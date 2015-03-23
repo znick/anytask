@@ -4,15 +4,10 @@ import shutil
 
 from django.conf import settings
 from django.contrib.auth import authenticate
-from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseForbidden
 from django.views.generic import View
-from django.shortcuts import get_object_or_404
 
-
-from cources.models import Cource
-
-from anysvn.common import get_svn_full_path
+from courses.models import Course
 
 class HttpResponseUnauthorized(HttpResponse):
     def __init__(self, *args, **kwargs):
@@ -25,15 +20,15 @@ class SvnAccesss(View):
     def _get_user(self, username, password):
         return authenticate(username=username, password=password)
 
-    def create_svn(self, user):
-        svn_full_path = get_svn_full_path(user)
+    def create_svn(self, svn_path):
+        svn_full_path = os.path.join(settings.ANYSVN_REPOS_PATH, svn_path)
         refference_svn_full_path = os.path.join(settings.ANYSVN_REPOS_PATH, settings.ANYSVN_REFFERENCE_REPO)
         shutil.copytree(refference_svn_full_path, svn_full_path, symlinks=True)
 
-    def ensure_svn_exists(self, user):
-        svn_full_path = get_svn_full_path(user)
+    def ensure_svn_exists(self, svn_path):
+        svn_full_path = os.path.join(settings.ANYSVN_REPOS_PATH, svn_path)
         if not os.path.exists(svn_full_path):
-            self.create_svn(user)
+            self.create_svn(svn_path)
 
     def check_svn_access(self, svn_path, username, password):
         user = self._get_user(username, password)
@@ -43,7 +38,7 @@ class SvnAccesss(View):
         if svn_path == username:
             return True
 
-        for course in Cource.objects.all():
+        for course in Course.objects.all():
             if course.user_is_teacher(user):
                 return True
         return False
@@ -51,8 +46,7 @@ class SvnAccesss(View):
     def check_svn_access_and_ensure_exists(self, svn_path, username, password):
         if not self.check_svn_access(svn_path, username, password):
             return False
-        repo_user = get_object_or_404(User, username__iexact=svn_path)
-        self.ensure_svn_exists(repo_user)
+        self.ensure_svn_exists(svn_path)
         return True
 
     def dispatch(self, request, *args, **kwargs):

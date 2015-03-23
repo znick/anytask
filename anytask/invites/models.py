@@ -5,7 +5,7 @@ from datetime import datetime
 
 from django.contrib.auth.models import User
 
-from cources.models import Cource
+from courses.models import Course
 from groups.models import Group
 
 import random
@@ -34,7 +34,7 @@ class Invite(models.Model):
         if generative_user.is_superuser:
             return True
         
-        if Cource.objects.filter(teachers=generative_user).count():
+        if Course.objects.filter(teachers=generative_user).count():
             return True
 
         return False

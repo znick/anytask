@@ -3,7 +3,7 @@ from django.core.management.base import BaseCommand, CommandError
 import datetime
 from django.db.models import Q
 
-from cources.models import Cource
+from courses.models import Course
 from tasks.models import TaskTaken
 
 
@@ -15,12 +15,12 @@ class Command(BaseCommand):
         self.out_lines = []
         self.need_print = False
 
-    def check_cource_task_taken_expires(self, cource):
-        if not cource.max_days_without_score:
+    def check_course_task_taken_expires(self, course):
+        if not course.max_days_without_score:
             return
 
-        task_expired_date = datetime.datetime.now() - datetime.timedelta(days=cource.max_days_without_score)
-        for task in cource.task_set.all():
+        task_expired_date = datetime.datetime.now() - datetime.timedelta(days=course.max_days_without_score)
+        for task in course.task_set.all():
             task_taken_query = TaskTaken.objects.filter(task=task)
             task_taken_query = task_taken_query.filter(Q(Q(status=TaskTaken.STATUS_TAKEN) | Q(status=TaskTaken.STATUS_CANCELLED)))
             task_taken_query = task_taken_query.filter(added_time__lte = task_expired_date)
@@ -45,10 +45,10 @@ class Command(BaseCommand):
             for task_taken in task_taken_to_delete:
                 task_taken.delete()
 
-    def check_blacklist_expires(self, cource):
-        blacklist_expired_date = datetime.datetime.now() - datetime.timedelta(days=cource.days_drop_from_blacklist)
+    def check_blacklist_expires(self, course):
+        blacklist_expired_date = datetime.datetime.now() - datetime.timedelta(days=course.days_drop_from_blacklist)
 
-        for task in cource.task_set.all():
+        for task in course.task_set.all():
             task_taken_query = TaskTaken.objects.filter(task=task)
             task_taken_query = task_taken_query.filter(status=TaskTaken.STATUS_BLACKLISTED)
             task_taken_query = task_taken_query.filter(update_time__lte = blacklist_expired_date)
@@ -63,13 +63,10 @@ class Command(BaseCommand):
                 task_taken.delete()
 
     def handle(self, *args, **options):
-        for cource in Cource.objects.filter(type=Cource.TAKE_POLICY_SELF_TAKEN):
-            self.out_lines.append("Cource '{0}'".format(cource))
-            if cource.max_days_without_score:
-                self.check_cource_task_taken_expires(cource)
-            else:
-                self.out_lines.append("max_days_without_score == 0 - Course skipped for check_cource_task_taken_expires")
-            self.check_blacklist_expires(cource)
+        for course in Course.objects.filter(type=Course.TAKE_POLICY_SELF_TAKEN).filter(max_days_without_score__gt=0):
+            self.out_lines.append("Course '{0}'".format(course))
+            self.check_course_task_taken_expires(course)
+            self.check_blacklist_expires(course)
 
         if self.need_print:
             print "\n".join(self.out_lines)

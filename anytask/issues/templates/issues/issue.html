@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load django_bootstrap_breadcrumbs %}
+
+{% block scripts %}
+  <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}issues/issue.css">
+  {% include "issues/issue_js.html" %}
+{% endblock %}
+
+
+{% block title %}{{ issue.task }} | {{ issue.student.last_name }}
+{{ issue.student.first_name }} {% endblock %}
+
+{% block breadcrumbs %}
+{{ block.super }}
+{% breadcrumb course.year course.year.get_absolute_url %}
+{% breadcrumb course.name course.get_absolute_url %}
+{% if teacher_or_staff %}
+  {% breadcrumb "очередь" course.get_absolute_url|add:"/queue" %}
+{% endif %}
+{% breadcrumb issue "" %}
+{% endblock breadcrumbs %}
+
+{% block content %}
+{{ block.super }}
+
+<div class="row">
+  <div class="span8">
+    {% include "issues/history.html" %}
+  </div>
+  <div class="span4">
+    {% include "issues/info.html" %}
+  </div>
+</div>
+{% endblock content %}
+
+<h1>
+  Issue page
+</h1>

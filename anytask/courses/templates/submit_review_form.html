@@ -1,0 +1,64 @@
+<script>
+
+    $(document).ready(function() {
+        var prev_revision = {{ prev_revision }};
+        var head_revision = {{ head_revision }};
+        var ready_to_submit = {{ ready_to_submit }};
+
+        $("#rev_b_" + head_revision.toString()).prop('checked', true);
+        $("#rev_a_" + prev_revision.toString()).prop('checked', true);
+
+        if (ready_to_submit) {
+            $('#submit').removeClass('disabled');
+        }
+
+    });
+
+</script>
+
+<div class="row">
+    <div class="span9">
+        <p>
+            Выберете ревизии, которые вы хотите показать преподавателю. Минимальная ревизия &#151; та, которую вы показывали прошлый раз, а максимальная, которую хотите показаться сейчас. Если сдаете задачу первый раз, то минимальная ревизия &#151; 1.
+        </p>
+        <form id="submit_review_form" action="{{ request.get_full_path }}" method="POST">
+            {% csrf_token %}
+            <table class="table">
+                <tr><th>Revision<th><th><th>Author<th>Datetime<th>Log message</tr>
+                {% for log in logs %}
+                    <tr><td>{{ log.0 }}
+                        <td>{% if not forloop.last %}<input type="radio" id="rev_b_{{ log.0 }}" name="rev_b" value="{{ log.0 }}">{% endif %}
+                        <td>{% if not forloop.first %}<input type="radio" id="rev_a_{{ log.0 }}" name="rev_a" value="{{ log.0 }}">{% endif %}
+                        <td>{{ log.1 }}
+                        <td>{{ log.2 }}
+                        <td>{{ log.3 }}
+                    </tr>
+                {% endfor %}
+            </table>
+            <button type="submit" id="submit" class="btn btn-primary disabled">Отправить</button>
+        </form>
+
+    </div>
+</div>
+
+
+<script>
+$("#submit_review_form").submit(function() {
+    var rev_a = $('input[name=rev_a]:checked', '#submit_review_form').val();
+    var rev_b = $('input[name=rev_b]:checked', '#submit_review_form').val();
+
+    if (!rev_a || !rev_b) {
+        alert("Нужно выбрать 2 ревизии");
+        return false;
+    }
+
+    if (rev_a == rev_b) {
+        alert("Ревизии должны различаться");
+        return false;
+    }
+    return true;
+
+});
+
+
+</script>

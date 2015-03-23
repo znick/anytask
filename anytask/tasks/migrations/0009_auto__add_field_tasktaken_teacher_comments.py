@@ -55,8 +55,8 @@ class Migration(SchemaMigration):
             'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
-        'cources.cource': {
-            'Meta': {'object_name': 'Cource'},
+        'courses.course': {
+            'Meta': {'object_name': 'Course'},
             'added_time': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'auto_now_add': 'True', 'blank': 'True'}),
             'days_drop_from_blacklist': ('django.db.models.fields.IntegerField', [], {'default': '0', 'null': 'True', 'blank': 'True'}),
             'groups': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'to': "orm['groups.Group']", 'null': 'True', 'blank': 'True'}),
@@ -64,9 +64,9 @@ class Migration(SchemaMigration):
             'max_days_without_score': ('django.db.models.fields.IntegerField', [], {'default': '0', 'null': 'True', 'blank': 'True'}),
             'max_users_per_task': ('django.db.models.fields.IntegerField', [], {'default': '0', 'null': 'True', 'blank': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '256', 'db_index': 'True'}),
-            'students': ('django.db.models.fields.related.ManyToManyField', [], {'blank': 'True', 'related_name': "'cource_students_set'", 'null': 'True', 'symmetrical': 'False', 'to': "orm['auth.User']"}),
+            'students': ('django.db.models.fields.related.ManyToManyField', [], {'blank': 'True', 'related_name': "'course_students_set'", 'null': 'True', 'symmetrical': 'False', 'to': "orm['auth.User']"}),
             'take_policy': ('django.db.models.fields.IntegerField', [], {'default': '0', 'max_length': '1', 'null': 'True', 'db_index': 'True', 'blank': 'True'}),
-            'teachers': ('django.db.models.fields.related.ManyToManyField', [], {'blank': 'True', 'related_name': "'cource_teachers_set'", 'null': 'True', 'symmetrical': 'False', 'to': "orm['auth.User']"}),
+            'teachers': ('django.db.models.fields.related.ManyToManyField', [], {'blank': 'True', 'related_name': "'course_teachers_set'", 'null': 'True', 'symmetrical': 'False', 'to': "orm['auth.User']"}),
             'type': ('django.db.models.fields.IntegerField', [], {'default': '0', 'max_length': '1', 'null': 'True', 'db_index': 'True', 'blank': 'True'}),
             'update_time': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'auto_now': 'True', 'blank': 'True'}),
             'year': ('django.db.models.fields.related.ForeignKey', [], {'default': '2012', 'to': "orm['years.Year']"})
@@ -83,7 +83,7 @@ class Migration(SchemaMigration):
         'tasks.task': {
             'Meta': {'object_name': 'Task'},
             'added_time': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'auto_now_add': 'True', 'blank': 'True'}),
-            'cource': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['cources.Cource']"}),
+            'course': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['courses.Course']"}),
             'group': ('django.db.models.fields.related.ForeignKey', [], {'default': 'None', 'to': "orm['groups.Group']", 'null': 'True', 'db_index': 'False', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'parent_task': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'parent_task_set'", 'null': 'True', 'to': "orm['tasks.Task']"}),

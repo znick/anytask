@@ -1,17 +1,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>{% block title %}{% endblock %}</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>{% block title %}{% endblock %}</title>
 
-{% block main_scripts %}
-  <script src="http://yastatic.net/jquery/1.7.2/jquery.min.js"></script>
-  <script src="http://malsup.github.io/jquery.form.js"></script>
-  <script src="{{ STATIC_URL }}jquery.tablesorter/jquery.tablesorter.min.js"></script>
-  <script src="{{ STATIC_URL }}jquery-metadata/jquery.metadata.js"></script>
+  {% block main_scripts %}
+    <script src="http://yastatic.net/jquery/1.7.2/jquery.min.js"></script>
+    <script src="http://malsup.github.io/jquery.form.js"></script>
+    <script src="{{ STATIC_URL }}jquery.tablesorter/jquery.tablesorter.min.js"></script>
+    <script src="{{ STATIC_URL }}jquery-metadata/jquery.metadata.js"></script>
 
-  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/2.0.4/css/bootstrap.min.css" rel="stylesheet">
-
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/2.0.4/css/bootstrap.min.css" rel="stylesheet">
 
     <style type="text/css">
       body {
@@ -28,88 +27,109 @@
       .sidebar-nav {
         padding: 9px 0;
       }
-
+      
+      .breadcrumb_button {
+        position: absolute;
+        right: 55px;
+        top: 63px;
+      }
       table {
-        //table-layout: fixed;
+      //table-layout: fixed;
       }
 
       .fixedsticky { top: 120px; }
 
     </style>
-	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/2.0.4/css/bootstrap-responsive.min.css" rel="stylesheet">
-{% endblock %}
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/2.0.4/css/bootstrap-responsive.min.css" rel="stylesheet">
+  {% endblock %}
 
-{% block scripts %}{% endblock %}
+  {% block scripts %}{% endblock %}
 </head>
+
 <body data-spy="scroll">
 
-    <div class="navbar navbar-fixed-top">
-      <div class="navbar-inner">
-        <div class="container">
-          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </a>
-          <a class="brand" href="/">Anytask</a>
-          <!--
-          <ul class="nav">
-                <li><a href="/about">About</a></li>
-          </ul>
-          -->
+<div class="navbar navbar-fixed-top">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </a>
+      <a class="brand" href="/">Anytask</a>
+      <!--
+      <ul class="nav">
+            <li><a href="/about">About</a></li>
+      </ul>
+      -->
+      {% block navbar %} {% endblock navbar %}
 
 
-          {% block user %}
-			{% if user.is_authenticated %}
-	          <div class="btn-group pull-right">
-	            <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-	              <i class="icon-user"></i> {% if user.get_full_name %} {{ user.get_full_name }} {% else %} {{ user }} {% endif %}
-	              <span class="caret"></span>
-	            </a>
-	              <ul class="dropdown-menu">
-	              <li><a href="#"><a href="{% url users.views.profile %}">Профиль</a></a></li>
-	              <li class="divider"></li>
-	              <li><a href="{% url django.contrib.auth.views.logout %}">Выйти</a></li>
-	            </ul>
-            </div>
-
-			{% else %}
-				<div class="btn-group pull-right">
-					<a href="{% url django.contrib.auth.views.login %}">Войдите</a> или
-					<a href="/accounts/register/">зарегистрируйтесь</a>
-				</div>
-
-			{% endif %}
-
-	      {% endblock %}
-
-
-          <div class="nav-collapse">
-            <ul class="nav">
-              <!-- <li class="active"><a href="/">Главная</a></li>
-              <li><a href=""></a></li>
-              <li><a href="#contact">Contact</a></li> -->
+      {% block user %}
+        {% if user.is_authenticated %}
+          <div class="btn-group pull-right">
+            <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+              <i class="icon-user"></i> {% if user.get_full_name %} {{ user.get_full_name }} {% else %} {{ user }} {% endif %}
+              <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+              <li><a href="#"><a href="{% url users.views.profile %}">Профиль</a></a></li>
+              {% if user.is_staff %}
+                <li> <a href="{% url admin:index %}">Админка</a> </li>
+              {% endif %}
+              <li class="divider"></li>
+              <li><a href="{% url django.contrib.auth.views.password_change %}">Сменить пароль</a></li>
+              <li class="divider"></li>
+              <li><a href="{% url django.contrib.auth.views.logout %}">Выйти</a></li>
             </ul>
-          </div><!--/.nav-collapse -->
-        </div>
-      </div>
+          </div>
+
+        {% else %}
+          <div class="nav-collapse pull-right">
+            <ul class="nav">
+              <li> <a href="{% url django.contrib.auth.views.login %}">Войдите</a> </li>
+              <li> <a href="/accounts/register/">Зарегистрируйтесь</a> </li>
+            </ul>
+          </div>
+
+        {% endif %}
+
+      {% endblock %}
+
     </div>
+  </div>
+</div>
+
 
 
 <div class="container">
 
-{% block content %}{% endblock %}
+  {% load django_bootstrap_breadcrumbs %}
+
+  {% block breadcrumbs %}
+    {% clear_breadcrumbs %}
+    {% breadcrumb "Home" "/" %}
+  {% endblock %}
+
+  {% block content %}
+    {% render_breadcrumbs %}
+  {% endblock %}
 
 </div>
 
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/2.0.4/js/bootstrap.min.js"></script>
 <script src="{{ STATIC_URL }}/bootbox.min.js"></script>
+
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
 (function (d, w, c) {
     (w[c] = w[c] || []).push(function() {
         try {
-            w.yaCounter16465726 = new Ya.Metrika({id:16465726, enableAll: true, webvisor:true});
+            w.yaCounter26396970 = new Ya.Metrika({id:26396970,
+                    webvisor:true,
+                    clickmap:true,
+                    trackLinks:true,
+                    accurateTrackBounce:true});
         } catch(e) { }
     });
 
@@ -121,11 +141,12 @@
     s.src = (d.location.protocol == "https:" ? "https:" : "http:") + "//mc.yandex.ru/metrika/watch.js";
 
     if (w.opera == "[object Opera]") {
-        d.addEventListener("DOMContentLoaded", f);
+        d.addEventListener("DOMContentLoaded", f, false);
     } else { f(); }
 })(document, window, "yandex_metrika_callbacks");
 </script>
-<noscript><div><img src="//mc.yandex.ru/watch/16465726" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<noscript><div><img src="//mc.yandex.ru/watch/26396970" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
 <!-- /Yandex.Metrika counter -->
+
 </body>
 </html>

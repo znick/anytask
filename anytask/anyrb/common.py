@@ -1,76 +1,175 @@
+# -*- coding: utf-8 -*-
 import datetime
 
 from django.conf import settings
 
 from rbtools.api.client import RBClient
 
-from anysvn.common import get_svn_uri
+# from anysvn.common import get_svn_uri, svn_diff
+
 
 class AnyRB(object):
-    def __init__(self):
+    def __init__(self, event):
         self.client = RBClient(settings.RB_API_URL, username=settings.RB_API_USERNAME, password=settings.RB_API_PASSWORD)
+        self.event = event
 
-    def get_repository(self, user):
-        username = user.username
-        root = self.client.get_root()
-        for repo in root.get_repositories():
-            if repo.fields["name"] == username:
-                return repo
+    def upload_review(self):
+        if len(self.event.file_set.all()) == 0:
+            return
 
-        return None
+        files_diff = []
+        empty = True
+        import magic
+        for f in self.event.file_set.all():
+            # print f.filename()
+            mime_type = magic.from_buffer(f.file.read(1024), mime=True)
+            # print mime_type
+            if mime_type[:4] != 'text':
+                continue
 
-    def create_repository(self, user):
-        root = self.client.get_root()
-        root.get_repositories().create(name=user.username,
-                                            path=get_svn_uri(user),
-                                            tool="Subversion",
-                                            public=False,
-                                            access_users=",".join((user.username, settings.RB_API_USERNAME)),
-                                            access_groups=settings.RB_API_DEFAULT_REVIEW_GROUP
-                                            )
-        return self.get_repository(user)
+            empty = False
+            file_content = []
+            for line in f.file:
+                file_content.append(line.decode('utf-8'))
+            # = f.file.read()
 
-    def submit_review(self, user, diff_content, path="", summary="", description="", review_group_name=None, review_id=None): #review_id is for update
-        descriptions = []
-        if isinstance(summary, unicode):
-            summary = summary.encode("utf-8")
+            from difflib import unified_diff
+            fname = f.filename()
+            from_name = u'a/{0}'.format(fname)
+            to_name = u'b/{0}'.format(fname)
 
-        root = self.client.get_root()
+            diff = [(u'diff --git {0} {1}'.format(from_name, to_name))]
+            from_name = u'/dev/null'
 
-        repository = self.get_repository(user)
-        if repository is None:
-            repository = self.create_repository(user)
+            diff_content = unified_diff('',
+                                        file_content,
+                                        fromfile=from_name,
+                                        tofile=to_name.encode('utf-8'))
+            for line in diff_content:
+                line = line.strip()
+                if isinstance(line, str):
+                    diff.append(line.decode('utf-8'))
+                else:
+                    diff.append(line)
 
-        if review_id:
-            review_request = root.get_review_request(review_request_id=review_id)
-            descriptions.append(review_request.description.encode("utf-8"))
-        else:
-            review_request = root.get_review_requests().create(repository=repository.id, submit_as=user.username)
+            files_diff.append(u'\n'.join(diff))
 
-        try:
-            review_request.get_diffs().upload_diff(diff_content, base_dir="/")
-        except Exception:
-            descriptions.append(u"WARNING: Diff has not been uploaded. Probably it contains non-ASCII filenames. Non-ASCII filenames are not supported.")
+        files_diff = u'\n'.join(files_diff)
+
+        if empty:
+            return
 
 
-        descriptions.append("=== Added on {0} ===\n".format(datetime.datetime.now()))
-        descriptions.append(description)
+        review_request = self.get_or_create_review_request()
+        review_request.get_diffs().upload_diff(files_diff.encode('utf-8'))
+
+            # print f.file.read()
+            # review_request.get_diffs().upload_diff(f.file.read())
 
         draft = review_request.get_or_create_draft()
-        description = "\n".join(descriptions)
-        draft.update(description=description, summary=summary)
-        review_request.update(status="pending")
+        issue = self.event.issue
+        summary = u'{0} {1}'.format(issue.student.get_full_name(), issue.task.title) #.decode('utf-8'))
+        description = u'backward url will be here: [/issue/{0}]({1})'.format(
+            issue.id,
+            issue.get_absolute_url(),
+        )
+        draft = draft.update(summary=summary.encode('utf-8'),
+                             description=description.encode('utf-8'),
+                             target_people='admin', public=True,
+                             )
+        pass
 
-        if review_group_name:
-            draft.update(target_groups=review_group_name)
+    def get_or_create_review_request(self):
+        root = self.client.get_root()
 
-        return review_request.id
+        repos = root.get_repositories()
+        repository = repos[0].id
 
-    def get_review_url(self, request, review_id):
-        host = request.get_host()
-        proto = "http://"
-        if request.is_secure():
-            proto = "https://"
+        review_request = None
+        try:
+            review_id = self.event.issue.get_byname('review_id')
+            review_request = root.get_review_request(review_request_id=review_id)
+        except Exception, e:
+            review_request = root.get_review_requests().create(repository=repository)
+        self.event.issue.set_byname('review_id', review_request.id, self.event.author)
+        return review_request
 
-        return "{0}{1}/rb/r/{2}".format(proto, host, review_id)
+
+    # def get_repository(self, user):
+        # username = user.username
+        # root = self.client.get_root()
+        # for repo in root.get_repositories():
+            # if repo.fields["name"] == username:
+                # return repo
+
+        # return None
+
+    # def create_repository(self, user):
+        # root = self.client.get_root()
+        # root.get_repositories().create(name=user.username,
+                                            # path=get_svn_uri(user),
+                                            # tool="Subversion",
+                                            # public=False,
+                                            # access_users=",".join((user.username, settings.RB_API_USERNAME)),
+                                            # access_groups=settings.RB_API_DEFAULT_REVIEW_GROUP
+                                            # )
+        # return self.get_repository(user)
+
+    # def submit_review(self, user, rev_a, rev_b, path="", summary="", description="",review_group_name=None):
+        # if isinstance(summary, unicode):
+            # summary = summary.encode("utf-8")
+
+        # root = self.client.get_root()
+
+        # repository = self.get_repository(user)
+        # if repository is None:
+            # repository = self.create_repository(user)
+
+        # review_request = root.get_review_requests().create(repository=repository.id, submit_as=user.username)
+
+        # diff_content = svn_diff(user, rev_a, rev_b, path=path)
+        # try:
+            # review_request.get_diffs().upload_diff(diff_content, base_dir="/")
+        # except Exception:
+            # description +="\n WARNING: Diff has not been uploaded. Probably it contains non-ASCII filenames. Non-ASCII filenames are not supported."
+
+
+        # draft = review_request.get_or_create_draft()
+        # description = "=== Added on {0} ===\n".format(datetime.datetime.now()) + description
+        # draft = draft.update(summary=summary, description=description)
+
+        # if review_group_name:
+            # draft.update(target_groups=review_group_name)
+
+        # return review_request.id
+
+    # def update_review(self, user, rev_a, rev_b, review_id, description="", path=""):
+        # root = self.client.get_root()
+
+        # review_request = root.get_review_request(review_request_id=review_id)
+
+        # descriptions = [review_request.description.encode("utf-8")]
+        # descriptions.append("=== Added on {0} ===".format(datetime.datetime.now()))
+        # descriptions.append(description)
+
+        # draft = review_request.get_or_create_draft()
+
+        # diff_content = svn_diff(user, rev_a, rev_b, path=path)
+        # try:
+            # review_request.get_diffs().upload_diff(diff_content, base_dir="/")
+        # except Exception:
+            # descriptions.append("\n WARNING: Diff has not been uploaded. Probably it contains non-ASCII filenames. Non-ASCII filenames are not supported.")
+        # draft.update(description="\n".join(descriptions))
+        # review_request.update(status="pending")
+
+        # return review_id
+
+
+    # def get_review_url(self, request, review_id):
+        # host = request.get_host()
+        # proto = "http://"
+        # if request.is_secure():
+            # proto = "https://"
+
+        # return "{0}{1}/rb/r/{2}".format(proto, host, review_id)
 

@@ -5,8 +5,6 @@ from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
 import os
 PROJECT_PATH = os.path.dirname(os.path.abspath(__file__))
 
-DEBUG = True
-TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
@@ -25,7 +23,7 @@ MANAGERS = ADMINS
 # timezone as the operating system.
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
-TIME_ZONE = 'Asia/Yekaterinburg'
+TIME_ZONE = 'Europe/Moscow'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
@@ -39,11 +37,14 @@ USE_I18N = True
 
 # If you set this to False, Django will not format dates, numbers and
 # calendars according to the current locale
-USE_L10N = True
+# USE_L10N = True
+
+# DECIMAL_SEPARATOR = '.'
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
 MEDIA_ROOT = os.path.join(PROJECT_PATH, 'media')
+UPLOAD_ROOT = os.path.join(PROJECT_PATH, 'upload')
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
@@ -120,21 +121,25 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.admin',
-    'common',
     'south',
+    'common',
     'users',
     'years',
     'groups',
-    'cources',
+    'courses',
     'tasks',
     'registration',
-    'django_bootstrap',
-    'index',
     'bootstrap',
+    'index',
+    'django_bootstrap',
     'invites',
     'anysvn',
     'issues',
     'anyrb',
+    'django_extensions',
+    'debug_toolbar',
+    'django_bootstrap_breadcrumbs',
+    'filemanager',
 )
 
 AUTH_PROFILE_MODULE = "users.UserProfile"
@@ -148,9 +153,16 @@ RECAPTCHA_PRIVATE_KEY = "18ccfac9d336db9817a893ce45751d5a"
 ANYSVN_SVN_URL_PREFIX = "/svn/"
 ANYSVN_REPOS_PATH = "../svn/user_repos"
 ANYSVN_REFFERENCE_REPO = "../new_repo" #for new svns
-ANYSVN_MAX_DIFF_SIZE = 5 * 1024 * 1024
 
 RB_API_URL = "http://127.0.0.1/rb/"
 RB_API_USERNAME = "user"
 RB_API_PASSWORD = "qwer"
 RB_API_DEFAULT_REVIEW_GROUP = 'teachers'
+
+IPYTHON_URL = "http://anytask-dev1.i-folb.fog.yandex.net:8888/notebooks/anytask/src/anytask"
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# from django.contrib.auth.models import User
+# user = User.objects.all()[0]
+
+REGISTRATION_ALLOWED_DOMAINS = set(('ya.ru', 'yandex.ru', 'yandex.by', 'yandex.com', 'yandex.kz', 'yandex.ua'))

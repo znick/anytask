@@ -11,7 +11,7 @@ from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
 
 from groups.models import Group
-from cources.models import Cource
+from courses.models import Course
 from years.common import get_current_year, get_or_create_current_year
 from years.models import Year
 
@@ -39,7 +39,7 @@ class Command(BaseCommand):
             action='store',
             dest='year',
             default=None,
-            help='Cource start year'),
+            help='Course start year'),
         )
 
     def handle(self, **options):
@@ -51,15 +51,15 @@ class Command(BaseCommand):
         if not year:
             year = get_or_create_current_year()
         
-        cource, created = Cource.objects.get_or_create(year=year, name='Perltask')
+        course, created = Course.objects.get_or_create(year=year, name='Perltask')
         if created:
-            print "WARNING: NEW Cource created!"
-            cource.type = Cource.TYPE_POTOK
-            cource.take_policy = Cource.TAKE_POLICY_SELF_TAKEN
-            cource.max_users_per_task = 8
-            cource.max_days_without_score = 30
-            cource.days_drop_from_blacklist = 14
-            cource.save()
+            print "WARNING: NEW Course created!"
+            course.type = Course.TYPE_POTOK
+            course.take_policy = Course.TAKE_POLICY_SELF_TAKEN
+            course.max_users_per_task = 8
+            course.max_days_without_score = 30
+            course.days_drop_from_blacklist = 14
+            course.save()
         
         for student in get_users_from_cs_xml(sys.stdin):
             last_name, first_name = student['name'].split(' ', 1)
@@ -77,6 +77,6 @@ class Command(BaseCommand):
                 user.save()
 
             group, _ = Group.objects.get_or_create(year=year, name=group_name)
-            cource.groups.add(group)
+            course.groups.add(group)
             group.students.add(user)
             print "{0} {1} {2}".format(user, user.get_full_name().encode("utf-8"), group)

@@ -21,29 +21,22 @@ DATABASES = {
 # the site admins on every HTTP 500 error.
 # See http://docs.djangoproject.com/en/dev/topics/logging for
 # more details on how to customize your logging configuration.
-
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'handlers': {
-        'file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': 'logs/debug.log',
-
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler'
         }
-
     },
     'loggers': {
         'django.request': {
-            'handlers': ['file'],
-            'level': 'DEBUG',
+            'handlers': ['mail_admins'],
+            'level': 'ERROR',
             'propagate': True,
-
         },
-
     }
 }
-
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

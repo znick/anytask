@@ -4,6 +4,7 @@
 {% block content %}
 
 <h1>Вход</h1>
+
 <form method="post" action="{% url django.contrib.auth.views.login %}" class="form-horizontal">
 {% csrf_token %}
 {{ form }}

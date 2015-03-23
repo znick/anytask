@@ -5,7 +5,7 @@ from datetime import datetime
 from django.utils.translation import ugettext as _
 from django.db.models.signals import post_save, pre_delete
 
-from cources.models import Cource
+from courses.models import Course
 from groups.models import Group
 
 from django.db.models import Q
@@ -17,7 +17,7 @@ import copy
 
 class Task(models.Model):
     title = models.CharField(max_length=254, db_index=True, null=True, blank=True)
-    cource = models.ForeignKey(Cource, db_index=True, null=False, blank=False)
+    course = models.ForeignKey(Course, db_index=True, null=False, blank=False)
     group = models.ForeignKey(Group, db_index=False, null=True, blank=True, default=None)
     weight = models.IntegerField(db_index=True, null=False, blank=False, default=0)
 
@@ -38,7 +38,7 @@ class Task(models.Model):
         return unicode(self.title)
 
     def user_can_take_task(self, user):
-        cource = self.cource
+        course = self.course
 
         if user.is_anonymous():
             return (False, '')
@@ -46,18 +46,18 @@ class Task(models.Model):
         if self.is_hidden:
             return (False, '')
 
-        if cource.take_policy != Cource.TAKE_POLICY_SELF_TAKEN:
+        if course.take_policy != Course.TAKE_POLICY_SELF_TAKEN:
             return (False, u'')
 
-        if not self.cource.groups.filter(students=user).count() and not self.cource.students.filter(id=user.id).count():
+        if not self.course.groups.filter(students=user).count() and not self.course.students.filter(id=user.id).count():
             return (False, u'')
 
-        if cource.max_users_per_task:
-            if TaskTaken.objects.filter(task=self).filter(Q( Q(status=TaskTaken.STATUS_TAKEN) | Q(status=TaskTaken.STATUS_SCORED))).count() >= cource.max_users_per_task:
-                return (False, u'Задача не может быть взята более чем {0} студентами'.format(cource.max_users_per_task))
+        if course.max_users_per_task:
+            if TaskTaken.objects.filter(task=self).filter(Q( Q(status=TaskTaken.STATUS_TAKEN) | Q(status=TaskTaken.STATUS_SCORED))).count() >= course.max_users_per_task:
+                return (False, u'Задача не может быть взята более чем {0} студентами'.format(course.max_users_per_task))
 
-        if cource.max_tasks_without_score_per_student:
-            if TaskTaken.objects.filter(user=user).filter(status=TaskTaken.STATUS_TAKEN).count() >= cource.max_tasks_without_score_per_student:
+        if course.max_tasks_without_score_per_student:
+            if TaskTaken.objects.filter(user=user).filter(status=TaskTaken.STATUS_TAKEN).count() >= course.max_tasks_without_score_per_student:
                 return (False, u'')
 
         if Task.objects.filter(parent_task=self).count() > 0:
@@ -73,7 +73,7 @@ class Task(models.Model):
 
         try:
             task_taken = TaskTaken.objects.filter(task=self).filter(user=user).get(status=TaskTaken.STATUS_BLACKLISTED)
-            black_list_expired_date = task_taken.update_time + timedelta(days=cource.days_drop_from_blacklist)
+            black_list_expired_date = task_taken.update_time + timedelta(days=course.days_drop_from_blacklist)
             return (False, u'Вы сможете взять эту задачу с {0}'.format(black_list_expired_date.strftime("%d.%m.%Y")))
         except TaskTaken.DoesNotExist:
             pass
@@ -84,7 +84,7 @@ class Task(models.Model):
         return (True, u'')
 
     def user_can_cancel_task(self, user):
-        if user.is_anonymous() or self.cource.take_policy != Cource.TAKE_POLICY_SELF_TAKEN or self.is_hidden:
+        if user.is_anonymous() or self.course.take_policy != Course.TAKE_POLICY_SELF_TAKEN or self.is_hidden:
             return False
         if TaskTaken.objects.filter(task=self).filter(user=user).filter(status=TaskTaken.STATUS_TAKEN).count() != 0:
             return True
@@ -94,16 +94,16 @@ class Task(models.Model):
         if user.is_anonymous():
             return False
 
-        return self.cource.user_is_teacher(user)
+        return self.course.user_is_teacher(user)
 
     def user_can_pass_task(self, user):
         if user.is_anonymous():
             return False
 
-        if not self.cource.rb_integrated:
+        if not self.course.rb_integrated and not self.course.gr_integrated and not self.course.pdf_integrated:
             return False
 
-        if self.cource.take_policy == Cource.TAKE_POLICY_ALL_TASKS_TO_ALL_STUDENTS and \
+        if self.course.take_policy == Course.TAKE_POLICY_ALL_TASKS_TO_ALL_STUDENTS and \
            self.user_can_take_task(user):
 
             return True
@@ -132,11 +132,11 @@ class Task(models.Model):
         self.can_cancel = self.user_can_cancel_task(user)
         self.can_score = self.user_can_score_task(user)
         self.can_pass = self.user_can_pass_task(user)
-        self.is_shown = not self.is_hidden or self.cource.user_is_teacher(user)
+        self.is_shown = not self.is_hidden or self.course.user_is_teacher(user)
 
 class TaskLog(models.Model):
     title = models.CharField(max_length=254, db_index=True, null=True, blank=True)
-    cource = models.ForeignKey(Cource, db_index=False, null=False, blank=False)
+    course = models.ForeignKey(Course, db_index=False, null=False, blank=False)
     group = models.ForeignKey(Group, db_index=False, null=True, blank=True, default=None)
     weight = models.IntegerField(db_index=False, null=False, blank=False, default=0)
 
@@ -174,10 +174,28 @@ class TaskTaken(models.Model):
     )
     status = models.IntegerField(max_length=1, choices=TASK_TAKEN_STATUSES, db_index=True, null=False, blank=False, default=0)
 
-    score = models.IntegerField(db_index=False, null=False, blank=False, default=0)
+    EDIT = 'EDIT'
+    QUEUE = 'QUEUE'
+    OK = 'OK'
+    STATUS_CHECK_CHOICES = (
+        (EDIT, u'Дорешивание'),
+        (QUEUE, u'Ожидает проверки'),
+        (OK, u'Задача зачтена и/или больше не принимается'),
+    )
+    status_check = models.CharField(db_index=True, max_length=5, choices=STATUS_CHECK_CHOICES, default=EDIT)
+
+    teacher = models.ForeignKey(User, db_index=True, null=True, blank=False, default=None, related_name='teacher')
+
+    score = models.FloatField(db_index=False, null=False, blank=False, default=0)
     scored_by = models.ForeignKey(User, db_index=True, null=True, blank=True, related_name='task_taken_scored_by_set')
 
     teacher_comments = models.TextField(db_index=False, null=True, blank=True, default='')
+
+    id_issue_gr_review = models.IntegerField(db_index=True, null=True, blank=False, default=None)
+    pdf = models.FileField(upload_to="pdf_review", db_index=True, null=True, blank=False, default=None)
+
+    pdf_update_time = models.DateTimeField(default=datetime.now)
+    gr_review_update_time = models.DateTimeField(default=datetime.now)
 
     added_time = models.DateTimeField(auto_now_add=True, default=datetime.now)
     update_time = models.DateTimeField(auto_now=True, default=datetime.now)
@@ -187,6 +205,26 @@ class TaskTaken(models.Model):
 
     def __unicode__(self):
         return unicode(self.task) + " (" + unicode(self.user) + ")"
+
+    def user_can_change_status(self, user, status):
+        if user.is_anonymous():
+            return False
+        if self.task.course.user_is_teacher(user):
+            return True
+        if user.id != self.user.id:
+            return False
+        if status == self.OK:
+            return  self.status_check == self.OK
+        else:
+            return  self.status_check != self.OK
+
+    def user_can_change_teacher(self, user):
+        if user.is_anonymous():
+            return False
+        if self.task.course.user_is_teacher(user):
+            return True
+        return False
+
 
 class TaskTakenLog(models.Model):
     user = models.ForeignKey(User, db_index=False, null=False, blank=False)
@@ -229,6 +267,8 @@ def task_taken_save_to_log_pre_delete(sender, instance, **kwargs):
     task_taken_log.status = TaskTaken.STATUS_DELETED
     task_taken_log.save()
 
+
 post_save.connect(task_save_to_log_post_save, sender=Task)
 post_save.connect(task_taken_save_to_log_post_save, sender=TaskTaken)
 pre_delete.connect(task_taken_save_to_log_pre_delete, sender=TaskTaken)
+

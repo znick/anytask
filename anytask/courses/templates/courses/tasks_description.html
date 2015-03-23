@@ -1,0 +1,28 @@
+{% load sanitize_html %}
+
+<h1>
+  tasks_description
+</h1>
+
+<div class="row span8">
+  {% for group,tasks in group_x_tasks.items %}
+  <h2>{{ group.name }}</h2>
+  <dl>
+    {% for task in tasks %}
+    <dt>{{ task.title }}</dt>
+    <dd>{{ task.task_text|sanitize|safe }}</dd>
+    <br>
+    {% endfor %}
+  </dl>
+  {% endfor %}
+  {% if course_tasks %}
+  <h2>Задачи курса</h2>
+  <dl>
+    {% for task in course_tasks %}
+    <dt>{{ task.title }}</dt>
+    <dd>{{ task.task_text|sanitize|safe }}</dd>
+    <br>
+    {% endfor %}
+  </dl>
+  {% endif %}
+</div>

@@ -1,0 +1,43 @@
+<div class="accordion" id="accordion2">
+  {% for field in issue_fields %}
+    {% if field.is_visible %}
+      <div class="accordion-group">
+        <div class="accordion-heading">
+          <div class="row-fluid col-wrap">
+            <div class="span4">
+              <div class="pull-right">
+                {% if field.editable %}
+                  <a href="#" data-toggle="collapse" data-target="#collapse{{ forloop.counter }}">{{ field.title }}</a>:
+                {% else %}
+                  {{ field.title }}:
+                {% endif %}
+              </div>
+            </div>
+            <div class="span8">
+              {% autoescape off %}
+              {% if field.repr  or field.repr == 0 %}
+                  {{ field.repr }}
+                {% else %}
+                  ---
+                {% endif %}
+              {% endautoescape %}
+            </div>
+          </div>
+        </div>
+        <div id="collapse{{ forloop.counter }}" class="accordion-body collapse">
+          <div class="accordion-inner">
+            <form method="post" id="{{ field.name }}_form" enctype="multipart/form-data">
+              {% csrf_token %}
+              <fieldset>
+                <input type="hidden" name="form_name" value="{{ field.name }}_form">
+                {{ field.form }}
+                <br>
+                <button type="submit" class="btn">Отправить</button>
+              </fieldset>
+            </form>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  {% endfor %}
+</div>

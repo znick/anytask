@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% load django_bootstrap_breadcrumbs %}
+{% load sanitize_html icon %}
+{% load dict_func %}
+{% load task_taken_func %}
+
+{% block title %}{{ course.name }} | {{ course.year }}{% endblock %}
+
+{% block breadcrumbs %}
+  {{ block.super }}
+  {% breadcrumb course.year course.year.get_absolute_url %}
+  {% breadcrumb course.name "" %}
+{% endblock breadcrumbs %}
+
+{% block navbar %}
+  <ul class="nav">
+    <li class="active">
+      <a href="">Список задач</a>
+    </li>
+    {% if visible_queue %}
+      <li>
+        <a href="{{ course.get_absolute_url }}/queue">Очередь на проверку</a>
+      </li>
+    {% endif %}
+  </ul>
+{% endblock navbar %}
+
+{% block content %}
+  {{ block.super }}
+    {% if course.information %}
+      {{ course.information|urlize|sanitize|safe }}
+      <br>
+    {% endif %}
+    {% if course.can_edit %}
+      <a class="btn-small" href="javascript:get_edit_course_modal({{ course.id }}, {% if course.information %} '{{course.information|escapejs}}' {% else %} '' {% endif %});">
+        {% if course.information %}
+          Редактировать информацию о курсе
+        {% else %}
+          Добавить информацию о курсе
+        {% endif %}
+      </a>
+      <a class="btn-small" href="{{course.id}}/data/"> Добавить данных
+      </a>
+      <br>
+
+      {% if course.can_edit and course.is_special_course %}
+        <a class="btn-small" href="javascript:get_add_task_modal({{ course.id }}, null,  null, '{{course.can_edit}}');">
+          Добавить задачу
+        </a>
+        <br>
+      {% endif %}
+    {% endif %}
+    
+    <div class = "breadcrumb_button">
+    {% if not user_is_teacher and course.can_be_chosen_by_extern%}
+      {% if user_is_attended_special_course %}
+        <button type="button" class="btn btn-danger" OnClick="javascript:set_spectial_course_attend({{ course.id }}, 'remove');">
+          Отписаться
+        </button>
+      {% else %}
+        <button type="button" class="btn btn-success" OnClick="javascript:set_spectial_course_attend({{ course.id }},'add');">
+          Записаться
+        </button>
+      {% endif %}
+      <br>
+    {% endif %}
+    </div>
+
+    Преподаватели:
+    {% for teacher in course.teachers.all %}
+      <a href="{% url users.views.profile teacher.username %}">
+        {{ teacher.last_name }} {{ teacher.first_name }}
+      </a>
+      {% if not forloop.last %},{% endif %}
+    {% endfor %}
+    <br />
+    <br />
+
+    <a class="label ">Новый</a>
+    <a class="label label-important">На доработке</a>
+    <a class="label label-warning">На проверке</a>
+    <a class="label label-success">Зачтено</a>
+    <a class="label label-info">Сумарный балл</a>
+
+    <br />
+    <br />
+    {% include tasklist_template %}
+{% endblock content %}

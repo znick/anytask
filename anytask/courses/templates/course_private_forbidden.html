@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load sanitize_html %}
+
+{% block title %}{{ course.name }} | {{ course.year }}{% endblock %}
+
+{% block scripts %}
+
+	{% include "course_tasks_base_js.html" %}
+
+{% endblock %}
+
+{% block content %}
+
+
+<dl>
+	<dt><h3>{{ course.name }} <small>{{ course.year }}</small></h3></dt>
+        К сожалению, у вас нет доступа к этому курсу.
+</dl>
+
+{% include "course_tasks_base.html" %}
+
+{% endblock %}

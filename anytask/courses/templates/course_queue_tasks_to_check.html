@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% load sanitize_html icon %}
+{% load dict_func %}
+{% load task_taken_func %}
+
+{% block title %}{{ course.name }} | {{ course.year }}{% endblock %}
+
+{% block scripts %}
+
+{% include "course_tasks_base_js.html" %}
+
+    <script type="text/javascript">
+        function change_to_edit()
+        {
+            $('#modal_task_desc_text').hide();
+            $('#modal_task_desc_edit').show();
+        };
+        $(document).ready(function() {
+            $('tr[name="student_information"]').each(function(index) {
+                if ($(this).find('span[name^="teacher_"]').size() == 0)
+                {
+                    $(this).hide();
+                }
+            });
+        });
+    </script>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="subnav">
+    <ul class="nav nav-pills">
+      <li><a href="{% url courses.views.tasks_list course.id %}">Список по группам</a></li>
+      <li><a href="{% url courses.views.tasks_description course_id=course.id %}">Описание задач</a></li>
+      <li class="active"><a href="{% url courses.views.queue_tasks_to_check course_id=course.id %}"> Очередь на проверку </a> </li>
+    </ul>
+</div>
+
+<h3>{{ course.name }} <small>{{ course.year }}</small></h3>
+{% if course.can_edit %}
+    <a class="btn-small" href="javascript:get_edit_course_modal({{ course.id }}, {% if course.information %} '{{course.information|escapejs}}' {% else %} '' {% endif %});">
+        {% if course.information %}Редактировать информацию о курсе{% else %}Добавить информацию о курсе{% endif %}
+    </a>
+    <br>
+    {% if course.can_edit and course.is_special_course %}
+        <a class="btn-small" href="javascript:get_add_task_modal({{ course.id }}, null,  null, '{{course.can_edit}}');">
+            Добавить задачу
+        </a>
+        <br>
+    {% endif %}
+
+{% endif %}
+{% if user.is_active and course.is_special_course %}
+    {% if user_is_attended_special_course %}
+        <a class="btn-small" href="javascript:set_spectial_course_attend({{ course.id }}, 'remove');">
+            Больше не буду ходить на этот спец-курс
+        </a>
+    {% else %}
+        <a class="btn-small" href="javascript:set_spectial_course_attend({{ course.id }}, 'add');">
+            Буду ходить на этот спец-курс
+        </a>
+    {% endif %}
+    <br>
+{% endif %}
+
+
+{% if course.information %}
+    {{ course.information|sanitize|safe }}
+    <br>
+{% endif %}
+Преподаватели:
+{% for teacher in course.teachers.all %}
+    <a href="{% url users.views.profile teacher.username %}">{{ teacher.last_name }} {{ teacher.first_name }}</a>{% if not forloop.last %},{% endif %}
+{% endfor %}
+<br />
+
+<br />
+<div class="row" id="transcript">
+
+</div>
+
+{% include "course_tasks_base.html" %}
+
+{% endblock %}

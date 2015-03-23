@@ -12,7 +12,7 @@ class Migration(SchemaMigration):
         db.create_table('tasks_task', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('title', self.gf('django.db.models.fields.CharField')(db_index=True, max_length=256, null=True, blank=True)),
-            ('cource', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['cources.Cource'])),
+            ('course', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['courses.Course'])),
             ('group', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['groups.Group'], db_index=False)),
             ('task_text', self.gf('django.db.models.fields.TextField')()),
             ('added_time', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now, auto_now_add=True, blank=True)),
@@ -102,8 +102,8 @@ class Migration(SchemaMigration):
             'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
-        'cources.cource': {
-            'Meta': {'object_name': 'Cource'},
+        'courses.course': {
+            'Meta': {'object_name': 'Course'},
             'added_time': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'auto_now_add': 'True', 'blank': 'True'}),
             'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['groups.Group']", 'symmetrical': 'False'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
@@ -125,7 +125,7 @@ class Migration(SchemaMigration):
         'tasks.task': {
             'Meta': {'object_name': 'Task'},
             'added_time': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'auto_now_add': 'True', 'blank': 'True'}),
-            'cource': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['cources.Cource']"}),
+            'course': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['courses.Course']"}),
             'group': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['groups.Group']", 'db_index': 'False'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'task_blacklist': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'task_blacklist_set'", 'symmetrical': 'False', 'through': "orm['tasks.TaskBlacklist']", 'to': "orm['auth.User']"}),

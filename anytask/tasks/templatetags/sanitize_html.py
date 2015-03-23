@@ -10,7 +10,7 @@ ALLOWED_TAGS_STRING = _("Allowed tags: ") + ALLOWED_TAGS
 
 def sanitize_html(value):
     valid_tags = ALLOWED_TAGS.split()
-    valid_attrs = 'href src target'.split()
+    valid_attrs = 'href src'.split()
 
     if not value:
         return ''

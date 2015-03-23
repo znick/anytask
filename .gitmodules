@@ -16,3 +16,6 @@
 [submodule "rbtools"]
 	path = rbtools
 	url = https://github.com/reviewboard/rbtools.git
+[submodule "django-filemanager"]
+	path = django-filemanager
+	url = https://github.com/IMGIITRoorkee/django-filemanager.git

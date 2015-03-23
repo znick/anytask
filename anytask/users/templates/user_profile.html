@@ -3,67 +3,95 @@
 {% block title %} {{ user_to_show.get_full_name }} {% endblock %}
 
 {% block scripts %}
-	<script type="text/javascript">
-	</script>
+  <script type="text/javascript">
+    $(document).ready(function() {
+      $(".table_tasks").tablesorter();
+      $(".table_tasks").stickyTableHeaders({fixedOffset: $('.navbar')});
+    });
+  </script>
 
 {% endblock %}
 
 {% block content %}
 
-<div class="row">
-	<div class="span9">
-			<h2>{{ user_to_show.get_full_name }}</h2>
-			{% for group in groups %}
-				{{ group }}<br/>
-			{% endfor %}
-			{% if user == user_to_show and can_generate_invites %}
-				<a href="#" onclick="window.open('{% url invites.views.generate_invites %}','_blank','height=331,width=640,status=yes,toolbar=no,menubar=no,location=no');return false;">Сгенерировать инвайты</a>
-				<br>
-			{% endif%}
+  <div class="row">
+    <div class="span9">
+      <h2>{{ user_to_show.get_full_name }}</h2>
+      {% for group in groups %}
+        {{ group }}<br/>
+      {% endfor %}
+      {% if user == user_to_show and can_generate_invites %}
+        <a href="#" onclick="window.open('{% url invites.views.generate_invites %}','_blank','height=331,width=640,status=yes,toolbar=no,menubar=no,location=no');return false;">Сгенерировать инвайты</a>
+        <br>
+      {% endif%}
 
-			{% if teacher_in_cources %}
-				<p>E-mail: {{ user_to_show.email }}</p>
-				Преподаватель в курсах:
-				<ul>
-					{% for cource in teacher_in_cources %}
-						<li><a href="{% url cources.views.tasks_list cource_id=cource.id %}">{{ cource }}</a></li>
-					{% endfor %}
-				</ul>
-				<br />
-			{% endif %}
+      {% if teacher_in_courses %}
+        <p>E-mail: {{ user_to_show.email }}</p>
+        Преподаватель в курсах:
+        <ul>
+          {% for course in teacher_in_courses %}
+            <li><a href="{{ course.get_absolute_url }}">{{ course }}</a></li>
+          {% endfor %}
+        </ul>
+        <br />
+      {% endif %}
 
-			{% for cource,scores,tasks_list in user_cource_information %}
-				<a href="{% url cources.views.tasks_list cource_id=cource.id %}">{{ cource.name }}</a>
-				<span class="label label-info">{{ scores }}</span>
+      {# {% for course,scores,tasks_list in user_course_information %} #}
+        {# <a href="{{ course.get_absolute_url }}">{{ course.name }}</a> #}
+        {# <span class="label label-info">{{ scores }}</span> #}
 
-				<table class="table table-striped">
-					<tbody>
-						{% for task,max_score,score,task_end_date in tasks_list %}
-						<tr>
-							<td style="width:65%">
-								{{task.title}}
-							</td>
-							<td style="width:15%">
-								<span class="label label-success">{{max_score}}</span>
-							</td>
-							<td style="width:20%">
-								{% if score > 0 %}
-									<span class="label {% if score == task.score_max %} label-success{% endif %}">{{score}}</span>
-								{% else %}
-									{{ task_end_date|date:"d.m.Y" }}
-								{% endif %}
-							</td>
-						</tr>
-						{% endfor %}
-					</tbody>
-				</table>
+        {# <table class="table table-striped"> #}
+          {# <tbody> #}
+          {# {% for task,max_score,score,task_end_date in tasks_list %} #}
+            {# <tr> #}
+              {# <td style="width:65%"> #}
+                {# {{task.title}} #}
+              {# </td> #}
+              {# <td style="width:15%"> #}
+                {# <span class="label label-success">{{max_score}}</span> #}
+              {# </td> #}
+              {# <td style="width:20%"> #}
+                {# {% if score > 0 %} #}
+                  {# <span class="label {% if score == task.score_max %} label-success{% endif %}">{{score}}</span> #}
+                {# {% else %} #}
+                  {# {{ task_end_date|date:"d.m.Y" }} #}
+                {# {% endif %} #}
+              {# </td> #}
+            {# </tr> #}
+          {# {% endfor %} #}
+          {# </tbody> #}
+        {# </table> #}
 
-			{% endfor %}
+      {# {% endfor %} #}
+      {% if issues %}
+        <table class="table table_tasks">
+          <thead>
+            <tr>
+              <th>Задача</th>
+              <th>Курс</th>
+              <th>Обновлена</th>
+              <th>Статус</th>
+              <th>Оценка</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for issue in issues %}
+          <tr onclick="location.href='{{ issue.get_absolute_url }}'">
+            <td><a href="{{ issue.get_absolute_url }}">{{ issue.task }}</a></td>
+            <td><a href="{{ issue.task.course.get_absolute_url }}">{{ issue.task.course }}</a></td>
+            <td> {{ issue.update_time|date:"d M H:i" }} </td>
+            <td> {{ issue.get_status }} </td>
+            <td> {{ issue.score }} </td>
+          </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      {% endif %}
 
-		<p>
-       		Если какие-либо данные неверны, обратитесь к <a href="mailto:anytask@urgu.org">администратору</a>.
-       	</p>
+      <p>
+        Если какие-либо данные неверны, обратитесь к <a href="mailto:anytask@yandex.ru">администратору</a>.
+      </p>
 
-	</div>
-</div>
+    </div>
+  </div>
 {% endblock %}
