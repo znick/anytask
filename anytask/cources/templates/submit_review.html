@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}AnyTask. Отправка на проверку:  {{ task.cource.year }} / {{ task.cource.name }} / {{ task.title }}{% endblock %}
+
+
+{% block content %}
+
+<div class="row">
+    <div class="span9">
+        <dt><h2>{{ task.cource.name }} <small>{{ task.title }}</small></h2></dt>
+        <form class="navbar-form pull-left" id="svn_path_form">
+            Путь до задачи в svn-репозитарии:
+            <input type="text" id="svn_path" class="span5">
+            <button type="submit" id="submit_btn" class="btn" data-loading-text="Loading ...">Выбрать</button>
+        </form>
+        <br/><br/>
+        <p>
+            Инструкция <a href="{{ STATIC_URL }}/HowtoPassTask.pdf">как сдавать задачи</a>.
+        </p>
+        <br/>
+        <div id="review_submit_form">
+        </div>
+
+    </div>
+</div>
+
+<script>
+
+$('#submit_btn').prop('disabled', true);
+
+$('input[id=svn_path]').on('input', function() {
+    var svn_path = $("#svn_path").val();
+    if (svn_path.length) {
+        $('#submit_btn').prop('disabled', false);
+    } else {
+        $('#submit_btn').prop('disabled', true);
+    }
+});
+
+$("#svn_path_form").submit(function() {
+    $("#submit_btn").button('loading');
+    var svn_path = $("#svn_path").val();
+    var task_id = {{ task.id }};
+
+    $.ajax({
+        url: "/course/submit_review_form/" + task_id + "/" + svn_path
+        //context: document.body
+        }).done(function(data) {
+            $("#review_submit_form").html(data);
+            $("#submit_btn").button('reset');
+        });
+    return false;
+});
+
+</script>
+
+{% endblock %}

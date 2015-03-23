@@ -1,0 +1,131 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>{% block title %}{% endblock %}</title>
+
+{% block main_scripts %}
+  <script src="http://yastatic.net/jquery/1.7.2/jquery.min.js"></script>
+  <script src="http://malsup.github.io/jquery.form.js"></script>
+  <script src="{{ STATIC_URL }}jquery.tablesorter/jquery.tablesorter.min.js"></script>
+  <script src="{{ STATIC_URL }}jquery-metadata/jquery.metadata.js"></script>
+
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/2.0.4/css/bootstrap.min.css" rel="stylesheet">
+
+
+    <style type="text/css">
+      body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+
+      .table .no-font-weight {
+        font-weight: normal;
+        white-space: nowrap;
+        background-color: white;
+      }
+
+      .sidebar-nav {
+        padding: 9px 0;
+      }
+
+      table {
+        //table-layout: fixed;
+      }
+
+      .fixedsticky { top: 120px; }
+
+    </style>
+	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/2.0.4/css/bootstrap-responsive.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block scripts %}{% endblock %}
+</head>
+<body data-spy="scroll">
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/">Anytask</a>
+          <!--
+          <ul class="nav">
+                <li><a href="/about">About</a></li>
+          </ul>
+          -->
+
+
+          {% block user %}
+			{% if user.is_authenticated %}
+	          <div class="btn-group pull-right">
+	            <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+	              <i class="icon-user"></i> {% if user.get_full_name %} {{ user.get_full_name }} {% else %} {{ user }} {% endif %}
+	              <span class="caret"></span>
+	            </a>
+	              <ul class="dropdown-menu">
+	              <li><a href="#"><a href="{% url users.views.profile %}">Профиль</a></a></li>
+	              <li class="divider"></li>
+	              <li><a href="{% url django.contrib.auth.views.logout %}">Выйти</a></li>
+	            </ul>
+            </div>
+
+			{% else %}
+				<div class="btn-group pull-right">
+					<a href="{% url django.contrib.auth.views.login %}">Войдите</a> или
+					<a href="/accounts/register/">зарегистрируйтесь</a>
+				</div>
+
+			{% endif %}
+
+	      {% endblock %}
+
+
+          <div class="nav-collapse">
+            <ul class="nav">
+              <!-- <li class="active"><a href="/">Главная</a></li>
+              <li><a href=""></a></li>
+              <li><a href="#contact">Contact</a></li> -->
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+<div class="container">
+
+{% block content %}{% endblock %}
+
+</div>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/2.0.4/js/bootstrap.min.js"></script>
+<script src="{{ STATIC_URL }}/bootbox.min.js"></script>
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+(function (d, w, c) {
+    (w[c] = w[c] || []).push(function() {
+        try {
+            w.yaCounter16465726 = new Ya.Metrika({id:16465726, enableAll: true, webvisor:true});
+        } catch(e) { }
+    });
+
+    var n = d.getElementsByTagName("script")[0],
+        s = d.createElement("script"),
+        f = function () { n.parentNode.insertBefore(s, n); };
+    s.type = "text/javascript";
+    s.async = true;
+    s.src = (d.location.protocol == "https:" ? "https:" : "http:") + "//mc.yandex.ru/metrika/watch.js";
+
+    if (w.opera == "[object Opera]") {
+        d.addEventListener("DOMContentLoaded", f);
+    } else { f(); }
+})(document, window, "yandex_metrika_callbacks");
+</script>
+<noscript><div><img src="//mc.yandex.ru/watch/16465726" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+</body>
+</html>

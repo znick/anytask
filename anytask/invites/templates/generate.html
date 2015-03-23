@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}Создание инвайтов{% endblock %}
+
+{% block scripts %}
+	<script src="{{ STATIC_URL }}jquery.validate.min.js"></script>
+	<script src="http://malsup.github.io/jquery.form.js"></script>-->
+	
+	<script type="text/javascript">
+		$(document).ready(function() {
+			$('#invites-form').validate(
+			{
+				/*submitHandler: function(form) {
+					$(form).ajaxSubmit();
+				},*/
+				
+				rules: {
+					number_of_invites: {
+						required : true,
+						digits : true,
+						range : [1, 50],
+					},
+				},
+				
+				highlight: function(label) {
+					$(label).closest('.control-group').removeClass('success').addClass('error');
+				},
+				
+				success: function(label) {
+					label.addClass('valid').closest('.control-group').addClass('success');
+				},
+				
+				messages: {
+					number_of_invites: {
+						required: "Необходимо указать, какое число инвайтов вы хотите сгенерировать",
+						range : "Число инвайтов не может быть больше 50",
+						digits : "Количество инвайтов должно быть целым числом"
+					},
+				},
+				
+				errorPlacement: function(error, element) {
+					$('#error_text').append(error);
+				}
+			});
+		});
+		
+		function change_state()
+		{
+			if ($('#invites_not_for_group').is(':checked'))
+			{
+				$('#groups').attr("disabled",true);
+			}
+			else
+			{
+				$('#groups').attr("disabled",false);
+			}
+		}
+	</script>
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+      <div class="span12">
+        <h2>Создание инвайтов</h2>
+        <form action="{% url invites.views.generate_invites %}" method="post" id="invites-form" class="form-horizontal">
+        	{% csrf_token %}
+        	<fieldset>
+		       	<div class="control-group">
+		       		<label class="control-label" for="number_of_invites">Количество инвайтов:</label>
+		       		<div class="controls">
+		       			<input type="text" value="1" name="number_of_invites" class="input-mini" id="number_of_invites">
+		       			<span class="help-inline" id="error_text"></span>
+		       		</div>
+		       		<!-- <span class="help-inline btn-small">*За один раз может быть сгенерированно не более 50 инвайтов</span> -->
+		       	</div>
+		       	
+		       	<div id="group_options">
+		       		Группа, для которой создаются инвайты:&nbsp;
+		       		<select id="groups" name="group_id">
+		       			{% for group in groups %}
+		       				<option value="{{ group.id }}">{{ group.name }}</option>
+		       			{% endfor %}
+		       		</select>
+		       	</div> 
+		       	<div>
+		       		<label class="checkbox inline">
+		       			<input type="checkbox" name="invites_not_for_group" id="invites_not_for_group" onchange="change_state();">Не привязывать инвайты к группе
+		       		</label>
+		       	</div><br/>
+		       	<div>
+		       		<button type="submit" class="btn btn-primary">OK</button>
+		       		<!-- <a href="#" class="btn btn-primary" id="generate_invites_ok" data-loading-text="Updating...">OK</a>-->
+		       	</div>
+	       	</fieldset>
+       	</form>
+       	<p>
+       		Если необходимой группы нет в списке, обратитесь к <a href="mailto:anytask@urgu.org">администратору</a>.
+       	</p>
+     </div>
+</div>
+
+{% endblock %}

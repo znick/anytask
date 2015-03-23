@@ -1,0 +1,14 @@
+django==1.4.14
+south
+pillow
+django-recaptcha
+python-gettext
+beautifulsoup
+Werkzeug
+django-extensions
+ipython
+ipdb
+django-debug-toolbar
+django-bootstrap-breadcrumbs
+pycrypto
+python-magic

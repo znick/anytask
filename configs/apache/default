@@ -1,0 +1,93 @@
+<VirtualHost *:80>
+	RewriteEngine On
+	RewriteMap lc int:tolower
+	RewriteCond %{REQUEST_URI} ^/svn/.*[A-Z]+
+	RewriteRule (.*) ${lc:$1} [R=301,L]
+	RewriteLog /tmp/rewrite.log
+	RewriteLogLevel 3
+
+	ServerAdmin webmaster@localhost
+
+	DocumentRoot /var/www
+	<Directory />
+		Options FollowSymLinks
+		AllowOverride None
+		Options +Indexes FollowSymLinks MultiViews
+		#AllowOverride None
+
+	</Directory>
+	<Directory /var/www/>
+		Order allow,deny
+		allow from all
+		AllowOverride None
+		Options +Indexes FollowSymLinks MultiViews
+	        Options +Indexes FollowSymLinks ExecCGI
+	</Directory>
+
+	<Location /svn>
+		DAV svn
+		SVNParentPath "/root/p/anytask/svn/user_repos/"
+		SVNPathAuthz off
+		Order deny,allow
+		#Deny from all
+		LimitXMLRequestBody 0
+
+		AuthName "AnyTask SVN"
+		AuthType Basic
+		PerlAuthenHandler Apache::AuthenURL
+		PerlSetVar AuthenURL_method HEAD
+		PerlSetVar AuthenURL_url http://127.0.0.1:8080/anysvn/access
+		PerlSetVar AuthenURL_send_origin_url 1
+		
+		Options +Indexes FollowSymLinks ExecCGI
+		
+		require valid-user
+		
+	</Location>
+
+
+	ScriptAlias /cgi-bin/ /usr/lib/cgi-bin/
+	<Directory "/usr/lib/cgi-bin">
+		AllowOverride None
+		Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
+		Order allow,deny
+		Allow from all
+	</Directory>
+
+	ErrorLog ${APACHE_LOG_DIR}/error.log
+
+	# Possible values include: debug, info, notice, warn, error, crit,
+	# alert, emerg.
+	LogLevel debug
+
+	CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+	WSGIPassAuthorization On
+	WSGIScriptAlias "/rb" "/var/www/rb/htdocs/reviewboard.wsgi/rb"
+
+	<Directory "/var/www/rb/htdocs">
+		AllowOverride All
+		Options -Indexes FollowSymLinks
+		Allow from all
+	</Directory>
+
+	# Alias static media requests to filesystem
+	Alias /rb/media "/var/www/rb/htdocs/media"
+	Alias /rb/static "/var/www/rb/htdocs/static"
+	Alias /rb/errordocs "/var/www/rb/htdocs/errordocs"
+	Alias /rb/favicon.ico "/var/www/rb/htdocs/static/rb/images/favicon.png"
+
+#        <Location /rb>
+#                AuthName "AnyTask SVN"
+#                AuthType Basic
+#                PerlAuthenHandler Apache::AuthenURL
+#                PerlSetVar AuthenURL_method HEAD
+#                PerlSetVar AuthenURL_url http://127.0.0.1:8080/anysvn/access
+#                PerlSetVar AuthenURL_send_origin_url 1
+#
+#                Options +Indexes FollowSymLinks ExecCGI
+#
+#                require valid-user
+#        </Location>
+
+</VirtualHost>

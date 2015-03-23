@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Вход{% endblock %}
+
+{% block content %}
+
+<h1>Вход</h1>
+<form method="post" action="{% url django.contrib.auth.views.login %}" class="form-horizontal">
+{% csrf_token %}
+{{ form }}
+<input type="submit" value="Войти" />
+<input type="hidden" name="next" value="{{ next }}" />
+</form>
+<br/>
+<a href="{% url django.contrib.auth.views.password_reset %}">Забыли пароль?</a>
+
+{% endblock %}
+
+{% block social_buttons %}{% endblock %}

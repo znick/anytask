@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Anytask{% endblock %}
+
+{% block content %}
+
+  <div class="hero-unit">
+    <h1>Anytask</h1>
+    <p>
+    	&beta;-версия
+    </p>
+    <p>
+    	AnyTask &#151; сервис для учета выполнения студентами программы по учебным курсам. <a href="/about">>></a>
+	  </p>
+    <!-- <p><a class="btn btn-primary btn-large">Learn more &raquo;</a></p> -->
+  </div>
+  
+  <div class="row">
+        <div class="span6">
+          <h2>Активные курсы</h2>
+          <ul>
+          {% for cource in cources %}
+          	<li>
+          		<a href="{% url cources.views.tasks_list cource.id %}">{{ cource }}</a>
+          		|
+          		{{ cource.year }}
+          	</li>
+          {% endfor %}
+          </ul>
+           
+       </div>
+        <div class="span5">
+          <h2>Архив</h2>
+          <ul>
+          {% for cource in archive_cources %}
+          	<li><a href="{% url cources.views.tasks_list cource.id %}">{{ cource }}</a> | {{ cource.year }}</li>
+          {% endfor %}
+          </ul>
+        </div>
+        
+
+  </div>
+  <div style="padding:0 0 0 2%; text-align: right;">
+  	  <footer>
+        	<p><small>Пишите нам на <a href="mailto:anytask@urgu.org">anytask@urgu.org</a></small></p>
+      </footer>
+  </div>
+{% endblock %}

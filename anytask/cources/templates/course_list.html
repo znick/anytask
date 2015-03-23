@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}{{ cource.name }} | {{ cource.year }}{% endblock %}
+
+{% block content %}
+
+	{{ year }}
+	<ul type="circle">
+		{% for cource in cources_list %}
+			<li><a href="{% url cources.views.tasks_list cource_id=cource.id %}">{{ cource.name }}</a></li>
+		{% endfor %}
+	</ul>
+
+{% endblock %}

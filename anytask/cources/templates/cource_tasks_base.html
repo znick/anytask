@@ -1,0 +1,143 @@
+<div class="modal hide" id="modal_score">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal">×</button>
+		<h3 id="modal_score_header">modal!!!</h3>
+	</div>
+ 	<form action="{% url cources.views.score_task %}" method="post" id="modal-score-form" class="form-horizontal" style="margin-bottom: 0px;">
+		{% csrf_token %}
+		<div class="modal-body" id="modal_score_body">
+			<div id="modal_scored_task_other_text"></div>
+			<div id="modal_scored_comments" class="hide well"></div>
+
+			<input type="hidden" id="modal_max_score" />
+			<input type="hidden" id="modal_score_task_id" name="task_id" />
+			<input type="hidden" id="modal_score_student_id" name="student_id" />
+
+			<div class="control-group" id="modal_control_group" >
+				<label class="control-label" for="modal_score_score" id="modal_scores_range"></label>
+				<div class="controls">
+					<input id='modal_score_score' name='score' type='text' size='20'>
+					<span class="help-inline" id="modal_error_text"></span>
+					<div class="btn-toolbar" role="toolbar">
+					    <div class="btn-group" id="score_buttons">
+					    </div>
+					</div>
+				</div>
+			</div>
+
+			<br>
+
+			Комментарий (необязательно):
+			<br>
+			<textarea class='input-xlarge' style="width: 98%" id='score_comment' rows='10' cols='800' name='comment'></textarea>
+		</div>
+		<div class="modal-footer">
+			<a href="#" class="btn" data-dismiss="modal">Close</a>
+			<button type="submit" id="modal_score_ok" class="btn btn-primary" data-loading-text="Updating ...">OK</button>
+		</div>
+	</form>
+</div>
+
+<div class="modal hide" id="modal_comment">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal">×</button>
+		<h3 id="modal_comment_header">Комментарии</h3>
+	</div>
+	<div class="modal-body">
+		<div id="modal_comment_body"></div>
+	</div>
+</div>
+
+
+<div class="modal hide" id="modal_task_description">
+	<div class="hide" id="modal_task_desc_text">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal">×</button>
+			<h3 id="modal_header_task_descr"></h3>
+			<div class="hide" id="edit_task_descr">
+				<a href="javascript:change_to_edit();">Редактировать</a>
+			</div>
+		</div>
+		<div class="modal-body">
+			<div id="modal_body_task_descr"></div>
+		</div>
+	</div>
+
+	<div class="hide" id="modal_task_desc_edit">
+		<form action="" method="post" id="modal-edite-task-form" class="form-horizontal" style="margin-bottom: 0px;">
+			{% csrf_token %}
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">×</button>
+
+				<div class="control-group" id="modal_control_edit_title_group">
+					<label class="control-label" for="modal_edit_task_title">Название:</label>
+					<div class="controls">
+						<input id='modal_task_header_edit' name='task_title' type='text' size='20'>
+						<span class="help-inline" id="modal_edit_task_title_error_text"></span>
+					</div>
+				</div>
+
+			</div>
+			<div class="modal-body" id="modal_body_task_descr_edit">
+
+				<input type="hidden" id="modal_edit_task_task_id" name="task_id" />
+				<input type="hidden" id="modal_edit_task_cource_id" name="cource_id" />
+				<input type="hidden" id="modal_edit_task_group_id" name="group_id" />
+				<input type="hidden" id="modal_edit_task_parent_id" name="parent_id" />
+
+				<div class="control-group" id="modal_control_edit_score_group">
+					<label class="control-label" for="modal_task_max_score_edit">Максимальный балл:</label>
+					<div class="controls">
+					 	<input id='modal_task_max_score_edit' name='max_score' type='text' maxlength='25' size='20'>
+					 	<span class="help-inline" id="modal_edit_task_score_error_text"></span>
+					 </div>
+				</div>
+
+				<br>
+				<div>
+		       		<label class="checkbox inline">
+		       			<input type="checkbox" name="hidden_task" id="hidden_task">Скрыть задачу
+		       		</label>
+	       		</div><br/>
+				Формулировка: <br>
+				<textarea class='input-xlarge' style="width: 98%" id='modal_task_body_edit' rows='10' cols='800' name='task_text'></textarea>
+			</div>
+			<div class="modal-footer">
+				<a href="#" class="btn" data-dismiss="modal">Close</a>
+				<button type="submit" id="modal_task_edit_ok" class="btn btn-primary" data-loading-text="Updating ...">OK</button>
+			</div>
+		</form>
+	</div>
+
+</div>
+
+<div class="modal hide" id="modal_cource_information">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal">×</button>
+		<h3 id="modal_cource_information_header">Описание курса</h3>
+	</div>
+	<div class="modal-body">
+		<textarea class='input-xlarge' style="width: 98%" id='cource_information' rows='10' cols='800' name='text'></textarea>
+	</div>
+	<div class="modal-footer">
+		<a href="#" class="btn" data-dismiss="modal">Close</a>
+		<a href="#" class="btn btn-primary" id="modal_cource_info_ok" data-loading-text="Updating...">OK</a>
+	</div>
+</div>
+
+<div class="modal hide" id="modal_pass_task">
+	<div class="modal-header">
+		<h3 id="modal_cource_information_header">Сдать задачу</h3>
+	</div>
+	<div class="modal-body">
+		Path: <input type="text" id="modal_pass_task_path">
+		<div class="hide" id="modal_pass_task_loading">
+			<br/>
+			<center><img src="{{ STATIC_URL }}/img/loading.gif"></center>
+		</div>
+	</div>
+	<div class="modal-footer">
+		<a href="#" class="btn" data-dismiss="modal">Close</a>
+		<a href="#" class="btn btn-primary" id="modal_cource_info_ok" data-loading-text="Updating...">OK</a>
+	</div>
+</div>

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Статистика по курсу {{ cource.name }} | {{ cource.year }}{% endblock %}
+
+{% block content %}
+
+<div class="subnav">
+    <ul class="nav nav-pills">
+      <li><a href="{% url cources.views.tasks_list cource.id %}">Задачи</a></li>
+      <li class="active"><a href="{% url cources.views.cource_statistics cource_id=cource.id %}">Статистика</a></li>
+    </ul>
+</div>
+
+<h3>{{ cource.name }} <small>{{ cource.year }}</small> </h3>
+
+
+<div class="row span8">
+	
+		{% for group,students in groups_statistics %}
+			<b>{{ group.name }}</b>
+			<table class="table table-striped table-condensed">
+				<tbody>
+				{% for student,scores,tasks_list in students %}
+					<tr> 
+						<td style="width: 28%;">
+							{{ student.last_name }} {{ student.first_name }}
+						</td> 
+						<td style="width: 6%;">
+							{% if scores %}
+								<span class="label label-info">{{ scores }}</span>
+							{% endif %}
+						</td>
+						<td>
+							{% if tasks_list %}
+								{% for task,score in tasks_list %}
+									<a href="{% url cources.views.tasks_list cource.id %}#{{task.id}}">{{ task }}</a>{% if score %} <span class="label {% if score == task.score_max %} label-success{% endif %}">{{ score }}</span>{% endif %}{% if not forloop.last %},{% endif %}
+								{% endfor %}
+							{% endif %}
+						</td>
+					</tr>
+				{% endfor%}
+				</tbody>
+			</table>
+		{% endfor %}
+	
+	{% for group,scores,students,students_with_tasks,middle_scores_some_students,middle_scores,ratio in cource_statistics %}
+		{% if not forloop.last %} {{ group.name }} {% endif %} {{ scores }} / {{ students_with_tasks }} ({{middle_scores_some_students|floatformat}}) {{students}} {{middle_scores|floatformat}} / {{ ratio|floatformat }} 
+		<br>
+	{% endfor %}
+</div>
+{% endblock %}
