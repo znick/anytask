@@ -1,18 +1,18 @@
 [submodule "StickyTableHeaders"]
-	path = StickyTableHeaders
+	path = dependencies/StickyTableHeaders
 	url = https://github.com/jmosbech/StickyTableHeaders.git
 [submodule "jquery-metadata"]
-	path = jquery-metadata
+	path = dependencies/jquery-metadata
 	url = https://github.com/jquery-archive/jquery-metadata.git
 [submodule "tablesorter"]
-	path = jquery.tablesorter
+	path = dependencies/jquery.tablesorter
 	url = https://github.com/christianbach/tablesorter.git
 [submodule "django-bootstrap"]
-	path = django-bootstrap
+	path = dependencies/django-bootstrap
 	url = https://github.com/earle/django-bootstrap.git
 [submodule "bootbox"]
-	path = bootbox
+	path = dependencies/bootbox
 	url = https://github.com/makeusabrew/bootbox.git
 [submodule "rbtools"]
-	path = rbtools
+	path = dependencies/rbtools
 	url = https://github.com/reviewboard/rbtools.git
