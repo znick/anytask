@@ -1,32 +1,16 @@
 # -*- coding: utf-8 -*-
 
-import json
+from courses.models import Course
 from django.db import models
 
 
-# class ManagerStorage(models.Model):
-#
-#     issue = models.IntegerField()
-#     meta_class = models.CharField()
-#     meta_functions = models.CharField()
+class PluginManager(models.Model):
+    plugin_name = models.CharField(max_length=128, db_index=True)
+    course = models.ForeignKey(Course, db_index=True)
 
-class MixinModel(models.Model):
+    def get_course_plugins(self, course):
+        for plugin in PluginManager.objects.filter(course=course):
+            yield plugin.plugin_name
 
-    plugins = models.TextField(default='[]')
-
-    def add_plugin(self, plugin):
-        plugins_lst = json.loads(self.plugins)
-        plugins_lst.add(plugin)
-        self.plugins = json.dumps(plugins_lst)
-        self.save()
-
-
-class IssueModel(MixinModel):
-
-    issue_id = models.IntegerField()
-
-
-class CourseModel(MixinModel):
-
-    course_id = models.IntegerField()
-
+    def get_issue_plugin(self, issue):
+        return self.get_course_plugins(issue.task.course)

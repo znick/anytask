@@ -19,14 +19,7 @@ class PluginManager(object):
         self.course_plugins = {}
         self.issue_plugins = {}
         self._set_plugins()
-
         self.plugins = {}
-        for app in apps:
-            try:
-                if app.startwith('plugin'):
-                    self.plugins[app] = importlib.import_module(app)
-            except Exception:
-                pass
 
     def _set_plugins(self):
         for course in CourseModel.objects.all():
@@ -34,27 +27,14 @@ class PluginManager(object):
         for issue in IssueModel.objects.all():
             self.issue_plugins[issue.issue_id] = json.loads(issue.plugins)
 
-    def _get_course_plugins(self, course):
-        try:
-            return self.course_plugins[course]
-        except Exception:
-            pass
-        finally:
-            return json.loads(CourseModel.objects.get(course))
-
-    def _get_issue_plugins(self, issue):
-        try:
-            return self.course_plugins[issue]
-        except Exception:
-            pass
-        finally:
-            return json.loads(IssueModel.objects.get(issue))
-
     def _work_views(self, course_plugins, issue_plugins):
         pass
 
     def _work_events(self, course_plugins, issue_plugins):
         pass
+
+    def register_plugin(self, instance):
+        self.plugins[instance.name] = instance
 
     def get_req_data(self, request):
         course = request.GET.get('course', None)
@@ -90,16 +70,15 @@ class PluginManager(object):
 
 
 class BasicPlugin(object):
-
     def __init__(self):
         self.fields = {}
+
+    @property
+    def name(self):
+        raise NotImplemented
 
     def set(self, issue, field, value):
         pass
 
     def get(self, issue, field):
         pass
-
-
-
-
