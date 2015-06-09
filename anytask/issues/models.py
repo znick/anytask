@@ -250,7 +250,9 @@ class Issue(models.Model):
         """
         :returns event objects
         """
-        events = Event.objects.filter(issue_id=self.id).exclude(author__isnull=True).order_by('timestamp')
+        from django.db.models import Q
+        events = Event.objects.filter(issue_id=self.id).exclude(Q(author__isnull=True) | 
+                    Q(field__name='review_id')).order_by('timestamp')
         return events
 
     def __unicode__(self):
@@ -307,6 +309,11 @@ class Event(models.Model):
 
     def is_change(self):
         return self.field.name != 'comment'
+        
+#    def save(self, *a, **ka):
+#        import traceback
+#        traceback.print_stack()
+#        return super(self.__class__, self).save(*a, **ka)
 
     def __unicode__(self):
         if not self.author:
