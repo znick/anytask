@@ -35,11 +35,6 @@
               <i class="icon-file"></i>
               {% for file in event.file_set.all %}
                 <a href={% link_to_open file course user %}>{{ file.filename }}</a>
-                <p>
-                {% if '.py' in file.filename or '.cpp' in file.filename %}
-                  <a href=event/{{event.id}}> Upload to RB </a>
-                {% endif %}
-                </p>
               {% endfor %}
             </div>
           {% endif %}

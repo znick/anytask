@@ -154,9 +154,9 @@ ANYSVN_SVN_URL_PREFIX = "/svn/"
 ANYSVN_REPOS_PATH = "../svn/user_repos"
 ANYSVN_REFFERENCE_REPO = "../new_repo" #for new svns
 
-RB_API_URL = "http://127.0.0.1/rb/"
-RB_API_USERNAME = "user"
-RB_API_PASSWORD = "qwer"
+RB_API_URL = "http://127.0.0.1:8080"
+RB_API_USERNAME = "anytask"
+RB_API_PASSWORD = "P@ssw0rd"
 RB_API_DEFAULT_REVIEW_GROUP = 'teachers'
 
 IPYTHON_URL = "http://anytask-dev1.i-folb.fog.yandex.net:8888/notebooks/anytask/src/anytask"

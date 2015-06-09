@@ -215,6 +215,8 @@ class Issue(models.Model):
                 for file in value['files']:
                     uploaded_file = File(file=file, event=event)
                     uploaded_file.save()
+                    if '.py' in file.name or '.cpp' in file.name:
+                       upload_review(event)
                 value = value['comment']
                 if author == self.student:
                     self.status = self.STATUS_VERIFICATION
