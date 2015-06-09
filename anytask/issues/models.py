@@ -217,6 +217,9 @@ class Issue(models.Model):
                     uploaded_file.save()
                     if '.py' in file.name or '.cpp' in file.name:
                        upload_review(event)
+                       value['comment']+= '\n' + \
+                            u'<a href="{1}/r/{0}">Review request {0}</a>'. \
+                            format(self.get_byname('review_id'),settings.RB_API_URL)
                 value = value['comment']
                 if author == self.student:
                     self.status = self.STATUS_VERIFICATION
