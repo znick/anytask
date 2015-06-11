@@ -68,10 +68,12 @@ class AnyRB(object):
 
         draft = review_request.get_or_create_draft()
         issue = self.event.issue
-        summary = u'{0} {1}'.format(issue.student.get_full_name(), issue.task.title)
-        description = u'backward url will be here: [/issue/{0}]({1})'.format(
-            issue.id,
+        summary = u'[{0}][{1}] {2}'.format(issue.student.get_full_name(), 
+                                          issue.task.group,
+                                          issue.task.title)
+        description = u'[/issue/{1}]({0})'.format(
             issue.get_absolute_url(),
+            issue.id
         )
 
         draft = draft.update(summary=summary,
