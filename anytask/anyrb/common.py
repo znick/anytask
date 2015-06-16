@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import datetime
+import os
 
 from django.conf import settings
 
@@ -21,9 +22,7 @@ class AnyRB(object):
         empty = True
         import magic
         for f in self.event.file_set.all():
-            #print f.filename()
             mime_type = magic.from_buffer(f.file.read(1024), mime=True)
-            #print mime_type
             if mime_type[:4] != 'text':
                 continue
 
@@ -31,7 +30,6 @@ class AnyRB(object):
             file_content = []
             for line in f.file:
                 file_content.append(line.decode('utf-8'))
-            # = f.file.read()
 
             from difflib import unified_diff
             fname = f.filename()
@@ -58,22 +56,18 @@ class AnyRB(object):
 
         if empty:
             return
-        #print (files_diff)
 
         review_request = self.get_or_create_review_request()
         review_request.get_diffs().upload_diff(files_diff.encode('utf-8'))
-        
-        #f.file.read()
-        #review_request.get_diffs().upload_diff(f.file.read())
 
         draft = review_request.get_or_create_draft()
         issue = self.event.issue
         summary = u'[{0}][{1}] {2}'.format(issue.student.get_full_name(), 
                                           issue.task.group,
                                           issue.task.title)
-        description = u'[/issue/{1}]({0})'.format(
+        description = u'{1}{0}'.format(
             issue.get_absolute_url(),
-            issue.id
+            settings.SITE_URL
         )
 
         draft = draft.update(summary=summary,
@@ -85,21 +79,16 @@ class AnyRB(object):
     def get_or_create_review_request(self):
         root = self.client.get_root()
 
-        
-        #repository = repos[0].id
-
         review_request = None
         try:
             review_id = self.event.issue.get_byname('review_id')
-            print(review_id, self.event.issue.id)
             review_request = root.get_review_request(review_request_id=review_id)
         except Exception, e:
             repository_name = str(self.event.issue.id)
-            from os import symlink
-            symlink('/var/test/','/var/test/'+repository_name)
+            os.symlink(settings.RB_SYMLINK_DIR,settings.RB_SYMLINK_DIR+repository_name)
             repository = root.get_repositories().create(
                      name=repository_name,
-                     path='/var/test/'+repository_name+'/.git',
+                     path=settings.RB_SYMLINK_DIR+repository_name+'/.git',
                      tool='Git',
                      public=False)
             root.get_repository(repository_id=repository.id).update(grant_type='add', 

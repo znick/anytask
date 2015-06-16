@@ -5,6 +5,7 @@ import os
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.db import models
+from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext as _
 from django.conf import settings
@@ -255,7 +256,6 @@ class Issue(models.Model):
         """
         :returns event objects
         """
-        from django.db.models import Q
         events = Event.objects.filter(issue_id=self.id).exclude(Q(author__isnull=True) | 
                     Q(field__name='review_id')).order_by('timestamp')
         return events
