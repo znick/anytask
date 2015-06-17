@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import datetime
+import os
 
 from django.conf import settings
 
@@ -21,9 +22,7 @@ class AnyRB(object):
         empty = True
         import magic
         for f in self.event.file_set.all():
-            # print f.filename()
             mime_type = magic.from_buffer(f.file.read(1024), mime=True)
-            # print mime_type
             if mime_type[:4] != 'text':
                 continue
 
@@ -31,7 +30,6 @@ class AnyRB(object):
             file_content = []
             for line in f.file:
                 file_content.append(line.decode('utf-8'))
-            # = f.file.read()
 
             from difflib import unified_diff
             fname = f.filename()
@@ -59,38 +57,47 @@ class AnyRB(object):
         if empty:
             return
 
-
         review_request = self.get_or_create_review_request()
         review_request.get_diffs().upload_diff(files_diff.encode('utf-8'))
 
-            # print f.file.read()
-            # review_request.get_diffs().upload_diff(f.file.read())
-
         draft = review_request.get_or_create_draft()
         issue = self.event.issue
-        summary = u'{0} {1}'.format(issue.student.get_full_name(), issue.task.title) #.decode('utf-8'))
-        description = u'backward url will be here: [/issue/{0}]({1})'.format(
-            issue.id,
+        summary = u'[{0}][{1}] {2}'.format(issue.student.get_full_name(), 
+                                          issue.task.group,
+                                          issue.task.title)
+        description = u'{1}{0}'.format(
             issue.get_absolute_url(),
+            settings.SITE_URL
         )
-        draft = draft.update(summary=summary.encode('utf-8'),
+
+        draft = draft.update(summary=summary,
                              description=description.encode('utf-8'),
-                             target_people='admin', public=True,
+                             target_people='anytask', public=True,
                              )
         pass
 
     def get_or_create_review_request(self):
         root = self.client.get_root()
 
-        repos = root.get_repositories()
-        repository = repos[0].id
-
         review_request = None
         try:
             review_id = self.event.issue.get_byname('review_id')
             review_request = root.get_review_request(review_request_id=review_id)
         except Exception, e:
-            review_request = root.get_review_requests().create(repository=repository)
+            repository_name = str(self.event.issue.id)
+            os.symlink(settings.RB_SYMLINK_DIR,settings.RB_SYMLINK_DIR+repository_name)
+            repository = root.get_repositories().create(
+                     name=repository_name,
+                     path=settings.RB_SYMLINK_DIR+repository_name+'/.git',
+                     tool='Git',
+                     public=False)
+            root.get_repository(repository_id=repository.id).update(grant_type='add', 
+                                                      grant_entity='user',
+                                                      grant_name=self.event.author)
+            root.get_repository(repository_id=repository.id).update(grant_type='add',
+                                                      grant_entity='group',
+                                                      grant_name='teachers')
+            review_request = root.get_review_requests().create(repository=repository.id)
         self.event.issue.set_byname('review_id', review_request.id, self.event.author)
         return review_request
 

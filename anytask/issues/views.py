@@ -8,7 +8,8 @@ from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpRespons
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template.context import RequestContext
 from issues.forms import FileForm
-from issues.models import Issue, Event
+from issues.models import Issue, Event, upload_review
+
 
 def user_is_teacher_or_staff(user, issue):
     if user.is_staff:
@@ -40,6 +41,10 @@ def prepare_info_fields(info_fields, request, issue):
         data = { field.name : field.value }
         field.form = field.get_form(request, issue, data)
 
+def upload_to_rb(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
+    upload_review(event)
+    return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
 @login_required
 def issue_page(request, issue_id):
