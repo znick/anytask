@@ -5,6 +5,7 @@ import os
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.db import models
+from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext as _
 from django.conf import settings
@@ -215,6 +216,11 @@ class Issue(models.Model):
                 for file in value['files']:
                     uploaded_file = File(file=file, event=event)
                     uploaded_file.save()
+                    if '.py' in file.name or '.cpp' in file.name:
+                       upload_review(event)
+                       value['comment']+= '\n' + \
+                            u'<a href="{1}/r/{0}">Review request {0}</a>'. \
+                            format(self.get_byname('review_id'),settings.RB_API_URL)
                 value = value['comment']
                 if author == self.student:
                     self.status = self.STATUS_VERIFICATION
@@ -250,7 +256,8 @@ class Issue(models.Model):
         """
         :returns event objects
         """
-        events = Event.objects.filter(issue_id=self.id).exclude(author__isnull=True).order_by('timestamp')
+        events = Event.objects.filter(issue_id=self.id).exclude(Q(author__isnull=True) | 
+                    Q(field__name='review_id')).order_by('timestamp')
         return events
 
     def __unicode__(self):
@@ -307,6 +314,11 @@ class Event(models.Model):
 
     def is_change(self):
         return self.field.name != 'comment'
+        
+#    def save(self, *a, **ka):
+#        import traceback
+#        traceback.print_stack()
+#        return super(self.__class__, self).save(*a, **ka)
 
     def __unicode__(self):
         if not self.author:
