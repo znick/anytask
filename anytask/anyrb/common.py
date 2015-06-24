@@ -65,9 +65,8 @@ class AnyRB(object):
         summary = u'[{0}][{1}] {2}'.format(issue.student.get_full_name(), 
                                           issue.task.group,
                                           issue.task.title)
-        description = u'{1}{0}'.format(
+        description = u'{0}'.format(
             issue.get_absolute_url(),
-            settings.SITE_URL
         )
 
         draft = draft.update(summary=summary,
