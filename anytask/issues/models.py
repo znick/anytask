@@ -2,6 +2,7 @@
 
 from datetime import datetime
 import os
+import requests
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.db import models
@@ -230,15 +231,23 @@ class Issue(models.Model):
                     self.status = self.STATUS_REWORK
 
         elif name == 'status':
+            if value == self.STATUS_ACCEPTED:
+                url = settings.RB_API_URL + '/api/review-requests/' + self.get_byname('review_id') +'/'
+                req = requests.put(url,data={'status': 'submitted'},
+                                   auth=(settings.RB_API_USERNAME, settings.RB_API_PASSWORD))
+            elif self.status == self.STATUS_ACCEPTED:
+                url = settings.RB_API_URL + '/api/review-requests/' + self.get_byname('review_id') +'/'
+                req = requests.put(url,data={'status': 'pending'},
+                                   auth=(settings.RB_API_USERNAME, settings.RB_API_PASSWORD))
             self.status = value
-            value = self.get_field_repr(field)
+            value = self.get_status()
 
         elif name == 'mark':
             if not value:
                 value = 0
             value = normalize_decimal(value)
             value = str(value)
-            if self.status != Issue.STATUS_ACCEPTED:
+            if self.status != self.STATUS_ACCEPTED:
                 self.set_byname('status', 'rework')
 
         self.save()

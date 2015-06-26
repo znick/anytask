@@ -13,3 +13,4 @@ django-bootstrap-breadcrumbs
 pycrypto
 python-magic
 django-filemanager
+requests
