@@ -13,8 +13,7 @@ from issues.model_issue_field import IssueField
 @csrf_exempt
 def message_from_rb(request, review_id):
     field = get_object_or_404(IssueField, name='review_id')
-    events = list(Event.objects.filter(field_id=field.id))
-    for event in events:
+    for event in Event.objects.filter(field_id=field.id):
         if event.issue.get_byname('review_id') == review_id:
             issue = event.issue
             break
