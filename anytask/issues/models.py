@@ -2,7 +2,6 @@
 
 from datetime import datetime
 import os
-import requests
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.db import models
@@ -13,7 +12,7 @@ from django.conf import settings
 from issues.model_issue_field import IssueField
 from decimal import Decimal
 from anyrb.common import AnyRB
-
+from anyrb.common import update_status_review_request
 from tasks.models import Task
 
 import uuid
@@ -217,12 +216,14 @@ class Issue(models.Model):
                 for file in value['files']:
                     uploaded_file = File(file=file, event=event)
                     uploaded_file.save()
-                    for ext in settings.RB_EXTENSIONS:
-                        if ext in file.name:
-                            upload_review(event)
-                            value['comment']+= '\n' + \
-                            u'<a href="{1}/r/{0}">Review request {0}</a>'. \
-                            format(self.get_byname('review_id'),settings.RB_API_URL)
+                    if self.task.course.rb_integrated:
+                        for ext in settings.RB_EXTENSIONS:
+                            if ext in file.name:
+                                upload_review(event)
+                                value['comment']+= '\n' + \
+                                u'<a href="{1}/r/{0}">Review request {0}</a>'. \
+                                format(self.get_byname('review_id'),settings.RB_API_URL)
+
                 value = value['comment']
                 if author == self.student:
                     self.status = self.STATUS_VERIFICATION
@@ -231,14 +232,14 @@ class Issue(models.Model):
                     self.status = self.STATUS_REWORK
 
         elif name == 'status':
-            if value == self.STATUS_ACCEPTED:
-                url = settings.RB_API_URL + '/api/review-requests/' + self.get_byname('review_id') +'/'
-                req = requests.put(url,data={'status': 'submitted'},
-                                   auth=(settings.RB_API_USERNAME, settings.RB_API_PASSWORD))
-            elif self.status == self.STATUS_ACCEPTED:
-                url = settings.RB_API_URL + '/api/review-requests/' + self.get_byname('review_id') +'/'
-                req = requests.put(url,data={'status': 'pending'},
-                                   auth=(settings.RB_API_USERNAME, settings.RB_API_PASSWORD))
+            try:
+                review_id = self.get_byname('review_id')
+                if value == self.STATUS_ACCEPTED:
+                    update_status_review_request(review_id,'submitted')
+                elif self.status == self.STATUS_ACCEPTED:
+                    update_status_review_request(review_id,'pending')
+            except:
+                pass
             self.status = value
             value = self.get_status()
 

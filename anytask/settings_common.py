@@ -158,7 +158,7 @@ RB_API_URL = "http://127.0.0.1:8080"
 RB_API_USERNAME = "anytask"
 RB_API_PASSWORD = "P@ssw0rd"
 RB_API_DEFAULT_REVIEW_GROUP = 'teachers'
-RB_SYMLINK_DIR = '/var/test/'
+RB_SYMLINK_DIR = '/var/lib/anytask/repos/'
 RB_EXTENSIONS = ['.py','.cpp']
 
 IPYTHON_URL = "http://anytask-dev1.i-folb.fog.yandex.net:8888/notebooks/anytask/src/anytask"
