@@ -12,7 +12,7 @@ from django.conf import settings
 from issues.model_issue_field import IssueField
 from decimal import Decimal
 from anyrb.common import AnyRB
-
+from anyrb.common import update_status_review_request
 from tasks.models import Task
 
 import uuid
@@ -216,11 +216,14 @@ class Issue(models.Model):
                 for file in value['files']:
                     uploaded_file = File(file=file, event=event)
                     uploaded_file.save()
-                    if '.py' in file.name or '.cpp' in file.name:
-                       upload_review(event)
-                       value['comment']+= '\n' + \
-                            u'<a href="{1}/r/{0}">Review request {0}</a>'. \
-                            format(self.get_byname('review_id'),settings.RB_API_URL)
+                    if self.task.course.rb_integrated:
+                        for ext in settings.RB_EXTENSIONS:
+                            if ext in file.name:
+                                upload_review(event)
+                                value['comment']+= '\n' + \
+                                u'<a href="{1}/r/{0}">Review request {0}</a>'. \
+                                format(self.get_byname('review_id'),settings.RB_API_URL)
+
                 value = value['comment']
                 if author == self.student:
                     self.status = self.STATUS_VERIFICATION
@@ -229,15 +232,23 @@ class Issue(models.Model):
                     self.status = self.STATUS_REWORK
 
         elif name == 'status':
+            try:
+                review_id = self.get_byname('review_id')
+                if value == self.STATUS_ACCEPTED:
+                    update_status_review_request(review_id,'submitted')
+                elif self.status == self.STATUS_ACCEPTED:
+                    update_status_review_request(review_id,'pending')
+            except:
+                pass
             self.status = value
-            value = self.get_field_repr(field)
+            value = self.get_status()
 
         elif name == 'mark':
             if not value:
                 value = 0
             value = normalize_decimal(value)
             value = str(value)
-            if self.status != Issue.STATUS_ACCEPTED:
+            if self.status != self.STATUS_ACCEPTED:
                 self.set_byname('status', 'rework')
 
         self.save()

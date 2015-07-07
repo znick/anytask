@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import datetime
 import os
+import requests
 
 from django.conf import settings
 
@@ -65,9 +66,8 @@ class AnyRB(object):
         summary = u'[{0}][{1}] {2}'.format(issue.student.get_full_name(), 
                                           issue.task.group,
                                           issue.task.title)
-        description = u'{1}{0}'.format(
+        description = u'{0}'.format(
             issue.get_absolute_url(),
-            settings.SITE_URL
         )
 
         draft = draft.update(summary=summary,
@@ -180,3 +180,7 @@ class AnyRB(object):
 
         # return "{0}{1}/rb/r/{2}".format(proto, host, review_id)
 
+def update_status_review_request(review_id, status):
+    url = settings.RB_API_URL + '/api/review-requests/' + review_id +'/'
+    req = requests.put(url,data={'status': status},
+                       auth=(settings.RB_API_USERNAME, settings.RB_API_PASSWORD))

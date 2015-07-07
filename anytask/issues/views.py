@@ -4,11 +4,13 @@ from django.contrib.auth.decorators import user_passes_test, login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 import json
+from django.conf import settings
 from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpResponse
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template.context import RequestContext
 from issues.forms import FileForm
 from issues.models import Issue, Event, upload_review
+from issues.model_issue_field import IssueField
 
 
 def user_is_teacher_or_staff(user, issue):
