@@ -62,7 +62,7 @@ class AnyRB(object):
 
         draft = review_request.get_or_create_draft()
         issue = self.event.issue
-        summary = u'[{0}][{1}] {2}'.format(issue.student.get_full_name(), 
+        summary = u'[{0}][{1}] {2}'.format(issue.student.get_full_name(),
                                           issue.task.group,
                                           issue.task.title)
         description = u'{0}'.format(
@@ -71,7 +71,7 @@ class AnyRB(object):
 
         draft = draft.update(summary=summary,
                              description=description.encode('utf-8'),
-                             target_people='anytask', public=True,
+                             target=settings.RB_API_USERNAME, public=True,
                              )
         pass
 
@@ -82,15 +82,15 @@ class AnyRB(object):
         try:
             review_id = self.event.issue.get_byname('review_id')
             review_request = root.get_review_request(review_request_id=review_id)
-        except Exception, e:
+        except AttributeError:
             repository_name = str(self.event.issue.id)
-            os.symlink(settings.RB_SYMLINK_DIR,settings.RB_SYMLINK_DIR+repository_name)
+            os.symlink(settings.RB_SYMLINK_DIR,os.path.join(settings.RB_SYMLINK_DIR, repository_name))
             repository = root.get_repositories().create(
                      name=repository_name,
                      path=settings.RB_SYMLINK_DIR+repository_name+'/.git',
                      tool='Git',
                      public=False)
-            root.get_repository(repository_id=repository.id).update(grant_type='add', 
+            root.get_repository(repository_id=repository.id).update(grant_type='add',
                                                       grant_entity='user',
                                                       grant_name=self.event.author)
             root.get_repository(repository_id=repository.id).update(grant_type='add',
