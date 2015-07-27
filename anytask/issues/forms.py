@@ -1,6 +1,7 @@
 # coding: utf-8
 
 from django import forms
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext as _
@@ -113,7 +114,7 @@ class CommentForm(DefaultForm):
                               label='',
                               required=False)
 
-    files = MultiFileField(label='', required=False, max_num=10, min_num=0, maximum_file_size=1024*1024*5)
+    files = MultiFileField(label='', required=False, max_num=10, min_num=0, maximum_file_size=settings.MAX_FILE_SIZE)
 
 
 class IntForm(DefaultForm):

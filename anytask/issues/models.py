@@ -118,8 +118,8 @@ class Issue(models.Model):
             return dict(self.ISSUE_STATUSES)[self.status]
         if name == 'mark':
             return self.score()
-        if name == 'review_id':
-            return u'<a href="{1}r/{0}">/rb/r/{0}</a>'.format(
+        if name == 'review_id' and self.task.course.rb_integrated:
+            return u'<a href="{1}">{0}</a>'.format(
                 self.get_field_value(field),
                 settings.RB_API_URL,
             )
