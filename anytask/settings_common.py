@@ -161,6 +161,10 @@ RB_API_DEFAULT_REVIEW_GROUP = 'teachers'
 RB_SYMLINK_DIR = '/var/lib/anytask/repos/'
 RB_EXTENSIONS = ['.py','.cpp']
 
+CONTEST_API_URL = 'https://api.contest.yandex.net/anytask/'
+CONTEST_OAUTH = '61a1df2df495415b86eb777e771fd057'
+CONTEST_EXTENSIONS = {'.py':'python3', '.cpp':'gcc'}
+
 IPYTHON_URL = "http://anytask-dev1.i-folb.fog.yandex.net:8888/notebooks"
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 

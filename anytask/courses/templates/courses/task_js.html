@@ -330,7 +330,7 @@
     }
 
 
-    function get_task_modal(task_id, task_title, task_hidden, task_text_to_show, task_text_to_edit, max_score, is_teacher, mode)
+    function get_task_modal(task_id, task_title, task_hidden, task_text_to_show, task_text_to_edit, max_score, is_teacher, mode, contest_id, problem_id)
     {
         clear();
         $('#modal_edit_task_title_error_text').empty()
@@ -344,6 +344,8 @@
                 $('#modal_task_body_edit').val(task_text_to_edit);
                 $('#modal_task_header_edit').val(task_title);
                 $('#modal_task_max_score_edit').val(max_score);
+                $('#modal_task_contest_id_edit').val(contest_id);
+                $('#modal_task_problem_id_edit').val(problem_id);
                 $('#modal_edit_task_task_id').val(task_id);
                 if (task_hidden == "True")
                 {
@@ -369,6 +371,8 @@
                 $('#modal_task_body_edit').html(task_text_to_edit);
                 $('#modal_task_header_edit').val(task_title);
                 $('#modal_task_max_score_edit').val(max_score);
+                $('#modal_task_contest_id_edit').val(contest_id);
+                $('#modal_task_problem_id_edit').val(problem_id);
                 $('#modal_edit_task_task_id').val(task_id);
                 if (task_hidden == "True")
                 {
@@ -419,6 +423,8 @@
         $('#modal_task_body_edit').html('');
         $('#modal_task_header_edit').val('');
         $('#modal_task_max_score_edit').val('');
+        $('#modal_task_contest_id_edit').val('');
+        $('#modal_task_problem_id_edit').val('');
         $('#modal_edit_task_score_error_text').empty();
         $('#modal_edit_task_title_error_text').empty();
         $('#hidden_task').attr('checked', false);
