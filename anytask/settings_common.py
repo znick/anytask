@@ -154,14 +154,14 @@ ANYSVN_SVN_URL_PREFIX = "/svn/"
 ANYSVN_REPOS_PATH = "../svn/user_repos"
 ANYSVN_REFFERENCE_REPO = "../new_repo" #for new svns
 
-RB_API_URL = "http://anytask-dev1.i-folb.fog.yandex.net:8080"
+RB_API_URL = "http://localhost:8080"
 RB_API_USERNAME = "anytask"
 RB_API_PASSWORD = "P@ssw0rd"
 RB_API_DEFAULT_REVIEW_GROUP = 'teachers'
 RB_SYMLINK_DIR = '/var/lib/anytask/repos/'
 RB_EXTENSIONS = ['.py','.cpp']
 
-IPYTHON_URL = "http://anytask-dev1.i-folb.fog.yandex.net:8888/notebooks"
+IPYTHON_URL = "http://localhost:8888/notebooks"
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 MAX_FILE_SIZE = 100*1024*1024
