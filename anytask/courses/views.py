@@ -600,11 +600,6 @@ def edit_task(request):
     if not request.method == 'POST':
         return HttpResponseForbidden()
 
-    for key in ['task_id', 'task_title', 'task_text',
-                'max_score', 'contest_id', 'problem_id']:
-        if key not in request.POST:
-            return HttpResponseForbidden()
-
     hidden_task = False
     if 'hidden_task' in request.POST:
         hidden_task = True
@@ -614,12 +609,12 @@ def edit_task(request):
         task_title = request.POST['task_title'].strip()
         task_text = request.POST['task_text'].strip()
         max_score = int(request.POST['max_score'])
-        contest_id = int(request.POST['contest_id'])
-        problem_id = request.POST['problem_id'].strip()
+        task = get_object_or_404(Task, id = task_id)
+        if task.course.contest_integrated:
+            contest_id = int(request.POST['contest_id'])
+            problem_id = request.POST['problem_id'].strip()
     except ValueError: #not int
         return HttpResponseForbidden()
-
-    task = get_object_or_404(Task, id = task_id)
 
     if not task.course.user_is_teacher(user):
         return HttpResponseForbidden()
@@ -632,8 +627,9 @@ def edit_task(request):
     task.title = task_title
     task.task_text = task_text
     task.score_max = max_score
-    task.contest_id = contest_id
-    task.problem_id = problem_id
+    if task.course.contest_integrated:
+        task.contest_id = contest_id
+        task.problem_id = problem_id
     task.updated_by = user
     task.save()
 
@@ -649,11 +645,6 @@ def add_task(request):
     if not request.method == 'POST':
         return HttpResponseForbidden()
 
-    for key in ['course_id', 'group_id', 'parent_id', 'task_title',
-                'task_text','max_score', 'contest_id', 'problem_id']:
-        if key not in request.POST:
-            return HttpResponseForbidden()
-
     hidden_task = False
     if 'hidden_task' in request.POST:
         hidden_task = True
@@ -663,8 +654,10 @@ def add_task(request):
         task_title = request.POST['task_title'].strip()
         task_text = request.POST['task_text'].strip()
         max_score = int(request.POST['max_score'])
-        contest_id = int(request.POST['contest_id'])
-        problem_id = request.POST['problem_id'].strip()
+        course = get_object_or_404(Course, id = course_id)
+        if course.contest_integrated:
+            contest_id = int(request.POST['contest_id'])
+            problem_id = request.POST['problem_id'].strip()
 
         group_id = request.POST['group_id']
         if not group_id or group_id == 'null':
@@ -681,7 +674,6 @@ def add_task(request):
     except ValueError: #not int
         return HttpResponseForbidden()
 
-    course = get_object_or_404(Course, id = course_id)
     group = None
     if group_id is not None:
         group = get_object_or_404(Group, id = group_id)
@@ -712,8 +704,9 @@ def add_task(request):
     task.title = task_title
     task.task_text = task_text
     task.score_max = max_score
-    task.contest_id = contest_id
-    task.problem_id = problem_id
+    if course.contest_integrated:
+        task.contest_id = contest_id
+        task.problem_id = problem_id
     task.is_hidden = hidden_task
     task.updated_by = user
     task.save()

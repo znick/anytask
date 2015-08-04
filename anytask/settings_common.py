@@ -133,7 +133,7 @@ INSTALLED_APPS = (
     'index',
     'django_bootstrap',
     'invites',
-    'anysvn',
+    'anycontest',
     'issues',
     'anyrb',
     'django_extensions',

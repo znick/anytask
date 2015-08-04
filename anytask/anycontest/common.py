@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 import requests
 
+import logging
 from django.conf import settings
 
 def upload_contest(event, extension, file):
+    logger = logging.getLogger('django.request')
     try:
         issue = event.issue
         contest_id = issue.task.contest_id
@@ -22,10 +24,10 @@ def upload_contest(event, extension, file):
                                    files=files,
                                    headers={'Authorization': 'OAuth '+settings.CONTEST_OAUTH})
         run_id = submit_req.json()['result']['value']
-        comment = u"Отправлено на проверку в Я.Контест"
+        sent = True
+        logger.info('Contest submission with run_id '+str(run_id)+' sent successfully.')
         issue.set_byname(name='run_id', value=run_id)
-        if issue.status != issue.STATUS_ACCEPTED:
-           issue.status = issue.STATUS_CONTEST_VERIFICATION
     except Exception as e:
-        comment = u'Ошибка отправки в Я.Контест'
-    return comment
+        logger.exception(e)
+        sent = False
+    return sent

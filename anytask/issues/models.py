@@ -58,14 +58,14 @@ class Issue(models.Model):
     STATUS_REWORK = 'rework'
     STATUS_VERIFICATION = 'verification'
     STATUS_ACCEPTED = 'accepted'
-    STATUS_CONTEST_VERIFICATION = 'contest_verification'
+    STATUS_AUTO_VERIFICATION = 'auto_verification'
 
     ISSUE_STATUSES = (
         (STATUS_NEW, _(u'Новый')),
         (STATUS_REWORK, _(u'На доработке')),
         (STATUS_VERIFICATION, _(u'На проверке')),
         (STATUS_ACCEPTED, _(u'Зачтено')),
-        (STATUS_CONTEST_VERIFICATION, _(u'На автоматической проверке')),
+        (STATUS_AUTO_VERIFICATION, _(u'На автоматической проверке')),
     )
 
     status = models.CharField(max_length=20, choices=ISSUE_STATUSES, default=STATUS_NEW)
@@ -223,8 +223,13 @@ class Issue(models.Model):
                     if self.task.course.contest_integrated:
                         for ext in settings.CONTEST_EXTENSIONS:
                             if ext in file.name:
-                                comment = upload_contest(event, ext, uploaded_file)
-                                value['comment'] += comment
+                                sent = upload_contest(event, ext, uploaded_file)
+                                if sent:
+                                    value['comment'] += u"Отправлено на проверку в Я.Контест"
+                                    if self.status != self.STATUS_ACCEPTED:
+                                        self.status = self.STATUS_AUTO_VERIFICATION
+                                else:
+                                    value['comment'] += u"Ошибка отправки в Я.Контест"
 
                     if self.task.course.rb_integrated:
                         for ext in settings.RB_EXTENSIONS:
