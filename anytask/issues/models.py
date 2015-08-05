@@ -13,9 +13,11 @@ from issues.model_issue_field import IssueField
 from decimal import Decimal
 from anyrb.common import AnyRB
 from anyrb.common import update_status_review_request
+from anycontest.common import upload_contest
 from tasks.models import Task
 
 import uuid
+import requests
 
 def get_file_path(instance, filename):
     return '/'.join(['files', str(uuid.uuid4()), filename])
@@ -56,12 +58,14 @@ class Issue(models.Model):
     STATUS_REWORK = 'rework'
     STATUS_VERIFICATION = 'verification'
     STATUS_ACCEPTED = 'accepted'
+    STATUS_AUTO_VERIFICATION = 'auto_verification'
 
     ISSUE_STATUSES = (
         (STATUS_NEW, _(u'Новый')),
         (STATUS_REWORK, _(u'На доработке')),
         (STATUS_VERIFICATION, _(u'На проверке')),
         (STATUS_ACCEPTED, _(u'Зачтено')),
+        (STATUS_AUTO_VERIFICATION, _(u'На автоматической проверке')),
     )
 
     status = models.CharField(max_length=20, choices=ISSUE_STATUSES, default=STATUS_NEW)
@@ -216,20 +220,32 @@ class Issue(models.Model):
                 for file in value['files']:
                     uploaded_file = File(file=file, event=event)
                     uploaded_file.save()
+                    if self.task.course.contest_integrated:
+                        for ext in settings.CONTEST_EXTENSIONS:
+                            if ext in file.name:
+                                sent = upload_contest(event, ext, uploaded_file)
+                                if sent:
+                                    value['comment'] += u"Отправлено на проверку в Я.Контест"
+                                    if self.status != self.STATUS_ACCEPTED:
+                                        self.status = self.STATUS_AUTO_VERIFICATION
+                                else:
+                                    value['comment'] += u"Ошибка отправки в Я.Контест"
+
                     if self.task.course.rb_integrated:
                         for ext in settings.RB_EXTENSIONS:
                             if ext in file.name:
                                 upload_review(event)
-                                value['comment']+= '\n' + \
+                                value['comment'] += '\n' + \
                                 u'<a href="{1}/r/{0}">Review request {0}</a>'. \
                                 format(self.get_byname('review_id'),settings.RB_API_URL)
 
                 value = value['comment']
-                if author == self.student:
-                    self.status = self.STATUS_VERIFICATION
-                    self.update_time = datetime.now()
-                if author == self.responsible:
-                    self.status = self.STATUS_REWORK
+                if not self.task.course.contest_integrated:
+                    if author == self.student:
+                        self.status = self.STATUS_VERIFICATION
+                        self.update_time = datetime.now()
+                    if author == self.responsible:
+                        self.status = self.STATUS_REWORK
 
         elif name == 'status':
             try:

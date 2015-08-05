@@ -102,6 +102,7 @@ class Course(models.Model):
     max_tasks_without_score_per_student = models.IntegerField(null=True, blank=True, default=0)
     days_drop_from_blacklist = models.IntegerField(null=True, blank=True, default=0)
 
+    contest_integrated = models.BooleanField(db_index=False, null=False, blank=False, default=False)
     rb_integrated = models.BooleanField(db_index=False, null=False, blank=False, default=False)
     gr_integrated = models.BooleanField(db_index=False, null=False, blank=False, default=False)
     pdf_integrated = models.BooleanField(db_index=False, null=False, blank=False, default=False)

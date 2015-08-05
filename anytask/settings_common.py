@@ -133,7 +133,7 @@ INSTALLED_APPS = (
     'index',
     'django_bootstrap',
     'invites',
-    'anysvn',
+    'anycontest',
     'issues',
     'anyrb',
     'django_extensions',
@@ -161,11 +161,13 @@ RB_API_DEFAULT_REVIEW_GROUP = 'teachers'
 RB_SYMLINK_DIR = '/var/lib/anytask/repos/'
 RB_EXTENSIONS = ['.py','.cpp']
 
+CONTEST_API_URL = 'https://api.contest.yandex.net/anytask/'
+CONTEST_OAUTH = 'OAUTH'
+CONTEST_EXTENSIONS = {'.py':'python3', '.cpp':'gcc'}
+
 IPYTHON_URL = "http://localhost:8888/notebooks"
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 MAX_FILE_SIZE = 100*1024*1024
-# from django.contrib.auth.models import User
-# user = User.objects.all()[0]
 
 REGISTRATION_ALLOWED_DOMAINS = set(('ya.ru', 'yandex.ru', 'yandex.by', 'yandex.com', 'yandex.kz', 'yandex.ua'))
