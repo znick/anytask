@@ -240,11 +240,12 @@ class Issue(models.Model):
                                 format(self.get_byname('review_id'),settings.RB_API_URL)
 
                 value = value['comment']
-                if author == self.student:
-                    self.status = self.STATUS_VERIFICATION
-                    self.update_time = datetime.now()
-                if author == self.responsible:
-                    self.status = self.STATUS_REWORK
+                if not self.task.course.contest_integrated:
+                    if author == self.student:
+                        self.status = self.STATUS_VERIFICATION
+                        self.update_time = datetime.now()
+                    if author == self.responsible:
+                        self.status = self.STATUS_REWORK
 
         elif name == 'status':
             try:
