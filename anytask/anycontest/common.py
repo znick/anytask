@@ -40,6 +40,7 @@ def upload_contest(event, extension, file):
 
 def check_submission(issue):
     try:
+        verdict = False
         run_id = issue.get_byname('run_id')
         contest_id = issue.task.contest_id
         results_req = requests.get(settings.CONTEST_API_URL+'results?runId='+str(run_id)+'&contestId='+str(contest_id),
@@ -47,6 +48,7 @@ def check_submission(issue):
 
         if results_req.json()['result']['submission']['verdict'] == 'ok':
             comment = u'Вердикт Я.Контест: ok'
+            verdict = True
         else:
             comment = u'Вердикт Я.Контест: ' \
             + results_req.json()['result']['submission']['verdict'] + '\n' \
@@ -56,15 +58,18 @@ def check_submission(issue):
     except Exception as e:
         logger.exception(e)
         get_verdict = False
-    return get_verdict, comment
+    return get_verdict, verdict, comment
 
-def comment_verdict(issue, comment):
+def comment_verdict(issue, verdict, comment):
     author, author_get = User.objects.get_or_create(username=issue.student.username)
     field, field_get = IssueField.objects.get_or_create(name='comment')
     event = issue.create_event(field, author=author)
     event.value = comment
     event.save()
     if issue.status != issue.STATUS_ACCEPTED:
-        issue.status = issue.STATUS_VERIFICATION
+        if verdict:
+            issue.status = issue.STATUS_VERIFICATION
+        else:
+            issue.status = issue.STATUS_REWORK
     event.issue.set_byname('run_id', '')
     issue.save()

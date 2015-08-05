@@ -13,6 +13,6 @@ class Command(BaseCommand):
         for issue in Issue.objects.filter(status=Issue.STATUS_AUTO_VERIFICATION):
             for event in issue.event_set.all():
                 if event.issue.get_byname('run_id') != '':
-                    get_verdict, comment = check_submission(issue)
+                    get_verdict, verdict, comment = check_submission(issue)
                     if get_verdict:
-                        comment_verdict(issue, comment)
+                        comment_verdict(issue, verdict, comment)
