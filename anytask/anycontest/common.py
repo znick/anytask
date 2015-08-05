@@ -53,12 +53,12 @@ def check_submission(issue):
             comment = u'Вердикт Я.Контест: ' \
             + results_req.json()['result']['submission']['verdict'] + '\n' \
             + results_req.json()['result']['compileLog'][18:]
-        logger.info('Contest submission verdict with run_id '+str(run_id)+' get successfully.')
-        get_verdict = True
+        logger.info('Contest submission verdict with run_id '+str(run_id)+' got successfully.')
+        got_verdict = True
     except Exception as e:
         logger.exception(e)
-        get_verdict = False
-    return get_verdict, verdict, comment
+        got_verdict = False
+    return got_verdict, verdict, comment
 
 def comment_verdict(issue, verdict, comment):
     author, author_get = User.objects.get_or_create(username=issue.student.username)
