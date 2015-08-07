@@ -1,0 +1,26 @@
+#!/usr/bin/make -f
+
+DEB_PYTHON_SYSTEM = pysupport
+DEB_COMPRESS_EXCLUDE = .py
+DESTDIR = debian/anytask
+
+include /usr/share/cdbs/1/rules/debhelper.mk
+
+#binary-install/anytask::
+#	dh_environment -pyanytask
+
+install/anytask::
+#	sh debian/build.sh
+	
+	echo ==============================
+	mkdir -p $(DESTDIR)/opt
+	virtualenv $(DESTDIR)/opt/anytask-env
+	virtualenv $(DESTDIR)/opt/reviewboard-env
+	$(DESTDIR)/opt/reviewboard-env/bin/easy_install -U Djblets
+#	easy_install -U RBTools
+#	easy_install -U django_evolution
+#	easy_install -U recaptcha-client
+
+
+.PHONY: all install
+
