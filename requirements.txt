@@ -6,7 +6,7 @@ python-gettext
 beautifulsoup
 Werkzeug
 django-extensions
-ipython
+ipython notebook
 ipdb
 django-debug-toolbar
 django-bootstrap-breadcrumbs
