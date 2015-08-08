@@ -7,17 +7,11 @@ set -e
 
 case "$1" in
     configure)
-            mkdir /home/anytask
-            mkdir /home/ipython
-            useradd anytask -d /home/anytask -g sudo
-            passwd -d anytask
-            useradd ipython -d /home/ipython
-            passwd -d ipython
-            chown -R ipython:ipython /opt/anytask/anytask/media
-            chmod a+x /opt/anytask/anytask/manage.py
-            chmod a+x /opt/reviewboard/contrib/internal/devserver.py
-            chown -R anytask:anytask /opt/anytask
-            chown -R anytask:anytask /opt/reviewboard
+            adduser --system --disabled-login anytask
+            adduser --system --disabled-login ipython
+            chown -R ipython:nogroup /usr/share/python/anytask/lib/python2.7/site-packages/Anytask-0.0.0-py2.7.egg/anytask/media
+            chmod a+x /usr/share/python/anytask/lib/python2.7/site-packages/Anytask-0.0.0-py2.7.egg/anytask/manage.py
+            chown -R anytask:nogroup /usr/share/python/anytask
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
