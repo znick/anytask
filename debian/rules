@@ -1,9 +1,4 @@
 #!/usr/bin/make -f
 
 %:
-	dh $@ --with python-virtualenv
-
-override_dh_auto_build:
-	quilt push
-	dh_auto_build
-	quilt pop
+	dh $@ --with quilt --with python-virtualenv
