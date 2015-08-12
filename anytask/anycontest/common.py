@@ -33,7 +33,6 @@ def upload_contest(event, extension, file):
             logger.info('Contest submission with run_id '+str(run_id)+' sent successfully.')
             issue.set_byname(name='run_id', value=run_id)
     except Exception as e:
-        print(e)
         logger.exception(e)
         sent = False
     return sent

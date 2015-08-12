@@ -123,8 +123,8 @@ class Issue(models.Model):
         if name == 'mark':
             return self.score()
         if name == 'review_id' and self.task.course.rb_integrated:
-            return u'<a href="{1}">{0}</a>'.format(
-                self.get_field_value(field),
+            return u'<a href="{1}/r/{0}">{0}</a>'.format(
+                self.get_byname('review_id'),
                 settings.RB_API_URL,
             )
 
@@ -231,7 +231,7 @@ class Issue(models.Model):
                                 else:
                                     value['comment'] += u"Ошибка отправки в Я.Контест"
 
-                    if self.task.course.rb_integrated:
+                    if self.task.course.rb_integrated and (self.task.course.send_rb_and_contest_together or not self.task.course.contest_integrated):
                         for ext in settings.RB_EXTENSIONS:
                             if ext in file.name:
                                 upload_review(event)

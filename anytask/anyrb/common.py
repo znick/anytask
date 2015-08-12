@@ -83,7 +83,7 @@ class AnyRB(object):
         try:
             review_id = self.event.issue.get_byname('review_id')
             review_request = root.get_review_request(review_request_id=review_id)
-        except AttributeError:
+        except (AttributeError, ValueError):
             repository_name = str(self.event.issue.id)
             os.symlink(settings.RB_SYMLINK_DIR,os.path.join(settings.RB_SYMLINK_DIR, repository_name))
             repository = root.get_repositories().create(
