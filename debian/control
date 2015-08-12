@@ -1,0 +1,18 @@
+Source: anytask
+Section: misc
+Priority: extra
+Maintainer: Aleksandr Bukin  <gebetix@yandex-team.ru>
+Build-Depends: debhelper (>= 4), python (>=2.7), python-support, cdbs, dh-virtualenv
+Standards-Version: 3.7.2
+
+Package: anytask
+Architecture: all
+Depends: ${shlibs:Depends}, ${misc:Depends},
+ python (>=2.7),
+ python-mysqldb (>= 1.2.1-p2),
+ python-pip,
+ python-virtualenv,
+ python-simplejson (>=1.9),
+ python-lxml,
+ python-dev,
+Description: Anytask -- платформа для взаимодействия преподавателей и студентов в процессе обучения.
