@@ -1,6 +1,8 @@
---- a/anytask/settings.py
-+++ b/anytask/settings.py
-@@ -39,4 +39,6 @@
+Index: anytask/anytask/settings.py
+===================================================================
+--- anytask.orig/anytask/settings.py	2015-08-19 16:38:07.677294970 +0300
++++ anytask/anytask/settings.py	2015-08-19 16:38:07.673295015 +0300
+@@ -39,4 +39,7 @@
      }
  }
  
@@ -9,4 +11,5 @@
 +EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 +MEDIA_ROOT = '/var/lib/anytask/media'
 +UPLOAD_ROOT = '/var/lib/anytask/upload'
++STATIC_ROOT = '/var/lib/anytask/static'
 \ No newline at end of file
