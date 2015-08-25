@@ -70,5 +70,4 @@ def comment_verdict(issue, verdict, comment):
             issue.status = issue.STATUS_VERIFICATION
         else:
             issue.status = issue.STATUS_REWORK
-    event.issue.set_byname('run_id', '')
     issue.save()

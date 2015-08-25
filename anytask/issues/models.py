@@ -127,6 +127,11 @@ class Issue(models.Model):
                 self.get_byname('review_id'),
                 settings.RB_API_URL,
             )
+        if name == 'run_id' and self.task.course.contest_integrated:
+            return u'<a href="https://contest.yandex.ru/contest/{1}/run-report/{0}">{0}</a>'.format(
+                self.get_byname('run_id'),
+                self.task.contest_id,
+            )
 
         return self.get_field_value(field)
 
@@ -229,7 +234,7 @@ class Issue(models.Model):
                                     if self.status != self.STATUS_ACCEPTED:
                                         self.status = self.STATUS_AUTO_VERIFICATION
                                 else:
-                                    value['comment'] += u"Ошибка отправки в Я.Контест"
+                                    value['comment'] += u"Ошибка отправки в Я.Контест. Попробуйте еще раз."
 
                     if self.task.course.rb_integrated and (self.task.course.send_rb_and_contest_together or not self.task.course.contest_integrated):
                         for ext in settings.RB_EXTENSIONS:
