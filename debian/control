@@ -2,7 +2,7 @@ Source: anytask
 Section: misc
 Priority: extra
 Maintainer: Aleksandr Bukin  <gebetix@yandex-team.ru>
-Build-Depends: debhelper (>= 4), python (>=2.7), python-support, cdbs, dh-virtualenv
+Build-Depends: debhelper (>= 4), python (>=2.7), python-support, cdbs, dh-virtualenv, quilt
 Standards-Version: 3.7.2
 
 Package: anytask
