@@ -15,3 +15,5 @@ python-magic
 django-filemanager
 requests
 flup
+django-mysql-pymysql
+pymysql
