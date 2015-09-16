@@ -9,7 +9,19 @@ from django.contrib.auth.models import User
 
 logger = logging.getLogger('django.request')
 
+class FakeResponse(object):
+    def __init__(self):
+        self.url = None
+
+    @staticmethod
+    def json():
+        return None
+
 def upload_contest(event, extension, file):
+    problem_req = FakeResponse()
+    submit_req = FakeResponse()
+    message = "OK"
+
     try:
         issue = event.issue
         contest_id = issue.task.contest_id
@@ -28,16 +40,25 @@ def upload_contest(event, extension, file):
                                              'problemId': problem_id},
                                        files=files,
                                        headers={'Authorization': 'OAuth '+settings.CONTEST_OAUTH})
+
+            if 'error' in submit_req.json():
+                return False, submit_req.json()["error"]["message"]
+
+
             run_id = submit_req.json()['result']['value']
             sent = True
             logger.info('Contest submission with run_id '+str(run_id)+' sent successfully.')
             issue.set_byname(name='run_id', value=run_id)
     except Exception as e:
-        logger.exception(e)
+        logger.exception("Exception while request to Contest: '%s' : '%s', '%s' : '%s', Exception: '%s'",
+                         problem_req.url, problem_req.json(), submit_req.url, submit_req.json(), e)
         sent = False
-    return sent
+        message = "Unexpected error"
+    return sent, message
 
 def check_submission(issue):
+    results_req = FakeResponse()
+
     try:
         verdict = False
         run_id = issue.get_byname('run_id')
@@ -55,7 +76,8 @@ def check_submission(issue):
         logger.info('Contest submission verdict with run_id '+str(run_id)+' got successfully.')
         got_verdict = True
     except Exception as e:
-        logger.exception(e)
+        logger.exception("Exception while request to Contest: '%s' : '%s', Exception: '%s'",
+                         results_req.url, results_req.json(), e)
         got_verdict = False
     return got_verdict, verdict, comment
 

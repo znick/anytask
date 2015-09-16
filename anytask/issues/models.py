@@ -228,13 +228,13 @@ class Issue(models.Model):
                     if self.task.course.contest_integrated:
                         for ext in settings.CONTEST_EXTENSIONS:
                             if ext in file.name:
-                                sent = upload_contest(event, ext, uploaded_file)
+                                sent, message = upload_contest(event, ext, uploaded_file)
                                 if sent:
                                     value['comment'] += u"Отправлено на проверку в Я.Контест"
                                     if self.status != self.STATUS_ACCEPTED:
                                         self.status = self.STATUS_AUTO_VERIFICATION
                                 else:
-                                    value['comment'] += u"Ошибка отправки в Я.Контест. Попробуйте еще раз."
+                                    value['comment'] += u"Ошибка отправки в Я.Контест ('{0}').".format(message)
 
                     if self.task.course.rb_integrated and (self.task.course.send_rb_and_contest_together or not self.task.course.contest_integrated):
                         for ext in settings.RB_EXTENSIONS:
