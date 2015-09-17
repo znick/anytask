@@ -58,17 +58,23 @@ def upload_contest(event, extension, file):
 
 def check_submission(issue):
     results_req = FakeResponse()
-
+    verdict = False
+    comment = ''
     try:
-        verdict = False
         run_id = issue.get_byname('run_id')
         contest_id = issue.task.contest_id
         results_req = requests.get(settings.CONTEST_API_URL+'results?runId='+str(run_id)+'&contestId='+str(contest_id),
                                    headers={'Authorization': 'OAuth '+settings.CONTEST_OAUTH})
 
-        if results_req.json()['result']['submission']['verdict'] == 'ok':
+        contest_verdict = results_req.json()['result']['submission']['verdict']
+        if contest_verdict == 'ok':
             comment = u'Вердикт Я.Контест: ok'
             verdict = True
+        elif contest_verdict == 'precompile-check-failed':
+            contest_messages = []
+            for precompile_check in results_req.json()['result']['precompileChecks']:
+                contest_messages.append(precompile_check['message'])
+            comment = u'Вердикт Я.Контест: precompile-check-failed\n' + u'\n'.join(contest_messages)
         else:
             comment = u'Вердикт Я.Контест: ' \
             + results_req.json()['result']['submission']['verdict'] + '\n' \
