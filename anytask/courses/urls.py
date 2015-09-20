@@ -22,5 +22,6 @@ urlpatterns = patterns('courses.views',
     url(r'^queue_tasks_to_check/(?P<course_id>\d+)', 'queue_tasks_to_check'),
     url(r'^ajax_get_transcript/(?P<course_id>\d+)', 'ajax_get_transcript'),
     url(r'^tasks_list/(?P<course_id>\d+)', 'tasks_list'),
+    url(r'^(?P<course_id>\d+)/settings$', 'course_settings'),
     url(r'^(?P<course_id>\d+)/data/$'+path_end,'filemanager'),
 )

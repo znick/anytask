@@ -20,6 +20,11 @@
     <li class="active">
       <a href="">Очередь на проверку</a>
     </li>
+    {% if user_is_teacher %}
+      <li>
+        <a href="{% url courses.views.course_settings course.id %}">Настройки</a>
+      </li>
+    {% endif %}
   </ul>
 {% endblock navbar %}
 

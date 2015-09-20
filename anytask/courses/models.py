@@ -199,6 +199,12 @@ class Course(models.Model):
          if self.group_with_extern is not None:
              self.group_with_extern.students.remove(user)
 
+    def get_default_teacher(self, group):
+        try:
+            return DefaultTeacher.objects.filter(course=self).get(group=group).teacher
+        except DefaultTeacher.DoesNotExist:
+            return None
+
 def add_default_issue_fields(sender, instance, action, **kwargs):
     default_issue_fields = DefaultIssueFields()
     pk_set = kwargs.get("pk_set", set())
@@ -215,5 +221,16 @@ def add_default_issue_fields(sender, instance, action, **kwargs):
     if action == "post_add":
         instance.issue_fields.remove(*default_issue_fields.get_issue_fields())
         return
+
+class DefaultTeacher(models.Model):
+    teacher = models.ForeignKey(User, db_index=False, null=True, blank=True)
+    course = models.ForeignKey(Course, db_index=True, null=False, blank=False)
+    group = models.ForeignKey(Group, db_index=True, null=True, blank=True)
+
+    def __unicode__(self):
+        return u"|".join((self.course.name, self.group.name, self.teacher.username))
+
+    class Meta:
+        unique_together = (("course", "group"),)
 
 m2m_changed.connect(add_default_issue_fields, sender=Course.issue_fields.through)

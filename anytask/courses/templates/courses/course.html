@@ -22,6 +22,11 @@
         <a href="{{ course.get_absolute_url }}/queue">Очередь на проверку</a>
       </li>
     {% endif %}
+    {% if user_is_teacher %}
+      <li>
+        <a href="{% url courses.views.course_settings course.id %}">Настройки</a>
+      </li>
+    {% endif %}
   </ul>
 {% endblock navbar %}
 

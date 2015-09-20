@@ -232,7 +232,7 @@ class Issue(models.Model):
                                 if sent:
                                     value['comment'] += u"Отправлено на проверку в Я.Контест"
                                     if self.status != self.STATUS_ACCEPTED:
-                                        self.status = self.STATUS_AUTO_VERIFICATION
+                                        self.set_byname('status', self.STATUS_AUTO_VERIFICATION)
                                 else:
                                     value['comment'] += u"Ошибка отправки в Я.Контест ('{0}').".format(message)
 
@@ -247,7 +247,7 @@ class Issue(models.Model):
                 value = value['comment']
                 if self.status != self.STATUS_AUTO_VERIFICATION:
                     if author == self.student:
-                        self.status = self.STATUS_VERIFICATION
+                        self.set_byname('status', self.STATUS_VERIFICATION)
                         self.update_time = datetime.now()
                     if author == self.responsible:
                         self.status = self.STATUS_REWORK
@@ -261,6 +261,14 @@ class Issue(models.Model):
                     update_status_review_request(review_id,'pending')
             except:
                 pass
+
+            if value == self.STATUS_VERIFICATION:
+                course = self.task.course
+                group = course.get_user_group(self.student)
+                default_teacher = course.get_default_teacher(group)
+                if default_teacher and (not self.get_byname('responsible_name')):
+                    self.set_byname('responsible_name', default_teacher)
+
             self.status = value
             value = self.get_status()
 

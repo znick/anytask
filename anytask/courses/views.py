@@ -21,7 +21,7 @@ import pysvn
 import urllib, urllib2
 import httplib
 
-from courses.models import Course
+from courses.models import Course, DefaultTeacher
 from groups.models import Group
 from tasks.models import TaskTaken, Task
 from tasks.views import update_status_check
@@ -35,7 +35,7 @@ from issues.models import Issue
 
 from common.ordered_dict import OrderedDict
 
-from courses.forms import PdfForm, QueueForm
+from courses.forms import PdfForm, QueueForm, default_teacher_forms_factory, DefaultTeacherForm
 from django.utils.html import strip_tags
 from filemanager import FileManager
 from settings import UPLOAD_ROOT
@@ -66,7 +66,6 @@ def queue_page(request, course_id):
 
     issues = Issue.objects.filter(task__course=course).exclude(status=Issue.STATUS_NEW).exclude(status=Issue.STATUS_ACCEPTED)
 
-    context = dict()
     if request.method == 'POST':
         queue_form = QueueForm(request.POST)
         if queue_form.is_valid():
@@ -93,9 +92,12 @@ def queue_page(request, course_id):
         issues = issues.exclude(status=Issue.STATUS_REWORK) # not good
 
     issues = issues.order_by('update_time')
-    context['course'] = course
-    context['issues'] = issues
-    context['queue_form'] = queue_form
+    context = {
+        'course' : course,
+        'issues' : issues,
+        'queue_form' : queue_form,
+        'user_is_teacher' : course.user_is_teacher(request.user),
+    }
     return render_to_response('courses/queue.html', context, context_instance=RequestContext(request))
 
 @login_required
@@ -1110,4 +1112,49 @@ def queue_tasks_to_check(request, course_id):
     #tasks_to_check = TaskTaken.objects.filter(course=course, status_check=TaskTaken.QUEUE)
     return render_to_response('course_queue_tasks_to_check.html', {"course":course}, context_instance=RequestContext(request))
 
+def default_teachers_generate_form(course, post_data=None):
+    groups_teacher = {}
+    groups_forms = {}
+    groups = course.groups.all().order_by('name')
 
+    for default_teacher in DefaultTeacher.objects.filter(course=course).filter(group__in=groups):
+        groups_teacher[default_teacher.group.id] = default_teacher.teacher
+
+    for group in groups:
+        teacher = groups_teacher.get(group.id)
+        groups_forms[group] = default_teacher_forms_factory(course, group, teacher, post_data)
+    return groups_forms
+
+def course_settings(request, course_id):
+    course = get_object_or_404(Course, id=course_id)
+    if not course.user_is_teacher(request.user):
+        return HttpResponseForbidden()
+
+    context = {'course' : course,
+               'visible_queue' : course.user_can_see_queue(request.user),
+               'user_is_teacher' : course.user_is_teacher(request.user),
+    }
+
+    if request.method != "POST":
+        form = DefaultTeacherForm(course)
+        context['form'] = form
+        return render_to_response('courses/settings.html', context, context_instance=RequestContext(request))
+
+    form = DefaultTeacherForm(course, request.POST)
+    context['form'] = form
+
+    if not form.is_valid():
+        return render_to_response('courses/settings.html', context, context_instance=RequestContext(request))
+
+    for group_key, teacher_id in form.cleaned_data.iteritems():
+        teacher_id = int(teacher_id)
+        group = form.groups[group_key]
+        if teacher_id == 0:
+            DefaultTeacher.objects.filter(course=course).filter(group=group).delete()
+        else:
+            teacher = User.objects.get(pk=teacher_id)
+            default_teacher, _ = DefaultTeacher.objects.get_or_create(course=course, group=group)
+            default_teacher.teacher = teacher
+            default_teacher.save()
+
+    return HttpResponseRedirect('')

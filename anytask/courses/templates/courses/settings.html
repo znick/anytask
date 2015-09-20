@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load sanitize_html icon %}
+{% load dict_func %}
+{% load task_taken_func %}
+
+{% block title %}{{ course.name }} | {{ course.year }}{% endblock %}
+
+{% block navbar %}
+  <ul class="nav">
+    <li>
+      <a href="{{ course.get_absolute_url }}">Список задач</a>
+    </li>
+    {% if visible_queue %}
+      <li>
+        <a href="{{ course.get_absolute_url }}/queue">Очередь на проверку</a>
+      </li>
+    {% endif %}
+    {% if user_is_teacher %}
+      <li class="active">
+        <a href="{% url courses.views.course_settings course.id %}">Настройки</a>
+      </li>
+    {% endif %}
+  </ul>
+{% endblock navbar %}
+
+
+{% block content %}
+
+<h1>Настройки</h1>
+<h2>Преподаватели</h2>
+<p>Эти преподаватели будут назначатся проаеряющими во время перехода задачи в статус "на проверке",
+если другой преподаватель не был назначен ранее</p>
+
+<form id="submit_review_form" action="{{ request.get_full_path }}" method="POST">
+{% csrf_token %}
+<table>
+{{ form.as_table}}
+</table>
+<button type="submit" id="submit" class="btn btn-primary">Сохранить</button>
+</form>
+
+{% endblock %}
