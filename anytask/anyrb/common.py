@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 import datetime
+import logging
 import os
 import requests
 
 from django.conf import settings
 
 from rbtools.api.client import RBClient
+
+logger = logging.getLogger('django.request')
 
 # from anysvn.common import get_svn_uri, svn_diff
 
@@ -84,6 +87,7 @@ class AnyRB(object):
             review_id = self.event.issue.get_byname('review_id')
             review_request = root.get_review_request(review_request_id=review_id)
         except (AttributeError, ValueError):
+            course_id = self.event.issue.task.course.id
             repository_name = str(self.event.issue.id)
             os.symlink(settings.RB_SYMLINK_DIR,os.path.join(settings.RB_SYMLINK_DIR, repository_name))
             repository = root.get_repositories().create(
@@ -97,10 +101,49 @@ class AnyRB(object):
             root.get_repository(repository_id=repository.id).update(grant_type='add',
                                                       grant_entity='group',
                                                       grant_name='teachers')
+            root.get_repository(repository_id=repository.id).update(grant_type='add',
+                                                      grant_entity='group',
+                                                      grant_name='teachers_{0}'.format(course_id))
+
+
             review_request = root.get_review_requests().create(repository=repository.id)
         self.event.issue.set_byname('review_id', review_request.id, self.event.author)
         return review_request
 
+
+
+class RbReviewGroup(object):
+    def __init__(self, review_group_name):
+        self.review_group_name = review_group_name
+
+    def create(self):
+        url = settings.RB_API_URL + "/api/groups/"
+        payload = {
+            'display_name' : self.review_group_name,
+            'invite_only' : True,
+            'name' : self.review_group_name,
+        }
+        r = requests.post(url, auth=(settings.RB_API_USERNAME, settings.RB_API_PASSWORD), data=payload)
+        assert r.status_code in (200, 201, 223, 409)
+
+    def list(self):
+        url = settings.RB_API_URL + "/api/groups/{0}/users/".format(self.review_group_name)
+        r = requests.get(url, auth=(settings.RB_API_USERNAME, settings.RB_API_PASSWORD))
+        for user in r.json()["users"]:
+            yield user["username"]
+
+    def user_add(self, username):
+        url = settings.RB_API_URL + "/api/groups/{0}/users/".format(self.review_group_name)
+        payload = {
+            'username' : username,
+        }
+        r = requests.post(url, auth=(settings.RB_API_USERNAME, settings.RB_API_PASSWORD), data=payload)
+        assert r.status_code in (200, 201)
+
+    def user_del(self, username):
+        url = settings.RB_API_URL + "/api/groups/{0}/users/{1}".format(self.review_group_name, username)
+        r = requests.delete(url, auth=(settings.RB_API_USERNAME, settings.RB_API_PASSWORD))
+        assert r.status_code in (200, 201)
 
     # def get_repository(self, user):
         # username = user.username

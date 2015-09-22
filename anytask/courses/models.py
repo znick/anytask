@@ -14,6 +14,7 @@ from django.db.models.signals import post_save
 from groups.models import Group
 from issues.model_issue_field import IssueField
 from years.models import Year
+from anyrb.common import RbReviewGroup
 
 def add_group_with_extern(sender, instance, **kwargs):
     instance.add_group_with_extern()
@@ -205,6 +206,17 @@ class Course(models.Model):
         except DefaultTeacher.DoesNotExist:
             return None
 
+class DefaultTeacher(models.Model):
+    teacher = models.ForeignKey(User, db_index=False, null=True, blank=True)
+    course = models.ForeignKey(Course, db_index=True, null=False, blank=False)
+    group = models.ForeignKey(Group, db_index=True, null=True, blank=True)
+
+    def __unicode__(self):
+        return u"|".join((self.course.name, self.group.name, self.teacher.username))
+
+    class Meta:
+        unique_together = (("course", "group"),)
+
 def add_default_issue_fields(sender, instance, action, **kwargs):
     default_issue_fields = DefaultIssueFields()
     pk_set = kwargs.get("pk_set", set())
@@ -222,15 +234,24 @@ def add_default_issue_fields(sender, instance, action, **kwargs):
         instance.issue_fields.remove(*default_issue_fields.get_issue_fields())
         return
 
-class DefaultTeacher(models.Model):
-    teacher = models.ForeignKey(User, db_index=False, null=True, blank=True)
-    course = models.ForeignKey(Course, db_index=True, null=False, blank=False)
-    group = models.ForeignKey(Group, db_index=True, null=True, blank=True)
+def update_rb_review_group(sender, instance, created, **kwargs):
+    course = instance
+    if not course.rb_integrated:
+        return
 
-    def __unicode__(self):
-        return u"|".join((self.course.name, self.group.name, self.teacher.username))
+    rb_review_group_name = "teachers_{0}".format(course.id)
+    rg = RbReviewGroup(rb_review_group_name)
+    rg.create()
+    teachers = set([teacher.username for teacher in course.teachers.all()])
+    rg_users = set(rg.list())
 
-    class Meta:
-        unique_together = (("course", "group"),)
+    for rg_user in rg_users:
+        if rg_user not in teachers:
+            rg.user_del(rg_user)
+
+    for teacher in teachers:
+        if teacher not in rg_users:
+            rg.user_add(teacher)
 
 m2m_changed.connect(add_default_issue_fields, sender=Course.issue_fields.through)
+post_save.connect(update_rb_review_group, sender=Course)
