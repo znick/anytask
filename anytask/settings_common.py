@@ -163,7 +163,7 @@ RB_EXTENSIONS = ['.py','.cpp']
 
 CONTEST_API_URL = 'https://api.contest.yandex.net/anytask/'
 CONTEST_OAUTH = 'OAUTH'
-CONTEST_EXTENSIONS = {'.py':'python3', '.cpp':'gcc0x'}
+CONTEST_EXTENSIONS = {'.py':'python2_6', '.cpp':'gcc0x'} #Actually python2_6 is python 2.7
 
 IPYTHON_URL = "http://localhost:8888/notebooks"
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
