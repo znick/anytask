@@ -17,6 +17,16 @@ class FakeResponse(object):
     def json():
         return None
 
+def get_compiler_id(course, extension):
+    compiler_id = settings.CONTEST_EXTENSIONS[extension]
+    if course.id not in settings.CONTEST_EXTENSIONS_COURSE:
+        return compiler_id
+
+    if extension not in settings.CONTEST_EXTENSIONS_COURSE[course.id]:
+        return compiler_id
+
+    return settings.CONTEST_EXTENSIONS_COURSE[course.id][extension]
+
 def upload_contest(event, extension, file):
     problem_req = FakeResponse()
     submit_req = FakeResponse()
@@ -25,7 +35,8 @@ def upload_contest(event, extension, file):
     try:
         issue = event.issue
         contest_id = issue.task.contest_id
-        compiler_id = settings.CONTEST_EXTENSIONS[extension]
+        course = event.issue.task.course
+        compiler_id = get_compiler_id(course, extension)
         problem_req = requests.get(settings.CONTEST_API_URL+'problems?contestId='+str(contest_id),
                                    headers={'Authorization': 'OAuth '+settings.CONTEST_OAUTH})
         for problem in problem_req.json()['result']['problems']:
