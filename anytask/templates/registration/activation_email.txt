@@ -2,7 +2,7 @@
 
 {{ site }}/accounts/activate/{{ activation_key }}
 
-Ссылка действительна в течении {{ expiration_days }} дней.
+Ссылка действительна в течение {{ expiration_days }} дней.
 
 -- 
 Команда AnyTask
