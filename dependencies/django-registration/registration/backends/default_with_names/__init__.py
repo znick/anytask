@@ -1,22 +1,46 @@
 # coding: utf-8
 
+import re
+
 from django.conf import settings
+from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.sites.models import RequestSite
 from django.contrib.sites.models import Site
 from django import forms
+from django.shortcuts import get_object_or_404
 
 from registration import signals
 from registration.forms import RegistrationForm, RegistrationFormUniqueEmail
 from registration.models import RegistrationProfile
 
-from invites.models import Invite
-
 from django_bootstrap.forms import BootstrapMixin
 
-from django.shortcuts import get_object_or_404
-
+from invites.models import Invite
 
 attrs_dict = { 'class': 'required' }
+
+EMAIL_RE = re.compile(r'''([^@]+)@([^@]+\.[^@]+)''')
+def parse_email(email):
+    m = EMAIL_RE.match(email)
+    if not m:
+        return None, None
+    return m.group(1), m.group(2).lower() #username, domain
+
+
+class AnytaskLoginForm(BootstrapMixin, AuthenticationForm):
+    def __init__(self, *args, **kwargs):
+        BootstrapMixin.__init__(self, *args, **kwargs)
+        AuthenticationForm.__init__(self, *args, **kwargs)
+        self.fields['username'].label = u"Email / Login"
+
+    def clean_username(self):
+        username = self.cleaned_data.get('username', '')
+        email_username, email_domain = parse_email(username)
+        if not email_username:
+            return username
+        if email_domain and email_domain not in settings.REGISTRATION_ALLOWED_DOMAINS:
+            raise forms.ValidationError("Bad email")
+        return email_username
 
 class RegistrationFormWithNames(RegistrationForm):
     first_name = forms.CharField(widget=forms.TextInput(attrs=attrs_dict), label="Имя")
@@ -27,7 +51,7 @@ class RegistrationFormWithNames(RegistrationForm):
         super(RegistrationForm, self).__init__(*args, **kwargs)
 
         self.fields.keyOrder = [
-            'username',
+            #'username',
             'first_name',
             'last_name',
             'email',
@@ -35,13 +59,27 @@ class RegistrationFormWithNames(RegistrationForm):
             'password2',
             'invite',
         ]
-        
+
+    def clean(self):
+        email_username, email_domain = parse_email(self.cleaned_data.get('email', ''))
+        if not email_username:
+            return self.cleaned_data
+        self.cleaned_data['username'] = email_username
+        self.cleaned_data['username'] = RegistrationForm.clean_username(self)
+        return self.cleaned_data
+
+    def clean_email(self):
+        email_username, email_domain = parse_email(self.cleaned_data.get('email', ''))
+        if email_domain not in settings.REGISTRATION_ALLOWED_DOMAINS:
+            raise forms.ValidationError(u"Электронная почта должна быть в доменах {0}".format(", ".join(settings.REGISTRATION_ALLOWED_DOMAINS)))
+        return self.cleaned_data['email']
+
     def clean_invite(self):
         """
         Validate that the invite is not already
         in use and exists.
-        
         """
+
         valid, message = Invite.can_be_used(self.cleaned_data['invite'])
         if not valid:
             raise forms.ValidationError(message)
@@ -93,7 +131,7 @@ class DefaultBackend(object):
     an instance of ``registration.models.RegistrationProfile``. See
     that model and its custom manager for full documentation of its
     fields and supported operations.
-    
+
     """
     def register(self, request, **kwargs):
         """
@@ -121,7 +159,7 @@ class DefaultBackend(object):
         """
         username, email, password, first_name, last_name, invite_key = kwargs['username'], kwargs['email'], kwargs['password1'], kwargs['first_name'], kwargs['last_name'], kwargs['invite']
         invite = get_object_or_404(Invite, key=invite_key)
-        
+
         if Site._meta.installed:
             site = Site.objects.get_current()
         else:
@@ -132,7 +170,7 @@ class DefaultBackend(object):
         new_user.first_name = first_name
         new_user.last_name = last_name
         new_user.save()
-        
+
         if invite.group:
             invite.group.students.add(new_user)
         invite.invited_user = new_user
@@ -152,7 +190,7 @@ class DefaultBackend(object):
         ``registration.signals.user_activated`` will be sent, with the
         newly activated ``User`` as the keyword argument ``user`` and
         the class of this backend as the sender.
-        
+
         """
         activated = RegistrationProfile.objects.activate_user(activation_key)
         if activated:
@@ -172,14 +210,14 @@ class DefaultBackend(object):
 
         * If ``REGISTRATION_OPEN`` is both specified and set to
           ``False``, registration is not permitted.
-        
+
         """
         return getattr(settings, 'REGISTRATION_OPEN', True)
 
     def get_form_class(self, request):
         """
         Return the default form class used for user registration.
-        
+
         """
         return BootStrapRegistrationFormWithNames
 
@@ -187,7 +225,7 @@ class DefaultBackend(object):
         """
         Return the name of the URL to redirect to after successful
         user registration.
-        
+
         """
         return ('registration_complete', (), {})
 
@@ -195,6 +233,6 @@ class DefaultBackend(object):
         """
         Return the name of the URL to redirect to after successful
         account activation.
-        
+
         """
         return ('registration_activation_complete', (), {})

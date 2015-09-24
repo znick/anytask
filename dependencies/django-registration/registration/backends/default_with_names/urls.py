@@ -21,16 +21,11 @@ up your own URL patterns for these views instead.
 from django.conf.urls.defaults import *
 from django.views.generic.simple import direct_to_template
 
+from registration.backends.default_with_names import AnytaskLoginForm
 from registration.views import activate
 from registration.views import register
 
 from django.contrib.auth import views as auth_views
-from django.contrib.auth.forms import AuthenticationForm
-
-from django_bootstrap.forms import BootstrapMixin
-
-class BootstrapAuthenticationForm(BootstrapMixin, AuthenticationForm):
-  pass
 
 urlpatterns = patterns('',
                        url(r'^activate/complete/$',
@@ -59,7 +54,7 @@ urlpatterns = patterns('',
                            name='registration_disallowed'),
                        url(r'^login/$',
                            auth_views.login,
-                           {'template_name': 'registration/login.html', 'authentication_form' : BootstrapAuthenticationForm},
+                           {'template_name': 'registration/login.html', 'authentication_form' : AnytaskLoginForm},
                            name='auth_login'),
                        (r'', include('registration.auth_urls')),
                        )
