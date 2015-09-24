@@ -159,7 +159,7 @@ RB_API_USERNAME = "anytask"
 RB_API_PASSWORD = "P@ssw0rd"
 RB_API_DEFAULT_REVIEW_GROUP = 'teachers'
 RB_SYMLINK_DIR = '/var/lib/anytask/repos/'
-RB_EXTENSIONS = ['.py','.cpp', '.sage']
+RB_EXTENSIONS = ['.py','.cpp', '.sage', '.m']
 
 CONTEST_API_URL = 'https://api.contest.yandex.net/anytask/'
 CONTEST_OAUTH = 'OAUTH'
