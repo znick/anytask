@@ -39,10 +39,16 @@ def upload_contest(event, extension, file):
         compiler_id = get_compiler_id(course, extension)
         problem_req = requests.get(settings.CONTEST_API_URL+'problems?contestId='+str(contest_id),
                                    headers={'Authorization': 'OAuth '+settings.CONTEST_OAUTH})
+        problem_id = None
         for problem in problem_req.json()['result']['problems']:
             if problem['title'] == issue.task.problem_id:
                 problem_id = problem['id']
                 break
+
+        if problem_id is None:
+            logger.error("Cant find configured problem_id for problem_id '%s'" % (issue.task.problem_id))
+            return False, "Cant find problem '{0}' in Yandex.Contest".format(issue.task.problem_id)
+
         with open(os.path.join(settings.MEDIA_ROOT, file.file.name), 'rb') as f:
             files = {'file': f}
             submit_req = requests.post(settings.CONTEST_API_URL+'submit',
