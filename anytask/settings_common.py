@@ -159,11 +159,11 @@ RB_API_USERNAME = "anytask"
 RB_API_PASSWORD = "P@ssw0rd"
 RB_API_DEFAULT_REVIEW_GROUP = 'teachers'
 RB_SYMLINK_DIR = '/var/lib/anytask/repos/'
-RB_EXTENSIONS = ['.py','.cpp', '.sage', '.m']
+RB_EXTENSIONS = ['.py','.cpp', '.sage', '.m', '.java']
 
 CONTEST_API_URL = 'https://api.contest.yandex.net/anytask/'
 CONTEST_OAUTH = 'OAUTH'
-CONTEST_EXTENSIONS = {'.py':'python2_6', '.cpp':'gcc0x'} #Actually python2_6 is python 2.7
+CONTEST_EXTENSIONS = {'.py':'python2_6', '.cpp':'gcc0x', '.java':'java8'} #Actually python2_6 is python 2.7
 CONTEST_EXTENSIONS_COURSE = {
     30 : {
         ".py" : "python3"
