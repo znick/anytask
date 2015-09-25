@@ -3,6 +3,8 @@ import requests
 import logging
 import os
 
+from time import sleep
+
 from django.conf import settings
 from issues.model_issue_field import IssueField
 from django.contrib.auth.models import User
@@ -37,13 +39,18 @@ def upload_contest(event, extension, file):
         contest_id = issue.task.contest_id
         course = event.issue.task.course
         compiler_id = get_compiler_id(course, extension)
-        problem_req = requests.get(settings.CONTEST_API_URL+'problems?contestId='+str(contest_id),
-                                   headers={'Authorization': 'OAuth '+settings.CONTEST_OAUTH})
-        problem_id = None
-        for problem in problem_req.json()['result']['problems']:
-            if problem['title'] == issue.task.problem_id:
-                problem_id = problem['id']
+        for i in range(3):
+            problem_req = requests.get(settings.CONTEST_API_URL+'problems?contestId='+str(contest_id),
+                                       headers={'Authorization': 'OAuth '+settings.CONTEST_OAUTH})
+            problem_id = None
+            for problem in problem_req.json()['result']['problems']:
+                if problem['title'] == issue.task.problem_id:
+                    problem_id = problem['id']
+                    break
+
+            if problem_id is not None:
                 break
+            sleep(0.5)
 
         if problem_id is None:
             logger.error("Cant find problem_id '%s' for issue '%s'" % issue.task.problem_id, issue.id)
