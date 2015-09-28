@@ -200,6 +200,9 @@ class Course(models.Model):
          if self.group_with_extern is not None:
              self.group_with_extern.students.remove(user)
 
+    def get_teachers(self):
+        return self.teachers.all().order_by('last_name', 'first_name')
+
     def get_default_teacher(self, group):
         try:
             return DefaultTeacher.objects.filter(course=self).get(group=group).teacher

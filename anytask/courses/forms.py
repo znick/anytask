@@ -28,7 +28,7 @@ class QueueForm(forms.Form):
 
 def get_teacher_choises(course):
     teachers = [(0, "(None)")]
-    for teacher in course.teachers.all():
+    for teacher in course.get_teachers():
         teachers.append((teacher.id, teacher.get_full_name()))
     return teachers
 

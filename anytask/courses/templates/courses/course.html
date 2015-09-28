@@ -72,11 +72,8 @@
     </div>
 
     Преподаватели:
-    {% for teacher in course.teachers.all %}
-      <a href="{% url users.views.profile teacher.username %}">
-        {{ teacher.last_name }} {{ teacher.first_name }}
-      </a>
-      {% if not forloop.last %},{% endif %}
+    {% for teacher in course.get_teachers %}
+      <a href="{% url users.views.profile teacher.username %}">{{ teacher.last_name }} {{ teacher.first_name }}</a>{% if not forloop.last %},{% endif %}
     {% endfor %}
     <br />
     <br />
