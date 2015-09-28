@@ -118,7 +118,7 @@ def comment_verdict(issue, verdict, comment):
     event.save()
     if issue.status != issue.STATUS_ACCEPTED:
         if verdict:
-            set_byname('status', self.STATUS_VERIFICATION)
+            issue.set_byname('status', issue.STATUS_VERIFICATION)
         else:
-            set_byname('status', self.STATUS_REWORK)
+            issue.set_byname('status', issue.STATUS_REWORK)
     issue.save()
