@@ -35,7 +35,7 @@ class Task(models.Model):
     updated_by = models.ForeignKey(User, db_index=False, null=True, blank=True)
 
     contest_id = models.IntegerField(db_index=True, null=False, blank=False, default=0)
-    problem_id = models.CharField(max_length=1, db_index=True, null=True, blank=True)
+    problem_id = models.CharField(max_length=128, db_index=True, null=True, blank=True)
 
     def __unicode__(self):
         return unicode(self.title)
