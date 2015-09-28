@@ -57,7 +57,8 @@ class Command(BaseCommand):
                 for follower in issue.followers.all():
                     if follower.email:
                         notify_messages.append(get_message(follower.email))
-            send_mass_mail(notify_messages)
+                send_mass_mail(notify_messages)
+                time.sleep(1)
+
             for event in events_to_send:
                 event.save()
-            time.sleep(1)
