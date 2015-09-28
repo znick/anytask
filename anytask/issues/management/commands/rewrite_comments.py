@@ -4,16 +4,14 @@ from django.core.management.base import BaseCommand
 from django.core.mail import send_mass_mail
 from django.contrib.sites.models import Site
 from django.conf import settings
+from optparse import make_option
 
 from issues.models import Event
 
 import re
 
 class Command(BaseCommand):
-    help = "Send notifications via email"
-
-    option_list = BaseCommand.option_list
-    def handle(self, **options):
+    help = "Rewrite comments"
 
     option_list = BaseCommand.option_list + (
         make_option('--pattern',
@@ -31,7 +29,11 @@ class Command(BaseCommand):
             dest='dry_run',
             default=False,
             help='dry_run'),
-        )
+    )
+
+    option_list = BaseCommand.option_list
+    def handle(self, **options):
+
 
         pattern = options['pattern']
         replace = options['replace']
