@@ -6,6 +6,7 @@ from django.contrib.sites.models import Site
 from django.conf import settings
 
 from issues.models import Issue
+import time
 
 
 class Command(BaseCommand):
@@ -13,7 +14,6 @@ class Command(BaseCommand):
 
     option_list = BaseCommand.option_list
     def handle(self, **options):
-        notify_messages = []
         issues = Issue.objects.all()
         domain = Site.objects.get_current().domain
 
@@ -25,11 +25,12 @@ class Command(BaseCommand):
             message_body = []
             empty_message = True
 
+            events_to_send = []
             for event in events:
                 message_body.append(event.get_notify_message())
                 message_body.append('-' * 79)
                 event.sended_notify = True
-                event.save()
+                events_to_send.append(event)
 
             if message_body:
                 empty_message = False
@@ -46,7 +47,7 @@ class Command(BaseCommand):
             def get_message(email):
                 return (subject, message_text, from_email, [email])
 
-
+            notify_messages = []
             if not empty_message:
                 if issue.student.email:
                     notify_messages.append(get_message(issue.student.email))
@@ -56,5 +57,7 @@ class Command(BaseCommand):
                 for follower in issue.followers.all():
                     if follower.email:
                         notify_messages.append(get_message(follower.email))
-        send_mass_mail(notify_messages)
-
+            send_mass_mail(notify_messages)
+            for event in events_to_send:
+                event.save()
+            time.sleep(1)
