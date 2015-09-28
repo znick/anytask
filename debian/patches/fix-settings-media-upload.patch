@@ -1,15 +1,14 @@
 Index: anytask/anytask/settings.py
 ===================================================================
---- anytask.orig/anytask/settings.py	2015-08-19 16:38:07.677294970 +0300
-+++ anytask/anytask/settings.py	2015-08-19 16:38:07.673295015 +0300
+--- anytask.orig/anytask/settings.py	2015-09-28 23:12:34.000000000 +0500
++++ anytask/anytask/settings.py	2015-09-28 23:15:20.950325604 +0500
 @@ -39,4 +39,7 @@
      }
  }
  
 -EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-\ No newline at end of file
 +EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 +MEDIA_ROOT = '/var/lib/anytask/media'
 +UPLOAD_ROOT = '/var/lib/anytask/upload'
 +STATIC_ROOT = '/var/lib/anytask/static'
-\ No newline at end of file
+ 
