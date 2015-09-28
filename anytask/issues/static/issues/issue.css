@@ -14,7 +14,7 @@
 
 .history li .primary-font
 {
-    color: darkgray;
+    color: black;
     margin-left: 0px;
 }
 
@@ -32,7 +32,7 @@
 .history li .history-body p
 {
     margin: 0;
-    color: #777777;
+    color: black;
 }
 
 a.user
