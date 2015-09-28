@@ -201,7 +201,7 @@ class Course(models.Model):
              self.group_with_extern.students.remove(user)
 
     def get_teachers(self):
-        return self.teachers.all().order_by('last_name', 'first_name')
+        return self.teachers.order_by('last_name', 'first_name')
 
     def get_default_teacher(self, group):
         try:
