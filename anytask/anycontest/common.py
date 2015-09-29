@@ -48,7 +48,7 @@ def upload_contest(event, extension, file):
                 break
 
         if problem_id is None:
-            logger.error("Cant find problem_id '%s' for issue '%s'" % issue.task.problem_id, issue.id)
+            logger.error("Cant find problem_id '%s' for issue '%s'", issue.task.problem_id, issue.id)
             return False, "Cant find problem '{0}' in Yandex.Contest".format(issue.task.problem_id)
 
         for i in range(3):
