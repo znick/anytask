@@ -51,9 +51,9 @@ def upload_contest(event, extension, file):
             logger.error("Cant find problem_id '%s' for issue '%s'" % issue.task.problem_id, issue.id)
             return False, "Cant find problem '{0}' in Yandex.Contest".format(issue.task.problem_id)
 
-        with open(os.path.join(settings.MEDIA_ROOT, file.file.name), 'rb') as f:
-            files = {'file': f}
-            for i in range(3):
+        for i in range(3):
+            with open(os.path.join(settings.MEDIA_ROOT, file.file.name), 'rb') as f:
+                files = {'file': f}
                 submit_req = requests.post(settings.CONTEST_API_URL+'submit',
                                            data={'compilerId': compiler_id,
                                                  'contestId': contest_id,
@@ -64,14 +64,14 @@ def upload_contest(event, extension, file):
                     break
                 sleep(0.5)
 
-            if 'error' in submit_req.json():
-                return False, submit_req.json()["error"]["message"]
+        if 'error' in submit_req.json():
+            return False, submit_req.json()["error"]["message"]
 
 
-            run_id = submit_req.json()['result']['value']
-            sent = True
-            logger.info('Contest submission with run_id '+str(run_id)+' sent successfully.')
-            issue.set_byname(name='run_id', value=run_id)
+        run_id = submit_req.json()['result']['value']
+        sent = True
+        logger.info('Contest submission with run_id '+str(run_id)+' sent successfully.')
+        issue.set_byname(name='run_id', value=run_id)
     except Exception as e:
         logger.exception("Exception while request to Contest: '%s' : '%s', '%s' : '%s', Exception: '%s'",
                          problem_req.url, problem_req.json(), submit_req.url, submit_req.json(), e)
