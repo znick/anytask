@@ -31,7 +31,6 @@ class Command(BaseCommand):
             help='dry_run'),
     )
 
-    option_list = BaseCommand.option_list
     def handle(self, **options):
 
 
