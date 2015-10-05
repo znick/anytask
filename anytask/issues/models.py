@@ -277,7 +277,7 @@ class Issue(models.Model):
                 value = 0
             value = normalize_decimal(value)
             value = str(value)
-            if self.status != self.STATUS_ACCEPTED:
+            if self.status != self.STATUS_ACCEPTED and self.status != self.STATUS_NEW:
                 self.set_byname('status', 'rework')
 
         self.save()
