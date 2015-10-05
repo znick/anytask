@@ -139,7 +139,7 @@ class StatusForm(DefaultForm):
     ISSUE_STATUSES = (
         # (STATUS_NEW, _(u'Новый')),
         (STATUS_REWORK, _(u'На доработке')),
-        # (STATUS_VERIFICATION, _(u'На проверке')),
+        (STATUS_VERIFICATION, _(u'На проверке')),
         (STATUS_ACCEPTED, _(u'Зачтено')),
     )
 
