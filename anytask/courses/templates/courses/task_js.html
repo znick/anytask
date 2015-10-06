@@ -333,6 +333,7 @@
     function get_task_modal(task_id,
                             task_title,
                             task_hidden,
+                            for_all_groups,
                             task_text_to_show,
                             task_text_to_edit,
                             max_score,
@@ -360,6 +361,10 @@
                 {
                     $('#hidden_task').attr('checked', true);
                 }
+                if (for_all_groups == "True")
+                {
+                    $('#for_all_groups').attr('checked', true);
+                }
 
                 $('#modal-edite-task-form').attr('action', '{% url courses.views.edit_task %}');
 
@@ -386,6 +391,10 @@
                 if (task_hidden == "True")
                 {
                     $('#hidden_task').attr('checked', true);
+                }
+                if (for_all_groups == "True")
+                {
+                    $('#for_all_groups').attr('checked', true);
                 }
 
                 $('#modal-edite-task-form').attr('action', '{% url courses.views.edit_task %}');
@@ -437,6 +446,7 @@
         $('#modal_edit_task_score_error_text').empty();
         $('#modal_edit_task_title_error_text').empty();
         $('#hidden_task').attr('checked', false);
+        $('#for_all_groups').attr('checked', false);
         $('#review_data').find('[name="pdf"]').html('');
         $('#review_data').find('[name="pdf_update_time"]').html('');
         $('#review_data').find('[name="gr_review"]').html('');
