@@ -606,10 +606,6 @@ def edit_task(request):
     if 'hidden_task' in request.POST:
         hidden_task = True
 
-    for_all_groups = False
-    if 'for_all_groups' in request.POST:
-        for_all_groups = True
-
     try:
         task_id = int(request.POST['task_id'])
         task_title = request.POST['task_title'].strip()
@@ -655,10 +651,6 @@ def add_task(request):
     if 'hidden_task' in request.POST:
         hidden_task = True
 
-    for_all_groups = False
-    if 'for_all_groups' in request.POST:
-        for_all_groups = True
-
     try:
         course_id = int(request.POST['course_id'])
         task_title = request.POST['task_title'].strip()
@@ -684,50 +676,42 @@ def add_task(request):
     except ValueError: #not int
         return HttpResponseForbidden()
 
-    
-    if for_all_groups:
-        groups = course.groups
-    else:
-        group = None
-        if group_id is not None:
-            group = get_object_or_404(Group, id = group_id)
-        parent = None
-        if parent_id is not None:
-            parent = get_object_or_404(Task, id = parent_id)
-        groups = []
-        groups[0] = group
-
-    for group in groups:
-        max_weight_query = Task.objects.filter(course=course)
-        if group:
-            max_weight_query = max_weight_query.filter(group=group)
-        if parent:
-            max_weight_query = max_weight_query.filter(parent_task=parent)
-
-        tasks = max_weight_query.aggregate(Max('weight'))
-        _, max_weight = tasks.items()[0]
-        if max_weight is None:
-            max_weight = 0
-        max_weight += 1
-
-        task = Task()
-        task.course = course
-        task.group = group
-        task.parent_task = parent
-        task.weight = max_weight
-        task.title = task_title
-        task.task_text = task_text
-        task.score_max = max_score
-        if course.contest_integrated:
-            task.contest_id = contest_id
-            task.problem_id = problem_id
-        task.is_hidden = hidden_task
-        task.for_all_groups = for_all_groups
-        task.updated_by = user
-        task.save()
+    group = None
+    if group_id is not None:
+        group = get_object_or_404(Group, id = group_id)
+    parent = None
+    if parent_id is not None:
+        parent = get_object_or_404(Task, id = parent_id)
 
     if not course.user_can_edit_course(user):
         return HttpResponseForbidden()
+
+    max_weight_query = Task.objects.filter(course=course)
+    if group:
+        max_weight_query = max_weight_query.filter(group=group)
+    if parent:
+        max_weight_query = max_weight_query.filter(parent_task=parent)
+
+    tasks = max_weight_query.aggregate(Max('weight'))
+    _, max_weight = tasks.items()[0]
+    if max_weight is None:
+        max_weight = 0
+    max_weight += 1
+
+    task = Task()
+    task.course = course
+    task.group = group
+    task.parent_task = parent
+    task.weight = max_weight
+    task.title = task_title
+    task.task_text = task_text
+    task.score_max = max_score
+    if course.contest_integrated:
+        task.contest_id = contest_id
+        task.problem_id = problem_id
+    task.is_hidden = hidden_task
+    task.updated_by = user
+    task.save()
 
     return HttpResponse("OK")
 

@@ -21,7 +21,6 @@ class Task(models.Model):
     group = models.ForeignKey(Group, db_index=False, null=True, blank=True, default=None)
     weight = models.IntegerField(db_index=True, null=False, blank=False, default=0)
 
-    for_all_groups = models.BooleanField(db_index=True, null=False, blank=False, default=False)
     is_hidden = models.BooleanField(db_index=True, null=False, blank=False, default=False)
 
     parent_task = models.ForeignKey('self', db_index=True, null=True, blank=True, related_name='parent_task_set')
