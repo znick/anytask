@@ -235,6 +235,7 @@ class Issue(models.Model):
                                         self.set_byname('status', self.STATUS_AUTO_VERIFICATION)
                                 else:
                                     value['comment'] += u"Ошибка отправки в Я.Контест ('{0}').".format(message)
+                                break
 
                     if self.task.course.rb_integrated and (self.task.course.send_rb_and_contest_together or not self.task.course.contest_integrated):
                         for ext in settings.RB_EXTENSIONS:
