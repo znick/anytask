@@ -78,9 +78,10 @@
     </form>
   </div>
 
-  <table class="table table_queue" id="table_queue">
+  <table class="table table_queue css-serial" id="table_queue">
     <thead>
     <tr>
+      <th>#</th>
       <th>id</th>
       <th>Студент</th>
       <th>Задача</th>
@@ -92,6 +93,7 @@
     <tbody>
       {% for issue in issues %}
         <tr>
+          <td>&nbsp;</td>
           <td>
             <a href="{{ issue.get_absolute_url }}">
               {{ issue.id }}
