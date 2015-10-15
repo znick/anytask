@@ -107,7 +107,7 @@ class Issue(models.Model):
                 return get_user_link(self.responsible)
             return None
         if name == 'followers_names':
-            followers = map(lambda x: u'<a class="user" href="{0}">{1}</a>'.format(x.get_absolute_url(), x.first_name),
+            followers = map(lambda x: u'<a class="user" href="{0}">{1} {2}</a>'.format(x.get_absolute_url(), x.first_name, x.last_name),
                             self.followers.all())
             return ', '.join(followers)
         if name == 'course_name':
@@ -210,7 +210,7 @@ class Issue(models.Model):
             value = value.last_name + ' ' + value.first_name
 
         elif name == 'followers_names':
-            if str(self.responsible.id) in value:
+            if self.responsible and str(self.responsible.id) in value:
                 value.remove(str(self.responsible.id))
             self.followers = list(value)
 
