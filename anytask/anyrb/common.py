@@ -13,9 +13,19 @@ class AnyRB(object):
     def get_repository(self, user):
         username = user.username
         root = self.client.get_root()
-        for repo in root.get_repositories():
-            if repo.fields["name"] == username:
-                return repo
+
+        repo_count = root.get_repositories(counts_only=True).count
+        repositories = root.get_repositories()
+
+        repositories = root.get_repositories()
+        try:
+            while True:
+                for repo in repositories:
+                    if repo.fields["name"] == username:
+                        return repo
+                repositories = repositories.get_next()
+        except StopIteration:
+            return None
 
         return None
 
@@ -41,6 +51,8 @@ class AnyRB(object):
         if repository is None:
             repository = self.create_repository(user)
 
+        assert repository
+
         if review_id:
             review_request = root.get_review_request(review_request_id=review_id)
             descriptions.append(review_request.description.encode("utf-8"))
@@ -50,7 +62,7 @@ class AnyRB(object):
         try:
             review_request.get_diffs().upload_diff(diff_content, base_dir="/")
         except Exception:
-            descriptions.append(u"WARNING: Diff has not been uploaded. Probably it contains non-ASCII filenames. Non-ASCII filenames are not supported.")
+            descriptions.append("WARNING: Diff has not been uploaded. Probably it contains non-ASCII filenames. Non-ASCII filenames are not supported.")
 
 
         descriptions.append("=== Added on {0} ===\n".format(datetime.datetime.now()))

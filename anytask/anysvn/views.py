@@ -40,7 +40,7 @@ class SvnAccesss(View):
         if not (user and user.is_active):
             return False
 
-        if svn_path == username:
+        if svn_path.lower() == username.lower():
             return True
 
         for course in Cource.objects.all():

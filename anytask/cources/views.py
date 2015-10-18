@@ -684,15 +684,15 @@ class SubmitReviewForm(View):
 
 
         descriptions = []
-        descriptions.append("SVN: {0}".format(get_svn_external_url(user, svn_path)))
-        descriptions.append("")
-        descriptions.append("SVN Log:")
+        descriptions.append(u"SVN: {0}".format(get_svn_external_url(user, svn_path)))
+        descriptions.append(u"")
+        descriptions.append(u"SVN Log:")
         for log in svn_log_rev_message(user, svn_path):
             rev = log[0]
             if (not rev_a or rev >= rev_a) and (not rev_b or rev <= rev_b):
                 descriptions.append(u"{0:3} {1:20} {2} {3}".format(*log))
 
-        return "\n".join(descriptions).encode("utf-8")
+        return u"\n".join(descriptions).encode("utf-8")
 
 
     def _submit_review(self, request, task, svn_path):
@@ -704,9 +704,6 @@ class SubmitReviewForm(View):
         except TypeError: #not int
             return HttpResponseForbidden()
         except ValueError: #not int
-            return HttpResponseForbidden()
-
-        if rev_a == rev_b:
             return HttpResponseForbidden()
 
         if rev_b < rev_a:

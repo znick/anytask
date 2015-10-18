@@ -22,9 +22,17 @@ class SvnLog(object):
     def get_logs(self):
         for el in self.xml_el.getElementsByTagName("logentry"):
             log = {}
+            log["author"] = ""
+            log["message"] = ""
             log["revision"] = int(el.getAttribute("revision"))
-            log["author"] = el.getElementsByTagName("author")[0].firstChild.nodeValue
-            log["message"] = el.getElementsByTagName("msg")[0].firstChild.nodeValue
+
+            try:
+                log["author"] = el.getElementsByTagName("author")[0].firstChild.nodeValue
+                log["message"] = el.getElementsByTagName("msg")[0].firstChild.nodeValue
+            except AttributeError:
+                pass
+            except IndexError:
+                pass
 
             date_str = el.getElementsByTagName("date")[0].firstChild.nodeValue
             date_str = date_str.split(".")[0]
@@ -52,7 +60,7 @@ class SvnDiff(object):
         try:
             proc = subprocess.Popen(['svn', 'diff', '-r', "{0}:{1}".format(self.rev_a, self.rev_b), self.url], stdout=subprocess.PIPE, stderr=FNULL)
 
-            yield_line = None
+            yield_line = True
             current_file_lines = 0
             current_file_too_big = False
             diff_bytes = 0
