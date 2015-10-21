@@ -244,6 +244,7 @@ class Issue(models.Model):
                                 value['comment'] += '\n' + \
                                 u'<a href="{1}/r/{0}">Review request {0}</a>'. \
                                 format(self.get_byname('review_id'),settings.RB_API_URL)
+                                break
 
                 value = value['comment']
                 if self.status != self.STATUS_AUTO_VERIFICATION:
