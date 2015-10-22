@@ -89,8 +89,8 @@ def issue_page(request, issue_id):
 
 @login_required
 def get_or_create(request, task_id, student_id):
-    if not request.is_ajax():
-        return HttpResponseForbidden()
+    #if not request.is_ajax():
+    #    return HttpResponseForbidden()
 
     issue, created = Issue.objects.get_or_create(task_id=task_id, student_id=student_id)
 
@@ -98,4 +98,4 @@ def get_or_create(request, task_id, student_id):
         'issue_url': issue.get_absolute_url(),
     }
 
-    return HttpResponse(json.dumps(data), content_type='application/json')
+    return HttpResponseRedirect("/issue/"+str(issue.id))#(json.dumps(data), content_type='application/json')
