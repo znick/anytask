@@ -141,7 +141,7 @@ def tasklist_shad_cpp(request, course):
     for group in course.groups.all().order_by('name'):
         student_x_task_x_task_takens = {}
 
-        group_x_task_list[group] = Task.objects.filter(course=course).filter(group=group).order_by('weight')
+        group_x_task_list[group] = Task.objects.filter(Q(course=course) & (Q(group=group) | Q(group=None))).order_by('weight')
         group_x_max_score.setdefault(group, 0)
 
         for task in group_x_task_list[group]:
@@ -615,8 +615,20 @@ def edit_task(request):
         if task.course.contest_integrated:
             contest_id = int(request.POST['contest_id'])
             problem_id = request.POST['problem_id'].strip()
+
+        task_group_id = request.POST['task_group_id']
+        group_id = request.POST['group_id']
+        if task_group_id == "":
+            group_id = None
+        else:
+            group_id = int(task_group_id)
+
     except ValueError: #not int
         return HttpResponseForbidden()
+
+    group = None
+    if group_id is not None:
+        group = get_object_or_404(Group, id = group_id)
 
     if not task.course.user_is_teacher(user):
         return HttpResponseForbidden()
@@ -627,6 +639,7 @@ def edit_task(request):
             task.is_hidden = True
 
     task.title = task_title
+    task.group = group
     task.task_text = task_text
     task.score_max = max_score
     if task.course.contest_integrated:
@@ -661,11 +674,12 @@ def add_task(request):
             contest_id = int(request.POST['contest_id'])
             problem_id = request.POST['problem_id'].strip()
 
+        task_group_id = request.POST['task_group_id']
         group_id = request.POST['group_id']
-        if not group_id or group_id == 'null':
+        if task_group_id == "":
             group_id = None
         else:
-            group_id = int(group_id)
+            group_id = int(task_group_id)
 
         parent_id = request.POST['parent_id']
         if not parent_id or parent_id == 'null':

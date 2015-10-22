@@ -132,7 +132,7 @@
                 <input type="hidden" id="modal_edit_task_course_id" name="course_id" />
                 <input type="hidden" id="modal_edit_task_group_id" name="group_id" />
                 <input type="hidden" id="modal_edit_task_parent_id" name="parent_id" />
-
+                    
                 <div class="control-group" id="modal_control_edit_score_group">
                     <label class="control-label" for="modal_task_max_score_edit">Максимальный балл:</label>
                     <div class="controls">
@@ -154,6 +154,17 @@
                      </div>
                 </div>
                 {% endif %}
+                <div class = "control-group">
+                    <label class="control-label" for="modal_task_group"> Группа:</label>
+                    <div class="controls">
+                    <select id='modal_task_group' name="task_group_id">
+                        <option value=""> Для всех групп </option>
+                    {% for group in course.groups.all %}
+                        <option value="{{ group.id }}">{{ group.name }}</option>
+                    {% endfor %}
+                    </select>
+                    </div>
+                </div>
                 <br>
                 <div>
                     <label class="checkbox inline">
