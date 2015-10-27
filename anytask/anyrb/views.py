@@ -19,6 +19,7 @@ def message_from_rb(request, review_id):
             break
 
     if request.method == 'POST':
+        value = {'files':[], 'comment':''}
         value = u'<strong>Добавлен новый комментарий в <a href="{1}/r/{0}">Review\
                   request {0}</a>'.format(review_id,settings.RB_API_URL)+'. \n'
         #if request.POST.get('diff-url',0):
@@ -28,8 +29,9 @@ def message_from_rb(request, review_id):
         #value += request.POST.get('body_bottom','')
         field = get_object_or_404(IssueField, name='comment')
         author = get_object_or_404(User, username=request.POST.get('author',''))
-        event = issue.create_event(field, author=author)
-        event.value = value
-        event.save()
+        #event = issue.create_event(field, author=author)
+        #event.value = value
+        #event.save()
+        issue.set_byname('comment', value, author)
         issue.save()
         return HttpResponse(status=201)
