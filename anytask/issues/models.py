@@ -59,6 +59,7 @@ class Issue(models.Model):
     STATUS_VERIFICATION = 'verification'
     STATUS_ACCEPTED = 'accepted'
     STATUS_AUTO_VERIFICATION = 'auto_verification'
+    STATUS_NEED_INFO = 'need_info'
 
     ISSUE_STATUSES = (
         (STATUS_NEW, _(u'Новый')),
@@ -66,6 +67,7 @@ class Issue(models.Model):
         (STATUS_VERIFICATION, _(u'На проверке')),
         (STATUS_ACCEPTED, _(u'Зачтено')),
         (STATUS_AUTO_VERIFICATION, _(u'На автоматической проверке')),
+        (STATUS_NEED_INFO, _(u'Требуется информация')),
     )
 
     status = models.CharField(max_length=20, choices=ISSUE_STATUSES, default=STATUS_NEW)
@@ -246,13 +248,17 @@ class Issue(models.Model):
                                 format(self.get_byname('review_id'),settings.RB_API_URL)
                                 break
 
-                value = value['comment']
                 if self.status != self.STATUS_AUTO_VERIFICATION:
-                    if author == self.student:
+                    if author == self.student and self.status != self.STATUS_ACCEPTED and self.status != self.STATUS_NEED_INFO:
                         self.set_byname('status', self.STATUS_VERIFICATION)
                         self.update_time = datetime.now()
                     if author == self.responsible:
                         self.status = self.STATUS_REWORK
+                if not value['files'] and not value['comment']:
+                    event.delete()
+                    return
+                else:
+                    value = value['comment']
 
         elif name == 'status':
             try:
