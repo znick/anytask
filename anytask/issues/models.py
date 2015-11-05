@@ -251,13 +251,13 @@ class Issue(models.Model):
                 if self.status != self.STATUS_AUTO_VERIFICATION:
                     if author == self.student and self.status != self.STATUS_ACCEPTED and self.status != self.STATUS_NEED_INFO:
                         self.set_byname('status', self.STATUS_VERIFICATION)
-                        self.update_time = datetime.now()
                     if author == self.responsible:
                         self.status = self.STATUS_REWORK
                 if not value['files'] and not value['comment']:
                     event.delete()
                     return
                 else:
+                    self.update_time = datetime.now()
                     value = value['comment']
 
         elif name == 'status':
