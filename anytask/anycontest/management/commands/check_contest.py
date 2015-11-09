@@ -17,16 +17,17 @@ class Command(BaseCommand):
         for issue in Issue.objects.filter(status=Issue.STATUS_AUTO_VERIFICATION):
             try:
                 run_id = issue.get_byname('run_id')
-                for event in issue.event_set.all().reverse():
+                events = issue.event_set.all().reverse()
+                for event_id,event in enumerate(events):
                     if event.value == run_id:
                         got_verdict, verdict, comment = check_submission(issue)
                         if got_verdict:
                             if verdict and not issue.task.course.send_rb_and_contest_together and issue.task.course.rb_integrated:
-                                anyrb = AnyRB(event.get_previous_by_timestamp())
+                                anyrb = AnyRB(events[event_id-1])
                                 anyrb.upload_review()
                                 comment += '\n' + \
                                           u'<a href="{1}/r/{0}">Review request {0}</a>'. \
                                           format(issue.get_byname('review_id'),settings.RB_API_URL)
                             comment_verdict(issue, verdict, comment)
             except Exception as e:
-                logging.exception(e)
+                logger.exception(e)
