@@ -69,7 +69,8 @@ def issue_page(request, issue_id):
                         if field.name == 'responsible_name':
                             value = request.user
                         else:
-                            value.append(request.user)
+                            if request.user not in value:
+                                value.append(request.user)
                     if field.name == 'comment':
                         value = {
                             'comment': value,
