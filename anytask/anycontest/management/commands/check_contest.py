@@ -24,10 +24,13 @@ class Command(BaseCommand):
                         if got_verdict:
                             if verdict and not issue.task.course.send_rb_and_contest_together and issue.task.course.rb_integrated:
                                 anyrb = AnyRB(events[event_id-1])
-                                anyrb.upload_review()
-                                comment += '\n' + \
-                                          u'<a href="{1}/r/{0}">Review request {0}</a>'. \
-                                          format(issue.get_byname('review_id'),settings.RB_API_URL)
+                                review_request_id = anyrb.upload_review()
+                                if review_request_id is not None:
+                                    comment += '\n' + \
+                                              u'<a href="{1}/r/{0}">Review request {0}</a>'. \
+                                              format(review_request_id,settings.RB_API_URL)
+                                else:
+                                    comment += u'Ошибка отправки в Review Board.'
                             comment_verdict(issue, verdict, comment)
             except Exception as e:
                 logger.exception(e)

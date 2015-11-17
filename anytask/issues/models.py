@@ -242,10 +242,14 @@ class Issue(models.Model):
                     if self.task.course.rb_integrated and (self.task.course.send_rb_and_contest_together or not self.task.course.contest_integrated):
                         for ext in settings.RB_EXTENSIONS:
                             if ext == file.name.split('.')[1]:
-                                upload_review(event)
-                                value['comment'] += '\n' + \
-                                u'<a href="{1}/r/{0}">Review request {0}</a>'. \
-                                format(self.get_byname('review_id'),settings.RB_API_URL)
+                                anyrb = AnyRB(event)
+                                review_request_id = anyrb.upload_review()
+                                if review_request_id is not None:
+                                    comment += '\n' + \
+                                              u'<a href="{1}/r/{0}">Review request {0}</a>'. \
+                                              format(review_request_id,settings.RB_API_URL)
+                                else:
+                                    comment += u'Ошибка отправки в Review Board.'
                                 break
 
                 if self.status != self.STATUS_AUTO_VERIFICATION:
@@ -313,13 +317,6 @@ class Issue(models.Model):
 
     def get_absolute_url(self):
         return reverse('issues.views.issue_page', args=[str(self.id)])
-
-
-def upload_review(event):
-
-    anyrb = AnyRB(event)
-    anyrb.upload_review()
-    pass
 
 
 class Event(models.Model):

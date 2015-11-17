@@ -20,7 +20,7 @@ class AnyRB(object):
 
     def upload_review(self):
         if len(self.event.file_set.all()) == 0:
-            return
+            return None
 
         files_diff = []
         empty = True
@@ -59,9 +59,14 @@ class AnyRB(object):
         files_diff = u'\n'.join(files_diff)
 
         if empty:
-            return
+            return None
 
-        review_request = self.get_or_create_review_request()
+        review_request = self.get_review_request()
+        if review_request is None:
+            review_request = self.create_review_request()
+        if review_request is None:
+            return review_request
+
         review_request.get_diffs().upload_diff(files_diff.encode('utf-8'))
 
         draft = review_request.get_or_create_draft()
@@ -77,22 +82,68 @@ class AnyRB(object):
                              description=description.encode('utf-8'),
                              target=settings.RB_API_USERNAME, public=True,
                              )
-        pass
+        return review_request.id
 
-    def get_or_create_review_request(self):
+    # def get_or_create_review_request(self):
+    #     root = self.client.get_root()
+
+    #     review_request = None
+    #     try:
+    #         review_id = self.event.issue.get_byname('review_id')
+    #         review_request = root.get_review_request(review_request_id=review_id)
+    #     except (AttributeError, ValueError):
+    #         course_id = self.event.issue.task.course.id
+    #         repository_name = str(self.event.issue.id)
+    #         os.symlink(settings.RB_SYMLINK_DIR,os.path.join(settings.RB_SYMLINK_DIR, repository_name))
+    #         repository = root.get_repositories().create(
+    #                  name=repository_name,
+    #                  path=settings.RB_SYMLINK_DIR+repository_name+'/.git',
+    #                  tool='Git',
+    #                  public=False)
+    #         root.get_repository(repository_id=repository.id).update(grant_type='add',
+    #                                                   grant_entity='user',
+    #                                                   grant_name=self.event.author)
+    #         root.get_repository(repository_id=repository.id).update(grant_type='add',
+    #                                                   grant_entity='group',
+    #                                                   grant_name='teachers')
+    #         root.get_repository(repository_id=repository.id).update(grant_type='add',
+    #                                                   grant_entity='group',
+    #                                                   grant_name='teachers_{0}'.format(course_id))
+
+
+    #         review_request = root.get_review_requests().create(repository=repository.id)
+    #     self.event.issue.set_byname('review_id', review_request.id, self.event.author)
+    #     return review_request
+
+    def get_review_request(self):
         root = self.client.get_root()
 
         review_request = None
         try:
             review_id = self.event.issue.get_byname('review_id')
-            review_request = root.get_review_request(review_request_id=review_id)
         except (AttributeError, ValueError):
-            course_id = self.event.issue.task.course.id
-            repository_name = str(self.event.issue.id)
-            os.symlink(settings.RB_SYMLINK_DIR,os.path.join(settings.RB_SYMLINK_DIR, repository_name))
+            logger.info("Issue '%s' has not review_id.", self.issue.id)
+            return None
+        try:            
+            review_request = root.get_review_request(review_request_id=review_id)
+            return review_request
+        except Exception as e:
+            logger.exception("Exception while getting review_request with id '%s'. Exception: '%s'. Issue: '%s'", review_id, e, self.issue.id)
+            return None
+
+    def create_review_request(self):
+        root = self.client.get_root()
+
+        review_request = None
+        course_id = self.event.issue.task.course.id
+        repository_name = str(self.event.issue.id)
+        repository_path = os.path.join(settings.RB_SYMLINK_DIR, repository_name)
+        os.symlink(settings.RB_SYMLINK_DIR,repository_path)
+        
+        try:
             repository = root.get_repositories().create(
                      name=repository_name,
-                     path=settings.RB_SYMLINK_DIR+repository_name+'/.git',
+                     path=os.path.join(repository_path,'/.git'),
                      tool='Git',
                      public=False)
             root.get_repository(repository_id=repository.id).update(grant_type='add',
@@ -100,17 +151,15 @@ class AnyRB(object):
                                                       grant_name=self.event.author)
             root.get_repository(repository_id=repository.id).update(grant_type='add',
                                                       grant_entity='group',
-                                                      grant_name='teachers')
-            root.get_repository(repository_id=repository.id).update(grant_type='add',
-                                                      grant_entity='group',
                                                       grant_name='teachers_{0}'.format(course_id))
 
-
             review_request = root.get_review_requests().create(repository=repository.id)
-        self.event.issue.set_byname('review_id', review_request.id, self.event.author)
+            self.event.issue.set_byname('review_id', review_request.id, self.event.author)
+        except Exception as e:
+            logger.exception("Exception while creating review_request with id '%s'. Exception: '%s'. Issue: '%s'", review_id, e, self.issue.id)
+            return None
+
         return review_request
-
-
 
 class RbReviewGroup(object):
     def __init__(self, review_group_name):
