@@ -65,6 +65,11 @@ def issue_page(request, issue_id):
 
                 if form.is_valid():
                     value = form.cleaned_data[field.name]
+                    if 'Me' in request.POST:
+                        if field.name == 'responsible_name':
+                            value = request.user
+                        else:
+                            value.append(request.user)
                     if field.name == 'comment':
                         value = {
                             'comment': value,
