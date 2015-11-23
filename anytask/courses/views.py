@@ -68,28 +68,59 @@ def queue_page(request, course_id):
 
     if request.method == 'POST':
         queue_form = QueueForm(request.POST)
-        if queue_form.is_valid():
-            cd = queue_form.cleaned_data
-            if not cd['mine']:
-                issues = issues.exclude(responsible=request.user)
-            if not cd['not_mine']:
-                issues = issues.filter(Q(responsible=request.user) | Q(responsible__isnull=True))
-            if not cd['following']:
-                issues = issues.exclude(followers=request.user)
-            if not cd['not_owned']:
-                issues = issues.exclude(responsible__isnull=True)
-            if not cd['rework']:
-                issues = issues.exclude(status=Issue.STATUS_REWORK)
-            if not cd['verefication']:
-                issues = issues.exclude(status=Issue.STATUS_VERIFICATION)
-
-            now_date = datetime.datetime.now()
-            delta = datetime.timedelta(days=cd['overdue'])
-            filter_date = now_date - delta
-            issues = issues.filter(update_time__lte=filter_date)
     else:
-        queue_form = QueueForm()
-        issues = issues.exclude(status=Issue.STATUS_REWORK) # not good
+        queue_form = QueueForm({'mine':request.session.get('mine', True),
+                                'not_mine':request.session.get('not_mine', True),
+                                'following':request.session.get('following', True),
+                                'not_owned':request.session.get('not_owned', True),
+                                'rework':request.session.get('rework', False),
+                                'verefication':request.session.get('verefication', True),
+                                'need_info':request.session.get('need_info', False),
+                                'overdue':request.session.get('overdue', 0)})
+
+    if queue_form.is_valid():
+        cd = queue_form.cleaned_data
+        if not cd['mine']:
+            issues = issues.exclude(responsible=request.user)
+            request.session['mine'] = False
+        else:
+            request.session['mine'] = True
+        if not cd['not_mine']:
+            issues = issues.filter(Q(responsible=request.user) | Q(responsible__isnull=True))
+            request.session['not_mine'] = False
+        else:
+            request.session['not_mine'] = True
+        if not cd['following']:
+            issues = issues.exclude(followers=request.user)
+            request.session['following'] = False
+        else:
+            request.session['following'] = True
+        if not cd['not_owned']:
+            issues = issues.exclude(responsible__isnull=True)
+            request.session['not_owned'] = False
+        else:
+            request.session['not_owned'] = True
+        if not cd['rework']:
+            issues = issues.exclude(status=Issue.STATUS_REWORK)
+            request.session['rework'] = False
+        else:
+            request.session['rework'] = True
+        if not cd['verefication']:
+            issues = issues.exclude(status=Issue.STATUS_VERIFICATION)
+            request.session['verefication'] = False
+        else:
+            request.session['verefication'] = True
+        if not cd['need_info']:
+            issues = issues.exclude(status=Issue.STATUS_NEED_INFO)
+            request.session['need_info'] = False
+        else:
+            request.session['need_info'] = True
+
+        now_date = datetime.datetime.now()
+        delta = datetime.timedelta(days=cd['overdue'])
+        request.session['overdue'] = cd['overdue']
+        filter_date = now_date - delta
+        issues = issues.filter(update_time__lte=filter_date)
 
     issues = issues.order_by('update_time')
     context = {
