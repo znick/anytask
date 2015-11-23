@@ -267,10 +267,11 @@ class Issue(models.Model):
         elif name == 'status':
             try:
                 review_id = self.get_byname('review_id')
-                if value == self.STATUS_ACCEPTED:
-                    update_status_review_request(review_id,'submitted')
-                elif self.status == self.STATUS_ACCEPTED:
-                    update_status_review_request(review_id,'pending')
+                if review_id != '':
+                    if value == self.STATUS_ACCEPTED:
+                        update_status_review_request(review_id,'submitted')
+                    elif self.status == self.STATUS_ACCEPTED:
+                        update_status_review_request(review_id,'pending')
             except:
                 pass
 
