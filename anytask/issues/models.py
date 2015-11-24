@@ -229,7 +229,8 @@ class Issue(models.Model):
                     uploaded_file.save()
                     if self.task.course.contest_integrated:
                         for ext in settings.CONTEST_EXTENSIONS:
-                            if ext == file.name.split('.')[1]:
+                            filename, extension = os.path.splitext(file.name)
+                            if ext == extension:
                                 sent, message = upload_contest(event, ext, uploaded_file)
                                 if sent:
                                     value['comment'] += u"Отправлено на проверку в Я.Контест"
@@ -241,7 +242,8 @@ class Issue(models.Model):
 
                     if self.task.course.rb_integrated and (self.task.course.send_rb_and_contest_together or not self.task.course.contest_integrated):
                         for ext in settings.RB_EXTENSIONS:
-                            if ext == file.name.split('.')[1]:
+                            filename, extension = os.path.splitext(file.name)
+                            if ext == extension:
                                 anyrb = AnyRB(event)
                                 review_request_id = anyrb.upload_review()
                                 if review_request_id is not None:
