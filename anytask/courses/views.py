@@ -60,6 +60,7 @@ def filemanager(request, path, course_id):
 @login_required
 def queue_page(request, course_id):
     course = get_object_or_404(Course, id=course_id)
+    course_id_as_str = str(course_id)
 
     if not course.user_can_see_queue(request.user):
         return HttpResponseForbidden()
@@ -69,56 +70,56 @@ def queue_page(request, course_id):
     if request.method == 'POST':
         queue_form = QueueForm(request.POST)
     else:
-        queue_form = QueueForm({'mine':request.session.get('_'.join(['mine',str(course_id)]), True),
-                                'not_mine':request.session.get('_'.join(['not_mine',str(course_id)]), True),
-                                'following':request.session.get('_'.join(['following',str(course_id)]), True),
-                                'not_owned':request.session.get('_'.join(['not_owned',str(course_id)]), True),
-                                'rework':request.session.get('_'.join(['rework',str(course_id)]), False),
-                                'verefication':request.session.get('_'.join(['verefication',str(course_id)]), True),
-                                'need_info':request.session.get('_'.join(['need_info',str(course_id)]), False),
-                                'overdue':request.session.get('_'.join(['overdue',str(course_id)]), 0)})
+        queue_form = QueueForm({'mine':request.session.get('_'.join(['mine',course_id_as_str]), True),
+                                'not_mine':request.session.get('_'.join(['not_mine',course_id_as_str]), True),
+                                'following':request.session.get('_'.join(['following',course_id_as_str]), True),
+                                'not_owned':request.session.get('_'.join(['not_owned',course_id_as_str]), True),
+                                'rework':request.session.get('_'.join(['rework',course_id_as_str]), False),
+                                'verefication':request.session.get('_'.join(['verefication',course_id_as_str]), True),
+                                'need_info':request.session.get('_'.join(['need_info',course_id_as_str]), False),
+                                'overdue':request.session.get('_'.join(['overdue',course_id_as_str]), 0)})
 
     if queue_form.is_valid():
         cd = queue_form.cleaned_data
         if not cd['mine']:
             issues = issues.exclude(responsible=request.user)
-            request.session['_'.join(['mine',str(course_id)])] = False
+            request.session['_'.join(['mine',course_id_as_str])] = False
         else:
-            request.session['_'.join(['mine',str(course_id)])] = True
+            request.session['_'.join(['mine',course_id_as_str])] = True
         if not cd['not_mine']:
             issues = issues.filter(Q(responsible=request.user) | Q(responsible__isnull=True))
-            request.session['_'.join(['not_mine',str(course_id)])] = False
+            request.session['_'.join(['not_mine',course_id_as_str])] = False
         else:
-            request.session['_'.join(['not_mine',str(course_id)])] = True
+            request.session['_'.join(['not_mine',course_id_as_str])] = True
         if not cd['following']:
             issues = issues.exclude(followers=request.user)
-            request.session['_'.join(['following',str(course_id)])] = False
+            request.session['_'.join(['following',course_id_as_str])] = False
         else:
-            request.session['_'.join(['following',str(course_id)])] = True
+            request.session['_'.join(['following',course_id_as_str])] = True
         if not cd['not_owned']:
             issues = issues.exclude(responsible__isnull=True)
-            request.session['_'.join(['not_owned',str(course_id)])] = False
+            request.session['_'.join(['not_owned',course_id_as_str])] = False
         else:
-            request.session['_'.join(['not_owned',str(course_id)])] = True
+            request.session['_'.join(['not_owned',course_id_as_str])] = True
         if not cd['rework']:
             issues = issues.exclude(status=Issue.STATUS_REWORK)
-            request.session['_'.join(['rework',str(course_id)])] = False
+            request.session['_'.join(['rework',course_id_as_str])] = False
         else:
-            request.session['_'.join(['rework',str(course_id)])] = True
+            request.session['_'.join(['rework',course_id_as_str])] = True
         if not cd['verefication']:
             issues = issues.exclude(status=Issue.STATUS_VERIFICATION)
-            request.session['_'.join(['verefication',str(course_id)])] = False
+            request.session['_'.join(['verefication',course_id_as_str])] = False
         else:
-            request.session['_'.join(['verefication',str(course_id)])] = True
+            request.session['_'.join(['verefication',course_id_as_str])] = True
         if not cd['need_info']:
             issues = issues.exclude(status=Issue.STATUS_NEED_INFO)
-            request.session['_'.join(['need_info',str(course_id)])] = False
+            request.session['_'.join(['need_info',course_id_as_str])] = False
         else:
-            request.session['_'.join(['need_info',str(course_id)])] = True
+            request.session['_'.join(['need_info',course_id_as_str])] = True
 
         now_date = datetime.datetime.now()
         delta = datetime.timedelta(days=cd['overdue'])
-        request.session['_'.join(['overdue',str(course_id)])] = cd['overdue']
+        request.session['_'.join(['overdue',course_id_as_str])] = cd['overdue']
         filter_date = now_date - delta
         issues = issues.filter(update_time__lte=filter_date)
 
