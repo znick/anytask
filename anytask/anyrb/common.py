@@ -5,6 +5,7 @@ import os
 import requests
 
 from django.conf import settings
+from django.contrib.sites.models import Site
 
 from rbtools.api.client import RBClient
 
@@ -74,12 +75,14 @@ class AnyRB(object):
         summary = u'[{0}][{1}] {2}'.format(issue.student.get_full_name(),
                                           issue.task.group,
                                           issue.task.title)
-        description = u'{0}'.format(
+        description = '[{1}](http://{0}{1})'.format(
+            Site.objects.get_current().domain,
             issue.get_absolute_url(),
         )
 
         draft = draft.update(summary=summary,
                              description=description.encode('utf-8'),
+                             description_text_type='markdown',
                              target=settings.RB_API_USERNAME, public=True,
                              )
         return review_request.id
