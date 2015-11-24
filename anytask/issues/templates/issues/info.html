@@ -36,6 +36,9 @@
                 {% if field.name == 'responsible_name' or field.name == 'followers_names'%}
                   <button type="submit" class="btn" name="Me">Я</button>
                 {% endif %}
+                {% if field.name == 'mark'%}
+                  <button type="submit" class="btn" name="Accepted">Зачтено</button>
+                {% endif %}
               </fieldset>
             </form>
           </div>

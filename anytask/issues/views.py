@@ -71,6 +71,9 @@ def issue_page(request, issue_id):
                         else:
                             if request.user not in value:
                                 value.append(request.user)
+                    if 'Accepted' in request.POST:
+                        issue.set_byname('status', 'accepted')
+
                     if field.name == 'comment':
                         value = {
                             'comment': value,
