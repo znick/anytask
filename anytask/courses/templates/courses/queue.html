@@ -48,14 +48,16 @@
     {# </div> #}
   </div>
 
-  <button type="button" class="btn" data-toggle="collapse" data-target="#tooltips">
-    Подсказки
-  </button>
   <button type="button" class="btn" data-toggle="collapse" data-target="#filters">
     Фильтры
   </button>
 
-  <div id="filters" class="collapse">
+  <button type="button" class="btn" data-toggle="collapse" data-target="#tooltips">
+    Подсказки
+  </button>
+
+
+  <div id="filters" class="collapse in">
     <form method="post" class="form-inline">
       {% csrf_token %}
       <table class="table table-condensed">
