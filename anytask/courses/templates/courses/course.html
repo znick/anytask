@@ -66,11 +66,10 @@
           Добавить информацию о курсе
         {% endif %}
       </a>
-      {% if course.can_edit %}
-         <a class="btn btn-default" href="javascript:get_add_task_modal({{ course.id }}, '',  null, '{{course.can_edit}}');" role="button">
-           Добавить задачу
-        </a>
-        <br>
+      <a class="btn btn-default" href="javascript:get_add_task_modal({{ course.id }}, '',  null, '{{course.can_edit}}');" role="button">
+        Добавить задачу
+      </a>
+      <br>
       {% endif %}
     {% endif %}
 
@@ -80,7 +79,8 @@
     <a class="label label-important">На доработке</a>
     <a class="label label-warning">На проверке</a>
     <a class="label label-success">Зачтено</a>
-    <a class="label label-info">Суммарный балл</a>
+    <a class="label label-info">Требуется информация</a>
+    <a class="label label-inverse">Суммарный балл</a>
 
     <br />
     <br />
