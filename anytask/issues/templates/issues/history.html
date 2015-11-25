@@ -63,6 +63,9 @@
           {{ issue_fields.0.form }}
       </div>
       <button type="button" class="btn" onClick="add_file_field()">+</button>
+      {% if not teacher_or_staff and issue.status == issue.STATUS_ACCEPTED %}
+        <button class="btn pull-right" type="submit" name="need_info">Задать вопрос</button>
+      {% endif %}
       <button class="btn pull-right" type="submit">Отправить (ctrl+enter)</button>
     </fieldset>
   </form>

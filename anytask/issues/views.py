@@ -79,6 +79,8 @@ def issue_page(request, issue_id):
                             'comment': value,
                             'files': request.FILES.getlist('files')
                         }
+                        if 'need_info' in request.POST:
+                            issue.set_byname('status', 'need_info')
 
                     issue.set_field(field, value, request.user)
                     return HttpResponseRedirect('')

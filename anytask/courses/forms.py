@@ -20,6 +20,7 @@ class PdfForm(forms.Form):
 class QueueForm(forms.Form):
     rework = forms.BooleanField(initial=False, label='На доработке', required=False)
     verefication = forms.BooleanField(initial=True, label='На проверке', required=False)
+    need_info = forms.BooleanField(initial=False, label='Требуется информация', required=False)
     mine = forms.BooleanField(initial=True, label='Мои задачи', required=False)
     following = forms.BooleanField(initial=True, label='Наблюдаемые мной', required=False)
     not_mine = forms.BooleanField(initial=True, label='Не мои', required=False)
