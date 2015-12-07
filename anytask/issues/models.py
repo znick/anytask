@@ -171,7 +171,7 @@ class Issue(models.Model):
             else:
                raise AttributeError('field_name = {0}'.format(name))
 
-        events = list(Event.objects.filter(issue_id=self.id, field_id=field.id).order_by('timestamp'))
+        events = list(Event.objects.filter(issue_id=self.id, field_id=field.id).order_by('timestamp')
         return events[-1].value
 
     def get_field_value_for_form(self, field):
@@ -238,6 +238,7 @@ class Issue(models.Model):
                                         self.set_byname('status', self.STATUS_AUTO_VERIFICATION)
                                 else:
                                     value['comment'] += u"Ошибка отправки в Я.Контест ('{0}').".format(message)
+                                    self.followers.add(User.objects.get(username='anytask'))
                                 break
 
                     if self.task.course.rb_integrated and (self.task.course.send_rb_and_contest_together or not self.task.course.contest_integrated):
@@ -255,7 +256,7 @@ class Issue(models.Model):
                                 break
 
                 if self.status != self.STATUS_AUTO_VERIFICATION:
-                    if author == self.student and self.status != self.STATUS_ACCEPTED and self.status != self.STATUS_NEED_INFO:
+                    if author == self.student and self.status != self.STATUS_ACCEPTED and self.status != self.STATUS_NEED_INFO and sent:
                         self.set_byname('status', self.STATUS_VERIFICATION)
                     if author == self.responsible:
                         self.status = self.STATUS_REWORK
