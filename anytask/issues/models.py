@@ -163,16 +163,15 @@ class Issue(models.Model):
         if name == 'max_mark':
             return self.task.score_max
 
-        events = list(Event.objects.filter(issue_id=self.id, field_id=field.id))
-        if len(events) == 0:
-            fields = list(self.task.course.issue_fields.filter(id=field.id))
-            if len(fields) != 0:
+        events = Event.objects.filter(issue_id=self.id, field_id=field.id).order_by('-timestamp')[:1]
+        if not events:
+            fields_count = self.task.course.issue_fields.filter(id=field.id).count()
+            if fields_count:
                 self.set_field(field, field.get_default_value())
             else:
                raise AttributeError('field_name = {0}'.format(name))
 
-        events = list(Event.objects.filter(issue_id=self.id, field_id=field.id).order_by('timestamp')
-        return events[-1].value
+        return events[0].value
 
     def get_field_value_for_form(self, field):
         ret = self.get_field_value(field)
