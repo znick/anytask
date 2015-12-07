@@ -36,4 +36,6 @@ def issue_label_type(d, task):
                 return 'label-warning'
             if d[task.id].status == Issue.STATUS_ACCEPTED:
                 return 'label-success'
+            if d[task.id].status == Issue.STATUS_NEED_INFO:
+                return 'label-info'
     return ''
