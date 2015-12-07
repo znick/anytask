@@ -65,6 +65,11 @@ def issue_page(request, issue_id):
 
                 if form.is_valid():
                     value = form.cleaned_data[field.name]
+
+                    if field.name in ['mark','status', 'responsible_name', 'followers_names']:
+                        if not user_is_teacher_or_staff(request.user, issue):
+                            raise PermissionDenied
+                    
                     if 'Me' in request.POST:
                         if field.name == 'responsible_name':
                             value = request.user
