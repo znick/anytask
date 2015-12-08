@@ -223,6 +223,7 @@ class Issue(models.Model):
 
         elif name == 'comment':
             if value:
+                sent = True
                 for file in value['files']:
                     uploaded_file = File(file=file, event=event)
                     uploaded_file.save()
