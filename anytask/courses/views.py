@@ -31,7 +31,7 @@ from course_statistics import CourseStatistics
 from score import TaskInfo
 from anysvn.common import svn_log_rev_message, svn_log_head_revision, get_svn_external_url, svn_log_min_revision
 from anyrb.common import AnyRB
-from issues.models import Issue
+from issues.models import Issue, Event
 
 from common.ordered_dict import OrderedDict
 
@@ -178,6 +178,11 @@ def tasklist_shad_cpp(request, course):
     task = Task()
     task.is_shown = None
     task.is_hidden = None
+
+    events_with_mark = Event.objects.filter(field_id=8).filter(author__in=course.teachers.all()).order_by('issue','timestamp')
+    marks_for_issues = {}
+    for event in events_with_mark:
+        marks_for_issues[event.issue.id] = event.value
     
     for group in course.groups.all().order_by('name'):
         student_x_task_x_task_takens = {}
@@ -215,7 +220,7 @@ def tasklist_shad_cpp(request, course):
             for task_taken in student_task_takens:
                 task_x_task_taken[task_taken.task.id] = task_taken
                 if not task_taken.task.is_hidden:
-                    student_summ_scores += task_taken.score()
+                    student_summ_scores += marks_for_issues[task_taken.id]
 
             student_x_task_x_task_takens[student] = (task_x_task_taken, student_summ_scores)
 
