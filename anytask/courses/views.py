@@ -68,7 +68,7 @@ def queue_page(request, course_id):
     issues = Issue.objects.filter(task__course=course).exclude(status=Issue.STATUS_NEW).exclude(status=Issue.STATUS_ACCEPTED)
 
     mine = '_'.join(['mine',course_id_as_str])
-    not_mine = mine = '_'.join(['not_mine',course_id_as_str])
+    not_mine = '_'.join(['not_mine',course_id_as_str])
     following = '_'.join(['following',course_id_as_str])
     not_owned = '_'.join(['not_owned',course_id_as_str])
     rework = '_'.join(['rework',course_id_as_str])
