@@ -278,13 +278,6 @@ class Issue(models.Model):
             except:
                 pass
 
-            if value == self.STATUS_VERIFICATION:
-                course = self.task.course
-                group = course.get_user_group(self.student)
-                default_teacher = course.get_default_teacher(group)
-                if default_teacher and (not self.get_byname('responsible_name')):
-                    self.set_byname('responsible_name', default_teacher)
-
             self.status = value
             value = self.get_status()
 
@@ -300,6 +293,12 @@ class Issue(models.Model):
 
         if not value:
             value = ''
+
+        course = self.task.course
+        group = course.get_user_group(self.student)
+        default_teacher = course.get_default_teacher(group)
+        if default_teacher and (not self.get_byname('responsible_name')):
+            self.set_byname('responsible_name', default_teacher)
 
         event.value = value
         event.save()
