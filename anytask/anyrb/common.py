@@ -151,7 +151,7 @@ class AnyRB(object):
                      public=False)
             root.get_repository(repository_id=repository.id).update(grant_type='add',
                                                       grant_entity='user',
-                                                      grant_name=self.event.issue.student)
+                                                      grant_name=self.event.author)
             root.get_repository(repository_id=repository.id).update(grant_type='add',
                                                       grant_entity='group',
                                                       grant_name='teachers_{0}'.format(course_id))
