@@ -168,6 +168,7 @@ class Issue(models.Model):
             fields_count = self.task.course.issue_fields.filter(id=field.id).count()
             if fields_count:
                 self.set_field(field, field.get_default_value())
+                return field.get_default_value()
             else:
                raise AttributeError('field_name = {0}'.format(name))
 
