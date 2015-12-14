@@ -182,7 +182,7 @@ def tasklist_shad_cpp(request, course):
     events_with_mark = Event.objects.filter(field_id=8).filter(author__in=course.teachers.all()).order_by('issue','timestamp')
     marks_for_issues = {}
     for event in events_with_mark:
-        marks_for_issues[event.issue.id] = event.value
+        marks_for_issues[event.issue.id] = float(event.value)
     
     for group in course.groups.all().order_by('name'):
         student_x_task_x_task_takens = {}
@@ -219,7 +219,7 @@ def tasklist_shad_cpp(request, course):
             student_summ_scores = 0
             for task_taken in student_task_takens:
                 task_x_task_taken[task_taken.task.id] = task_taken
-                if not task_taken.task.is_hidden:
+                if not task_taken.task.is_hidden and task_taken.id in marks_for_issues:
                     student_summ_scores += marks_for_issues[task_taken.id]
 
             student_x_task_x_task_takens[student] = (task_x_task_taken, student_summ_scores)
