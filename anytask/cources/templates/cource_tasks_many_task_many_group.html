@@ -75,7 +75,7 @@
 					Добавить задачу
 				</a>
 			{% endif %}
-			<table class="table table-striped table-bordered table-condensed table_results" id="table_results">
+			<table class="table table-striped table-bordered table-condensed table_results" data-name="{{ group.name }}" id="table_results">
 				<thead>
 					<tr>
 						{% for task in group_tasks|key:group %}
