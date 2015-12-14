@@ -83,10 +83,10 @@
 
 						{% for task in tasks %}
 					            {% if forloop.counter0|divisibleby:"6" %}
-						        <th></th>
+						         <th class="header_sortable"></th>
 					            {% endif %}
 					            {% if forloop.first %}
-					                <th class="no-font-weight">Группа</th>
+					                <th class="no-font-weight header_sortable">Группа</th>
 					            {% endif %}
 
 							{% if task.is_shown %}

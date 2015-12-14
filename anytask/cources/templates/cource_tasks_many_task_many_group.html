@@ -80,7 +80,7 @@
 					<tr>
 						{% for task in group_tasks|key:group %}
                             {% if forloop.counter0|divisibleby:"6" %}
-                                <th></th>
+                                <th class="header_sortable"></th>
                             {% endif %}
 							{% if task.is_shown %}
 								<th align="center" class="{sorter: false} no-font-weight">
@@ -95,7 +95,7 @@
 								</th>
 							{% endif %}
                         {% empty %}
-                            <th></th>
+                            <th class="header_sortable"></th>
 						{% endfor %}
 						<th class="no-font-weight">
 							Суммарный балл <span class="label label-success">{{ group_x_max_score|key:group }}</span>
