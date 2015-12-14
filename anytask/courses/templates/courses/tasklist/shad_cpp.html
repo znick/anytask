@@ -73,7 +73,7 @@
                     <a class="btn-small" href="{% url submit_review task.id %}">
                       <span class="label
                         {{ task_x_task_takens|label_type:task }}">
-                        {{ task_x_task_takens|score:task|floatformat:"-3" }}
+                        {{ task_x_task_takens|score:task }}
                       </span>
                     </a>
                   {% else %}
@@ -82,7 +82,7 @@
                     {% else %}
                       <span class="label
                         {{ task_x_task_takens|label_type:task }}">
-                        {{ task_x_task_takens|score:task|floatformat:"-3" }}
+                        {{ task_x_task_takens|score:task }}
                       </span>
                     {% endif %}
                   {% endif %}
