@@ -78,7 +78,7 @@
                     </a>
                   {% else %}
                     {% if task.is_hidden %}
-                      <span class="label">{{ task_x_task_takens|score:task|floatformat:"-3" }}</span>
+                      <span class="label">{{ task_x_task_takens|score:task }}</span>
                     {% else %}
                       <span class="label
                         {{ task_x_task_takens|label_type:task }}">
