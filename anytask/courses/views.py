@@ -20,6 +20,7 @@ import datetime
 import pysvn
 import urllib, urllib2
 import httplib
+import logging
 
 from courses.models import Course, DefaultTeacher
 from groups.models import Group
@@ -42,6 +43,8 @@ from settings import UPLOAD_ROOT
 import os.path
 
 import json
+
+logger = logging.getLogger('django.request')
 
 @login_required
 def filemanager(request, path, course_id):
@@ -182,23 +185,27 @@ def tasklist_shad_cpp(request, course):
     events_with_mark = Event.objects.filter(field_id=8).filter(author__in=course.teachers.all()).order_by('issue','timestamp')
     marks_for_issues = {}
     for event in events_with_mark:
-        marks_for_issues[event.issue.id] = float(event.value)
-    
+        if event.issue.task.course == course:
+            try:
+                marks_for_issues[event.issue.id] = float(event.value)
+            except Exception as e:
+                marks_for_issues[event.issue.id] = 0
+                logger.exception("Not a float mark. Exception: '%s'. Issue: '%s'. Event: '%s'.", e, event.issue.id, event.id)
+
     for group in course.groups.all().order_by('name'):
         student_x_task_x_task_takens = {}
 
-        group_x_task_list[group] = Task.objects.filter(Q(course=course) & (Q(group=group) | Q(group=None))).order_by('weight')
+        group_x_task_list[group] = Task.objects.filter(Q(course=course) & (Q(group=group) | Q(group=None))).order_by('weight').select_related()
         group_x_max_score.setdefault(group, 0)
 
         for task in group_x_task_list[group]:
-            task.add_user_properties(user)
 
             if not task.is_hidden:
                 group_x_max_score[group] += task.score_max
             if task.task_text is None:
                 task.task_text = ''
 
-        issues_students_in_group = Issue.objects.filter(task__in=group_x_task_list[group]).filter(student__group__in=[group]).order_by('student')
+        issues_students_in_group = Issue.objects.filter(task__in=group_x_task_list[group]).filter(student__group__in=[group]).order_by('student').select_related()
 
         from collections import defaultdict
         issues_x_student = defaultdict(list)
@@ -239,45 +246,45 @@ def tasklist_shad_cpp(request, course):
             group_x_student_information[group].append((student, student_x_task_x_task_takens[student][0], student_x_task_x_task_takens[student][1]))
 
 
-    extern_max_score = 0
-    extern_student_x_task_takens = {}
+    # extern_max_score = 0
+    # extern_student_x_task_takens = {}
 
-    extern_tasks = Task.objects.filter(course=course).filter(group=None).order_by('weight')
-    for task in extern_tasks:
-        task.add_user_properties(user)
+    # extern_tasks = Task.objects.filter(course=course).filter(group=None).order_by('weight')
+    # for task in extern_tasks:
+    #     task.add_user_properties(user)
 
-        if not task.is_hidden:
-            extern_max_score += task.score_max
-        if task.task_text is None:
-            task.task_text = ''
+    #     if not task.is_hidden:
+    #         extern_max_score += task.score_max
+    #     if task.task_text is None:
+    #         task.task_text = ''
 
 
-    task_takens = TaskTaken.objects.filter(task__in=extern_tasks)
-    for student in course.students.all():
-        if user == student:
-            user_is_attended = True
-            user_is_attended_special_course = True
-        elif not course.user_can_see_transcript(user, student):
-            continue
+    # task_takens = TaskTaken.objects.filter(task__in=extern_tasks)
+    # for student in course.students.all():
+    #     if user == student:
+    #         user_is_attended = True
+    #         user_is_attended_special_course = True
+    #     elif not course.user_can_see_transcript(user, student):
+    #         continue
 
-        task_x_task_taken = {}
+    #     task_x_task_taken = {}
 
-        student_summ_scores = 0
-        student_task_takens = filter(lambda x: x.user == student, task_takens)
+    #     student_summ_scores = 0
+    #     student_task_takens = filter(lambda x: x.user == student, task_takens)
 
-        for task_taken in student_task_takens:
-            task_x_task_taken[task_taken.task.id] = task_taken
-            if not task_taken.task.is_hidden:
-                student_summ_scores += task_taken.score
+    #     for task_taken in student_task_takens:
+    #         task_x_task_taken[task_taken.task.id] = task_taken
+    #         if not task_taken.task.is_hidden:
+    #             student_summ_scores += task_taken.score
 
-        extern_student_x_task_takens[student] = (task_x_task_taken, student_summ_scores)
+    #     extern_student_x_task_takens[student] = (task_x_task_taken, student_summ_scores)
 
-    extern_student_information = []
-    for student in sorted(extern_student_x_task_takens.keys(), key=lambda x: u"{0} {1}".format(x.last_name, x.first_name)):
-        if user == student:
-            user_is_attended = True
+    # extern_student_information = []
+    # for student in sorted(extern_student_x_task_takens.keys(), key=lambda x: u"{0} {1}".format(x.last_name, x.first_name)):
+    #     if user == student:
+    #         user_is_attended = True
 
-        extern_student_information.append((student, extern_student_x_task_takens[student][0], extern_student_x_task_takens[student][1]))
+    #     extern_student_information.append((student, extern_student_x_task_takens[student][0], extern_student_x_task_takens[student][1]))
 
     context = {
         'course'        : course,
