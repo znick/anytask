@@ -55,13 +55,9 @@
           {% for task in group_tasks|key:group %}
             {% if not task.is_hidden or user_is_teacher %}
               <th align="center" class="{sorter: false} no-font-weight">
-                {% if task.task_text %}
                   <a {% if task.is_hidden %} style="color:gray" {% endif %} href="javascript:get_task_modal({{task.id}}, '{{task.title}}', '{{task.is_hidden}}', '{{task.task_text|urlize|safe|sanitize|escapejs}}', '{{task.task_text|escapejs}}', {{task.score_max}}, '{{user_is_teacher}}', 'text', {{task.contest_id}}, '{{task.problem_id}}', {% if task.group %} {{group.id}} {% else %}''{% endif %})">
                     {{ task.title }}
                   </a>
-                {% else %}
-                  {{ task.title }}
-                {% endif %}
                 <span class="label {% if not task.is_hidden %} label-inverse {% endif %}">{{ task.score_max }}</span>
               </th>
             {% endif %}
