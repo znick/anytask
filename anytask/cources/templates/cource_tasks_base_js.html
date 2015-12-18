@@ -1,7 +1,7 @@
 <script type="text/javascript" src="{{ STATIC_URL }}jquery.validate.min.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}jquery.tablesorter/jquery.tablesorter.min.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}jquery.stickytableheaders.min.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}jquery-cookie/jquery.cookie.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js-cookie/src/js.cookie.js"></script>
 <script type="text/javascript">
 
     $(document).ready(function() {
@@ -10,7 +10,7 @@
             cookieName = "tableSorter_sortLists_cource_" + courceId;
 
         function getStoredSortLists() {
-            var cookieValue = $.cookie(cookieName);
+            var cookieValue = Cookies.get(cookieName);
             return cookieValue ? JSON.parse(cookieValue) : {};
         }
 
@@ -43,7 +43,7 @@
                         sortList.push([index, 0]);
                 });
                 storedSortLists[tableName] = sortList;
-                $.cookie(cookieName, JSON.stringify(storedSortLists), 365);
+                Cookies.set(cookieName, JSON.stringify(storedSortLists), { expires: 365, path: '' });
             });
         }
         table.stickyTableHeaders({fixedOffset: $('.navbar')});
