@@ -258,8 +258,8 @@ class Issue(models.Model):
                                     comment += u'Ошибка отправки в Review Board.'
                                 break
 
-                if self.status != self.STATUS_AUTO_VERIFICATION:
-                    if author == self.student and self.status != self.STATUS_ACCEPTED and self.status != self.STATUS_NEED_INFO and sent:
+                if self.status != self.STATUS_AUTO_VERIFICATION and self.status != self.STATUS_ACCEPTED:
+                    if author == self.student and self.status != self.STATUS_NEED_INFO and sent:
                         self.set_byname('status', self.STATUS_VERIFICATION)
                     if author == self.responsible:
                         self.status = self.STATUS_REWORK
