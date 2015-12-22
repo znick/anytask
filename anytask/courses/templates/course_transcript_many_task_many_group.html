@@ -30,7 +30,7 @@
                             {% if task.is_shown %}
                                 <th align="center" class="{sorter: false} no-font-weight">
                                     {% if task.task_text or task.can_score %}
-                                        <a {% if task.is_hidden %} style="color:gray" {% endif %}  href="javascript:get_task_modal({{task.id}}, '{{task.title}}', '{{task.is_hidden}}', '{{task.task_text|safe|sanitize|escapejs}}', '{{task.task_text|escapejs}}', {{task.score_max}}, '{{task.can_score}}', 'text')">
+                                        <a {% if task.is_hidden %} style="color:gray" {% endif %}  href="javascript:get_task_modal({{task.id}}, '{{task.title|escapejs}}', '{{task.is_hidden}}', '{{task.task_text|safe|sanitize|escapejs}}', '{{task.task_text|escapejs}}', {{task.score_max}}, '{{task.can_score}}', 'text')">
                                             {{ task.title }}
                                         </a>
                                     {% else %}
@@ -58,7 +58,7 @@
                                 {% if task.is_shown %}
                                     <td align="center" class="student_{{ student.id }}">
                                             {% if not task.is_hidden and task.can_score and task_x_task_takens|get_task_taken:task|in_queue %}
-                                                <a class="btn-small" href="javascript:get_modal({{ task.id }}, '{{ task.title }}', '{{ student.get_full_name }}', {{ student.id }}, '{{ task_x_task_takens|score:task }}', {{ task.score_max }}, '{{ task_x_task_takens|comment:task|safe|sanitize|escapejs }}');">
+                                                <a class="btn-small" href="javascript:get_modal({{ task.id }}, '{{ task.title|escapejs }}', '{{ student.get_full_name|escapejs }}', {{ student.id }}, '{{ task_x_task_takens|score:task|escapejs }}', {{ task.score_max }}, '{{ task_x_task_takens|comment:task|safe|sanitize|escapejs }}');">
                                                     <span class="label" style="background-color:{{ task_x_task_takens|get_task_taken:task|color_label_in_teacher_queue:color_set }}"
                                                     name="teacher_{{task_x_task_takens|get_task_taken:task|get_teacher}}"
                                                     >{{ task_x_task_takens|score:task }}</span>
@@ -96,7 +96,7 @@
                                 {% if task.is_shown %}
                                     <th align="center" class="{sorter: false} no-font-weight">
                                         {% if task.task_text or task.can_score %}
-                                            <a {% if task.is_hidden %} style="color:gray" {% endif %}  href="javascript:get_task_modal({{task.id}}, '{{task.title}}', '{{task.is_hidden}}', '{{task.task_text|safe|sanitize|escapejs}}', '{{task.task_text|safe|sanitize|escapejs}}', {{task.score_max}}, '{{task.can_score}}', 'text')">
+                                            <a {% if task.is_hidden %} style="color:gray" {% endif %}  href="javascript:get_task_modal({{task.id}}, '{{task.title|escapejs}}', '{{task.is_hidden}}', '{{task.task_text|safe|sanitize|escapejs}}', '{{task.task_text|safe|sanitize|escapejs}}', {{task.score_max}}, '{{task.can_score}}', 'text')">
                                                 {{ task.title }}
                                             </a>
                                         {% else %}
@@ -124,7 +124,7 @@
                                     {% if task.is_shown %}
                                         <td align="center">
                                                 {% if not task.is_hidden and task.can_score and task_x_task_takens|get_task_taken:task|in_queue %}
-                                                    <a class="btn-small" href="javascript:get_modal({{ task.id }}, '{{ task.title }}', '{{ student.get_full_name }}', {{ student.id }}, '{{ task_x_task_takens|score:task }}', {{ task.score_max }}, {% if task_x_task_takens|comment:task %} '{{ task_x_task_takens|comment:task|sanitize }}' {% else %} '' {% endif %})">
+                                                    <a class="btn-small" href="javascript:get_modal({{ task.id }}, '{{ task.title|escapejs }}', '{{ student.get_full_name|escapejs }}', {{ student.id }}, '{{ task_x_task_takens|score:task|escapejs }}', {{ task.score_max }}, {% if task_x_task_takens|comment:task %} '{{ task_x_task_takens|comment:task|sanitize|escapejs }}' {% else %} '' {% endif %})">
                                                         <span class="label" style="background-color:{{ task_x_task_takens|get_task_taken:task|color_label_in_teacher_queue:color_set }}" name="teacher_{{task_x_task_takens|get_task_taken:task|get_teacher}}"
                                                         >{{ task_x_task_takens|score:task }}</span>
                                                     </a>
