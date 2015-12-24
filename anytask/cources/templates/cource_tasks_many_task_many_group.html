@@ -75,12 +75,12 @@
 					Добавить задачу
 				</a>
 			{% endif %}
-			<table class="table table-striped table-bordered table-condensed table_results" id="table_results">
+			<table class="table table-striped table-bordered table-condensed table_results" data-name="{{ group.name }}" id="table_results">
 				<thead>
 					<tr>
 						{% for task in group_tasks|key:group %}
                             {% if forloop.counter0|divisibleby:"6" %}
-                                <th></th>
+                                <th class="header_sortable"></th>
                             {% endif %}
 							{% if task.is_shown %}
 								<th align="center" class="{sorter: false} no-font-weight">
@@ -95,7 +95,7 @@
 								</th>
 							{% endif %}
                         {% empty %}
-                            <th></th>
+                            <th class="header_sortable"></th>
 						{% endfor %}
 						<th class="no-font-weight">
 							Суммарный балл <span class="label label-success">{{ group_x_max_score|key:group }}</span>

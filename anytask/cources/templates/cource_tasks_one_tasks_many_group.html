@@ -77,16 +77,16 @@
 
 <div class="row">
 	<div class="_span12">
-			<table class="table table-striped table-bordered table-condensed table_results" id="table_results">
+			<table class="table table-striped table-bordered table-condensed table_results" data-name="allResults" id="table_results">
 				<thead id="table_results_thead">
 					<tr>
 
 						{% for task in tasks %}
 					            {% if forloop.counter0|divisibleby:"6" %}
-						        <th></th>
+						         <th class="header_sortable"></th>
 					            {% endif %}
 					            {% if forloop.first %}
-					                <th class="no-font-weight">Группа</th>
+					                <th class="no-font-weight header_sortable">Группа</th>
 					            {% endif %}
 
 							{% if task.is_shown %}

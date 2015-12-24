@@ -16,3 +16,6 @@
 [submodule "rbtools"]
 	path = dependencies/rbtools
 	url = https://github.com/reviewboard/rbtools.git
+[submodule "js-cookie"]
+	path = dependencies/js-cookie
+	url = https://github.com/js-cookie/js-cookie.git

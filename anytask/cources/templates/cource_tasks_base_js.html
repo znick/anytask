@@ -1,16 +1,52 @@
-<script src="{{ STATIC_URL }}jquery.validate.min.js"></script>
-<script src="http://malsup.github.io/jquery.form.js"></script>
-<script src="{{ STATIC_URL }}jquery.tablesorter/jquery.tablesorter.min.js"></script>
-<script src="{{ STATIC_URL }}jquery.stickytableheaders.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}jquery.validate.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}jquery.tablesorter/jquery.tablesorter.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}jquery.stickytableheaders.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js-cookie/src/js.cookie.js"></script>
 <script type="text/javascript">
 
     $(document).ready(function() {
 
+        var courceId = {{ cource.id }},
+            cookieName = "tableSorter_sortLists_cource_" + courceId;
 
-        // Here we select for <table> elements universally,
-        // but you can definitely fine tune your selector
-        $(".table_results").tablesorter();
-        $(".table_results").stickyTableHeaders({fixedOffset: $('.navbar')});
+        function getStoredSortLists() {
+            var cookieValue = Cookies.get(cookieName);
+            return cookieValue ? JSON.parse(cookieValue) : {};
+        }
+
+        // На случай если мы захотим их поменять
+        var cssAsc = "headerSortUp",
+            cssDesc = "headerSortDown";
+
+        var storedSortLists = getStoredSortLists();
+
+        var tables = $(".table_results"),
+            tableCount = tables.length;
+
+        for (var i = 0; i < tableCount; i++) {
+            var table = tables.eq(i),
+                tableName = table.data("name"),
+                storedSortList = tableName ? storedSortLists[tableName] : [];
+
+            table.tablesorter({ cssAsc: cssAsc, cssDesc: cssDesc, sortList: storedSortList });
+            table.on("sortEnd", function() {
+                var $this = $(this);
+                var headers = $this.find('th').filter(":visible"),
+                    tableName = $this.data("name");
+                storedSortLists = getStoredSortLists();
+                var sortList = [];
+                headers.each(function(index, domElement) {
+                    var header = $(domElement);
+                    if (header.hasClass(cssAsc))
+                        sortList.push([index, 1]);
+                    else if (header.hasClass(cssDesc))
+                        sortList.push([index, 0]);
+                });
+                storedSortLists[tableName] = sortList;
+                Cookies.set(cookieName, JSON.stringify(storedSortLists), { expires: 365, path: '' });
+            });
+        }
+        table.stickyTableHeaders({fixedOffset: $('.navbar')});
         jQuery.validator.addMethod("lessThanMax", function(value, element) {
             var int_value = parseInt(value);
             var int_max = parseInt($('#modal_max_score').val());
