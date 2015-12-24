@@ -79,7 +79,7 @@
 								<span class="label label-success">{{ task.score_max }}</span>
 							{% endif %}
 							{% if task.can_score %}
-								<a class="btn-small" href="javascript:get_task_modal({{task.id}}, '{{task.title}}', '{{task.is_hidden}}', '{{task.task_text|sanitize}}', '{{task.task_text|escapejs}}', {{task.score_max}}, '{{task.can_score}}', 'edit')">
+								<a class="btn-small" href="javascript:get_task_modal({{task.id}}, '{{task.title|escapejs}}', '{{task.is_hidden}}', '{{task.task_text|sanitize|escapejs}}', '{{task.task_text|escapejs}}', {{task.score_max}}, '{{task.can_score}}', 'edit')">
 									Редактировать задачу
 								</a>
 								<a class="btn-small" href="javascript:get_add_task_modal({{ course.id }}, null, {{ task.id }}, '{{course.can_edit}}');">
@@ -108,7 +108,7 @@
 									<div id="{{subtask.id}}"></div><font {% if subtask.is_hidden %} color="gray" {% endif %}>{{ subtask.title }}</font>
 									<span class="label label-success">{{ subtask.score_max }}</span>
 									{% if subtask.can_score %}
-										<a class="btn-small" href="javascript:get_task_modal({{subtask.id}}, '{{subtask.title}}', '{{subtask.is_hidden}}', '{{subtask.task_text|sanitize}}', '{{subtask.task_text|escapejs}}', {{subtask.score_max}}, '{{subtask.can_score}}', 'edit')">
+										<a class="btn-small" href="javascript:get_task_modal({{subtask.id}}, '{{subtask.title|escapejs}}', '{{subtask.is_hidden}}', '{{subtask.task_text|sanitize|escapejs}}', '{{subtask.task_text|escapejs}}', {{subtask.score_max}}, '{{subtask.can_score}}', 'edit')">
 											Редактировать подзадачу
 										</a>
 									{% endif %}
@@ -146,7 +146,7 @@
 														<td style="width:20%;"></td>
 														<td style="width:20%;">
 															{% if subtask.can_score %}
-																<a class="btn-small" href="javascript:get_modal({{ subtask.id }}, '{{ subtask.title }}', '{{ task_taken.user.get_full_name }}', {{ task_taken.user.id }}, 0, {{ subtask.score_max }}, '{{ task_taken.teacher_comments|sanitize }}')">Оценить</a>
+																<a class="btn-small" href="javascript:get_modal({{ subtask.id }}, '{{ subtask.title|escapejs }}', '{{ task_taken.user.get_full_name|escapejs }}', {{ task_taken.user.id }}, 0, {{ subtask.score_max }}, '{{ task_taken.teacher_comments|sanitize|escapejs }}')">Оценить</a>
 															{% endif %}
 														</td>
 													{% endif %}
@@ -154,7 +154,7 @@
 														<td style="width:10%;">
 															<span class="label {% if task_taken.score == subtask.score_max %} label-success{% endif %}">{{ task_taken.score }}</span>
 															{% if task_taken.teacher_comments %}
-																<a class="icon-comment" href="javascript:get_modal_comment('{{ task_taken.teacher_comments|sanitize }}')"></a>
+																<a class="icon-comment" href="javascript:get_modal_comment('{{ task_taken.teacher_comments|sanitize|escapejs }}')"></a>
 															{% endif %}
 														</td>
 														<td style="width:20%;">
@@ -162,7 +162,7 @@
 														</td>
 														<td style="width:20%;">
 															{% if subtask.can_score %}
-																<a class="btn-small" href="javascript:get_modal({{ subtask.id }}, '{{ subtask.title }}', '{{ task_taken.user.get_full_name }}', {{ task_taken.user.id }}, '{{ task_taken.score }}', {{ subtask.score_max }}, '{{ task_taken.teacher_comments|sanitize }}')">Оценить</a>
+																<a class="btn-small" href="javascript:get_modal({{ subtask.id }}, '{{ subtask.title|escapejs }}', '{{ task_taken.user.get_full_name|escapejs }}', {{ task_taken.user.id }}, '{{ task_taken.score }}', {{ subtask.score_max }}, '{{ task_taken.teacher_comments|sanitize|escapejs }}')">Оценить</a>
 															{% endif %}
 														</td>
 													{% endif %}
@@ -193,7 +193,7 @@
 												<td style="width:20%;"></td>
 												<td style="width:20%;">
 													{% if task.can_score %}
-														<a class="btn-small" href="javascript:get_modal({{ task.id }}, '{{ task.title }}', '{{ task_taken.user.get_full_name }}', {{ task_taken.user.id }}, 0, {{ task.score_max }}, '{{ task_taken.teacher_comments|sanitize }}')">Оценить</a>
+														<a class="btn-small" href="javascript:get_modal({{ task.id }}, '{{ task.title|escapejs }}', '{{ task_taken.user.get_full_name|escapejs }}', {{ task_taken.user.id }}, 0, {{ task.score_max }}, '{{ task_taken.teacher_comments|sanitize|escapejs }}')">Оценить</a>
 													{% endif %}
 												</td>
 											{% endif %}
@@ -202,7 +202,7 @@
 												<td style="width:10%;">
 													<span class="label {% if task_taken.score == task.score_max %} label-success{% endif %}">{{ task_taken.score|floatformat }}</span>
 													{% if task_taken.teacher_comments %}
-														<a class="icon-comment" href="javascript:get_modal_comment('{{ task_taken.teacher_comments|sanitize }}')"></a>
+														<a class="icon-comment" href="javascript:get_modal_comment('{{ task_taken.teacher_comments|sanitize|escapejs }}')"></a>
 													{% endif %}
 												</td>
 												<td style="width:20%;">
@@ -210,7 +210,7 @@
 												</td>
 												<td style="width:20%;">
 													{% if task.can_score %}
-														<a class="btn-small" href="javascript:get_modal({{ task.id }}, '{{ task.title }}', '{{ task_taken.user.get_full_name }}', {{ task_taken.user.id }}, '{{ task_taken.score }}', {{ task.score_max }}, '{{ task_taken.teacher_comments|sanitize }}')">Оценить</a>
+														<a class="btn-small" href="javascript:get_modal({{ task.id }}, '{{ task.title|escapejs }}', '{{ task_taken.user.get_full_name|escapejs }}', {{ task_taken.user.id }}, '{{ task_taken.score }}', {{ task.score_max }}, '{{ task_taken.teacher_comments|sanitize|escapejs }}')">Оценить</a>
 													{% endif %}
 												</td>
 											{% endif %}
