@@ -49,9 +49,6 @@ class Task(models.Model):
         if self.is_hidden:
             return (False, '')
 
-        if course.take_policy != Course.TAKE_POLICY_SELF_TAKEN:
-            return (False, u'')
-
         if not self.course.groups.filter(students=user).count() and not self.course.students.filter(id=user.id).count():
             return (False, u'')
 
@@ -86,12 +83,6 @@ class Task(models.Model):
 
         return (True, u'')
 
-    def user_can_cancel_task(self, user):
-        if user.is_anonymous() or self.course.take_policy != Course.TAKE_POLICY_SELF_TAKEN or self.is_hidden:
-            return False
-        if TaskTaken.objects.filter(task=self).filter(user=user).filter(status=TaskTaken.STATUS_TAKEN).count() != 0:
-            return True
-        return False
 
     def user_can_score_task(self, user):
         if user.is_anonymous():
@@ -103,7 +94,7 @@ class Task(models.Model):
         if user.is_anonymous():
             return False
 
-        if not self.course.rb_integrated and not self.course.gr_integrated and not self.course.pdf_integrated:
+        if not self.course.rb_integrated:
             return False
 
         if self.course.take_policy == Course.TAKE_POLICY_ALL_TASKS_TO_ALL_STUDENTS and \
@@ -132,7 +123,6 @@ class Task(models.Model):
 
     def add_user_properties(self, user):
         self.can_take = self.user_can_take_task(user)
-        self.can_cancel = self.user_can_cancel_task(user)
         self.can_score = self.user_can_score_task(user)
         self.can_pass = self.user_can_pass_task(user)
         self.is_shown = not self.is_hidden or self.course.user_is_teacher(user)
