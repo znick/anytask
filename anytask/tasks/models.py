@@ -86,7 +86,7 @@ class Task(models.Model):
     def user_can_cancel_task(self, user):
         if user.is_anonymous() or self.is_hidden:
             return False
-        if TaskTaken.objects.filter(task=self).filter(user=user).filter(status=TaskTaken.STATUS_TAKEN).count() != 0:       
+        if TaskTaken.objects.filter(task=self).filter(user=user).filter(status=TaskTaken.STATUS_TAKEN).count() != 0:
             return True
         return False
 
