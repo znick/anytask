@@ -70,11 +70,6 @@ class Course(models.Model):
 
     issue_fields = models.ManyToManyField(IssueField, null=True, blank=True)
 
-    max_users_per_task = models.IntegerField(null=True, blank=True, default=0)
-    max_days_without_score = models.IntegerField(null=True, blank=True, default=0)
-    max_tasks_without_score_per_student = models.IntegerField(null=True, blank=True, default=0)
-    days_drop_from_blacklist = models.IntegerField(null=True, blank=True, default=0)
-
     contest_integrated = models.BooleanField(db_index=False, null=False, blank=False, default=False)
     send_rb_and_contest_together = models.BooleanField(db_index=False, null=False, blank=False, default=False)
     rb_integrated = models.BooleanField(db_index=False, null=False, blank=False, default=False)
@@ -123,9 +118,6 @@ class Course(models.Model):
             return True
 
         if self.get_user_group(user):
-            return True
-
-        if self.students.filter(id=user.id).exists():
             return True
 
         return False

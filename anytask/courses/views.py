@@ -398,6 +398,24 @@ def add_task(request):
 
     return HttpResponse("OK")
 
+def courses_list(request, year=None):
+    if year is None:
+        year_object = get_current_year()
+    else:
+        year_object = get_object_or_404(Year, start_year=year)
+
+    if year_object is None:
+        raise Http404
+
+    courses_list = Course.objects.filter(year=year_object).order_by('name')
+
+    context = {
+        'courses_list'  : courses_list,
+        'year'  : year_object,
+    }
+
+    return render_to_response('course_list.html', context, context_instance=RequestContext(request))
+
 def edit_course_information(request):
     user = request.user
 

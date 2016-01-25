@@ -49,7 +49,7 @@ class Task(models.Model):
         if self.is_hidden:
             return (False, '')
 
-        if not self.course.groups.filter(students=user).count() and not self.course.students.filter(id=user.id).count():
+        if not self.course.groups.filter(students=user).count():
             return (False, u'')
 
         if course.max_users_per_task:
