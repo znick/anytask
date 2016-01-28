@@ -125,13 +125,13 @@ class AnyRB(object):
         try:
             review_id = self.event.issue.get_byname('review_id')
         except (AttributeError, ValueError):
-            logger.info("Issue '%s' has not review_id.", self.issue.id)
+            logger.info("Issue '%s' has not review_id.", self.event.issue.id)
             return None
         try:            
             review_request = root.get_review_request(review_request_id=review_id)
             return review_request
         except Exception as e:
-            logger.exception("Exception while getting review_request with id '%s'. Exception: '%s'. Issue: '%s'", review_id, e, self.issue.id)
+            logger.exception("Exception while getting review_request with id '%s'. Exception: '%s'. Issue: '%s'", review_id, e, self.event.issue.id)
             return None
 
     def create_review_request(self):
@@ -159,7 +159,7 @@ class AnyRB(object):
             review_request = root.get_review_requests().create(repository=repository.id)
             self.event.issue.set_byname('review_id', review_request.id, self.event.author)
         except Exception as e:
-            logger.exception("Exception while creating review_request with id '%s'. Exception: '%s'. Issue: '%s'", review_id, e, self.issue.id)
+            logger.exception("Exception while creating review_request with id '%s'. Exception: '%s'. Issue: '%s'", review_id, e, self.event.issue.id)
             return None
 
         return review_request

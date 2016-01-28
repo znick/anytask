@@ -251,11 +251,11 @@ class Issue(models.Model):
                                 anyrb = AnyRB(event)
                                 review_request_id = anyrb.upload_review()
                                 if review_request_id is not None:
-                                    comment += '\n' + \
+                                    value['comment'] += '\n' + \
                                               u'<a href="{1}/r/{0}">Review request {0}</a>'. \
                                               format(review_request_id,settings.RB_API_URL)
                                 else:
-                                    comment += u'Ошибка отправки в Review Board.'
+                                    value['comment'] += u'Ошибка отправки в Review Board.'
                                 break
 
                 if self.status != self.STATUS_AUTO_VERIFICATION and self.status != self.STATUS_ACCEPTED:
