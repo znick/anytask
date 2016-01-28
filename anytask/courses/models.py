@@ -56,16 +56,6 @@ class FilenameExtension(models.Model):
 
 class Course(models.Model):
 
-    TYPE_POTOK = 0
-    TYPE_ONE_TASK_MANY_GROUP = 1
-    TYPE_MANY_TASK_MANY_GROUP = 2
-    TYPE_SPECIAL_COURSE = 3
-    TYPE_SHAD_CPP = 4
-
-    TAKE_POLICY_SELF_TAKEN = 0
-    TAKE_POLICY_SET_BY_TEACHER = 1
-    TAKE_POLICY_ALL_TASKS_TO_ALL_STUDENTS = 2
-
     name = models.CharField(max_length=254, db_index=True, null=False, blank=False)
     name_id = models.CharField(max_length=254, db_index=True, null=True, blank=True)
 
@@ -75,39 +65,14 @@ class Course(models.Model):
 
     is_active = models.BooleanField(db_index=True, null=False, blank=False, default=False)
 
-    TYPES = (
-        (TYPE_POTOK,                _(u'Potok')),
-        (TYPE_ONE_TASK_MANY_GROUP,  _(u'OneTasksManyGroup')),
-        (TYPE_MANY_TASK_MANY_GROUP, _(u'ManyTasksManyGroup')),
-        (TYPE_SPECIAL_COURSE,       _(u'Special Course')),
-        (TYPE_SHAD_CPP,             _(u'Shad c++')),
-    )
-
-    type = models.IntegerField(max_length=1, choices=TYPES, db_index=True, null=True, blank=True, default=0)
-
-    TAKE_POLICYS = (
-        (TAKE_POLICY_SELF_TAKEN,                _(u'Self taken')),
-        (TAKE_POLICY_SET_BY_TEACHER,            _(u'Set by teacher')),
-        (TAKE_POLICY_ALL_TASKS_TO_ALL_STUDENTS, _(u'All tasks to all students')),
-    )
-    take_policy = models.IntegerField(max_length=1, choices=TAKE_POLICYS, db_index=True, null=True, blank=True, default=0)
-
-    students = models.ManyToManyField(User, related_name='course_students_set', null=True, blank=True)
     teachers = models.ManyToManyField(User, related_name='course_teachers_set', null=True, blank=True)
     groups = models.ManyToManyField(Group, null=True, blank=True)
 
     issue_fields = models.ManyToManyField(IssueField, null=True, blank=True)
 
-    max_users_per_task = models.IntegerField(null=True, blank=True, default=0)
-    max_days_without_score = models.IntegerField(null=True, blank=True, default=0)
-    max_tasks_without_score_per_student = models.IntegerField(null=True, blank=True, default=0)
-    days_drop_from_blacklist = models.IntegerField(null=True, blank=True, default=0)
-
     contest_integrated = models.BooleanField(db_index=False, null=False, blank=False, default=False)
     send_rb_and_contest_together = models.BooleanField(db_index=False, null=False, blank=False, default=False)
     rb_integrated = models.BooleanField(db_index=False, null=False, blank=False, default=False)
-    gr_integrated = models.BooleanField(db_index=False, null=False, blank=False, default=False)
-    pdf_integrated = models.BooleanField(db_index=False, null=False, blank=False, default=False)
 
     filename_extensions = models.ManyToManyField(FilenameExtension, related_name='filename_extensions_set', null=True, blank=True)
 
@@ -140,9 +105,6 @@ class Course(models.Model):
 
         return self.teachers.filter(id=user.id).count() > 0
 
-    def is_special_course(self):
-        return self.type == Course.TYPE_SPECIAL_COURSE
-
     def get_user_group(self, user):
         for group in self.groups.filter(students=user):
             return group
@@ -156,9 +118,6 @@ class Course(models.Model):
             return True
 
         if self.get_user_group(user):
-            return True
-
-        if self.students.filter(id=user.id).exists():
             return True
 
         return False

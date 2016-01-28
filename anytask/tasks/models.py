@@ -49,10 +49,7 @@ class Task(models.Model):
         if self.is_hidden:
             return (False, '')
 
-        if course.take_policy != Course.TAKE_POLICY_SELF_TAKEN:
-            return (False, u'')
-
-        if not self.course.groups.filter(students=user).count() and not self.course.students.filter(id=user.id).count():
+        if not self.course.groups.filter(students=user).count():
             return (False, u'')
 
         if course.max_users_per_task:
@@ -87,7 +84,7 @@ class Task(models.Model):
         return (True, u'')
 
     def user_can_cancel_task(self, user):
-        if user.is_anonymous() or self.course.take_policy != Course.TAKE_POLICY_SELF_TAKEN or self.is_hidden:
+        if user.is_anonymous() or self.is_hidden:
             return False
         if TaskTaken.objects.filter(task=self).filter(user=user).filter(status=TaskTaken.STATUS_TAKEN).count() != 0:
             return True
@@ -103,12 +100,10 @@ class Task(models.Model):
         if user.is_anonymous():
             return False
 
-        if not self.course.rb_integrated and not self.course.gr_integrated and not self.course.pdf_integrated:
+        if not self.course.rb_integrated:
             return False
 
-        if self.course.take_policy == Course.TAKE_POLICY_ALL_TASKS_TO_ALL_STUDENTS and \
-           self.user_can_take_task(user):
-
+        if self.user_can_take_task(user):
             return True
 
         try:
