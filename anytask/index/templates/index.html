@@ -24,22 +24,12 @@
 
 <div class="row">
   <div class="span6">
-    <h2>Активные курсы</h2>
+    <h2>Школы</h2>
     <ul>
-      {% for course in courses %}
+      {% for school in schools %}
       <li>
-      <a href="{% url courses.views.course_page course.id %}">{{ course }}</a>
-      |
-      {{ course.year }}
+      <a href="{% url schools.views.school_page school.id %}">{{ school.name }}</a>
       </li>
-      {% endfor %}
-    </ul>
-  </div>
-  <div class="span5">
-    <h2>Архив</h2>
-    <ul>
-      {% for course in archive_courses %}
-      <li><a href="{% url courses.views.course_page course.id %}">{{ course }}</a> | {{ course.year }}</li>
       {% endfor %}
     </ul>
   </div>

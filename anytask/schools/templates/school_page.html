@@ -1,18 +1,18 @@
 {% extends "base.html" %}
 {% load django_bootstrap_breadcrumbs %}
 
-{% block title %}Список курсов {{ school }}{% endblock %}
+{% block title %}Список курсов {{ school.name }}{% endblock %}
 
 {% block breadcrumbs %}
   {{ block.super }}
-  {% breadcrumb school "" %}
+  {% breadcrumb school.name "" %}
 {% endblock breadcrumbs %}
 
 {% block content %}
   {{ block.super }}
 
   <ul type="circle">
-    {% for course in courses_list %}
+    {% for course in courses %}
     <li><a href="{{ course.get_absolute_url }}">{{ course.name }}</a></li>
     {% endfor %}
   </ul>
