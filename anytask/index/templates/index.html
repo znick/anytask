@@ -28,7 +28,7 @@
     <ul>
       {% for school in schools %}
       <li>
-      <a href="{% url schools.views.school_page school.id %}">{{ school.name }}</a>
+      <a href="{% url schools.views.school_page school.link %}">{{ school.name }}</a>
       </li>
       {% endfor %}
     </ul>
