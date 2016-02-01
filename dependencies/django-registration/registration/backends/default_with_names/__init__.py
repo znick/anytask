@@ -31,7 +31,7 @@ class AnytaskLoginForm(BootstrapMixin, AuthenticationForm):
     def __init__(self, *args, **kwargs):
         BootstrapMixin.__init__(self, *args, **kwargs)
         AuthenticationForm.__init__(self, *args, **kwargs)
-        self.fields['username'].label = u"Email / Login"
+        self.fields['username'].label = u"Login"
 
     def clean_username(self):
         username = self.cleaned_data.get('username', '')
