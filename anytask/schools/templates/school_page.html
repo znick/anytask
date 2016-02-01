@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load django_bootstrap_breadcrumbs %}
+
+{% block title %}Список курсов {{ school }}{% endblock %}
+
+{% block breadcrumbs %}
+  {{ block.super }}
+  {% breadcrumb school "" %}
+{% endblock breadcrumbs %}
+
+{% block content %}
+  {{ block.super }}
+
+  <ul type="circle">
+    {% for course in courses_list %}
+    <li><a href="{{ course.get_absolute_url }}">{{ course.name }}</a></li>
+    {% endfor %}
+  </ul>
+{% endblock %}
