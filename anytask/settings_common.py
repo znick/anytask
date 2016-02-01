@@ -140,6 +140,7 @@ INSTALLED_APPS = (
     'debug_toolbar',
     'django_bootstrap_breadcrumbs',
     'filemanager',
+    'schools',
 )
 
 AUTH_PROFILE_MODULE = "users.UserProfile"
