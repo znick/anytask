@@ -1,5 +1,5 @@
 from django.db import models
-from courses.models import School
+from schools.models import School
 
 # Create your models here.
 
