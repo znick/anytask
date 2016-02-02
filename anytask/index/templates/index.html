@@ -24,11 +24,10 @@
 
 <div class="row">
   <div class="span6">
-    <h2>Школы</h2>
     <ul>
       {% for school in schools %}
       <li>
-      <a href="{% url schools.views.school_page school.link %}">{{ school.name }}</a>
+      <a href="{% url schools.views.school_page school.link %}"><h2>{{ school.name }}</h2></a>
       </li>
       {% endfor %}
     </ul>

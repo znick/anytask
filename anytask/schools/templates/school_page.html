@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load django_bootstrap_breadcrumbs %}
 
-{% block title %}Список курсов {{ school.name }}{% endblock %}
+{% block title %}{{ school.name }}{% endblock %}
 
 {% block breadcrumbs %}
   {{ block.super }}
