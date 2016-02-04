@@ -34,7 +34,10 @@ class AnyRB(object):
             empty = False
             file_content = []
             for line in f.file:
-                file_content.append(line.decode('utf-8'))
+                try:
+                    file_content.append(line.decode('utf-8'))
+                except:
+                    file_content.append(line.decode('cp1251'))
 
             from difflib import unified_diff
             fname = f.filename()
