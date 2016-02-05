@@ -30,7 +30,7 @@ class Command(BaseCommand):
                                               u'<a href="{1}/r/{0}">Review request {0}</a>'. \
                                               format(review_request_id,settings.RB_API_URL)
                                 else:
-                                    comment += u'Ошибка отправки в Review Board.'
+                                    comment += '\n' + u'Ошибка отправки в Review Board.'
                             comment_verdict(issue, verdict, comment)
             except Exception as e:
                 logger.exception(e)

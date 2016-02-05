@@ -149,7 +149,7 @@ class AnyRB(object):
         try:
             repository = root.get_repositories().create(
                      name=repository_name,
-                     path=os.path.join(repository_path,'/.git'),
+                     path=os.path.join(repository_path,'.git'),
                      tool='Git',
                      public=False)
             root.get_repository(repository_id=repository.id).update(grant_type='add',
@@ -162,7 +162,7 @@ class AnyRB(object):
             review_request = root.get_review_requests().create(repository=repository.id)
             self.event.issue.set_byname('review_id', review_request.id, self.event.author)
         except Exception as e:
-            logger.exception("Exception while creating review_request with id '%s'. Exception: '%s'. Issue: '%s'", review_id, e, self.event.issue.id)
+            logger.exception("Exception while creating review_request. Exception: '%s'. Issue: '%s'", e, self.event.issue.id)
             return None
 
         return review_request
