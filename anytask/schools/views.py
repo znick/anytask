@@ -13,7 +13,7 @@ from schools.models import School
 @login_required
 def school_page(request, school_link):
     school = get_object_or_404(School, link=school_link)
-    courses = school.courses.all().filter(is_active=True).order_by('-name')
+    courses = school.courses.all().filter(is_active=True).order_by('name')
 
     context = {
         'school'  : school,
@@ -25,7 +25,7 @@ def school_page(request, school_link):
 @login_required
 def archive_page(request, school_link):
     school = get_object_or_404(School, link=school_link)
-    courses = school.courses.all().filter(is_active=False).order_by('-name')
+    courses = school.courses.all().filter(is_active=False).order_by('name')
 
     context = {
         'school'  : school,
