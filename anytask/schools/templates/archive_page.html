@@ -5,7 +5,7 @@
 
 {% block breadcrumbs %}
   {{ block.super }}
-  {% breadcrumb school.name url schools.views.school_page school.link %}
+  {% breadcrumb school.name "schools.views.school_page" school.link %}
   {% breadcrumb "Архив" "" %}
 {% endblock breadcrumbs %}
 
