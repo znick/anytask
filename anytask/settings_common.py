@@ -135,6 +135,7 @@ INSTALLED_APPS = (
     'anysvn',
     'issues',
     'anyrb',
+    'easy_ci',
 )
 
 AUTH_PROFILE_MODULE = "users.UserProfile"
@@ -154,3 +155,9 @@ RB_API_URL = "http://127.0.0.1/rb/"
 RB_API_USERNAME = "user"
 RB_API_PASSWORD = "qwer"
 RB_API_DEFAULT_REVIEW_GROUP = 'teachers'
+
+EASYCI_TIMEOUT = 40 #seconds
+EASYCI_CHECKERS = {
+    u"style" : u"easy_ci/scripts/return_false.sh",
+    u"tests" : u"easy_ci/scripts/return_true.sh",
+}

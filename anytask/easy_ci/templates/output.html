@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load sanitize_html %}
+
+{% block title %}{{ task.title }} | {{ student }}{% endblock %}
+
+{% block scripts %}
+<style>{{ styles }}</style>
+{% endblock %}
+
+{% block content %}
+<h2>{{ task.title }}</h2>
+<h3>{{ student.get_full_name }}</h3>
+<h4>Код</h4>
+{{ code_html|safe }}
+
+<h4>Комментарий преподавателя</h4>
+{% if user_is_teacher and is_last_task %}
+    <form method="post" class="form-horizontal">
+    {% csrf_token %}
+    {{ task_taken_form.as_p }}
+    <button type="submit" id="submit" class="btn btn-primary">Submit</button>
+    </form>
+{% endif %}
+
+{% if teachers_comments %}
+    <pre>{{ teachers_comments }}</pre>
+{% endif %}
+
+{% for check in checks %}
+    <h4>{{ check.type_name }}</h4>
+    <p>
+        Статус выхода: {{ check.exit_status }}
+        <pre>{{ check.output }}</pre>
+    </p>
+{% endfor %}
+
+{% endblock %}

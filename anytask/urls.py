@@ -30,5 +30,6 @@ urlpatterns = patterns('',
     url(r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_ROOT}),
     #url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
     url(r'^about$', direct_to_template, {'template' : 'about.html'}),
+    url(r'^easy_ci/', include('easy_ci.urls')),
     url(r'^$', 'index.views.index'),
 )

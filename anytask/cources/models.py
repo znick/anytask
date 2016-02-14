@@ -53,6 +53,7 @@ class Cource(models.Model):
 
     rb_integrated = models.BooleanField(db_index=False, null=False, blank=False, default=False)
     private = models.BooleanField(db_index=False, null=False, blank=False, default=False)
+    easy_ci = models.BooleanField(db_index=False, null=False, blank=False, default=False)
 
     added_time = models.DateTimeField(auto_now_add=True, default=datetime.now)
     update_time = models.DateTimeField(auto_now=True, default=datetime.now)

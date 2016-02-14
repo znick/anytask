@@ -12,3 +12,4 @@ django-debug-toolbar
 django-bootstrap-breadcrumbs
 pycrypto
 python-magic
+pygments

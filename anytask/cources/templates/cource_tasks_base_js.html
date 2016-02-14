@@ -28,6 +28,7 @@
                 tableName = table.data("name"),
                 storedSortList = tableName ? storedSortLists[tableName] : [];
 
+            table.stickyTableHeaders({fixedOffset: $('.navbar')});
             table.tablesorter({ cssAsc: cssAsc, cssDesc: cssDesc, sortList: storedSortList });
             table.on("sortEnd", function() {
                 var $this = $(this);
@@ -46,7 +47,7 @@
                 Cookies.set(cookieName, JSON.stringify(storedSortLists), { expires: 365, path: '' });
             });
         }
-        table.stickyTableHeaders({fixedOffset: $('.navbar')});
+
         jQuery.validator.addMethod("lessThanMax", function(value, element) {
             var int_value = parseInt(value);
             var int_max = parseInt($('#modal_max_score').val());

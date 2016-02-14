@@ -46,7 +46,7 @@ def tasks_list(request, cource_id):
         return tasks_list_json(request, cource)
 
     if cource.private and not cource.user_is_attended(request.user):
-        return render_to_response('cource_private_forbidden.html', {"cource" : cource}, context_instance=RequestContext(request))
+        return render_to_response('task_taken_status.html', {"cource" : cource}, context_instance=RequestContext(request))
 
     if cource.type == Cource.TYPE_POTOK:
         return tasks_list_potok(request, cource)

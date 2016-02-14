@@ -177,7 +177,7 @@ class TaskTaken(models.Model):
     score = models.IntegerField(db_index=False, null=False, blank=False, default=0)
     scored_by = models.ForeignKey(User, db_index=True, null=True, blank=True, related_name='task_taken_scored_by_set')
 
-    teacher_comments = models.TextField(db_index=False, null=True, blank=True, default='')
+    teacher_comments = models.TextField(db_index=False, null=True, blank=True, default='', verbose_name=u"Комментарий преподавателя")
 
     added_time = models.DateTimeField(auto_now_add=True, default=datetime.now)
     update_time = models.DateTimeField(auto_now=True, default=datetime.now)

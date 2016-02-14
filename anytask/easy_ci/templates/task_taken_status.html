@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load sanitize_html %}
+
+{% block title %}{{ task.title }} | {{ student }}{% endblock %}
+
+{#{% block scripts %}#}
+{#{% endblock %}#}
+
+{% block content %}
+
+<h2>{{ task.title }}</h2>
+{% if checks %}
+    <table class="table table-striped">
+    <tr>
+        <th>Дата</th>
+        {% for check_type in types_order %}
+            <td>{{ check_type.1 }}</th>
+        {% endfor %}
+        {% if user_is_teacher %}
+
+        {% endif %}
+        {% for run, checks in checks.iteritems %}
+            <tr>
+                <td><a href='{% url easy_ci.views.check_task_view run.id %}'>{{ run.added_time }}</a></td>
+            {% for check in checks %}
+                <td>
+                    {% if check.exit_status == 0 %}
+                        <span class="label label-success">OK
+                    {% elif check.exit_status == None %}
+                        Checking ...
+                    {% else %}
+                        <span class="label label-important">FAIL
+                    {% endif %}
+                    </span>
+                </td>
+            {% endfor %}
+            </tr>
+        {% endfor %}
+    </tr>
+    </table>
+ {% endif %}
+
+<form method="post" class="form-horizontal">
+{% csrf_token %}
+{{ form.as_p }}
+<button type="submit" id="submit" class="btn btn-primary">Submit</button>
+</form>
+
+
+
+{% endblock %}
