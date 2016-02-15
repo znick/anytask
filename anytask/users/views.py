@@ -66,13 +66,16 @@ def profile(request, username=None, year=None):
 
     issues = Issue.objects.filter(student=user_to_show).order_by('task__course')
 
+    invite_form = InviteActivationForm()
+
     context = {
         'user_to_show'              : user_to_show,
         'groups'                    : groups,
         'user_course_information'   : user_course_information,
         'teacher_in_courses'        : teacher_in_courses,
         'can_generate_invites'      : can_generate_invites,
-        'issues': issues,
+        'issues':                   : issues,
+        'invite_form'               : invite_form,
     }
 
     return render_to_response('user_profile.html', context, context_instance=RequestContext(request))

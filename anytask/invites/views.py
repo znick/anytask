@@ -11,21 +11,26 @@ from groups.models import Group
 from years.common import get_current_year
 from courses.models import Course
 
+from users.forms import InviteActivationForm
+
 def generate_invites(request):
     user = request.user
-    
+
     if not Invite.user_can_generate_invite(user):
         return render_to_response('generate_forbidden.html', {}, context_instance=RequestContext(request)) 
-    
+
     if request.method == 'POST':
         return generate_invites_post(request)
-    
+
     courses = Course.objects.filter(is_active=True)
-    groups = []
+    groups = Group.objects.filter(year=get_current_year())
+    true_courses = []
     for course in courses:
         if user in course.teachers.all():
-            groups.append(course.groups.all())
-    
+            true_courses.append(course)
+
+    groups = set(groups.filter(course__in=true_courses))
+
     context = {
         'groups'    : groups,
         #'courses'   : courses,
@@ -79,11 +84,12 @@ def generate_invites_post(request):
 
 def activate_invite(request):
     user = request.user
-    
-    if 'invite' not in request.POST:
+    invite_form = InviteActivationForm(request.POST)
+    if invite_form.cleaned_data['invite'] is None:
         return HttpResponseForbidden()
 
-    invite = get_object_or_404(Invite, key=request.POST['invite'].strip())
+    invite = get_object_or_404(Invite, key=invite_form.cleaned_data['invite'])
+
     if invite.group:
         invite.group.students.add(user)
 
