@@ -16,7 +16,11 @@ class InviteActivationForm(forms.Form):
         in use and exists.
         """
 
-        invite = Invite(key=self.cleaned_data['invite'])
+        try:
+            invite = Invite.objects.get(key=self.cleaned_data['invite'])
+        except:
+            raise forms.ValidationError("Такого инвайта не существует.")
+
         if invite.added_time + datetime.timedelta(days=settings.INVITE_EXPIRED_DAYS) < datetime.datetime.now():
             raise forms.ValidationError("Срок действия инвайта истек.")
         else:
