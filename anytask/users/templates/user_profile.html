@@ -26,10 +26,16 @@
         <br>
       {% endif %}
 
-      <form action="{% url invites.views.activate_invite %}" method="post" id="invites-form" class="form-horizontal">
+      <form action="{% url users.views.profile %}" method="post" id="invites-form" class="form-horizontal">
           {% csrf_token %}
           <fieldset>
-            <div>{{ invite_form }} </div> <br>
+            <div>{{ invite_form }} 
+              {% if invite_form.errors %}
+                <span class="help-block">
+                  {% for error in invite_foem.errors %}{{ error }}{% endfor %}
+                </span>
+              {% endif %}
+            </div> <br>
             <div>
               <button type="submit" class="btn btn-primary">Применить</button>
             </div>

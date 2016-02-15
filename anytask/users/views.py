@@ -67,7 +67,14 @@ def profile(request, username=None, year=None):
 
     issues = Issue.objects.filter(student=user_to_show).order_by('task__course')
 
-    invite_form = InviteActivationForm()
+    if request.method == 'POST':
+        invite_form = InviteActivationForm(request.POST)
+        if invite_form.is_valid():
+            invite = get_object_or_404(Invite, key=invite_form.cleaned_data['invite'])
+            if invite.group:
+                invite.group.students.add(user)
+    else:
+        invite_form = InviteActivationForm()
 
     context = {
         'user_to_show'              : user_to_show,
@@ -100,5 +107,3 @@ def add_user_to_group(request):
     group.save()
 
     return HttpResponse("OK")
-
-

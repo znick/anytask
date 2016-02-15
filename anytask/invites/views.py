@@ -80,16 +80,4 @@ def generate_invites_post(request):
         'invite_expired_date'   : invite_expired_date,
     }
     
-    return render_to_response('invites_list.html', context, context_instance=RequestContext(request))
-
-def activate_invite(request):
-    user = request.user
-    invite_form = InviteActivationForm(request.POST)
-    if invite_form.is_valid():
-
-        invite = get_object_or_404(Invite, key=invite_form.cleaned_data['invite'])
-
-        if invite.group:
-            invite.group.students.add(user)
-
-    return redirect('users.views.profile', username=user.username)
+    return render_to_response('invites_list.html', context, context_instance=RequestContext(request))   
