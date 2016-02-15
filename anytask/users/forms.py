@@ -1,3 +1,4 @@
+# coding: utf-8
 from django import forms
 from django.conf import settings
 from invites.models import Invite
@@ -15,8 +16,8 @@ class InviteActivationForm(forms.Form):
         in use and exists.
         """
 
-        invite = self.cleaned_data['invite']
-        if invite.added_time + datetime.timedelta(days=settings.INVITE_EXPIRED_DAYS) > datetime.date.today():
+        invite = Invite(key=self.cleaned_data['invite'])
+        if invite.added_time + datetime.timedelta(days=settings.INVITE_EXPIRED_DAYS) < datetime.datetime.now():
             raise forms.ValidationError("Срок действия инвайта истек.")
         else:
             return self.cleaned_data['invite']
