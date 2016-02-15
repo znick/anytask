@@ -157,8 +157,8 @@ class DefaultBackend(object):
         class of this backend as the sender.
 
         """
-        username, email, password, first_name, last_name, invite_key = kwargs['username'], kwargs['email'], kwargs['password1'], kwargs['first_name'], kwargs['last_name'], kwargs['invite']
-        invite = get_object_or_404(Invite, key=invite_key)
+        username, email, password, first_name, last_name = kwargs['username'], kwargs['email'], kwargs['password1'], kwargs['first_name'], kwargs['last_name']
+        #invite = get_object_or_404(Invite, key=invite_key)
 
         if Site._meta.installed:
             site = Site.objects.get_current()
@@ -171,10 +171,10 @@ class DefaultBackend(object):
         new_user.last_name = last_name
         new_user.save()
 
-        if invite.group:
-            invite.group.students.add(new_user)
-        invite.invited_user = new_user
-        invite.save()
+        #if invite.group:
+        #    invite.group.students.add(new_user)
+        #invite.invited_user = new_user
+        #invite.save()
 
         signals.user_registered.send(sender=self.__class__,
                                      user=new_user,

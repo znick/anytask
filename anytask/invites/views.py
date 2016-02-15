@@ -1,7 +1,7 @@
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.http import Http404
 from django.template import RequestContext
-from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound
+from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound, HttpResponseRedirect
 from django.conf import settings
 
 import datetime
@@ -73,3 +73,15 @@ def generate_invites_post(request):
     }
     
     return render_to_response('invites_list.html', context, context_instance=RequestContext(request))
+
+def activate_invite(request):
+    user = request.user
+    
+    if 'invite' not in request.POST:
+        return HttpResponseForbidden()
+
+    invite = get_object_or_404(Invite, key=request.POST['invite'].strip())
+    if invite.group:
+        invite.group.students.add(user)
+
+    return HttpResponseRedirect('')
