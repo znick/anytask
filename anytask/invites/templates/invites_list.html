@@ -4,7 +4,7 @@
 		<title>Инвайты</title>
 	</head>
 	<body>
-	Инвайты на Anytask {% if group %} для {{ group.name }} {% endif %}<br/>
+	Инвайт на Anytask {% if group %} для {{ group.name }} {% endif %}<br/>
 	Действительны до {{ invite_expired_date }}
 		<pre>
 			{% for invite in invites %}

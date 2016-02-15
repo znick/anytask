@@ -21,9 +21,11 @@ def generate_invites(request):
     
     
     groups = Group.objects.filter(year=get_current_year())
+    courses = Course.objects.filter(is_active=True)
     
     context = {
         'groups'    : groups,
+        'courses'   : courses,
     }
     
     return render_to_response('generate.html', context, context_instance=RequestContext(request))
@@ -34,9 +36,9 @@ def generate_invites_post(request):
     if 'number_of_invites' not in request.POST:
         return HttpResponseForbidden()
     
-    invites_not_for_group = False
-    if 'invites_not_for_group' in request.POST:
-        invites_not_for_group = True
+    #invites_not_for_group = False
+    #if 'invites_not_for_group' in request.POST:
+    #    invites_not_for_group = True
     
     group_id = None
     if 'group_id' in request.POST:
@@ -44,8 +46,13 @@ def generate_invites_post(request):
             group_id = int(request.POST['group_id'])
         except ValueError: #not int
             return HttpResponseForbidden()
-    if invites_not_for_group == False and group_id is None:
-        return HttpResponseForbidden()
+    if 'course_id' in request.POST:
+        try:
+            group_id = int(request.POST['course_id'])
+        except ValueError: #not int
+            return HttpResponseForbidden()
+    #if invites_not_for_group == False and group_id is None:
+    #    return HttpResponseForbidden()
     
     try:
         number_of_invites = int(request.POST['number_of_invites'])
@@ -53,8 +60,8 @@ def generate_invites_post(request):
         return HttpResponseForbidden()
     
     group = None
-    if not invites_not_for_group:
-        group = get_object_or_404(Group, id = group_id)
+    #if not invites_not_for_group:
+    group = get_object_or_404(Group, id = group_id)
     
     invites = Invite.generate_invites(number_of_invites, user, group)
     invite_expired_date = datetime.date.today() + datetime.timedelta(days=settings.INVITE_EXPIRED_DAYS)

@@ -49,10 +49,12 @@
 			if ($('#invites_not_for_group').is(':checked'))
 			{
 				$('#groups').attr("disabled",true);
+				$('#courses').attr("disabled",false);
 			}
 			else
 			{
 				$('#groups').attr("disabled",false);
+				$('#courses').attr("disabled",true);
 			}
 		}
 	</script>
@@ -66,7 +68,7 @@
         <form action="{% url invites.views.generate_invites %}" method="post" id="invites-form" class="form-horizontal">
         	{% csrf_token %}
         	<fieldset>
-		       	<div class="control-group">
+		       	<div class="control-group" style="display: none;"s>
 		       		<label class="control-label" for="number_of_invites">Количество инвайтов:</label>
 		       		<div class="controls">
 		       			<input type="text" value="1" name="number_of_invites" class="input-mini" id="number_of_invites">
@@ -76,16 +78,25 @@
 		       	</div>
 		       	
 		       	<div id="group_options">
-		       		Группа, для которой создаются инвайты:&nbsp;
+		       		Группа, для которой создаем инвайт:&nbsp;
 		       		<select id="groups" name="group_id">
 		       			{% for group in groups %}
 		       				<option value="{{ group.id }}">{{ group.name }}</option>
 		       			{% endfor %}
 		       		</select>
+		       	</div>
+		       	<div id="course_options">
+		       		Курс, для которой создаем инвайт:&nbsp;
+		       		<select disabled="true" id="courses" name="course_id">
+		       			{% for course in courses %}
+		       				<option value="{{ course.group_with_extern.id }}">{{ course.name }}</option>
+		       			{% endfor %}
+		       		</select>
 		       	</div> 
+
 		       	<div>
 		       		<label class="checkbox inline">
-		       			<input type="checkbox" name="invites_not_for_group" id="invites_not_for_group" onchange="change_state();">Не привязывать инвайты к группе
+		       			<input type="checkbox" name="invites_not_for_group" id="invites_not_for_group" onchange="change_state();">Привязать инвайт не к группе, а к курсу
 		       		</label>
 		       	</div><br/>
 		       	<div>

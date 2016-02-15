@@ -45,7 +45,7 @@ class AnytaskLoginForm(BootstrapMixin, AuthenticationForm):
 class RegistrationFormWithNames(RegistrationForm):
     first_name = forms.CharField(widget=forms.TextInput(attrs=attrs_dict), label="Имя")
     last_name = forms.CharField(widget=forms.TextInput(attrs=attrs_dict), label="Фамилия")
-    invite = forms.CharField(widget=forms.TextInput(attrs=attrs_dict), label="Инвайт")
+    #invite = forms.CharField(widget=forms.TextInput(attrs=attrs_dict), label="Инвайт")
 
     def __init__(self, *args, **kwargs):
         super(RegistrationForm, self).__init__(*args, **kwargs)
@@ -57,7 +57,7 @@ class RegistrationFormWithNames(RegistrationForm):
             'email',
             'password1',
             'password2',
-            'invite',
+            #'invite',
         ]
 
     def clean(self):
