@@ -68,7 +68,7 @@
         <form action="{% url invites.views.generate_invites %}" method="post" id="invites-form" class="form-horizontal">
         	{% csrf_token %}
         	<fieldset>
-		       	<div class="control-group" style="display: none;"s>
+		       	<div class="control-group" style="display: none;">
 		       		<label class="control-label" for="number_of_invites">Количество инвайтов:</label>
 		       		<div class="controls">
 		       			<input type="text" value="1" name="number_of_invites" class="input-mini" id="number_of_invites">
@@ -85,6 +85,7 @@
 		       			{% endfor %}
 		       		</select>
 		       	</div>
+		       	<br>
 		       	<div id="course_options">
 		       		Курс, для которой создаем инвайт:&nbsp;
 		       		<select disabled="true" id="courses" name="course_id">

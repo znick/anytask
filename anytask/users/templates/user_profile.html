@@ -24,7 +24,7 @@
       {% if user == user_to_show and can_generate_invites %}
         <a href="#" onclick="window.open('{% url invites.views.generate_invites %}','_blank','height=331,width=640,status=yes,toolbar=no,menubar=no,location=no');return false;">Сгенерировать инвайты</a>
         <br>
-      {% elif%}
+      {% else %}
       <form action="{% url invites.views.activate_invite %}" method="post" id="invites-form" class="form-horizontal">
           {% csrf_token %}
           <fieldset>
@@ -39,8 +39,8 @@
             </div>
           </fieldset>
         </form>
-      {% endif%}
-      
+      {% endif %}
+
       {% if teacher_in_courses %}
         <p>E-mail: {{ user_to_show.email }}</p>
         Преподаватель в курсах:

@@ -9,6 +9,7 @@ import datetime
 from invites.models import Invite 
 from groups.models import Group
 from years.common import get_current_year
+from courses.models import Course
 
 def generate_invites(request):
     user = request.user
@@ -21,7 +22,7 @@ def generate_invites(request):
     
     
     groups = Group.objects.filter(year=get_current_year())
-    courses = Course.objects.filter(is_active=True)
+    courses = Course.objects.filter(is_active=True).exclude(group_with_extern__isnull=True)
     
     context = {
         'groups'    : groups,
@@ -36,9 +37,9 @@ def generate_invites_post(request):
     if 'number_of_invites' not in request.POST:
         return HttpResponseForbidden()
     
-    #invites_not_for_group = False
-    #if 'invites_not_for_group' in request.POST:
-    #    invites_not_for_group = True
+    invites_not_for_group = False
+    if 'invites_not_for_group' in request.POST:
+        invites_not_for_group = True
     
     group_id = None
     if 'group_id' in request.POST:
@@ -46,7 +47,7 @@ def generate_invites_post(request):
             group_id = int(request.POST['group_id'])
         except ValueError: #not int
             return HttpResponseForbidden()
-    if 'course_id' in request.POST:
+    if invites_not_for_group and 'course_id' in request.POST:
         try:
             group_id = int(request.POST['course_id'])
         except ValueError: #not int
@@ -60,7 +61,7 @@ def generate_invites_post(request):
         return HttpResponseForbidden()
     
     group = None
-    #if not invites_not_for_group:
+
     group = get_object_or_404(Group, id = group_id)
     
     invites = Invite.generate_invites(number_of_invites, user, group)
@@ -84,4 +85,4 @@ def activate_invite(request):
     if invite.group:
         invite.group.students.add(user)
 
-    return HttpResponseRedirect('')
+    return redirect('users.views.profile', username=user.username)
