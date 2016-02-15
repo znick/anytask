@@ -73,6 +73,7 @@ def profile(request, username=None, year=None):
             invite = get_object_or_404(Invite, key=invite_form.cleaned_data['invite'])
             if invite.group:
                 invite.group.students.add(user)
+                invite.invited_users.add(user)
     else:
         invite_form = InviteActivationForm()
 

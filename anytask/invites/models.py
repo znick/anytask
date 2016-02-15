@@ -17,6 +17,7 @@ class Invite(models.Model):
     generated_by = models.ForeignKey(User, db_index=False, null=False, blank=False, related_name='invite_generated_by')
     group = models.ForeignKey(Group, db_index=False, null=True, blank=True)
     invited_user = models.ForeignKey(User, db_index=False, null=True, blank=True, related_name='initve_invited')
+    invited_users = models.ManyToManyField(User, null=True, blank=True)
     
     key = models.CharField(max_length=10, db_index=True, null=False, blank=False, unique=True)
 
