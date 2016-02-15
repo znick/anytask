@@ -7,15 +7,15 @@
 
 {% block scripts %}
 
-	{% include "cource_tasks_base_js.html" %}
+    {% include "cource_tasks_base_js.html" %}
 
-	<script type="text/javascript">
-		function change_to_edit()
-		{
-			$('#modal_task_desc_text').hide();
-			$('#modal_task_desc_edit').show();
-		}
-	</script>
+    <script type="text/javascript">
+        function change_to_edit()
+        {
+            $('#modal_task_desc_text').hide();
+            $('#modal_task_desc_edit').show();
+        }
+    </script>
 
 {% endblock %}
 
@@ -30,16 +30,16 @@
 
 <h3>{{ cource.name }} <small>{{ cource.year }}</small></h3>
 {% if cource.can_edit %}
-	<a class="btn-small" href="javascript:get_edit_cource_modal({{ cource.id }}, {% if cource.information %} '{{cource.information|escapejs}}' {% else %} '' {% endif %});">
-		{% if cource.information %}Редактировать информацию о курсе{% else %}Добавить информацию о курсе{% endif %}
-	</a>
-	<br>
-	{% if cource.can_edit and cource.is_special_course %}
-		<a class="btn-small" href="javascript:get_add_task_modal({{ cource.id }}, null,  null, '{{cource.can_edit}}');">
-			Добавить задачу
-		</a>
-		<br>
-	{% endif %}
+    <a class="btn-small" href="javascript:get_edit_cource_modal({{ cource.id }}, {% if cource.information %} '{{cource.information|escapejs}}' {% else %} '' {% endif %});">
+        {% if cource.information %}Редактировать информацию о курсе{% else %}Добавить информацию о курсе{% endif %}
+    </a>
+    <br>
+    {% if cource.can_edit and cource.is_special_course %}
+        <a class="btn-small" href="javascript:get_add_task_modal({{ cource.id }}, null,  null, '{{cource.can_edit}}');">
+            Добавить задачу
+        </a>
+        <br>
+    {% endif %}
 
 {% endif %}
 {% if user.is_active and cource.is_special_course %}
@@ -57,175 +57,175 @@
 
 
 {% if cource.information %}
-	{{ cource.information|sanitize|safe }}
-	<br>
+    {{ cource.information|sanitize|safe }}
+    <br>
 {% endif %}
 Преподаватели:
 {% for teacher in cource.teachers.all %}
-	<a href="{% url users.views.profile teacher.username %}">{{ teacher.last_name }} {{ teacher.first_name }}</a>{% if not forloop.last %},{% endif %}
+    <a href="{% url users.views.profile teacher.username %}">{{ teacher.last_name }} {{ teacher.first_name }}</a>{% if not forloop.last %},{% endif %}
 {% endfor %}
 <br />
 <br />
 <div class="row">
-	<div class="_span12">
-		{% for group,student_information in group_information.items %}
-			<b>{{ group.name }}</b>
-			{% if cource.can_edit %}
-				<a class="btn-small" href="javascript:get_add_task_modal({{ cource.id }}, {{ group.id }},  null, '{{cource.can_edit}}');">
-					Добавить задачу
-				</a>
-			{% endif %}
-			<table class="table table-striped table-bordered table-condensed table_results" data-name="{{ group.name }}" id="table_results">
-				<thead>
-					<tr>
-						{% for task in group_tasks|key:group %}
+    <div class="_span12">
+        {% for group,student_information in group_information.items %}
+            <b>{{ group.name }}</b>
+            {% if cource.can_edit %}
+                <a class="btn-small" href="javascript:get_add_task_modal({{ cource.id }}, {{ group.id }},  null, '{{cource.can_edit}}');">
+                    Добавить задачу
+                </a>
+            {% endif %}
+            <table class="table table-striped table-bordered table-condensed table_results" data-name="{{ group.name }}" id="table_results">
+                <thead>
+                    <tr>
+                        {% for task in group_tasks|key:group %}
                             {% if forloop.counter0|divisibleby:"6" %}
                                 <th class="header_sortable"></th>
                             {% endif %}
-							{% if task.is_shown %}
-								<th align="center" class="{sorter: false} no-font-weight">
-									{% if task.task_text or task.can_score %}
-										<a {% if task.is_hidden %} style="color:gray" {% endif %}  href="javascript:get_task_modal({{task.id}}, '{{task.title}}', '{{task.is_hidden}}', '{{task.task_text|safe|sanitize|escapejs}}', '{{task.task_text|escapejs}}', {{task.score_max}}, '{{task.can_score}}', 'text')">
-											{{ task.title }}
-										</a>
-									{% else %}
-										{{ task.title }}
-									{% endif %}
-									 <span class="label {% if not task.is_hidden %} label-success {% endif 	%}">{{ task.score_max }}</span>
-								</th>
-							{% endif %}
+                            {% if task.is_shown %}
+                                <th align="center" class="{sorter: false} no-font-weight">
+                                    {% if task.task_text or task.can_score %}
+                                        <a {% if task.is_hidden %} style="color:gray" {% endif %}  href="javascript:get_task_modal({{task.id}}, '{{task.title}}', '{{task.is_hidden}}', '{{task.task_text|safe|sanitize|escapejs}}', '{{task.task_text|escapejs}}', {{task.score_max}}, '{{task.can_score}}', 'text')">
+                                            {{ task.title }}
+                                        </a>
+                                    {% else %}
+                                        {{ task.title }}
+                                    {% endif %}
+                                     <span class="label {% if not task.is_hidden %} label-success {% endif 	%}">{{ task.score_max }}</span>
+                                </th>
+                            {% endif %}
                         {% empty %}
                             <th class="header_sortable"></th>
-						{% endfor %}
-						<th class="no-font-weight">
-							Суммарный балл <span class="label label-success">{{ group_x_max_score|key:group }}</span>
-						</th>
-					</tr>
-				</thead>
+                        {% endfor %}
+                        <th class="no-font-weight">
+                            Суммарный балл <span class="label label-success">{{ group_x_max_score|key:group }}</span>
+                        </th>
+                    </tr>
+                </thead>
                 <tbody>
-                	{% for student, task_x_task_takens, student_summ_score in student_information %}
-						<tr>
+                    {% for student, task_x_task_takens, student_summ_score in student_information %}
+                        <tr>
 
-							{% for task in group_tasks|key:group %}
+                            {% for task in group_tasks|key:group %}
                                 {% if forloop.counter0|divisibleby:"6" %}
                                     <td>{{ student.last_name }}&nbsp;{{ student.first_name }}</td>
                                 {% endif %}
-								{% if task.is_shown %}
-									<td align="center" class="student_{{ student.id }}">
-											{% if not task.is_hidden and task.can_score %}
+                                {% if task.is_shown %}
+                                    <td align="center" class="student_{{ student.id }}">
+                                            {% if not task.is_hidden and task.can_score %}
                                                 {% if cource.easy_ci %}
                                                     <a class="btn-small" href="{% url easy_ci.views.task_taken_view student.id task.id %}">
-												{% else %}
+                                                {% else %}
                                                     <a class="btn-small" href="javascript:get_modal({{ task.id }}, '{{ task.title }}', '{{ student.get_full_name }}', {{ student.id }}, {{ task_x_task_takens|score:task }}, {{ task.score_max }}, '{{ task_x_task_takens|comment:task|safe|sanitize|escapejs }}');">
                                                 {% endif %}
                                                 <span class="label {% if task_x_task_takens|score:task %} {% if task_x_task_takens|score:task == task.score_max %} label-success {% else %} label-info {% endif %} {% endif %}">{{ task_x_task_takens|score:task }}</span>
-												</a>
-											{% elif user.username == student.username and task.can_pass %}
+                                                </a>
+                                            {% elif user.username == student.username and task.can_pass %}
                                                 {% if cource.easy_ci %}
                                                     <a class="btn-small" href="{% url easy_ci.views.task_taken_view student.id task.id %}"><span class="label {% if task_x_task_takens|score:task %} {% if task_x_task_takens|score:task == task.score_max %} label-success {% else %} label-info {% endif %} {% endif %}">{{ task_x_task_takens|score:task }}</span></a>
-												{% else %}
-												    <a class="btn-small" href="{% url submit_review task.id %}"><span class="label {% if task_x_task_takens|score:task %} {% if task_x_task_takens|score:task == task.score_max %} label-success {% else %} label-info {% endif %} {% endif %}">{{ task_x_task_takens|score:task }}</span></a>
+                                                {% else %}
+                                                    <a class="btn-small" href="{% url submit_review task.id %}"><span class="label {% if task_x_task_takens|score:task %} {% if task_x_task_takens|score:task == task.score_max %} label-success {% else %} label-info {% endif %} {% endif %}">{{ task_x_task_takens|score:task }}</span></a>
                                                 {% endif %}
-											{% else %}
-												{% if task.is_hidden %}
-													<span class="label">{{ task_x_task_takens|score:task }}</span>
-												{% else %}
-													<span class="label {% if task_x_task_takens|score:task %} {% if task_x_task_takens|score:task == task.score_max %} label-success {% else %} label-info {% endif %} {% endif %}">{{ task_x_task_takens|score:task }}</span>
-												{% endif %}
-											{% endif %}
-											{% if task_x_task_takens|comment:task %}
-												<a class="icon-comment" href="javascript:get_modal_comment('{{task_x_task_takens|comment:task|safe|sanitize|escapejs }}')"></a>
-											{% endif %}
-									</td>
-								{% endif %}
+                                            {% else %}
+                                                {% if task.is_hidden %}
+                                                    <span class="label">{{ task_x_task_takens|score:task }}</span>
+                                                {% else %}
+                                                    <span class="label {% if task_x_task_takens|score:task %} {% if task_x_task_takens|score:task == task.score_max %} label-success {% else %} label-info {% endif %} {% endif %}">{{ task_x_task_takens|score:task }}</span>
+                                                {% endif %}
+                                            {% endif %}
+                                            {% if task_x_task_takens|comment:task %}
+                                                <a class="icon-comment" href="javascript:get_modal_comment('{{task_x_task_takens|comment:task|safe|sanitize|escapejs }}')"></a>
+                                            {% endif %}
+                                    </td>
+                                {% endif %}
                             {% empty %}
                                 <td>{{ student.last_name }}&nbsp;{{ student.first_name }}</td>
-							{% endfor %}
-							<td>
-								<span class="label {% if student_summ_score %} {% if student_summ_score == group_x_max_score|key:group %} label-success {% else %} label-info {% endif %} {% else %} label-important {% endif %}">{{ student_summ_score }}</span>
-							</td>
-						</tr>
-					{% endfor %}
-				</tbody>
-			</table>
-		{% endfor %}
+                            {% endfor %}
+                            <td>
+                                <span class="label {% if student_summ_score %} {% if student_summ_score == group_x_max_score|key:group %} label-success {% else %} label-info {% endif %} {% else %} label-important {% endif %}">{{ student_summ_score }}</span>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endfor %}
 
             {% if cource.can_edit or extern_tasks %}
-    			<b>Слушатели курса</b>
-    			{% if cource.can_edit and not cource.is_special_course %}
-    				<a class="btn-small" href="javascript:get_add_task_modal({{ cource.id }}, null,  null, '{{cource.can_edit}}');">
-    					Добавить задачу
-    				</a>
-    			{% endif %}
+                <b>Слушатели курса</b>
+                {% if cource.can_edit and not cource.is_special_course %}
+                    <a class="btn-small" href="javascript:get_add_task_modal({{ cource.id }}, null,  null, '{{cource.can_edit}}');">
+                        Добавить задачу
+                    </a>
+                {% endif %}
 
-    			<table class="table table-striped table-bordered table-condensed table_results" id="table_results">
-    				<thead>
-    					<tr>
-    						{% for task in extern_tasks %}
+                <table class="table table-striped table-bordered table-condensed table_results" id="table_results">
+                    <thead>
+                        <tr>
+                            {% for task in extern_tasks %}
                                 {% if forloop.counter0|divisibleby:"6" %}
                                      <th></th>
                                 {% endif %}
-    							{% if task.is_shown %}
-    								<th align="center" class="{sorter: false} no-font-weight">
-    									{% if task.task_text or task.can_score %}
-    										<a {% if task.is_hidden %} style="color:gray" {% endif %}  href="javascript:get_task_modal({{task.id}}, '{{task.title}}', '{{task.is_hidden}}', '{{task.task_text|safe|sanitize|escapejs}}', '{{task.task_text|safe|sanitize|escapejs}}', {{task.score_max}}, '{{task.can_score}}', 'text')">
-    											{{ task.title }}
-    										</a>
-    									{% else %}
-    										{{ task.title }}
-    									{% endif %}
-    									 <span class="label {% if not task.is_hidden %} label-success {% endif %}">{{ task.score_max }}</span>
-    								</th>
-    							{% endif %}
+                                {% if task.is_shown %}
+                                    <th align="center" class="{sorter: false} no-font-weight">
+                                        {% if task.task_text or task.can_score %}
+                                            <a {% if task.is_hidden %} style="color:gray" {% endif %}  href="javascript:get_task_modal({{task.id}}, '{{task.title}}', '{{task.is_hidden}}', '{{task.task_text|safe|sanitize|escapejs}}', '{{task.task_text|safe|sanitize|escapejs}}', {{task.score_max}}, '{{task.can_score}}', 'text')">
+                                                {{ task.title }}
+                                            </a>
+                                        {% else %}
+                                            {{ task.title }}
+                                        {% endif %}
+                                         <span class="label {% if not task.is_hidden %} label-success {% endif %}">{{ task.score_max }}</span>
+                                    </th>
+                                {% endif %}
                             {% empty %}
                                 <th></th>
-    						{% endfor %}
-    						<th>
-    							Суммарный балл <span class="label label-success">{{ extern_max_score }}</span>
-    						</th>
-    					</tr>
+                            {% endfor %}
+                            <th>
+                                Суммарный балл <span class="label label-success">{{ extern_max_score }}</span>
+                            </th>
+                        </tr>
                     </thead>
                     <tbody>
-    					{% for student, task_x_task_takens, summ_scores in extern_student_information %}
-    						<tr>
-    							{% for task in extern_tasks %}
+                        {% for student, task_x_task_takens, summ_scores in extern_student_information %}
+                            <tr>
+                                {% for task in extern_tasks %}
                                     {% if forloop.counter0|divisibleby:"6" %}
                                          <td>{{ student.last_name }}&nbsp;{{ student.first_name }}</td>
                                     {% endif %}
 
-    								{% if task.is_shown %}
-    									<td align="center">
-    											{% if not task.is_hidden and task.can_score %}
-    												<a class="btn-small" href="javascript:get_modal({{ task.id }}, '{{ task.title }}', '{{ student.get_full_name }}', {{ student.id }}, {{ task_x_task_takens|score:task }}, {{ task.score_max }}, {% if task_x_task_takens|comment:task %} '{{ task_x_task_takens|comment:task|sanitize }}' {% else %} '' {% endif %})">
-    													<span class="label {% if task_x_task_takens|score:task %} {% if task_x_task_takens|score:task == task.score_max %} label-success {% else %} label-info {% endif %} {% endif %}">{{ task_x_task_takens|score:task }}</span>
-    												</a>
+                                    {% if task.is_shown %}
+                                        <td align="center">
+                                                {% if not task.is_hidden and task.can_score %}
+                                                    <a class="btn-small" href="javascript:get_modal({{ task.id }}, '{{ task.title }}', '{{ student.get_full_name }}', {{ student.id }}, {{ task_x_task_takens|score:task }}, {{ task.score_max }}, {% if task_x_task_takens|comment:task %} '{{ task_x_task_takens|comment:task|sanitize }}' {% else %} '' {% endif %})">
+                                                        <span class="label {% if task_x_task_takens|score:task %} {% if task_x_task_takens|score:task == task.score_max %} label-success {% else %} label-info {% endif %} {% endif %}">{{ task_x_task_takens|score:task }}</span>
+                                                    </a>
                                                 {% elif user.username == student.username and task.can_pass %}
                                                     <a class="btn-small" href="{% url submit_review task.id %}"><span class="label {% if task_x_task_takens|score:task %} {% if task_x_task_takens|score:task == task.score_max %} label-success {% else %} label-info {% endif %} {% endif %}">{{ task_x_task_takens|score:task }}</span></a>
-    											{% else %}
-    												{% if task.is_hidden %}
-    													<span class="label">{{ task_x_task_takens|score:task }}</span>
-    												{% else %}
-    													<span class="label {% if task_x_task_takens|score:task %} {% if task_x_task_takens|score:task == task.score_max %} label-success {% else %} label-info {% endif %} {% endif %}">{{ task_x_task_takens|score:task }}</span>
-    												{% endif %}
-    											{% endif %}
-    											{% if task_x_task_takens|comment:task %}
-    												<a class="icon-comment" href="javascript:get_modal_comment('{{ task_x_task_takens|comment:task|sanitize }}')"></a>
-    											{% endif %}
-    									</td>
+                                                {% else %}
+                                                    {% if task.is_hidden %}
+                                                        <span class="label">{{ task_x_task_takens|score:task }}</span>
+                                                    {% else %}
+                                                        <span class="label {% if task_x_task_takens|score:task %} {% if task_x_task_takens|score:task == task.score_max %} label-success {% else %} label-info {% endif %} {% endif %}">{{ task_x_task_takens|score:task }}</span>
+                                                    {% endif %}
+                                                {% endif %}
+                                                {% if task_x_task_takens|comment:task %}
+                                                    <a class="icon-comment" href="javascript:get_modal_comment('{{ task_x_task_takens|comment:task|sanitize }}')"></a>
+                                                {% endif %}
+                                        </td>
 
-    								{% endif %}
+                                    {% endif %}
                                 {% empty %}
                                     <td>{{ student.last_name }}&nbsp;{{ student.first_name }}</td>
                                 {% endfor %}
-    							<td>
-    								<span class="label {% if summ_scores %} {% if summ_scores == extern_max_score %} label-success {% else %} label-info {% endif %} {% else %} label-important {% endif %}">{{ summ_scores }}</span>
-    							</td>
-    						</tr>
-    					{% endfor %}
-    				</tbody>
-    			</table>
+                                <td>
+                                    <span class="label {% if summ_scores %} {% if summ_scores == extern_max_score %} label-success {% else %} label-info {% endif %} {% else %} label-important {% endif %}">{{ summ_scores }}</span>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             {% endif %}
-	</div>
+    </div>
 </div>
 
 {% include "cource_tasks_base.html" %}
