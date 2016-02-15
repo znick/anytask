@@ -16,7 +16,6 @@ from django.db import IntegrityError
 class Invite(models.Model):
     generated_by = models.ForeignKey(User, db_index=False, null=False, blank=False, related_name='invite_generated_by')
     group = models.ForeignKey(Group, db_index=False, null=True, blank=True)
-    invited_user = models.ForeignKey(User, db_index=False, null=True, blank=True, related_name='initve_invited')
     invited_users = models.ManyToManyField(User, null=True, blank=True)
     
     key = models.CharField(max_length=10, db_index=True, null=False, blank=False, unique=True)
@@ -65,11 +64,4 @@ class Invite(models.Model):
     @staticmethod    
     def _id_generator(size = 7, chars = string.ascii_letters + string.digits):
         return ''.join(random.choice(chars) for x in range(size))
-    
-    @staticmethod 
-    def can_be_used(key):
-        if Invite.objects.filter(key=key).filter(invited_user=None).count():
-            return (True, u'')
-        if Invite.objects.filter(key=key).count():
-            return (False, u'Этот инвайт уже был использован')
-        return (False, u'Такого инвайта не существует')
+

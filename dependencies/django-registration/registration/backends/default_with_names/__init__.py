@@ -74,18 +74,6 @@ class RegistrationFormWithNames(RegistrationForm):
             raise forms.ValidationError(u"Электронная почта должна быть в доменах {0}".format(", ".join(settings.REGISTRATION_ALLOWED_DOMAINS)))
         return self.cleaned_data['email']
 
-    def clean_invite(self):
-        """
-        Validate that the invite is not already
-        in use and exists.
-        """
-
-        valid, message = Invite.can_be_used(self.cleaned_data['invite'])
-        if not valid:
-            raise forms.ValidationError(message)
-        else:
-            return self.cleaned_data['invite']
-
 
 class RegistrationFormWithNamesUniqEmail(RegistrationFormWithNames, RegistrationFormUniqueEmail):
     pass
