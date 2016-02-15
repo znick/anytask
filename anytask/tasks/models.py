@@ -100,12 +100,10 @@ class Task(models.Model):
         if user.is_anonymous():
             return False
 
-        if not self.cource.rb_integrated:
+        if not self.cource.rb_integrated and not self.cource.easy_ci:
             return False
 
-        if self.cource.take_policy == Cource.TAKE_POLICY_ALL_TASKS_TO_ALL_STUDENTS and \
-           self.user_can_take_task(user):
-
+        if self.cource.take_policy == Cource.TAKE_POLICY_ALL_TASKS_TO_ALL_STUDENTS:
             return True
 
         try:
