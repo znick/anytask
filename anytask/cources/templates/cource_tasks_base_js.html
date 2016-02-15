@@ -4,6 +4,15 @@
 <script type="text/javascript" src="{{ STATIC_URL }}js-cookie/src/js.cookie.js"></script>
 <script type="text/javascript">
 
+function utf8_to_b64(str) {
+    return window.btoa(escape(encodeURIComponent(str)));
+}
+
+function b64_to_utf8(str) {
+    return decodeURIComponent(unescape(window.atob(str)));
+}
+
+
     $(document).ready(function() {
 
         var courceId = {{ cource.id }},
@@ -11,7 +20,11 @@
 
         function getStoredSortLists() {
             var cookieValue = Cookies.get(cookieName);
-            return cookieValue ? JSON.parse(cookieValue) : {};
+            try {
+                return cookieValue ? JSON.parse(b64_to_utf8(cookieValue)) : {};
+            } catch (e) {
+                return {};
+            };
         }
 
         // На случай если мы захотим их поменять
@@ -44,7 +57,7 @@
                         sortList.push([index, 0]);
                 });
                 storedSortLists[tableName] = sortList;
-                Cookies.set(cookieName, JSON.stringify(storedSortLists), { expires: 365, path: '' });
+                Cookies.set(cookieName, utf8_to_b64(JSON.stringify(storedSortLists)), { expires: 365, path: '' });
             });
         }
 
