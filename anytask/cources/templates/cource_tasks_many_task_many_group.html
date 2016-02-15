@@ -122,7 +122,7 @@
 												</a>
 											{% elif user.username == student.username and task.can_pass %}
                                                 {% if cource.easy_ci %}
-                                                    <a class="btn-small" href="{% url easy_ci.views.task_taken_view student.id task.id %}">
+                                                    <a class="btn-small" href="{% url easy_ci.views.task_taken_view student.id task.id %}"><span class="label {% if task_x_task_takens|score:task %} {% if task_x_task_takens|score:task == task.score_max %} label-success {% else %} label-info {% endif %} {% endif %}">{{ task_x_task_takens|score:task }}</span></a>
 												{% else %}
 												    <a class="btn-small" href="{% url submit_review task.id %}"><span class="label {% if task_x_task_takens|score:task %} {% if task_x_task_takens|score:task == task.score_max %} label-success {% else %} label-info {% endif %} {% endif %}">{{ task_x_task_takens|score:task }}</span></a>
                                                 {% endif %}
