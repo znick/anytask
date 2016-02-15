@@ -8,7 +8,7 @@ import datetime
 attrs_dict = { 'class': 'required' }
 
 class InviteActivationForm(forms.Form):
-    invite = forms.CharField(widget=forms.TextInput(attrs=attrs_dict), label="Инвайт в группу:")
+    invite = forms.CharField(widget=forms.TextInput(attrs=attrs_dict), label="")
 
     def clean_invite(self):
         """

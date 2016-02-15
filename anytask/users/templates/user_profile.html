@@ -43,10 +43,13 @@
         </ul>
         <br />
       {% endif %}
-
-      <form action="{% url users.views.profile %}" method="post" id="invites-form" class="form-horizontal">
+      <button type="button" class="btn" data-toggle="collapse" data-target="#invites-form">
+        Ввести инвайт
+      </button>
+      <form action="{% url users.views.profile %}" method="post" id="invites-form" class="form-horizontal {% if invite_form.errors %} collapse in {% else %} collapse {% endif %}">
           {% csrf_token %}
           <fieldset>
+            <br>
             <div>{{ invite_form }}
               {% if invite_form.errors %}
                 <span class="help-block">
