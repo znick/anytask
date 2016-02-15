@@ -15,6 +15,7 @@ from groups.models import Group
 from courses.models import Course
 from invites.models import Invite
 from issues.models import Issue
+from users.forms import InviteActivationForm
 
 from years.common import get_current_year
 
@@ -74,7 +75,7 @@ def profile(request, username=None, year=None):
         'user_course_information'   : user_course_information,
         'teacher_in_courses'        : teacher_in_courses,
         'can_generate_invites'      : can_generate_invites,
-        'issues':                   : issues,
+        'issues'                    : issues,
         'invite_form'               : invite_form,
     }
 

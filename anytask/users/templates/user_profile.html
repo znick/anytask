@@ -24,22 +24,17 @@
       {% if user == user_to_show and can_generate_invites %}
         <a href="#" onclick="window.open('{% url invites.views.generate_invites %}','_blank','height=331,width=640,status=yes,toolbar=no,menubar=no,location=no');return false;">Сгенерировать инвайты</a>
         <br>
-      {% else %}
+      {% endif %}
+
       <form action="{% url invites.views.activate_invite %}" method="post" id="invites-form" class="form-horizontal">
           {% csrf_token %}
           <fieldset>
-            <div class="control-group">
-              <label class="control-label" for="invite">Инвайт в группу или курс:</label>
-              <div class="controls">
-                <input type="text" name="invite" class="input" id="invite">
-              </div>
-            </div>
+            <div>{{ invite_form }} </div> <br>
             <div>
               <button type="submit" class="btn btn-primary">Применить</button>
             </div>
           </fieldset>
-        </form>
-      {% endif %}
+      </form>
 
       {% if teacher_in_courses %}
         <p>E-mail: {{ user_to_show.email }}</p>
