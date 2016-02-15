@@ -43,20 +43,7 @@
 				}
 			});
 		});
-		
-		function change_state()
-		{
-			if ($('#invites_not_for_group').is(':checked'))
-			{
-				$('#groups').attr("disabled",true);
-				$('#courses').attr("disabled",false);
-			}
-			else
-			{
-				$('#groups').attr("disabled",false);
-				$('#courses').attr("disabled",true);
-			}
-		}
+
 	</script>
 {% endblock %}
 
@@ -84,22 +71,8 @@
 		       				<option value="{{ group.id }}">{{ group.name }}</option>
 		       			{% endfor %}
 		       		</select>
-		       	</div>
-
-		       	<div id="course_options" style="display: none;">
-		       		Курс, для которой создаем инвайт:&nbsp;
-		       		<select disabled="true" id="courses" name="course_id">
-		       			{% for course in courses %}
-		       				<option value="{{ course.group_with_extern.id }}">{{ course.name }}</option>
-		       			{% endfor %}
-		       		</select>
 		       	</div> 
 
-		       	<div style="display: none;">
-		       		<label class="checkbox inline">
-		       			<input type="checkbox" name="invites_not_for_group" id="invites_not_for_group" onchange="change_state();">Привязать инвайт не к группе, а к курсу
-		       		</label>
-		       	</div>
 		       	<div>
 		       		<button type="submit" class="btn btn-primary">OK</button>
 		       		<!-- <a href="#" class="btn btn-primary" id="generate_invites_ok" data-loading-text="Updating...">OK</a>-->

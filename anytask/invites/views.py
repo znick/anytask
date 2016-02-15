@@ -44,21 +44,13 @@ def generate_invites_post(request):
     if 'number_of_invites' not in request.POST:
         return HttpResponseForbidden()
     
-    invites_not_for_group = False
-    if 'invites_not_for_group' in request.POST:
-        invites_not_for_group = True
-    
     group_id = None
     if 'group_id' in request.POST:
         try:
             group_id = int(request.POST['group_id'])
         except ValueError: #not int
             return HttpResponseForbidden()
-    if invites_not_for_group and 'course_id' in request.POST:
-        try:
-            group_id = int(request.POST['course_id'])
-        except ValueError: #not int
-            return HttpResponseForbidden()
+
     #if invites_not_for_group == False and group_id is None:
     #    return HttpResponseForbidden()
     
