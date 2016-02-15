@@ -85,8 +85,8 @@
 		       			{% endfor %}
 		       		</select>
 		       	</div>
-		       	<br>
-		       	<div id="course_options">
+
+		       	<div id="course_options" style="display: none;">
 		       		Курс, для которой создаем инвайт:&nbsp;
 		       		<select disabled="true" id="courses" name="course_id">
 		       			{% for course in courses %}
@@ -95,11 +95,11 @@
 		       		</select>
 		       	</div> 
 
-		       	<div>
+		       	<div style="display: none;">
 		       		<label class="checkbox inline">
 		       			<input type="checkbox" name="invites_not_for_group" id="invites_not_for_group" onchange="change_state();">Привязать инвайт не к группе, а к курсу
 		       		</label>
-		       	</div><br/>
+		       	</div>
 		       	<div>
 		       		<button type="submit" class="btn btn-primary">OK</button>
 		       		<!-- <a href="#" class="btn btn-primary" id="generate_invites_ok" data-loading-text="Updating...">OK</a>-->

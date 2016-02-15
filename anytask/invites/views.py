@@ -20,13 +20,15 @@ def generate_invites(request):
     if request.method == 'POST':
         return generate_invites_post(request)
     
-    
-    groups = Group.objects.filter(year=get_current_year())
-    courses = Course.objects.filter(is_active=True).exclude(group_with_extern__isnull=True)
+    courses = Course.objects.filter(is_active=True)
+    groups = []
+    for course in courses:
+        if user in course.teachers.all():
+            groups.append(course.groups.all())
     
     context = {
         'groups'    : groups,
-        'courses'   : courses,
+        #'courses'   : courses,
     }
     
     return render_to_response('generate.html', context, context_instance=RequestContext(request))
