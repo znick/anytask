@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+import logging
+
 from django.contrib import messages
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound
 from django.shortcuts import render_to_response, get_object_or_404, redirect
@@ -16,6 +18,7 @@ from pygments import highlight
 from pygments.lexers import PythonLexer
 from pygments.formatters import HtmlFormatter
 
+LOGGER = logging.getLogger('django.request')
 
 @transaction.commit_on_success
 def task_taken_submit(request, student_id, task_id):
@@ -49,7 +52,8 @@ def task_taken_submit(request, student_id, task_id):
     runner = CheckRunner(easy_ci_task.data, easy_ci_task.task.title)
     try:
         exit_status, output = runner.run(EasyCiCheck.CHECK_ACTION_PEP8, easy_ci_task.student, task.group.name)
-    except Exception:
+    except Exception as e:
+        LOGGER.info("EasyCiQuickRunner=%s", e)
         return redirect(task_taken_view, student_id=student_id, task_id=task_id)
 
     easy_ci_check = EasyCiCheck()

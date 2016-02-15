@@ -7,16 +7,17 @@ import threading
 
 from django.conf import settings
 
+LOGGER = logging.getLogger('django.request')
+
 class CheckRunner(object):
-    def __init__(self, script, name, timeout=settings.EASYCI_TIMEOUT, max_output_size=1024*500, tmp_prefix=""):
+    def __init__(self, script, name, timeout=settings.EASYCI_TIMEOUT, max_output_size=1024*500):
         self.script = script
         self.name = name
         self.timeout = timeout
         self.max_output_size = max_output_size
-        self.tmp_prefix = tmp_prefix
-        self._dir = tempfile.mkdtemp(tmp_prefix)
+        self._dir = tempfile.mkdtemp()
 
-        self._script_path = os.path.join(self._dir, name)
+        self._script_path = os.path.join(self._dir, name + ".py")
         with open(self._script_path, "w") as fn:
             fn.write(script)
 
@@ -32,14 +33,14 @@ class CheckRunner(object):
 
 
     def run(self, action, student, group):
-        LOGGER = logging.getLogger('django.request')
         if action not in settings.EASYCI_CHECKERS:
             LOGGER.info(u"EasyCIRUN=No checkers for this action\tCMD=%s\tSTUDENT=%s\tEXIT_CODE=%s\tOUTPUT_LEN=%s\tTRUNCATED=%s\tTIMEOUTED=%s", None, student.username, None, None, None, None)
             raise Exception("Internal error: no checkers for this action")
 
         checker = settings.EASYCI_CHECKERS[action]
         cmd = [checker, action, group, self.name, self._script_path]
-        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        cwd = os.path.dirname(checker)
+        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, cwd=cwd)
         proc._timeouted = False
         t = threading.Timer(self.timeout, self._timeout, [proc])
         t.start()
