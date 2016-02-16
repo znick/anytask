@@ -1,6 +1,6 @@
 Для активации аккаунта на AnyTask перейдите по ссылке
 
-{{ site }}/accounts/activate/{{ activation_key }}
+http://{{ site }}/accounts/activate/{{ activation_key }}
 
 Ссылка действительна в течение {{ expiration_days }} дней.
 
