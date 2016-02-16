@@ -77,15 +77,22 @@ def task_taken_view(request, student_id, task_id):
     if not (user_is_teacher or student == user):
         return HttpResponseForbidden()
 
+    types_order = EasyCiCheck.TYPES_ORDER
+    types_count = len(EasyCiCheck.TYPES)
+    if not user_is_teacher:
+        types_order = filter(lambda x : x not in EasyCiCheck.TYPES_HIDDEN, types_order)
+        types_count -= len(EasyCiCheck.TYPES_HIDDEN)
+
     checks = {}
 
     runs = EasyCiTask.objects.filter(student=student).filter(task=task).order_by('added_time')
     for run in runs:
         _checks = run.easycicheck_set.all()
         if (not user_is_teacher):
-            _checks = filter(lambda x: x.type not in EasyCiCheck.TYPES_HIDDEN, _checks)
+            _checks = _checks.exclude(type__in=EasyCiCheck.TYPES_HIDDEN)
         _checks = sorted(_checks, key=lambda x: x.type)
-        while (len(_checks) < len(EasyCiCheck.TYPES)):
+
+        while (len(_checks) < types_count):
             _checks.append(EasyCiCheck())
 
         checks[run] = _checks
@@ -94,7 +101,7 @@ def task_taken_view(request, student_id, task_id):
         'runs' : runs,
         'task' : task,
         'hidden_types' : EasyCiCheck.TYPES_HIDDEN,
-        'types_order' : EasyCiCheck.TYPES,
+        'types_order' : types_order,
         'checks' : checks,
         'user_is_teacher' : user_is_teacher,
         'form' : RunForm(),
@@ -114,8 +121,8 @@ def check_task_view(request, easy_ci_task_id):
         return HttpResponseForbidden()
 
     checks = EasyCiCheck.objects.filter(easy_ci_task=easy_ci_task).order_by('added_time')
-    if (not user_is_teacher):
-        checks = filter(lambda x: x.type not in EasyCiCheck.TYPES_HIDDEN, checks)
+    if not user_is_teacher:
+        checks = checks.exclude(type__in=EasyCiCheck.TYPES_HIDDEN)
 
     is_last_task = True
     try:
