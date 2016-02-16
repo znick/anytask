@@ -18,13 +18,10 @@
   <div class="row">
     <div class="span9">
       <h2>{{ user_to_show.get_full_name }}</h2>
-      {% for group in groups %}
-        {{ group }}<br/>
-      {% endfor %}
       {% if user == user_to_show and can_generate_invites %}
         <a href="#" onclick="window.open('{% url invites.views.generate_invites %}','_blank','height=331,width=640,status=yes,toolbar=no,menubar=no,location=no');return false;">Сгенерировать инвайты</a>
         <br>
-      {% endif%}
+      {% endif %}
 
       {% if teacher_in_courses %}
         <p>E-mail: {{ user_to_show.email }}</p>
@@ -36,6 +33,35 @@
         </ul>
         <br />
       {% endif %}
+
+      {% if groups %}
+      Состоит в группах:
+        <ul>
+          {% for group in groups %}
+            <li>{{ group }}</li>
+          {% endfor %}
+        </ul>
+        <br />
+      {% endif %}
+      <button type="button" class="btn" data-toggle="collapse" data-target="#invites-form">
+        Ввести инвайт
+      </button>
+      <form action="{% url users.views.profile %}" method="post" id="invites-form" class="form-horizontal {% if invite_form.errors %} collapse in {% else %} collapse {% endif %}">
+          {% csrf_token %}
+          <fieldset>
+            <br>
+            <div>{{ invite_form }}
+              {% if invite_form.errors %}
+                <span class="help-block">
+                  {% for error in invite_foem.errors %}{{ error }}{% endfor %}
+                </span>
+              {% endif %}
+            </div> <br>
+            <div>
+              <button type="submit" class="btn btn-primary">Применить</button>
+            </div>
+          </fieldset>
+      </form>
 
       {# {% for course,scores,tasks_list in user_course_information %} #}
         {# <a href="{{ course.get_absolute_url }}">{{ course.name }}</a> #}

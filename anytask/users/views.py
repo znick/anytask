@@ -15,6 +15,7 @@ from groups.models import Group
 from courses.models import Course
 from invites.models import Invite
 from issues.models import Issue
+from users.forms import InviteActivationForm
 
 from years.common import get_current_year
 
@@ -66,13 +67,24 @@ def profile(request, username=None, year=None):
 
     issues = Issue.objects.filter(student=user_to_show).order_by('task__course')
 
+    if request.method == 'POST':
+        invite_form = InviteActivationForm(request.POST)
+        if invite_form.is_valid():
+            invite = get_object_or_404(Invite, key=invite_form.cleaned_data['invite'])
+            if invite.group:
+                invite.group.students.add(user)
+                invite.invited_users.add(user)
+    else:
+        invite_form = InviteActivationForm()
+
     context = {
         'user_to_show'              : user_to_show,
         'groups'                    : groups,
         'user_course_information'   : user_course_information,
         'teacher_in_courses'        : teacher_in_courses,
         'can_generate_invites'      : can_generate_invites,
-        'issues': issues,
+        'issues'                    : issues,
+        'invite_form'               : invite_form,
     }
 
     return render_to_response('user_profile.html', context, context_instance=RequestContext(request))
@@ -96,5 +108,3 @@ def add_user_to_group(request):
     group.save()
 
     return HttpResponse("OK")
-
-

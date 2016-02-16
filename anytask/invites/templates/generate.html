@@ -4,7 +4,7 @@
 
 {% block scripts %}
 	<script src="{{ STATIC_URL }}jquery.validate.min.js"></script>
-	<script src="http://malsup.github.io/jquery.form.js"></script>-->
+	<script src="http://malsup.github.io/jquery.form.js"></script>
 	
 	<script type="text/javascript">
 		$(document).ready(function() {
@@ -43,18 +43,7 @@
 				}
 			});
 		});
-		
-		function change_state()
-		{
-			if ($('#invites_not_for_group').is(':checked'))
-			{
-				$('#groups').attr("disabled",true);
-			}
-			else
-			{
-				$('#groups').attr("disabled",false);
-			}
-		}
+
 	</script>
 {% endblock %}
 
@@ -66,7 +55,7 @@
         <form action="{% url invites.views.generate_invites %}" method="post" id="invites-form" class="form-horizontal">
         	{% csrf_token %}
         	<fieldset>
-		       	<div class="control-group">
+		       	<div class="control-group" style="display: none;">
 		       		<label class="control-label" for="number_of_invites">Количество инвайтов:</label>
 		       		<div class="controls">
 		       			<input type="text" value="1" name="number_of_invites" class="input-mini" id="number_of_invites">
@@ -76,18 +65,14 @@
 		       	</div>
 		       	
 		       	<div id="group_options">
-		       		Группа, для которой создаются инвайты:&nbsp;
+		       		Группа, для которой создаем инвайт:&nbsp;
 		       		<select id="groups" name="group_id">
 		       			{% for group in groups %}
 		       				<option value="{{ group.id }}">{{ group.name }}</option>
 		       			{% endfor %}
 		       		</select>
 		       	</div> 
-		       	<div>
-		       		<label class="checkbox inline">
-		       			<input type="checkbox" name="invites_not_for_group" id="invites_not_for_group" onchange="change_state();">Не привязывать инвайты к группе
-		       		</label>
-		       	</div><br/>
+
 		       	<div>
 		       		<button type="submit" class="btn btn-primary">OK</button>
 		       		<!-- <a href="#" class="btn btn-primary" id="generate_invites_ok" data-loading-text="Updating...">OK</a>-->

@@ -45,7 +45,7 @@ class AnytaskLoginForm(BootstrapMixin, AuthenticationForm):
 class RegistrationFormWithNames(RegistrationForm):
     first_name = forms.CharField(widget=forms.TextInput(attrs=attrs_dict), label="Имя")
     last_name = forms.CharField(widget=forms.TextInput(attrs=attrs_dict), label="Фамилия")
-    invite = forms.CharField(widget=forms.TextInput(attrs=attrs_dict), label="Инвайт")
+    #invite = forms.CharField(widget=forms.TextInput(attrs=attrs_dict), label="Инвайт")
 
     def __init__(self, *args, **kwargs):
         super(RegistrationForm, self).__init__(*args, **kwargs)
@@ -57,7 +57,7 @@ class RegistrationFormWithNames(RegistrationForm):
             'email',
             'password1',
             'password2',
-            'invite',
+            #'invite',
         ]
 
     def clean(self):
@@ -73,18 +73,6 @@ class RegistrationFormWithNames(RegistrationForm):
         if email_domain not in settings.REGISTRATION_ALLOWED_DOMAINS:
             raise forms.ValidationError(u"Электронная почта должна быть в доменах {0}".format(", ".join(settings.REGISTRATION_ALLOWED_DOMAINS)))
         return self.cleaned_data['email']
-
-    def clean_invite(self):
-        """
-        Validate that the invite is not already
-        in use and exists.
-        """
-
-        valid, message = Invite.can_be_used(self.cleaned_data['invite'])
-        if not valid:
-            raise forms.ValidationError(message)
-        else:
-            return self.cleaned_data['invite']
 
 
 class RegistrationFormWithNamesUniqEmail(RegistrationFormWithNames, RegistrationFormUniqueEmail):
@@ -157,8 +145,8 @@ class DefaultBackend(object):
         class of this backend as the sender.
 
         """
-        username, email, password, first_name, last_name, invite_key = kwargs['username'], kwargs['email'], kwargs['password1'], kwargs['first_name'], kwargs['last_name'], kwargs['invite']
-        invite = get_object_or_404(Invite, key=invite_key)
+        username, email, password, first_name, last_name = kwargs['username'], kwargs['email'], kwargs['password1'], kwargs['first_name'], kwargs['last_name']
+        #invite = get_object_or_404(Invite, key=invite_key)
 
         if Site._meta.installed:
             site = Site.objects.get_current()
@@ -171,10 +159,10 @@ class DefaultBackend(object):
         new_user.last_name = last_name
         new_user.save()
 
-        if invite.group:
-            invite.group.students.add(new_user)
-        invite.invited_user = new_user
-        invite.save()
+        #if invite.group:
+        #    invite.group.students.add(new_user)
+        #invite.invited_user = new_user
+        #invite.save()
 
         signals.user_registered.send(sender=self.__class__,
                                      user=new_user,
