@@ -19,7 +19,7 @@ class CheckRunner(object):
 
         self._script_path = os.path.join(self._dir, name + ".py")
         with open(self._script_path, "w") as fn:
-            fn.write(script)
+            fn.write(script.encode("utf-8"))
 
     def __del__(self):
         if os.path.isdir(self._dir):
