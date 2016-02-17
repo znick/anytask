@@ -130,11 +130,11 @@ class AnyRB(object):
         except (AttributeError, ValueError):
             logger.info("Issue '%s' has not review_id.", self.event.issue.id)
             return None
-        try:            
+        try:
             review_request = root.get_review_request(review_request_id=review_id)
             return review_request
         except Exception as e:
-            logger.exception("Exception while getting review_request with id '%s'. Exception: '%s'. Issue: '%s'", review_id, e, self.event.issue.id)
+            logger.info("Issue '%s' has not RB review_request. Exception: '%s'.", self.event.issue.id, e)
             return None
 
     def create_review_request(self):
@@ -145,7 +145,7 @@ class AnyRB(object):
         repository_name = str(self.event.issue.id)
         repository_path = os.path.join(settings.RB_SYMLINK_DIR, repository_name)
         os.symlink(settings.RB_SYMLINK_DIR,repository_path)
-        
+
         try:
             repository = root.get_repositories().create(
                      name=repository_name,
