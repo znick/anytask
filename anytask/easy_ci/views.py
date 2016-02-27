@@ -18,6 +18,8 @@ from pygments import highlight
 from pygments.lexers import PythonLexer
 from pygments.formatters import HtmlFormatter
 
+from collections import OrderedDict
+
 LOGGER = logging.getLogger('django.request')
 
 @transaction.commit_on_success
@@ -83,7 +85,7 @@ def task_taken_view(request, student_id, task_id):
         types_order = filter(lambda x : x not in EasyCiCheck.TYPES_HIDDEN, types_order)
         types_count -= len(EasyCiCheck.TYPES_HIDDEN)
 
-    checks = {}
+    checks = OrderedDict()
 
     runs = EasyCiTask.objects.filter(student=student).filter(task=task).order_by('added_time')
     for run in runs:
@@ -125,11 +127,11 @@ def check_task_view(request, easy_ci_task_id):
         checks = checks.exclude(type__in=EasyCiCheck.TYPES_HIDDEN)
 
     is_last_task = True
-    try:
-        easy_ci_task.get_next_by_added_time()
-        is_last_task = False
-    except easy_ci_task.DoesNotExist:
-        pass
+    #try:
+    #    checks.get_next_by_added_time()
+    #    is_last_task = False
+    #except easy_ci_task.DoesNotExist:
+    #    pass
 
     try:
         task_taken = TaskTaken.objects.get(task=task, user=student)
