@@ -42,8 +42,11 @@ class AnyRB(object):
 
     def submit_review(self, user, diff_content, path="", summary="", description="", review_group_name=None, review_id=None): #review_id is for update
         descriptions = []
-        if isinstance(summary, unicode):
-            summary = summary.encode("utf-8")
+        if isinstance(summary, str):
+            summary = summary.decode("utf-8")
+
+        if isinstance(description, str):
+            description = description.decode("utf-8")
 
         root = self.client.get_root()
 
@@ -55,21 +58,21 @@ class AnyRB(object):
 
         if review_id:
             review_request = root.get_review_request(review_request_id=review_id)
-            descriptions.append(review_request.description.encode("utf-8"))
+            descriptions.append(review_request.description.decode("utf-8"))
         else:
             review_request = root.get_review_requests().create(repository=repository.id, submit_as=user.username)
 
         try:
             review_request.get_diffs().upload_diff(diff_content, base_dir="/")
         except Exception:
-            descriptions.append("WARNING: Diff has not been uploaded. Probably it contains non-ASCII filenames. Non-ASCII filenames are not supported.")
+            descriptions.append(u"WARNING: Diff has not been uploaded. Probably it contains non-ASCII filenames. Non-ASCII filenames are not supported.")
 
 
-        descriptions.append("=== Added on {0} ===\n".format(datetime.datetime.now()))
+        descriptions.append(u"=== Added on {0} ===\n".format(datetime.datetime.now()))
         descriptions.append(description)
 
         draft = review_request.get_or_create_draft()
-        description = "\n".join(descriptions)
+        description = u"\n".join(descriptions)
         draft.update(description=description, summary=summary)
         review_request.update(status="pending")
 
