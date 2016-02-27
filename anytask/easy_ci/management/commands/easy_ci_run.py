@@ -13,12 +13,16 @@ class Command(BaseCommand):
 
     def handle(self, **options):
         for easy_ci_task in EasyCiTask.objects.filter(checked=False):
-            LOGGER.info("EasyCiCron=1\tSTUDENT=%s\tTASK=%s", easy_ci_task.student.username, easy_ci_task.task.title)
             runner = CheckRunner(easy_ci_task.data, easy_ci_task.task.title)
 
-            actions = [EasyCiCheck.CHECK_ACTION_TEST]
+            actions = []
             if easy_ci_task.easycicheck_set.filter(type=EasyCiCheck.CHECK_ACTION_PEP8).count() == 0:
                 actions.append(EasyCiCheck.CHECK_ACTION_PEP8)
+
+            if easy_ci_task.easycicheck_set.filter(type=EasyCiCheck.CHECK_ACTION_TEST).count() == 0:
+                actions.append(EasyCiCheck.CHECK_ACTION_TEST)
+
+            LOGGER.info("EasyCiCron=1\tSTUDENT=%s\tTASK=%s\tACTIONS=%s", easy_ci_task.student.username, easy_ci_task.task.title, actions)
 
             for action in actions:
                 with transaction.commit_on_success():
