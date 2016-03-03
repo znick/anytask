@@ -58,7 +58,6 @@ class AnyRB(object):
 
         if review_id:
             review_request = root.get_review_request(review_request_id=review_id)
-            descriptions.append(review_request.description.decode("utf-8"))
         else:
             review_request = root.get_review_requests().create(repository=repository.id, submit_as=user.username)
 
