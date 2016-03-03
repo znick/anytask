@@ -18,6 +18,6 @@ admin.site.register(EasyCiTask, EasyCiTaskAdmin)
 
 class EasyCiCheckAdmin(admin.ModelAdmin):
     list_display = ('easy_ci_task', 'exit_status')
-    list_filter = ("easy_ci_task__task", "easy_ci_task__task__cource__year", "easy_ci_task__student__group")
+    list_filter = ("easy_ci_task__task", "easy_ci_task__task__cource__year", "easy_ci_task__student__group", "type")
 
 admin.site.register(EasyCiCheck, EasyCiCheckAdmin)
