@@ -57,7 +57,7 @@ class Task(models.Model):
                 return (False, u'Задача не может быть взята более чем {0} студентами'.format(cource.max_users_per_task))
 
         if cource.max_tasks_without_score_per_student:
-            if TaskTaken.objects.filter(user=user).filter(status=TaskTaken.STATUS_TAKEN).count() >= cource.max_tasks_without_score_per_student:
+            if TaskTaken.objects.filter(user=user).filter(task__cource=cource).filter(status=TaskTaken.STATUS_TAKEN).count() >= cource.max_tasks_without_score_per_student:
                 return (False, u'')
 
         if Task.objects.filter(parent_task=self).count() > 0:

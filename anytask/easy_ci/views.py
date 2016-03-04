@@ -146,6 +146,7 @@ def check_task_view(request, easy_ci_task_id):
             task_taken.task = task
             task_taken.user = student
             task_taken.scored_by = user
+            task_taken.status = TaskTaken.STATUS_SCORED
             task_taken.save()
             easy_ci_task.teacher_comments = task_taken.teacher_comments
             easy_ci_task.save()
