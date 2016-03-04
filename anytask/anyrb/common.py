@@ -21,7 +21,7 @@ class AnyRB(object):
         try:
             while True:
                 for repo in repositories:
-                    if repo.fields["name"] == username:
+                    if repo.name == username:
                         return repo
                 repositories = repositories.get_next()
         except StopIteration:
