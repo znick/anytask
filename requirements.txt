@@ -15,5 +15,5 @@ python-magic
 django-filemanager
 requests
 flup
-mysql
+# mysql
 unidecode
