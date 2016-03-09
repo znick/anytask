@@ -16,6 +16,8 @@ from anyrb.common import update_status_review_request
 from anycontest.common import upload_contest
 from tasks.models import Task
 
+from unidecode import unidecode
+
 import uuid
 import requests
 
@@ -228,6 +230,7 @@ class Issue(models.Model):
             if value:
                 sent = True
                 for file in value['files']:
+                    file.name = unidecode(file.name)
                     uploaded_file = File(file=file, event=event)
                     uploaded_file.save()
                     if self.task.course.contest_integrated:
