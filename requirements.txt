@@ -16,3 +16,4 @@ django-filemanager
 requests
 flup
 mysql
+unidecode

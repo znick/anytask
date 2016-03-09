@@ -8,6 +8,8 @@ from django.conf import settings
 from issues.model_issue_field import IssueField
 from django.contrib.auth.models import User
 
+from unidecode import unidecode
+
 logger = logging.getLogger('django.request')
 
 class FakeResponse(object):
@@ -51,8 +53,9 @@ def upload_contest(event, extension, file):
             logger.error("Cant find problem_id '%s' for issue '%s'", issue.task.problem_id, issue.id)
             return False, "Cant find problem '{0}' in Yandex.Contest".format(issue.task.problem_id)
 
+        filename = unidecode(os.path.join(settings.MEDIA_ROOT, file.file.name).decode('utf-8'))
         for i in range(3):
-            with open(os.path.join(settings.MEDIA_ROOT, file.file.name), 'rb') as f:
+            with open(filename, 'rb') as f:
                 files = {'file': f}
                 submit_req = requests.post(settings.CONTEST_API_URL+'submit',
                                            data={'compilerId': compiler_id,

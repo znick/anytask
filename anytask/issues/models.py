@@ -36,7 +36,7 @@ def normalize_decimal(number):
 
 
 class File(models.Model):
-    file = models.FileField(upload_to=get_file_path, null=True, blank=True)
+    file = models.FileField(upload_to=get_file_path, null=True, blank=True, max_length = 500)
     event = models.ForeignKey('Event')
     deleted = models.BooleanField(default=False)
 
