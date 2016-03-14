@@ -12,6 +12,7 @@ from django.contrib.auth.models import User
 
 from groups.models import Group
 from courses.models import Course
+from schools.models import School
 from years.common import get_current_year, get_or_create_current_year
 from years.models import Year
 
@@ -32,7 +33,7 @@ def get_users_from_cs_xml(cs_xml_fn):
         yield student
 
 class Command(BaseCommand):
-    help = "Import users from cs.usu.edu.ru/home. Put default.xml to STDIN"
+    help = "Creating shad users, python course, shad school."
 
     option_list = BaseCommand.option_list + (
         make_option('--year',
@@ -50,17 +51,22 @@ class Command(BaseCommand):
 
         if not year:
             year = get_or_create_current_year()
-        
-        course, created = Course.objects.get_or_create(year=year, name='Perltask')
+
+        school, created = School.objects.get_or_create(link='shad', name='School of Data Analysis')
+        if created:
+            print "WARNING: NEW School created!"
+            school.save()  
+
+        course, created = Course.objects.get_or_create(year=year, name='Python')
         if created:
             print "WARNING: NEW Course created!"
-            course.type = Course.TYPE_POTOK
-            course.take_policy = Course.TAKE_POLICY_SELF_TAKEN
-            course.max_users_per_task = 8
-            course.max_days_without_score = 30
-            course.days_drop_from_blacklist = 14
+            course.is_active = True
+            course.contest_integrated = True
+            course.rb_integrated = True
             course.save()
-        
+
+        school.courses.add(course)
+
         for student in get_users_from_cs_xml(sys.stdin):
             last_name, first_name = student['name'].split(' ', 1)
             username = student['login']
@@ -71,6 +77,8 @@ class Command(BaseCommand):
             except User.DoesNotExist:
                 print "Creating new user! : {0}".format(username.encode("utf-8"))
                 user = User.objects.create(username=username)
+                user.last_name = last_name
+                user.first_name = first_name
 
             if ( user.password == "" ) or ( user.has_usable_password() == False ):
                 user.set_password(''.join(random.choice(string.letters) for i in xrange(20)))
