@@ -146,7 +146,7 @@ INSTALLED_APPS = (
 AUTH_PROFILE_MODULE = "users.UserProfile"
 
 ACCOUNT_ACTIVATION_DAYS = 7
-INVITE_EXPIRED_DAYS = 10
+INVITE_EXPIRED_DAYS = 30
 
 RECAPTCHA_PUBLIC_KEY = "01MgZtfgTcrycDEs4Wdvd06g=="
 RECAPTCHA_PRIVATE_KEY = "18ccfac9d336db9817a893ce45751d5a"
@@ -170,6 +170,9 @@ CONTEST_EXTENSIONS_COURSE = {
         ".py" : "python3"
     },
     13 : {
+        ".h" : "make2"
+    },
+    61 : {
         ".h" : "make2"
     }
 }
