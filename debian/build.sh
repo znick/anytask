@@ -6,6 +6,7 @@ virtualenv $DESTDIR/opt/anytask-env
 source $DESTDIR/opt/anytask-env/bin/activate
 cd /home/gebetix/package/anytask_packages/anytask
 pip install -r requirements.txt
+pip install -r requirements_deployment.txt
 deactivate
 mkdir -p $DESTDIR/opt
 virtualenv $DESTDIR/opt/reviewboard-env
