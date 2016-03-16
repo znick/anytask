@@ -140,18 +140,19 @@ def upload(request, issue_id):
     # 'file' may be a list of files.
     file = upload_receive(request)
     issue = get_object_or_404(Issue, id=issue_id)
-    event = Event.objects.create(issue=issue)
+    field = get_object_or_404(IssueField, name='file')
+    event = Event.objects.create(issue=issue, field=field)
     instance = File(file=file, event=event)
     instance.save()
 
-    basename = os.path.basename(instance.file.path)
+    basename = instance.filename()
 
     file_dict = {
         'name' : basename,
         'size' : file.size,
 
-        'url': settings.MEDIA_URL + basename,
-        'thumbnailUrl': settings.MEDIA_URL + basename,
+        'url': instance.file.url,
+        'thumbnailUrl': instance.file.url,
 
         'deleteUrl': reverse('jfu_delete', kwargs = { 'pk': instance.pk }),
         'deleteType': 'POST',
