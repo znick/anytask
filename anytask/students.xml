@@ -1,0 +1,14 @@
+<root>
+  <student login='pv' name='Петров Василий' grp='ШАД'></student>
+  <student login='ma' name='Мордвинов Алексей' grp='ШАД'></student>
+  <student login='sn' name='Семенов Николай' grp='ШАД'></student>
+  <student login='ba' name='Букин Александр' grp='ШАД'></student>
+  <student login='tm' name='Трифонов Максим' grp='ШАД'></student>
+  <student login='ia' name='Иванов Алексей' grp='ШАД'></student>
+  <student login='pb' name='Первиков Борис' grp='ШПЯ'></student>
+  <student login='rd' name='Романов Дмитрий' grp='ШПЯ'></student>
+  <student login='gs' name='Горин Сергей' grp='ШПЯ'></student>
+  <student login='tk' name='Тарантино Квентин' grp='ШПЯ'></student>
+  <student login='jl' name='Лукас Джордж' grp='ШПЯ'></student>
+  <student login='ss' name='Стивен Спилберг' grp='ШПЯ'></student>
+</root>
