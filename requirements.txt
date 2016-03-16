@@ -17,4 +17,4 @@ requests
 flup
 mysql
 unidecode
-django-jfu
+django-jfu==2.0.6
