@@ -5,13 +5,17 @@ from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 import json
 from django.conf import settings
-from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpRespons
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template.context import RequestContext
 from issues.forms import FileForm
-from issues.models import Issue, Event
+from issues.models import Issue, Event, File
 from issues.model_issue_field import IssueField
 
+from django.core.urlresolvers import reverse
+from django.views import generic
+from django.views.decorators.http import require_POST
+from jfu.http import upload_receive, UploadResponse, JFUResponse
 
 def user_is_teacher_or_staff(user, issue):
     if user.is_staff:
@@ -64,7 +68,7 @@ def issue_page(request, issue_id):
                     if field.name in ['mark','status', 'responsible_name', 'followers_names']:
                         if not user_is_teacher_or_staff(request.user, issue):
                             raise PermissionDenied
-                    
+    
                     if 'Me' in request.POST:
                         if field.name == 'responsible_name':
                             value = request.user
@@ -73,7 +77,7 @@ def issue_page(request, issue_id):
                                 value.append(request.user)
                     if 'Accepted' in request.POST:
                         issue.set_byname('status', 'accepted')
-
+    
                     if field.name == 'comment':
                         value = {
                             'comment': value,
@@ -81,10 +85,10 @@ def issue_page(request, issue_id):
                         }
                         if 'need_info' in request.POST:
                             issue.set_byname('status', 'need_info')
-
+        
                     issue.set_field(field, value, request.user)
                     return HttpResponseRedirect('')
-
+    
     prepare_info_fields(issue_fields, request, issue)
 
     context = {
@@ -94,7 +98,7 @@ def issue_page(request, issue_id):
         'events_to_show': 7,
         'teacher_or_staff': user_is_teacher_or_staff(request.user, issue),
     }
-
+    
     return render_to_response('issues/issue.html', context, context_instance=RequestContext(request))
 
 
@@ -109,4 +113,59 @@ def get_or_create(request, task_id, student_id):
         'issue_url': issue.get_absolute_url(),
     }
 
+    return render_to_response('issues/issue.html', context, context_instance=RequestContext(request))
+    
+        
+@login_required
+def get_or_create(request, task_id, student_id):
+    #if not request.is_ajax():
+    #    return HttpResponseForbidden()
+
+    issue, created = Issue.objects.get_or_create(task_id=task_id, student_id=student_id)
+        
+    data = {
+        'issue_url': issue.get_absolute_url(),
+    }
+    
     return HttpResponseRedirect("/issue/"+str(issue.id))#(json.dumps(data), content_type='application/json')
+        
+
+@require_POST
+def upload(request, issue_id):
+    
+    # The assumption here is that jQuery File Upload
+    # has been configured to send files one at a time.
+    # If multiple files can be uploaded simulatenously,
+    # 'file' may be a list of files.
+    file = upload_receive(request)
+    issue = get_object_or_404(id = issue_id)
+    event = Event.objects.create(issue=issue)
+    instance = File(file=file, event=event)
+    instance.save()
+
+    basename = os.path.basename(instance.file.path)
+
+    file_dict = {
+        'name' : basename,
+        'size' : file.size,
+
+        'url': settings.MEDIA_URL + basename,
+        'thumbnailUrl': settings.MEDIA_URL + basename,
+
+        'deleteUrl': reverse('jfu_delete', kwargs = { 'pk': instance.pk }),
+        'deleteType': 'POST',
+    }
+
+    return UploadResponse(request, file_dict)
+
+@require_POST
+def upload_delete(request, pk):
+    success = True
+    try:
+        instance = File.objects.get(pk = pk)
+        os.unlink(instance.file.path)
+        instance.delete()
+    except File.DoesNotExist:
+        success = False
+
+    return JFUResponse(request, success)

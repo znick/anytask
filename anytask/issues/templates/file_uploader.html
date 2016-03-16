@@ -1,0 +1,43 @@
+{% extends 'jfu/upload_form.html' %}
+
+{% block JS_OPTS %}
+autoUpload: true,
+maxNumberOfFiles: 10,
+sequentialUploads: true,
+dropZone: $(".drop-zone"),
+url: './upload/'
+{% endblock %}
+
+{% block JS_JQUERY %}
+<script src="http://yastatic.net/jquery/1.7.2/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+{% endblock %}
+
+{% block CSS_BOOTSTRAP %}
+<link href="https://maxcdn.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block UPLOAD_FORM_BUTTON_BAR %}
+<div class="btn btn-success fileinput-button">
+  <i class="glyphicon glyphicon-plus"></i>
+  <span>Выбрать файлы</span>
+  <input type="file" name="files[]" multiple="true" >
+</div>
+<br>
+<br>
+<style type = "text/css">
+.drop-zone {
+  border: 2px dashed rgba(0,0,0,.3);
+  border-radius: 20px;
+  font-family: Arial;
+  text-align: center;
+  position: relative;
+  line-height: 90px;
+  font-size: 20px;
+  color: rgba(0,0,0,.3);
+}
+</style>
+<div class="drop-zone">
+  Перетащить файлы...
+</div>
+{% endblock %}
