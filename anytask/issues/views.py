@@ -4,8 +4,9 @@ from django.contrib.auth.decorators import user_passes_test, login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 import json
+import os   
 from django.conf import settings
-from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpRespons
+from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpResponse
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template.context import RequestContext
 from issues.forms import FileForm
@@ -114,8 +115,8 @@ def get_or_create(request, task_id, student_id):
     }
 
     return render_to_response('issues/issue.html', context, context_instance=RequestContext(request))
-    
-        
+
+
 @login_required
 def get_or_create(request, task_id, student_id):
     #if not request.is_ajax():
@@ -128,17 +129,17 @@ def get_or_create(request, task_id, student_id):
     }
     
     return HttpResponseRedirect("/issue/"+str(issue.id))#(json.dumps(data), content_type='application/json')
-        
+
 
 @require_POST
 def upload(request, issue_id):
-    
+
     # The assumption here is that jQuery File Upload
     # has been configured to send files one at a time.
     # If multiple files can be uploaded simulatenously,
     # 'file' may be a list of files.
     file = upload_receive(request)
-    issue = get_object_or_404(id = issue_id)
+    issue = get_object_or_404(Issue, id=issue_id)
     event = Event.objects.create(issue=issue)
     instance = File(file=file, event=event)
     instance.save()
