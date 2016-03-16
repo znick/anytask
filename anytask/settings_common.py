@@ -111,6 +111,7 @@ TEMPLATE_DIRS = (
 
 TEMPLATE_CONTEXT_PROCESSORS = TCP + (
     'django.core.context_processors.request',
+    'django.core.context_processors.static',
 )
 
 INSTALLED_APPS = (
@@ -141,6 +142,7 @@ INSTALLED_APPS = (
     'django_bootstrap_breadcrumbs',
     'filemanager',
     'schools',
+    'jfu',
 )
 
 AUTH_PROFILE_MODULE = "users.UserProfile"
