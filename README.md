@@ -13,7 +13,7 @@ Development installation commands:
     git submodule update
     virtualenv .env
     . .env/bin/activate
-    pip install -r requirements.txt
+    pip install -r requirements_local.txt
     python setup.py develop
     ./anytask/manage.py  # test it  # TODO: make a setup entry point
     ./anytask/manage.py syncdb --migrate --noinput

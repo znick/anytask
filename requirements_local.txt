@@ -15,6 +15,5 @@ python-magic
 django-filemanager
 requests
 flup
-mysql
 unidecode
 django-jfu==2.0.6
