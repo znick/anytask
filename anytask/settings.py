@@ -43,3 +43,10 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 MEDIA_ROOT = '/var/lib/anytask/media'
 UPLOAD_ROOT = '/var/lib/anytask/upload'
 STATIC_ROOT = '/var/lib/anytask/static'
+
+
+# local overrides (optional)
+import os
+_settings_local = os.path.join(os.path.dirname(__file__), 'settings_local.py')
+if os.path.exists(_settings_local):
+    execfile(_settings_local)

@@ -52,3 +52,10 @@ docs/_build/
 
 # PyBuilder
 target/
+
+
+# ...
+anytask/settings_local.py
+.env
+.eggs
+sqlite3.db
