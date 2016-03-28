@@ -1,0 +1,205 @@
+{% extends 'jfu/upload_form.html' %}
+
+{% block JS_INIT %}
+    $('#fileupload').fileupload({
+        formData: [
+            { name: "csrfmiddlewaretoken", value: "{{ csrf_token }}"},
+            { name: "issue_id", value: "{{ issue.id }}"},
+            { name: "comment", value:$( "#id_comment" ).val()}
+        ],
+        {% block JS_OPTS %}
+            autoUpload: true,
+            maxNumberOfFiles: 10,
+            dropZone: $(".drop-zone"),
+        {% endblock %}
+    });
+{% endblock %}
+
+{% block JS_JQUERY %}
+<script src="https://maxcdn.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+{% endblock %}
+
+{% block CSS_BOOTSTRAP %}
+<link href="https://maxcdn.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
+{% endblock %}
+
+
+
+{% block UPLOAD_FORM %}
+
+{% comment %}
+ The file upload form used as target for the file upload widget.
+{% endcomment %}
+<form
+    id="fileupload" action="{{ upload_handler_url }}"
+    method="POST" enctype="multipart/form-data"
+>
+
+    {% csrf_token %}
+
+    {% comment %}
+     Redirect browsers with JavaScript disabled to the origin page.
+    {% endcomment %}
+    <noscript>
+        <input type="hidden" name="redirect" value="{{ STATIC_URL }}demo/jQuery-File-Upload/">
+    </noscript>
+    <input type="hidden" name="form_name" value="comment_form">
+    <textarea rows="4" name="comment" id="id_comment" cols="40" class="span12"></textarea>
+    <input type="hidden" name="issue_id" value="{{ issue.id }}">
+    {% block UPLOAD_FORM_BUTTON_BAR %}
+    <div class="fileupload-buttonbar">
+    {% comment %}
+     The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload.
+    {% endcomment %}
+
+        <div class="span12">
+
+            {% comment %}
+             The fileinput-button span is used to style the file input field as button.
+            {% endcomment %}
+
+            {% block UPLOAD_FORM_BUTTON_BAR_ADD %}
+            <style type = "text/css">
+            .drop-zone {
+              cursor: point;
+              border: 2px dashed rgba(0,0,0,.3);
+              border-radius: 10px;
+              font-family: Arial;
+              text-align: center;
+              position: relative;
+              line-height: 70px;
+              font-size: 20px;
+              color: rgba(0,0,0,.3);
+            }
+            .drop-btn {
+              position: relative;
+              float: none;
+            }
+            </style>
+            <table style="margin-bottom: 0px;" role="presentation" class="table table-striped">
+               <tbody class="files" data-toggle="modal-gallery" data-target="#modal-gallery"></tbody>
+            </table>
+            <div class="drop-zone" id="drop-zone" ondragenter="this.style.background='#E0E0E0';" ondragleave="this.style.background='white';" ondrop="this.style.background='white';">
+
+            <span class="btn drop-btn fileinput-button" id="drop-btn">
+                <span>Выберите файлы</span>
+
+                {% block FILE_INPUT %}
+                {% comment %}
+                    The file input for the upload form.
+                {% endcomment %}
+                <input
+                    type="file" name="files[]" multiple
+
+                    {% if accepted_mime_types %}
+                        accept = '{{ accepted_mime_types|join:"," }}'
+                    {% endif %}
+                >
+                {% endblock %}
+            </span>
+            или перетащите сюда
+            </div>
+            {% endblock %}
+
+            {% block UPLOAD_FORM_BUTTON_BAR_CONTROL %}
+            {% if not teacher_or_staff and issue.status == issue.STATUS_ACCEPTED %}
+                <button class="btn btn-info pull-right" formaction="#" style="margin-top: 10px; margin-left: 10px;" type="submit" name="need_info">Задать вопрос</button>
+            {% endif %}
+            <button style="margin-top: 10px;" type="submit" name="update_issue" class="btn btn-primary pull-right">
+                <span>Отправить</span>
+            </button>
+            {% endblock %}
+        </div>
+        {% block UPLOAD_FORM_PROGRESS_BAR %}
+        {% comment %}
+         The global progress information.
+        {% endcomment %}
+        {% endblock %}
+
+    </div>
+    {% endblock %}
+
+    {% comment %}
+     The loading indicator is shown during file processing.
+    {% endcomment %}
+
+    {% block UPLOAD_FORM_LINDICATOR %}
+    <div class="fileupload-loading"></div>
+    <br>
+    {% endblock %}
+
+    {% block UPLOAD_FORM_LISTING %}
+    {% comment %}
+     The table listing the files available for upload/download.
+    {% endcomment %}
+    {% endblock %}
+
+</form>
+{% endblock %}
+
+
+{% block JS_UPLOAD_TEMPLATE %}
+<script id="template-upload" type="text/x-tmpl">
+{{ JQ_OPEN }} for (var i=0, file; file=o.files[i]; i++) { {{ JQ_CLOSE }}
+    <tr class="template-upload fade">
+        <td class="preview"><span class="fade"></span></td>
+        <td class="name"><span>{{ JQ_OPEN }}=file.name{{ JQ_CLOSE }}</span></td>
+        <td class="size"><span>{{ JQ_OPEN }}=o.formatFileSize(file.size){{ JQ_CLOSE }}</span></td>
+
+        {{ JQ_OPEN }} if (file.error) { {{ JQ_CLOSE }}
+            <td class="error" colspan="2">
+                <span class="label label-important">Error</span>.
+                {{ JQ_OPEN }}=file.error{{ JQ_CLOSE }}
+            </td>
+        {{ JQ_OPEN }} } else if (o.files.valid && !i) { {{ JQ_CLOSE }}
+
+            <td>
+                <div.
+                    class="progress progress-success progress-striped active".
+                    role="progressbar" aria-valuemin="0" aria-valuemax="100".
+                    aria-valuenow="0">
+                    <div class="bar" style="width:0%;"></div>
+                </div>
+            </td>
+
+            <td class="cancel">{{ JQ_OPEN }} if (!o.options.autoUpload) { {{ JQ_CLOSE }}
+            {{ JQ_OPEN }} } {{ JQ_CLOSE }}</td>
+        {{ JQ_OPEN }} } else { {{ JQ_CLOSE }}
+            <td colspan="2"></td>
+        {{ JQ_OPEN }} } {{ JQ_CLOSE }}
+        <td class="start">{{ JQ_OPEN }} if (!i) { {{ JQ_CLOSE }}
+        {{ JQ_OPEN }} } {{ JQ_CLOSE }}</td>
+    </tr>
+{{ JQ_OPEN }} } {{ JQ_CLOSE }}
+</script>
+{% endblock %}
+
+{% block JS_DOWNLOAD_TEMPLATE_DELETE %}
+        <td>
+            <button class="btn btn-danger delete" data-type="{{ JQ_OPEN }}=file.delete_type{{ JQ_CLOSE }}"
+                    data-url="{{ JQ_OPEN }}=file.delete_url{{ JQ_CLOSE }}"
+                    data-data='{ "csrfmiddlewaretoken" : "{{ csrf_token }}" }'
+                    {{ JQ_OPEN }} if (file.delete_with_credentials) { {{ JQ_CLOSE }}
+                         data-xhr-fields='{"withCredentials":true}'
+                    {{ JQ_OPEN }} } {{ JQ_CLOSE }}>
+                <i class="icon-remove icon-white"></i>
+                <span></span>
+            </button>
+        </td>
+        <td>
+        {{ JQ_OPEN }} if (file.send_to_contest) { {{ JQ_CLOSE }}
+            <div class="alert alert-success" role="alert">Выберите компилятор для отправки в контест</div>
+            <select id='compiler' name="compiler_for_{{ JQ_OPEN }}=file.pk{{ JQ_CLOSE }}">
+                {{ JQ_OPEN }} if (file.chosen_compiler) { {{ JQ_CLOSE }}
+                    <option value="{{ JQ_OPEN }}=file.chosen_compiler{{ JQ_CLOSE }}"> {{ JQ_OPEN }}=file.chosen_compiler{{ JQ_CLOSE }} </option>
+                {{ JQ_OPEN }} } {{ JQ_CLOSE }}
+                {{ JQ_OPEN }} for (var j=0, compiler; compiler=file.problem_compilers[j]; j++) { {{ JQ_CLOSE }}
+                    <option value="{{ JQ_OPEN }}=compiler{{ JQ_CLOSE }}">{{ JQ_OPEN }}=compiler{{ JQ_CLOSE }}</option>
+                {{ JQ_OPEN }} } {{ JQ_CLOSE }}
+            </select>
+        {{ JQ_OPEN }} } {{ JQ_CLOSE }}
+        </td>
+        {{ JQ_OPEN }} if (!file.send_to_contest) { {{ JQ_CLOSE }}
+            <input type="hidden" name="pk_{{ JQ_OPEN }}=file.name{{ JQ_CLOSE }}" value="{{ JQ_OPEN }}=file.pk{{ JQ_CLOSE }}">
+        {{ JQ_OPEN }} } {{ JQ_CLOSE }}
+{% endblock %}

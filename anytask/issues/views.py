@@ -4,14 +4,19 @@ from django.contrib.auth.decorators import user_passes_test, login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 import json
+import os   
 from django.conf import settings
 from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpResponse
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template.context import RequestContext
 from issues.forms import FileForm
-from issues.models import Issue, Event
+from issues.models import Issue, Event, File
 from issues.model_issue_field import IssueField
 
+from django.core.urlresolvers import reverse
+from django.views import generic
+from django.views.decorators.http import require_POST
+from jfu.http import upload_receive, UploadResponse, JFUResponse
 
 def user_is_teacher_or_staff(user, issue):
     if user.is_staff:
@@ -64,7 +69,7 @@ def issue_page(request, issue_id):
                     if field.name in ['mark','status', 'responsible_name', 'followers_names']:
                         if not user_is_teacher_or_staff(request.user, issue):
                             raise PermissionDenied
-                    
+
                     if 'Me' in request.POST:
                         if field.name == 'responsible_name':
                             value = request.user
@@ -109,4 +114,102 @@ def get_or_create(request, task_id, student_id):
         'issue_url': issue.get_absolute_url(),
     }
 
+    return render_to_response('issues/issue.html', context, context_instance=RequestContext(request))
+
+
+@login_required
+def get_or_create(request, task_id, student_id):
+    #if not request.is_ajax():
+    #    return HttpResponseForbidden()
+
+    issue, created = Issue.objects.get_or_create(task_id=task_id, student_id=student_id)
+        
+    data = {
+        'issue_url': issue.get_absolute_url(),
+    }
+    
     return HttpResponseRedirect("/issue/"+str(issue.id))#(json.dumps(data), content_type='application/json')
+
+
+@require_POST
+def upload(request, issue_id):
+
+    # The assumption here is that jQuery File Upload
+    # has been configured to send files one at a time.
+    # If multiple files can be uploaded simulatenously,
+    # 'file' may be a list of files.
+    issue = get_object_or_404(Issue, id=int(request.POST['issue_id']))
+
+    if 'update_issue' in request.POST:
+        event_value = {'files':[], 'comment':'', 'compilers':[]}
+        event_value['comment'] = request.POST['comment']
+        for field, value in dict(request.POST).iteritems():
+            if 'compiler' in field:
+                pk = int(field[13:])
+                file = File.objects.get(pk = pk)
+                compiler_id = value
+                event_value['files'].append(file.file)
+                event_value['compilers'].append(compiler_id)
+
+            if 'pk' in field:
+                pk = int(value[0])
+                file = File.objects.get(pk = pk)
+                event_value['files'].append(file.file)
+                event_value['compilers'].append(None)
+
+        issue.set_byname('comment', event_value, request.user)
+
+        return redirect(issue_page, issue_id=int(request.POST['issue_id']))
+
+    file = upload_receive(request)
+    field = get_object_or_404(IssueField, name='file')
+    event = Event.objects.create(issue_id=issue.id, field=field)
+
+    problem_compilers = []
+    chosen_compiler = None
+    send_to_contest = False
+
+    if issue.task.course.contest_integrated:
+        problem_compilers = get_problem_compilers(issue.task.problem_id, issue.task.contest_id)
+        for ext in settings.CONTEST_EXTENSIONS:
+            filename, extension = os.path.splitext(file.name)
+            if ext == extension:
+                send_to_contest = True
+                if settings.CONTEST_EXTENSIONS[ext] in problem_compilers:
+                    chosen_compiler = settings.CONTEST_EXTENSIONS[ext]
+                    problem_compilers.remove(chosen_compiler)
+
+    instance = File(file=file, event=event)
+    instance.save()
+
+    basename = instance.filename()
+
+    file_dict = {
+        'name' : basename,
+        'size' : file.size,
+
+        'url': instance.file.url,
+        'thumbnailUrl': instance.file.url,
+
+        'delete_url': reverse('jfu_delete', kwargs = { 'pk': instance.pk }),
+        'delete_type': 'POST',
+
+        'problem_compilers': problem_compilers,
+        'chosen_compiler' : chosen_compiler,
+        'pk': instance.pk,
+        'send_to_contest': send_to_contest,
+    }
+
+    return UploadResponse(request, file_dict)
+
+@require_POST
+def upload_delete(request, pk):
+    success = True
+    try:
+        instance = File.objects.get(pk = pk)
+        os.unlink(instance.file.path)
+        instance.delete()
+    except File.DoesNotExist:
+        success = False
+
+    return JFUResponse(request, success)

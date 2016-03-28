@@ -28,7 +28,20 @@ def get_compiler_id(course, extension):
 
     return settings.CONTEST_EXTENSIONS_COURSE[course.id][extension]
 
-def upload_contest(event, extension, file):
+def get_problem_compilers(problem_id, contest_id):
+    contest_req = FakeResponse()
+    try:
+        contest_req = requests.get(settings.CONTEST_API_URL+'contest?contestId='+str(contest_id),
+                                    headers={'Authorization': 'OAuth '+settings.CONTEST_OAUTH})    
+        for problem in contest_req.json()['result']['problems']:
+            if problem['alias'] == problem_id: 
+                return problem['compilers']
+    except Exception as e:
+        logger.exception("Exception while request to Contest: '%s' : '%s', Exception: '%s'",
+                         contest_req.url, contest_req.json(), e)
+    return None
+
+def upload_contest(event, extension, file, compiler_id=None):
     problem_req = FakeResponse()
     submit_req = FakeResponse()
     message = "OK"
@@ -37,7 +50,8 @@ def upload_contest(event, extension, file):
         issue = event.issue
         contest_id = issue.task.contest_id
         course = event.issue.task.course
-        compiler_id = get_compiler_id(course, extension)
+        if not compiler_id:
+            compiler_id = get_compiler_id(course, extension)
 
         problem_req = requests.get(settings.CONTEST_API_URL+'problems?contestId='+str(contest_id),
                                    headers={'Authorization': 'OAuth '+settings.CONTEST_OAUTH})
