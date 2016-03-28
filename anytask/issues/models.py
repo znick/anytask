@@ -229,7 +229,7 @@ class Issue(models.Model):
         elif name == 'comment':
             if value:
                 sent = True
-                for file in value['files']:
+                for file_id, file in enumerate(value['files']):
                     file.name = unidecode(file.name)
                     uploaded_file = File(file=file, event=event)
                     uploaded_file.save()
@@ -237,7 +237,7 @@ class Issue(models.Model):
                         for ext in settings.CONTEST_EXTENSIONS:
                             filename, extension = os.path.splitext(file.name)
                             if ext == extension:
-                                sent, message = upload_contest(event, ext, uploaded_file)
+                                sent, message = upload_contest(event, ext, uploaded_file, compiler_id=value['compilers'][file_id])
                                 if sent:
                                     value['comment'] += u"Отправлено на проверку в Я.Контест"
                                     if self.status != self.STATUS_ACCEPTED:
