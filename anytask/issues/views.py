@@ -18,6 +18,8 @@ from django.views import generic
 from django.views.decorators.http import require_POST
 from jfu.http import upload_receive, UploadResponse, JFUResponse
 
+from anycontest.common import get_problem_compilers
+
 def user_is_teacher_or_staff(user, issue):
     if user.is_staff:
         return True
@@ -132,7 +134,7 @@ def get_or_create(request, task_id, student_id):
 
 
 @require_POST
-def upload(request, issue_id):
+def upload(request):
 
     # The assumption here is that jQuery File Upload
     # has been configured to send files one at a time.
