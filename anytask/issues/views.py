@@ -7,7 +7,7 @@ import json
 import os   
 from django.conf import settings
 from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpResponse
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template.context import RequestContext
 from issues.forms import FileForm
 from issues.models import Issue, Event, File
