@@ -39,7 +39,7 @@ def get_problem_compilers(problem_id, contest_id):
     except Exception as e:
         logger.exception("Exception while request to Contest: '%s' : '%s', Exception: '%s'",
                          contest_req.url, contest_req.json(), e)
-    return None
+    return []
 
 def upload_contest(event, extension, file, compiler_id=None):
     problem_req = FakeResponse()

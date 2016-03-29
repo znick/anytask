@@ -177,6 +177,8 @@ def upload(request):
             filename, extension = os.path.splitext(file.name)
             if ext == extension:
                 send_to_contest = True
+                if not problem_compilers:
+                    chosen_compiler = settings.CONTEST_EXTENSIONS[ext]
                 if settings.CONTEST_EXTENSIONS[ext] in problem_compilers:
                     chosen_compiler = settings.CONTEST_EXTENSIONS[ext]
                     problem_compilers.remove(chosen_compiler)
