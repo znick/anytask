@@ -20,6 +20,8 @@ from jfu.http import upload_receive, UploadResponse, JFUResponse
 
 from anycontest.common import get_problem_compilers
 
+from unidecode import unidecode
+
 def user_is_teacher_or_staff(user, issue):
     if user.is_staff:
         return True
@@ -183,6 +185,7 @@ def upload(request):
                     chosen_compiler = settings.CONTEST_EXTENSIONS[ext]
                     problem_compilers.remove(chosen_compiler)
 
+    file.name = unidecode(file.name)
     instance = File(file=file, event=event)
     instance.save()
 
