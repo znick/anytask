@@ -32,7 +32,7 @@ from course_statistics import CourseStatistics
 from score import TaskInfo
 from anysvn.common import svn_log_rev_message, svn_log_head_revision, get_svn_external_url, svn_log_min_revision
 from anyrb.common import AnyRB
-from issues.models import Issue, Event
+from issues.models import Issue, Event, IssueFilter
 
 from common.ordered_dict import OrderedDict
 
@@ -69,6 +69,8 @@ def queue_page(request, course_id):
         return HttpResponseForbidden()
 
     issues = Issue.objects.filter(task__course=course).exclude(status=Issue.STATUS_NEW).exclude(status=Issue.STATUS_ACCEPTED)
+
+    f = IssueFilter(request.GET, issues)
 
     mine = '_'.join(['mine',course_id_as_str])
     not_mine = '_'.join(['not_mine',course_id_as_str])
@@ -141,6 +143,7 @@ def queue_page(request, course_id):
         'issues' : issues,
         'queue_form' : queue_form,
         'user_is_teacher' : course.user_is_teacher(request.user),
+        'filter': f,
     }
     return render_to_response('courses/queue.html', context, context_instance=RequestContext(request))
 

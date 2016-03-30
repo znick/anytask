@@ -16,4 +16,5 @@ django-filemanager
 requests
 flup
 unidecode
-django-jfu==2.0.6
+django-jfu==1.0.7
+django-filter==0.10.0

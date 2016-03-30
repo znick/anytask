@@ -18,3 +18,4 @@ flup
 mysql
 unidecode
 django-jfu==1.0.7
+django-filter==0.10.0

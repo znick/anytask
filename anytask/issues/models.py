@@ -20,6 +20,7 @@ from unidecode import unidecode
 
 import uuid
 import requests
+import django-filters
 
 def get_file_path(instance, filename):
     return '/'.join(['files', str(uuid.uuid4()), filename])
@@ -327,6 +328,11 @@ class Issue(models.Model):
     def get_absolute_url(self):
         return reverse('issues.views.issue_page', args=[str(self.id)])
 
+class IssueFilter(django-filters.FilterSet):
+
+    class Meta:
+        model = Issue
+        fields = ['status', 'responsible', 'followers', 'update_time']
 
 class Event(models.Model):
     issue = models.ForeignKey(Issue, null=False, blank=False)
