@@ -32,7 +32,7 @@ from course_statistics import CourseStatistics
 from score import TaskInfo
 from anysvn.common import svn_log_rev_message, svn_log_head_revision, get_svn_external_url, svn_log_min_revision
 from anyrb.common import AnyRB
-from issues.models import Issue, Event
+from issues.models import Issue, Event, IssueFilter
 
 from common.ordered_dict import OrderedDict
 
@@ -68,79 +68,20 @@ def queue_page(request, course_id):
     if not course.user_can_see_queue(request.user):
         return HttpResponseForbidden()
 
-    issues = Issue.objects.filter(task__course=course).exclude(status=Issue.STATUS_NEW).exclude(status=Issue.STATUS_ACCEPTED)
+    issues = Issue.objects.filter(task__course=course)
 
-    mine = '_'.join(['mine',course_id_as_str])
-    not_mine = '_'.join(['not_mine',course_id_as_str])
-    following = '_'.join(['following',course_id_as_str])
-    not_owned = '_'.join(['not_owned',course_id_as_str])
-    rework = '_'.join(['rework',course_id_as_str])
-    verefication = '_'.join(['verefication',course_id_as_str])
-    need_info = '_'.join(['need_info',course_id_as_str])
-    overdue = '_'.join(['overdue',course_id_as_str])
+    f = IssueFilter(request.GET, issues)
+    f.set_course(course)
 
-    if request.method == 'POST':
-        queue_form = QueueForm(request.POST)
-    else:
-        queue_form = QueueForm({'mine':request.session.get(mine, True),
-                                'not_mine':request.session.get(not_mine, True),
-                                'following':request.session.get(following, True),
-                                'not_owned':request.session.get(not_owned, True),
-                                'rework':request.session.get(rework, False),
-                                'verefication':request.session.get(verefication, True),
-                                'need_info':request.session.get(need_info, False),
-                                'overdue':request.session.get(overdue, 0)})
+    if f.form.data:
+        request.session[course_id_as_str] = f.form.data
+    elif course_id_as_str in request.session:
+        f.form.data = request.session.get(course_id_as_str)
 
-    if queue_form.is_valid():
-        cd = queue_form.cleaned_data
-        if not cd['mine']:
-            issues = issues.exclude(responsible=request.user)
-            request.session[mine] = False
-        else:
-            request.session[mine] = True
-        if not cd['not_mine']:
-            issues = issues.filter(Q(responsible=request.user) | Q(responsible__isnull=True))
-            request.session[not_mine] = False
-        else:
-            request.session[not_mine] = True
-        if not cd['following']:
-            issues = issues.exclude(followers=request.user)
-            request.session[following] = False
-        else:
-            request.session[following] = True
-        if not cd['not_owned']:
-            issues = issues.exclude(responsible__isnull=True)
-            request.session[not_owned] = False
-        else:
-            request.session[not_owned] = True
-        if not cd['rework']:
-            issues = issues.exclude(status=Issue.STATUS_REWORK)
-            request.session[rework] = False
-        else:
-            request.session[rework] = True
-        if not cd['verefication']:
-            issues = issues.exclude(status=Issue.STATUS_VERIFICATION)
-            request.session[verefication] = False
-        else:
-            request.session[verefication] = True
-        if not cd['need_info']:
-            issues = issues.exclude(status=Issue.STATUS_NEED_INFO)
-            request.session[need_info] = False
-        else:
-            request.session[need_info] = True
-
-        now_date = datetime.datetime.now()
-        delta = datetime.timedelta(days=cd['overdue'])
-        request.session[overdue] = cd['overdue']
-        filter_date = now_date - delta
-        issues = issues.filter(update_time__lte=filter_date)
-
-    issues = issues.order_by('update_time')
     context = {
         'course' : course,
-        'issues' : issues,
-        'queue_form' : queue_form,
         'user_is_teacher' : course.user_is_teacher(request.user),
+        'filter': f,
     }
     return render_to_response('courses/queue.html', context, context_instance=RequestContext(request))
 

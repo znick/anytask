@@ -143,6 +143,7 @@ INSTALLED_APPS = (
     'filemanager',
     'schools',
     'jfu',
+    'django_filters',
 )
 
 AUTH_PROFILE_MODULE = "users.UserProfile"

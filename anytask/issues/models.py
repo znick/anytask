@@ -20,6 +20,7 @@ from unidecode import unidecode
 
 import uuid
 import requests
+import django_filters
 
 def get_file_path(instance, filename):
     return '/'.join(['files', str(uuid.uuid4()), filename])
@@ -327,6 +328,24 @@ class Issue(models.Model):
     def get_absolute_url(self):
         return reverse('issues.views.issue_page', args=[str(self.id)])
 
+class IssueFilter(django_filters.FilterSet):
+    issue_statuses = Issue.objects.get(pk=1).ISSUE_STATUSES
+
+    status = django_filters.MultipleChoiceFilter(label=u'Статус', choices=issue_statuses, widget=forms.CheckboxSelectMultiple)
+    update_time = django_filters.DateRangeFilter(label=u'Дата последнего изменения')
+    responsible = django_filters.ChoiceFilter(label=u'Ответственный')
+    followers = django_filters.MultipleChoiceFilter(label=u'Наблюдатели', widget=forms.CheckboxSelectMultiple)
+
+    def set_course(self, course):
+        teacher_choices = [ (teacher.id, _(teacher.last_name+u' '+teacher.first_name)) for teacher in course.teachers.all() ]
+        teacher_choices.insert(0,(u'',_(u'------------')))
+        self.filters['responsible'].field.choices = tuple(teacher_choices)
+        teacher_choices.pop(0)
+        self.filters['followers'].field.choices = tuple(teacher_choices)
+
+    class Meta:
+        model = Issue
+        fields = ['status', 'responsible', 'followers', 'update_time']
 
 class Event(models.Model):
     issue = models.ForeignKey(Issue, null=False, blank=False)
