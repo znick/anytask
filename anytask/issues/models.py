@@ -339,7 +339,7 @@ class IssueFilter(django_filters.FilterSet):
     followers = django_filters.MultipleChoiceFilter(label=u'Наблюдатели', widget=forms.CheckboxSelectMultiple)
 
     def set_course(self, course):
-        teacher_choices = [ (teacher.id, _(teacher.get_full_name()) for teacher in course.get_teachers()]
+        teacher_choices = [(teacher.id, _(teacher.get_full_name()) for teacher in course.get_teachers()]
         teacher_choices.insert(0,(u'',_(u'------------')))
         self.filters['responsible'].field.choices = tuple(teacher_choices)
         teacher_choices.pop(0)
