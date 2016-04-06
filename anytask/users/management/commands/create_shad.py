@@ -62,7 +62,6 @@ class Command(BaseCommand):
             print "WARNING: NEW Course created!"
             course.is_active = True
             course.contest_integrated = True
-            course.rb_integrated = True
             course.save()
 
         school.courses.add(course)

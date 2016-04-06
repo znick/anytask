@@ -9,6 +9,7 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext as _
 from django.conf import settings
+from django import forms
 from issues.model_issue_field import IssueField
 from decimal import Decimal
 from anyrb.common import AnyRB
@@ -262,17 +263,18 @@ class Issue(models.Model):
                                     value['comment'] += '\n' + u'Ошибка отправки в Review Board.'
                                 break
 
-                if self.status != self.STATUS_AUTO_VERIFICATION and self.status != self.STATUS_ACCEPTED:
-                    if author == self.student and self.status != self.STATUS_NEED_INFO and sent:
-                        self.set_byname('status', self.STATUS_VERIFICATION)
-                    if author == self.responsible:
-                        self.status = self.STATUS_REWORK
                 if not value['files'] and not value['comment']:
                     event.delete()
                     return
                 else:
                     self.update_time = datetime.now()
                     value = value['comment']
+
+                if self.status != self.STATUS_AUTO_VERIFICATION and self.status != self.STATUS_ACCEPTED:
+                    if author == self.student and self.status != self.STATUS_NEED_INFO and sent:
+                        self.set_byname('status', self.STATUS_VERIFICATION)
+                    if author == self.responsible:
+                        self.status = self.STATUS_REWORK
 
         elif name == 'status':
             try:
@@ -337,7 +339,7 @@ class IssueFilter(django_filters.FilterSet):
     followers = django_filters.MultipleChoiceFilter(label=u'Наблюдатели', widget=forms.CheckboxSelectMultiple)
 
     def set_course(self, course):
-        teacher_choices = [ (teacher.id, _(teacher.last_name+u' '+teacher.first_name)) for teacher in course.teachers.all() ]
+        teacher_choices = [ (teacher.id, _(teacher.get_full_name()) for teacher in course.get_teachers()]
         teacher_choices.insert(0,(u'',_(u'------------')))
         self.filters['responsible'].field.choices = tuple(teacher_choices)
         teacher_choices.pop(0)
