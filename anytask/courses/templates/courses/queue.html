@@ -37,30 +37,16 @@
 {% block content %}
   {{ block.super }}
 
-  <div id="tooltips" class="collapse">
-    <div class="alert alert-info">
-      <button type="button" class="close" data-dismiss="alert">&times;</button>
-      Можно сортирорвать таблицу кликая по заголовку.
-    </div>
-    {# <div class="alert alert-info"> #}
-      {# <button type="button" class="close" data-dismiss="alert">&times;</button> #}
-      {# Чтобы открыть страницу ишью нужно кликнуть по строке. #}
-    {# </div> #}
-  </div>
-
-  <button type="button" class="btn" data-toggle="collapse" data-target="#filters">
+  <button type="button" class="btn btn-success" data-toggle="collapse" data-target="#filters">
     Фильтры
   </button>
 
-  <button type="button" class="btn" data-toggle="collapse" data-target="#tooltips">
-    Подсказки
-  </button>
-
+  <br>
+  <br>
   <div id="filters" class="collapse in">
-    <form method="post" class="form-inline">
-      {% csrf_token %}
+    <form action="" method="get" class="form-inline">
       <table class="table table-condensed">
-        {% for field in queue_form %}
+        {% for field in filter.form %}
           <tr>
             <td>
               {{ field.label }}
@@ -68,12 +54,15 @@
             <td>
               {{ field }}
             </td>
-            {% if forloop.last %}
+          </tr>
+          {% if forloop.last %}
+            <tr>
+              <td></td>
               <td>
                 <button class="btn pull-right" type="submit">Применить</button>
               </td>
-            {% endif %}
-          </tr>
+            </tr>
+          {% endif %}
         {% endfor %}
       </table>
     </form>
@@ -92,7 +81,7 @@
     </tr>
     </thead>
     <tbody>
-      {% for issue in issues %}
+      {% for issue in filter %}
         <tr>
           <td>&nbsp;</td>
           <td>
