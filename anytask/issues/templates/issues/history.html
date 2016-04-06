@@ -57,10 +57,4 @@
 <div class="row-fluid">
   {% load jfutags %}
   {% jfu 'file_uploader.html' 'jfu_upload' %}
-  <form id="comment" method="post" action="#" enctype="multipart/form-data">
-    {% csrf_token %}
-    <fieldset>
-      <input type="hidden" name="form_name" value="comment_form">
-    </fieldset>
-  </form>
 </div>
