@@ -331,7 +331,10 @@ class Issue(models.Model):
         return reverse('issues.views.issue_page', args=[str(self.id)])
 
 class IssueFilter(django_filters.FilterSet):
-    issue_statuses = Issue.objects.get(pk=1).ISSUE_STATUSES
+    try:
+        issue_statuses = Issue.objects.get(pk=1).ISSUE_STATUSES
+    except:
+        issue_statuses = [(0,(u'------------'))]
 
     status = django_filters.MultipleChoiceFilter(label=u'Статус', choices=issue_statuses, widget=forms.CheckboxSelectMultiple)
     update_time = django_filters.DateRangeFilter(label=u'Дата последнего изменения')
@@ -340,7 +343,7 @@ class IssueFilter(django_filters.FilterSet):
 
     def set_course(self, course):
         teacher_choices = [(teacher.id, _(teacher.get_full_name())) for teacher in course.get_teachers()]
-        teacher_choices.insert(0,(u'',_(u'------------')))
+        teacher_choices.insert(0,(u'', _(u'------------')))
         self.filters['responsible'].field.choices = tuple(teacher_choices)
         teacher_choices.pop(0)
         self.filters['followers'].field.choices = tuple(teacher_choices)
