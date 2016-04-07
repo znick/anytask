@@ -136,3 +136,17 @@ def comment_verdict(issue, verdict, comment):
         else:
             issue.set_byname('status', issue.STATUS_REWORK)
     issue.save()
+
+def get_contest_info(contest_id):
+    contest_req = FakeResponse()
+    got = False
+    contest_info = {}
+    try:
+        contest_req = requests.get(settings.CONTEST_API_URL+'contest?contestId='+str(contest_id),
+                                    headers={'Authorization': 'OAuth '+settings.CONTEST_OAUTH})
+        got = True
+        contest_info = contest_req.json()
+    except Exception as e:
+        logger.exception("Exception while request to Contest: '%s' : '%s', Exception: '%s'",
+                         contest_req.url, contest_req.json(), e)
+    return got, contest_info
