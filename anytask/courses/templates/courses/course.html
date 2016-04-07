@@ -37,7 +37,7 @@
       <br>
     {% endif %}
 
-    <div class = "breadcrumb_button">
+  <!--  <div class = "breadcrumb_button">
     {% if not user_is_teacher and course.can_be_chosen_by_extern%}
       {% if user_is_attended_special_course %}
         <button type="button" class="btn btn-danger" OnClick="javascript:set_spectial_course_attend({{ course.id }}, 'remove');">
@@ -50,7 +50,7 @@
       {% endif %}
       <br>
     {% endif %}
-    </div>
+    </div> -->
 
     Преподаватели:
     {% for teacher in course.get_teachers %}
