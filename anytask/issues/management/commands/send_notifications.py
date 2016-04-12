@@ -40,8 +40,8 @@ class Command(BaseCommand):
             message_body.append(u'команда Anytask')
             message_text = message_header + '\n'.join(message_body)
 
-            subject = u'{0} {1} {2}'.\
-            format(issue, issue.student.last_name, issue.student.first_name)
+            subject = u'{0} {1} {2} {3}'.\
+                format(issue.task.course, issue,  issue.student.last_name, issue.student.first_name)
             from_email = settings.DEFAULT_FROM_EMAIL
 
             def get_message(email):
