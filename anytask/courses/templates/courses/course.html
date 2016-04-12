@@ -51,7 +51,6 @@
       <br>
     {% endif %}
     </div>
-
     Преподаватели:
     {% for teacher in course.get_teachers %}
       <a href="{% url users.views.profile teacher.username %}">{{ teacher.last_name }} {{ teacher.first_name }}</a>{% if not forloop.last %},{% endif %}
@@ -59,7 +58,8 @@
     <br />
 
     {% if course.can_edit %}
-      <a class="btn btn-small" href="javascript:get_edit_course_modal({{ course.id }}, {% if course.information %} '{{course.information|escapejs}}' {% else %} '' {% endif %});">
+      <div class="btn-group">
+      <a class="btn btn-default" href="javascript:get_edit_course_modal({{ course.id }}, {% if course.information %} '{{course.information|escapejs}}' {% else %} '' {% endif %});">
         {% if course.information %}
           Редактировать информацию о курсе
         {% else %}
@@ -69,7 +69,14 @@
       <a class="btn btn-default" href="javascript:get_add_task_modal({{ course.id }}, '',  null, '{{course.can_edit}}');" role="button">
         Добавить задачу
       </a>
+      {% if course.contest_integrated %}
+        <a class="btn btn-default" href="javascript:get_add_contest_task_modal({{ course.id }}, '',  null, '{{course.can_edit}}');" role="button">
+          Импортировать задачу из Я.Контеста
+         </a>
+      {% endif %}
+      </div>
       <br>
+
     {% endif %}
 
     <br />
@@ -83,5 +90,6 @@
 
     <br />
     <br />
+    {% include "courses/task.html" %}
     {% include tasklist_template %}
 {% endblock content %}

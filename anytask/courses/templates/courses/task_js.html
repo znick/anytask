@@ -177,6 +177,27 @@
         }
     }
 
+    function get_add_contest_task_modal(course_id, group_id, parent_id, is_teacher)
+    {
+        clear();
+        if (is_teacher == 'True')
+        {
+            $('#modal_task_desc_text').hide();
+
+            $('#modal_edit_contest_task_course_id').val(course_id);
+            if (group_id) {
+                $('#modal_edit_contest_task_group_id').val(group_id);
+            }
+
+            $('#modal_edit_contest_task_parent_id').val(parent_id);
+
+            $('#modal_add_contest_task').show();
+
+            $('#modal_add_contest_task').modal('show');
+
+        }
+    }
+
 
     function get_pass_task_modal()
     {
@@ -186,6 +207,7 @@
     function clear()
     {
         $("#modal_task_edit_ok").button('reset');
+        $("#modal_contest_task_edit_ok").button('reset');
         $('#modal_header_task_descr').html();
         $('#modal_body_task_descr').html('');
         $('#modal_task_body_edit').html('');
@@ -193,6 +215,11 @@
         $('#modal_task_max_score_edit').val('');
         $('#modal_task_contest_id_edit').val('');
         $('#modal_task_problem_id_edit').val('');
+        $('#contest_problems').empty();
+        $('#score_group').hide();
+        $('#group_select').hide();
+        $('#hidden_checkbox').hide();
+        $('#get_tasks').show();
         $('#modal_edit_task_score_error_text').empty();
         $('#modal_edit_task_title_error_text').empty();
         $('#hidden_task').attr('checked', false);
@@ -235,7 +262,7 @@
 
     function set_spectial_course_attend(course_id, action)
     {
-        var csrf_token = "{{ csrf_token }}";
+
         $.post('{% url courses.views.set_spectial_course_attend %}',
                 { 'course_id' : course_id, 'action' : action, 'csrfmiddlewaretoken' : csrf_token, },
                 function (data) {
@@ -243,5 +270,31 @@
                 });
 
     }
+
+    $('#contest_id_form').submit(function(e){
+        if ($('#contest_problems').is(':empty')) {
+            $.post('{% url courses.views.get_contest_problems %}', $(this).serialize(), function(data){
+                clear();
+                var problems = $.parseJSON(data);
+                for (i = 0; i < problems.data.length; i++) {
+                    $('#contest_problems').append('<li><input name="contest_problems[]" type="checkbox" value="'
+                            + problems.data[i].id + '">' +
+                            ' ' + problems.data[i].title +
+                            ': ' + problems.data[i].name + '</input></li>');
+                }
+                $('#group_select').show();
+                $('#score_group').show();
+                $('#hidden_checkbox').show();
+                $('#get_tasks').hide();
+            });
+        }
+        else {
+            $('#modal_contest_task_edit_ok').button('loading');
+            $.post('{% url courses.views.add_task %}', $(this).serialize(), function(data){
+                window.location.reload();
+            });
+        }
+        e.preventDefault();
+    });
 
 </script>

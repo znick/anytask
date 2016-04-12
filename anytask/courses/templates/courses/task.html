@@ -33,7 +33,7 @@
                 <input type="hidden" id="modal_edit_task_course_id" name="course_id" />
                 <input type="hidden" id="modal_edit_task_group_id" name="group_id" />
                 <input type="hidden" id="modal_edit_task_parent_id" name="parent_id" />
-                    
+
                 <div class="control-group" id="modal_control_edit_score_group">
                     <label class="control-label" for="modal_task_max_score_edit">Максимальный балл:</label>
                     <div class="controls">
@@ -96,4 +96,58 @@
         <a href="#" class="btn" data-dismiss="modal">Close</a>
         <a href="#" class="btn btn-primary" id="modal_course_info_ok" data-loading-text="Updating...">OK</a>
     </div>
+</div>
+
+<div class="modal hide" id="modal_add_contest_task">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">×</button>
+        <h3 id="modal_contest_header">Импортировать задачи из Я.Контеста</h3>
+    </div>
+    <form id="contest_id_form" class="form-horizontal" style="margin-bottom: 0px;">
+        <div id="modal_contest_task_edit" class="modal-body">
+
+            {% csrf_token %}
+            <input type="hidden" id="modal_edit_contest_task_course_id" name="course_id" />
+            <input type="hidden" id="modal_edit_contest_task_group_id" name="group_id" />
+            <input type="hidden" id="modal_edit_contest_task_parent_id" name="parent_id" />
+            <div class="control-group" id="contest_problem_list">
+                <label class="control-label" for="task_contest_id_edit">ID контеста:</label>
+                <div class="controls">
+                    <input id='task_contest_id_edit' name="contest_id" type='text' maxlength='25' size='20'>
+                    <ol id='contest_problems' name="contest_problems_id"></ol>
+                    <button id="get_tasks" type="submit" class="btn">
+                        Получить список задач
+                    </button>
+                </div>
+            </div>
+            <div class="hide control-group" id="score_group">
+                <label class="control-label" for="modal_task_max_score_edit">Максимальный балл:</label>
+                <div class="controls">
+                    <input id='modal_task_max_score_edit' name='max_score' type='text' maxlength='25' size='20'>
+                    <span class="help-inline" id="modal_edit_task_score_error_text"></span>
+                </div>
+            </div>
+            <div id="group_select" class="hide control-group" >
+                <label class="control-label" for="modal_task_group"> Группа:</label>
+                <div class="controls">
+                    <select id='modal_task_group' name="task_group_id">
+                        <option value=""> Для всех групп </option>
+                        {% for group in course.groups.all %}
+                            <option value="{{ group.id }}">{{ group.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div id="hidden_checkbox" class="hide">
+                <label class="checkbox inline">
+                    <input type="checkbox" name="hidden_task" id="hidden_task">Скрыть задачи
+                </label>
+            </div>
+
+        </div>
+        <div class="modal-footer">
+            <a href="#" class="btn" data-dismiss="modal">Close</a>
+            <button id="modal_contest_task_edit_ok" type="submit" class="btn btn-primary" data-loading-text="Updating ...">OK</button>
+        </div>
+    </form>
 </div>

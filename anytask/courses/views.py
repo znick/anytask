@@ -21,6 +21,7 @@ import pysvn
 import urllib, urllib2
 import httplib
 import logging
+import requests
 
 from courses.models import Course, DefaultTeacher
 from groups.models import Group
@@ -32,6 +33,7 @@ from course_statistics import CourseStatistics
 from score import TaskInfo
 from anysvn.common import svn_log_rev_message, svn_log_head_revision, get_svn_external_url, svn_log_min_revision
 from anyrb.common import AnyRB
+from anycontest.common import get_contest_info
 from issues.models import Issue, Event, IssueFilter
 
 from common.ordered_dict import OrderedDict
@@ -274,18 +276,18 @@ def add_task(request):
     if 'hidden_task' in request.POST:
         hidden_task = True
 
+    tasks = []
+
     try:
         course_id = int(request.POST['course_id'])
-        task_title = request.POST['task_title'].strip()
-        task_text = request.POST['task_text'].strip()
         max_score = int(request.POST['max_score'])
         course = get_object_or_404(Course, id = course_id)
+
         if course.contest_integrated:
             contest_id = int(request.POST['contest_id'])
-            problem_id = request.POST['problem_id'].strip()
 
         task_group_id = request.POST['task_group_id']
-        group_id = request.POST['group_id']
+
         if task_group_id == "":
             group_id = None
         else:
@@ -297,8 +299,30 @@ def add_task(request):
         else:
             parent_id = int(parent_id)
 
-    except ValueError: #not int
+    except ValueError:  # not int
         return HttpResponseForbidden()
+
+    if 'contest_problems[]' not in request.POST:
+        try:
+            tasks.append({})
+            tasks[0]['task_title'] = request.POST['task_title'].strip()
+            tasks[0]['task_text'] = request.POST['task_text'].strip()
+            if course.contest_integrated:
+                tasks[0]['problem_id'] = request.POST['problem_id'].strip()
+
+        except ValueError: #not int
+            return HttpResponseForbidden()
+    else:
+        got_info, contest_info = get_contest_info(int(request.POST['contest_id']))
+        if got_info:
+            for problem in contest_info['problems']:
+                if problem['problemId'] in dict(request.POST)['contest_problems[]']:
+                    tasks.append({})
+                    tasks[-1]['task_title'] = problem['problemTitle']
+                    tasks[-1]['task_text'] = problem['statement']
+                    tasks[-1]['problem_id'] = problem['alias']
+        else:
+            return HttpResponseForbidden()
 
     group = None
     if group_id is not None:
@@ -310,32 +334,32 @@ def add_task(request):
     if not course.user_can_edit_course(user):
         return HttpResponseForbidden()
 
-    max_weight_query = Task.objects.filter(course=course)
-    if group:
-        max_weight_query = max_weight_query.filter(group=group)
-    if parent:
-        max_weight_query = max_weight_query.filter(parent_task=parent)
+    for task in tasks:
+        max_weight_query = Task.objects.filter(course=course)
+        if group:
+            max_weight_query = max_weight_query.filter(group=group)
+        if parent:
+            max_weight_query = max_weight_query.filter(parent_task=parent)
 
-    tasks = max_weight_query.aggregate(Max('weight'))
-    _, max_weight = tasks.items()[0]
-    if max_weight is None:
-        max_weight = 0
-    max_weight += 1
+        _, max_weight = max_weight_query.aggregate(Max('weight')).items()[0]
+        if max_weight is None:
+            max_weight = 0
+        max_weight += 1
 
-    task = Task()
-    task.course = course
-    task.group = group
-    task.parent_task = parent
-    task.weight = max_weight
-    task.title = task_title
-    task.task_text = task_text
-    task.score_max = max_score
-    if course.contest_integrated:
-        task.contest_id = contest_id
-        task.problem_id = problem_id
-    task.is_hidden = hidden_task
-    task.updated_by = user
-    task.save()
+        real_task = Task()
+        real_task.course = course
+        real_task.group = group
+        real_task.parent_task = parent
+        real_task.weight = max_weight
+        real_task.title = task['task_title']
+        real_task.task_text = task['task_text']
+        real_task.score_max = max_score
+        if course.contest_integrated:
+            real_task.contest_id = contest_id
+            real_task.problem_id = task['problem_id']
+        real_task.is_hidden = hidden_task
+        real_task.updated_by = user
+        real_task.save()
 
     return HttpResponse("OK")
 
@@ -451,4 +475,14 @@ def course_settings(request, course_id):
             default_teacher.teacher = teacher
             default_teacher.save()
 
+    return HttpResponseRedirect('')
+
+
+def get_contest_problems(request):
+    if request.method == 'POST':
+        contest_id = request.POST['contest_id']
+        problem_req = requests.get(settings.CONTEST_API_URL + 'problems?contestId=' + str(contest_id),
+                                   headers={'Authorization': 'OAuth ' + settings.CONTEST_OAUTH})
+        problems = problem_req.json()['result']['problems']
+        return HttpResponse(json.dumps({'data': problems}))
     return HttpResponseRedirect('')

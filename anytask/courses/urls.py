@@ -11,5 +11,6 @@ urlpatterns = patterns('courses.views',
     url(r'^edit_course_information', 'edit_course_information'),
     url(r'^set_spectial_course_attend', 'set_spectial_course_attend'),
     url(r'^(?P<course_id>\d+)/settings$', 'course_settings'),
-    url(r'^(?P<course_id>\d+)/data/$'+path_end,'filemanager'),
+    url(r'^get_contest_problems','get_contest_problems'),
+
 )
