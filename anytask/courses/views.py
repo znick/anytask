@@ -313,10 +313,11 @@ def add_task(request):
         except ValueError: #not int
             return HttpResponseForbidden()
     else:
-        got_info, contest_info = get_contest_info(int(request.POST['contest_id']))
+        got_info, contest_info = get_contest_info(contest_id)
         if got_info:
+            contest_problems = dict(request.POST)['contest_problems[]']
             for problem in contest_info['problems']:
-                if problem['problemId'] in dict(request.POST)['contest_problems[]']:
+                if problem['problemId'] in contest_problems:
                     tasks.append({})
                     tasks[-1]['task_title'] = problem['problemTitle']
                     tasks[-1]['task_text'] = problem['statement']
