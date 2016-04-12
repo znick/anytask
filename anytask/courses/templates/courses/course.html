@@ -33,7 +33,7 @@
 {% block content %}
   {{ block.super }}
     {% if course.information %}
-      {{ course.information|urlize|sanitize|safe }}
+      {{ course.information|sanitize|safe }}
       <br>
     {% endif %}
 
