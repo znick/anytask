@@ -6,7 +6,6 @@
 
     $(document).ready(function() {
 
-
         // Here we select for <table> elements universally,
         // but you can definitely fine tune your selector
         $(".table_results").tablesorter();
@@ -368,7 +367,15 @@
         else {
             $('#modal_contest_task_edit_ok').button('loading');
             $.post('{% url courses.views.add_task %}', $(this).serialize(), function(data){
-                window.location.reload();
+                if (data.is_error == true) {
+                   if ($('#contest_task_form').valid()) {
+                       $('#modal_edit_contest_task_id_error_text').empty().append(data.error);
+                       $('#contest_problem_list').removeClass('success').addClass('error');
+                   }
+                }
+                else {
+                    window.location.reload();
+                }
             });
             $('#modal_contest_task_edit_ok').button('reset');
         }

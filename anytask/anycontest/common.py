@@ -156,6 +156,10 @@ def get_contest_info(contest_id):
     try:
         contest_req = requests.get(settings.CONTEST_API_URL + 'contest?contestId=' + str(contest_id),
                                    headers={'Authorization': 'OAuth ' + settings.CONTEST_OAUTH})
+
+        if 'error' in contest_req.json():
+            return False, contest_req.json()["error"]["message"]
+
         contest_info = contest_req.json()['result']
         got_info = True
     except Exception as e:
