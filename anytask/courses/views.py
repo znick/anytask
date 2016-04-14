@@ -478,12 +478,18 @@ def course_settings(request, course_id):
 
     return HttpResponseRedirect('')
 
-
+@login_required
 def get_contest_problems(request):
-    if request.method == 'POST':
-        contest_id = request.POST['contest_id']
-        problem_req = requests.get(settings.CONTEST_API_URL + 'problems?contestId=' + str(contest_id),
-                                   headers={'Authorization': 'OAuth ' + settings.CONTEST_OAUTH})
-        problems = problem_req.json()['result']['problems']
-        return HttpResponse(json.dumps({'data': problems}))
-    return HttpResponseRedirect('')
+    course = get_object_or_404(Course, id=request.POST['course_id'])
+
+    if not course.user_can_edit_course(request.user):
+        return HttpResponseForbidden()
+
+    if request.method != 'POST':
+        return HttpResponseForbidden()
+
+    contest_id = request.POST['contest_id']
+    problem_req = requests.get(settings.CONTEST_API_URL + 'problems?contestId=' + str(contest_id),
+                               headers={'Authorization': 'OAuth ' + settings.CONTEST_OAUTH})
+    problems = problem_req.json()['result']['problems']
+    return HttpResponse(json.dumps(problems), content_type="application/json")

@@ -275,12 +275,12 @@
         if ($('#contest_problems').is(':empty')) {
             $.post('{% url courses.views.get_contest_problems %}', $(this).serialize(), function(data){
                 clear();
-                var problems = $.parseJSON(data);
-                for (i = 0; i < problems.data.length; i++) {
-                    $('#contest_problems').append('<li><input name="contest_problems[]" type="checkbox" value="'
-                            + problems.data[i].id + '">' +
-                            ' ' + problems.data[i].title +
-                            ': ' + problems.data[i].name + '</input></li>');
+                var problems = data;
+                for (i = 0; i < problems.length; i++) {
+                    $('#contest_problems').append('<li><label class="checkbox"><input name="contest_problems[]" type="checkbox" value="'
+                            + problems[i].id + '">' +
+                            ' ' + problems[i].title +
+                            ': ' + problems[i].name + '</input></label></li>');
                 }
                 $('#group_select').show();
                 $('#score_group').show();
