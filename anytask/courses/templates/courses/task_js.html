@@ -369,6 +369,8 @@
             $.post('{% url courses.views.add_task %}', $(this).serialize(), function(data){
                 if (data.is_error == true) {
                    if ($('#contest_task_form').valid()) {
+                       $('#get_tasks').show();
+                       $('#contest_problems').empty();
                        $('#modal_edit_contest_task_id_error_text').empty().append(data.error);
                        $('#contest_problem_list').removeClass('success').addClass('error');
                    }
