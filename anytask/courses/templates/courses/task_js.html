@@ -24,7 +24,7 @@
                 $(form).ajaxSubmit({
                     success: function() {
                         window.location.reload();
-                    },
+                    }
                 });
 
                 return false;
@@ -33,12 +33,19 @@
                 max_score: {
                     required : true,
                     number : true,
-                    min : 0,
+                    min : 0
                 },
                 task_title: {
                     required : true,
-                    maxlength : 254,
+                    maxlength : 254
                 },
+                contest_id: {
+                    required : true,
+                    number : true
+                },
+                problem_id: {
+                    required : true
+                }
             },
 
             highlight: function(label) {
@@ -52,20 +59,72 @@
             messages: {
                 max_score: {
                     required : "Необходимо указать максимальный балл",
-                    number : "Максимальный балл должен быть целым числом",
-                    min : "Максимальный балл должен быть больше или равен 0",
+                    number : "Максимальный балл должен быть натуральным числом",
+                    min : "Максимальный балл должен быть больше или равен 0"
                 },
                 task_title: {
                     required : "Название у задачи необходимо",
-                    maxlength : "Не так много",
+                    maxlength : "Не так много"
                 },
+                contest_id: {
+                    required : "Необходимо указать номер контеста",
+                    number : "Номер контеста должен натуральным числом"
+                },
+                problem_id: {
+                    required : "Необходимо указать литеру задачи контеста"
+                }
             },
 
             errorPlacement: function(error, element) {
                 if (element.attr('id') == 'modal_task_header_edit')
                     $('#modal_edit_task_title_error_text').append(error);
-                else
+                else if (element.attr('id') == 'modal_task_max_score_edit')
                     $('#modal_edit_task_score_error_text').append(error);
+                else if (element.attr('id') == 'modal_task_contest_id_edit')
+                    $('#modal_edit_task_contest_id_error_text').append(error);
+                else if (element.attr('id') == 'modal_task_problem_id_edit')
+                    $('#modal_edit_task_problem_id_error_text').append(error);
+            }
+        });
+        $('#contest_task_form').validate(
+        {
+            rules: {
+                max_score: {
+                    required : true,
+                    number : true,
+                    min : 0
+                },
+                contest_id: {
+                    required : true,
+                    number : true
+                }
+            },
+
+            highlight: function(label) {
+                $(label).closest('.control-group').removeClass('success').addClass('error');
+            },
+
+            success: function(label) {
+                label.addClass('valid').closest('.control-group').removeClass('error').addClass('success');
+            },
+
+            messages: {
+                max_score: {
+                    required : "Необходимо указать максимальный балл",
+                    number : "Максимальный балл должен быть натуральным числом",
+                    min : "Максимальный балл должен быть больше или равен 0"
+                },
+                contest_id: {
+                    required : "Необходимо указать номер контеста",
+                    number : "Номер контеста должен натуральным числом"
+                }
+            },
+
+            errorPlacement: function(error, element) {
+                if (element.attr('id') == 'task_contest_id_edit')
+                    $('#modal_edit_contest_task_id_error_text').empty().append(error);
+                else
+                    $('#modal_edit_contest_task_score_error_text').empty().append(error);
             }
         });
     });
@@ -214,6 +273,7 @@
         $('#modal_task_header_edit').val('');
         $('#modal_task_max_score_edit').val('');
         $('#modal_task_contest_id_edit').val('');
+        $('#task_contest_id_edit').val('');
         $('#modal_task_problem_id_edit').val('');
         $('#contest_problems').empty();
         $('#score_group').hide();
@@ -221,7 +281,11 @@
         $('#hidden_checkbox').hide();
         $('#get_tasks').show();
         $('#modal_edit_task_score_error_text').empty();
+        $('#modal_edit_task_contest_id_error_text').empty();
+        $('#modal_edit_task_problem_id_error_text').empty();
         $('#modal_edit_task_title_error_text').empty();
+        $('#modal_edit_contest_task_score_error_text').empty();
+        $('#modal_edit_contest_task_id_error_text').empty();
         $('#hidden_task').attr('checked', false);
         $('#review_data').find('[name="pdf"]').html('');
         $('#review_data').find('[name="pdf_update_time"]').html('');
@@ -234,6 +298,14 @@
         $('div[name="status_body"]').find('div[class="radio"]').html('');
         $('#modal_status').find('student_id').html('');
         $('#modal_status').find('task_id').html('');
+        $('#contest_problem_list').removeClass('error');
+        $('#score_group').removeClass('error');
+        $('#modal_control_edit_score_group').removeClass('error').removeClass('success');
+        $('#modal_control_edit_title_group').removeClass('error').removeClass('success');
+        $('#contest_problem_list').removeClass('error').removeClass('success');
+        $('#score_group').removeClass('error').removeClass('success');
+        $('#modal_control_edit_problem_group').removeClass('error').removeClass('success');
+        $('#modal_control_edit_contest_group').removeClass('error').removeClass('success');
     }
 
     function get_edit_course_modal(course_id, course_desc)
@@ -271,21 +343,26 @@
 
     }
 
-    $('#contest_id_form').submit(function(e){
+    $('#contest_task_form').submit(function(e){
         if ($('#contest_problems').is(':empty')) {
             $.post('{% url courses.views.get_contest_problems %}', $(this).serialize(), function(data){
-                clear();
-                var problems = data;
-                for (i = 0; i < problems.length; i++) {
-                    $('#contest_problems').append('<li><label class="checkbox"><input name="contest_problems[]" type="checkbox" value="'
-                            + problems[i].id + '">' +
-                            ' ' + problems[i].title +
-                            ': ' + problems[i].name + '</input></label></li>');
+                var problems = data.problems;
+                if (data.is_error == false) {
+                    for (i = 0; i < problems.length; i++) {
+                        $('#contest_problems').append('<li><label class="checkbox"><input name="contest_problems[]" type="checkbox" value="'
+                                + problems[i].id + '">' +
+                                ' ' + problems[i].title +
+                                ': ' + problems[i].name + '</input></label></li>');
+                    }
+                    $('#group_select').show();
+                    $('#score_group').show();
+                    $('#hidden_checkbox').show();
+                    $('#get_tasks').hide();
                 }
-                $('#group_select').show();
-                $('#score_group').show();
-                $('#hidden_checkbox').show();
-                $('#get_tasks').hide();
+                else if ($('#contest_task_form').valid()) {
+                    $('#modal_edit_contest_task_id_error_text').empty().append(data.error);
+                    $('#contest_problem_list').removeClass('success').addClass('error');
+                }
             });
         }
         else {
@@ -293,6 +370,7 @@
             $.post('{% url courses.views.add_task %}', $(this).serialize(), function(data){
                 window.location.reload();
             });
+            $('#modal_contest_task_edit_ok').button('reset');
         }
         e.preventDefault();
     });

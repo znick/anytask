@@ -46,12 +46,14 @@
                     <label class="control-label" for="modal_task_contest_id_edit">ID контеста:</label>
                     <div class="controls">
                         <input id='modal_task_contest_id_edit' name='contest_id' type='text' maxlength='25' size='20'>
+                        <span class="help-inline" id="modal_edit_task_contest_id_error_text"></span>
                     </div>
                </div>
                <div class="control-group" id="modal_control_edit_problem_group">
                     <label class="control-label" for="modal_task_problem_id_edit">Литера задачи в контесте:</label>
                     <div class="controls">
                         <input id='modal_task_problem_id_edit' name='problem_id' type='text' maxlength='25' size='20'>
+                        <span class="help-inline" id="modal_edit_task_problem_id_error_text"></span>
                      </div>
                 </div>
                 {% endif %}
@@ -103,7 +105,7 @@
         <button type="button" class="close" data-dismiss="modal">×</button>
         <h3 id="modal_contest_header">Импортировать задачи из Я.Контеста</h3>
     </div>
-    <form id="contest_id_form" class="form-horizontal" style="margin-bottom: 0px;">
+    <form id="contest_task_form" class="form-horizontal" style="margin-bottom: 0px;">
         <div id="modal_contest_task_edit" class="modal-body">
 
             {% csrf_token %}
@@ -114,6 +116,7 @@
                 <label class="control-label" for="task_contest_id_edit">ID контеста:</label>
                 <div class="controls">
                     <input id='task_contest_id_edit' name="contest_id" type='text' maxlength='25' size='20'>
+                    <span class="help-inline" id="modal_edit_contest_task_id_error_text"></span>
                     <ol id='contest_problems' name="contest_problems_id"></ol>
                     <button id="get_tasks" type="submit" class="btn">
                         Получить список задач
@@ -124,7 +127,7 @@
                 <label class="control-label" for="modal_task_max_score_edit">Максимальный балл:</label>
                 <div class="controls">
                     <input id='modal_task_max_score_edit' name='max_score' type='text' maxlength='25' size='20'>
-                    <span class="help-inline" id="modal_edit_task_score_error_text"></span>
+                    <span class="help-inline" id="modal_edit_contest_task_score_error_text"></span>
                 </div>
             </div>
             <div id="group_select" class="hide control-group" >

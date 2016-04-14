@@ -489,7 +489,21 @@ def get_contest_problems(request):
         return HttpResponseForbidden()
 
     contest_id = request.POST['contest_id']
+    is_error = False
+    error = ''
+    problems = []
+
     problem_req = requests.get(settings.CONTEST_API_URL + 'problems?contestId=' + str(contest_id),
                                headers={'Authorization': 'OAuth ' + settings.CONTEST_OAUTH})
-    problems = problem_req.json()['result']['problems']
-    return HttpResponse(json.dumps(problems), content_type="application/json")
+    problem_req = problem_req.json()
+
+    if 'error' in problem_req:
+        is_error = True
+        if 'IndexOutOfBoundsException' in problem_req['error']['name']:
+            error = u'Такого контеста не существует'
+        else:
+            error = u'Ошибка Я.Контеста: ' + problem_req['error']['message']
+    else:
+        problems = problem_req['result']['problems']
+
+    return HttpResponse(json.dumps({'problems':problems, 'is_error':is_error, 'error':error}), content_type="application/json")
