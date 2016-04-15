@@ -349,7 +349,7 @@
                 var problems = data.problems;
                 if (data.is_error == false) {
                     for (i = 0; i < problems.length; i++) {
-                        $('#contest_problems').append('<li><label class="checkbox"><input name="contest_problems[]" type="checkbox" value="'
+                        $('#contest_problems').append('<li><label class="checkbox" style="padding-top: 1px;"><input name="contest_problems[]" type="checkbox" value="'
                                 + problems[i].id + '">' +
                                 ' ' + problems[i].title +
                                 ': ' + problems[i].name + '</input></label></li>');

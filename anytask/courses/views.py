@@ -322,9 +322,6 @@ def add_task(request):
                     tasks[-1]['task_title'] = problem['problemTitle']
                     tasks[-1]['task_text'] = problem['statement']
                     tasks[-1]['problem_id'] = problem['alias']
-        elif "You're not allowed to view this contest." in contest_info:
-            return HttpResponse(json.dumps({'is_error': True, 'error': u"У anytask нет прав на данный контест"}),
-                                content_type="application/json")
         else:
             return HttpResponseForbidden()
 
@@ -497,6 +494,11 @@ def get_contest_problems(request):
     is_error = False
     error = ''
     problems = []
+
+    got_info, contest_info = get_contest_info(contest_id)
+    if "You're not allowed to view this contest." in contest_info:
+        return HttpResponse(json.dumps({'problems':problems, 'is_error': True, 'error': u"У anytask нет прав на данный контест"}),
+                            content_type="application/json")
 
     problem_req = requests.get(settings.CONTEST_API_URL + 'problems?contestId=' + str(contest_id),
                                headers={'Authorization': 'OAuth ' + settings.CONTEST_OAUTH})
