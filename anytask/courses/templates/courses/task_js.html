@@ -187,6 +187,8 @@
 
             $('#modal_task_desc_edit').hide();
             $('#modal_task_desc_text').show();
+            $('#modal_header_task_descr').show();
+
         } else
         {
             if (mode == 'edit' && is_teacher == 'True')
@@ -206,6 +208,7 @@
                 $('#modal-edite-task-form').attr('action', '{% url courses.views.edit_task %}');
         
                 $('#modal_task_desc_edit').show();
+
         
             }
         }
