@@ -96,6 +96,9 @@
                 contest_id: {
                     required : true,
                     number : true
+                },
+                'contest_problems[]': {
+                    required : true
                 }
             },
 
@@ -116,14 +119,19 @@
                 contest_id: {
                     required : "Необходимо указать номер контеста",
                     number : "Номер контеста должен натуральным числом"
+                },
+                'contest_problems[]': {
+                    required : "Необходимо выбрать хотя бы одну задачу"
                 }
             },
 
             errorPlacement: function(error, element) {
                 if (element.attr('id') == 'task_contest_id_edit')
                     $('#modal_edit_contest_task_id_error_text').empty().append(error);
-                else
+                else if (element.attr('id') == 'modal_task_max_score_edit')
                     $('#modal_edit_contest_task_score_error_text').empty().append(error);
+                else if (element.attr('name') == 'contest_problems[]')
+                    $('#modal_edit_contest_task_problems_checkbox_error_text').empty().append(error);
             }
         });
     });
@@ -279,6 +287,7 @@
         $('#modal_task_problem_id_edit').val('');
         $('#modal_task_body_edit').val('');
         $('#contest_problems').empty();
+        $('#contest_problem_list').val('');
         $('#score_group').hide();
         $('#group_select').hide();
         $('#hidden_checkbox').hide();
@@ -289,6 +298,7 @@
         $('#modal_edit_task_title_error_text').empty();
         $('#modal_edit_contest_task_score_error_text').empty();
         $('#modal_edit_contest_task_id_error_text').empty();
+        $('#modal_edit_contest_task_problems_checkbox_error_text').empty();
         $('#hidden_task').attr('checked', false);
         $('#review_data').find('[name="pdf"]').html('');
         $('#review_data').find('[name="pdf_update_time"]').html('');
@@ -301,14 +311,13 @@
         $('div[name="status_body"]').find('div[class="radio"]').html('');
         $('#modal_status').find('student_id').html('');
         $('#modal_status').find('task_id').html('');
-        $('#contest_problem_list').removeClass('error');
-        $('#score_group').removeClass('error');
         $('#modal_control_edit_score_group').removeClass('error').removeClass('success');
         $('#modal_control_edit_title_group').removeClass('error').removeClass('success');
-        $('#contest_problem_list').removeClass('error').removeClass('success');
+        $('#get_contest_problem_list').removeClass('error').removeClass('success');
         $('#score_group').removeClass('error').removeClass('success');
         $('#modal_control_edit_problem_group').removeClass('error').removeClass('success');
         $('#modal_control_edit_contest_group').removeClass('error').removeClass('success');
+        $('#contest_problem_list').removeClass('error').removeClass('success');
     }
 
     function get_edit_course_modal(course_id, course_desc)
@@ -382,26 +391,26 @@
                 }
                 else if ($('#contest_task_form').valid()) {
                     $('#modal_edit_contest_task_id_error_text').empty().append(data.error);
-                    $('#contest_problem_list').removeClass('success').addClass('error');
+                    $('#get_contest_problem_list').removeClass('success').addClass('error');
                 }
             });
         }
         else {
-            $('#modal_contest_task_edit_ok').button('loading');
-            $.post('{% url courses.views.add_task %}', $(this).serialize(), function(data){
-                if (data.is_error == true) {
-                   if ($('#contest_task_form').valid()) {
-                       $('#get_tasks').show();
-                       $('#contest_problems').empty();
-                       $('#modal_edit_contest_task_id_error_text').empty().append(data.error);
-                       $('#contest_problem_list').removeClass('success').addClass('error');
-                   }
-                }
-                else {
-                    window.location.reload();
-                }
-            });
-            $('#modal_contest_task_edit_ok').button('reset');
+            if ($('#contest_task_form').valid()) {
+                $('#modal_contest_task_edit_ok').button('loading');
+                $.post('{% url courses.views.add_task %}', $(this).serialize(), function(data){
+                    if (data.is_error == true) {
+                        $('#get_tasks').show();
+                        $('#contest_problems').empty();
+                        $('#modal_edit_contest_task_id_error_text').empty().append(data.error);
+                        $('#get_contest_problem_list').removeClass('success').addClass('error');
+                        $('#modal_contest_task_edit_ok').button('reset');
+                    }
+                    else {
+                        window.location.reload();
+                    }
+                });
+            }
         }
         e.preventDefault();
     });

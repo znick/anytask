@@ -114,15 +114,20 @@
             <input type="hidden" id="modal_edit_contest_task_course_id" name="course_id" />
             <input type="hidden" id="modal_edit_contest_task_group_id" name="group_id" />
             <input type="hidden" id="modal_edit_contest_task_parent_id" name="parent_id" />
-            <div class="control-group" id="contest_problem_list">
+            <div class="control-group" id="get_contest_problem_list">
                 <label class="control-label" for="task_contest_id_edit">ID контеста:</label>
                 <div class="controls">
                     <input id='task_contest_id_edit' name="contest_id" type='text' maxlength='25' size='20'>
                     <span class="help-inline" id="modal_edit_contest_task_id_error_text"></span>
-                    <ol id='contest_problems' name="contest_problems_id"></ol>
                     <button id="get_tasks" type="submit" class="btn">
                         Получить список задач
                     </button>
+                </div>
+            </div>
+            <div class="control-group" id="contest_problem_list">
+                <div class="controls">
+                    <ol id='contest_problems' name="contest_problems_id"></ol>
+                    <span class="help-inline" id="modal_edit_contest_task_problems_checkbox_error_text"></span>
                 </div>
             </div>
             <div class="hide control-group" id="score_group">
