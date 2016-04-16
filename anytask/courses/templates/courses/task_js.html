@@ -343,6 +343,24 @@
 
     }
 
+    function change_to_edit()
+    {
+      $('#modal_task_desc_text').hide();
+      $('#modal_header_task_descr').hide();
+      $('#modal_task_desc_edit').show();
+    }
+
+    function description_preview()
+    {
+        description_html = $('#modal_task_body_edit').val();
+        task_name = $('#modal_task_header_edit').val();
+        $('#modal_task_desc_edit').hide();
+        $('#modal_task_desc_text').show();
+        $('#modal_header_task_descr').show().text(task_name);
+        $('#edit_task_descr').show();
+        $('#modal_body_task_descr').html(description_html);
+    }
+
     $('#contest_task_form').submit(function(e){
         if ($('#contest_problems').is(':empty')) {
             $.post('{% url courses.views.get_contest_problems %}', $(this).serialize(), function(data){

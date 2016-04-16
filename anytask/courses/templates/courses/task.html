@@ -74,10 +74,12 @@
                         <input type="checkbox" name="hidden_task" id="hidden_task">Скрыть задачу
                     </label>
                 </div><br/>
-                Формулировка: <br>
+                Формулировка
+                <br>
                 <textarea class='input-xlarge' style="width: 98%;" id='modal_task_body_edit' rows='13' cols='800' name='task_text'></textarea>
             </div>
             <div class="modal-footer">
+                <a href="javascript:description_preview();" class="btn pull-left">Предпросмотр</a>
                 <a href="#" class="btn" data-dismiss="modal">Close</a>
                 <button type="submit" id="modal_task_edit_ok" class="btn btn-primary" data-loading-text="Updating ...">OK</button>
             </div>
