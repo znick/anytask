@@ -48,7 +48,7 @@ class Command(BaseCommand):
             message_body.append(u'С уважением,<br>')
             message_body.append(u'команда Anytask.<br>')
             message_body.append('</div>')
-            message_text = message_header + '\n'.join(message_body)
+            message = message_header + '\n'.join(message_body)
 
             subject = u'Курс: {0} | Задача: {1} | Студент: {2} {3}'.\
                 format(issue.task.course, issue.task.title, issue.student.last_name, issue.student.first_name)
@@ -64,17 +64,17 @@ class Command(BaseCommand):
             notify_messages = []
             if not empty_message:
                 if issue.student.email:
-                    message_text = message_text.\
+                    message_text = message.\
                         format(issue.student.first_name, get_html_url(issue_url, issue.task.title), u'студентом')
                     notify_messages.append(get_message(issue.student.email))
                 if issue.responsible:
                     if issue.responsible.email:
-                        message_text = message_text.\
+                        message_text = message.\
                             format(issue.responsible.first_name, get_html_url(issue_url, issue.task.title), u'проверяющим')
                         notify_messages.append(get_message(issue.responsible.email))
                 for follower in issue.followers.all():
                     if follower.email:
-                        message_text = message_text.\
+                        message_text = message.\
                             format(follower.first_name, get_html_url(issue_url, issue.task.title), u'наблюдателем')
                         notify_messages.append(get_message(follower.email))
                 send_mass_mail_html(notify_messages)
