@@ -90,7 +90,7 @@ def upload_contest(event, extension, file, compiler_id=None):
 
         run_id = submit_req.json()['result']['value']
         sent = True
-        logger.info("Contest submission with run_id '%d' sent successfully.", run_id)
+        logger.info("Contest submission with run_id '%s' sent successfully.", run_id)
         issue.set_byname(name='run_id', value=run_id)
     except Exception as e:
         logger.exception("Exception while request to Contest: '%s' : '%s', '%s' : '%s', Exception: '%s'",
@@ -126,7 +126,7 @@ def check_submission(issue):
             comment = u'Вердикт Я.Контест: ' \
                       + results_req.json()['result']['submission']['verdict'] + '\n' \
                       + results_req.json()['result']['compileLog'][18:]
-        logger.info("Contest submission verdict with run_id '%d' got successfully.", run_id)
+        logger.info("Contest submission verdict with run_id '%s' got successfully.", run_id)
         got_verdict = True
     except Exception as e:
         logger.exception("Exception while request to Contest: '%s' : '%s', Exception: '%s'",
