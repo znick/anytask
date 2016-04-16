@@ -246,7 +246,7 @@ class Issue(models.Model):
                                         self.set_byname('status', self.STATUS_AUTO_VERIFICATION)
                                 else:
                                     value['comment'] += u"Ошибка отправки в Я.Контест ('{0}').".format(message)
-                                    self.followers.add(User.objects.get(username='anytask'))
+                                    self.followers.add(User.objects.get(username='anytask.monitoring'))
                                 break
 
                     if self.task.course.rb_integrated and (self.task.course.send_rb_and_contest_together or not self.task.course.contest_integrated):
@@ -261,6 +261,7 @@ class Issue(models.Model):
                                               format(review_request_id,settings.RB_API_URL)
                                 else:
                                     value['comment'] += '\n' + u'Ошибка отправки в Review Board.'
+                                    self.followers.add(User.objects.get(username='anytask.monitoring'))
                                 break
 
                 if not value['files'] and not value['comment']:
