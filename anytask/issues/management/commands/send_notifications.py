@@ -33,7 +33,7 @@ class Command(BaseCommand):
             for event in events:
                 message_body.append('<div style="margin:20px">')
                 message_body.append('<pre>')
-                message_body.append(event.get_notify_message())
+                message_body.append(event.get_notify_message().replace('}','}}').replace('{','{{'))
                 message_body.append('-' * 79)
                 message_body.append('</pre>')
                 message_body.append('</div>')
@@ -64,7 +64,7 @@ class Command(BaseCommand):
             notify_messages = []
             if not empty_message:
                 if issue.student.email:
-                    message_text = message.\
+                    message_text = ca.\
                         format(issue.student.first_name, get_html_url(issue_url, issue.task.title), u'студентом')
                     notify_messages.append(get_message(issue.student.email))
                 if issue.responsible:
