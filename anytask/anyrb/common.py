@@ -75,9 +75,9 @@ class AnyRB(object):
 
         draft = review_request.get_or_create_draft()
         issue = self.event.issue
-        summary = u'[{0}]{1} {2}'.format(issue.student.get_full_name(),
-                                         '[' + unicode(issue.task.group) + ']' if issue.task.group else '',
-                                         issue.task.title)
+        summary = u'[{0}][{1}] {2}'.format(issue.student.get_full_name(),
+                                           issue.task.course.get_user_group(issue.student),
+                                           issue.task.title)
 
         description_template = u'Это ревью для задачи "{0}", ' + \
                                u'курса [{2}](http://{1}{3}). ' + \
