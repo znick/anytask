@@ -64,7 +64,7 @@ class Command(BaseCommand):
             notify_messages = []
             if not empty_message:
                 if issue.student.email:
-                    message_text = ca.\
+                    message_text = message.\
                         format(issue.student.first_name, get_html_url(issue_url, issue.task.title), u'студентом')
                     notify_messages.append(get_message(issue.student.email))
                 if issue.responsible:
