@@ -3,53 +3,69 @@
 {# <script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/additional-methods.min.js"></script> #}
 <script src="http://malsup.github.io/jquery.form.js"></script>
 <script type="text/javascript">
+    $(document).ready(function () {
+        $("#id_comment").keydown(function (e) {
+            if (e.ctrlKey && e.keyCode == 13) {
+                $("form#comment").submit();
+            }
+        });
 
-
-$(document).ready(function() {
-  $("#id_comment").keydown(function (e) {
-    if (e.ctrlKey && e.keyCode == 13) {
-      $("form#comment").submit();
-    }
-  });
-
-  {# $("#mark_form").validate({ #}
-    {# debug: true, #}
-    {# rules: { #}
-      {# id_mark: { #}
+        {# $("#mark_form").validate({ #}
+        {# debug: true, #}
+        {# rules: { #}
+        {# id_mark: { #}
         {# required: true, #}
         {# number: true #}
-      {# } #}
-    {# } #}
-  {# }); #}
+        {# } #}
+        {# } #}
+        {# }); #}
 
-  {# $('#id_mark').validate({ #}
-    {# debug: true, #}
-  {# }); #}
-  $("#error_text_mark").val("text");
-  $("#mark_form").validate({
-    rules: {
-      mark: {
-        number: true,
-        min: 0,
-      }
-    },
-    highlight: function(label) {
-    },
+        {# $('#id_mark').validate({ #}
+        {# debug: true, #}
+        {# }); #}
+        $("#error_text_mark").val("text");
 
-    {# success: function(label) { #}
-      {# $("button#btn").removeClass('btn').addClass('error'); #}
-    {# }, #}
+        jQuery.validator.addMethod("lt_max", function(value, element) {
+            var value = parseFloat(value);
+            var max = parseFloat($('#max_mark').val());
+            return isNaN(value) || value <= max;
+        });
 
-    {# errorPlacement: function(error, element) { #}
-      {# $("#error_text").append(error); #}
-    {# } #}
-  });
-});
+        $("#mark_form").validate({
+            rules: {
+                mark: {
+                    number: true,
+                    min: 0,
+                    lt_max: true
+                }
+            },
 
-function add_file_field() {
-  var files = $('#id_files')[0].outerHTML;
-  $("#file_field").append('<tr><td>' + files + '</td></tr>');
-}
+            highlight: function (label) {
+                $(label).closest('.control-group').removeClass('success').addClass('error');
+            },
+
+            success: function (label) {
+                label.addClass('valid').closest('.control-group').removeClass('error').addClass('success');
+            },
+
+            messages: {
+                mark: {
+                    number : "Оценка должена быть натуральным числом",
+                    min : "Оценка должена быть больше или равна 0",
+                    lt_max : "Оценка должена быть меньше максимальной"
+                }
+            },
+
+            errorPlacement: function (error, element) {
+                $('#mark_edit_error_text').empty().append(error);
+            }
+        });
+    });
+
+    function add_file_field() {
+        var files = $('#id_files')[0].outerHTML;
+        $("#file_field").append('<tr><td>' + files + '</td></tr>');
+    }
 
 
 </script>
