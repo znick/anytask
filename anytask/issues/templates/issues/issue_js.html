@@ -10,21 +10,6 @@
             }
         });
 
-        {# $("#mark_form").validate({ #}
-        {# debug: true, #}
-        {# rules: { #}
-        {# id_mark: { #}
-        {# required: true, #}
-        {# number: true #}
-        {# } #}
-        {# } #}
-        {# }); #}
-
-        {# $('#id_mark').validate({ #}
-        {# debug: true, #}
-        {# }); #}
-        $("#error_text_mark").val("text");
-
         jQuery.validator.addMethod("lt_max", function(value, element) {
             var value = parseFloat(value);
             var max = parseFloat($('#max_mark').val());
@@ -50,9 +35,9 @@
 
             messages: {
                 mark: {
-                    number : "Оценка должена быть натуральным числом",
-                    min : "Оценка должена быть больше или равна 0",
-                    lt_max : "Оценка должена быть меньше максимальной"
+                    number : "Оценка должна быть натуральным числом",
+                    min : "Оценка должна быть больше или равна 0",
+                    lt_max : "Оценка должна быть меньше максимальной"
                 }
             },
 
