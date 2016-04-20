@@ -19,6 +19,7 @@
         $("#mark_form").validate({
             rules: {
                 mark: {
+                    required : true,
                     number: true,
                     min: 0,
                     lt_max: true
@@ -35,6 +36,7 @@
 
             messages: {
                 mark: {
+                    required : "Укажите оценку",
                     number : "Оценка должна быть натуральным числом",
                     min : "Оценка должна быть больше или равна 0",
                     lt_max : "Оценка должна быть меньше максимальной"
