@@ -76,15 +76,25 @@ class AnyRB(object):
         draft = review_request.get_or_create_draft()
         issue = self.event.issue
         summary = u'[{0}][{1}] {2}'.format(issue.student.get_full_name(),
-                                          issue.task.group,
-                                          issue.task.title)
-        description = '[{1}](http://{0}{1})'.format(
-            Site.objects.get_current().domain,
-            issue.get_absolute_url(),
-        )
+                                           issue.task.course.get_user_group(issue.student),
+                                           issue.task.title)
+
+        description_template = u'Ревью задачи "{0}", ' + \
+                               u'курса [{1}](http://{2}{3}).\n' + \
+                               u'Студент: [{4}](http://{2}{5}).\n' + \
+                               u'[Обсуждение задачи](http://{2}{6}).'
+        description = description_template.format(
+                        issue.task.title,
+                        issue.task.course,
+                        Site.objects.get_current().domain,
+                        issue.task.course.get_absolute_url(),
+                        issue.student.get_full_name(),
+                        issue.student.get_absolute_url(),
+                        issue.get_absolute_url()
+                      )
 
         draft = draft.update(summary=summary,
-                             description=description.encode('utf-8'),
+                             description=description,
                              description_text_type='markdown',
                              target=settings.RB_API_USERNAME, public=True,
                              )
