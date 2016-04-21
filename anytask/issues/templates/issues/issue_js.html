@@ -36,15 +36,15 @@
 
             messages: {
                 mark: {
-                    required : "Укажите оценку",
+                    required : "Необходимо указать оценку",
                     number : "Оценка должна быть натуральным числом",
                     min : "Оценка должна быть больше или равна 0",
-                    lt_max : "Оценка должна быть меньше максимальной"
+                    lt_max : "Оценка должна быть меньше " + $('#max_mark').val()
                 }
             },
 
             errorPlacement: function (error, element) {
-                $('#mark_edit_error_text').empty().append(error);
+                $('#mark_edit_error_text').empty().append(error );
             }
         });
     });
