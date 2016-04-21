@@ -28,15 +28,21 @@
           <div class="accordion-inner">
             <form method="post" id="{{ field.name }}_form" enctype="multipart/form-data">
               {% csrf_token %}
-              <fieldset>
+              <fieldset class="control-group">
                 <input type="hidden" name="form_name" value="{{ field.name }}_form">
+                {% if field.name == 'mark' %}
+                  <input type="hidden" id="max_mark" value="{{ issue.task.score_max }}">
+                {% endif %}
                 {{ field.form }}
+                {% if field.name == 'mark' %}
+                  <span class="help-inline" id="mark_edit_error_text"></span>
+                {% endif %}
                 <br>
                 <button type="submit" class="btn">Отправить</button>
-                {% if field.name == 'responsible_name' or field.name == 'followers_names'%}
+                {% if field.name == 'responsible_name' or field.name == 'followers_names' %}
                   <button type="submit" class="btn" name="Me">Я</button>
                 {% endif %}
-                {% if field.name == 'mark'%}
+                {% if field.name == 'mark' %}
                   <button type="submit" class="btn" name="Accepted">Зачтено</button>
                 {% endif %}
               </fieldset>
