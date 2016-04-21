@@ -79,17 +79,16 @@ class AnyRB(object):
                                            issue.task.course.get_user_group(issue.student),
                                            issue.task.title)
 
-        description_template = u'Это ревью для задачи "{0}", ' + \
-                               u'курса [{2}](http://{1}{3}). ' + \
-                               u'Последние изменения внес [{4} {5}](http://{1}{6}).\n' + \
-                               u'[Перейти к обсуждению задачи.](http://{1}{7})'
+        description_template = u'Ревью задачи "{0}", ' + \
+                               u'курса [{1}](http://{2}{3}).\n' + \
+                               u'Студент: [{4}](http://{2}{5}).\n' + \
+                               u'[Обсуждение задачи.](http://{2}{6})'
         description = description_template.format(
                         issue.task.title,
-                        Site.objects.get_current().domain,
                         issue.task.course,
+                        Site.objects.get_current().domain,
                         issue.task.course.get_absolute_url(),
-                        self.event.author.first_name,
-                        self.event.author.last_name,
+                        self.event.author.get_full_name(),
                         self.event.author.get_absolute_url(),
                         issue.get_absolute_url()
                       )
