@@ -82,7 +82,7 @@ class AnyRB(object):
         description_template = u'Ревью задачи "{0}", ' + \
                                u'курса [{1}](http://{2}{3}).\n' + \
                                u'Студент: [{4}](http://{2}{5}).\n' + \
-                               u'[Обсуждение задачи.](http://{2}{6})'
+                               u'[Обсуждение задачи](http://{2}{6}).'
         description = description_template.format(
                         issue.task.title,
                         issue.task.course,
