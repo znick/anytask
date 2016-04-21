@@ -88,8 +88,8 @@ class AnyRB(object):
                         issue.task.course,
                         Site.objects.get_current().domain,
                         issue.task.course.get_absolute_url(),
-                        self.event.author.get_full_name(),
-                        self.event.author.get_absolute_url(),
+                        issue.student.get_full_name(),
+                        issue.student.get_absolute_url(),
                         issue.get_absolute_url()
                       )
 
