@@ -44,13 +44,11 @@ class DefaultIssueFields(set):
         return default_issue_fields_pks, default_issue_fields
 
     def get_pks(self):
-        if not self.__class__._default_issue_fields_pks:
-            self.__class__._default_issue_fields_pks, self.__class__._default_issue_fields = self._get_default_issue_fields()
+        self.__class__._default_issue_fields_pks, self.__class__._default_issue_fields = self._get_default_issue_fields()
         return self.__class__._default_issue_fields_pks
 
     def get_issue_fields(self):
-        if not self.__class__._default_issue_fields:
-            self.__class__._default_issue_fields_pks, self.__class__._default_issue_fields = self._get_default_issue_fields()
+        self.__class__._default_issue_fields_pks, self.__class__._default_issue_fields = self._get_default_issue_fields()
         return self.__class__._default_issue_fields
 
 
