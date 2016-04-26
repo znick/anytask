@@ -16,22 +16,29 @@ from issues.model_issue_field import IssueField
 from years.models import Year
 from anyrb.common import RbReviewGroup
 
+
 def add_group_with_extern(sender, instance, **kwargs):
     instance.add_group_with_extern()
 
+
 class DefaultIssueFields(set):
-    DEFAILT_USSUE_FIELDS_FIXTURE = os.path.join(settings.PROJECT_PATH, "issues", "fixtures", "initial_data.json")
+    _DEFAULT_ISSUE_FIELDS_PKS = set([1, 2, 3, 4, 5, 6, 7, 8, 9])
+    _DEFAULT_RB_ISSUE_FIELDS_PKS = set([10])
+    _DEFAULT_CNTST_ISSUE_FIELDS_PKS = set([11])
     _default_issue_fields = set()
     _default_issue_fields_pks = set()
+    _course_rb_integrated = False
+    _course_contest_integrated = False
+
+    def set_integrated(self, rb_integrated=False, contest_integrated=False):
+        self._course_rb_integrated = rb_integrated
+        self._course_contest_integrated = contest_integrated
 
     def _get_default_issue_fields(self):
-        default_issue_fields = set()
-        default_issue_fields_pks = set()
+        rb_pk = self._DEFAULT_RB_ISSUE_FIELDS_PKS if self._course_rb_integrated else set()
+        contest_pk = self._DEFAULT_CNTST_ISSUE_FIELDS_PKS if self._course_contest_integrated else set()
 
-        with open(self.DEFAILT_USSUE_FIELDS_FIXTURE) as fixture_fn:
-            fixture = json.load(fixture_fn)
-            for issue_field in fixture:
-                default_issue_fields_pks.add(issue_field["pk"])
+        default_issue_fields_pks = self._DEFAULT_ISSUE_FIELDS_PKS | rb_pk | contest_pk
 
         default_issue_fields = set(IssueField.objects.filter(pk__in=default_issue_fields_pks))
         return default_issue_fields_pks, default_issue_fields
@@ -181,6 +188,7 @@ class DefaultTeacher(models.Model):
 
 def add_default_issue_fields(sender, instance, action, **kwargs):
     default_issue_fields = DefaultIssueFields()
+    default_issue_fields.set_integrated(instance.rb_integrated, instance.contest_integrated)
     pk_set = kwargs.get("pk_set", set())
     if action not in ("post_add", "post_remove", "post_clear"):
         return
