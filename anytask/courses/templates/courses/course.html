@@ -74,13 +74,15 @@
           Импортировать задачу из Я.Контеста
          </a>
       {% endif %}
-      <a class="btn btn-default" href="javascript:change_visibility_hidden_tasks({{ course.id }});" role="button">
-        {% if show_hidden_tasks %}
-          Не показывать скрытые задачи
-        {% else %}
-          Показать скрытые задачи
-        {% endif %}
-      </a>
+      {% if visible_hide_button %}
+        <a class="btn btn-default" href="javascript:change_visibility_hidden_tasks({{ course.id }});" role="button">
+          {% if show_hidden_tasks %}
+            Не показывать скрытые задачи
+          {% else %}
+            Показать скрытые задачи
+          {% endif %}
+        </a>
+      {% endif %}
       </div>
       <br>
 

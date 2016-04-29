@@ -140,10 +140,15 @@ def tasklist_shad_cpp(request, course):
     for group in course.groups.all().order_by('name'):
         student_x_task_x_task_takens = {}
 
-        group_x_task_list[group] = Task.objects.filter(Q(course=course) &
-                                                       (Q(group=group) | Q(group=None)) &
-                                                       Q(is_hidden=False) if not show_hidden_tasks else Q()
-                                                       ).order_by('weight').select_related()
+        if show_hidden_tasks:
+            group_x_task_list[group] = Task.objects.filter(Q(course=course) &
+                                                           (Q(group=group) | Q(group=None))
+                                                           ).order_by('weight').select_related()
+        else:
+            group_x_task_list[group] = Task.objects.filter(Q(course=course) &
+                                                           (Q(group=group) | Q(group=None)) &
+                                                           Q(is_hidden=False)
+                                                           ).order_by('weight').select_related()
         group_x_max_score.setdefault(group, 0)
 
         for task in group_x_task_list[group]:
@@ -194,17 +199,18 @@ def tasklist_shad_cpp(request, course):
             group_x_student_information[group].append((student, student_x_task_x_task_takens[student][0], student_x_task_x_task_takens[student][1]))
 
     context = {
-        'course'        : course,
-        'group_information'   : group_x_student_information,
-        'group_tasks'   : group_x_task_list,
-        'group_x_max_score' : group_x_max_score,
+        'course': course,
+        'group_information': group_x_student_information,
+        'group_tasks': group_x_task_list,
+        'group_x_max_score': group_x_max_score,
 
-        'user' : user,
-        'user_is_attended' : user_is_attended,
-        'user_is_attended_special_course' : user_is_attended_special_course,
+        'user': user,
+        'user_is_attended': user_is_attended,
+        'user_is_attended_special_course': user_is_attended_special_course,
         'user_is_teacher': course.user_is_teacher(user),
         
-        'visible_queue' : course.user_can_see_queue(user),
+        'visible_queue': course.user_can_see_queue(user),
+        'visible_hide_button': Task.objects.filter(Q(course=course) & Q(is_hidden=True)).order_by('weight').count()
     }
 
     return context
