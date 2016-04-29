@@ -103,6 +103,7 @@ def course_page(request, course_id):
     tasklist_context = get_tasklist_context(request, course)
     context = tasklist_context
     context['tasklist_template'] = 'courses/tasklist/shad_cpp.html'
+    context['show_hidden_tasks'] = request.session.get(str(request.user.id) + '_' + str(course.id) + '_show_hidden_tasks', False)
 
     return render_to_response('courses/course.html', context, context_instance=RequestContext(request))
 
@@ -120,6 +121,7 @@ def tasklist_shad_cpp(request, course):
     group_x_student_x_task_takens = OrderedDict()
     group_x_task_list = {}
     group_x_max_score = {}
+    show_hidden_tasks = request.session.get(str(request.user.id) + '_' + str(course.id) + '_show_hidden_tasks', False)
 
     task = Task()
     task.is_shown = None
@@ -138,7 +140,10 @@ def tasklist_shad_cpp(request, course):
     for group in course.groups.all().order_by('name'):
         student_x_task_x_task_takens = {}
 
-        group_x_task_list[group] = Task.objects.filter(Q(course=course) & (Q(group=group) | Q(group=None))).order_by('weight').select_related()
+        group_x_task_list[group] = Task.objects.filter(Q(course=course) &
+                                                       (Q(group=group) | Q(group=None)) &
+                                                       Q(is_hidden=False) if not show_hidden_tasks else Q()
+                                                       ).order_by('weight').select_related()
         group_x_max_score.setdefault(group, 0)
 
         for task in group_x_task_list[group]:
@@ -517,3 +522,14 @@ def get_contest_problems(request):
         problems = problem_req['result']['problems']
 
     return HttpResponse(json.dumps({'problems':problems, 'is_error':is_error, 'error':error}), content_type="application/json")
+
+
+@login_required
+def change_visibility_hidden_tasks(request):
+    if not request.method == 'POST':
+        return HttpResponseForbidden()
+
+    session_var_name = str(request.user.id) + '_' + request.POST['course_id'] + '_show_hidden_tasks'
+    request.session[session_var_name] = not request.session.get(session_var_name, False)
+
+    return HttpResponse("OK")

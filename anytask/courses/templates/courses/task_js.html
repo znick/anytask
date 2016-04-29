@@ -415,4 +415,14 @@
         e.preventDefault();
     });
 
+    function change_visibility_hidden_tasks(course_id)
+    {
+        $.post('{% url courses.views.change_visibility_hidden_tasks %}',
+                { 'course_id' : course_id, 'csrfmiddlewaretoken' : "{{ csrf_token }}" },
+                function (data) {
+                    window.location.reload();
+                });
+
+    }
+
 </script>
