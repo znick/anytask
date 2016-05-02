@@ -76,7 +76,11 @@
                 </div><br/>
                 Формулировка
                 <br>
+                {% if course.contest_integrated %}
+                <textarea class='input-xlarge' style="width: 98%;" id='modal_task_body_edit' rows='7' cols='800' name='task_text'></textarea>
+                {% else %}
                 <textarea class='input-xlarge' style="width: 98%;" id='modal_task_body_edit' rows='13' cols='800' name='task_text'></textarea>
+                {% endif %}
             </div>
             <div class="modal-footer">
                 <a href="javascript:description_preview();" class="btn pull-left">Предпросмотр</a>
