@@ -12,7 +12,74 @@ class Migration(DataMigration):
         # Note: Don't use "from appname.models import ModelName". 
         # Use orm.ModelName to refer to models in this application,
         # and orm['appname.ModelName'] for models in other applications.
-        call_command('loaddata', 'initial_data.json')
+
+        # pk 1
+        orm.IssueField(**{'history_message': '',
+                          'plugin_version': '0.1',
+                          'name': 'comment',
+                          'plugin': 'FieldCommentPlugin',
+                          'title': u'Комментарий'}).save()
+        # pk 2
+        orm.IssueField(**{'history_message': '',
+                          'plugin_version': '0.1',
+                          'name': 'course_name',
+                          'plugin': 'FieldReadOnlyPlugin',
+                          'title': u'Предмет'}).save()
+        # pk 3
+        orm.IssueField(**{'history_message': '',
+                          'plugin_version': '0.1',
+                          'name': 'task_name',
+                          'plugin': 'FieldReadOnlyPlugin',
+                          'title': u'Задача'}).save()
+        # pk 4
+        orm.IssueField(**{'history_message': '',
+                          'plugin_version': '0.1',
+                          'name': 'student_name',
+                          'plugin': 'FieldReadOnlyPlugin',
+                          'title': u'Студент'}).save()
+        # pk 5
+        orm.IssueField(**{'history_message': u'Теперь задачу проверяет',
+                          'plugin_version': '0.1',
+                          'name': 'responsible_name',
+                          'plugin': 'FieldResponsiblePlugin',
+                          'title': u'Проверяющий'}).save()
+        # pk 6
+        orm.IssueField(**{'history_message': u'За задачей наблюдают:',
+                          'plugin_version': '0.1',
+                          'name': 'followers_names',
+                          'plugin': 'FieldFollowersPlugin',
+                          'title': u'Наблюдатели'}).save()
+        # pk 7
+        orm.IssueField(**{'history_message': u'Статус изменен:',
+                          'plugin_version': '0.1',
+                          'name': 'status',
+                          'plugin': 'FieldStatusPlugin',
+                          'title': u'Статус'}).save()
+        # pk 8
+        orm.IssueField(**{'history_message': u'Оценка изменена на',
+                          'plugin_version': '0.1',
+                          'name': 'mark',
+                          'plugin': 'FieldMarkPlugin',
+                          'title': u'Оценка'}).save()
+        # pk 9
+        orm.IssueField(**{'history_message': u'Загружен файл:',
+                          'plugin_version': '0.1',
+                          'name': 'file',
+                          'plugin': 'FieldFilePlugin',
+                          'title': u'Файл'}).save()
+        # pk 10
+        orm.IssueField(**{'history_message': '',
+                          'plugin_version': '0.1',
+                          'name': 'review_id',
+                          'plugin': 'FieldReadOnlyPlugin',
+                          'title': u'Номер ревью'}).save()
+        # pk 11
+        orm.IssueField(**{'history_message': '',
+                          'plugin_version': '0.1',
+                          'name': 'run_id',
+                          'plugin': 'FieldReadOnlyPlugin',
+                          'title': u'Номер посылки в контест'}).save()
+
 
     def backwards(self, orm):
         "Write your backwards methods here."
