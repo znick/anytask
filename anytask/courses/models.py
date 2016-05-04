@@ -51,6 +51,15 @@ class DefaultIssueFields(set):
         self.__class__._default_issue_fields_pks, self.__class__._default_issue_fields = self._get_default_issue_fields()
         return self.__class__._default_issue_fields
 
+    def get_deleted_pks(self):
+        rb_pk = self._DEFAULT_RB_ISSUE_FIELDS_PKS if not self._course_rb_integrated else set()
+        contest_pk = self._DEFAULT_CNTST_ISSUE_FIELDS_PKS if not self._course_contest_integrated else set()
+
+        return rb_pk | contest_pk
+
+    def get_deleted_issue_fields(self):
+        return set(IssueField.objects.filter(pk__in=self.get_deleted_pks()))
+
 
 class FilenameExtension(models.Model):
     name = models.CharField(max_length=10, db_index=False, null=False, blank=False)
@@ -188,18 +197,22 @@ def add_default_issue_fields(sender, instance, action, **kwargs):
     default_issue_fields = DefaultIssueFields()
     default_issue_fields.set_integrated(instance.rb_integrated, instance.contest_integrated)
     pk_set = kwargs.get("pk_set", set())
+
     if action not in ("post_add", "post_remove", "post_clear"):
         return
 
     if action in ("post_remove", "post_clear"):
+        if pk_set and set(pk_set) == default_issue_fields.get_deleted_pks():
+            return
+
         instance.issue_fields.add(*default_issue_fields.get_issue_fields())
         return
 
-    if set(pk_set) == default_issue_fields.get_pks():
-        return
-
     if action == "post_add":
-        instance.issue_fields.remove(*default_issue_fields.get_issue_fields())
+        if pk_set and set(pk_set) == default_issue_fields.get_pks():
+            return
+
+        instance.issue_fields.remove(*default_issue_fields.get_deleted_issue_fields())
         return
 
 def update_rb_review_group(sender, instance, created, **kwargs):
