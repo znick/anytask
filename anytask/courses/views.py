@@ -219,11 +219,18 @@ def tasklist_shad_cpp(request, course):
 def get_tasklist_context(request, course):
     return tasklist_shad_cpp(request, course)
 
+
 def edit_task(request):
     user = request.user
 
+    def response(text, status=200):
+        return HttpResponse(
+                            json.dumps({'text': text}),
+                            content_type="application/json",
+                            status=status)
+
     if not request.method == 'POST':
-        return HttpResponseForbidden()
+        return response('Forbidden', 403)
 
     hidden_task = False
     if 'hidden_task' in request.POST:
@@ -247,14 +254,14 @@ def edit_task(request):
             group_id = int(task_group_id)
 
     except ValueError: #not int
-        return HttpResponseForbidden()
+        return response(u'Значение не является целым числом', 403)
 
     group = None
     if group_id is not None:
         group = get_object_or_404(Group, id = group_id)
 
     if not task.course.user_is_teacher(user):
-        return HttpResponseForbidden()
+        return response(u'Редактировать может только преподователь', 403)
 
     task.is_hidden = hidden_task
     if task.parent_task:
@@ -275,7 +282,8 @@ def edit_task(request):
         subtask.is_hidden = hidden_task
         subtask.save()
 
-    return HttpResponse("OK")
+    return response('OK')
+
 
 def add_task(request):
     user = request.user

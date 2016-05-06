@@ -16,15 +16,32 @@
             return isNaN(value) || value <= max;
         });
 
+        var modal_task_desc_edit_changed = false;
+        $('#modal_task_desc_edit').change(function() {
+             modal_task_desc_edit_changed = true;
+        });
+
         $('#modal-edite-task-form').validate(
         {
             submitHandler: function(form) {
-                $("#modal_task_edit_ok").button('loading');
-                $(form).ajaxSubmit({
-                    success: function() {
-                        window.location.reload();
-                    }
-                });
+                if (modal_task_desc_edit_changed) {
+                    $("#modal_task_edit_ok").button('loading');
+                    $(form).ajaxSubmit({
+                        success: function () {
+                            window.location.reload();
+                        },
+                        error: function (data) {
+                            $("#modal_task_edit_ok").button('reset');
+                            $('#edit_task_result').html('<div id="edit_task_err" class="alert alert-danger" role ="alert" id="edit_task_err">' +
+                                    '                      <a class="close" data-dismiss="alert">&times;</a>' +
+                                    '                      <span>' + JSON.parse(data.responseText).text + '</span>' +
+                                    '                    </div>')
+                        }
+                    });
+                }
+                else {
+                     $('#modal_task_description').modal('hide');
+                }
 
                 return false;
             },
@@ -85,6 +102,16 @@
                     $('#modal_edit_task_problem_id_error_text').append(error);
             }
         });
+
+        $('#modal_task_description').on('hide.bs.modal', function (e) {
+            modal_task_desc_edit_changed = false;
+            $("#edit_task_err").remove();
+        });
+
+        $('#edit_task_err .close').click(function(e) {
+            $("#edit_task_err").remove();
+        });
+
         $('#contest_task_form').validate(
         {
             rules: {
