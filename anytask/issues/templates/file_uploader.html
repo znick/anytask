@@ -79,35 +79,38 @@
             <table style="margin-bottom: 0px;" role="presentation" class="table table-striped">
                <tbody class="files" data-toggle="modal-gallery" data-target="#modal-gallery"></tbody>
             </table>
-            <div class="drop-zone" id="drop-zone" ondragenter="this.style.background='#E0E0E0';" ondragleave="this.style.background='white';" ondrop="this.style.background='white';">
+            {% if teacher_or_staff or issue.status != issue.STATUS_ACCEPTED and issue.status != issue.STATUS_NEED_INFO %}
+                <div class="drop-zone" id="drop-zone" ondragenter="this.style.background='#E0E0E0';" ondragleave="this.style.background='white';" ondrop="this.style.background='white';">
 
-            <span class="btn drop-btn fileinput-button" id="drop-btn">
-                <span>Выберите файлы</span>
+                <span class="btn drop-btn fileinput-button" id="drop-btn">
+                    <span>Выберите файлы</span>
 
-                {% block FILE_INPUT %}
-                {% comment %}
-                    The file input for the upload form.
-                {% endcomment %}
-                <input
-                    type="file" name="files[]" multiple
+                    {% block FILE_INPUT %}
+                    {% comment %}
+                        The file input for the upload form.
+                    {% endcomment %}
+                    <input
+                        type="file" name="files[]" multiple
 
-                    {% if accepted_mime_types %}
-                        accept = '{{ accepted_mime_types|join:"," }}'
-                    {% endif %}
-                >
-                {% endblock %}
-            </span>
-            или перетащите сюда
-            </div>
+                        {% if accepted_mime_types %}
+                            accept = '{{ accepted_mime_types|join:"," }}'
+                        {% endif %}
+                    >
+                    {% endblock %}
+                </span>
+                или перетащите сюда
+                </div>
+            {% endif %}
             {% endblock %}
 
             {% block UPLOAD_FORM_BUTTON_BAR_CONTROL %}
-            {% if not teacher_or_staff and issue.status == issue.STATUS_ACCEPTED %}
+            {% if issue.status == issue.STATUS_ACCEPTED or issue.status == issue.STATUS_NEED_INFO and not teacher_or_staff %}
                 <button class="btn btn-info pull-right" formaction="#" style="margin-top: 10px; margin-left: 10px;" type="submit" name="need_info">Задать вопрос</button>
+            {% else %}
+                <button style="margin-top: 10px;" type="submit" name="update_issue" class="btn btn-primary pull-right">
+                    <span>Отправить</span>
+                </button>
             {% endif %}
-            <button style="margin-top: 10px;" type="submit" name="update_issue" class="btn btn-primary pull-right">
-                <span>Отправить</span>
-            </button>
             {% endblock %}
         </div>
         {% block UPLOAD_FORM_PROGRESS_BAR %}
