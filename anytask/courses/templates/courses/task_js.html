@@ -16,15 +16,14 @@
             return isNaN(value) || value <= max;
         });
 
-        var modal_task_desc_edit_changed = false;
         $('#modal_task_desc_edit').change(function() {
-             modal_task_desc_edit_changed = true;
+            $('#modal_task_desc_edit').data('changed', true);
         });
 
         $('#modal-edite-task-form').validate(
         {
             submitHandler: function(form) {
-                if (modal_task_desc_edit_changed) {
+                if ($('#modal_task_desc_edit').data('changed')) {
                     $("#modal_task_edit_ok").button('loading');
                     $(form).ajaxSubmit({
                         success: function () {
@@ -32,10 +31,10 @@
                         },
                         error: function (data) {
                             $("#modal_task_edit_ok").button('reset');
-                            $('#edit_task_result').html('<div id="edit_task_err" class="alert alert-danger" role ="alert" id="edit_task_err">' +
-                                    '                      <a class="close" data-dismiss="alert">&times;</a>' +
-                                    '                      <span>Произошла ошибка при сохранении задачи. Попробуйте снова.</span>' +
-                                    '                    </div>')
+                            $('#modal_task_edit_error_text').html('<div id="edit_task_err" class="alert alert-danger" role ="alert" id="edit_task_err">' +
+                                                '                      <a class="close" data-dismiss="alert">&times;</a>' +
+                                                '                      <span>Произошла ошибка при сохранении задачи. Попробуйте снова.</span>' +
+                                                '                  </div>')
                         }
                     });
                 }
@@ -101,15 +100,6 @@
                 else if (element.attr('id') == 'modal_task_problem_id_edit')
                     $('#modal_edit_task_problem_id_error_text').append(error);
             }
-        });
-
-        $('#modal_task_description').on('hide.bs.modal', function (e) {
-            modal_task_desc_edit_changed = false;
-            $("#edit_task_err").remove();
-        });
-
-        $('#edit_task_err .close').click(function(e) {
-            $("#edit_task_err").remove();
         });
 
         $('#contest_task_form').validate(
@@ -197,7 +187,7 @@
         {
             $('#modal_header_task_descr').html(task_title);
             $('#modal_body_task_descr').html(task_text_to_show);
-            
+
             if (is_teacher == 'True')
             {
                 $('#modal_task_body_edit').val(task_text_to_edit);
@@ -212,7 +202,7 @@
                 }
                 $('#modal_task_group [value="'+ group_id +'"]').attr('selected', 'selected');
                 $('#modal-edite-task-form').attr('action', '{% url courses.views.edit_task %}');
-        
+
                 $('#edit_task_descr').show();
             }
             else
@@ -241,34 +231,34 @@
                 }
                 $('#modal_task_group [value="'+ group_id +'"]').attr('selected', 'selected');
                 $('#modal-edite-task-form').attr('action', '{% url courses.views.edit_task %}');
-        
+
                 $('#modal_task_desc_edit').show();
 
-        
+
             }
         }
-    
+
         $('#modal_task_description').modal('show');
     }
-    
+
     function get_add_task_modal(course_id, group_id, parent_id, is_teacher)
     {
         clear();
         if (is_teacher == 'True')
-        {   
+        {
             $('#modal_task_desc_text').hide();
-            
+
             $('#modal-edite-task-form').attr('action', '{% url courses.views.add_task %}');
-            
+
             $('#modal_edit_task_course_id').val(course_id);
             if (group_id) {
                 $('#modal_edit_task_group_id').val(group_id);
             }
             $('#modal_task_group [value="'+ group_id +'"]').attr('selected', 'selected');
             $('#modal_edit_task_parent_id').val(parent_id);
-        
+
             $('#modal_task_desc_edit').show();
-        
+
             $('#modal_task_description').modal('show');
         }
     }
@@ -345,6 +335,9 @@
         $('#modal_control_edit_problem_group').removeClass('error').removeClass('success');
         $('#modal_control_edit_contest_group').removeClass('error').removeClass('success');
         $('#contest_problem_list').removeClass('error').removeClass('success');
+        $("#edit_task_err").remove();
+        $('#modal_task_desc_edit').data('changed', false);
+
     }
 
     function get_edit_course_modal(course_id, course_desc)
