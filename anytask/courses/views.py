@@ -586,7 +586,7 @@ def set_course_mark(request):
         student_course_mark.student = student
 
     student_course_mark.teacher = request.user
-    student_course_mark.update_time = datetime.now
+    student_course_mark.update_time = datetime.datetime.now()
     student_course_mark.mark = mark
     student_course_mark.save()
 
