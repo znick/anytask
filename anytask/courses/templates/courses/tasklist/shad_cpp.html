@@ -126,7 +126,7 @@
                     <input type="hidden" name="course_id" value="{{ course.id }}"/>
                     <input type="hidden" name="group_id" value="{{ group.id }}"/>
                     <input type="hidden" name="student_id" value="{{ student.id }}"/>
-                    <select class="selectpicker" style="margin:0" name="mark_id">
+                    <select class="selectpicker" style="margin:0;width:auto;" name="mark_id">
                         <option value=-1>--</option>
                       {% for mark in course_mark_system_vals %}
                         <option value={{ mark.id }} {% ifequal mark_id mark.id %}selected{% endifequal %}>{{ mark }}</option>

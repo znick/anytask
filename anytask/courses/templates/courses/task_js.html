@@ -163,7 +163,9 @@
         });
 
         $('.mark-form').change(function() {
+            $(this).collapse('hide');
             var mark_value = $($(this).closest('td')).find('.mark-value');
+            $(mark_value).collapse('show');
             $.post('{% url courses.views.set_course_mark %}', $(this).serialize(), function(data){
                 $($(mark_value).find('span')).text(data.mark);
             });
