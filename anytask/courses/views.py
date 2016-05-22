@@ -70,7 +70,7 @@ def queue_page(request, course_id):
     if not course.user_can_see_queue(request.user):
         return HttpResponseForbidden()
 
-    issues = Issue.objects.filter(task__course=course)
+    issues = Issue.objects.filter(task__course=course).order_by('update_time')
 
     f = IssueFilter(request.GET, issues)
     f.set_course(course)
