@@ -341,13 +341,17 @@ class IssueFilter(django_filters.FilterSet):
     update_time = django_filters.DateRangeFilter(label=u'Дата последнего изменения')
     responsible = django_filters.ChoiceFilter(label=u'Ответственный')
     followers = django_filters.MultipleChoiceFilter(label=u'Наблюдатели', widget=forms.CheckboxSelectMultiple)
+    task = django_filters.ChoiceFilter(label=u'Задача')
 
     def set_course(self, course):
         teacher_choices = [(teacher.id, _(teacher.get_full_name())) for teacher in course.get_teachers()]
-        teacher_choices.insert(0,(u'', _(u'------------')))
+        teacher_choices.insert(0,(u'', _(u'Любой')))
         self.filters['responsible'].field.choices = tuple(teacher_choices)
         teacher_choices.pop(0)
         self.filters['followers'].field.choices = tuple(teacher_choices)
+        task_choices = [(task.id, _(task.title)) for task in Task.objects.all().filter(course=course)]
+        task_choices.insert(0, (u'', _(u'Любая')))
+        self.filters['task'].field.choices = tuple(task_choices)
 
     class Meta:
         model = Issue
