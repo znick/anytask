@@ -68,6 +68,16 @@
                     </select>
                     </div>
                 </div>
+                <div class="control-group">
+                    <label class="control-label" for="modal_task_datepicker">Дата сдачи:</label>
+                    <div class="controls">
+                        <input id='modal_task_datepicker' name='deadline' type='text' maxlength='25' size='20'>
+                        <span class="help-inline" id="modal_task_datepicker_error_text"></span>
+                        <label id="label_for_changed_task" class="checkbox inline hide">
+                            <input type="checkbox" name="changed_task" id="changed_task"> Уведомить студентов об изменении срока сдачи
+                        </label>
+                     </div>
+                </div>
                 <br>
                 <div>
                     <label class="checkbox inline">
@@ -151,6 +161,16 @@
                             <option value="{{ group.id }}">{{ group.name }}</option>
                         {% endfor %}
                     </select>
+                </div>
+            </div>
+            <div id="datepicker_group" class="hide control-group">
+                <label class="control-label" for="modal_task_datepicker">Дата сдачи:</label>
+                <div class="controls">
+                    <input id='modal_contest_task_datepicker' name='deadline' type='text' maxlength='25' size='20'>
+                    <span class="help-inline" id="modal_task_datepicker_error_text"></span>
+                    <label id="label_for_changed_contest_task" class="checkbox inline hide">
+                        <input type="checkbox" name="changed_task" id="changed_task"> Уведомить студентов об изменении срока сдачи
+                    </label>
                 </div>
             </div>
             <div id="hidden_checkbox" class="hide">

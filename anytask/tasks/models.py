@@ -31,11 +31,14 @@ class Task(models.Model):
 
     added_time = models.DateTimeField(auto_now_add=True, default=datetime.now)
     update_time = models.DateTimeField(auto_now=True, default=datetime.now)
+    deadline_time = models.DateTimeField(auto_now=False, null=True, default=None)
 
     updated_by = models.ForeignKey(User, db_index=False, null=True, blank=True)
 
     contest_id = models.IntegerField(db_index=True, null=False, blank=False, default=0)
     problem_id = models.CharField(max_length=128, db_index=True, null=True, blank=True)
+
+    sended_notify = models.BooleanField(db_index=True, null=False, blank=False, default=True)
 
     def __unicode__(self):
         return unicode(self.title)
@@ -146,8 +149,12 @@ class TaskLog(models.Model):
 
     added_time = models.DateTimeField(auto_now_add=True, default=datetime.now)
     update_time = models.DateTimeField(auto_now=True, default=datetime.now)
+    deadline_time = models.DateTimeField(auto_now=False, null=True, default=None)
 
     updated_by = models.ForeignKey(User, db_index=False, null=True, blank=True)
+
+    contest_id = models.IntegerField(db_index=True, null=False, blank=False, default=0)
+    problem_id = models.CharField(max_length=128, db_index=True, null=True, blank=True)
 
     def __unicode__(self):
         return unicode(self.title)
@@ -247,6 +254,7 @@ def task_save_to_log_post_save(sender, instance, created, **kwargs):
     task_log_dict  = copy.deepcopy(instance.__dict__)
     task_log_dict['id'] = None
     task_log.__dict__ = task_log_dict
+    task_log.sended_notify = False
     task_log.save()
 
 def task_taken_save_to_log_post_save(sender, instance, created, **kwargs):

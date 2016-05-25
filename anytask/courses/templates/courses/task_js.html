@@ -22,6 +22,7 @@
 
         $('#modal-edite-task-form').validate(
         {
+
             submitHandler: function(form) {
                 if ($('#modal_task_desc_edit').data('changed')) {
                     $("#modal_task_edit_ok").button('loading');
@@ -179,7 +180,8 @@
                             mode,
                             contest_id,
                             problem_id,
-                            group_id)
+                            group_id,
+                            deadline)
     {
         clear();
         $('#modal_edit_task_title_error_text').empty()
@@ -196,6 +198,7 @@
                 $('#modal_task_contest_id_edit').val(contest_id);
                 $('#modal_task_problem_id_edit').val(problem_id);
                 $('#modal_edit_task_task_id').val(task_id);
+                $('#modal_task_datepicker').val(deadline);
                 if (task_hidden == "True")
                 {
                     $('#hidden_task').attr('checked', true);
@@ -225,6 +228,7 @@
                 $('#modal_task_contest_id_edit').val(contest_id);
                 $('#modal_task_problem_id_edit').val(problem_id);
                 $('#modal_edit_task_task_id').val(task_id);
+                $('#modal_task_datepicker').val(deadline);
                 if (task_hidden == "True")
                 {
                     $('#hidden_task').attr('checked', true);
@@ -301,13 +305,34 @@
         $('#modal_task_max_score_edit').val('');
         $('#modal_task_contest_id_edit').val('');
         $('#task_contest_id_edit').val('');
+        $('#modal_task_datepicker').val('');
+        $('#modal_task_datepicker').datepicker({
+            changeMonth: true,
+            changeYear: true,
+            dateFormat: 'dd/mm/yy',
+            minDate: 0,
+            defaultDate: null
+        }).on("input change", function (e) {
+            $('#label_for_changed_task').show()});
+        $('#modal_contest_task_datepicker').val('');
+        $('#modal_contest_task_datepicker').datepicker({
+            changeMonth: true,
+            changeYear: true,
+            dateFormat: 'dd/mm/yy',
+            minDate: 0,
+            defaultDate: null
+        }).on("input change", function (e) {
+            $('#label_for_changed_contest_task').show()});
         $('#modal_task_problem_id_edit').val('');
         $('#modal_task_body_edit').val('');
         $('#contest_problems').empty();
         $('#contest_problem_list').val('');
         $('#score_group').hide();
+        $('#datepicker_group').hide();
         $('#group_select').hide();
         $('#hidden_checkbox').hide();
+        $('#label_for_changed_contest_task').hide();
+        $('#label_for_changed_task').hide();
         $('#get_tasks').show();
         $('#modal_edit_task_score_error_text').empty();
         $('#modal_edit_task_contest_id_error_text').empty();
@@ -407,6 +432,7 @@
                     $('#group_select').show();
                     $('#score_group').show();
                     $('#hidden_checkbox').show();
+                    $('#datepicker_group').show();
                     $('#get_tasks').hide();
                 }
                 else if ($('#contest_task_form').valid()) {

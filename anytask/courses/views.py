@@ -228,6 +228,8 @@ def edit_task(request):
     hidden_task = False
     if 'hidden_task' in request.POST:
         hidden_task = True
+    if 'chaged_task' in request.POST:
+        changed_task = True
 
     try:
         task_id = int(request.POST['task_id'])
@@ -238,6 +240,13 @@ def edit_task(request):
         if task.course.contest_integrated:
             contest_id = int(request.POST['contest_id'])
             problem_id = request.POST['problem_id'].strip()
+
+
+        task_deadline = request.POST['deadline']
+        if task_deadline == "":
+            task_deadline = None
+        else:
+            task_deadline = datetime.datetime.strptime(task_deadline, '%d/%m/%Y')
 
         task_group_id = request.POST['task_group_id']
         group_id = request.POST['group_id']
@@ -265,6 +274,11 @@ def edit_task(request):
     task.group = group
     task.task_text = task_text
     task.score_max = max_score
+    if changed_task:
+        task.sended_notify = False
+    else:
+        task.sended_notify = True
+    task.deadline_time = task_deadline
     if task.course.contest_integrated:
         task.contest_id = contest_id
         task.problem_id = problem_id
@@ -286,6 +300,8 @@ def add_task(request):
     hidden_task = False
     if 'hidden_task' in request.POST:
         hidden_task = True
+    if 'chaged_task' in request.POST:
+        changed_task = True
 
     tasks = []
 
@@ -297,8 +313,13 @@ def add_task(request):
         if course.contest_integrated:
             contest_id = int(request.POST['contest_id'])
 
-        task_group_id = request.POST['task_group_id']
+        task_deadline = request.POST['deadline']
+        if task_deadline == "":
+            task_deadline = None
+        else:
+            task_deadline = datetime.datetime.strptime(task_deadline, '%d/%m/%Y')
 
+        task_group_id = request.POST['task_group_id']
         if task_group_id == "":
             group_id = None
         else:
@@ -367,6 +388,11 @@ def add_task(request):
         real_task.course = course
         real_task.group = group
         real_task.parent_task = parent
+        if changed_task:
+            real_task.sended_notify = False
+        else:
+            real_task.sended_notify = True
+        real_task.deadline_time = task_deadline
         real_task.weight = max_weight
         real_task.title = task['task_title']
         real_task.task_text = task['task_text']
