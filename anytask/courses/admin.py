@@ -1,5 +1,6 @@
-from courses.models import Course, FilenameExtension, DefaultTeacher, MarkField, CourseMark
+from courses.models import Course, FilenameExtension, DefaultTeacher, MarkField, CourseMark, StudentCourseMark
 from django.contrib import admin
+
 
 class CourseAdmin(admin.ModelAdmin):
     filter_horizontal = ('teachers', 'groups', 'filename_extensions', 'issue_fields')
@@ -7,12 +8,24 @@ class CourseAdmin(admin.ModelAdmin):
     list_filter = ('name', 'year__start_year', 'is_active')
     search_fields = ('name', 'year__start_year', 'teachers__username', 'groups__name', 'filename_extensions_name')
 
+
 class DefaultTeacherAdmin(admin.ModelAdmin):
     list_display = ('teacher', 'group', 'course')
     list_filter = ('group', 'course')
 
+
+class CourseMarkAdmin(admin.ModelAdmin):
+    filter_horizontal = ('marks',)
+
+
+class StudentCourseMarkAdmin(admin.ModelAdmin):
+    list_display = ('student', 'course', 'mark')
+    list_filter = ('student', 'course', 'mark')
+    readonly_fields = ('update_time',)
+
 admin.site.register(Course, CourseAdmin)
 admin.site.register(FilenameExtension)
 admin.site.register(DefaultTeacher, DefaultTeacherAdmin)
-admin.site.register(CourseMark)
+admin.site.register(CourseMark, CourseMarkAdmin)
 admin.site.register(MarkField)
+admin.site.register(StudentCourseMark, StudentCourseMarkAdmin)
