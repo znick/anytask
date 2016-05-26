@@ -228,7 +228,8 @@ def edit_task(request):
     hidden_task = False
     if 'hidden_task' in request.POST:
         hidden_task = True
-    if 'chaged_task' in request.POST:
+    changed_task = False
+    if 'changed_task' in request.POST:
         changed_task = True
 
     try:
@@ -246,7 +247,7 @@ def edit_task(request):
         if task_deadline == "":
             task_deadline = None
         else:
-            task_deadline = datetime.datetime.strptime(task_deadline, '%d/%m/%Y')
+            task_deadline = datetime.datetime.strptime(task_deadline, '%d-%m-%Y')
 
         task_group_id = request.POST['task_group_id']
         group_id = request.POST['group_id']
@@ -300,7 +301,8 @@ def add_task(request):
     hidden_task = False
     if 'hidden_task' in request.POST:
         hidden_task = True
-    if 'chaged_task' in request.POST:
+    changed_task = False
+    if 'changed_task' in request.POST:
         changed_task = True
 
     tasks = []
@@ -317,7 +319,7 @@ def add_task(request):
         if task_deadline == "":
             task_deadline = None
         else:
-            task_deadline = datetime.datetime.strptime(task_deadline, '%d/%m/%Y')
+            task_deadline = datetime.datetime.strptime(task_deadline, '%d-%m-%Y')
 
         task_group_id = request.POST['task_group_id']
         if task_group_id == "":
