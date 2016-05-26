@@ -16,7 +16,7 @@
       Предыдущие сообщения
     </button>
     </li>
-      {% if issue.update_time > issue.task.deadline_time %}
+      {% if issue.update_time > issue.task.deadline_time and show_top_alert %}
         <div id="top_alert" class="alert alert-danger">
           <strong>Срок сдачи задания истек!</strong> Все сообщения, отправленные студентом позже срока сдачи, будут
          выделяться красным цветом.

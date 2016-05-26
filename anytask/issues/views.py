@@ -98,10 +98,13 @@ def issue_page(request, issue_id):
 
     first_event_after_deadline = None
     events_to_show = 6
+    show_top_alert = False
 
     for event_id, event in enumerate(issue.get_history()):
-        if  event.timestamp > issue.task.deadline_time:
+        if issue.task.deadline_time and event.timestamp > issue.task.deadline_time:
             first_event_after_deadline = event
+            if event_id < len(issue.get_history()) - events_to_show:
+                show_top_alert = True
             break
 
     context = {
@@ -110,6 +113,7 @@ def issue_page(request, issue_id):
         'course': issue.task.course,
         'events_to_show': events_to_show,
         'first_event_after_deadline': first_event_after_deadline,
+        'show_top_alert': show_top_alert,
         'teacher_or_staff': user_is_teacher_or_staff(request.user, issue),
     }
 
