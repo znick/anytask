@@ -151,6 +151,42 @@
                     $('#modal_edit_contest_task_problems_checkbox_error_text').empty().append(error);
             }
         });
+
+        $('.mark-value').click(function() {
+            $(this).collapse('hide');
+            var mark_form = $($(this).closest('td')).find('.mark-form');
+            $(mark_form).collapse('show');
+        });
+
+        $('.mark-form').on('show.bs.collapse focusout hide.bs.collapse', function () {
+            $(this).data('need_hide', false);
+        });
+
+        $('.mark-form').dblclick(function() {
+            $(this).collapse('hide');
+            var mark_value = $($(this).closest('td')).find('.mark-value');
+            $(mark_value).collapse('show');
+        });
+
+        $('.mark-form').click(function() {
+            if ($(this).data('need_hide')) {
+                $(this).collapse('hide');
+                var mark_value = $($(this).closest('td')).find('.mark-value');
+                $(mark_value).collapse('show');
+            }
+            else {
+                $(this).data('need_hide', true);
+            }
+        });
+
+        $('.mark-form').change(function() {
+            $(this).collapse('hide');
+            var mark_value = $($(this).closest('td')).find('.mark-value');
+            $(mark_value).collapse('show');
+            $.post('{% url courses.views.set_course_mark %}', $(this).serialize(), function(data){
+                $($(mark_value).find('span')).text(data.mark);
+            });
+        });
     });
 
     function isInt(x)

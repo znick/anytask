@@ -12,4 +12,5 @@ urlpatterns = patterns('courses.views',
     url(r'^(?P<course_id>\d+)/settings$', 'course_settings'),
     url(r'^get_contest_problems', 'get_contest_problems'),
     url(r'^change_visibility_hidden_tasks$', 'change_visibility_hidden_tasks'),
+    url(r'^set_course_mark$', 'set_course_mark'),
 )
