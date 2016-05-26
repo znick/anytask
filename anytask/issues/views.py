@@ -97,7 +97,7 @@ def issue_page(request, issue_id):
     prepare_info_fields(issue_fields, request, issue)
 
     first_event_after_deadline = None
-    events_to_show = 7
+    events_to_show = 6
 
     for event_id, event in enumerate(issue.get_history()):
         if  event.timestamp > issue.task.deadline_time:

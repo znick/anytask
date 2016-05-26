@@ -2,31 +2,31 @@
 {% load sanitize_html %}
 
 <script type="text/javascript">
-    $('#old_comments_button').click(function () {
-        $('#top_alert:visible').hide();
 
+    $(document).on("click", "#old_comments_button", function() {
+        $('#top_alert').toggle();
     });
 
 </script>
 <div class="row-fluid">
   <ul class="history">
     {% if issue.get_history.count > events_to_show %}
+    <li>
+    <button id="old_comments_button" type="button" class="btn" data-toggle="collapse" data-target="#old_comments">
+      Предыдущие сообщения
+    </button>
+    </li>
       {% if issue.update_time > issue.task.deadline_time %}
         <div id="top_alert" class="alert alert-danger">
           <strong>Срок сдачи задания истек!</strong> Все сообщения, отправленные студентом позже срока сдачи, будут
          выделяться красным цветом.
         </div>
       {% endif %}
-    <li>
-    <button id="old_comments_button" type="button" class="btn" data-toggle="collapse" data-target="#old_comments">
-      Предыдущие сообщения
-    </button>
-    </li>
     <div id="old_comments" class="collapse">
     {% endif %}
     {% for event in issue.get_history %}
       {% if event.id == first_event_after_deadline.id %}
-        <div class="alert alert-danger">
+        <div id="event_alert" class="alert alert-danger">
           <strong>Срок сдачи задания истек!</strong> Все сообщения, отправленные студентом позже срока сдачи, будут
          выделяться красным цветом.
         </div>
