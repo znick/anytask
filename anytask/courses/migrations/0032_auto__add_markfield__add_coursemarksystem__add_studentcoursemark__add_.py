@@ -8,22 +8,6 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding model 'CourseMark'
-        db.create_table('courses_coursemark', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=254)),
-        ))
-        db.send_create_signal('courses', ['CourseMark'])
-
-        # Adding M2M table for field marks on 'CourseMark'
-        m2m_table_name = db.shorten_name('courses_coursemark_marks')
-        db.create_table(m2m_table_name, (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('coursemark', models.ForeignKey(orm['courses.coursemark'], null=False)),
-            ('markfield', models.ForeignKey(orm['courses.markfield'], null=False))
-        ))
-        db.create_unique(m2m_table_name, ['coursemark_id', 'markfield_id'])
-
         # Adding model 'MarkField'
         db.create_table('courses_markfield', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
@@ -31,6 +15,22 @@ class Migration(SchemaMigration):
             ('name_int', self.gf('django.db.models.fields.IntegerField')(default=0)),
         ))
         db.send_create_signal('courses', ['MarkField'])
+
+        # Adding model 'CourseMarkSystem'
+        db.create_table('courses_coursemarksystem', (
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('name', self.gf('django.db.models.fields.CharField')(max_length=254)),
+        ))
+        db.send_create_signal('courses', ['CourseMarkSystem'])
+
+        # Adding M2M table for field marks on 'CourseMarkSystem'
+        m2m_table_name = db.shorten_name('courses_coursemarksystem_marks')
+        db.create_table(m2m_table_name, (
+            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
+            ('coursemarksystem', models.ForeignKey(orm['courses.coursemarksystem'], null=False)),
+            ('markfield', models.ForeignKey(orm['courses.markfield'], null=False))
+        ))
+        db.create_unique(m2m_table_name, ['coursemarksystem_id', 'markfield_id'])
 
         # Adding model 'StudentCourseMark'
         db.create_table('courses_studentcoursemark', (
@@ -49,7 +49,7 @@ class Migration(SchemaMigration):
 
         # Adding field 'Course.mark_system'
         db.add_column('courses_course', 'mark_system',
-                      self.gf('django.db.models.fields.related.ForeignKey')(db_index=False, to=orm['courses.CourseMark'], null=True, blank=True),
+                      self.gf('django.db.models.fields.related.ForeignKey')(db_index=False, to=orm['courses.CourseMarkSystem'], null=True, blank=True),
                       keep_default=False)
 
 
@@ -57,14 +57,14 @@ class Migration(SchemaMigration):
         # Removing unique constraint on 'StudentCourseMark', fields ['student', 'course', 'group']
         db.delete_unique('courses_studentcoursemark', ['student_id', 'course_id', 'group_id'])
 
-        # Deleting model 'CourseMark'
-        db.delete_table('courses_coursemark')
-
-        # Removing M2M table for field marks on 'CourseMark'
-        db.delete_table(db.shorten_name('courses_coursemark_marks'))
-
         # Deleting model 'MarkField'
         db.delete_table('courses_markfield')
+
+        # Deleting model 'CourseMarkSystem'
+        db.delete_table('courses_coursemarksystem')
+
+        # Removing M2M table for field marks on 'CourseMarkSystem'
+        db.delete_table(db.shorten_name('courses_coursemarksystem_marks'))
 
         # Deleting model 'StudentCourseMark'
         db.delete_table('courses_studentcoursemark')
@@ -123,7 +123,7 @@ class Migration(SchemaMigration):
             'information': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'db_index': 'True'}),
             'issue_fields': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'to': "orm['issues.IssueField']", 'null': 'True', 'blank': 'True'}),
-            'mark_system': ('django.db.models.fields.related.ForeignKey', [], {'db_index': 'False', 'to': "orm['courses.CourseMark']", 'null': 'True', 'blank': 'True'}),
+            'mark_system': ('django.db.models.fields.related.ForeignKey', [], {'db_index': 'False', 'to': "orm['courses.CourseMarkSystem']", 'null': 'True', 'blank': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '254', 'db_index': 'True'}),
             'name_id': ('django.db.models.fields.CharField', [], {'db_index': 'True', 'max_length': '254', 'null': 'True', 'blank': 'True'}),
             'private': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
@@ -133,8 +133,8 @@ class Migration(SchemaMigration):
             'update_time': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'auto_now': 'True', 'blank': 'True'}),
             'year': ('django.db.models.fields.related.ForeignKey', [], {'default': '2016', 'to': "orm['years.Year']"})
         },
-        'courses.coursemark': {
-            'Meta': {'object_name': 'CourseMark'},
+        'courses.coursemarksystem': {
+            'Meta': {'object_name': 'CourseMarkSystem'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'marks': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'to': "orm['courses.MarkField']", 'null': 'True', 'blank': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '254'})
