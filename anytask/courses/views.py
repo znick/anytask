@@ -270,7 +270,7 @@ def edit_task(request):
         if task_deadline == "":
             task_deadline = None
         else:
-            task_deadline = datetime.datetime.strptime(task_deadline, '%d-%m-%Y')
+            task_deadline = datetime.datetime.strptime(task_deadline, '%d-%m-%Y %H:%M')
 
         task_group_id = request.POST['task_group_id']
         group_id = request.POST['group_id']
@@ -342,7 +342,7 @@ def add_task(request):
         if task_deadline == "":
             task_deadline = None
         else:
-            task_deadline = datetime.datetime.strptime(task_deadline, '%d-%m-%Y')
+            task_deadline = datetime.datetime.strptime(task_deadline, '%d-%m-%Y %H:%M')
 
         task_group_id = request.POST['task_group_id']
         if task_group_id == "":

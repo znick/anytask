@@ -50,7 +50,7 @@
                     '{{task.is_hidden}}', '{{task.task_text|safe|escapejs}}',
                     '{{task.task_text|escapejs}}', {{task.score_max}}, '{{user_is_teacher}}',
                     'text', {{task.contest_id}}, '{{task.problem_id}}', {% if task.group %} {{group.id}} {% else %}''{% endif %},
-                     {% if task.deadline_time %} '{{task.deadline_time|date:'d-m-Y'}}' {% else %}''{% endif %})">
+                     {% if task.deadline_time %} '{{task.deadline_time|date:'d-m-Y H:i'}}' {% else %}''{% endif %})">
                     {{ task.title }}
                   </a>
                 <span class="label {% if not task.is_hidden %} label-inverse {% endif %}">{{ task.score_max }}</span>

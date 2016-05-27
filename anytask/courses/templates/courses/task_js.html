@@ -342,21 +342,27 @@
         $('#modal_task_contest_id_edit').val('');
         $('#task_contest_id_edit').val('');
         $('#modal_task_datepicker').val('');
-        $('#modal_task_datepicker').datepicker({
-            changeMonth: true,
-            changeYear: true,
-            dateFormat: 'dd-mm-yy',
-            minDate: 0,
-            defaultDate: null
+        $('.task_datetime').datetimepicker({
+            format: 'dd-mm-yyyy hh:ii',
+            language: "ru",
+            todayBtn: true,
+            autoclose: true,
+            todayHighlight: true,
+            pickerPosition: "bottom-left",
+            startDate: null,
+            minuteStep: 30
         }).on("input change", function (e) {
             $('#label_for_changed_task').show()});
         $('#modal_contest_task_datepicker').val('');
-        $('#modal_contest_task_datepicker').datepicker({
-            changeMonth: true,
-            changeYear: true,
-            dateFormat: 'dd-mm-yy',
-            minDate: 0,
-            defaultDate: null
+        $('.contest_task_datetime').datetimepicker({
+            format: 'dd-mm-yyyy hh:ii',
+            language: "ru",
+            todayBtn: true,
+            autoclose: true,
+            todayHighlight: true,
+            pickerPosition: "bottom-left",
+            startDate: null,
+            minuteStep: 30
         }).on("input change", function (e) {
             $('#label_for_changed_contest_task').show()});
         $('#modal_task_problem_id_edit').val('');

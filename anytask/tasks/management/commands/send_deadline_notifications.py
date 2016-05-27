@@ -37,7 +37,7 @@ class Command(BaseCommand):
 
                 message_body.append('<div style="margin:20px">')
                 message_body.append('<pre>')
-                message_body.append(task.deadline_time.strftime("%d-%m-%Y"))
+                message_body.append(task.deadline_time.strftime("%d-%m-%Y %H:%M"))
                 message_body.append('-' * 79)
                 message_body.append('</pre>')
                 message_body.append('</div>')
