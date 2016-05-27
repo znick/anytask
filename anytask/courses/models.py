@@ -68,6 +68,22 @@ class FilenameExtension(models.Model):
         return self.name
 
 
+class MarkField(models.Model):
+    name = models.CharField(max_length=254, db_index=True, null=False, blank=False)
+    name_int = models.IntegerField(db_index=False, null=False, blank=False, default=0)
+
+    def __unicode__(self):
+        return self.name if self.name else '--'
+
+
+class CourseMarkSystem(models.Model):
+    name = models.CharField(max_length=254, db_index=False, null=False, blank=False)
+    marks = models.ManyToManyField(MarkField, null=True, blank=True)
+
+    def __unicode__(self):
+        return unicode(self.name)
+
+
 class Course(models.Model):
 
     name = models.CharField(max_length=254, db_index=True, null=False, blank=False)
@@ -99,6 +115,8 @@ class Course(models.Model):
 
     can_be_chosen_by_extern = models.BooleanField(db_index=False, null=False, blank=False, default=False)
     group_with_extern = models.ForeignKey(Group, related_name="course_with_extern", db_index=False, null=True, blank=True)
+
+    mark_system = models.ForeignKey(CourseMarkSystem, db_index=False, null=True, blank=True)
 
     def __unicode__(self):
         return unicode(self.name)
@@ -182,6 +200,7 @@ class Course(models.Model):
         except DefaultTeacher.DoesNotExist:
             return None
 
+
 class DefaultTeacher(models.Model):
     teacher = models.ForeignKey(User, db_index=False, null=True, blank=True)
     course = models.ForeignKey(Course, db_index=True, null=False, blank=False)
@@ -192,6 +211,23 @@ class DefaultTeacher(models.Model):
 
     class Meta:
         unique_together = (("course", "group"),)
+
+
+class StudentCourseMark(models.Model):
+    student = models.ForeignKey(User, db_index=True, null=False, blank=False)
+    course = models.ForeignKey(Course, db_index=False, null=False, blank=False)
+    group = models.ForeignKey(Group, db_index=False, null=True, blank=True)
+    mark = models.ForeignKey(MarkField, db_index=False, null=True, blank=True)
+
+    teacher = models.ForeignKey(User, related_name='teacher_change_mark', db_index=False, null=True, blank=True)
+    update_time = models.DateTimeField(auto_now=True, default=datetime.now)
+
+    def __unicode__(self):
+        return unicode(self.mark)
+
+    class Meta:
+        unique_together = (("student", "course", "group"),)
+
 
 def add_default_issue_fields(sender, instance, action, **kwargs):
     default_issue_fields = DefaultIssueFields()

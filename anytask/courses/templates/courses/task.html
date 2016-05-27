@@ -6,6 +6,8 @@
             <div class="hide" id="edit_task_descr">
                 <a href="javascript:change_to_edit();">Редактировать</a>
             </div>
+            <div id="modal_header_deadline_time">
+            </div>
         </div>
         <div class="modal-body" style="max-height: 600px;">
             <div id="modal_body_task_descr"></div>
@@ -67,6 +69,20 @@
                     {% endfor %}
                     </select>
                     </div>
+                </div>
+                <div class="control-group input-append date">
+                    <label class="control-label" for="modal_task_datepicker">Дата сдачи:</label>
+                    <div class="controls">
+                        <div class="input-append date task_datetime">
+                            <input id='modal_task_datepicker'  name='deadline' type='text'  maxlength='25' size='20' readonly style="width: 153px; background-color: white; cursor: pointer">
+                            <span class="add-on"><i class="icon-remove"></i></span>
+                            <span class="add-on"><i class="icon-th"></i></span>
+                        </div>
+                        <span class="help-inline" id="modal_task_datepicker_error_text"></span>
+                        <label id="label_for_changed_task" class="checkbox inline hide">
+                            <input type="checkbox" name="changed_task" id="changed_task"> Уведомить студентов об изменении срока сдачи
+                        </label>
+                     </div>
                 </div>
                 <br>
                 <div>
@@ -151,6 +167,20 @@
                             <option value="{{ group.id }}">{{ group.name }}</option>
                         {% endfor %}
                     </select>
+                </div>
+            </div>
+            <div id="datepicker_group" class="hide control-group">
+                <label class="control-label" for="modal_task_datepicker">Дата сдачи:</label>
+                <div class="controls">
+                        <div class="input-append date contest_task_datetime">
+                            <input id='modal_contest_task_datepicker'  name='deadline' type='text'  maxlength='25' size='20' readonly style="width: 153px; background-color: white; cursor: pointer">
+                            <span class="add-on"><i class="icon-remove"></i></span>
+                            <span class="add-on"><i class="icon-th"></i></span>
+                        </div>
+                    <span class="help-inline" id="modal_task_datepicker_error_text"></span>
+                    <label id="label_for_changed_contest_task" class="checkbox inline hide">
+                        <input type="checkbox" name="changed_task" id="changed_task"> Уведомить студентов об изменении срока сдачи
+                    </label>
                 </div>
             </div>
             <div id="hidden_checkbox" class="hide">

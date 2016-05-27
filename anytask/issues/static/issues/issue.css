@@ -7,9 +7,16 @@
 
 .history li
 {
-    margin-bottom: 10px;
-    padding-bottom: 5px;
-    border-bottom: 1px dotted #B3A9A9;
+    padding: 20px;
+    margin: 10px 0;
+    border: 1px solid #eee;
+    border-radius: 5px
+}
+
+
+.history .after_deadline
+{
+    border-color: #ce4844;
 }
 
 .history li .primary-font
@@ -18,10 +25,16 @@
     margin-left: 0px;
 }
 
-.history li.mine .primary-font
+.history .mine
 {
-    color: #000000;
-    margin-left: 0px;
+    border-right-width: 5px;
+    border-right-color: #3a87ad
+}
+
+.history .not_mine
+{
+    border-left-color: #468847;
+    border-left-width: 5px
 }
 
 .history .files

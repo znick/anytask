@@ -23,7 +23,7 @@ import httplib
 import logging
 import requests
 
-from courses.models import Course, DefaultTeacher
+from courses.models import Course, DefaultTeacher, StudentCourseMark, MarkField
 from groups.models import Group
 from tasks.models import TaskTaken, Task
 from tasks.views import update_status_check
@@ -196,10 +196,17 @@ def tasklist_shad_cpp(request, course):
             elif not course.user_can_see_transcript(user, student):
                 continue
 
-            group_x_student_information[group].append((student, student_x_task_x_task_takens[student][0], student_x_task_x_task_takens[student][1]))
+            mark_id, course_mark = get_course_mark(course, group, student)
+
+            group_x_student_information[group].append((student,
+                                                      student_x_task_x_task_takens[student][0],
+                                                      student_x_task_x_task_takens[student][1],
+                                                      mark_id,
+                                                      course_mark))
 
     context = {
         'course': course,
+        'course_mark_system_vals': course.mark_system.marks.all() if course.mark_system else None,
         'group_information': group_x_student_information,
         'group_tasks': group_x_task_list,
         'group_x_max_score': group_x_max_score,
@@ -219,6 +226,22 @@ def tasklist_shad_cpp(request, course):
 def get_tasklist_context(request, course):
     return tasklist_shad_cpp(request, course)
 
+
+def get_course_mark(course, group, student):
+    mark_id = -1
+    course_mark = '--'
+
+    try:
+        student_course_mark = StudentCourseMark.objects.get(course=course, group=group, student=student)
+        if student_course_mark.mark:
+            mark_id = student_course_mark.mark.id
+            course_mark = unicode(student_course_mark)
+    except StudentCourseMark.DoesNotExist:
+        pass
+
+    return mark_id, course_mark
+
+
 def edit_task(request):
     user = request.user
 
@@ -228,6 +251,9 @@ def edit_task(request):
     hidden_task = False
     if 'hidden_task' in request.POST:
         hidden_task = True
+    changed_task = False
+    if 'changed_task' in request.POST:
+        changed_task = True
 
     try:
         task_id = int(request.POST['task_id'])
@@ -238,6 +264,13 @@ def edit_task(request):
         if task.course.contest_integrated:
             contest_id = int(request.POST['contest_id'])
             problem_id = request.POST['problem_id'].strip()
+
+
+        task_deadline = request.POST['deadline']
+        if task_deadline == "":
+            task_deadline = None
+        else:
+            task_deadline = datetime.datetime.strptime(task_deadline, '%d-%m-%Y %H:%M')
 
         task_group_id = request.POST['task_group_id']
         group_id = request.POST['group_id']
@@ -265,6 +298,11 @@ def edit_task(request):
     task.group = group
     task.task_text = task_text
     task.score_max = max_score
+    if changed_task:
+        task.sended_notify = False
+    else:
+        task.sended_notify = True
+    task.deadline_time = task_deadline
     if task.course.contest_integrated:
         task.contest_id = contest_id
         task.problem_id = problem_id
@@ -286,6 +324,9 @@ def add_task(request):
     hidden_task = False
     if 'hidden_task' in request.POST:
         hidden_task = True
+    changed_task = False
+    if 'changed_task' in request.POST:
+        changed_task = True
 
     tasks = []
 
@@ -297,8 +338,13 @@ def add_task(request):
         if course.contest_integrated:
             contest_id = int(request.POST['contest_id'])
 
-        task_group_id = request.POST['task_group_id']
+        task_deadline = request.POST['deadline']
+        if task_deadline == "":
+            task_deadline = None
+        else:
+            task_deadline = datetime.datetime.strptime(task_deadline, '%d-%m-%Y %H:%M')
 
+        task_group_id = request.POST['task_group_id']
         if task_group_id == "":
             group_id = None
         else:
@@ -367,6 +413,11 @@ def add_task(request):
         real_task.course = course
         real_task.group = group
         real_task.parent_task = parent
+        if changed_task:
+            real_task.sended_notify = False
+        else:
+            real_task.sended_notify = True
+        real_task.deadline_time = task_deadline
         real_task.weight = max_weight
         real_task.title = task['task_title']
         real_task.task_text = task['task_text']
@@ -539,3 +590,33 @@ def change_visibility_hidden_tasks(request):
     request.session[session_var_name] = not request.session.get(session_var_name, False)
 
     return HttpResponse("OK")
+
+
+@login_required
+def set_course_mark(request):
+    if request.method != 'POST':
+        return HttpResponseForbidden()
+
+    course = get_object_or_404(Course, id=request.POST['course_id'])
+    group = get_object_or_404(Group, id=request.POST['group_id'])
+    student = get_object_or_404(User, id=request.POST['student_id'])
+    if request.POST['mark_id'] != '-1':
+        mark = get_object_or_404(MarkField, id=request.POST['mark_id'])
+    else:
+        mark = MarkField()
+
+    student_course_mark = StudentCourseMark()
+    try:
+        student_course_mark = StudentCourseMark.objects.get(course=course, group=group, student=student)
+    except StudentCourseMark.DoesNotExist:
+        student_course_mark.course = course
+        student_course_mark.group = group
+        student_course_mark.student = student
+
+    student_course_mark.teacher = request.user
+    student_course_mark.update_time = datetime.datetime.now()
+    student_course_mark.mark = mark
+    student_course_mark.save()
+
+    return HttpResponse(json.dumps({'mark': unicode(mark), 'student_course_mark_id': student_course_mark.id}),
+                        content_type="application/json")

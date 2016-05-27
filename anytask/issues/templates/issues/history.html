@@ -1,20 +1,40 @@
 {% load link_to_open %}
 {% load sanitize_html %}
+
+<script type="text/javascript">
+
+    $(document).on("click", "#old_comments_button", function() {
+        $('#top_alert').toggle();
+    });
+
+</script>
 <div class="row-fluid">
   <ul class="history">
     {% if issue.get_history.count > events_to_show %}
     <li>
-    <button type="button" class="btn" data-toggle="collapse" data-target="#old_comments">
+    <button id="old_comments_button" type="button" class="btn" data-toggle="collapse" data-target="#old_comments">
       Предыдущие сообщения
     </button>
     </li>
+      {% if issue.update_time > issue.task.deadline_time and show_top_alert %}
+        <div id="top_alert" class="alert alert-danger">
+          <strong>Срок сдачи задания истек!</strong> Все сообщения, отправленные студентом позже срока сдачи, будут
+         выделяться красным цветом.
+        </div>
+      {% endif %}
     <div id="old_comments" class="collapse">
     {% endif %}
     {% for event in issue.get_history %}
+      {% if event.id == first_event_after_deadline.id %}
+        <div id="event_alert" class="alert alert-danger">
+          <strong>Срок сдачи задания истек!</strong> Все сообщения, отправленные студентом позже срока сдачи, будут
+         выделяться красным цветом.
+        </div>
+      {% endif %}
       {% if event.author == user %}
-        <li class="mine">
+        <li class="mine {% if issue.task.deadline_time < event.timestamp and event.author.username == issue.student.username %} after_deadline {% endif %}">
       {% else %}
-        <li>
+        <li class="not_mine {% if issue.task.deadline_time < event.timestamp and event.author.username == issue.student.username  %} after_deadline {% endif %}">
       {% endif %}
         <div class="history-body">
           <div class="header">
@@ -46,9 +66,11 @@
         </li>
       {% endif %}
 
+
       {% if forloop.revcounter0 == events_to_show %}
       </div>
       {% endif %}
+
 
     {% endfor %}
   </ul>
