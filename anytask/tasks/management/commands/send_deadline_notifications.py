@@ -37,7 +37,7 @@ class Command(BaseCommand):
 
                 message_body.append('<div style="margin:20px">')
                 message_body.append('<pre>')
-                message_body.append(task.deadline_time)
+                message_body.append(task.deadline_time.strftime("%d-%m-%Y"))
                 message_body.append('-' * 79)
                 message_body.append('</pre>')
                 message_body.append('</div>')
@@ -70,7 +70,7 @@ class Command(BaseCommand):
 
                     if not empty_message:
                         message_text = message.\
-                            format(student.first_name, task.title, get_html_url(course_url,task.course))
+                            format(student.first_name, task.title, get_html_url(course_url,task.course.name))
                         notify_messages.append(get_message(student.email))
 
                 send_mass_mail_html(notify_messages)
