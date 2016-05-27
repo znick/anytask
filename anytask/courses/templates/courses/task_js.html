@@ -225,6 +225,9 @@
         {
             $('#modal_header_task_descr').html(task_title);
             $('#modal_body_task_descr').html(task_text_to_show);
+            if (deadline != ''){
+                $('#modal_header_deadline_time').append('<strong>Дата сдачи: ' + deadline + '</strong>');
+            }
 
             if (is_teacher == 'True')
             {
@@ -342,6 +345,7 @@
         $('#modal_task_contest_id_edit').val('');
         $('#task_contest_id_edit').val('');
         $('#modal_task_datepicker').val('');
+        $('#modal_header_deadline_time').empty();
         $('.task_datetime').datetimepicker({
             format: 'dd-mm-yyyy hh:ii',
             language: "ru",
