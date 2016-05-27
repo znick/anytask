@@ -76,7 +76,7 @@ class MarkField(models.Model):
         return self.name if self.name else '--'
 
 
-class CourseMark(models.Model):
+class CourseMarkSystem(models.Model):
     name = models.CharField(max_length=254, db_index=False, null=False, blank=False)
     marks = models.ManyToManyField(MarkField, null=True, blank=True)
 
@@ -116,7 +116,7 @@ class Course(models.Model):
     can_be_chosen_by_extern = models.BooleanField(db_index=False, null=False, blank=False, default=False)
     group_with_extern = models.ForeignKey(Group, related_name="course_with_extern", db_index=False, null=True, blank=True)
 
-    mark_system = models.ForeignKey(CourseMark, db_index=False, null=True, blank=True)
+    mark_system = models.ForeignKey(CourseMarkSystem, db_index=False, null=True, blank=True)
 
     def __unicode__(self):
         return unicode(self.name)

@@ -1,4 +1,4 @@
-from courses.models import Course, FilenameExtension, DefaultTeacher, MarkField, CourseMark, StudentCourseMark
+from courses.models import Course, FilenameExtension, DefaultTeacher, MarkField, CourseMarkSystem, StudentCourseMark
 from django.contrib import admin
 
 
@@ -14,7 +14,7 @@ class DefaultTeacherAdmin(admin.ModelAdmin):
     list_filter = ('group', 'course')
 
 
-class CourseMarkAdmin(admin.ModelAdmin):
+class CourseMarkSystemAdmin(admin.ModelAdmin):
     filter_horizontal = ('marks',)
 
 
@@ -26,6 +26,6 @@ class StudentCourseMarkAdmin(admin.ModelAdmin):
 admin.site.register(Course, CourseAdmin)
 admin.site.register(FilenameExtension)
 admin.site.register(DefaultTeacher, DefaultTeacherAdmin)
-admin.site.register(CourseMark, CourseMarkAdmin)
+admin.site.register(CourseMarkSystem, CourseMarkSystemAdmin)
 admin.site.register(MarkField)
 admin.site.register(StudentCourseMark, StudentCourseMarkAdmin)
