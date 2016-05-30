@@ -165,34 +165,36 @@
             return isNaN(value) || value <= max;
         });
 
-        $('.task-mark-form').validate({
-            submitHandler: function(form) {
+        $('.task-mark-form').each( function(){
+            var form = $(this);
+            form.validate({
+                submitHandler: function(form) {
+                    var mark_value = $($(form).closest('td')).find('.task-mark-value');
+                    $.post('{% url courses.views.set_task_mark %}', $(form).serialize(), function(data){
+                        $($(mark_value).find('span')).text(data.mark);
+                    });
+                    $(form).collapse('hide');
+                    $(mark_value).collapse('show');
+                },
+                rules: {
+                    mark_value: {
+                        required : true,
+                        number: true,
+                        min: 0,
+                        lt_max: true
+                    }
+                },
 
-                var mark_value = $($(form).closest('td')).find('.task-mark-value');
-                $.post('{% url courses.views.set_task_mark %}', $(form).serialize(), function(data){
-                    $($(mark_value).find('span')).text(data.mark);
-                });
-                $(form).collapse('hide');
-                $(mark_value).collapse('show');
-            },
-            rules: {
-                mark_value: {
-                    required : true,
-                    number: true,
-                    min: 0,
-                    lt_max: true
-                }
-            },
+                highlight: function (label) {
+                    $(label).closest('.control-group').removeClass('success').addClass('error');
+                },
 
-            highlight: function (label) {
-                $(label).closest('.control-group').removeClass('success').addClass('error');
-            },
+                success: function (label) {
+                    label.addClass('valid').closest('.control-group').removeClass('error').addClass('success');
+                },
 
-            success: function (label) {
-                label.addClass('valid').closest('.control-group').removeClass('error').addClass('success');
-            },
-
-            errorPlacement: function(error, element) { }
+                errorPlacement: function(error, element) { }
+            });
         });
 
         $('.mark-value').click(function() {
