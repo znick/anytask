@@ -103,6 +103,7 @@ def course_page(request, course_id):
     tasklist_context = get_tasklist_context(request, course)
     context = tasklist_context
     context['tasklist_template'] = 'courses/tasklist/shad_cpp.html'
+    context['task_types'] = dict(Task().TASK_TYPE_CHOICES).items()
     context['show_hidden_tasks'] = request.session.get(str(request.user.id) + '_' + str(course.id) + '_show_hidden_tasks', False)
 
     return render_to_response('courses/course.html', context, context_instance=RequestContext(request))
@@ -126,16 +127,6 @@ def tasklist_shad_cpp(request, course):
     task = Task()
     task.is_shown = None
     task.is_hidden = None
-
-    events_with_mark = Event.objects.filter(field_id=8).filter(author__in=course.teachers.all()).order_by('issue','timestamp')
-    marks_for_issues = {}
-    for event in events_with_mark:
-        if event.issue.task.course == course:
-            try:
-                marks_for_issues[event.issue.id] = float(event.value)
-            except Exception as e:
-                marks_for_issues[event.issue.id] = 0
-                logger.exception("Not a float mark. Exception: '%s'. Issue: '%s'. Event: '%s'.", e, event.issue.id, event.id)
 
     for group in course.groups.all().order_by('name'):
         student_x_task_x_task_takens = {}
@@ -171,16 +162,14 @@ def tasklist_shad_cpp(request, course):
                 user_is_attended = True
                 user_is_attended_special_course = True
 
-            task_list = group_x_task_list[group]
-
             student_task_takens = issues_x_student[student.id]
 
             task_x_task_taken = {}
             student_summ_scores = 0
             for task_taken in student_task_takens:
                 task_x_task_taken[task_taken.task.id] = task_taken
-                if not task_taken.task.is_hidden and task_taken.id in marks_for_issues:
-                    student_summ_scores += marks_for_issues[task_taken.id]
+                if not task_taken.task.is_hidden:
+                    student_summ_scores += task_taken.mark
 
             student_x_task_x_task_takens[student] = (task_x_task_taken, student_summ_scores)
 
@@ -260,7 +249,8 @@ def edit_task(request):
         task_title = request.POST['task_title'].strip()
         task_text = request.POST['task_text'].strip()
         max_score = int(request.POST['max_score'])
-        task = get_object_or_404(Task, id = task_id)
+        task_type = request.POST['task_type_id']
+        task = get_object_or_404(Task, id=task_id)
         if task.course.contest_integrated:
             contest_id = int(request.POST['contest_id'])
             problem_id = request.POST['problem_id'].strip()
@@ -293,6 +283,11 @@ def edit_task(request):
     if task.parent_task:
         if task.parent_task.is_hidden:
             task.is_hidden = True
+
+    if task_type in dict(task.TASK_TYPE_CHOICES):
+        task.type = task_type
+    else:
+        task.type = task.TYPE_FULL
 
     task.title = task_title
     task.group = group
@@ -333,7 +328,7 @@ def add_task(request):
     try:
         course_id = int(request.POST['course_id'])
         max_score = int(request.POST['max_score'])
-        course = get_object_or_404(Course, id = course_id)
+        course = get_object_or_404(Course, id=course_id)
 
         if course.contest_integrated:
             contest_id = int(request.POST['contest_id'])
@@ -422,6 +417,12 @@ def add_task(request):
         real_task.title = task['task_title']
         real_task.task_text = task['task_text']
         real_task.score_max = max_score
+
+        if 'task_type_id' in request.POST and request.POST['task_type_id'] in dict(real_task.TASK_TYPE_CHOICES):
+            real_task.type = request.POST['task_type_id']
+        else:
+            real_task.type = real_task.TYPE_FULL
+
         if course.contest_integrated:
             real_task.contest_id = contest_id
             real_task.problem_id = task['problem_id']
@@ -619,4 +620,21 @@ def set_course_mark(request):
     student_course_mark.save()
 
     return HttpResponse(json.dumps({'mark': unicode(mark), 'student_course_mark_id': student_course_mark.id}),
+                        content_type="application/json")
+
+
+@login_required
+def set_task_mark(request):
+    if request.method != 'POST':
+        return HttpResponseForbidden()
+
+    issue, created = Issue.objects.get_or_create(task_id=request.POST['task_id'], student_id=request.POST['student_id'])
+
+    if not issue.task.course.user_is_teacher(request.user):
+        HttpResponseForbidden()
+
+    mark = float(request.POST['mark_value'])
+    issue.set_byname('mark', mark)
+
+    return HttpResponse(json.dumps({'mark': mark}),
                         content_type="application/json")

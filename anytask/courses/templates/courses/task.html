@@ -85,6 +85,17 @@
                      </div>
                 </div>
                 <br>
+                <div class = "control-group">
+                    <label class="control-label" for="modal_task_type"> Тип задачи:</label>
+                    <div class="controls">
+                    <select id='modal_task_type' name="task_type_id">
+                    {% for type_id, type in task_types %}
+                        <option value="{{ type_id }}">{{ type }}</option>
+                    {% endfor %}
+                    </select>
+                    </div>
+                </div>
+                <br>
                 <div>
                     <label class="checkbox inline">
                         <input type="checkbox" name="hidden_task" id="hidden_task">Скрыть задачу
