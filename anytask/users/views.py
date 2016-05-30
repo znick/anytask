@@ -141,6 +141,17 @@ def ya_oauth_response(request, type_of_oauth):
     else:
         HttpResponseForbidden()
 
+def ya_oauth_disable(request, type_of_oauth):
+    user = request.user
+    user_profile = user.get_profile()
+    if type_of_oauth == 'contest':
+        user_profile.ya_contest_oauth = None
+    elif type_of_oauth == 'passport':
+        user_profile.ya_passport_oauth = None
+
+    user_profile.save()
+
+    return redirect('users.views.profile')
 
 def add_user_to_group(request):
     user = request.user
