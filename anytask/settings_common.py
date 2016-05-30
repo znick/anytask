@@ -167,6 +167,7 @@ RB_EXTENSIONS = ['.py', '.py2', '.py3', '.cpp', '.sage', '.m', '.java', '.h', '.
 
 CONTEST_API_URL = 'https://api.contest.yandex.net/anytask/'
 CONTEST_OAUTH = 'OAUTH'
+CONTEST_OAUTH_PASSWORD = 'PASSWORD'
 CONTEST_EXTENSIONS = {'.py':'python2_6', '.py2':'python2_6', '.py3':'python3', '.cpp':'gcc0x', '.java':'java8', '.h':'gcc0x', '.cs':'mono_csharp', '.c':'plain_c'} #Actually python2_6 is python 2.7
 CONTEST_EXTENSIONS_COURSE = {
     30 : {
@@ -179,6 +180,9 @@ CONTEST_EXTENSIONS_COURSE = {
         ".h" : "make2"
     }
 }
+
+PASSPORT_OAUTH = 'OAUTH'
+PASSPORT_OAUTH_PASSWORD = 'PASSWORD'
 
 IPYTHON_URL = "http://localhost:8888/notebooks"
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

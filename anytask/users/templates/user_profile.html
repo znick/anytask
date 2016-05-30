@@ -15,8 +15,21 @@
 
 {% block content %}
 
+<style type = "text/css">
+
+.profile_part
+{
+    padding: 20px;
+    margin: 10px 0;
+    border: 2px solid #eee;
+    border-radius: 5px;
+}
+
+</style>
+
   <div class="row">
     <div class="span9">
+      <div class="profile_part">
       <h2>{{ user_to_show.get_full_name }}</h2>
       {% if user == user_to_show and can_generate_invites %}
         <a href="#" onclick="window.open('{% url invites.views.generate_invites %}','_blank','height=331,width=640,status=yes,toolbar=no,menubar=no,location=no');return false;">Сгенерировать инвайты</a>
@@ -31,7 +44,7 @@
             <li><a href="{{ course.get_absolute_url }}">{{ course }}</a></li>
           {% endfor %}
         </ul>
-        <br />
+
       {% endif %}
 
       {% if groups %}
@@ -41,8 +54,27 @@
             <li>{{ group }}</li>
           {% endfor %}
         </ul>
-        <br />
       {% endif %}
+      </div>
+      {% if request.user == user_to_show %}
+        <div class="profile_part">
+        <h3>Сихронизация с другими сервисами</h3>
+        {% if not user_profile.ya_contest_oauth %}
+        <a href="/user/ya_oauth_request/contest" type="button" class="btn">
+          Синхронизировать с Я.Контестом
+        </a>
+        {% else %}
+        <div class="alert alert-success">
+          <strong>Вы синхронизированы с Я.Контестом.</strong> Теперь все посылки в соревнования будут отправляться от Вашего имени.
+        </div>
+        {% endif %}
+{#        <a href="/user/ya_oauth_request/passport" type="button" class="btn">#}
+{#          Войти через Яндекс#}
+{#        </a>#}
+        </div>
+
+      <div class="profile_part">
+      <h3>Активация инвайтов в курсы</h3>
       <button type="button" class="btn" data-toggle="collapse" data-target="#invites-form">
         Ввести инвайт
       </button>
@@ -53,7 +85,7 @@
             <div>{{ invite_form }}
               {% if invite_form.errors %}
                 <span class="help-block">
-                  {% for error in invite_foem.errors %}{{ error }}{% endfor %}
+                  {% for error in invite_form.errors %}{{ error }}{% endfor %}
                 </span>
               {% endif %}
             </div> <br>
@@ -62,6 +94,8 @@
             </div>
           </fieldset>
       </form>
+      </div>
+      {% endif %}
 
       {# {% for course,scores,tasks_list in user_course_information %} #}
         {# <a href="{{ course.get_absolute_url }}">{{ course.name }}</a> #}
@@ -91,6 +125,8 @@
 
       {# {% endfor %} #}
       {% if issues %}
+        <div class="profile_part">
+        <h3>Мои задачи</h3>
         <table class="table table_tasks">
           <thead>
             <tr>
@@ -113,6 +149,7 @@
           {% endfor %}
           </tbody>
         </table>
+        </div>
       {% endif %}
 
       <p>
