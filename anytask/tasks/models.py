@@ -32,9 +32,9 @@ class Task(models.Model):
     TYPE_FULL = 'All'
     TYPE_SIMPLE = 'Only mark'
     TASK_TYPE_CHOICES = (
-        (TYPE_FULL, u'Все'),
-        (TYPE_SIMPLE, u'Только оценка'),
-    )
+        (TYPE_FULL, u'с обсуждением'),
+        (TYPE_SIMPLE, u'без обсуждения'),
+    )   
     type = models.CharField(db_index=False, max_length=128, choices=TASK_TYPE_CHOICES, default=TYPE_FULL)
 
     added_time = models.DateTimeField(auto_now_add=True, default=datetime.now)
