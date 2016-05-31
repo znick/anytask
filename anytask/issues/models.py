@@ -52,7 +52,7 @@ class Issue(models.Model):
     student = models.ForeignKey(User, db_index=True, null=False, blank=False, related_name='student')
     task = models.ForeignKey(Task, db_index=True, null=True, blank=False)
 
-    mark = score = models.FloatField(db_index=False, null=False, blank=False, default=0)
+    mark = models.FloatField(db_index=False, null=False, blank=False, default=0)
 
     create_time = models.DateTimeField(auto_now_add=True, default=datetime.now)
     update_time = models.DateTimeField(default=datetime.now)

@@ -249,7 +249,7 @@ def edit_task(request):
         task_title = request.POST['task_title'].strip()
         task_text = request.POST['task_text'].strip()
         max_score = int(request.POST['max_score'])
-        task_type = request.POST['task_type_id']
+        task_type = request.POST['task_type'].strip()
         task = get_object_or_404(Task, id=task_id)
         if task.course.contest_integrated:
             contest_id = int(request.POST['contest_id'])
@@ -418,8 +418,8 @@ def add_task(request):
         real_task.task_text = task['task_text']
         real_task.score_max = max_score
 
-        if 'task_type_id' in request.POST and request.POST['task_type_id'] in dict(real_task.TASK_TYPE_CHOICES):
-            real_task.type = request.POST['task_type_id']
+        if 'task_type' in request.POST and request.POST['task_type'] in dict(real_task.TASK_TYPE_CHOICES):
+            real_task.type = request.POST['task_type']
         else:
             real_task.type = real_task.TYPE_FULL
 
@@ -628,10 +628,12 @@ def set_task_mark(request):
     if request.method != 'POST':
         return HttpResponseForbidden()
 
-    issue, created = Issue.objects.get_or_create(task_id=request.POST['task_id'], student_id=request.POST['student_id'])
+    task_id = request.POST['task_id']
+    task = get_object_or_404(Task, id=task_id)
+    if not task.course.user_is_teacher(request.user):
+        return HttpResponseForbidden()
 
-    if not issue.task.course.user_is_teacher(request.user):
-        HttpResponseForbidden()
+    issue, created = Issue.objects.get_or_create(task_id=task_id, student_id=request.POST['student_id'])
 
     mark = float(request.POST['mark_value'])
     issue.set_byname('mark', mark)
