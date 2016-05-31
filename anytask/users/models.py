@@ -24,6 +24,8 @@ class UserProfile(models.Model):
 
     ya_contest_oauth = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
     ya_passport_oauth = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
+    ya_uid = models.IntegerField(null=True, blank=True)
+
 
     def is_current_year_student(self):
         return Group.objects.filter(year=get_current_year()).filter(students=self.user).count() > 0

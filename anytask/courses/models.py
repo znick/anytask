@@ -104,6 +104,8 @@ class Course(models.Model):
     send_rb_and_contest_together = models.BooleanField(db_index=False, null=False, blank=False, default=False)
     rb_integrated = models.BooleanField(db_index=False, null=False, blank=False, default=False)
 
+    send_to_contest_from_users = models.BooleanField(db_index=False, null=False, blank=False, default=False)
+
     filename_extensions = models.ManyToManyField(FilenameExtension, related_name='filename_extensions_set', null=True, blank=True)
 
     full_transcript = models.BooleanField(db_index=False, null=False, blank=False, default=True)

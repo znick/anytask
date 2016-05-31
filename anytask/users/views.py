@@ -22,6 +22,7 @@ from years.common import get_current_year
 import datetime
 import operator
 import yandex_oauth
+import requests
 
 
 @login_required
@@ -110,7 +111,7 @@ def profile_settings(request, username=None):
 def ya_oauth_request(request, type_of_oauth):
 
     if type_of_oauth == 'contest':
-        OAUTH = settings.CONTEST_OAUTH
+        OAUTH = settings.CONTEST_OAUTH_ID
         PASSWORD = settings.CONTEST_OAUTH_PASSWORD
     elif type_of_oauth == 'passport':
         OAUTH = settings.PASSPORT_OAUTH
@@ -125,7 +126,7 @@ def ya_oauth_response(request, type_of_oauth):
         user_profile = user.get_profile()
 
         if type_of_oauth == 'contest':
-            OAUTH = settings.CONTEST_OAUTH
+            OAUTH = settings.CONTEST_OAUTH_ID
             PASSWORD = settings.CONTEST_OAUTH_PASSWORD
         elif type_of_oauth == 'passport':
             OAUTH = settings.PASSPORT_OAUTH
@@ -133,8 +134,10 @@ def ya_oauth_response(request, type_of_oauth):
 
         ya_oauth = yandex_oauth.OAuthYandex(OAUTH, PASSWORD)
         ya_response = ya_oauth.get_token(int(request.GET['code']))
-        print(ya_response)
+
         user_profile.ya_contest_oauth = ya_response['access_token']
+        ya_passport_response = requests.get('https://login.yandex.ru/info?json&oauth_token='+ya_response['access_token'])
+        user_profile.ya_uid = ya_passport_response.json()['id']
         user_profile.save()
 
         return redirect('users.views.profile')

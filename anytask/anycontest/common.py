@@ -61,8 +61,13 @@ def upload_contest(event, extension, file, compiler_id=None):
         if not compiler_id:
             compiler_id = get_compiler_id(course, extension)
 
-        if student_profile.ya_contest_oauth:
+        if student_profile.ya_contest_oauth and course.send_to_contest_from_users:
             OAUTH = student_profile.ya_contest_oauth
+            reg_req = requests.get(settings.CONTEST_API_URL + 'register-user?uidToRegister=' + student_profile.ya_uid +
+                                   '&contestId=' + str(contest_id),
+                                   headers={'Authorization': 'OAuth ' + settings.CONTEST_OAUTH})
+            if 'error' in reg_req.json():
+                return False, submit_req.json()["error"]["message"]
         else:
             OAUTH = settings.CONTEST_OAUTH
 

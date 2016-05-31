@@ -58,17 +58,17 @@
       </div>
       {% if request.user == user_to_show %}
         <div class="profile_part">
-        <h3>Сихронизация с другими сервисами</h3>
+        <h3>Связать профиль с другими сервисами</h3>
         {% if not user_profile.ya_contest_oauth %}
         <a href="/user/ya_oauth_request/contest" type="button" class="btn">
-          Синхронизировать с Я.Контестом
+          Привязать Я.Контест
         </a>
         {% else %}
         <div class="alert alert-success">
-          <strong>Вы синхронизированы с Я.Контестом.</strong> Теперь все посылки в соревнования будут отправляться от Вашего имени.
+          <strong>Вы привязали Я.Контест.</strong> Теперь все посылки в соревнования будут отправляться от Вашего имени.
         </div>
         <a href="/user/ya_oauth_disable/contest" type="button" class="btn">
-          Отменить синхронизацию с Я.Контестом
+          Отменить привязку Я.Контеста
         </a>
         {% endif %}
 {#        <a href="/user/ya_oauth_request/passport" type="button" class="btn">#}
