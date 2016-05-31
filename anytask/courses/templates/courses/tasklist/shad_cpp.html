@@ -87,19 +87,20 @@
                       </span>
                       </a>
                     {% else %}
-                      <div {% if user_is_teacher %}class="task-mark-value in collapse"{% endif %}>
+                      <div {% if user_is_teacher %}class="task-mark-value"{% endif %}>
                         <span class="label">
                           {{ task_x_task_takens|score:task }}
                         </span>
                       </div>
                       {% if user_is_teacher %}
-                        <form method="post" class="task-mark-form collapse" style="margin:0">
+                        <form method="post" class="task-mark-form hide" style="margin:0">
                           {% csrf_token %}
                           <fieldset class="control-group" style="margin:0;">
                             <input type="hidden" name="task_id" value="{{task.id}}"/>
                             <input type="hidden" name="student_id" value="{{student.id}}"/>
                             <input type="hidden" name="mark_max" class="mark_max" value="{{ task.score_max }}">
-                            <input name="mark_value" type="text" maxlength="25" size="5" style="margin:0;width:auto;height:18px;line-height: 14px;font-size:12px;padding: 0px 6px;" autocomplete="off" value="{{ task_x_task_takens|score:task }}">
+                            <input name="mark_value" type="text" maxlength="25" size="5" style="margin:0;width:22px;height:18px;line-height:14px;font-size:12px;padding:0px 2px;" autocomplete="off" value="{{ task_x_task_takens|score:task }}">
+                            <span class="hide"></span>
                           </fieldset>
                         </form>
                       {% endif %}
@@ -130,7 +131,7 @@
             {% empty %}
               <td>{{ student.last_name }}&nbsp;{{ student.first_name }}</td>
             {% endfor %}
-            <td>
+            <td class="sum-score">
               {# <span class="label {% if student_summ_score %} {% if student_summ_score == group_x_max_score|key:group %} label-success {% else %} label-info {% endif %} {% else %} label-important {% endif %}"> #}
               <span class="label label-inverse">
                 {{ student_summ_score }}

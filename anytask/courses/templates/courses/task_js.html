@@ -154,9 +154,12 @@
         });
 
         $('.task-mark-value').click(function() {
-            $(this).collapse('hide');
-            var mark_form = $($(this).closest('td')).find('.task-mark-form');
-            $(mark_form).collapse('show');
+            $(this).hide();
+
+            var mark_form = $(this).closest('td').find('.task-mark-form');
+            $(mark_form).find('.control-group').removeClass('success error');
+            $(mark_form).show();
+            $(mark_form).find('[name="mark_value"]').focus().select();
         });
 
         jQuery.validator.addMethod("lt_max", function(value, element) {
@@ -169,12 +172,16 @@
             var form = $(this);
             form.validate({
                 submitHandler: function(form) {
-                    var mark_value = $($(form).closest('td')).find('.task-mark-value');
+                    var mark_value = $(form).closest('td').find('.task-mark-value');
                     $.post('{% url courses.views.set_task_mark %}', $(form).serialize(), function(data){
-                        $($(mark_value).find('span')).text(data.mark);
+                        var mark_diff = parseFloat(data.mark) - parseFloat(mark_value.find('span').text());
+                        var sum_mark_span = $(form).closest('td').siblings('.sum-score').find('span');
+                        var sum_mark = parseFloat(sum_mark_span.text()) + mark_diff;
+                        $(sum_mark_span).text(sum_mark.toFixed(1));
+                        $(mark_value).find('span').text(data.mark);
+                        $(form).hide();
+                        $(mark_value).show();
                     });
-                    $(form).collapse('hide');
-                    $(mark_value).collapse('show');
                 },
                 rules: {
                     mark_value: {
@@ -193,7 +200,9 @@
                     label.addClass('valid').closest('.control-group').removeClass('error').addClass('success');
                 },
 
-                errorPlacement: function(error, element) { }
+                errorPlacement: function(error, element) {
+                    $(element).siblings('span.hide').empty().append(error);
+                }
             });
         });
 

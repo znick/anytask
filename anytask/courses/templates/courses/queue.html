@@ -85,9 +85,11 @@
         <tr>
           <td>&nbsp;</td>
           <td>
-            <a href="{{ issue.get_absolute_url }}">
-              {{ issue.id }}
-            </a>
+            {% if issue.task.has_issue_access %}
+              <a href="{{ issue.get_absolute_url }}">
+                {{ issue.id }}
+              </a>
+            {% endif %}
           </td>
           <td>
             <a href="{{ issue.student.get_absolute_url }}">
