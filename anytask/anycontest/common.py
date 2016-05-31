@@ -51,6 +51,7 @@ def get_problem_compilers(problem_id, contest_id):
 def upload_contest(event, extension, file, compiler_id=None):
     problem_req = FakeResponse()
     submit_req = FakeResponse()
+    reg_req = FakeResponse()
     message = "OK"
 
     try:
@@ -63,11 +64,16 @@ def upload_contest(event, extension, file, compiler_id=None):
 
         if student_profile.ya_contest_oauth and course.send_to_contest_from_users:
             OAUTH = student_profile.ya_contest_oauth
-            reg_req = requests.get(settings.CONTEST_API_URL + 'register-user?uidToRegister=' + student_profile.ya_uid +
-                                   '&contestId=' + str(contest_id),
-                                   headers={'Authorization': 'OAuth ' + settings.CONTEST_OAUTH})
+            reg_req = requests.get(
+                settings.CONTEST_API_URL + 'status?contestId=' + str(contest_id),
+                headers={'Authorization': 'OAuth ' + OAUTH})
+            if not reg_req.json()['result']['isRegistered']:
+                reg_req = requests.get(
+                    settings.CONTEST_API_URL + 'register-user?uidToRegister=' + str(student_profile.ya_uid) +
+                    '&contestId=' + str(contest_id),
+                    headers={'Authorization': 'OAuth ' + settings.CONTEST_OAUTH})
             if 'error' in reg_req.json():
-                return False, submit_req.json()["error"]["message"]
+                return False, reg_req.json()["error"]["message"]
         else:
             OAUTH = settings.CONTEST_OAUTH
 
