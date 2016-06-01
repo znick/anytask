@@ -29,7 +29,10 @@ def user_is_teacher_or_staff(user, issue):
         return True
     return False
 
+
 def user_can_read(user, issue):
+    if not issue.task.has_issue_access():
+        return False
     if user.is_staff:
         return True
     if user == issue.student:

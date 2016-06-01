@@ -103,8 +103,14 @@
           </thead>
           <tbody>
           {% for issue in issues %}
-          <tr onclick="location.href='{{ issue.get_absolute_url }}'">
-            <td><a href="{{ issue.get_absolute_url }}">{{ issue.task }}</a></td>
+          <tr onclick="location.href='{% if issue.task.has_issue_access %}{{ issue.get_absolute_url }}{% else %}#{% endif %}'">
+            <td>
+              {% if issue.task.has_issue_access %}
+                <a href="{{ issue.get_absolute_url }}">{{ issue.task }}</a>
+              {% else %}
+                {{ issue.task }}
+              {% endif %}
+            </td>
             <td><a href="{{ issue.task.course.get_absolute_url }}">{{ issue.task.course }}</a></td>
             <td> {{ issue.update_time|date:"d M H:i" }} </td>
             <td> {{ issue.get_status }} </td>

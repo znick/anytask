@@ -50,7 +50,7 @@
                     '{{task.is_hidden}}', '{{task.task_text|safe|escapejs}}',
                     '{{task.task_text|escapejs}}', {{task.score_max}}, '{{user_is_teacher}}',
                     'text', {{task.contest_id}}, '{{task.problem_id}}', {% if task.group %} {{group.id}} {% else %}''{% endif %},
-                     {% if task.deadline_time %} '{{task.deadline_time|date:'d-m-Y H:i'}}' {% else %}''{% endif %})">
+                     {% if task.deadline_time %} '{{task.deadline_time|date:'d-m-Y H:i'}}' {% else %}''{% endif %}, '{{ task.type }}')">
                     {{ task.title }}
                   </a>
                 <span class="label {% if not task.is_hidden %} label-inverse {% endif %}">{{ task.score_max }}</span>
@@ -78,13 +78,33 @@
               {% if not task.is_hidden or user_is_teacher %}
                 <td align="center" class="student_{{ student.id }}">
                   {% if not task.is_hidden and user_is_teacher or user.username == student.username %}
-                    <a class="btn-small" href="/issue/get_or_create/{{task.id}}/{{student.id}}">
-                      {# <span class="label {% if task_x_task_takens|score:task %} {% if task_x_task_takens|score:task == task.score_max %} label-success {% else %} label-info {% endif %} {% endif %}"> #}
+                    {% ifnotequal task.type task.TYPE_SIMPLE %}
+                      <a class="btn-small" href="/issue/get_or_create/{{task.id}}/{{student.id}}">
+                        {# <span class="label {% if task_x_task_takens|score:task %} {% if task_x_task_takens|score:task == task.score_max %} label-success {% else %} label-info {% endif %} {% endif %}"> #}
                       <span class="label
                         {{ task_x_task_takens|label_type:task }}">
                         {{ task_x_task_takens|score:task }}
                       </span>
-                    </a>
+                      </a>
+                    {% else %}
+                      <div {% if user_is_teacher %}class="task-mark-value"{% endif %}>
+                        <span class="label">
+                          {{ task_x_task_takens|score:task }}
+                        </span>
+                      </div>
+                      {% if user_is_teacher %}
+                        <form method="post" class="task-mark-form hide" style="margin:0">
+                          {% csrf_token %}
+                          <fieldset class="control-group" style="margin:0;">
+                            <input type="hidden" name="task_id" value="{{task.id}}"/>
+                            <input type="hidden" name="student_id" value="{{student.id}}"/>
+                            <input type="hidden" name="mark_max" class="mark_max" value="{{ task.score_max }}">
+                            <input name="mark_value" type="text" maxlength="25" size="5" style="margin:0;width:22px;height:18px;line-height:14px;font-size:12px;padding:0px 2px;" autocomplete="off" value="{{ task_x_task_takens|score:task }}">
+                            <span class="hide"></span>
+                          </fieldset>
+                        </form>
+                      {% endif %}
+                    {% endifnotequal %}
                   {% else %}
                     {% if task.is_hidden %}
                       <span class="label">{{ task_x_task_takens|score:task }}</span>
@@ -111,7 +131,7 @@
             {% empty %}
               <td>{{ student.last_name }}&nbsp;{{ student.first_name }}</td>
             {% endfor %}
-            <td>
+            <td class="sum-score">
               {# <span class="label {% if student_summ_score %} {% if student_summ_score == group_x_max_score|key:group %} label-success {% else %} label-info {% endif %} {% else %} label-important {% endif %}"> #}
               <span class="label label-inverse">
                 {{ student_summ_score }}

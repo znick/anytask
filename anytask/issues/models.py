@@ -52,6 +52,8 @@ class Issue(models.Model):
     student = models.ForeignKey(User, db_index=True, null=False, blank=False, related_name='student')
     task = models.ForeignKey(Task, db_index=True, null=True, blank=False)
 
+    mark = models.FloatField(db_index=False, null=False, blank=False, default=0)
+
     create_time = models.DateTimeField(auto_now_add=True, default=datetime.now)
     update_time = models.DateTimeField(default=datetime.now)
 
@@ -166,6 +168,8 @@ class Issue(models.Model):
             return self.status
         if name == 'max_mark':
             return self.task.score_max
+        if name == 'mark':
+            return self.mark
 
         events = Event.objects.filter(issue_id=self.id, field_id=field.id).order_by('-timestamp')[:1]
         if not events:
@@ -295,6 +299,7 @@ class Issue(models.Model):
             if not value:
                 value = 0
             value = normalize_decimal(value)
+            self.mark = float(value)
             value = str(value)
             if self.status != self.STATUS_ACCEPTED and self.status != self.STATUS_NEW:
                 self.set_byname('status', 'rework')

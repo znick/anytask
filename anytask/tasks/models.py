@@ -29,6 +29,14 @@ class Task(models.Model):
 
     score_max = models.IntegerField(db_index=True, null=False, blank=False, default=0)
 
+    TYPE_FULL = 'All'
+    TYPE_SIMPLE = 'Only mark'
+    TASK_TYPE_CHOICES = (
+        (TYPE_FULL, u'с обсуждением'),
+        (TYPE_SIMPLE, u'только оценка'),
+    )
+    type = models.CharField(db_index=False, max_length=128, choices=TASK_TYPE_CHOICES, default=TYPE_FULL)
+
     added_time = models.DateTimeField(auto_now_add=True, default=datetime.now)
     update_time = models.DateTimeField(auto_now=True, default=datetime.now)
     deadline_time = models.DateTimeField(auto_now=False, null=True, default=None)
@@ -134,6 +142,10 @@ class Task(models.Model):
         self.can_score = self.user_can_score_task(user)
         self.can_pass = self.user_can_pass_task(user)
         self.is_shown = not self.is_hidden or self.course.user_is_teacher(user)
+
+    def has_issue_access(self):
+        return self.type != self.TYPE_SIMPLE
+
 
 class TaskLog(models.Model):
     title = models.CharField(max_length=254, db_index=True, null=True, blank=True)

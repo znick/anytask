@@ -153,6 +153,66 @@
             }
         });
 
+        $('.task-mark-value').click(function() {
+            if (!$('.task-mark-form').data('is_error')) {
+                $(this).hide();
+
+                var mark_form = $(this).closest('td').find('.task-mark-form');
+                $(mark_form).find('.control-group').removeClass('success error');
+                $(mark_form).show();
+                $(mark_form).find('[name="mark_value"]').focus().select();
+            }
+        });
+
+        jQuery.validator.addMethod("lt_max", function(value, element) {
+            var value = parseFloat(value);
+            var max = parseFloat($(element).siblings('.mark_max').val());
+            return isNaN(value) || value <= max;
+        });
+
+        $('.task-mark-form').each( function(){
+            var form = $(this);
+            form.focusout(function() {
+                form.submit();
+            });
+            form.validate({
+                submitHandler: function(form) {
+                    var mark_value = $(form).closest('td').find('.task-mark-value');
+                    $.post('{% url courses.views.set_task_mark %}', $(form).serialize(), function(data){
+                        var mark_diff = parseFloat(data.mark) - parseFloat(mark_value.find('span').text());
+                        var sum_mark_span = $(form).closest('td').siblings('.sum-score').find('span');
+                        var sum_mark = parseFloat(sum_mark_span.text()) + mark_diff;
+                        $(sum_mark_span).text(sum_mark.toFixed(1));
+                        $(mark_value).find('span').text(data.mark);
+                        $(form).hide();
+                        $(mark_value).show();
+                    });
+                },
+                rules: {
+                    mark_value: {
+                        required : true,
+                        number: true,
+                        min: 0,
+                        lt_max: true
+                    }
+                },
+
+                highlight: function (label) {
+                    $('.task-mark-form').data('is_error', true);
+                    $(label).closest('.control-group').removeClass('success').addClass('error');
+                },
+
+                success: function (label) {
+                    $('.task-mark-form').data('is_error', false);
+                    label.addClass('valid').closest('.control-group').removeClass('error').addClass('success');
+                },
+
+                errorPlacement: function(error, element) {
+                    $(element).siblings('span.hide').empty().append(error);
+                }
+            });
+        });
+
         $('.mark-value').click(function() {
             $(this).collapse('hide');
             var mark_form = $($(this).closest('td')).find('.mark-form');
@@ -217,10 +277,11 @@
                             contest_id,
                             problem_id,
                             group_id,
-                            deadline)
+                            deadline,
+                            task_types)
     {
         clear();
-        $('#modal_edit_task_title_error_text').empty()
+        $('#modal_edit_task_title_error_text').empty();
         if (mode == 'text')
         {
             $('#modal_header_task_descr').html(task_title);
@@ -243,6 +304,7 @@
                     $('#hidden_task').attr('checked', true);
                 }
                 $('#modal_task_group [value="'+ group_id +'"]').attr('selected', 'selected');
+                $('#modal_task_type [value="'+ task_types +'"]').attr('selected', 'selected');
                 $('#modal-edite-task-form').attr('action', '{% url courses.views.edit_task %}');
 
                 $('#edit_task_descr').show();
@@ -273,6 +335,7 @@
                     $('#hidden_task').attr('checked', true);
                 }
                 $('#modal_task_group [value="'+ group_id +'"]').attr('selected', 'selected');
+                $('#modal_task_type [value="'+ task_types +'"]').attr('selected', 'selected');
                 $('#modal-edite-task-form').attr('action', '{% url courses.views.edit_task %}');
 
                 $('#modal_task_desc_edit').show();
@@ -298,6 +361,7 @@
                 $('#modal_edit_task_group_id').val(group_id);
             }
             $('#modal_task_group [value="'+ group_id +'"]').attr('selected', 'selected');
+            $('#modal_task_type :first').attr('selected', 'selected');
             $('#modal_edit_task_parent_id').val(parent_id);
 
             $('#modal_task_desc_edit').show();
