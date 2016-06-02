@@ -57,28 +57,30 @@
       {% endif %}
       </div>
       {% if request.user == user_to_show %}
-        <div class="profile_part">
-        <h3>Привязать профиль Яндекс.Контеста</h3>
-        {% if not user_profile.ya_contest_oauth %}
-        <div class="alert alert-warning">
-          <strong>Привязать можно только один профиль!</strong> Для того, чтобы отвязать свой профиль обратитесь к <a href="mailto:anytask@yandex.ru">администратору</a>.
-        </div>
-        <a href="/user/ya_oauth_request/contest" type="button" class="btn">
-          Привязать
-        </a>
-        {% else %}
-        <div class="alert alert-success">
-          <strong>Вы привязали Я.Контест.</strong> Теперь все посылки в соревнования будут отправляться от Вашего имени.
-          Для того, чтобы отвязать свой профиль обратитесь к <a href="mailto:anytask@yandex.ru">администратору</a>.
-        </div>
-{#        <a href="/user/ya_oauth_disable/contest" type="button" class="btn">#}
-{#          Отменить привязку Я.Контеста#}
-{#        </a>#}
+        {% if can_sync_contest %}
+            <div class="profile_part">
+            <h3>Привязать профиль Яндекс.Контеста</h3>
+            {% if not user_profile.ya_contest_oauth %}
+            <div class="alert alert-warning">
+              <strong>Привязать можно только один профиль!</strong> Для того, чтобы отвязать свой профиль обратитесь к <a href="mailto:anytask@yandex.ru">администратору</a>.
+            </div>
+            <a href="/user/ya_oauth_request/contest" type="button" class="btn">
+              Привязать
+            </a>
+            {% else %}
+            <div class="alert alert-success">
+              <strong>Вы привязали Я.Контест.</strong> Теперь все посылки в соревнования будут отправляться от Вашего имени.
+              Для того, чтобы отвязать свой профиль обратитесь к <a href="mailto:anytask@yandex.ru">администратору</a>.
+            </div>
+    {#        <a href="/user/ya_oauth_disable/contest" type="button" class="btn">#}
+    {#          Отменить привязку Я.Контеста#}
+    {#        </a>#}
+            {% endif %}
+    {#        <a href="/user/ya_oauth_request/passport" type="button" class="btn">#}
+    {#          Войти через Яндекс#}
+    {#        </a>#}
+            </div>
         {% endif %}
-{#        <a href="/user/ya_oauth_request/passport" type="button" class="btn">#}
-{#          Войти через Яндекс#}
-{#        </a>#}
-        </div>
 
       <div class="profile_part">
       <h3>Активация инвайтов в курсы</h3>
