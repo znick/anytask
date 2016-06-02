@@ -51,14 +51,31 @@ def get_problem_compilers(problem_id, contest_id):
 def upload_contest(event, extension, file, compiler_id=None):
     problem_req = FakeResponse()
     submit_req = FakeResponse()
+    reg_req = FakeResponse()
     message = "OK"
 
     try:
         issue = event.issue
+        student_profile = issue.student.get_profile()
         contest_id = issue.task.contest_id
         course = event.issue.task.course
         if not compiler_id:
             compiler_id = get_compiler_id(course, extension)
+
+        if student_profile.ya_contest_oauth and course.send_to_contest_from_users:
+            OAUTH = student_profile.ya_contest_oauth
+            reg_req = requests.get(
+                settings.CONTEST_API_URL + 'status?contestId=' + str(contest_id),
+                headers={'Authorization': 'OAuth ' + OAUTH})
+            if not reg_req.json()['result']['isRegistered']:
+                reg_req = requests.get(
+                    settings.CONTEST_API_URL + 'register-user?uidToRegister=' + str(student_profile.ya_uid) +
+                    '&contestId=' + str(contest_id),
+                    headers={'Authorization': 'OAuth ' + settings.CONTEST_OAUTH})
+            if 'error' in reg_req.json():
+                return False, reg_req.json()["error"]["message"]
+        else:
+            OAUTH = settings.CONTEST_OAUTH
 
         problem_req = requests.get(settings.CONTEST_API_URL + 'problems?contestId=' + str(contest_id),
                                    headers={'Authorization': 'OAuth ' + settings.CONTEST_OAUTH})
@@ -80,7 +97,7 @@ def upload_contest(event, extension, file, compiler_id=None):
                                                  'contestId': contest_id,
                                                  'problemId': problem_id},
                                            files=files,
-                                           headers={'Authorization': 'OAuth ' + settings.CONTEST_OAUTH})
+                                           headers={'Authorization': 'OAuth ' + OAUTH})
                 if not 'error' in submit_req.json():
                     break
                 sleep(0.5)
