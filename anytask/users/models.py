@@ -22,9 +22,12 @@ class UserProfile(models.Model):
     added_time = models.DateTimeField(auto_now_add=True, default=datetime.now)
     update_time = models.DateTimeField(auto_now=True, default=datetime.now)
 
+
+    ya_uid = models.IntegerField(null=True, blank=True)
+    ya_login = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
     ya_contest_oauth = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
     ya_passport_oauth = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
-    ya_uid = models.IntegerField(null=True, blank=True)
+
 
 
     def is_current_year_student(self):

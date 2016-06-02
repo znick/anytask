@@ -138,6 +138,7 @@ def ya_oauth_response(request, type_of_oauth):
         user_profile.ya_contest_oauth = ya_response['access_token']
         ya_passport_response = requests.get('https://login.yandex.ru/info?json&oauth_token='+ya_response['access_token'])
         user_profile.ya_uid = ya_passport_response.json()['id']
+        user_profile.ya_login = ya_passport_response.json()['login']
         user_profile.save()
 
         return redirect('users.views.profile')
