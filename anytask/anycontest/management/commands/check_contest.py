@@ -2,7 +2,7 @@
 
 from django.core.management.base import BaseCommand
 from django.conf import settings
-from anycontest.common import check_submission, comment_verdict
+from anycontest.common import check_submission, comment_verdict, get_contest_mark
 from anyrb.common import AnyRB
 from issues.models import Event, Issue
 
@@ -32,5 +32,12 @@ class Command(BaseCommand):
                                 else:
                                     comment += '\n' + u'Ошибка отправки в Review Board.'
                             comment_verdict(issue, verdict, comment)
+                            if issue.task.course.id in settings.COURSES_WITH_CONTEST_MARKS:
+                                student_profile = issue.student.get_profile()
+                                if student_profile.ya_login:
+                                    mark = get_contest_mark(issue.task.contest_id, issue.task.problem_id, student_profile.ya_login)
+                                    if mark:
+                                        if float(mark) > 0:
+                                            issue.set_byname('mark', float(mark))
             except Exception as e:
                 logger.exception(e)

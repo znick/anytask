@@ -2,6 +2,8 @@
 import requests
 import logging
 import os
+import csv
+from StringIO import StringIO
 
 from time import sleep
 from django.conf import settings
@@ -165,6 +167,28 @@ def comment_verdict(issue, verdict, comment):
         else:
             issue.set_byname('status', issue.STATUS_REWORK)
     issue.save()
+
+def get_contest_mark(contest_id, problem_id, ya_login):
+    results_req = FakeResponse()
+    contest_mark = None
+    try:
+        ya_session = requests.Session()
+        ya_session.post('https://passport.yandex.ru/auth', data={'login': 'anytask', 'passwd': 'G-k_IhmP8gZCqd6'})
+
+        results_req = ya_session.get(
+           'https://contest.yandex.ru/admin/contest-submissions/get-standings-csv?contestId=' + str(contest_id))
+        mark_dict = csv.DictReader(StringIO(results_req.content))
+
+        for user in mark_dict:
+            if user['login'] == ya_login:
+                for key in user.keys():
+                    if key.split('(')[0] == problem_id:
+                        contest_mark = user[key].split('(')[0]
+
+    except Exception as e:
+        logger.exception("Exception while request to Contest: '%s' : '%s', Exception: '%s'",
+                             results_req.url, results_req.json(), e)
+    return contest_mark
 
 
 def get_contest_info(contest_id):
