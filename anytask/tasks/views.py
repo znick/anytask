@@ -1,22 +1,315 @@
+# -*- coding: utf-8 -*-
+
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from tasks.models import Task
+from courses.models import Course
+from groups.models import Group
 from django.template import RequestContext
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from tasks.models import TaskTaken
+from django.contrib.auth.decorators import login_required
+from django.db.models import Max
+from anycontest.common import get_contest_info
+
+import datetime
+import requests
 import settings
 
 import json
 
+
+@login_required
+def task_create_page(request, course_id):
+    course = get_object_or_404(Course, id=course_id)
+
+    if not course.user_is_teacher(request.user):
+        return HttpResponseForbidden
+
+    if request.method == 'POST':
+        return task_create_ot_edit(request, course)
+
+    context = {
+        'is_create': True,
+        'course': course,
+        'task_types': Task().TASK_TYPE_CHOICES
+    }
+
+    return render_to_response('task_create_or_edit.html', context, context_instance=RequestContext(request))
+
+
+@login_required
+def task_import_page(request, course_id):
+    course = get_object_or_404(Course, id=course_id)
+
+    if not course.user_is_teacher(request.user):
+        return HttpResponseForbidden
+
+    context = {
+        'course': course
+    }
+
+    return render_to_response('task_import.html', context, context_instance=RequestContext(request))
+
+
+@login_required
+def task_edit_page(request, task_id):
+    task = get_object_or_404(Task, id=task_id)
+
+    if not task.course.user_is_teacher(request.user):
+        return HttpResponseForbidden
+
+    if request.method == 'POST':
+        return task_create_ot_edit(request, task.course, task_id)
+
+    context = {
+        'is_create': False,
+        'course': task.course,
+        'task': task,
+        'task_types': task.TASK_TYPE_CHOICES
+    }
+
+    return render_to_response('task_create_or_edit.html', context, context_instance=RequestContext(request))
+
+
+def task_create_ot_edit(request, course, task_id=None):
+    task_title = request.POST['task_title'].strip()
+    max_score = int(request.POST['max_score'])
+
+    if course.contest_integrated:
+        contest_id = int(request.POST['contest_id'])
+        problem_id = request.POST['problem_id'].strip()
+
+    task_group = request.POST['task_group_id']
+    if task_group:
+        task_group = get_object_or_404(Group, id=int(task_group))
+    else:
+        task_group = None
+
+    # parent_id = request.POST['parent_id']
+    # if not parent_id or parent_id == 'null':
+    #     parent_id = None
+    # else:
+    #     parent_id = int(parent_id)
+    # parent = None
+    # if parent_id is not None:
+    #     parent = get_object_or_404(Task, id = parent_id)
+
+    task_deadline = request.POST['deadline']
+    if task_deadline:
+        task_deadline = datetime.datetime.strptime(task_deadline, '%d-%m-%Y %H:%M')
+    else:
+        task_deadline = None
+    changed_task = False
+    if 'changed_task' in request.POST:
+        changed_task = True
+
+    task_type = request.POST['task_type'].strip()
+
+    hidden_task = False
+    if 'hidden_task' in request.POST:
+        hidden_task = True
+
+    task_text = request.POST['task_text'].strip()
+
+
+    if task_id:
+        task = get_object_or_404(Task, id=task_id)
+    else:
+        task = Task()
+        task.course = course
+        max_weight_query = Task.objects.filter(course=course)
+        if task_group:
+            max_weight_query = max_weight_query.filter(group=task_group)
+        # if parent:
+        #     max_weight_query = max_weight_query.filter(parent_task=parent)
+        _, max_weight = max_weight_query.aggregate(Max('weight')).items()[0]
+        if max_weight is None:
+            max_weight = 0
+        task.weight = max_weight + 1
+
+    task.title = task_title
+    task.score_max = max_score
+
+    if course.contest_integrated:
+        task.contest_id = contest_id
+        task.problem_id = problem_id
+
+    task.group = task_group
+    # task.parent_task = parent
+
+    task.deadline_time = task_deadline
+    task.sended_notify = not changed_task
+
+    if task_type in dict(task.TASK_TYPE_CHOICES):
+        task.type = task_type
+    else:
+        task.type = task.TYPE_FULL
+
+    task.is_hidden = hidden_task
+    if task.parent_task:
+        if task.parent_task.is_hidden:
+            task.is_hidden = True
+    for subtask in Task.objects.filter(parent_task=task):
+        subtask.is_hidden = hidden_task
+        subtask.save()
+
+    task.task_text = task_text
+
+    task.updated_by = request.user
+    task.save()
+
+    return HttpResponse(json.dumps({'page_title': task.title + ' | ' + course.name + ' | ' + str(course.year),
+                                    'redirect_page': '/task/edit/' + str(task.id) if not task_id else None}),
+                        content_type="application/json")
+
+
+@login_required
+def get_contest_problems(request):
+    course = get_object_or_404(Course, id=request.POST['course_id'])
+
+    if not course.user_can_edit_course(request.user):
+        return HttpResponseForbidden()
+
+    if request.method != 'POST':
+        return HttpResponseForbidden()
+
+    contest_id = request.POST['contest_id']
+    is_error = False
+    error = ''
+    problems = []
+
+    got_info, contest_info = get_contest_info(contest_id)
+    if "You're not allowed to view this contest." in contest_info:
+        return HttpResponse(json.dumps({'problems': problems,
+                                        'is_error': True,
+                                        'error': u"У anytask нет прав на данный контест"}),
+                            content_type="application/json")
+
+    problem_req = requests.get(settings.CONTEST_API_URL + 'problems?contestId=' + str(contest_id),
+                               headers={'Authorization': 'OAuth ' + settings.CONTEST_OAUTH})
+    problem_req = problem_req.json()
+
+    if 'error' in problem_req:
+        is_error = True
+        if 'IndexOutOfBoundsException' in problem_req['error']['name']:
+            error = u'Такого контеста не существует'
+        else:
+            error = u'Ошибка Я.Контеста: ' + problem_req['error']['message']
+    else:
+        problems = problem_req['result']['problems']
+
+    return HttpResponse(json.dumps({'problems': problems,
+                                    'is_error': is_error,
+                                    'error': error}),
+                        content_type="application/json")
+
+@login_required
+def task_import(request):
+    if not request.method == 'POST':
+        return HttpResponseForbidden()
+
+    course_id = int(request.POST['course_id'])
+    course = get_object_or_404(Course, id=course_id)
+
+    contest_id = int(request.POST['contest_id'])
+
+    max_score = int(request.POST['max_score'])
+
+    task_group = request.POST['task_group_id']
+    if task_group:
+        task_group = get_object_or_404(Group, id=int(task_group))
+    else:
+        task_group = None
+
+    task_deadline = request.POST['deadline']
+    if task_deadline:
+        task_deadline = datetime.datetime.strptime(task_deadline, '%d-%m-%Y %H:%M')
+    else:
+        task_deadline = None
+    changed_task = False
+    if 'changed_task' in request.POST:
+        changed_task = True
+
+    hidden_task = False
+    if 'hidden_task' in request.POST:
+        hidden_task = True
+
+    # parent_id = request.POST['parent_id']
+    # if not parent_id or parent_id == 'null':
+    #     parent_id = None
+    # else:
+    #     parent_id = int(parent_id)
+    # parent = None
+    # if parent_id is not None:
+    #     parent = get_object_or_404(Task, id = parent_id)
+
+    tasks = []
+
+    got_info, contest_info = get_contest_info(contest_id)
+    if got_info:
+        contest_problems = dict(request.POST)['contest_problems[]']
+        for problem in contest_info['problems']:
+            if problem['problemId'] in contest_problems:
+                tasks.append({})
+                tasks[-1]['task_title'] = problem['problemTitle']
+                tasks[-1]['task_text'] = problem['statement']
+                tasks[-1]['problem_id'] = problem['alias']
+    elif "You're not allowed to view this contest." in contest_info:
+        return HttpResponse(json.dumps({'is_error': True,
+                                        'error': u"У anytask нет прав на данный контест"}),
+                            content_type="application/json")
+    else:
+        return HttpResponseForbidden()
+
+    if not course.user_can_edit_course(request.user):
+        return HttpResponseForbidden()
+
+    for task in tasks:
+        max_weight_query = Task.objects.filter(course=course)
+        if task_group:
+            max_weight_query = max_weight_query.filter(group=task_group)
+        # if parent:
+        #     max_weight_query = max_weight_query.filter(parent_task=parent)
+
+        _, max_weight = max_weight_query.aggregate(Max('weight')).items()[0]
+        if max_weight is None:
+            max_weight = 0
+        max_weight += 1
+
+        real_task = Task()
+        real_task.course = course
+        real_task.group = task_group
+        # real_task.parent_task = parent
+        if changed_task:
+            real_task.sended_notify = False
+        else:
+            real_task.sended_notify = True
+        real_task.deadline_time = task_deadline
+        real_task.weight = max_weight
+        real_task.title = task['task_title']
+        real_task.task_text = task['task_text']
+        real_task.score_max = max_score
+
+        if course.contest_integrated:
+            real_task.contest_id = contest_id
+            real_task.problem_id = task['problem_id']
+        real_task.is_hidden = hidden_task
+        real_task.updated_by = request.user
+        real_task.save()
+
+    return HttpResponse("OK")
+
+
 def get_task_text_popup(request, task_id):
     task = get_object_or_404(Task, id=task_id)
-    
+
     context = {
         'task' : task,
     }
-    
+
     return render_to_response('task_text_popup.html', context, context_instance=RequestContext(request))
 
 

@@ -66,11 +66,11 @@
           Добавить информацию о курсе
         {% endif %}
       </a>
-      <a class="btn btn-default" href="javascript:get_add_task_modal({{ course.id }}, '',  null, '{{course.can_edit}}');" role="button">
+      <a class="btn btn-default" href="/task/create/{{ course.id }}" role="button">
         Добавить задачу
       </a>
       {% if course.contest_integrated %}
-        <a class="btn btn-default" href="javascript:get_add_contest_task_modal({{ course.id }}, '',  null, '{{course.can_edit}}');" role="button">
+        <a class="btn btn-default" href="/task/import/{{ course.id }}" role="button">
           Импортировать задачу из Я.Контеста
          </a>
       {% endif %}

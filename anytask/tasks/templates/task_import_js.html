@@ -1,0 +1,131 @@
+<script src="{{ STATIC_URL }}jquery.validate.min.js"></script>
+<script src="http://malsup.github.io/jquery.form.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('.task_datetime').datetimepicker({
+            format: 'dd-mm-yyyy hh:ii',
+            language: "ru",
+            todayBtn: true,
+            autoclose: true,
+            todayHighlight: true,
+            pickerPosition: "bottom-left",
+            startDate: null,
+            minuteStep: 30
+        }).on("input change", function (e) {
+            $('#task_edit_label_for_changed_task').show()
+        });
+
+        $('#contest_task_form').validate({
+            rules: {
+                max_score: {
+                    required : true,
+                    number : true,
+                    min : 0
+                },
+                contest_id: {
+                    required : true,
+                    number : true
+                },
+                'contest_problems[]': {
+                    required : true
+                }
+            },
+
+            highlight: function(label) {
+                $(label).closest('.control-group').removeClass('success').addClass('error');
+            },
+
+            success: function(label) {
+                label.addClass('valid').closest('.control-group').removeClass('error').addClass('success');
+            },
+
+            messages: {
+                max_score: {
+                    required : "Необходимо указать максимальный балл",
+                    number : "Максимальный балл должен быть натуральным числом",
+                    min : "Максимальный балл должен быть больше или равен 0"
+                },
+                contest_id: {
+                    required : "Необходимо указать номер контеста",
+                    number : "Номер контеста должен натуральным числом"
+                },
+                'contest_problems[]': {
+                    required : "Необходимо выбрать хотя бы одну задачу"
+                }
+            },
+
+            errorPlacement: function(error, element) {
+                console.log(element.attr('id'));
+                if (element.attr('id') == 'task_contest_id')
+                    $('#task_contest_id_error_text').empty().append(error);
+                else if (element.attr('id') == 'task_max_score')
+                    $('#task_max_score_error_text').empty().append(error);
+                else if (element.attr('name') == 'contest_problems[]')
+                    $('#contest_problems_error_text').empty().append(error);
+            }
+        });
+
+        $('#contest_task_form').submit(function(e){
+            set_disabled();
+            if ($('#contest_problems').is(':empty')) {
+                $.post('{% url tasks.views.get_contest_problems %}', $(this).serialize(), function(data){
+                    var problems = data.problems;
+                    if (data.is_error == false) {
+                        for (i = 0; i < problems.length; i++) {
+                            $('#contest_problems').append('<li><label class="checkbox" style="padding-top: 1px;"><input name="contest_problems[]" type="checkbox" value="'
+                                    + problems[i].id + '">' +
+                                    ' ' + problems[i].title +
+                                    ': ' + problems[i].name + '</input></label></li>');
+                        }
+                        $('#task_contest_body').show();
+                        $('#task_contest_id').attr("readonly", "readonly");
+                        $('#get_tasks').hide();
+                        remove_disabled();
+                    }
+                    else if ($('#contest_task_form').valid()) {
+                        $('#task_contest_id_error_text').empty().append(data.error);
+                        $('#task_contest_id_error_text').closest('.control-group').removeClass('success').addClass('error');
+                        remove_disabled();
+                    }
+                });
+            }
+            else {
+                if ($('#contest_task_form').valid()) {
+                    $.post('{% url tasks.views.task_import %}', $(this).serialize(), function(data){
+                        if (data.is_error == true) {
+                            $('#get_tasks').show();
+                            $('#contest_problems').empty();
+                            $('#task_contest_id_error_text').empty().append(data.error);
+                            $('#task_contest_id_error_text').closest('.control-group').removeClass('success').addClass('error');
+                            remove_disabled();
+                        }
+                        else {
+                            redirect();
+                        }
+                    });
+                }
+            }
+            e.preventDefault();
+        });
+
+        $('#button_cancel_quit').click(function() {
+            redirect();
+        });
+    });
+
+    function set_disabled() {
+        $('#button_get_tasks').attr('disabled', 'disabled');
+        $('#button_cancel_quit').attr('disabled', 'disabled');
+        $('#button_save_quit').attr('disabled', 'disabled');
+    }
+
+    function remove_disabled() {
+        $('#button_get_tasks').removeAttr('disabled');
+        $('#button_cancel_quit').removeAttr('disabled');
+        $('#button_save_quit').removeAttr('disabled');
+    }
+
+    function redirect() {
+        window.location.href = $('#course_url').attr('href');
+    }
+</script>

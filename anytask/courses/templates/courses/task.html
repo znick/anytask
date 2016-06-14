@@ -1,123 +1,17 @@
 <div class="modal modal-lg hide" id="modal_task_description">
-    <div class="hide" id="modal_task_desc_text">
+    <div id="modal_task_desc_text">
         <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">×</button>
+            <button type="button" class="close" data-dismiss="modal"><i class="icon-remove"></i></button>
+            {% if user_is_teacher %}
+                <a id="modal_task_descr_edit_button" type="button" class="close"><i class="icon-cog"></i></a>
+            {% endif %}
             <h3 id="modal_header_task_descr"></h3>
-            <div class="hide" id="edit_task_descr">
-                <a href="javascript:change_to_edit();">Редактировать</a>
-            </div>
-            <div id="modal_header_deadline_time">
-            </div>
+            <div id="modal_header_deadline_time"></div>
         </div>
-        <div class="modal-body" style="max-height: 600px;">
+        <div class="modal-body">
             <div id="modal_body_task_descr"></div>
         </div>
     </div>
-
-    <div class="hide" id="modal_task_desc_edit">
-        <form action="" method="post" id="modal-edite-task-form" class="form-horizontal" style="margin-bottom: 0px;">
-            {% csrf_token %}
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">×</button>
-
-                <div class="control-group" id="modal_control_edit_title_group">
-                    <label class="control-label" for="modal_edit_task_title">Название:</label>
-                    <div class="controls">
-                        <input id='modal_task_header_edit' name='task_title' type='text' size='20'>
-                        <span class="help-inline" id="modal_edit_task_title_error_text"></span>
-                    </div>
-                </div>
-
-            </div>
-            <div class="modal-body" id="modal_body_task_descr_edit" style="max-height: none;">
-
-                <input type="hidden" id="modal_edit_task_task_id" name="task_id" />
-                <input type="hidden" id="modal_edit_task_course_id" name="course_id" />
-                <input type="hidden" id="modal_edit_task_group_id" name="group_id" />
-                <input type="hidden" id="modal_edit_task_parent_id" name="parent_id" />
-
-                <div class="control-group" id="modal_control_edit_score_group">
-                    <label class="control-label" for="modal_task_max_score_edit">Максимальный балл:</label>
-                    <div class="controls">
-                        <input id='modal_task_max_score_edit' name='max_score' type='text' maxlength='25' size='20'>
-                        <span class="help-inline" id="modal_edit_task_score_error_text"></span>
-                     </div>
-                </div>
-                {% if course.contest_integrated %}
-                <div class="control-group" id="modal_control_edit_contest_group">
-                    <label class="control-label" for="modal_task_contest_id_edit">ID контеста:</label>
-                    <div class="controls">
-                        <input id='modal_task_contest_id_edit' name='contest_id' type='text' maxlength='25' size='20'>
-                        <span class="help-inline" id="modal_edit_task_contest_id_error_text"></span>
-                    </div>
-               </div>
-               <div class="control-group" id="modal_control_edit_problem_group">
-                    <label class="control-label" for="modal_task_problem_id_edit">Литера задачи в контесте:</label>
-                    <div class="controls">
-                        <input id='modal_task_problem_id_edit' name='problem_id' type='text' maxlength='25' size='20'>
-                        <span class="help-inline" id="modal_edit_task_problem_id_error_text"></span>
-                     </div>
-                </div>
-                {% endif %}
-                <div class = "control-group">
-                    <label class="control-label" for="modal_task_group"> Группа:</label>
-                    <div class="controls">
-                    <select id='modal_task_group' name="task_group_id">
-                        <option value=""> Для всех групп </option>
-                    {% for group in course.groups.all %}
-                        <option value="{{ group.id }}">{{ group.name }}</option>
-                    {% endfor %}
-                    </select>
-                    </div>
-                </div>
-                <div class="control-group input-append date">
-                    <label class="control-label" for="modal_task_datepicker">Дата сдачи:</label>
-                    <div class="controls">
-                        <div class="input-append date task_datetime">
-                            <input id='modal_task_datepicker'  name='deadline' type='text'  maxlength='25' size='20' readonly style="width: 153px; background-color: white; cursor: pointer">
-                            <span class="add-on"><i class="icon-remove"></i></span>
-                            <span class="add-on"><i class="icon-th"></i></span>
-                        </div>
-                        <span class="help-inline" id="modal_task_datepicker_error_text"></span>
-                        <label id="label_for_changed_task" class="checkbox inline hide">
-                            <input type="checkbox" name="changed_task" id="changed_task"> Уведомить студентов об изменении срока сдачи
-                        </label>
-                     </div>
-                </div>
-                <br>
-                <div class = "control-group">
-                    <label class="control-label" for="modal_task_type"> Тип задачи:</label>
-                    <div class="controls">
-                    <select id='modal_task_type' name="task_type">
-                    {% for type_id, type in task_types %}
-                        <option value="{{ type_id }}">{{ type }}</option>
-                    {% endfor %}
-                    </select>
-                    </div>
-                </div>
-                <br>
-                <div>
-                    <label class="checkbox inline">
-                        <input type="checkbox" name="hidden_task" id="hidden_task">Скрыть задачу
-                    </label>
-                </div><br/>
-                Формулировка
-                <br>
-                {% if course.contest_integrated %}
-                <textarea class='input-xlarge' style="width: 98%; max-height: 200px;" id='modal_task_body_edit' rows='7' cols='800' name='task_text'></textarea>
-                {% else %}
-                <textarea class='input-xlarge' style="width: 98%; max-height: 200px;" id='modal_task_body_edit' rows='13' cols='800' name='task_text'></textarea>
-                {% endif %}
-            </div>
-            <div class="modal-footer">
-                <div id="modal_task_edit_error_text"></div>
-                <a href="javascript:description_preview();" class="btn pull-left">Предпросмотр</a>
-                <a href="#" class="btn" data-dismiss="modal">Close</a>
-                <button type="submit" id="modal_task_edit_ok" class="btn btn-primary" data-loading-text="Updating ...">OK</button>
-            </div>
-        </form>
-    </div>
-
 </div>
 
 <div class="modal modal-lg hide" id="modal_course_information">
@@ -132,78 +26,4 @@
         <a href="#" class="btn" data-dismiss="modal">Close</a>
         <a href="#" class="btn btn-primary" id="modal_course_info_ok" data-loading-text="Updating...">OK</a>
     </div>
-</div>
-
-<div class="modal modal-lg hide" id="modal_add_contest_task">
-    <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">×</button>
-        <h3 id="modal_contest_header">Импортировать задачи из Я.Контеста</h3>
-    </div>
-    <form id="contest_task_form" class="form-horizontal" style="margin-bottom: 0px;">
-        <div id="modal_contest_task_edit" class="modal-body" style="max-height: none;">
-
-            {% csrf_token %}
-            <input type="hidden" id="modal_edit_contest_task_course_id" name="course_id" />
-            <input type="hidden" id="modal_edit_contest_task_group_id" name="group_id" />
-            <input type="hidden" id="modal_edit_contest_task_parent_id" name="parent_id" />
-            <div class="control-group" id="get_contest_problem_list">
-                <label class="control-label" for="task_contest_id_edit">ID контеста:</label>
-                <div class="controls">
-                    <input id='task_contest_id_edit' name="contest_id" type='text' maxlength='25' size='20'>
-                    <span class="help-inline" id="modal_edit_contest_task_id_error_text"></span>
-                    <button id="get_tasks" type="submit" class="btn">
-                        Получить список задач
-                    </button>
-                </div>
-            </div>
-            <div class="control-group" id="contest_problem_list">
-                <div class="controls">
-                    <ol id='contest_problems' name="contest_problems_id"></ol>
-                    <span class="help-inline" id="modal_edit_contest_task_problems_checkbox_error_text"></span>
-                </div>
-            </div>
-            <div class="hide control-group" id="score_group">
-                <label class="control-label" for="modal_task_max_score_edit">Максимальный балл:</label>
-                <div class="controls">
-                    <input id='modal_task_max_score_edit' name='max_score' type='text' maxlength='25' size='20'>
-                    <span class="help-inline" id="modal_edit_contest_task_score_error_text"></span>
-                </div>
-            </div>
-            <div id="group_select" class="hide control-group" >
-                <label class="control-label" for="modal_task_group"> Группа:</label>
-                <div class="controls">
-                    <select id='modal_task_group' name="task_group_id">
-                        <option value=""> Для всех групп </option>
-                        {% for group in course.groups.all %}
-                            <option value="{{ group.id }}">{{ group.name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
-            <div id="datepicker_group" class="hide control-group">
-                <label class="control-label" for="modal_task_datepicker">Дата сдачи:</label>
-                <div class="controls">
-                        <div class="input-append date contest_task_datetime">
-                            <input id='modal_contest_task_datepicker'  name='deadline' type='text'  maxlength='25' size='20' readonly style="width: 153px; background-color: white; cursor: pointer">
-                            <span class="add-on"><i class="icon-remove"></i></span>
-                            <span class="add-on"><i class="icon-th"></i></span>
-                        </div>
-                    <span class="help-inline" id="modal_task_datepicker_error_text"></span>
-                    <label id="label_for_changed_contest_task" class="checkbox inline hide">
-                        <input type="checkbox" name="changed_task" id="changed_task"> Уведомить студентов об изменении срока сдачи
-                    </label>
-                </div>
-            </div>
-            <div id="hidden_checkbox" class="hide">
-                <label class="checkbox inline">
-                    <input type="checkbox" name="hidden_task" id="hidden_task">Скрыть задачи
-                </label>
-            </div>
-
-        </div>
-        <div class="modal-footer">
-            <a href="#" class="btn" data-dismiss="modal">Close</a>
-            <button id="modal_contest_task_edit_ok" type="submit" class="btn btn-primary" data-loading-text="Updating ...">OK</button>
-        </div>
-    </form>
 </div>

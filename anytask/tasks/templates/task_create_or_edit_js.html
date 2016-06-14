@@ -1,0 +1,163 @@
+<script src="{{ STATIC_URL }}jquery.validate.min.js"></script>
+<script src="http://malsup.github.io/jquery.form.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('.task_datetime').datetimepicker({
+            format: 'dd-mm-yyyy hh:ii',
+            language: "ru",
+            todayBtn: true,
+            autoclose: true,
+            todayHighlight: true,
+            pickerPosition: "bottom-left",
+            startDate: null,
+            minuteStep: 30
+        }).on("input change", function (e) {
+            $('#task_edit_label_for_changed_task').show()
+        });
+
+        $('#task_edit_form').change(function() {
+            $('#task_submit_error_text').empty();
+            $('#task_edit_form').data('changed', true);
+        });
+
+        $('#task_edit_form').validate({
+            submitHandler: function(form) {
+                if ($('#task_edit_form').data('changed')) {
+                    $('#task_edit_form').ajaxSubmit({
+                        success: function (data) {
+                            $('#task_edit_form').data('changed', false);
+                            $('#task_submit_error_text').html('<div class="alert alert-success" role ="alert" id="edit_task_err">' +
+                                    '                            <a class="close" data-dismiss="alert">&times;</a>' +
+                                    '                            <span>Задача сохранена успешно.</span>' +
+                                    '                          </div>');
+                            if ($('#task_edit_form').data('quit'))
+                                redirect();
+                            else if (data.redirect_page)
+                                window.location.replace(data.redirect_page);
+                            $(document).prop('title', data.page_title);
+                        },
+                        error: function (data) {
+                            $('#task_submit_error_text').html('<div  class="alert alert-danger" role ="alert" id="edit_task_err">' +
+                                    '                            <a class="close" data-dismiss="alert">&times;</a>' +
+                                    '                            <span>Произошла ошибка при сохранении задачи. Попробуйте снова.</span>' +
+                                    '                          </div>');
+                            remove_disabled();
+                        }
+                    });
+                }
+                else {
+                    if ($('#task_edit_form').data('quit'))
+                        redirect();
+                }
+            },
+            rules: {
+                max_score: {
+                    required : true,
+                    number : true,
+                    min : 0
+                },
+                task_title: {
+                    required : true,
+                    maxlength : 254
+                },
+                contest_id: {
+                    required : true,
+                    number : true
+                },
+                problem_id: {
+                    required : true
+                }
+            },
+
+            highlight: function(label) {
+                $(label).closest('.control-group').removeClass('success').addClass('error');
+            },
+
+            success: function(label) {
+                label.addClass('valid').closest('.control-group').addClass('success');
+            },
+
+            messages: {
+                max_score: {
+                    required : "Необходимо указать максимальный балл",
+                    number : "Максимальный балл должен быть натуральным числом",
+                    min : "Максимальный балл должен быть больше или равен 0"
+                },
+                task_title: {
+                    required : "Название у задачи необходимо",
+                    maxlength : "Не так много"
+                },
+                contest_id: {
+                    required : "Необходимо указать номер контеста",
+                    number : "Номер контеста должен натуральным числом"
+                },
+                problem_id: {
+                    required : "Необходимо указать литеру задачи контеста"
+                }
+            },
+
+            errorPlacement: function(error, element) {
+                if (element.attr('id') == 'task_edit_header')
+                    $('#task_edit_header_error_text').append(error);
+                else if (element.attr('id') == 'task_edit_max_score')
+                    $('#task_edit_max_score_error_text').append(error);
+                else if (element.attr('id') == 'task_edit_contest_id')
+                    $('#task_edit_contest_id_error_text').append(error);
+                else if (element.attr('id') == 'task_edit_problem_id')
+                    $('#task_edit_problem_id_error_text').append(error);
+            }
+        });
+
+        $('#button_preview').click(function() {
+            description_preview();
+        });
+
+        $('#button_cancel_quit').click(function() {
+            redirect();
+        });
+
+        $('#button_save').click(function() {
+            set_disabled();
+            $('#task_edit_form').data('quit', false);
+            $('#task_edit_form').submit();
+            remove_disabled();
+        });
+
+        $('#button_save_quit').click(function() {
+            set_disabled();
+            $('#task_edit_form').data('quit', true);
+            $('#task_edit_form').submit();
+        });
+    });
+
+    function description_preview() {
+        var description_html = $('#task_edit_body').val();
+        var deadline = $('#task_edit_datepicker').val();
+        var task_name = $('#task_edit_header').val();
+        $('#modal_task_header').show().text(task_name);
+        if (deadline) {
+            $('#modal_task_deadline').html('<strong>Дата сдачи: ' + deadline + ' MSK UTC+3</strong>');
+        }
+        else {
+            $('#modal_task_deadline').empty();
+        }
+        $('#modal_task_body').html(description_html);
+        $('#modal_task_preview').modal('show');
+    }
+
+    function set_disabled() {
+        $('#button_cancel_quit').attr('disabled', 'disabled');
+        $('#button_save').attr('disabled', 'disabled');
+        $('#button_save_quit').attr('disabled', 'disabled');
+    }
+
+    function remove_disabled() {
+        $('#button_cancel_quit').removeAttr('disabled');
+        $('#button_save').removeAttr('disabled');
+        $('#button_save_quit').removeAttr('disabled');
+    }
+
+    function redirect() {
+        window.location.href = $('#course_url').attr('href');
+    }
+</script>
