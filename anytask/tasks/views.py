@@ -13,10 +13,10 @@ from tasks.models import TaskTaken
 from django.contrib.auth.decorators import login_required
 from django.db.models import Max
 from anycontest.common import get_contest_info
+from django.conf import settings
 
 import datetime
 import requests
-import settings
 
 import json
 
