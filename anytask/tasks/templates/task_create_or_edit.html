@@ -25,37 +25,21 @@
         <form method="post" id="task_edit_form" class="form-horizontal" style="margin-bottom:0px;">
             {% csrf_token %}
             <div class="control-group">
-                <label class="control-label" for="task_edit_header">Название:</label>
+                <label class="control-label" for="task_edit_header">Название</label>
                 <div class="controls">
                     <input id='task_edit_header' name='task_title' type='text' size='20' value="{{task.title}}" />
                     <span class="help-inline" id="task_edit_header_error_text"></span>
                 </div>
             </div>
             <div class="control-group">
-                <label class="control-label" for="task_edit_max_score">Максимальный балл:</label>
+                <label class="control-label" for="task_edit_max_score">Максимальный балл</label>
                 <div class="controls">
                     <input id='task_edit_max_score' name='max_score' type='text' maxlength='25' size='20' value="{{ task.score_max }}">
                     <span class="help-inline" id="task_edit_max_score_error_text"></span>
                 </div>
             </div>
-            {% if course.contest_integrated %}
-                <div class="control-group">
-                    <label class="control-label" for="task_edit_contest_id">ID контеста:</label>
-                    <div class="controls">
-                        <input id='task_edit_contest_id' name='contest_id' type='text' maxlength='25' size='20' value="{{ task.contest_id }}">
-                        <span class="help-inline" id="task_edit_contest_id_error_text"></span>
-                    </div>
-                </div>
-                <div class="control-group">
-                    <label class="control-label" for="task_edit_problem_id">Литера задачи в контесте:</label>
-                    <div class="controls">
-                        <input id='task_edit_problem_id' name='problem_id' type='text' maxlength='25' size='20' value="{{ task.problem_id }}">
-                        <span class="help-inline" id="task_edit_problem_id_error_text"></span>
-                    </div>
-                </div>
-            {% endif %}
             <div class="control-group">
-                <label class="control-label" for="task_edit_group"> Группа:</label>
+                <label class="control-label" for="task_edit_group"> Группа</label>
                 <div class="controls">
                     <select id='task_edit_group' name="task_group_id">
                         <option value=""> Для всех групп </option>
@@ -66,7 +50,7 @@
                 </div>
             </div>
             <div class="control-group input-append date">
-                <label class="control-label" for="task_edit_datepicker">Дата сдачи:</label>
+                <label class="control-label" for="task_edit_datepicker">Дата сдачи</label>
                 <div class="controls">
                     <div class="input-append date task_datetime">
                         <input id='task_edit_datepicker' name='deadline' type='text'  maxlength='25' size='20' readonly value="{{task.deadline_time|date:'d-m-Y H:i'}}" style="width: 153px; background-color: white; cursor: pointer">
@@ -80,7 +64,7 @@
                 </div>
             </div>
             <div class="control-group">
-                <label class="control-label" for="task_edit_type"> Тип задачи:</label>
+                <label class="control-label" for="task_edit_type"> Тип задачи</label>
                 <div class="controls">
                     <select id='task_edit_type' name="task_type">
                         {% for type_id, type in task_types %}
@@ -90,12 +74,41 @@
                 </div>
             </div>
             <div class="control-group">
-                <label class="checkbox inline">
-                    <input type="checkbox" name="hidden_task" id="task_edit_hidden_task" {% if task.is_hidden %}checked{% endif %}>Скрыть задачу
-                </label>
+                <label class="control-label" for="task_edit_contest_integrated">Интеграция с Яндекс.Контестом</label>
+                <div class="controls" style="padding-top: 5px">
+                    <input type="checkbox" name="contest_integrated" id="task_edit_contest_integrated"  {% if contest_integrated %}checked{% endif %}>
+                </div>
+            </div>
+            <div id="contest_integrated_body" class="{% if not contest_integrated %}hide{% endif %}">
+                <div class="control-group">
+                    <label class="control-label" for="task_edit_contest_id">ID контеста</label>
+                    <div class="controls">
+                        <input id='task_edit_contest_id' name='contest_id' type='text' maxlength='25' size='20' value="{{ task.contest_id }}">
+                        <span class="help-inline" id="task_edit_contest_id_error_text"></span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="task_edit_problem_id">Литера задачи в контесте</label>
+                    <div class="controls">
+                        <input id='task_edit_problem_id' name='problem_id' type='text' maxlength='25' size='20' value="{{ task.problem_id }}">
+                        <span class="help-inline" id="task_edit_problem_id_error_text"></span>
+                    </div>
+                </div>
             </div>
             <div class="control-group">
-                <p>Формулировка:</p>
+                <label class="control-label" for="task_edit_rb_integrated">Интеграция с Review Board</label>
+                <div class="controls" style="padding-top: 5px">
+                    <input type="checkbox" name="rb_integrated" id="task_edit_rb_integrated"  {% if rb_integrated %}checked{% endif %}>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="task_edit_hidden_task">Скрыть задачу</label>
+                <div class="controls" style="padding-top: 5px">
+                    <input type="checkbox" name="hidden_task" id="task_edit_hidden_task"  {% if task.hidden_task %}checked{% endif %}>
+                </div>
+            </div>
+            <div class="control-group">
+                <p>Формулировка</p>
                 <textarea class='input-xlarge' style="max-width:98%;width:98%;height:200px;" id='task_edit_body' name='task_text'>{{ task.task_text }}</textarea>
             </div>
             <div class="control-group" style="margin-bottom:10px;">

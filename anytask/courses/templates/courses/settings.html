@@ -5,38 +5,74 @@
 
 {% block title %}{{ course.name }} | {{ course.year }}{% endblock %}
 
+{% block scripts %}
+    {% include "courses/settings_js.html" %}
+{% endblock scripts %}
+
 {% block navbar %}
-  <ul class="nav">
-    <li>
-      <a href="{{ course.get_absolute_url }}">Список задач</a>
-    </li>
-    {% if visible_queue %}
-      <li>
-        <a href="{{ course.get_absolute_url }}/queue">Очередь на проверку</a>
-      </li>
-    {% endif %}
-    {% if user_is_teacher %}
-      <li class="active">
-        <a href="{% url courses.views.course_settings course.id %}">Настройки</a>
-      </li>
-    {% endif %}
-  </ul>
+    <ul class="nav">
+        <li>
+            <a href="{{ course.get_absolute_url }}">Список задач</a>
+        </li>
+        {% if visible_queue %}
+            <li>
+                <a href="{{ course.get_absolute_url }}/queue">Очередь на проверку</a>
+            </li>
+        {% endif %}
+        {% if user_is_teacher %}
+            <li class="active">
+                <a href="{% url courses.views.course_settings course.id %}">Настройки</a>
+            </li>
+        {% endif %}
+    </ul>
 {% endblock navbar %}
 
 
 {% block content %}
+    <style type = "text/css">
+        .select-col {
+            width: 220px !important;
+            height: 150px !important;
+        }
+        .select-btn {
+            color: #000000;
+        }
+    </style>
+    <h1>Настройки</h1>
+    <h2>Преподаватели</h2>
+    <p>Эти преподаватели будут назначаться проверяющими во время перехода задачи в статус "на проверке", если другой преподаватель не был назначен ранее</p>
 
-<h1>Настройки</h1>
-<h2>Преподаватели</h2>
-<p>Эти преподаватели будут назначаться проверяющими во время перехода задачи в статус "на проверке",
-если другой преподаватель не был назначен ранее</p>
+    <form id="submit_review_form" action="{{ request.get_full_path }}" method="POST">
+        {% csrf_token %}
+        <table>
+            {{ form.as_table}}
+        </table>
+        {% if  course.is_rb_integrated %}
+            <label>Расширения файлов для Review Board:</label>
+            <div class="row control-group">
+                <div class="span4 select-col">
+                    <select name="rb_extensions_from[]" id="search" class="form-control select-col" size="8" multiple="multiple" style="margin-bottom: 0px;">
+                        {% for file_ext in file_extensions %}
+                            <option value="{{ file_ext.id }}">{{ file_ext.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
 
-<form id="submit_review_form" action="{{ request.get_full_path }}" method="POST">
-{% csrf_token %}
-<table>
-{{ form.as_table}}
-</table>
-<button type="submit" id="submit" class="btn btn-primary">Сохранить</button>
-</form>
+                <div class="span2" style="width:20px;margin-top: 60px; ">
+                    <a type="button" id="search_rightSelected" class="btn-block select-btn"><i class="fa fa-chevron-right fa-lg"></i></a>
+                    <a type="button" id="search_leftSelected" class="btn-block select-btn"><i class="fa fa-chevron-left fa-lg"></i></a>
+                </div>
+
+                <div class="span4 select-col">
+                    <select name="rb_extensions[]" id="search_to" class="form-control select-col " size="8" multiple="multiple">
+                        {% for file_ext in file_extensions_course %}
+                            <option value="{{ file_ext.id }}">{{ file_ext.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        {% endif %}
+        <button type="submit" id="submit" class="btn btn-primary">Сохранить</button>
+    </form>
 
 {% endblock %}

@@ -10,6 +10,7 @@ from django.contrib.auth.models import User
 from django.db.models.signals import m2m_changed
 from django.conf import settings
 from django.db.models.signals import post_save
+from django.db.models import Q
 
 from groups.models import Group
 from issues.model_issue_field import IssueField
@@ -202,6 +203,9 @@ class Course(models.Model):
         except DefaultTeacher.DoesNotExist:
             return None
 
+    def is_rb_integrated(self):
+        return self.rb_integrated or self.task_set.filter(Q(course=self) & Q(rb_integrated=True)).count()
+
 
 class DefaultTeacher(models.Model):
     teacher = models.ForeignKey(User, db_index=False, null=True, blank=True)
@@ -255,7 +259,8 @@ def add_default_issue_fields(sender, instance, action, **kwargs):
 
 def update_rb_review_group(sender, instance, created, **kwargs):
     course = instance
-    if not course.rb_integrated:
+
+    if not course.is_rb_integrated():
         return
 
     rb_review_group_name = "teachers_{0}".format(course.id)

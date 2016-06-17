@@ -21,6 +21,10 @@
             }
         });
 
+        $('#modal_task_description').on('shown',function(){
+            $(this).find('.modal-body').attr('style','max-height:'+($(window).height()*0.6)+'px !important;');
+        });
+
         jQuery.validator.addMethod("lt_max", function(value, element) {
             var value = parseFloat(value);
             var max = parseFloat($(element).siblings('.mark_max').val());

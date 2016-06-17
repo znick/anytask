@@ -1,11 +1,11 @@
 <div class="modal modal-lg hide" id="modal_task_description">
     <div id="modal_task_desc_text">
         <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal"><i class="icon-remove"></i></button>
-            {% if user_is_teacher %}
-                <a id="modal_task_descr_edit_button" type="button" class="close"><i class="icon-cog"></i></a>
-            {% endif %}
-            <h3 id="modal_header_task_descr"></h3>
+                <button type="button" class="close" data-dismiss="modal"><i class="icon-remove"></i></button>
+                <h3 id="modal_header_task_descr" style="display: inline-block; "></h3>
+                {% if user_is_teacher %}
+                    <a id="modal_task_descr_edit_button" type="button" style="opacity:0.2;filter: alpha(opacity=20);color:#000000;display: inline-block;vertical-align: super;margin-left: 5px;"><i class="fa fa-edit fa-lg"></i></a>
+                {% endif %}
             <div id="modal_header_deadline_time"></div>
         </div>
         <div class="modal-body">

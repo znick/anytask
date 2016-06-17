@@ -189,7 +189,7 @@ def upload(request):
     chosen_compiler = None
     send_to_contest = False
 
-    if issue.task.course.contest_integrated:
+    if issue.task.contest_integrated:
         problem_compilers = get_problem_compilers(issue.task.problem_id, issue.task.contest_id)
         for ext in settings.CONTEST_EXTENSIONS:
             filename, extension = os.path.splitext(file.name)

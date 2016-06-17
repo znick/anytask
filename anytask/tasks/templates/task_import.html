@@ -26,7 +26,7 @@
             {% csrf_token %}
             <input id='course_id' name="course_id" type='hidden' value="{{ course.id }}">
             <div class="control-group">
-                <label class="control-label" for="task_contest_id">ID контеста:</label>
+                <label class="control-label" for="task_contest_id">ID контеста</label>
                 <div class="controls">
                     <input id='task_contest_id' name="contest_id" type='text' maxlength='25' size='20'>
                     <span class="help-inline" id="task_contest_id_error_text"></span>
@@ -44,14 +44,14 @@
                     </div>
                 </div>
                 <div class="control-group">
-                    <label class="control-label" for="task_max_score">Максимальный балл:</label>
+                    <label class="control-label" for="task_max_score">Максимальный балл</label>
                     <div class="controls">
                         <input id='task_max_score' name='max_score' type='text' maxlength='25' size='20'>
                         <span class="help-inline" id="task_max_score_error_text"></span>
                     </div>
                 </div>
                 <div class="control-group">
-                    <label class="control-label" for="task_group"> Группа:</label>
+                    <label class="control-label" for="task_group"> Группа</label>
                     <div class="controls">
                         <select id='task_group' name="task_group_id">
                             <option value=""> Для всех групп </option>
@@ -62,7 +62,7 @@
                     </div>
                 </div>
                 <div class="control-group input-append date">
-                    <label class="control-label" for="task_datepicker">Дата сдачи:</label>
+                    <label class="control-label" for="task_datepicker">Дата сдачи</label>
                     <div class="controls">
                         <div class="input-append date task_datetime">
                             <input id='task_datepicker' name='deadline' type='text'  maxlength='25' size='20' readonly style="width: 153px; background-color: white; cursor: pointer">
@@ -76,9 +76,16 @@
                     </div>
                 </div>
                 <div class="control-group">
-                    <label class="checkbox inline">
-                        <input type="checkbox" name="hidden_task" id="task_hidden_task">Скрыть задачу
-                    </label>
+                    <label class="control-label" for="task_edit_rb_integrated">Интеграция с Review Board</label>
+                    <div class="controls" style="padding-top: 5px">
+                        <input type="checkbox" name="rb_integrated" id="task_edit_rb_integrated"  {% if rb_integrated %}checked{% endif %}>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="task_edit_hidden_task">Скрыть задачу</label>
+                    <div class="controls" style="padding-top: 5px">
+                        <input type="checkbox" name="hidden_task" id="task_edit_hidden_task"  {% if task.hidden_task %}checked{% endif %}>
+                    </div>
                 </div>
                 <div class="control-group" style="margin-bottom:10px;">
                     <div id="task_submit_error_text"></div>
