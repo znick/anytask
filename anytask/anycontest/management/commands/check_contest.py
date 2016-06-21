@@ -31,12 +31,12 @@ class Command(BaseCommand):
                                               format(review_request_id,settings.RB_API_URL)
                                 else:
                                     comment += '\n' + u'Ошибка отправки в Review Board.'
-                            comment_verdict(issue, verdict, comment)
                             if issue.task.course.id in settings.COURSES_WITH_CONTEST_MARKS:
                                 student_profile = issue.student.get_profile()
                                 if student_profile.ya_login:
                                     mark = get_contest_mark(issue.task.contest_id, issue.task.problem_id, student_profile.ya_login)
                                     if mark and float(mark) > 0:
                                         issue.set_byname('mark', float(mark))
+                            comment_verdict(issue, verdict, comment)
             except Exception as e:
                 logger.exception(e)
