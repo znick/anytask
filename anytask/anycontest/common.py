@@ -186,7 +186,7 @@ def get_contest_mark(contest_id, problem_id, ya_login):
         submits.reverse()
 
         for submit in submits:
-            if submit['@userId'] == user_id and submit['@problemTitle'] == 'C' and submit['@verdict'] == 'OK':
+            if submit['@userId'] == user_id and submit['@problemTitle'] == problem_id and submit['@verdict'] == 'OK':
                 contest_mark = submit['@score']
                 break
 
