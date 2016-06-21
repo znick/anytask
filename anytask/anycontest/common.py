@@ -2,8 +2,7 @@
 import requests
 import logging
 import os
-import csv
-from StringIO import StringIO
+import xmltodict
 
 from time import sleep
 from django.conf import settings
@@ -168,22 +167,28 @@ def comment_verdict(issue, verdict, comment):
             issue.set_byname('status', issue.STATUS_REWORK)
     issue.save()
 
+
 def get_contest_mark(contest_id, problem_id, ya_login):
     results_req = FakeResponse()
     contest_mark = None
     try:
-        ya_session = requests.Session()
-        ya_session.post('https://passport.yandex.ru/auth', data={'login': 'anytask', 'passwd': 'G-k_IhmP8gZCqd6'})
+        results_req = requests.get(
+           'https://contest.yandex.ru/action/api/download-log?contestId=' + str(contest_id) + '&snarkKey=spike')
+        contest_dict = xmltodict.parse(results_req.content)
 
-        results_req = ya_session.get(
-           'https://contest.yandex.ru/admin/contest-submissions/get-standings-csv?contestId=' + str(contest_id))
-        mark_dict = csv.DictReader(StringIO(results_req.content))
+        users = contest_dict['contestLog']['users']['user']
+        for user in users:
+            if user['@loginName'] == ya_login:
+                user_id = user['@id']
+                break
 
-        for user in mark_dict:
-            if user['login'] == ya_login:
-                for key in user.keys():
-                    if key.split('(')[0] == problem_id:
-                        contest_mark = user[key].split('(')[0]
+        submits = contest_dict['contestLog']['events']['submit']
+        submits.reverse()
+
+        for submit in submits:
+            if submit['@userId'] == user_id and submit['@problemTitle'] == 'C' and submit['@verdict'] == 'OK':
+                contest_mark = submit['@score']
+                break
 
     except Exception as e:
         logger.exception("Exception while request to Contest: '%s' : '%s', Exception: '%s'",

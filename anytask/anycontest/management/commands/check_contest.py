@@ -36,8 +36,7 @@ class Command(BaseCommand):
                                 student_profile = issue.student.get_profile()
                                 if student_profile.ya_login:
                                     mark = get_contest_mark(issue.task.contest_id, issue.task.problem_id, student_profile.ya_login)
-                                    if mark:
-                                        if float(mark) > 0:
-                                            issue.set_byname('mark', float(mark))
+                                    if mark and float(mark) > 0:
+                                        issue.set_byname('mark', float(mark))
             except Exception as e:
                 logger.exception(e)
