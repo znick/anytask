@@ -19,11 +19,18 @@
             $(this).find('.modal-body').attr('style','max-height:'+($(window).height()*0.6)+'px !important;');
         });
 
+        $('#task_edit_type').change(function() {
+            if ($('#task_edit_type').val() != 'Only mark')
+                $('#contest_rb_body').collapse('show');
+            else
+                $('#contest_rb_body').collapse('hide');
+        });
+
         $('#task_edit_contest_integrated').change(function() {
             if ($('#task_edit_contest_integrated').is(':checked'))
-                $('#contest_integrated_body').show();
+                $('#contest_integrated_body').collapse('show');
             else
-                $('#contest_integrated_body').hide();
+                $('#contest_integrated_body').collapse('hide');
         });
 
         $('#task_edit_form').change(function() {
@@ -142,6 +149,7 @@
             set_disabled();
             $('#task_edit_form').data('quit', true);
             $('#task_edit_form').submit();
+            remove_disabled();
         });
     });
 

@@ -1,6 +1,82 @@
 <script src="{{ STATIC_URL }}multiselect.min.js"></script>
+<script src="{{ STATIC_URL }}jquery.validate.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function() {
-        $('#search').multiselect();
+        $('#rb_ext_select').multiselect();
+
+        $('#course_settings_form').change(function() {
+            $('#course_settings_form_error_text').empty();
+        });
+
+        $('#course_settings_form').validate({
+            submitHandler: function(form) {
+                $('#course_settings_form').ajaxSubmit({
+                    success: function (data) {
+                        $('#course_settings_form_error_text').html('<div class="alert alert-success" role ="alert" id="edit_task_err">' +
+                                '                                     <a class="close" data-dismiss="alert">&times;</a>' +
+                                '                                     <span>Сохранено успешно.</span>' +
+                                '                                   </div>');
+                        if ($('#course_settings_form').data('quit'))
+                            redirect();
+                    },
+                    error: function (data) {
+                        $('#course_settings_form_error_text').html('<div  class="alert alert-danger" role ="alert" id="edit_task_err">' +
+                                '                                     <a class="close" data-dismiss="alert">&times;</a>' +
+                                '                                     <span>Произошла ошибка при сохранении. Попробуйте снова.</span>' +
+                                '                                   </div>');
+                        remove_disabled();
+                    }
+                });
+            },
+            rules: {
+
+            },
+
+            highlight: function(label) {
+                $(label).closest('.control-group').removeClass('success').addClass('error');
+            },
+
+            success: function(label) {
+                label.addClass('valid').closest('.control-group').addClass('success');
+            },
+
+            messages: {
+
+            },
+        });
+
+        $('#button_cancel_quit').click(function() {
+            redirect();
+        });
+
+        $('#button_save').click(function() {
+            set_disabled();
+            $('#course_settings_form').data('quit', false);
+            $('#course_settings_form').submit();
+            remove_disabled();
+        });
+
+        $('#button_save_quit').click(function() {
+            set_disabled();
+            $('#course_settings_form').data('quit', true);
+            $('#course_settings_form').submit();
+            remove_disabled();
+        });
     });
+
+    function set_disabled() {
+        $('#button_cancel_quit').attr('disabled', 'disabled');
+        $('#button_save').attr('disabled', 'disabled');
+        $('#button_save_quit').attr('disabled', 'disabled');
+    }
+
+    function remove_disabled() {
+        $('#button_cancel_quit').removeAttr('disabled');
+        $('#button_save').removeAttr('disabled');
+        $('#button_save_quit').removeAttr('disabled');
+    }
+
+    function redirect() {
+        window.location.href = $('#course_url').attr('href');
+    }
 </script>

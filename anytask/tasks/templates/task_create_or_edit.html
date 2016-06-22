@@ -73,32 +73,34 @@
                     </select>
                 </div>
             </div>
-            <div class="control-group">
-                <label class="control-label" for="task_edit_contest_integrated">Интеграция с Яндекс.Контестом</label>
-                <div class="controls" style="padding-top: 5px">
-                    <input type="checkbox" name="contest_integrated" id="task_edit_contest_integrated"  {% if contest_integrated %}checked{% endif %}>
-                </div>
-            </div>
-            <div id="contest_integrated_body" class="{% if not contest_integrated %}hide{% endif %}">
+            <div id='contest_rb_body' class="{% if is_create or task.type != task.TYPE_SIMPLE %}in{% endif %} collapse">
                 <div class="control-group">
-                    <label class="control-label" for="task_edit_contest_id">ID контеста</label>
-                    <div class="controls">
-                        <input id='task_edit_contest_id' name='contest_id' type='text' maxlength='25' size='20' value="{{ task.contest_id }}">
-                        <span class="help-inline" id="task_edit_contest_id_error_text"></span>
+                    <label class="control-label" for="task_edit_contest_integrated">Интеграция с Яндекс.Контестом</label>
+                    <div class="controls" style="padding-top: 5px">
+                        <input type="checkbox" name="contest_integrated" id="task_edit_contest_integrated"  {% if contest_integrated %}checked{% endif %}>
+                    </div>
+                </div>
+                <div id="contest_integrated_body" class="{% if contest_integrated %}in{% endif %} collapse">
+                    <div class="control-group">
+                        <label class="control-label" for="task_edit_contest_id">ID контеста</label>
+                        <div class="controls">
+                            <input id='task_edit_contest_id' name='contest_id' type='text' maxlength='25' size='20' value="{{ task.contest_id }}">
+                            <span class="help-inline" id="task_edit_contest_id_error_text"></span>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" for="task_edit_problem_id">Литера задачи в контесте</label>
+                        <div class="controls">
+                            <input id='task_edit_problem_id' name='problem_id' type='text' maxlength='25' size='20' value="{{ task.problem_id }}">
+                            <span class="help-inline" id="task_edit_problem_id_error_text"></span>
+                        </div>
                     </div>
                 </div>
                 <div class="control-group">
-                    <label class="control-label" for="task_edit_problem_id">Литера задачи в контесте</label>
-                    <div class="controls">
-                        <input id='task_edit_problem_id' name='problem_id' type='text' maxlength='25' size='20' value="{{ task.problem_id }}">
-                        <span class="help-inline" id="task_edit_problem_id_error_text"></span>
+                    <label class="control-label" for="task_edit_rb_integrated">Интеграция с Review Board</label>
+                    <div class="controls" style="padding-top: 5px">
+                        <input type="checkbox" name="rb_integrated" id="task_edit_rb_integrated"  {% if rb_integrated %}checked{% endif %}>
                     </div>
-                </div>
-            </div>
-            <div class="control-group">
-                <label class="control-label" for="task_edit_rb_integrated">Интеграция с Review Board</label>
-                <div class="controls" style="padding-top: 5px">
-                    <input type="checkbox" name="rb_integrated" id="task_edit_rb_integrated"  {% if rb_integrated %}checked{% endif %}>
                 </div>
             </div>
             <div class="control-group">

@@ -55,7 +55,6 @@
             },
 
             errorPlacement: function(error, element) {
-                console.log(element.attr('id'));
                 if (element.attr('id') == 'task_contest_id')
                     $('#task_contest_id_error_text').empty().append(error);
                 else if (element.attr('id') == 'task_max_score')

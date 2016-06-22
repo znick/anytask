@@ -204,7 +204,7 @@ class Course(models.Model):
             return None
 
     def is_rb_integrated(self):
-        return self.rb_integrated or self.task_set.filter(Q(course=self) & Q(rb_integrated=True)).count()
+        return self.rb_integrated or self.task_set.filter(rb_integrated=True).count()
 
 
 class DefaultTeacher(models.Model):
