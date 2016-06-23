@@ -177,6 +177,8 @@ def get_contest_mark(contest_id, problem_id, ya_login):
         contest_dict = xmltodict.parse(results_req.content)
 
         users = contest_dict['contestLog']['users']['user']
+
+        user_id = None
         for user in users:
             if user['@loginName'] == ya_login:
                 user_id = user['@id']
