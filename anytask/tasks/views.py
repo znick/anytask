@@ -221,8 +221,9 @@ def get_contest_problems(request):
                                     'error': error}),
                         content_type="application/json")
 
+
 @login_required
-def task_import(request):
+def contest_task_import(request):
     if not request.method == 'POST':
         return HttpResponseForbidden()
 

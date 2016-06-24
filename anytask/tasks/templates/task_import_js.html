@@ -90,7 +90,7 @@
             }
             else {
                 if ($('#contest_task_form').valid()) {
-                    $.post('{% url tasks.views.task_import %}', $(this).serialize(), function(data){
+                    $.post('{% url tasks.views.contest_task_import %}', $(this).serialize(), function(data){
                         if (data.is_error == true) {
                             $('#get_tasks').show();
                             $('#contest_problems').empty();
