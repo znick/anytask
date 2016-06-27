@@ -106,7 +106,7 @@
             <div class="control-group">
                 <label class="control-label" for="task_edit_hidden_task">Скрыть задачу</label>
                 <div class="controls" style="padding-top: 5px">
-                    <input type="checkbox" name="hidden_task" id="task_edit_hidden_task"  {% if task.hidden_task %}checked{% endif %}>
+                    <input type="checkbox" name="hidden_task" id="task_edit_hidden_task"  {% if task.is_hidden %}checked{% endif %}>
                 </div>
             </div>
             <div class="control-group">

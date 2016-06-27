@@ -230,7 +230,7 @@ def contest_task_import(request):
     course_id = int(request.POST['course_id'])
     course = get_object_or_404(Course, id=course_id)
 
-    contest_id = int(request.POST['contest_id'])
+    contest_id = int(request.POST['contest_id_for_task'])
 
     max_score = int(request.POST['max_score'])
 
