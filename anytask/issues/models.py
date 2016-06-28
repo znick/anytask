@@ -130,7 +130,7 @@ class Issue(models.Model):
             return dict(self.ISSUE_STATUSES)[self.status]
         if name == 'mark':
             return self.score()
-        if name == 'review_id' and self.task.course.rb_integrated:
+        if name == 'review_id' and self.task.rb_integrated:
             return u'<a href="{1}/r/{0}">{0}</a>'.format(
                 self.get_byname('review_id'),
                 settings.RB_API_URL,
@@ -253,7 +253,7 @@ class Issue(models.Model):
                                     self.followers.add(User.objects.get(username='anytask.monitoring'))
                                 break
 
-                    if self.task.course.rb_integrated and (self.task.course.send_rb_and_contest_together or not self.task.contest_integrated):
+                    if self.task.rb_integrated and (self.task.course.send_rb_and_contest_together or not self.task.contest_integrated):
                         for ext in settings.RB_EXTENSIONS + [str(ext.name) for ext in self.task.course.filename_extensions.all()]:
                             filename, extension = os.path.splitext(file.name)
                             if ext == extension:
