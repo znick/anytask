@@ -5,38 +5,90 @@
 
 {% block title %}{{ course.name }} | {{ course.year }}{% endblock %}
 
+{% block scripts %}
+    {% include "courses/settings_js.html" %}
+{% endblock scripts %}
+
 {% block navbar %}
-  <ul class="nav">
-    <li>
-      <a href="{{ course.get_absolute_url }}">Список задач</a>
-    </li>
-    {% if visible_queue %}
-      <li>
-        <a href="{{ course.get_absolute_url }}/queue">Очередь на проверку</a>
-      </li>
-    {% endif %}
-    {% if user_is_teacher %}
-      <li class="active">
-        <a href="{% url courses.views.course_settings course.id %}">Настройки</a>
-      </li>
-    {% endif %}
-  </ul>
+    <ul class="nav">
+        <li>
+            <a id="course_url" href="{{ course.get_absolute_url }}">Список задач</a>
+        </li>
+        {% if visible_queue %}
+            <li>
+                <a href="{{ course.get_absolute_url }}/queue">Очередь на проверку</a>
+            </li>
+        {% endif %}
+        {% if user_is_teacher %}
+            <li class="active">
+                <a href="{% url courses.views.course_settings course.id %}">Настройки</a>
+            </li>
+        {% endif %}
+    </ul>
 {% endblock navbar %}
 
 
 {% block content %}
+    <style type = "text/css">
+        .select-col {
+            width: 220px !important;
+            height: 180px !important;
+        }
+        .select-btn {
+            color: #000000;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+    </style>
+    <div class="profile_part">
+        <h1>Настройки</h1>
 
-<h1>Настройки</h1>
-<h2>Преподаватели</h2>
-<p>Эти преподаватели будут назначаться проверяющими во время перехода задачи в статус "на проверке",
-если другой преподаватель не был назначен ранее</p>
-
-<form id="submit_review_form" action="{{ request.get_full_path }}" method="POST">
-{% csrf_token %}
-<table>
-{{ form.as_table}}
-</table>
-<button type="submit" id="submit" class="btn btn-primary">Сохранить</button>
-</form>
+        <form id="course_settings_form" action="{{ request.get_full_path }}" method="POST" style="margin-bottom:0px;">
+            <div class="profile_part">
+                <h3>Преподаватели</h3>
+                <p>Эти преподаватели будут назначаться проверяющими во время перехода задачи в статус "на проверке", если другой преподаватель не был назначен ранее</p>
+                {% csrf_token %}
+                <table>
+                    {{ form.as_table}}
+                </table>
+            </div>
+            {% if course.is_rb_integrated %}
+                <div class="profile_part">
+                    <h3>Review Board</h3>
+                    <p>Расширения файлов</p>
+                    <div class="row control-group">
+                        <div class="span4 select-col">
+                            <select name="rb_extensions_from[]" id="rb_ext_select" class="form-control select-col" size="8" multiple="multiple" style="margin-bottom: 0px;">
+                                {% for file_ext in file_extensions %}
+                                    <option value="{{ file_ext.id }}">{{ file_ext.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="span2" style="width:40px;margin-top: 30px;">
+                            <button type="button" id="rb_ext_select_rightAll" class="btn btn-default btn-block"><i class="fa fa-forward fa"></i></button>
+                            <button type="button" id="rb_ext_select_rightSelected" class="btn btn-default btn-block"><i class="fa fa-chevron-right fa"></i></button>
+                            <button type="button" id="rb_ext_select_leftSelected" class="btn btn-default btn-block"><i class="fa fa-chevron-left fa"></i></button>
+                            <button type="button" id="rb_ext_select_leftAll" class="btn btn-default btn-block"><i class="fa fa-backward fa"></i></button>
+                        </div>
+                        <div class="span4 select-col">
+                            <select name="rb_extensions[]" id="rb_ext_select_to" class="form-control select-col " size="8" multiple="multiple">
+                                {% for file_ext in file_extensions_course %}
+                                    <option value="{{ file_ext.id }}">{{ file_ext.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            <div class="control-group" style="margin-bottom:45px;">
+                <div id="course_settings_form_error_text"></div>
+                <div class="btn-group pull-right" role="group">
+                    <button type="button" id="button_cancel_quit" class="btn">Отменить и выйти</button>
+                    <button type="button" id="button_save" class="btn">Сохранить и продолжить редактирование</button>
+                    <button type="button" id="button_save_quit" class="btn btn-primary">Сохранить и выйти</button>
+                </div>
+            </div>
+        </form>
+    </div>
 
 {% endblock %}

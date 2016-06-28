@@ -135,7 +135,7 @@ class Issue(models.Model):
                 self.get_byname('review_id'),
                 settings.RB_API_URL,
             )
-        if name == 'run_id' and self.task.course.contest_integrated:
+        if name == 'run_id' and self.task.contest_integrated:
             return u'<a href="https://contest.yandex.ru/contest/{1}/run-report/{0}">{0}</a>'.format(
                 self.get_byname('run_id'),
                 self.task.contest_id,
@@ -239,7 +239,7 @@ class Issue(models.Model):
                     file.name = unidecode(file.name)
                     uploaded_file = File(file=file, event=event)
                     uploaded_file.save()
-                    if self.task.course.contest_integrated:
+                    if self.task.contest_integrated:
                         for ext in settings.CONTEST_EXTENSIONS:
                             filename, extension = os.path.splitext(file.name)
                             if ext == extension:
@@ -253,8 +253,8 @@ class Issue(models.Model):
                                     self.followers.add(User.objects.get(username='anytask.monitoring'))
                                 break
 
-                    if self.task.course.rb_integrated and (self.task.course.send_rb_and_contest_together or not self.task.course.contest_integrated):
-                        for ext in settings.RB_EXTENSIONS:
+                    if self.task.course.rb_integrated and (self.task.course.send_rb_and_contest_together or not self.task.contest_integrated):
+                        for ext in settings.RB_EXTENSIONS + [str(ext.name) for ext in self.task.course.filename_extensions.all()]:
                             filename, extension = os.path.splitext(file.name)
                             if ext == extension:
                                 anyrb = AnyRB(event)

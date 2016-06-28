@@ -22,7 +22,7 @@ class Command(BaseCommand):
                     if event.value == run_id:
                         got_verdict, verdict, comment = check_submission(issue)
                         if got_verdict:
-                            if verdict and not issue.task.course.send_rb_and_contest_together and issue.task.course.rb_integrated:
+                            if verdict and not issue.task.course.send_rb_and_contest_together and issue.task.rb_integrated:
                                 anyrb = AnyRB(events[event_id-1])
                                 review_request_id = anyrb.upload_review()
                                 if review_request_id is not None:

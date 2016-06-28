@@ -29,6 +29,9 @@ class Task(models.Model):
 
     score_max = models.IntegerField(db_index=True, null=False, blank=False, default=0)
 
+    contest_integrated = models.BooleanField(db_index=False, null=False, blank=False, default=False)
+    rb_integrated = models.BooleanField(db_index=False, null=False, blank=False, default=False)
+
     TYPE_FULL = 'All'
     TYPE_SIMPLE = 'Only mark'
     TASK_TYPE_CHOICES = (
@@ -111,7 +114,7 @@ class Task(models.Model):
         if user.is_anonymous():
             return False
 
-        if not self.course.rb_integrated:
+        if not self.rb_integrated:
             return False
 
         if self.user_can_take_task(user):
@@ -158,6 +161,17 @@ class TaskLog(models.Model):
     task_text = models.TextField(null=True, blank=True, default=None)
 
     score_max = models.IntegerField(db_index=False, null=False, blank=False, default=0)
+
+    contest_integrated = models.BooleanField(db_index=False, null=False, blank=False, default=False)
+    rb_integrated = models.BooleanField(db_index=False, null=False, blank=False, default=False)
+
+    TYPE_FULL = 'All'
+    TYPE_SIMPLE = 'Only mark'
+    TASK_TYPE_CHOICES = (
+        (TYPE_FULL, u'с обсуждением'),
+        (TYPE_SIMPLE, u'только оценка'),
+    )
+    type = models.CharField(db_index=False, max_length=128, choices=TASK_TYPE_CHOICES, default=TYPE_FULL)
 
     added_time = models.DateTimeField(auto_now_add=True, default=datetime.now)
     update_time = models.DateTimeField(auto_now=True, default=datetime.now)

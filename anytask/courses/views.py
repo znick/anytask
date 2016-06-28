@@ -23,7 +23,7 @@ import httplib
 import logging
 import requests
 
-from courses.models import Course, DefaultTeacher, StudentCourseMark, MarkField
+from courses.models import Course, DefaultTeacher, StudentCourseMark, MarkField, FilenameExtension
 from groups.models import Group
 from tasks.models import TaskTaken, Task
 from tasks.views import update_status_check
@@ -204,7 +204,7 @@ def tasklist_shad_cpp(request, course):
         'user_is_attended': user_is_attended,
         'user_is_attended_special_course': user_is_attended_special_course,
         'user_is_teacher': course.user_is_teacher(user),
-        
+
         'visible_queue': course.user_can_see_queue(user),
         'visible_hide_button': Task.objects.filter(Q(course=course) & Q(is_hidden=True)).order_by('weight').count()
     }
@@ -525,12 +525,16 @@ def course_settings(request, course_id):
     if request.method != "POST":
         form = DefaultTeacherForm(course)
         context['form'] = form
+        context['file_extensions'] = FilenameExtension.objects.all()
+        context['file_extensions_course'] = course.filename_extensions.all()
         return render_to_response('courses/settings.html', context, context_instance=RequestContext(request))
 
     form = DefaultTeacherForm(course, request.POST)
     context['form'] = form
 
     if not form.is_valid():
+        context['file_extensions'] = FilenameExtension.objects.all()
+        context['file_extensions_course'] = course.filename_extensions.all()
         return render_to_response('courses/settings.html', context, context_instance=RequestContext(request))
 
     for group_key, teacher_id in form.cleaned_data.iteritems():
@@ -543,6 +547,11 @@ def course_settings(request, course_id):
             default_teacher, _ = DefaultTeacher.objects.get_or_create(course=course, group=group)
             default_teacher.teacher = teacher
             default_teacher.save()
+
+    if 'rb_extensions[]' in request.POST:
+        course.filename_extensions = request.POST.getlist('rb_extensions[]')
+    else:
+        course.filename_extensions.clear()
 
     return HttpResponseRedirect('')
 

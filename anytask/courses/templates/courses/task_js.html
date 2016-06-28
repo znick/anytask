@@ -5,153 +5,10 @@
 <script type="text/javascript">
 
     $(document).ready(function() {
-
         // Here we select for <table> elements universally,
         // but you can definitely fine tune your selector
         $(".table_results").tablesorter();
         $(".table_results").stickyTableHeaders({fixedOffset: $('.navbar')});
-        jQuery.validator.addMethod("lessThanMax", function(value, element) {
-            var value = parseFloat(value);
-            var max = parseFloat($('#modal_max_score').val());
-            return isNaN(value) || value <= max;
-        });
-
-        $('#modal_task_desc_edit').change(function() {
-            $('#modal_task_desc_edit').data('changed', true);
-        });
-
-        $('#modal-edite-task-form').validate(
-        {
-
-            submitHandler: function(form) {
-                if ($('#modal_task_desc_edit').data('changed')) {
-                    $("#modal_task_edit_ok").button('loading');
-                    $(form).ajaxSubmit({
-                        success: function () {
-                            window.location.reload();
-                        },
-                        error: function (data) {
-                            $("#modal_task_edit_ok").button('reset');
-                            $('#modal_task_edit_error_text').html('<div id="edit_task_err" class="alert alert-danger" role ="alert" id="edit_task_err">' +
-                                                '                      <a class="close" data-dismiss="alert">&times;</a>' +
-                                                '                      <span>Произошла ошибка при сохранении задачи. Попробуйте снова.</span>' +
-                                                '                  </div>')
-                        }
-                    });
-                }
-                else {
-                     $('#modal_task_description').modal('hide');
-                }
-
-                return false;
-            },
-            rules: {
-                max_score: {
-                    required : true,
-                    number : true,
-                    min : 0
-                },
-                task_title: {
-                    required : true,
-                    maxlength : 254
-                },
-                contest_id: {
-                    required : true,
-                    number : true
-                },
-                problem_id: {
-                    required : true
-                }
-            },
-
-            highlight: function(label) {
-                $(label).closest('.control-group').removeClass('success').addClass('error');
-            },
-
-            success: function(label) {
-                label.addClass('valid').closest('.control-group').addClass('success');
-            },
-
-            messages: {
-                max_score: {
-                    required : "Необходимо указать максимальный балл",
-                    number : "Максимальный балл должен быть натуральным числом",
-                    min : "Максимальный балл должен быть больше или равен 0"
-                },
-                task_title: {
-                    required : "Название у задачи необходимо",
-                    maxlength : "Не так много"
-                },
-                contest_id: {
-                    required : "Необходимо указать номер контеста",
-                    number : "Номер контеста должен натуральным числом"
-                },
-                problem_id: {
-                    required : "Необходимо указать литеру задачи контеста"
-                }
-            },
-
-            errorPlacement: function(error, element) {
-                if (element.attr('id') == 'modal_task_header_edit')
-                    $('#modal_edit_task_title_error_text').append(error);
-                else if (element.attr('id') == 'modal_task_max_score_edit')
-                    $('#modal_edit_task_score_error_text').append(error);
-                else if (element.attr('id') == 'modal_task_contest_id_edit')
-                    $('#modal_edit_task_contest_id_error_text').append(error);
-                else if (element.attr('id') == 'modal_task_problem_id_edit')
-                    $('#modal_edit_task_problem_id_error_text').append(error);
-            }
-        });
-
-        $('#contest_task_form').validate(
-        {
-            rules: {
-                max_score: {
-                    required : true,
-                    number : true,
-                    min : 0
-                },
-                contest_id: {
-                    required : true,
-                    number : true
-                },
-                'contest_problems[]': {
-                    required : true
-                }
-            },
-
-            highlight: function(label) {
-                $(label).closest('.control-group').removeClass('success').addClass('error');
-            },
-
-            success: function(label) {
-                label.addClass('valid').closest('.control-group').removeClass('error').addClass('success');
-            },
-
-            messages: {
-                max_score: {
-                    required : "Необходимо указать максимальный балл",
-                    number : "Максимальный балл должен быть натуральным числом",
-                    min : "Максимальный балл должен быть больше или равен 0"
-                },
-                contest_id: {
-                    required : "Необходимо указать номер контеста",
-                    number : "Номер контеста должен натуральным числом"
-                },
-                'contest_problems[]': {
-                    required : "Необходимо выбрать хотя бы одну задачу"
-                }
-            },
-
-            errorPlacement: function(error, element) {
-                if (element.attr('id') == 'task_contest_id_edit')
-                    $('#modal_edit_contest_task_id_error_text').empty().append(error);
-                else if (element.attr('id') == 'modal_task_max_score_edit')
-                    $('#modal_edit_contest_task_score_error_text').empty().append(error);
-                else if (element.attr('name') == 'contest_problems[]')
-                    $('#modal_edit_contest_task_problems_checkbox_error_text').empty().append(error);
-            }
-        });
 
         $('.task-mark-value').click(function() {
             if (!$('.task-mark-form').data('is_error')) {
@@ -162,6 +19,10 @@
                 $(mark_form).show();
                 $(mark_form).find('[name="mark_value"]').focus().select();
             }
+        });
+
+        $('#modal_task_description').on('shown',function(){
+            $(this).find('.modal-body').attr('style','max-height:'+($(window).height()*0.6)+'px !important;');
         });
 
         jQuery.validator.addMethod("lt_max", function(value, element) {
@@ -266,213 +127,19 @@
         $('#modal_comment').modal('show');
     }
 
-    function get_task_modal(task_id,
-                            task_title,
-                            task_hidden,
-                            task_text_to_show,
-                            task_text_to_edit,
-                            max_score,
-                            is_teacher,
-                            mode,
-                            contest_id,
-                            problem_id,
-                            group_id,
-                            deadline,
-                            task_types)
+    function get_task_modal(task_id, task_title, task_text_to_show, deadline)
     {
-        clear();
-        $('#modal_edit_task_title_error_text').empty();
-        if (mode == 'text')
-        {
-            $('#modal_header_task_descr').html(task_title);
-            $('#modal_body_task_descr').html(task_text_to_show);
-            if (deadline != ''){
-                $('#modal_header_deadline_time').append('<strong>Дата сдачи: ' + deadline + ' MSK UTC+3</strong>');
-            }
-
-            if (is_teacher == 'True')
-            {
-                $('#modal_task_body_edit').val(task_text_to_edit);
-                $('#modal_task_header_edit').val(task_title);
-                $('#modal_task_max_score_edit').val(max_score);
-                $('#modal_task_contest_id_edit').val(contest_id);
-                $('#modal_task_problem_id_edit').val(problem_id);
-                $('#modal_edit_task_task_id').val(task_id);
-                $('#modal_task_datepicker').val(deadline);
-                if (task_hidden == "True")
-                {
-                    $('#hidden_task').attr('checked', true);
-                }
-                $('#modal_task_group [value="'+ group_id +'"]').attr('selected', 'selected');
-                $('#modal_task_type [value="'+ task_types +'"]').attr('selected', 'selected');
-                $('#modal-edite-task-form').attr('action', '{% url courses.views.edit_task %}');
-
-                $('#edit_task_descr').show();
-            }
-            else
-            {
-                $('#edit_task_descr').hide();
-            }
-
-            $('#modal_task_desc_edit').hide();
-            $('#modal_task_desc_text').show();
-            $('#modal_header_task_descr').show();
-
-        } else
-        {
-            if (mode == 'edit' && is_teacher == 'True')
-            {
-                $('#modal_task_desc_text').hide();
-                $('#modal_task_body_edit').html(task_text_to_edit);
-                $('#modal_task_header_edit').val(task_title);
-                $('#modal_task_max_score_edit').val(max_score);
-                $('#modal_task_contest_id_edit').val(contest_id);
-                $('#modal_task_problem_id_edit').val(problem_id);
-                $('#modal_edit_task_task_id').val(task_id);
-                $('#modal_task_datepicker').val(deadline);
-                if (task_hidden == "True")
-                {
-                    $('#hidden_task').attr('checked', true);
-                }
-                $('#modal_task_group [value="'+ group_id +'"]').attr('selected', 'selected');
-                $('#modal_task_type [value="'+ task_types +'"]').attr('selected', 'selected');
-                $('#modal-edite-task-form').attr('action', '{% url courses.views.edit_task %}');
-
-                $('#modal_task_desc_edit').show();
-
-
-            }
+        $('#modal_header_task_descr').html(task_title);
+        $('#modal_body_task_descr').html(task_text_to_show);
+        if (deadline != ''){
+            $('#modal_header_deadline_time').html('<strong>Дата сдачи: ' + deadline + ' MSK UTC+3</strong>');
         }
-
+        else {
+            $('#modal_header_deadline_time').empty();
+        }
+        $('#modal_task_desc_edit').hide();
+        $('#modal_task_descr_edit_button').attr("href", "/task/edit/" + task_id);
         $('#modal_task_description').modal('show');
-    }
-
-    function get_add_task_modal(course_id, group_id, parent_id, is_teacher)
-    {
-        clear();
-        if (is_teacher == 'True')
-        {
-            $('#modal_task_desc_text').hide();
-
-            $('#modal-edite-task-form').attr('action', '{% url courses.views.add_task %}');
-
-            $('#modal_edit_task_course_id').val(course_id);
-            if (group_id) {
-                $('#modal_edit_task_group_id').val(group_id);
-            }
-            $('#modal_task_group [value="'+ group_id +'"]').attr('selected', 'selected');
-            $('#modal_task_type :first').attr('selected', 'selected');
-            $('#modal_edit_task_parent_id').val(parent_id);
-
-            $('#modal_task_desc_edit').show();
-
-            $('#modal_task_description').modal('show');
-        }
-    }
-
-    function get_add_contest_task_modal(course_id, group_id, parent_id, is_teacher)
-    {
-        clear();
-        if (is_teacher == 'True')
-        {
-            $('#modal_task_desc_text').hide();
-
-            $('#modal_edit_contest_task_course_id').val(course_id);
-            if (group_id) {
-                $('#modal_edit_contest_task_group_id').val(group_id);
-            }
-
-            $('#modal_edit_contest_task_parent_id').val(parent_id);
-
-            $('#modal_add_contest_task').show();
-
-            $('#modal_add_contest_task').modal('show');
-
-        }
-    }
-
-
-    function get_pass_task_modal()
-    {
-        $('#modal_pass_task').modal('show');
-    }
-
-    function clear()
-    {
-        $("#modal_task_edit_ok").button('reset');
-        $("#modal_contest_task_edit_ok").button('reset');
-        $('#modal_header_task_descr').html();
-        $('#modal_body_task_descr').html('');
-        $('#modal_task_body_edit').html('');
-        $('#modal_task_header_edit').val('');
-        $('#modal_task_max_score_edit').val('');
-        $('#modal_task_contest_id_edit').val('');
-        $('#task_contest_id_edit').val('');
-        $('#modal_task_datepicker').val('');
-        $('#modal_header_deadline_time').empty();
-        $('.task_datetime').datetimepicker({
-            format: 'dd-mm-yyyy hh:ii',
-            language: "ru",
-            todayBtn: true,
-            autoclose: true,
-            todayHighlight: true,
-            pickerPosition: "bottom-left",
-            startDate: null,
-            minuteStep: 30
-        }).on("input change", function (e) {
-            $('#label_for_changed_task').show()});
-        $('#modal_contest_task_datepicker').val('');
-        $('.contest_task_datetime').datetimepicker({
-            format: 'dd-mm-yyyy hh:ii',
-            language: "ru",
-            todayBtn: true,
-            autoclose: true,
-            todayHighlight: true,
-            pickerPosition: "bottom-left",
-            startDate: null,
-            minuteStep: 30
-        }).on("input change", function (e) {
-            $('#label_for_changed_contest_task').show()});
-        $('#modal_task_problem_id_edit').val('');
-        $('#modal_task_body_edit').val('');
-        $('#contest_problems').empty();
-        $('#contest_problem_list').val('');
-        $('#score_group').hide();
-        $('#datepicker_group').hide();
-        $('#group_select').hide();
-        $('#hidden_checkbox').hide();
-        $('#label_for_changed_contest_task').hide();
-        $('#label_for_changed_task').hide();
-        $('#get_tasks').show();
-        $('#modal_edit_task_score_error_text').empty();
-        $('#modal_edit_task_contest_id_error_text').empty();
-        $('#modal_edit_task_problem_id_error_text').empty();
-        $('#modal_edit_task_title_error_text').empty();
-        $('#modal_edit_contest_task_score_error_text').empty();
-        $('#modal_edit_contest_task_id_error_text').empty();
-        $('#modal_edit_contest_task_problems_checkbox_error_text').empty();
-        $('#hidden_task').attr('checked', false);
-        $('#review_data').find('[name="pdf"]').html('');
-        $('#review_data').find('[name="pdf_update_time"]').html('');
-        $('#review_data').find('[name="gr_review"]').html('');
-        $('#review_data').find('[name="gr_review_update_time"]').html('');
-        $('#teaher_information').html('');
-        $('#modal_score_task_id').html('');
-        $('#modal_score_student_id').html('');
-        $('#modal_current_status').html('');
-        $('div[name="status_body"]').find('div[class="radio"]').html('');
-        $('#modal_status').find('student_id').html('');
-        $('#modal_status').find('task_id').html('');
-        $('#modal_control_edit_score_group').removeClass('error').removeClass('success');
-        $('#modal_control_edit_title_group').removeClass('error').removeClass('success');
-        $('#get_contest_problem_list').removeClass('error').removeClass('success');
-        $('#score_group').removeClass('error').removeClass('success');
-        $('#modal_control_edit_problem_group').removeClass('error').removeClass('success');
-        $('#modal_control_edit_contest_group').removeClass('error').removeClass('success');
-        $('#contest_problem_list').removeClass('error').removeClass('success');
-        $("#edit_task_err").remove();
-        $('#modal_task_desc_edit').data('changed', false);
-
     }
 
     function get_edit_course_modal(course_id, course_desc)
@@ -510,67 +177,6 @@
 
     }
 
-    function change_to_edit()
-    {
-      $('#modal_task_desc_text').hide();
-      $('#modal_header_task_descr').hide();
-      $('#modal_task_desc_edit').show();
-    }
-
-    function description_preview()
-    {
-        description_html = $('#modal_task_body_edit').val();
-        task_name = $('#modal_task_header_edit').val();
-        $('#modal_task_desc_edit').hide();
-        $('#modal_task_desc_text').show();
-        $('#modal_header_task_descr').show().text(task_name);
-        $('#edit_task_descr').show();
-        $('#modal_body_task_descr').html(description_html);
-    }
-
-    $('#contest_task_form').submit(function(e){
-        if ($('#contest_problems').is(':empty')) {
-            $.post('{% url courses.views.get_contest_problems %}', $(this).serialize(), function(data){
-                var problems = data.problems;
-                if (data.is_error == false) {
-                    for (i = 0; i < problems.length; i++) {
-                        $('#contest_problems').append('<li><label class="checkbox" style="padding-top: 1px;"><input name="contest_problems[]" type="checkbox" value="'
-                                + problems[i].id + '">' +
-                                ' ' + problems[i].title +
-                                ': ' + problems[i].name + '</input></label></li>');
-                    }
-                    $('#group_select').show();
-                    $('#score_group').show();
-                    $('#hidden_checkbox').show();
-                    $('#datepicker_group').show();
-                    $('#get_tasks').hide();
-                }
-                else if ($('#contest_task_form').valid()) {
-                    $('#modal_edit_contest_task_id_error_text').empty().append(data.error);
-                    $('#get_contest_problem_list').removeClass('success').addClass('error');
-                }
-            });
-        }
-        else {
-            if ($('#contest_task_form').valid()) {
-                $('#modal_contest_task_edit_ok').button('loading');
-                $.post('{% url courses.views.add_task %}', $(this).serialize(), function(data){
-                    if (data.is_error == true) {
-                        $('#get_tasks').show();
-                        $('#contest_problems').empty();
-                        $('#modal_edit_contest_task_id_error_text').empty().append(data.error);
-                        $('#get_contest_problem_list').removeClass('success').addClass('error');
-                        $('#modal_contest_task_edit_ok').button('reset');
-                    }
-                    else {
-                        window.location.reload();
-                    }
-                });
-            }
-        }
-        e.preventDefault();
-    });
-
     function change_visibility_hidden_tasks(course_id)
     {
         $.post('{% url courses.views.change_visibility_hidden_tasks %}',
@@ -580,5 +186,4 @@
                 });
 
     }
-
 </script>

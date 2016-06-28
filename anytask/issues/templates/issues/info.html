@@ -1,6 +1,6 @@
 <div class="accordion" id="accordion2">
   {% for field in issue_fields %}
-    {% if field.is_visible %}
+    {% if field.is_visible and field.name != 'run_id' or field.is_visible and teacher_or_staff %}
       <div class="accordion-group">
         <div class="accordion-heading">
           <div class="row-fluid col-wrap">
