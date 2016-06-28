@@ -29,6 +29,9 @@
                 <label class="control-label" for="task_contest_id">ID контеста</label>
                 <div class="controls">
                     <input id='task_contest_id' name="contest_id" type='text' maxlength='25' size='20'>
+                    <div id="loading_contest_img" style="display: none;">
+                        <i class="fa fa-circle-o-notch fa-spin fa-lg fa-fw" style="opacity:0.2;filter: alpha(opacity=20);color:#000000;margin-left: 5px;"></i>
+                    </div>
                     <div class="input-append hide" id="task_contest_id_readonly">
                         <input name="contest_id_for_task" type='text' maxlength='25' size='20' readonly style="width: 178px;cursor: default;">
                         <span class="add-on" id='button_task_contest_id_clear' style="cursor: pointer;"><i class="icon-remove"></i></span>

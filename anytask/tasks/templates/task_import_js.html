@@ -83,32 +83,37 @@
         });
 
         $('#contest_task_form').submit(function(e){
-            if ($('#contest_problems').is(':empty')) {
-                $.post('{% url tasks.views.get_contest_problems %}', $(this).serialize(), function(data){
-                    var problems = data.problems;
-                    if (data.is_error == false) {
-                        for (i = 0; i < problems.length; i++) {
-                            $('#contest_problems').append('<li><label class="checkbox" style="padding-top: 1px;"><input name="contest_problems[]" type="checkbox" value="'
-                                    + problems[i].id + '">' +
-                                    ' ' + problems[i].title +
-                                    ': ' + problems[i].name + '</input></label></li>');
+            if ($('#contest_task_form').valid()) {
+                set_disabled();
+                if ($('#contest_problems').is(':empty')) {
+                    $('#loading_contest_img').css('display', 'inline-block');
+                    $('#task_contest_id').attr('readonly', 'readonly');
+
+                    $.post('{% url tasks.views.get_contest_problems %}', $(this).serialize(), function(data){
+                        var problems = data.problems;
+                        if (data.is_error == false) {
+                            for (i = 0; i < problems.length; i++) {
+                                $('#contest_problems').append('<li><label class="checkbox" style="padding-top: 1px;"><input name="contest_problems[]" type="checkbox" value="'
+                                        + problems[i].id + '">' +
+                                        ' ' + problems[i].title +
+                                        ': ' + problems[i].name + '</input></label></li>');
+                            }
+                            $('#get_tasks').hide();
+                            $('#task_contest_body').show();
+                            $('#task_contest_id_readonly').show();
+                            $('#task_contest_id_readonly').find('input').val($('#task_contest_id').val());
+                            $('#task_contest_id').hide();
                         }
-                        $('#get_tasks').hide();
-                        $('#task_contest_body').show();
-                        $('#task_contest_id_readonly').show();
-                        $('#task_contest_id_readonly').find('input').val($('#task_contest_id').val());
-                        $('#task_contest_id').hide();
+                        else {
+                            $('#task_contest_id_error_text').empty().append(data.error);
+                            $('#task_contest_id_error_text').closest('.control-group').removeClass('success').addClass('error');
+                        }
                         remove_disabled();
-                    }
-                    else if ($('#contest_task_form').valid()) {
-                        $('#task_contest_id_error_text').empty().append(data.error);
-                        $('#task_contest_id_error_text').closest('.control-group').removeClass('success').addClass('error');
-                        remove_disabled();
-                    }
-                });
-            }
-            else {
-                if ($('#contest_task_form').valid()) {
+                        $('#loading_contest_img').css('display', 'none');
+                        $('#task_contest_id').removeAttr('readonly');
+                    });
+                }
+                else {
                     $.post('{% url tasks.views.contest_task_import %}', $(this).serialize(), function(data){
                         if (data.is_error == true) {
                             $('#get_tasks').show();
