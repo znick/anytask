@@ -111,13 +111,13 @@ def task_create_ot_edit(request, course, task_id=None):
     contest_integrated = False
     contest_id = 0
     problem_id = None
-    if 'contest_integrated' in request.POST:
+    if 'contest_integrated' in request.POST and task_type != Task().TYPE_SIMPLE:
         contest_integrated = True
         contest_id = int(request.POST['contest_id'])
         problem_id = request.POST['problem_id'].strip()
 
     rb_integrated = False
-    if 'rb_integrated' in request.POST:
+    if 'rb_integrated' in request.POST and task_type != Task().TYPE_SIMPLE:
         rb_integrated = True
 
     hidden_task = False
