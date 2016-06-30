@@ -84,14 +84,14 @@
                     <div class="control-group">
                         <label class="control-label" for="task_edit_contest_id">ID контеста</label>
                         <div class="controls">
-                            <input id='task_edit_contest_id' name='contest_id' type='text' maxlength='25' size='20' value="{{ task.contest_id }}">
+                            <input id='task_edit_contest_id' name='contest_id' type='text' maxlength='25' size='20' {% if hide_contest_settings %}class="hide"{% endif %} value="{{ task.contest_id }}">
                             <span class="help-inline" id="task_edit_contest_id_error_text"></span>
                         </div>
                     </div>
                     <div class="control-group">
                         <label class="control-label" for="task_edit_problem_id">Литера задачи в контесте</label>
                         <div class="controls">
-                            <input id='task_edit_problem_id' name='problem_id' type='text' maxlength='25' size='20' value="{{ task.problem_id }}">
+                            <input id='task_edit_problem_id' name='problem_id' type='text' maxlength='25' size='20' {% if hide_contest_settings %}class="hide"{% endif %} value="{{ task.problem_id }}">
                             <span class="help-inline" id="task_edit_problem_id_error_text"></span>
                         </div>
                     </div>

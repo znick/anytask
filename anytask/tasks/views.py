@@ -36,7 +36,8 @@ def task_create_page(request, course_id):
         'course': course,
         'task_types': Task().TASK_TYPE_CHOICES,
         'contest_integrated': course.contest_integrated,
-        'rb_integrated': course.rb_integrated
+        'rb_integrated': course.rb_integrated,
+        'hide_contest_settings': True if not course.contest_integrated else False
     }
 
     return render_to_response('task_create_or_edit.html', context, context_instance=RequestContext(request))
@@ -72,7 +73,8 @@ def task_edit_page(request, task_id):
         'task': task,
         'task_types': task.TASK_TYPE_CHOICES,
         'contest_integrated': task.contest_integrated,
-        'rb_integrated': task.rb_integrated
+        'rb_integrated': task.rb_integrated,
+        'hide_contest_settings': True if not task.contest_integrated or task.type == task.TYPE_SIMPLE else False
     }
 
     return render_to_response('task_create_or_edit.html', context, context_instance=RequestContext(request))
