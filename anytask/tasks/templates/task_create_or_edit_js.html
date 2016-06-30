@@ -20,17 +20,34 @@
         });
 
         $('#task_edit_type').change(function() {
-            if ($('#task_edit_type').val() != 'Only mark')
+            if ($('#task_edit_type').val() != 'Only mark') {
                 $('#contest_rb_body').collapse('show');
-            else
+                $("#task_edit_contest_integrated").show();
+                $("#task_edit_contest_id").show();
+                $("#task_edit_problem_id").show();
+                $("#task_edit_rb_integrated").show();
+            }
+            else {
                 $('#contest_rb_body').collapse('hide');
+                $("#task_edit_contest_integrated").hide();
+                $("#task_edit_contest_id").hide();
+                $("#task_edit_problem_id").hide();
+                $("#task_edit_rb_integrated").hide();
+            }
+
         });
 
         $('#task_edit_contest_integrated').change(function() {
-            if ($('#task_edit_contest_integrated').is(':checked'))
+            if ($('#task_edit_contest_integrated').is(':checked')) {
                 $('#contest_integrated_body').collapse('show');
-            else
+                $("#task_edit_contest_id").show();
+                $("#task_edit_problem_id").show();
+            }
+            else {
                 $('#contest_integrated_body').collapse('hide');
+                $("#task_edit_contest_id").hide();
+                $("#task_edit_problem_id").hide();
+            }
         });
 
         $('#task_edit_form').change(function() {
