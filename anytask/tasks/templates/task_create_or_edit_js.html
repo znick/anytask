@@ -3,6 +3,7 @@
 <script type="text/javascript">
     $(document).ready(function() {
         $('.task_datetime').datetimepicker({
+            bootcssVer: 3,
             format: 'dd-mm-yyyy hh:ii',
             language: "ru",
             todayBtn: true,
@@ -12,11 +13,8 @@
             startDate: null,
             minuteStep: 30
         }).on("input change", function (e) {
+            console.log('123');
             $('#task_edit_label_for_changed_task').show()
-        });
-
-        $('#modal_task_description').on('shown',function(){
-            $(this).find('.modal-body').attr('style','max-height:'+($(window).height()*0.6)+'px !important;');
         });
 
         $('#task_edit_type').change(function() {
@@ -109,11 +107,11 @@
             },
 
             highlight: function(label) {
-                $(label).closest('.control-group').removeClass('success').addClass('error');
+                $(label).closest('.form-group').removeClass('has-success').addClass('has-error');
             },
 
             success: function(label) {
-                label.addClass('valid').closest('.control-group').addClass('success');
+                label.addClass('valid').closest('.form-group').addClass('has-success');
             },
 
             messages: {

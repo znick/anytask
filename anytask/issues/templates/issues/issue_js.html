@@ -26,12 +26,13 @@
                 }
             },
 
-            highlight: function (label) {
-                $(label).closest('.control-group').removeClass('success').addClass('error');
+            highlight: function(label) {
+                $('#mark_fieldset_id').removeClass('has-success').addClass('has-error');
             },
 
-            success: function (label) {
-                label.addClass('valid').closest('.control-group').removeClass('error').addClass('success');
+            success: function(label) {
+                label.addClass('valid');
+                $('#mark_fieldset_id').removeClass('has-error').addClass('has-success');
             },
 
             messages: {

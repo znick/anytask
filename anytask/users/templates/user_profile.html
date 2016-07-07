@@ -3,162 +3,158 @@
 {% block title %} {{ user_to_show.get_full_name }} {% endblock %}
 
 {% block scripts %}
-  <script src="{{ STATIC_URL }}jquery.stickytableheaders.min.js"></script>
-  <script type="text/javascript">
-    $(document).ready(function() {
-      $(".table_tasks").tablesorter();
-      $(".table_tasks").stickyTableHeaders({fixedOffset: $('.navbar')});
-    });
-  </script>
+    <script src="{{ STATIC_URL }}jquery.stickytableheaders.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $(".table_tasks").tablesorter();
+            $(".table_tasks").stickyTableHeaders({fixedOffset: $('.navbar')});
+        });
+    </script>
 
 {% endblock %}
 
 {% block content %}
 
-  <div class="row">
-    <div class="span9">
-      <div class="profile_part">
-      <h2>{{ user_to_show.get_full_name }}</h2>
-      {% if user == user_to_show and can_generate_invites %}
-        <a href="#" onclick="window.open('{% url invites.views.generate_invites %}','_blank','height=331,width=640,status=yes,toolbar=no,menubar=no,location=no');return false;">Сгенерировать инвайты</a>
-        <br>
-      {% endif %}
-
-      {% if teacher_in_courses %}
-        <p>E-mail: {{ user_to_show.email }}</p>
-        Преподаватель в курсах:
-        <ul>
-          {% for course in teacher_in_courses %}
-            <li><a href="{{ course.get_absolute_url }}">{{ course }}</a></li>
-          {% endfor %}
-        </ul>
-
-      {% endif %}
-
-      {% if groups %}
-      Состоит в группах:
-        <ul>
-          {% for group in groups %}
-            <li>{{ group }}</li>
-          {% endfor %}
-        </ul>
-      {% endif %}
-      </div>
-      {% if request.user == user_to_show %}
-        {% if can_sync_contest %}
+    <div class="row">
+        <div class="col-md-9">
             <div class="profile_part">
-            <h3>Привязать профиль Яндекс.Контеста</h3>
-            {% if not user_profile.ya_contest_oauth %}
-            <div class="alert alert-warning">
-              <strong>Привязать можно только один профиль!</strong> Для того, чтобы отвязать свой профиль обратитесь к <a href="mailto:anytask@yandex.ru">администратору</a>.
+                <h2>{{ user_to_show.get_full_name }}</h2>
+                {% if user == user_to_show and can_generate_invites %}
+                    <a href="#" onclick="window.open('{% url invites.views.generate_invites %}','_blank','height=331,width=769,status=yes,toolbar=no,menubar=no,location=no');return false;">Сгенерировать инвайты</a>
+                    <br>
+                {% endif %}
+
+                {% if teacher_in_courses %}
+                    <p>E-mail: {{ user_to_show.email }}</p>
+                    Преподаватель в курсах:
+                    <ul>
+                        {% for course in teacher_in_courses %}
+                            <li><a href="{{ course.get_absolute_url }}">{{ course }}</a></li>
+                        {% endfor %}
+                    </ul>
+
+                {% endif %}
+
+                {% if groups %}
+                    Состоит в группах:
+                    <ul>
+                        {% for group in groups %}
+                            <li>{{ group }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
             </div>
-            <a href="/user/ya_oauth_request/contest" type="button" class="btn">
-              Привязать
-            </a>
-            {% else %}
-            <div class="alert alert-success">
-              <strong>Вы привязали Я.Контест.</strong> Теперь все посылки в соревнования будут отправляться от Вашего имени.
-              Для того, чтобы отвязать свой профиль обратитесь к <a href="mailto:anytask@yandex.ru">администратору</a>.
-            </div>
-    {#        <a href="/user/ya_oauth_disable/contest" type="button" class="btn">#}
-    {#          Отменить привязку Я.Контеста#}
-    {#        </a>#}
+            {% if request.user == user_to_show %}
+                {% if can_sync_contest %}
+                    <div class="profile_part">
+                        <h3>Привязать профиль Яндекс.Контеста</h3>
+                        {% if not user_profile.ya_contest_oauth %}
+                            <div class="alert alert-warning">
+                                <strong>Привязать можно только один профиль!</strong> Для того, чтобы отвязать свой профиль обратитесь к <a href="mailto:anytask@yandex.ru">администратору</a>.
+                            </div>
+                            <a href="/user/ya_oauth_request/contest" type="button" class="btn btn-default">
+                                Привязать
+                            </a>
+                        {% else %}
+                            <div class="alert alert-success">
+                                <strong>Вы привязали Я.Контест.</strong> Теперь все посылки в соревнования будут отправляться от Вашего имени.
+                                Для того, чтобы отвязать свой профиль обратитесь к <a href="mailto:anytask@yandex.ru">администратору</a>.
+                            </div>
+                            {#        <a href="/user/ya_oauth_disable/contest" type="button" class="btn">#}
+                            {#          Отменить привязку Я.Контеста#}
+                            {#        </a>#}
+                        {% endif %}
+                        {#        <a href="/user/ya_oauth_request/passport" type="button" class="btn">#}
+                        {#          Войти через Яндекс#}
+                        {#        </a>#}
+                    </div>
+                {% endif %}
+
+                <div class="profile_part">
+                    <h3>Активация инвайтов в курсы</h3>
+                    <button type="button" class="btn btn-default" data-toggle="collapse" data-target="#invites-form">Ввести инвайт</button>
+                    <form action="{% url users.views.profile %}" method="post" id="invites-form" class="form-horizontal {% if invite_form.errors %} collapse in {% else %} collapse {% endif %}">
+                        {% csrf_token %}
+                        <fieldset>
+                            <br>
+                            <div>{{ invite_form }}
+                                {% if invite_form.errors %}
+                                    <span class="help-block">{% for error in invite_form.errors %}{{ error }}{% endfor %}</span>
+                                {% endif %}
+                            </div> <br>
+                            <div>
+                                <button type="submit" class="btn btn-primary">Применить</button>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
             {% endif %}
-    {#        <a href="/user/ya_oauth_request/passport" type="button" class="btn">#}
-    {#          Войти через Яндекс#}
-    {#        </a>#}
-            </div>
-        {% endif %}
 
-      <div class="profile_part">
-      <h3>Активация инвайтов в курсы</h3>
-      <button type="button" class="btn" data-toggle="collapse" data-target="#invites-form">
-        Ввести инвайт
-      </button>
-      <form action="{% url users.views.profile %}" method="post" id="invites-form" class="form-horizontal {% if invite_form.errors %} collapse in {% else %} collapse {% endif %}">
-          {% csrf_token %}
-          <fieldset>
-            <br>
-            <div>{{ invite_form }}
-              {% if invite_form.errors %}
-                <span class="help-block">
-                  {% for error in invite_form.errors %}{{ error }}{% endfor %}
-                </span>
-              {% endif %}
-            </div> <br>
-            <div>
-              <button type="submit" class="btn btn-primary">Применить</button>
-            </div>
-          </fieldset>
-      </form>
-      </div>
-      {% endif %}
+            {# {% for course,scores,tasks_list in user_course_information %} #}
+            {# <a href="{{ course.get_absolute_url }}">{{ course.name }}</a> #}
+            {# <span class="label label-info">{{ scores }}</span> #}
 
-      {# {% for course,scores,tasks_list in user_course_information %} #}
-        {# <a href="{{ course.get_absolute_url }}">{{ course.name }}</a> #}
-        {# <span class="label label-info">{{ scores }}</span> #}
-
-        {# <table class="table table-striped"> #}
-          {# <tbody> #}
-          {# {% for task,max_score,score,task_end_date in tasks_list %} #}
+            {# <table class="table table-striped"> #}
+            {# <tbody> #}
+            {# {% for task,max_score,score,task_end_date in tasks_list %} #}
             {# <tr> #}
-              {# <td style="width:65%"> #}
-                {# {{task.title}} #}
-              {# </td> #}
-              {# <td style="width:15%"> #}
-                {# <span class="label label-success">{{max_score}}</span> #}
-              {# </td> #}
-              {# <td style="width:20%"> #}
-                {# {% if score > 0 %} #}
-                  {# <span class="label {% if score == task.score_max %} label-success{% endif %}">{{score}}</span> #}
-                {# {% else %} #}
-                  {# {{ task_end_date|date:"d.m.Y" }} #}
-                {# {% endif %} #}
-              {# </td> #}
+            {# <td style="width:65%"> #}
+            {# {{task.title}} #}
+            {# </td> #}
+            {# <td style="width:15%"> #}
+            {# <span class="label label-success">{{max_score}}</span> #}
+            {# </td> #}
+            {# <td style="width:20%"> #}
+            {# {% if score > 0 %} #}
+            {# <span class="label {% if score == task.score_max %} label-success{% endif %}">{{score}}</span> #}
+            {# {% else %} #}
+            {# {{ task_end_date|date:"d.m.Y" }} #}
+            {# {% endif %} #}
+            {# </td> #}
             {# </tr> #}
-          {# {% endfor %} #}
-          {# </tbody> #}
-        {# </table> #}
+            {# {% endfor %} #}
+            {# </tbody> #}
+            {# </table> #}
 
-      {# {% endfor %} #}
-      {% if issues %}
-        <div class="profile_part">
-        <h3>Мои задачи</h3>
-        <table class="table table_tasks">
-          <thead>
-            <tr>
-              <th>Задача</th>
-              <th>Курс</th>
-              <th>Обновлена</th>
-              <th>Статус</th>
-              <th>Оценка</th>
-            </tr>
-          </thead>
-          <tbody>
-          {% for issue in issues %}
-          <tr onclick="location.href='{% if issue.task.has_issue_access %}{{ issue.get_absolute_url }}{% else %}#{% endif %}'">
-            <td>
-              {% if issue.task.has_issue_access %}
-                <a href="{{ issue.get_absolute_url }}">{{ issue.task }}</a>
-              {% else %}
-                {{ issue.task }}
-              {% endif %}
-            </td>
-            <td><a href="{{ issue.task.course.get_absolute_url }}">{{ issue.task.course }}</a></td>
-            <td> {{ issue.update_time|date:"d M H:i" }} </td>
-            <td> {{ issue.get_status }} </td>
-            <td> {{ issue.score }} </td>
-          </tr>
-          {% endfor %}
-          </tbody>
-        </table>
+            {# {% endfor %} #}
+            {% if issues %}
+                <div class="profile_part">
+                    <h3>Мои задачи</h3>
+                    <table class="table table_tasks">
+                        <thead>
+                        <tr>
+                            <th>Задача</th>
+                            <th>Курс</th>
+                            <th>Обновлена</th>
+                            <th>Статус</th>
+                            <th>Оценка</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for issue in issues %}
+                            <tr onclick="location.href='{% if issue.task.has_issue_access %}{{ issue.get_absolute_url }}{% else %}#{% endif %}'">
+                                <td>
+                                    {% if issue.task.has_issue_access %}
+                                        <a href="{{ issue.get_absolute_url }}">{{ issue.task }}</a>
+                                    {% else %}
+                                        {{ issue.task }}
+                                    {% endif %}
+                                </td>
+                                <td><a href="{{ issue.task.course.get_absolute_url }}">{{ issue.task.course }}</a></td>
+                                <td> {{ issue.update_time|date:"d M H:i" }} </td>
+                                <td> {{ issue.get_status }} </td>
+                                <td> {{ issue.score }} </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+
+            <p>
+                Если какие-либо данные неверны, обратитесь к <a href="mailto:anytask@yandex.ru">администратору</a>.
+            </p>
+
         </div>
-      {% endif %}
-
-      <p>
-        Если какие-либо данные неверны, обратитесь к <a href="mailto:anytask@yandex.ru">администратору</a>.
-      </p>
-
     </div>
-  </div>
 {% endblock %}

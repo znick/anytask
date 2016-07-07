@@ -10,7 +10,7 @@
 {% endblock scripts %}
 
 {% block navbar %}
-    <ul class="nav">
+    <ul class="nav navbar-nav">
         <li>
             <a id="course_url" href="{{ course.get_absolute_url }}">Список задач</a>
         </li>
@@ -25,42 +25,44 @@
         <form id="contest_task_form" class="form-horizontal" style="margin-bottom: 0px;">
             {% csrf_token %}
             <input id='course_id' name="course_id" type='hidden' value="{{ course.id }}">
-            <div class="control-group">
-                <label class="control-label" for="task_contest_id">ID контеста</label>
-                <div class="controls">
-                    <input id='task_contest_id' name="contest_id" type='text' maxlength='25' size='20'>
-                    <div id="loading_contest_img" style="display: none;">
-                        <i class="fa fa-circle-o-notch fa-spin fa-lg fa-fw" style="opacity:0.2;filter: alpha(opacity=20);color:#000000;margin-left: 5px;"></i>
+            <div class="form-group" style="margin-bottom: 0px;">
+                <label class="col-sm-3 control-label" for="task_contest_id">ID контеста</label>
+                <div class="controls col-sm-3">
+                    <div class="has-feedback">
+                        <input class="form-control" id='task_contest_id' name="contest_id" type='text' maxlength='25' size='20'>
+                        <div id="loading_contest_img" class="form-control-feedback collapse" style="line-height:normal;right: 0;top: calc(50% - 7px);">
+                            <span class="fa fa-circle-o-notch fa-spin fa-lg fa-fw" style="opacity:0.2;filter: alpha(opacity=20);color:#000000;"></span>
+                        </div>
                     </div>
-                    <div class="input-append hide" id="task_contest_id_readonly">
-                        <input name="contest_id_for_task" type='text' maxlength='25' size='20' readonly style="width: 178px;cursor: default;">
-                        <span class="add-on" id='button_task_contest_id_clear' style="cursor: pointer;"><i class="icon-remove"></i></span>
+                    <div class="input-group" id="task_contest_id_readonly" style="display: none;">
+                        <input class="form-control" name="contest_id_for_task" type='text' maxlength='25' size='20' readonly style="cursor: default;">
+                        <span class="input-group-addon" id='button_task_contest_id_clear' style="cursor: pointer;"><i class="fa fa-times fa-lg"></i></span>
                     </div>
-                    <span class="help-inline" id="task_contest_id_error_text"></span>
-                    <div id="get_tasks" style="margin-top: 10px">
-                        <button id="button_get_tasks" type="submit" class="btn">Получить список задач</button>
-                    </div>
+                    <span class="help-block" id="task_contest_id_error_text"></span>
+                </div>
+                <div id="get_tasks">
+                    <button id="button_get_tasks" type="submit" class="btn btn-default">Получить список задач</button>
                 </div>
             </div>
 
-            <div class="hide" id="task_contest_body">
-                <div class="control-group">
-                    <div class="controls">
-                        <ol id='contest_problems' name="contest_problems_id"></ol>
-                        <span class="help-inline" id="contest_problems_error_text"></span>
+            <div class="collapse" id="task_contest_body">
+                <div class="form-group">
+                    <div class="controls col-sm-offset-3 col-sm-3">
+                        <ol id='contest_problems' name="contest_problems_id"style="white-space: nowrap;"></ol>
+                        <span class="help-block" id="contest_problems_error_text"></span>
                     </div>
                 </div>
-                <div class="control-group">
-                    <label class="control-label" for="task_max_score">Максимальный балл</label>
-                    <div class="controls">
-                        <input id='task_max_score' name='max_score' type='text' maxlength='25' size='20'>
-                        <span class="help-inline" id="task_max_score_error_text"></span>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label" for="task_max_score">Максимальный балл</label>
+                    <div class="controls col-sm-3">
+                        <input class="form-control" id='task_max_score' name='max_score' type='text' maxlength='25' size='20'>
+                        <span class="help-block" id="task_max_score_error_text"></span>
                     </div>
                 </div>
-                <div class="control-group">
-                    <label class="control-label" for="task_group"> Группа</label>
-                    <div class="controls">
-                        <select id='task_group' name="task_group_id">
+                <div class="form-group">
+                    <label class="col-sm-3 control-label" for="task_group">Группа</label>
+                    <div class="controls col-sm-3">
+                        <select class="form-control" id='task_group' name="task_group_id">
                             <option value=""> Для всех групп </option>
                             {% for group in course.groups.all %}
                                 <option value="{{ group.id }}">{{ group.name }}</option>
@@ -68,36 +70,40 @@
                         </select>
                     </div>
                 </div>
-                <div class="control-group input-append date">
-                    <label class="control-label" for="task_datepicker">Дата сдачи</label>
-                    <div class="controls">
-                        <div class="input-append date task_datetime">
-                            <input id='task_datepicker' name='deadline' type='text'  maxlength='25' size='20' readonly style="width: 153px; background-color: white; cursor: pointer">
-                            <span class="add-on"><i class="icon-remove"></i></span>
-                            <span class="add-on"><i class="icon-th"></i></span>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label" for="task_edit_datepicker">Дата сдачи</label>
+                    <div class="controls col-sm-3">
+                        <div class="input-group date task_datetime">
+                            <input class="form-control" id='task_edit_datepicker' name='deadline' type='text'  readonly value="{{task.deadline_time|date:'d-m-Y H:i'}}" style="background-color: white; cursor: pointer">
+                            <span class="input-group-addon" style="cursor: pointer;"><i class="fa fa-times fa-lg"></i></span>
+                            <span class="input-group-addon" style="cursor: pointer;"><i class="fa fa-calendar fa-lg"></i></span>
                         </div>
-                        <span class="help-inline" id="task_datepicker_error_text"></span>
-                        <label id="task_label_for_changed_task" class="checkbox inline hide">
-                            <input type="checkbox" name="changed_task" id="task_changed_task"> Уведомить студентов об изменении срока сдачи
-                        </label>
+                        <span class="help-block" id="task_edit_datepicker_error_text"></span>
+                        <div id="task_edit_label_for_changed_task" class="collapse">
+                            <label class="control-label" for="task_edit_changed_task" style="font-weight: normal;white-space: nowrap;padding: 0px 3px 0px 17px;">
+                                <input type="checkbox" name="changed_task" id="task_edit_changed_task" style="margin-left: 3px;">
+                                Уведомить студентов об изменении срока сдачи
+                            </label>
+                            </label>
+                        </div>
                     </div>
                 </div>
-                <div class="control-group">
-                    <label class="control-label" for="task_edit_rb_integrated">Интеграция с Review Board</label>
-                    <div class="controls" style="padding-top: 5px">
+                <div class="form-group">
+                    <label class="col-sm-3 control-label" for="task_edit_rb_integrated">Интеграция с Review Board</label>
+                    <div class="controls col-sm-3" style="padding-top: 5px">
                         <input type="checkbox" name="rb_integrated" id="task_edit_rb_integrated"  {% if rb_integrated %}checked{% endif %}>
                     </div>
                 </div>
-                <div class="control-group">
-                    <label class="control-label" for="task_edit_hidden_task">Скрыть задачу</label>
-                    <div class="controls" style="padding-top: 5px">
+                <div class="form-group">
+                    <label class="col-sm-3 control-label" for="task_edit_hidden_task">Скрыть задачу</label>
+                    <div class="controls col-sm-3" style="padding-top: 5px">
                         <input type="checkbox" name="hidden_task" id="task_edit_hidden_task">
                     </div>
                 </div>
-                <div class="control-group" style="margin-bottom:10px;">
+                <div class="form-group" style="margin-bottom:0px;">
                     <div id="task_submit_error_text"></div>
                     <div class="btn-group pull-right" role="group">
-                        <button type="button" id="button_cancel_quit" class="btn">Отменить и выйти</button>
+                        <button type="button" id="button_cancel_quit" class="btn btn-default">Отменить и выйти</button>
                         <button type="submit" id="button_save_quit" class="btn btn-primary">Сохранить и выйти</button>
                     </div>
                 </div>

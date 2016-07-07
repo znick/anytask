@@ -4,79 +4,87 @@
 <script type="text/javascript">
 
     $(document).on("click", "#old_comments_button", function() {
-        $('#top_alert').toggle();
+        if($("#top_alert").hasClass("clicked")) {
+            $("#top_alert").show();
+            $("#top_alert").removeClass("clicked");
+        } else {
+            $("#top_alert").hide();
+            $("#top_alert").addClass("clicked");
+        }
     });
 
 </script>
-<div class="row-fluid">
-  <ul class="history">
-    {% if issue.get_history.count > events_to_show %}
-    <li>
-    <button id="old_comments_button" type="button" class="btn" data-toggle="collapse" data-target="#old_comments">
-      Предыдущие сообщения
-    </button>
-    </li>
-      {% if issue.update_time > issue.task.deadline_time and show_top_alert %}
-        <div id="top_alert" class="alert alert-danger">
-          <strong>Срок сдачи задания истек!</strong> Все сообщения, отправленные студентом позже срока сдачи, будут
-         выделяться красным цветом.
-        </div>
-      {% endif %}
-    <div id="old_comments" class="collapse">
-    {% endif %}
-    {% for event in issue.get_history %}
-      {% if event.id == first_event_after_deadline.id %}
-        <div id="event_alert" class="alert alert-danger">
-          <strong>Срок сдачи задания истек!</strong> Все сообщения, отправленные студентом позже срока сдачи, будут
-         выделяться красным цветом.
-        </div>
-      {% endif %}
-      {% if event.author == user %}
-        <li class="mine {% if issue.task.deadline_time < event.timestamp and event.author.username == issue.student.username %} after_deadline {% endif %}">
-      {% else %}
-        <li class="not_mine {% if issue.task.deadline_time < event.timestamp and event.author.username == issue.student.username  %} after_deadline {% endif %}">
-      {% endif %}
+<div class="row" style="margin-left: 0px;">
+    <ul class="history">
+        {% if issue.get_history.count > events_to_show %}
+            <li>
+                <button id="old_comments_button" type="button" class="btn btn-default" data-toggle="collapse" data-target="#old_comments">
+                    Предыдущие сообщения
+                </button>
+            </li>
+            {% if issue.update_time > issue.task.deadline_time and show_top_alert %}
+                <div id="top_alert" class="alert alert-danger">
+                    <strong>Срок сдачи задания истек!</strong> Все сообщения, отправленные студентом позже срока сдачи, будут
+                    выделяться красным цветом.
+                </div>
+            {% endif %}
+            <div id="old_comments" class="collapse">
+        {% endif %}
+        {% for event in issue.get_history %}
+            {% if event.id == first_event_after_deadline.id %}
+                <div id="event_alert" class="alert alert-danger">
+                    <strong>Срок сдачи задания истек!</strong> Все сообщения, отправленные студентом позже срока сдачи, будут
+                    выделяться красным цветом.
+                </div>
+            {% endif %}
+            {% if event.author == user %}
+                <li class="mine {% if issue.task.deadline_time < event.timestamp and event.author.username == issue.student.username %} after_deadline {% endif %}">
+                    {% else %}
+                <li class="not_mine {% if issue.task.deadline_time < event.timestamp and event.author.username == issue.student.username  %} after_deadline {% endif %}">
+            {% endif %}
         <div class="history-body">
-          <div class="header">
-            <strong class="primary-font">
-              {{ event.author.last_name }} {{ event.author.first_name }}
-            </strong>
-            <small class="pull-right text-muted">
-              <i class="icon-time"></i> {{ event.timestamp|date:"d M H:i" }}
-            </small>
-          </div>
-          {% autoescape off %}
-          <p>
-            {{ event.get_message|urlize|sanitize }}
-          </p>
-          {% endautoescape %}
-          {% if event.file_set.all %}
-            <div class="files">
-              <i class="icon-file"></i>
-              {% for file in event.file_set.all %}
-                <a href={% link_to_open file course user %}>{{ file.filename }}</a>
-              {% endfor %}
+            <div class="header">
+                <strong class="primary-font">
+                    {{ event.author.last_name }} {{ event.author.first_name }}
+                </strong>
+                <small class="pull-right text-muted">
+                    <i class="glyphicon glyphicon-time"></i> {{ event.timestamp|date:"d M H:i" }}
+                </small>
             </div>
-          {% endif %}
+            {% autoescape off %}
+                <p>
+                    {{ event.get_message|urlize|sanitize }}
+                </p>
+            {% endautoescape %}
+            {% if event.file_set.all %}
+                <div class="files">
+                    <i class="glyphicon glyphicon-file"></i>
+                    {% for file in event.file_set.all %}
+                        <a href={% link_to_open file course user %}>{{ file.filename }}</a>
+                    {% endfor %}
+                </div>
+            {% endif %}
         </div>
-      </li>
-      {% if event.is_omg %}
-        <li class="change">
-          {{ event.field.title }} changed to {{ event.value }} by {{ event.author.last_name }} {{ event.author.first_name }}
         </li>
-      {% endif %}
+            {% if event.is_omg %}
+                <li class="change">
+                    {{ event.field.title }} changed to {{ event.value }} by {{ event.author.last_name }} {{ event.author.first_name }}
+                </li>
+            {% endif %}
 
 
-      {% if forloop.revcounter0 == events_to_show %}
-      </div>
-      {% endif %}
+            {% if forloop.revcounter0 == events_to_show %}
+                </div>
+            {% endif %}
 
 
-    {% endfor %}
-  </ul>
+        {% endfor %}
+    </ul>
 </div>
 
-<div class="row-fluid">
-  {% load jfutags %}
-  {% jfu 'file_uploader.html' 'jfu_upload' %}
+<div class="row" style="margin-left: 0px;">
+    {% load jfutags %}
+    {% jfu 'file_uploader.html' 'jfu_upload' %}
 </div>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>

@@ -7,91 +7,91 @@
 {% block title %}{{ course.name }} | {{ course.year }}{% endblock %}
 
 {% block breadcrumbs %}
-  {{ block.super }}
-  {% breadcrumb course.year course.year.get_absolute_url %}
-  {% breadcrumb course.name "" %}
+    {{ block.super }}
+    {% breadcrumb course.year course.year.get_absolute_url %}
+    {% breadcrumb course.name "" %}
 {% endblock breadcrumbs %}
 
 {% block navbar %}
-  <ul class="nav">
-    <li class="active">
-      <a href="">Список задач</a>
-    </li>
-    {% if visible_queue %}
-      <li>
-        <a href="{{ course.get_absolute_url }}/queue">Очередь на проверку</a>
-      </li>
-    {% endif %}
-    {% if user_is_teacher %}
-      <li>
-        <a href="{% url courses.views.course_settings course.id %}">Настройки</a>
-      </li>
-    {% endif %}
-  </ul>
+    <ul class="nav navbar-nav">
+        <li class="active">
+            <a href="">Список задач</a>
+        </li>
+        {% if visible_queue %}
+            <li>
+                <a href="{{ course.get_absolute_url }}/queue">Очередь на проверку</a>
+            </li>
+        {% endif %}
+        {% if user_is_teacher %}
+            <li>
+                <a href="{% url courses.views.course_settings course.id %}">Настройки</a>
+            </li>
+        {% endif %}
+    </ul>
 {% endblock navbar %}
 
 {% block content %}
-  {{ block.super }}
+    {{ block.super }}
     {% if course.information %}
-      {{ course.information|sanitize|safe }}
-      <br>
+        {{ course.information|sanitize|safe }}
+        <br>
     {% endif %}
 
     <div class = "breadcrumb_button">
-    {% if not user_is_teacher and course.can_be_chosen_by_extern%}
-      {% if user_is_attended_special_course %}
-        <button type="button" class="btn btn-danger" OnClick="javascript:set_spectial_course_attend({{ course.id }}, 'remove');">
-          Отписаться
-        </button>
-      {% else %}
-        <button type="button" class="btn btn-success" OnClick="javascript:set_spectial_course_attend({{ course.id }},'add');">
-          Записаться
-        </button>
-      {% endif %}
-      <br>
-    {% endif %}
+        {% if not user_is_teacher and course.can_be_chosen_by_extern%}
+            {% if user_is_attended_special_course %}
+                <button type="button" class="btn btn-danger" OnClick="javascript:set_spectial_course_attend({{ course.id }}, 'remove');">
+                    Отписаться
+                </button>
+            {% else %}
+                <button type="button" class="btn btn-success" OnClick="javascript:set_spectial_course_attend({{ course.id }},'add');">
+                    Записаться
+                </button>
+            {% endif %}
+            <br>
+        {% endif %}
     </div>
     Преподаватели:
     {% for teacher in course.get_teachers %}
-      <a href="{% url users.views.profile teacher.username %}">{{ teacher.last_name }} {{ teacher.first_name }}</a>{% if not forloop.last %},{% endif %}
+        <a href="{% url users.views.profile teacher.username %}">{{ teacher.last_name }} {{ teacher.first_name }}</a>{% if not forloop.last %},{% endif %}
     {% endfor %}
     <br />
 
     {% if course.can_edit %}
-      <div class="btn-group">
-      <a class="btn btn-default" href="javascript:get_edit_course_modal({{ course.id }}, {% if course.information %} '{{course.information|escapejs}}' {% else %} '' {% endif %});">
-        {% if course.information %}
-          Редактировать информацию о курсе
-        {% else %}
-          Добавить информацию о курсе
-        {% endif %}
-      </a>
-      <a class="btn btn-default" href="/task/create/{{ course.id }}" role="button">
-        Добавить задачу
-      </a>
-      {% if course.contest_integrated %}
-        <a class="btn btn-default" href="/task/import/{{ course.id }}" role="button">
-          Импортировать задачу из Я.Контеста
-         </a>
-      {% endif %}
-      {% if visible_hide_button %}
-        <a class="btn btn-default" href="javascript:change_visibility_hidden_tasks({{ course.id }});" role="button">
-          {% if show_hidden_tasks %}
-            Не показывать скрытые задачи
-          {% else %}
-            Показать скрытые задачи
-          {% endif %}
-        </a>
-      {% endif %}
-      </div>
-      <br>
+        <div class="btn-group btn-group-sm" role="group" aria-label="...">
+            <a class="btn btn-default" href="javascript:get_edit_course_modal({{ course.id }}, {% if course.information %} '{{course.information|escapejs}}' {% else %} '' {% endif %});">
+                {% if course.information %}
+                    Редактировать информацию о курсе
+                {% else %}
+                    Добавить информацию о курсе
+                {% endif %}
+            </a>
+            <a class="btn btn-default" href="/task/create/{{ course.id }}" role="button">
+                Добавить задачу
+            </a>
+            {% if course.contest_integrated %}
+                <a class="btn btn-default" href="/task/import/{{ course.id }}" role="button">
+                    Импортировать задачу из Я.Контеста
+                </a>
+            {% endif %}
+            {% if visible_hide_button %}
+                <a class="btn btn-default" href="javascript:change_visibility_hidden_tasks({{ course.id }});" role="button">
+                    {% if show_hidden_tasks %}
+                        Не показывать скрытые задачи
+                    {% else %}
+                        Показать скрытые задачи
+                    {% endif %}
+                </a>
+            {% endif %}
+        </div>
+        <br>
 
     {% endif %}
 
     <br />
 
-    <a class="label ">Новый</a>
-    <a class="label label-important">На доработке</a>
+    <a class="label label-default">Новый</a>
+    <a class="label label-danger">На доработке</a>
     <a class="label label-warning">На проверке</a>
     <a class="label label-success">Зачтено</a>
     <a class="label label-info">Требуется информация</a>

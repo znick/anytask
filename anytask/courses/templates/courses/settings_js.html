@@ -33,11 +33,11 @@
             },
 
             highlight: function(label) {
-                $(label).closest('.control-group').removeClass('success').addClass('error');
+                $(label).closest('.form-group').removeClass('has-success').addClass('has-error');
             },
 
             success: function(label) {
-                label.addClass('valid').closest('.control-group').addClass('success');
+                label.addClass('valid').closest('.form-group').addClass('has-success');
             },
 
             messages: {

@@ -38,4 +38,4 @@ def issue_label_type(d, task):
                 return 'label-success'
             if d[task.id].status == Issue.STATUS_NEED_INFO:
                 return 'label-info'
-    return ''
+    return 'label-default'

@@ -21,10 +21,10 @@
             $('#task_contest_id_readonly').hide();
             $('#contest_problems').empty();
             $('#task_contest_id').removeAttr("readonly");
-            $('#contest_problems').closest('.control-group').removeClass('success error');
-            $('#task_contest_id_error_text').closest('.control-group').removeClass('success error');
+            $('#contest_problems').closest('.form-group').removeClass('has-success has-error');
+            $('#task_contest_id_error_text').closest('.form-group').removeClass('has-success has-error');
             $('#task_contest_id').val('').show().focus().select();
-            $('#task_max_score').val('').closest('.control-group').removeClass('success error');
+            $('#task_max_score').val('').closest('.form-group').removeClass('has-success has-error');
             $("#task_group").val($("#task_group option:first").val());
             $('#task_datepicker').val('');
             $('#task_changed_task').attr('checked', false);
@@ -50,11 +50,11 @@
             },
 
             highlight: function(label) {
-                $(label).closest('.control-group').removeClass('success').addClass('error');
+                $(label).closest('.form-group').removeClass('has-success').addClass('has-error');
             },
 
             success: function(label) {
-                label.addClass('valid').closest('.control-group').removeClass('error').addClass('success');
+                label.addClass('valid').closest('.form-group').removeClass('has-error').addClass('has-success');
             },
 
             messages: {
@@ -93,7 +93,7 @@
                         var problems = data.problems;
                         if (data.is_error == false) {
                             for (i = 0; i < problems.length; i++) {
-                                $('#contest_problems').append('<li><label class="checkbox" style="padding-top: 1px;"><input name="contest_problems[]" type="checkbox" value="'
+                                $('#contest_problems').append('<li><label class="checkbox" style="padding-top: 1px;font-weight: normal;"><input name="contest_problems[]" type="checkbox" value="'
                                         + problems[i].id + '">' +
                                         ' ' + problems[i].title +
                                         ': ' + problems[i].name + '</input></label></li>');
@@ -106,7 +106,7 @@
                         }
                         else {
                             $('#task_contest_id_error_text').empty().append(data.error);
-                            $('#task_contest_id_error_text').closest('.control-group').removeClass('success').addClass('error');
+                            $('#task_contest_id_error_text').closest('.form-group').removeClass('has-success').addClass('has-error');
                         }
                         remove_disabled();
                         $('#loading_contest_img').css('display', 'none');
@@ -122,7 +122,7 @@
                             $('#task_contest_id').show();
                             $('#contest_problems').empty();
                             $('#task_contest_id_error_text').empty().append(data.error);
-                            $('#task_contest_id_error_text').closest('.control-group').removeClass('success').addClass('error');
+                            $('#task_contest_id_error_text').closest('.form-group').removeClass('has-success').addClass('has-error');
                             remove_disabled();
                         }
                         else {

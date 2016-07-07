@@ -1,12 +1,15 @@
 {% extends "base.html" %}
+{% load crispy_forms_tags %}
 
 {% block content %}
+    <style>
+        .asteriskField {
+            display: none;
+        }
+    </style>
 
-<p><b>NB!</b> В настоящий момент в AnyTask-е можно регистрироваться только с почтой от Яндекса.</p>
+    <p><b>NB!</b> В настоящий момент в AnyTask-е можно регистрироваться только с почтой от Яндекса.</p>
 
-<form method="POST" class="form-horizontal">
-{% csrf_token %}
-{{ form }}
-<input type="submit" value="Register">
+    {% crispy form %}
 
 {% endblock %}

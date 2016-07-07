@@ -15,14 +15,10 @@
                 $(this).hide();
 
                 var mark_form = $(this).closest('td').find('.task-mark-form');
-                $(mark_form).find('.control-group').removeClass('success error');
+                $(mark_form).find('.form-group').removeClass('has-success has-error');
                 $(mark_form).show();
                 $(mark_form).find('[name="mark_value"]').focus().select();
             }
-        });
-
-        $('#modal_task_description').on('shown',function(){
-            $(this).find('.modal-body').attr('style','max-height:'+($(window).height()*0.6)+'px !important;');
         });
 
         jQuery.validator.addMethod("lt_max", function(value, element) {
@@ -60,12 +56,12 @@
 
                 highlight: function (label) {
                     $('.task-mark-form').data('is_error', true);
-                    $(label).closest('.control-group').removeClass('success').addClass('error');
+                    $(label).closest('.form-group').removeClass('has-success').addClass('has-error');
                 },
 
                 success: function (label) {
                     $('.task-mark-form').data('is_error', false);
-                    label.addClass('valid').closest('.control-group').removeClass('error').addClass('success');
+                    label.addClass('valid').closest('.form-group').removeClass('has-error').addClass('has-success');
                 },
 
                 errorPlacement: function(error, element) {

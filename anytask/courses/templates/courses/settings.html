@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load crispy_forms_tags %}
 {% load sanitize_html icon %}
 {% load dict_func %}
 {% load task_taken_func %}
@@ -10,7 +11,7 @@
 {% endblock scripts %}
 
 {% block navbar %}
-    <ul class="nav">
+    <ul class="nav navbar-nav">
         <li>
             <a id="course_url" href="{{ course.get_absolute_url }}">Список задач</a>
         </li>
@@ -29,49 +30,38 @@
 
 
 {% block content %}
-    <style type = "text/css">
-        .select-col {
-            width: 220px !important;
-            height: 180px !important;
-        }
-        .select-btn {
-            color: #000000;
-            margin-bottom: 10px;
-            text-align: center;
-        }
-    </style>
-    <div class="profile_part">
+    <div class="profile_part col-md-12" >
         <h1>Настройки</h1>
 
-        <form id="course_settings_form" action="{{ request.get_full_path }}" method="POST" style="margin-bottom:0px;">
-            <div class="profile_part">
+        <form id="course_settings_form" action="{{ request.get_full_path }}" method="POST" style="margin-bottom:0px;" >
+            {% csrf_token %}
+            <div class="profile_part col-md-12">
                 <h3>Преподаватели</h3>
                 <p>Эти преподаватели будут назначаться проверяющими во время перехода задачи в статус "на проверке", если другой преподаватель не был назначен ранее</p>
-                {% csrf_token %}
-                <table>
-                    {{ form.as_table}}
-                </table>
+                <div class="col-md-3">
+                    {{ form|crispy }}
+                </div>
             </div>
             {% if course.is_rb_integrated %}
-                <div class="profile_part">
+                <div class="profile_part col-md-12">
                     <h3>Review Board</h3>
                     <p>Расширения файлов</p>
-                    <div class="row control-group">
-                        <div class="span4 select-col">
-                            <select name="rb_extensions_from[]" id="rb_ext_select" class="form-control select-col" size="8" multiple="multiple" style="margin-bottom: 0px;">
+                    <div class="row form-group">
+                        <div class="col-xs-2">
+                            <select name="rb_extensions_from[]" id="rb_ext_select" class="form-control" size="7" multiple="multiple" style="margin-bottom: 0px;">
                                 {% for file_ext in file_extensions %}
                                     <option value="{{ file_ext.id }}">{{ file_ext.name }}</option>
                                 {% endfor %}
                             </select>
                         </div>
-                        <div class="span2" style="width:40px;margin-top: 30px;">
+                        <div class="col-xs-1" style="margin-top: 3px;">
                             <button type="button" id="rb_ext_select_rightAll" class="btn btn-default btn-block"><i class="fa fa-forward fa"></i></button>
                             <button type="button" id="rb_ext_select_rightSelected" class="btn btn-default btn-block"><i class="fa fa-chevron-right fa"></i></button>
                             <button type="button" id="rb_ext_select_leftSelected" class="btn btn-default btn-block"><i class="fa fa-chevron-left fa"></i></button>
                             <button type="button" id="rb_ext_select_leftAll" class="btn btn-default btn-block"><i class="fa fa-backward fa"></i></button>
                         </div>
-                        <div class="span4 select-col">
-                            <select name="rb_extensions[]" id="rb_ext_select_to" class="form-control select-col " size="8" multiple="multiple">
+                        <div class="col-xs-2">
+                            <select name="rb_extensions[]" id="rb_ext_select_to" class="form-control" size="7" multiple="multiple">
                                 {% for file_ext in file_extensions_course %}
                                     <option value="{{ file_ext.id }}">{{ file_ext.name }}</option>
                                 {% endfor %}
@@ -80,11 +70,11 @@
                     </div>
                 </div>
             {% endif %}
-            <div class="control-group" style="margin-bottom:45px;">
-                <div id="course_settings_form_error_text"></div>
+            <div class="form-group">
+                <div id="course_settings_form_error_text" class="col-md-12"></div>
                 <div class="btn-group pull-right" role="group">
-                    <button type="button" id="button_cancel_quit" class="btn">Отменить и выйти</button>
-                    <button type="button" id="button_save" class="btn">Сохранить и продолжить редактирование</button>
+                    <button type="button" id="button_cancel_quit" class="btn btn-default">Отменить и выйти</button>
+                    <button type="button" id="button_save" class="btn btn-default">Сохранить и продолжить редактирование</button>
                     <button type="button" id="button_save_quit" class="btn btn-primary">Сохранить и выйти</button>
                 </div>
             </div>

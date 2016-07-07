@@ -21,7 +21,7 @@ up your own URL patterns for these views instead.
 from django.conf.urls.defaults import *
 from django.views.generic.simple import direct_to_template
 
-from registration.backends.default_with_names import AnytaskLoginForm
+from registration.backends.default_with_names import AnytaskLoginForm, AnytaskPasswordResetForm, AnytaskSetPasswordForm, AnytaskPasswordChangeForm
 from registration.views import activate
 from registration.views import register
 
@@ -56,5 +56,17 @@ urlpatterns = patterns('',
                            auth_views.login,
                            {'template_name': 'registration/login.html', 'authentication_form' : AnytaskLoginForm},
                            name='auth_login'),
+                       url(r'^password/reset/$',
+                           auth_views.password_reset,
+                           {'password_reset_form': AnytaskPasswordResetForm},
+                           name='auth_password_reset'),
+                       url(r'^password/reset/confirm/(?P<uidb36>[0-9A-Za-z]+)-(?P<token>.+)/$',
+                           auth_views.password_reset_confirm,
+                           {'set_password_form': AnytaskSetPasswordForm},
+                           name='auth_password_reset_confirm'),
+                       url(r'^password/change/$',
+                           auth_views.password_change,
+                           {'password_change_form': AnytaskPasswordChangeForm},
+                           name='auth_password_change'),
                        (r'', include('registration.auth_urls')),
                        )

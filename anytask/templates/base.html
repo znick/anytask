@@ -1,183 +1,178 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <title>{% block title %}{% endblock %}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>{% block title %}{% endblock %}</title>
 
-  {% block main_scripts %}
-    <script src="http://yastatic.net/jquery/1.7.2/jquery.min.js"></script>
-    <script src="https://yastatic.net/jquery-ui/1.11.2/jquery-ui.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/smalot-bootstrap-datetimepicker/2.3.11/js/bootstrap-datetimepicker.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/smalot-bootstrap-datetimepicker/2.3.11/js/locales/bootstrap-datetimepicker.ru.js"></script>
-    <script src="http://malsup.github.io/jquery.form.js"></script>
-    <script src="{{ STATIC_URL }}jquery.tablesorter/jquery.tablesorter.min.js"></script>
-    <script src="{{ STATIC_URL }}jquery-metadata/jquery.metadata.js"></script>
+    {% block main_scripts %}
+        <script src="https://yastatic.net/jquery/1.9.1/jquery.min.js"></script>
+        <script src="https://yastatic.net/jquery-ui/1.11.2/jquery-ui.min.js"></script>
+        <script src="http://code.jquery.com/jquery-migrate-1.4.1.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/smalot-bootstrap-datetimepicker/2.3.11/js/bootstrap-datetimepicker.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/smalot-bootstrap-datetimepicker/2.3.11/js/locales/bootstrap-datetimepicker.ru.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+        <script src="http://malsup.github.io/jquery.form.js"></script>
+        <script src="{{ STATIC_URL }}jquery.tablesorter/jquery.tablesorter.min.js"></script>
+        <script src="{{ STATIC_URL }}jquery-metadata/jquery.metadata.js"></script>
 
-    <link href="https://maxcdn.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
-    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
-    <link href="https://code.jquery.com/ui/1.12.0-rc.2/themes/base/jquery-ui.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/smalot-bootstrap-datetimepicker/2.3.11/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+{#        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" rel="stylesheet"  crossorigin="anonymous">#}
+        <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+        <link href="https://code.jquery.com/ui/1.12.0-rc.2/themes/base/jquery-ui.css" rel="stylesheet">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/smalot-bootstrap-datetimepicker/2.3.11/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
 
-    <style type="text/css">
-      body {
-        padding-top: 60px;
-        padding-bottom: 40px;
-      }
+        <style type="text/css">
+            body {
+                padding-top: 60px;
+                padding-bottom: 40px;
+            }
 
-      .table .no-font-weight {
-        font-weight: normal;
-        white-space: nowrap;
-        background-color: white;
-      }
+            .table .no-font-weight {
+                font-weight: normal;
+                white-space: nowrap;
+                background-color: white;
+            }
 
-      .sidebar-nav {
-        padding: 9px 0;
-      }
-      
-      .breadcrumb_button {
-        position: absolute;
-        right: 55px;
-        top: 63px;
-      }
-      table {
-      //table-layout: fixed;
-      }
-      
-      /* Automatic Serial Number Row */
-      .css-serial {
-        counter-reset: serial-number; /* Set the serial number counter to 0 */
-      }
-      .css-serial td:first-child:before {
-        counter-increment: serial-number; /* Increment the serial number counter */
-        content: counter(serial-number); /* Display the counter */
-      }
+            .sidebar-nav {
+                padding: 9px 0;
+            }
 
-      .fixedsticky { top: 120px; }
+            .breadcrumb_button {
+                position: absolute;
+                right: 55px;
+                top: 63px;
+            }
+            table {
+            //table-layout: fixed;
+            }
 
-      .modal-lg {
-        width: 70%;
-        height: auto;
-        margin-left: -35%;
-        max-height: 80%;
-      }
+            /* Automatic Serial Number Row */
+            .css-serial {
+                counter-reset: serial-number; /* Set the serial number counter to 0 */
+            }
+            .css-serial td:first-child:before {
+                counter-increment: serial-number; /* Increment the serial number counter */
+                content: counter(serial-number); /* Display the counter */
+            }
 
-      .profile_part {
-        padding: 20px;
-        margin: 10px 0;
-        border: 2px solid #eee;
-        border-radius: 5px;
-      }
+            .fixedsticky { top: 120px; }
 
+            {#            .modal-lg {#}
+            {#                width: 70%;#}
+            {#                height: auto;#}
+            {#                margin-left: -35%;#}
+            {#                max-height: 80%;#}
+            {#            }#}
 
-    </style>
+            .profile_part {
+                padding: 20px;
+                margin: 10px 0;
+                border: 2px solid #eee;
+                border-radius: 5px;
+            }
 
-  {% endblock %}
+            .label-inverse {
+                background-color: #333333;
+            }
+        </style>
 
-  {% block scripts %}{% endblock %}
+    {% endblock %}
+
+    {% block scripts %}{% endblock %}
 </head>
 
 <body data-spy="scroll">
 
-<div class="navbar navbar-fixed-top">
-  <div class="navbar-inner">
+<nav class="navbar navbar-default navbar-fixed-top">
     <div class="container">
-      
-      <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </a>
-      <a class="brand" href="/">Anytask</a>
-      <!--
-      <ul class="nav">
-            <li><a href="/about">About</a></li>
-      </ul>
-      -->
-      {% block navbar %} {% endblock navbar %}
-
-
-      {% block user %}
-        {% if user.is_authenticated %}
-          <div class="btn-group pull-right">
-            <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-              <i class="icon-user"></i> {% if user.get_full_name %} {{ user.get_full_name }} {% else %} {{ user }} {% endif %}
-              <span class="caret"></span>
+        <div class="navbar-header">
+            <a class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
             </a>
-            <ul class="dropdown-menu">
-              <li><a href="#"><a href="{% url users.views.profile %}">Профиль</a></a></li>
-              {% if user.is_staff %}
-                <li> <a href="{% url admin:index %}">Админка</a> </li>
-              {% endif %}
-              <li class="divider"></li>
-              <li><a href="{% url django.contrib.auth.views.password_change %}">Сменить пароль</a></li>
-              <li class="divider"></li>
-              <li><a href="{% url django.contrib.auth.views.logout %}">Выйти</a></li>
-            </ul>
-          </div>
-
-        {% else %}
-          <div class="nav-collapse pull-right">
-            <ul class="nav">
-              <li> <a href="{% url django.contrib.auth.views.login %}">Войдите</a> </li>
-              <li> <a href="/accounts/register/">Зарегистрируйтесь</a> </li>
-            </ul>
-          </div>
-
-        {% endif %}
-
-      {% endblock %}
-
+            <a class="navbar-brand" href="/">Anytask</a>
+        </div>
+        <!--
+        <ul class="nav">
+            <li><a href="/about">About</a></li>
+        </ul>
+        -->
+        {% block navbar %} {% endblock navbar %}
+        {% block user %}
+            {% if user.is_authenticated %}
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                            <i class="glyphicon glyphicon-user"></i>{% if user.get_full_name %} {{ user.get_full_name }} {% else %} {{ user }} {% endif %}
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="{% url users.views.profile %}">Профиль</a></li>
+                            {% if user.is_staff %}
+                                <li><a href="{% url admin:index %}">Админка</a></li>
+                            {% endif %}
+                            <li class="divider"></li>
+                            <li><a href="{% url django.contrib.auth.views.password_change %}">Сменить пароль</a></li>
+                            <li class="divider"></li>
+                            <li><a href="{% url django.contrib.auth.views.logout %}">Выйти</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            {% else %}
+                <div class="navbar-collapse navbar-right">
+                    <ul class="nav navbar-nav">
+                        <li><a href="{% url django.contrib.auth.views.login %}">Войдите</a></li>
+                        <li><a href="/accounts/register/">Зарегистрируйтесь</a></li>
+                    </ul>
+                </div>
+            {% endif %}
+        {% endblock %}
     </div>
-  </div>
-</div>
-
-
+</nav>
 
 <div class="container">
 
-  {% load django_bootstrap_breadcrumbs %}
-  {% load index_messages %}
+    {% load django_bootstrap_breadcrumbs %}
+    {% load index_messages %}
+    {% block breadcrumbs %}
+        {% clear_breadcrumbs %}
+        {% breadcrumb "Home" "/" %}
+    {% endblock %}
+    {% all_pages_message %}
 
-  {% block breadcrumbs %}
-    {% clear_breadcrumbs %}
-    {% breadcrumb "Home" "/" %}
-  {% endblock %}
-
-  {% all_pages_message %}
-
-  {% block content %}
-    {% render_breadcrumbs %}
-  {% endblock %}
+    {% block content %}
+        {% render_breadcrumbs "django_bootstrap_breadcrumbs/bootstrap3.html" %}
+    {% endblock %}
 
 </div>
 
-<script src="https://maxcdn.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
 <script src="{{ STATIC_URL }}/bootbox.min.js"></script>
 
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
-(function (d, w, c) {
-    (w[c] = w[c] || []).push(function() {
-        try {
-            w.yaCounter26396970 = new Ya.Metrika({id:26396970,
+    (function (d, w, c) {
+        (w[c] = w[c] || []).push(function() {
+            try {
+                w.yaCounter26396970 = new Ya.Metrika({id:26396970,
                     webvisor:true,
                     clickmap:true,
                     trackLinks:true,
                     accurateTrackBounce:true});
-        } catch(e) { }
-    });
+            } catch(e) { }
+        });
 
-    var n = d.getElementsByTagName("script")[0],
-        s = d.createElement("script"),
-        f = function () { n.parentNode.insertBefore(s, n); };
-    s.type = "text/javascript";
-    s.async = true;
-    s.src = (d.location.protocol == "https:" ? "https:" : "http:") + "//mc.yandex.ru/metrika/watch.js";
+        var n = d.getElementsByTagName("script")[0],
+                s = d.createElement("script"),
+                f = function () { n.parentNode.insertBefore(s, n); };
+        s.type = "text/javascript";
+        s.async = true;
+        s.src = (d.location.protocol == "https:" ? "https:" : "http:") + "//mc.yandex.ru/metrika/watch.js";
 
-    if (w.opera == "[object Opera]") {
-        d.addEventListener("DOMContentLoaded", f, false);
-    } else { f(); }
-})(document, window, "yandex_metrika_callbacks");
+        if (w.opera == "[object Opera]") {
+            d.addEventListener("DOMContentLoaded", f, false);
+        } else { f(); }
+    })(document, window, "yandex_metrika_callbacks");
 </script>
 <noscript><div><img src="//mc.yandex.ru/watch/26396970" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
 <!-- /Yandex.Metrika counter -->

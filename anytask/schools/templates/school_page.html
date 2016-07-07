@@ -4,25 +4,25 @@
 {% block title %}{{ school.name }}{% endblock %}
 
 {% block breadcrumbs %}
-  {{ block.super }}
-  {% breadcrumb school.name "" %}
+    {{ block.super }}
+    {% breadcrumb school.name "" %}
 {% endblock breadcrumbs %}
 
 {% block content %}
-  {{ block.super }}
+    {{ block.super }}
 
-<div class="row">
-  <div class="span6">
-    <h2>Активные курсы</h2>
-      <ul type="circle">
-        {% for course in courses %}
-        <li><a href="{{ course.get_absolute_url }}">{{ course.name }}</a></li>
-        {% endfor %}
-      </ul>
-  </div>
+    <div class="row">
+        <div class="col-xs-6">
+            <h2>Активные курсы</h2>
+            <ul type="circle">
+                {% for course in courses %}
+                    <li><a href="{{ course.get_absolute_url }}">{{ course.name }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
 
-  <div class="span4">
-      <a href="{% url schools.views.archive_page school.link %}"><h2>Архив</h2></a>
-  </div>
-</div>
+        <div class="col-xs-4">
+            <a href="{% url schools.views.archive_page school.link %}"><h2>Архив</h2></a>
+        </div>
+    </div>
 {% endblock %}

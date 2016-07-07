@@ -4,22 +4,22 @@
 {% block title %}{{ school.name }}{% endblock %}
 
 {% block breadcrumbs %}
-  {{ block.super }}
-  {% breadcrumb school.name "schools.views.school_page" school.link %}
-  {% breadcrumb "Архив" "" %}
+    {{ block.super }}
+    {% breadcrumb school.name "schools.views.school_page" school.link %}
+    {% breadcrumb "Архив" "" %}
 {% endblock breadcrumbs %}
 
 {% block content %}
-  {{ block.super }}
+    {{ block.super }}
 
-<div class="row">
-  <div class="span6">
-    <h2>Архив</h2>
-      <ul type="circle">
-        {% for course in courses %}
-        <li><a href="{{ course.get_absolute_url }}">{{ course.name }}</a></li>
-        {% endfor %}
-      </ul>
-  </div>
-</div>
+    <div class="row">
+        <div class="col-md-6">
+            <h2>Архив</h2>
+            <ul type="circle">
+                {% for course in courses %}
+                    <li><a href="{{ course.get_absolute_url }}">{{ course.name }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
 {% endblock %}
