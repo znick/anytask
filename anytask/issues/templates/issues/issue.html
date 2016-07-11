@@ -12,14 +12,24 @@
 
 {% block breadcrumbs %}
     {{ block.super }}
-    {% breadcrumb course.year course.year.get_absolute_url %}
+    {% breadcrumb school.name school.get_absolute_url %}
     {% breadcrumb course.name course.get_absolute_url %}
-    {% if teacher_or_staff %}
-        {% breadcrumb "очередь" course.get_absolute_url|add:"/queue" %}
-    {% endif %}
     {% breadcrumb issue "" %}
 
 {% endblock breadcrumbs %}
+
+{% block navbar %}
+    <ul class="nav navbar-nav">
+        <li class="nav-item">
+            <a class="nav-link" href="{{ course.get_absolute_url }}">Список задач</a>
+        </li>
+        {% if visible_queue %}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ course.get_absolute_url }}/queue">Очередь на проверку</a>
+            </li>
+        {% endif %}
+    </ul>
+{% endblock navbar %}
 
 {% block content %}
     {{ block.super }}

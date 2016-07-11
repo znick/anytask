@@ -19,26 +19,35 @@
                                 digits : true,
                                 range : [1, 50],
                             },
+                            group_id: {
+                                required : true,
+                            },
                         },
 
-                        highlight: function(label) {
-                            $(label).closest('.form-group').removeClass('success').addClass('has-error');
+                        highlight: function(input) {
+                            $(input).removeClass('form-control-success').addClass('form-control-danger');
+                            $(input).closest('.form-group').removeClass('has-success').addClass('has-danger');
                         },
 
                         success: function(label) {
-                            label.addClass('valid').closest('.form-group').addClass('has-success');
+                            label.addClass('valid');
+                            label.closest('.text-help').siblings('.form-control').removeClass('form-control-danger').addClass('form-control-success');
+                            label.closest('.form-group').removeClass('has-danger').addClass('has-success');
                         },
 
                         messages: {
                             number_of_invites: {
                                 required: "Необходимо указать, какое число инвайтов вы хотите сгенерировать",
-                                range : "Число инвайтов не может быть больше 50",
+                                range : "Число инвайтов должно быть больше 0 и меньше 50",
                                 digits : "Количество инвайтов должно быть целым числом"
+                            },
+                            group_id: {
+                                required: "Необходимо указать группу",
                             },
                         },
 
                         errorPlacement: function(error, element) {
-                            $('#error_text').append(error);
+                            $(element).siblings('small.text-help').empty().append(error);
                         }
                     });
         });
@@ -49,17 +58,17 @@
 {% block content %}
 
     <div>
-        <h2>Создание инвайтов</h2>
-        <form action="{% url invites.views.generate_invites %}" method="post" id="invites-form" class="form-horizontal">
+        <h1>Создание инвайтов</h1>
+        <form action="{% url invites.views.generate_invites %}" method="post" id="invites-form">
             {% csrf_token %}
-            <div class="form-group" style="display: inherit;">
-                <label for="number_of_invites" class="col-sm-3">Количество инвайтов</label>
+            <div class="form-group row" style="display: none;"i>
+                <label class="form-control-label col-sm-3" for="number_of_invites">Количество инвайтов</label>
                 <div class="controls col-sm-3">
                     <input class="form-control" type="text" value="1" name="number_of_invites" class="input-sm" id="number_of_invites">
-                    <span class="help-block" id="error_text"></span>
+                    <small class="text-help" id="error_text"></small>
                 </div>
             </div>
-            <div class="form-group" id="group_options">
+            <div class="form-group row" id="group_options">
                 <label for="groups" class="col-sm-3">Группа, для которой создаем инвайт</label>
                 <div class="controls col-sm-3">
                     <select id="groups" name="group_id" class="form-control">
@@ -67,11 +76,12 @@
                             <option value="{{ group.id }}">{{ group.name }}</option>
                         {% endfor %}
                     </select>
+                    <small class="text-help"></small>
                 </div>
             </div>
-            <div class="form-group">
+            <div class="form-group row">
                 <div class="col-sm-offset-3 col-sm-3">
-                    <button type="submit" class="btn btn-default">Создать</button>
+                    <button type="submit" class="btn btn-secondary">Создать</button>
                 </div>
             </div>
         </form>

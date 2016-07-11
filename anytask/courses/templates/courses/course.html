@@ -8,23 +8,23 @@
 
 {% block breadcrumbs %}
     {{ block.super }}
-    {% breadcrumb course.year course.year.get_absolute_url %}
+    {% breadcrumb school.name school.get_absolute_url %}
     {% breadcrumb course.name "" %}
 {% endblock breadcrumbs %}
 
 {% block navbar %}
     <ul class="nav navbar-nav">
-        <li class="active">
-            <a href="">Список задач</a>
+        <li class="nav-item active">
+            <a class="nav-link" href="">Список задач</a>
         </li>
         {% if visible_queue %}
-            <li>
-                <a href="{{ course.get_absolute_url }}/queue">Очередь на проверку</a>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ course.get_absolute_url }}/queue">Очередь на проверку</a>
             </li>
         {% endif %}
         {% if user_is_teacher %}
-            <li>
-                <a href="{% url courses.views.course_settings course.id %}">Настройки</a>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url courses.views.course_settings course.id %}">Настройки</a>
             </li>
         {% endif %}
     </ul>
@@ -58,24 +58,24 @@
     <br />
 
     {% if course.can_edit %}
-        <div class="btn-group btn-group-sm" role="group" aria-label="...">
-            <a class="btn btn-default" href="javascript:get_edit_course_modal({{ course.id }}, {% if course.information %} '{{course.information|escapejs}}' {% else %} '' {% endif %});">
+        <div class="btn-group btn-block" role="group" aria-label="...">
+            <a class="btn btn-secondary" href="javascript:get_edit_course_modal({{ course.id }}, {% if course.information %} '{{course.information|escapejs}}' {% else %} '' {% endif %});">
                 {% if course.information %}
                     Редактировать информацию о курсе
                 {% else %}
                     Добавить информацию о курсе
                 {% endif %}
             </a>
-            <a class="btn btn-default" href="/task/create/{{ course.id }}" role="button">
+            <a class="btn btn-secondary" href="/task/create/{{ course.id }}" role="button">
                 Добавить задачу
             </a>
             {% if course.contest_integrated %}
-                <a class="btn btn-default" href="/task/import/{{ course.id }}" role="button">
+                <a class="btn btn-secondary" href="/task/import/{{ course.id }}" role="button">
                     Импортировать задачу из Я.Контеста
                 </a>
             {% endif %}
             {% if visible_hide_button %}
-                <a class="btn btn-default" href="javascript:change_visibility_hidden_tasks({{ course.id }});" role="button">
+                <a class="btn btn-secondary" href="javascript:change_visibility_hidden_tasks({{ course.id }});" role="button">
                     {% if show_hidden_tasks %}
                         Не показывать скрытые задачи
                     {% else %}
@@ -90,15 +90,15 @@
 
     <br />
 
-    <a class="label label-default">Новый</a>
-    <a class="label label-danger">На доработке</a>
-    <a class="label label-warning">На проверке</a>
-    <a class="label label-success">Зачтено</a>
-    <a class="label label-info">Требуется информация</a>
-    <a class="label label-inverse">Суммарный балл</a>
+    <h5>
+        <a class="label label-default">Новый</a>
+        <a class="label label-danger">На доработке</a>
+        <a class="label label-warning">На проверке</a>
+        <a class="label label-success">Зачтено</a>
+        <a class="label label-info">Требуется информация</a>
+        <a class="label label-inverse">Суммарный балл</a>
+    </h5>
 
-    <br />
-    <br />
     {% include "courses/task.html" %}
     {% include tasklist_template %}
 {% endblock content %}

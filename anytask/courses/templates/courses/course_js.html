@@ -15,7 +15,7 @@
                 $(this).hide();
 
                 var mark_form = $(this).closest('td').find('.task-mark-form');
-                $(mark_form).find('.form-group').removeClass('has-success has-error');
+                $(mark_form).find('.form-group').removeClass('has-success has-danger');
                 $(mark_form).show();
                 $(mark_form).find('[name="mark_value"]').focus().select();
             }
@@ -54,18 +54,19 @@
                     }
                 },
 
-                highlight: function (label) {
+                highlight: function(input) {
                     $('.task-mark-form').data('is_error', true);
-                    $(label).closest('.form-group').removeClass('has-success').addClass('has-error');
+                    $(input).closest('.form-group').removeClass('has-success').addClass('has-danger');
                 },
 
-                success: function (label) {
+                success: function(label) {
                     $('.task-mark-form').data('is_error', false);
-                    label.addClass('valid').closest('.form-group').removeClass('has-error').addClass('has-success');
+                    label.addClass('valid');
+                    label.closest('.form-group').removeClass('has-danger').addClass('has-success');
                 },
 
                 errorPlacement: function(error, element) {
-                    $(element).siblings('span.hide').empty().append(error);
+                    $(element).siblings('span.text-help').empty().append(error);
                 }
             });
         });

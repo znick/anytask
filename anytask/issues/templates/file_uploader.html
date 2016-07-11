@@ -82,7 +82,7 @@
             {% if teacher_or_staff or issue.status != issue.STATUS_ACCEPTED and issue.status != issue.STATUS_NEED_INFO %}
                 <div class="drop-zone" id="drop-zone" ondragenter="this.style.background='#E0E0E0';" ondragleave="this.style.background='white';" ondrop="this.style.background='white';">
 
-                <span class="btn btn-default drop-btn fileinput-button" id="drop-btn">
+                <span class="btn btn-secondary drop-btn fileinput-button" id="drop-btn">
                     <span>Выберите файлы</span>
 
                     {% block FILE_INPUT %}
@@ -105,9 +105,9 @@
 
             {% block UPLOAD_FORM_BUTTON_BAR_CONTROL %}
             {% if issue.status == issue.STATUS_ACCEPTED or issue.status == issue.STATUS_NEED_INFO and not teacher_or_staff %}
-                <button class="btn btn-info pull-right" formaction="#" style="margin-top: 10px; margin-left: 10px;" type="submit" name="need_info">Задать вопрос</button>
+                <button class="btn btn-info pull-xs-right" formaction="#" style="margin-top: 10px; margin-left: 10px;" type="submit" name="need_info">Задать вопрос</button>
             {% else %}
-                <button style="margin-top: 10px;" type="submit" name="update_issue" class="btn btn-primary pull-right">
+                <button style="margin-top: 10px;" type="submit" name="update_issue" class="btn btn-primary pull-xs-right">
                     <span>Отправить</span>
                 </button>
             {% endif %}
@@ -157,9 +157,9 @@
         {{ JQ_OPEN }} } else if (o.files.valid && !i) { {{ JQ_CLOSE }}
 
             <td>
-                <div class="progress">
+                <progress class="progress">
                     <div class="progress-bar progress-bar-success progress-bar-striped active bar" role="progressbar" style="width:0%"></div>
-                </div>
+                </progress>
             </td>
 
             <td class="cancel">{{ JQ_OPEN }} if (!o.options.autoUpload) { {{ JQ_CLOSE }}
@@ -182,7 +182,7 @@
                     {{ JQ_OPEN }} if (file.delete_with_credentials) { {{ JQ_CLOSE }}
                          data-xhr-fields='{"withCredentials":true}'
                     {{ JQ_OPEN }} } {{ JQ_CLOSE }}>
-                <i class="glyphicon glyphicon-remove" style="color:#FFFFFF"></i>
+                <i class="fa fa-times" style="color:#FFFFFF"></i>
                 <span></span>
             </button>
         </td>

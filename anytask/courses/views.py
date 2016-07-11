@@ -81,9 +81,10 @@ def queue_page(request, course_id):
         f.form.data = request.session.get(course_id_as_str)
 
     context = {
-        'course' : course,
-        'user_is_teacher' : course.user_is_teacher(request.user),
+        'course': course,
+        'user_is_teacher': course.user_is_teacher(request.user),
         'filter': f,
+        'school': course.school_set.all()[0],
     }
     return render_to_response('courses/queue.html', context, context_instance=RequestContext(request))
 
@@ -105,6 +106,7 @@ def course_page(request, course_id):
     context['tasklist_template'] = 'courses/tasklist/shad_cpp.html'
     context['task_types'] = dict(Task().TASK_TYPE_CHOICES).items()
     context['show_hidden_tasks'] = request.session.get(str(request.user.id) + '_' + str(course.id) + '_show_hidden_tasks', False)
+    context['school'] = course.school_set.all()[0]
 
     return render_to_response('courses/course.html', context, context_instance=RequestContext(request))
 
@@ -517,9 +519,10 @@ def course_settings(request, course_id):
     if not course.user_is_teacher(request.user):
         return HttpResponseForbidden()
 
-    context = {'course' : course,
-               'visible_queue' : course.user_can_see_queue(request.user),
-               'user_is_teacher' : course.user_is_teacher(request.user),
+    context = {'course': course,
+               'visible_queue': course.user_can_see_queue(request.user),
+               'user_is_teacher': course.user_is_teacher(request.user),
+               'school': course.school_set.all()[0],
     }
 
     if request.method != "POST":

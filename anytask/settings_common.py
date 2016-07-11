@@ -195,4 +195,4 @@ MAX_FILE_SIZE = 100*1024*1024
 REGISTRATION_ALLOWED_DOMAINS = set(('ya.ru', 'yandex.ru', 'yandex.by', 'yandex.com', 'yandex.kz', 'yandex.ua'))
 EMAIL_DEFAULT_BCC = None
 
-CRISPY_TEMPLATE_PACK = 'bootstrap3'
+CRISPY_TEMPLATE_PACK = 'bootstrap4'

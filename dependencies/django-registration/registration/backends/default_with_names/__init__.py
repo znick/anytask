@@ -35,17 +35,16 @@ class AnytaskLoginForm(AuthenticationForm):
 
         self.helper = FormHelper(self)
         self.helper.form_action = '/accounts/login/'
-        self.helper.form_class = 'form-horizontal'
         self.helper.label_class = 'col-sm-1'
         self.helper.field_class = 'col-sm-3'
-        self.helper.layout.append(HTML(u"""<div class="form-group" style="margin-bottom: 0px;">
+        self.helper.layout.append(HTML(u"""<div class="form-group row" style="margin-bottom: 16px;margin-top: -16px;">
                                              <div class="col-sm-offset-1 col-sm-3">
-                                               <a class="help-block" href="{% url django.contrib.auth.views.password_reset %}" style="margin-top: -10px;font-size: 12px;">Забыли пароль?</a>
+                                               <a href="{% url django.contrib.auth.views.password_reset %}"><small class="text-muted">Забыли пароль?</small></a>
                                              </div>
                                            </div>
-                                           <div class="form-group">
+                                           <div class="form-group row">
                                              <div class="col-sm-offset-1 col-sm-3">
-                                               <button type="submit" class="btn btn-default">Войти</button>
+                                               <button type="submit" class="btn btn-secondary">Войти</button>
                                                <input type="hidden" name="next" value="{{ next }}" />
                                              </div>
                                            </div>"""))
@@ -65,12 +64,11 @@ class AnytaskPasswordResetForm(PasswordResetForm):
     def __init__(self, *args, **kwargs):
         PasswordResetForm.__init__(self, *args, **kwargs)
         self.helper = FormHelper(self)
-        self.helper.form_class = 'form-horizontal'
         self.helper.label_class = 'col-sm-3'
         self.helper.field_class = 'col-sm-3'
-        self.helper.layout.append(HTML(u"""<div class="form-group">
+        self.helper.layout.append(HTML(u"""<div class="form-group row">
                                              <div class="col-sm-offset-3 col-sm-3">
-                                               <button type="submit" class="btn btn-default">Сбросить</button>
+                                               <button type="submit" class="btn btn-secondary">Сбросить</button>
                                              </div>
                                            </div>"""))
 
@@ -79,12 +77,11 @@ class AnytaskSetPasswordForm(SetPasswordForm):
     def __init__(self, *args, **kwargs):
         SetPasswordForm.__init__(self, *args, **kwargs)
         self.helper = FormHelper(self)
-        self.helper.form_class = 'form-horizontal'
         self.helper.label_class = 'col-sm-3'
         self.helper.field_class = 'col-sm-3'
-        self.helper.layout.append(HTML(u"""<div class="form-group">
+        self.helper.layout.append(HTML(u"""<div class="form-group row">
                                              <div class="col-sm-offset-3 col-sm-3">
-                                               <button type="submit" class="btn btn-default">Применить</button>
+                                               <button type="submit" class="btn btn-secondary">Применить</button>
                                              </div>
                                            </div>"""))
 
@@ -93,12 +90,11 @@ class AnytaskPasswordChangeForm(PasswordChangeForm):
     def __init__(self, *args, **kwargs):
         PasswordChangeForm.__init__(self, *args, **kwargs)
         self.helper = FormHelper(self)
-        self.helper.form_class = 'form-horizontal'
         self.helper.label_class = 'col-sm-3'
         self.helper.field_class = 'col-sm-3'
-        self.helper.layout.append(HTML(u"""<div class="form-group">
+        self.helper.layout.append(HTML(u"""<div class="form-group row">
                                              <div class="col-sm-offset-3 col-sm-3">
-                                               <button type="submit" class="btn btn-default">Изменить</button>
+                                               <button type="submit" class="btn btn-secondary">Изменить</button>
                                              </div>
                                            </div>"""))
 
@@ -144,12 +140,11 @@ class BootStrapRegistrationFormWithNames(RegistrationFormWithNamesUniqEmail):
         RegistrationFormWithNamesUniqEmail.__init__(self, *args, **kwargs)
 
         self.helper = FormHelper(self)
-        self.helper.form_class = 'form-horizontal'
         self.helper.label_class = 'col-sm-3'
         self.helper.field_class = 'col-sm-3'
-        self.helper.layout.append(HTML(u"""<div class="form-group">
+        self.helper.layout.append(HTML(u"""<div class="form-group row">
                                              <div class="col-sm-offset-3 col-sm-3">
-                                               <button type="submit" class="btn btn-default">Зарегистрироваться</button>
+                                               <button type="submit" class="btn btn-secondary">Зарегистрироваться</button>
                                              </div>
                                            </div>"""))
 

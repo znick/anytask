@@ -59,8 +59,10 @@
                     $('#task_edit_form').ajaxSubmit({
                         success: function (data) {
                             $('#task_edit_form').data('changed', false);
-                            $('#task_submit_error_text').html('<div class="alert alert-success" role ="alert" id="edit_task_err">' +
-                                    '                            <a class="close" data-dismiss="alert">&times;</a>' +
+                            $('#task_submit_error_text').html('<div class="alert alert-success alert-dismissible" role ="alert" id="edit_task_err">' +
+                                    '                            <button type="button" class="close" data-dismiss="alert" aria-label="Закрыть">' +
+                                    '                               <span aria-hidden="true">&times;</span>' +
+                                    '                            </button>' +
                                     '                            <span>Задача сохранена успешно.</span>' +
                                     '                          </div>');
                             if ($('#task_edit_form').data('quit'))
@@ -70,8 +72,10 @@
                             $(document).prop('title', data.page_title);
                         },
                         error: function (data) {
-                            $('#task_submit_error_text').html('<div  class="alert alert-danger" role ="alert" id="edit_task_err">' +
-                                    '                            <a class="close" data-dismiss="alert">&times;</a>' +
+                            $('#task_submit_error_text').html('<div  class="alert alert-danger alert-dismissible" role ="alert" id="edit_task_err">' +
+                                    '                            <button type="button" class="close" data-dismiss="alert" aria-label="Закрыть">' +
+                                    '                               <span aria-hidden="true">&times;</span>' +
+                                    '                            </button>' +
                                     '                            <span>Произошла ошибка при сохранении задачи. Попробуйте снова.</span>' +
                                     '                          </div>');
                             remove_disabled();
@@ -79,8 +83,10 @@
                     });
                 }
                 else {
-                    $('#task_submit_error_text').html('<div class="alert alert-success" role ="alert" id="edit_task_err">' +
-                            '                            <a class="close" data-dismiss="alert">&times;</a>' +
+                    $('#task_submit_error_text').html('<div class="alert alert-success alert-dismissible" role ="alert" id="edit_task_err">' +
+                            '                            <button type="button" class="close" data-dismiss="alert" aria-label="Закрыть">' +
+                            '                               <span aria-hidden="true">&times;</span>' +
+                            '                            </button>' +
                             '                            <span>Задача сохранена успешно.</span>' +
                             '                          </div>');
                     if ($('#task_edit_form').data('quit'))
@@ -106,12 +112,15 @@
                 }
             },
 
-            highlight: function(label) {
-                $(label).closest('.form-group').removeClass('has-success').addClass('has-error');
+            highlight: function(input) {
+                $(input).removeClass('form-control-success').addClass('form-control-danger');
+                $(input).closest('.form-group').removeClass('has-success').addClass('has-danger');
             },
 
             success: function(label) {
-                label.addClass('valid').closest('.form-group').addClass('has-success');
+                label.addClass('valid');
+                label.closest('.text-help').siblings('.form-control').removeClass('form-control-danger').addClass('form-control-success');
+                label.closest('.form-group').removeClass('has-danger').addClass('has-success');
             },
 
             messages: {
@@ -134,14 +143,7 @@
             },
 
             errorPlacement: function(error, element) {
-                if (element.attr('id') == 'task_edit_header')
-                    $('#task_edit_header_error_text').append(error);
-                else if (element.attr('id') == 'task_edit_max_score')
-                    $('#task_edit_max_score_error_text').append(error);
-                else if (element.attr('id') == 'task_edit_contest_id')
-                    $('#task_edit_contest_id_error_text').append(error);
-                else if (element.attr('id') == 'task_edit_problem_id')
-                    $('#task_edit_problem_id_error_text').append(error);
+                $(element).siblings('small.text-help').empty().append(error);
             }
         });
 

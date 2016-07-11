@@ -5,26 +5,26 @@
     <title>{% block title %}{% endblock %}</title>
 
     {% block main_scripts %}
-        <script src="https://yastatic.net/jquery/1.9.1/jquery.min.js"></script>
+        <script src="https://yastatic.net/jquery/2.2.3/jquery.min.js"></script>
         <script src="https://yastatic.net/jquery-ui/1.11.2/jquery-ui.min.js"></script>
-        <script src="http://code.jquery.com/jquery-migrate-1.4.1.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/smalot-bootstrap-datetimepicker/2.3.11/js/bootstrap-datetimepicker.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/smalot-bootstrap-datetimepicker/2.3.11/js/locales/bootstrap-datetimepicker.ru.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+        <script src="https://www.atlasestateagents.co.uk/javascript/tether.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/js/bootstrap.min.js"></script>
         <script src="http://malsup.github.io/jquery.form.js"></script>
         <script src="{{ STATIC_URL }}jquery.tablesorter/jquery.tablesorter.min.js"></script>
         <script src="{{ STATIC_URL }}jquery-metadata/jquery.metadata.js"></script>
 
-        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
-{#        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" rel="stylesheet"  crossorigin="anonymous">#}
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" rel="stylesheet">
         <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
-        <link href="https://code.jquery.com/ui/1.12.0-rc.2/themes/base/jquery-ui.css" rel="stylesheet">
+        <link href="https://yastatic.net/jquery-ui/1.11.2/themes/base/jquery-ui.min.css" rel="stylesheet">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/smalot-bootstrap-datetimepicker/2.3.11/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
 
         <style type="text/css">
             body {
                 padding-top: 60px;
                 padding-bottom: 40px;
+                background-color: #f5f8fa;
             }
 
             .table .no-font-weight {
@@ -37,11 +37,18 @@
                 padding: 9px 0;
             }
 
+            .breadcrumb {
+                background-color: white;
+                border: 1px solid #e5e5e5;
+                border-radius: .25rem;
+            }
+
             .breadcrumb_button {
                 position: absolute;
                 right: 55px;
                 top: 63px;
             }
+
             table {
             //table-layout: fixed;
             }
@@ -74,6 +81,19 @@
             .label-inverse {
                 background-color: #333333;
             }
+
+            .main-container {
+                padding-top: 1rem !important;
+            }
+
+            .navbar-blue {
+                background-color: #3097d1;
+                border-color: #1c73a5;
+            }
+
+            .card-clickable {
+                color:#373a3c;
+            }
         </style>
 
     {% endblock %}
@@ -81,58 +101,56 @@
     {% block scripts %}{% endblock %}
 </head>
 
-<body data-spy="scroll">
+<body data-spy="scroll" style="">
 
-<nav class="navbar navbar-default navbar-fixed-top">
+<nav class="navbar navbar-fixed-top navbar-dark navbar-blue">
     <div class="container">
-        <div class="navbar-header">
-            <a class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </a>
-            <a class="navbar-brand" href="/">Anytask</a>
-        </div>
+        <a class="navbar-brand" href="/">Anytask</a>
         <!--
         <ul class="nav">
             <li><a href="/about">About</a></li>
         </ul>
         -->
-        {% block navbar %} {% endblock navbar %}
-        {% block user %}
-            {% if user.is_authenticated %}
-                <ul class="nav navbar-nav navbar-right">
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                            <i class="glyphicon glyphicon-user"></i>{% if user.get_full_name %} {{ user.get_full_name }} {% else %} {{ user }} {% endif %}
-                            <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a href="{% url users.views.profile %}">Профиль</a></li>
-                            {% if user.is_staff %}
-                                <li><a href="{% url admin:index %}">Админка</a></li>
-                            {% endif %}
-                            <li class="divider"></li>
-                            <li><a href="{% url django.contrib.auth.views.password_change %}">Сменить пароль</a></li>
-                            <li class="divider"></li>
-                            <li><a href="{% url django.contrib.auth.views.logout %}">Выйти</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            {% else %}
-                <div class="navbar-collapse navbar-right">
-                    <ul class="nav navbar-nav">
-                        <li><a href="{% url django.contrib.auth.views.login %}">Войдите</a></li>
-                        <li><a href="/accounts/register/">Зарегистрируйтесь</a></li>
+        <button class="navbar-toggler hidden-md-up pull-xs-right" type="button" data-toggle="collapse" data-target="#exCollapsingNavbar2">
+            &#9776;
+        </button>
+        <div class="collapse navbar-toggleable-sm" id="exCollapsingNavbar2">
+            {% block navbar %} {% endblock navbar %}
+            {% block user %}
+                {% if user.is_authenticated %}
+                    <ul class="nav navbar-nav pull-xs-right">
+                        <li class="nav-item dropdown">
+                            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                <i class="fa fa-user"></i>{% if user.get_full_name %} {{ user.get_full_name }} {% else %} {{ user }} {% endif %}
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                <a class="dropdown-item" href="{% url users.views.profile %}">Профиль</a>
+                                {% if user.is_staff %}
+                                    <a class="dropdown-item" href="{% url admin:index %}">Админка</a>
+                                {% endif %}
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="{% url django.contrib.auth.views.password_change %}">Сменить пароль</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="{% url django.contrib.auth.views.logout %}">Выйти</a>
+                            </div>
+                        </li>
                     </ul>
-                </div>
-            {% endif %}
-        {% endblock %}
+                {% else %}
+                    <ul class="nav navbar-nav pull-xs-right">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url django.contrib.auth.views.login %}">Войдите</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/accounts/register/">Зарегистрируйтесь</a>
+                        </li>
+                    </ul>
+                {% endif %}
+            {% endblock %}
+        </div>
     </div>
 </nav>
 
-<div class="container">
-
+<div class="container main-container">
     {% load django_bootstrap_breadcrumbs %}
     {% load index_messages %}
     {% block breadcrumbs %}
@@ -147,7 +165,7 @@
 
 </div>
 
-<script src="{{ STATIC_URL }}/bootbox.min.js"></script>
+{#<script src="{{ STATIC_URL }}/bootbox.min.js"></script>#}
 
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">

@@ -1,5 +1,5 @@
-<div class="modal" id="modal_task_description">
-    <div class="modal-dialog modal-lg">
+<div class="modal" id="modal_task_description" tabindex="-1" role="dialog" aria-labelledby="modal_header_task_descr" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -16,8 +16,8 @@
     </div>
 </div>
 
-<div class="modal" id="modal_course_information">
-    <div class="modal-dialog modal-lg">
+<div class="modal" id="modal_course_information" tabindex="-1" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -27,7 +27,7 @@
                 <textarea class='input-xlarge form-control' style="width: 100%;resize: none;" id='course_information' rows='13' cols='800' name='text'></textarea>
             </div>
             <div class="modal-footer">
-                <a href="#" class="btn btn-default" data-dismiss="modal">Закрыть</a>
+                <a href="#" class="btn btn-secondary" data-dismiss="modal">Закрыть</a>
                 <a href="#" class="btn btn-primary" id="modal_course_info_ok" data-loading-text="Сохранение...">Сохранить</a>
             </div>
         </div>

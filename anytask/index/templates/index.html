@@ -7,33 +7,37 @@
 
     {% index_message %}
 
-    <div class="jumbotron">
-        <h1>Anytask</h1>
-        <p>&beta;-версия</p>
-        <p>
-            Платформа для взаимодействия преподавателей и студентов в процессе обучения.
+    {#    <div class="jumbotron">#}
+    {#        <h1 class="display-3">Anytask</h1>#}
+    {#        <p class="lead">&beta;-версия</p>#}
+    {#        <p>#}
+    {#            Платформа для взаимодействия преподавателей и студентов в процессе обучения.#}
+    {##}
+    {# AnyTask &#151; сервис для учета выполнения студентами программы по #}
+    {# учебным курсам.  #}
+    {# <a href="/about">>></a> #}
+    {#        </p>#}
+    {#        <!-- <p><a class="btn btn-primary btn-large">Learn more &raquo;</a></p> -->#}
+    {#    </div>#}
 
-            {# AnyTask &#151; сервис для учета выполнения студентами программы по #}
-            {# учебным курсам.  #}
-            {# <a href="/about">>></a> #}
-        </p>
-        <!-- <p><a class="btn btn-primary btn-large">Learn more &raquo;</a></p> -->
-    </div>
+    <div class="card-deck-wrapper">
+        <div class="card-deck">
+            {% for school in schools %}
+                <div class="card">
+                    <a class="card-link card-clickable"  href="{% url schools.views.school_page school.link %}">
+                        <div class="card-block">
+                            <h1 class="card-title">{{ school.name }}</h1>
+                            <p class="card-text">Some text.</p>
+                        </div>
+                    </a>
+                </div>
 
-    <div class="row">
-        <div class="col-md-6">
-            <ul>
-                {% for school in schools %}
-                    <li>
-                        <a href="{% url schools.views.school_page school.link %}"><h2>{{ school.name }}</h2></a>
-                    </li>
-                {% endfor %}
-            </ul>
+            {% endfor %}
         </div>
     </div>
-    <div class="pull-right">
-        <footer>
-            <p><small>Пишите нам на <a href="mailto:anytask@yandex.ru">anytask@yandex.ru</a></small></p>
-        </footer>
-    </div>
+
+    <footer>
+        <small class="text-muted pull-xs-right">Пишите нам на <a href="mailto:anytask@yandex.ru">anytask@yandex.ru</a></small>
+    </footer>
+
 {% endblock %}

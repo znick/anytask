@@ -14,11 +14,11 @@
     });
 
 </script>
-<div class="row" style="margin-left: 0px;">
+<div class="card card-block">
     <ul class="history">
         {% if issue.get_history.count > events_to_show %}
             <li>
-                <button id="old_comments_button" type="button" class="btn btn-default" data-toggle="collapse" data-target="#old_comments">
+                <button id="old_comments_button" type="button" class="btn btn-secondary" data-toggle="collapse" data-target="#old_comments">
                     Предыдущие сообщения
                 </button>
             </li>
@@ -47,8 +47,8 @@
                 <strong class="primary-font">
                     {{ event.author.last_name }} {{ event.author.first_name }}
                 </strong>
-                <small class="pull-right text-muted">
-                    <i class="glyphicon glyphicon-time"></i> {{ event.timestamp|date:"d M H:i" }}
+                <small class="pull-xs-right text-muted">
+                    <i class="fa fa-clock-o fa-flip-horizontal"></i> {{ event.timestamp|date:"d M H:i" }}
                 </small>
             </div>
             {% autoescape off %}
@@ -58,7 +58,7 @@
             {% endautoescape %}
             {% if event.file_set.all %}
                 <div class="files">
-                    <i class="glyphicon glyphicon-file"></i>
+                    <i class="fa fa-file-o"></i>
                     {% for file in event.file_set.all %}
                         <a href={% link_to_open file course user %}>{{ file.filename }}</a>
                     {% endfor %}
@@ -82,9 +82,9 @@
     </ul>
 </div>
 
-<div class="row" style="margin-left: 0px;">
+<div>
     {% load jfutags %}
     {% jfu 'file_uploader.html' 'jfu_upload' %}
 </div>
 
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/js/bootstrap.min.js"></script>

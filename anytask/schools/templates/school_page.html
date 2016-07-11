@@ -3,26 +3,38 @@
 
 {% block title %}{{ school.name }}{% endblock %}
 
+{% block navbar %}
+    <ul class="nav navbar-nav">
+        <li class="nav-item active">
+            <a class="nav-link" href="">Активные курсы</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{% url schools.views.archive_page school.link %}">Архив</a>
+        </li>
+    </ul>
+{% endblock navbar %}
+
 {% block breadcrumbs %}
     {{ block.super }}
-    {% breadcrumb school.name "" %}
+    {% breadcrumb school.name "schools.views.school_page" school.link %}
+    {% breadcrumb "Активные курсы" "" %}
 {% endblock breadcrumbs %}
 
 {% block content %}
     {{ block.super }}
 
-    <div class="row">
-        <div class="col-xs-6">
-            <h2>Активные курсы</h2>
-            <ul type="circle">
-                {% for course in courses %}
-                    <li><a href="{{ course.get_absolute_url }}">{{ course.name }}</a></li>
-                {% endfor %}
-            </ul>
-        </div>
-
-        <div class="col-xs-4">
-            <a href="{% url schools.views.archive_page school.link %}"><h2>Архив</h2></a>
+    <div class="card-deck-wrapper">
+        <div class="card-deck">
+            {% for course in courses %}
+                <div class="card">
+                    <a class="card-link card-clickable" href="{{ course.get_absolute_url }}">
+                        <div class="card-block">
+                            <h2 class="card-title">{{ course.name }}</h2>
+                            <p class="card-text">Some text.</p>
+                        </div>
+                    </a>
+                </div>
+            {% endfor %}
         </div>
     </div>
 {% endblock %}

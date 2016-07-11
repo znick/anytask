@@ -1,21 +1,26 @@
 {% load crispy_forms_tags %}
 
-<div class="panel-group" id="accordion2">
+<style>
+    .card-header {
+        background-color: #FFFFFF;
+    }
+</style>
+
+
+<div id="accordion2">
     {% for field in issue_fields %}
         {% if field.is_visible and field.name != 'run_id' or field.is_visible and teacher_or_staff %}
-            <div class="panel panel-default">
-                <div class="panel-heading">
+            <div class="card">
+                <div class="card-header">
                     <div class="row col-wrap">
-                        <div class="col-md-4">
-                            <div class="pull-right">
-                                {% if field.editable %}
-                                    <a href="#" data-toggle="collapse" data-target="#collapse{{ forloop.counter }}">{{ field.title }}</a>:
-                                {% else %}
-                                    {{ field.title }}:
-                                {% endif %}
-                            </div>
+                        <div class="col-md-5">
+                            {% if field.editable %}
+                                <a href="#" data-toggle="collapse" data-target="#collapse{{ forloop.counter }}">{{ field.title }}</a>:
+                            {% else %}
+                                {{ field.title }}:
+                            {% endif %}
                         </div>
-                        <div class="col-md-8">
+                        <div class="col-md-7">
                             {% autoescape off %}
                                 {% if field.repr  or field.repr == 0 %}
                                     {{ field.repr }}
@@ -26,38 +31,40 @@
                         </div>
                     </div>
                 </div>
-                <div id="collapse{{ forloop.counter }}" class="panel-collapse collapse">
-                    <div class="panel-body">
+                <div id="collapse{{ forloop.counter }}" class="collapse">
+                    <div class="card-block">
                         <form method="post" id="{{ field.name }}_form" enctype="multipart/form-data">
                             {% csrf_token %}
-                            <fieldset class="form-group" id="{{ field.name }}_fieldset_id">
+                            <div class="form-group col-md-12" id="{{ field.name }}_fieldset_id">
                                 <input type="hidden" name="form_name" value="{{ field.name }}_form">
                                 {% if field.name == 'mark' %}
                                     <input type="hidden" id="max_mark" value="{{ issue.task.score_max }}">
                                 {% endif %}
                                 {{ field.form|crispy }}
                                 {% if field.name == 'mark' %}
-                                    <span class="help-block" style="margin-top: 0px;" id="mark_edit_error_text"></span>
+                                    <small class="text-help" style="margin-top: 0px;" id="mark_edit_error_text"></small>
                                 {% endif %}
-                                <button type="submit" class="btn btn-default">Отправить</button>
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-secondary">Отправить</button>
                                 {% if field.name == 'responsible_name' or field.name == 'followers_names' %}
-                                    <button type="submit" class="btn btn-default" name="Me">Я</button>
+                                    <button type="submit" class="btn btn-secondary" name="Me">Я</button>
                                 {% endif %}
                                 {% if field.name == 'mark' %}
-                                    <button type="submit" class="btn btn-default" name="Accepted">Зачтено</button>
+                                    <button type="submit" class="btn btn-secondary" name="Accepted">Зачтено</button>
                                 {% endif %}
-                            </fieldset>
+                            </div>
                         </form>
                     </div>
                 </div>
             </div>
         {% endif %}
     {% endfor %}
-    <div class="panel panel-default">
-        <div class="panel-heading">
+    <div class="card">
+        <div class="card-header">
             <div class="row col-wrap">
                 <div class="col-md-4">
-                    <div class="pull-right">
+                    <div class="pull-xs-right">
                         Дата сдачи:
                     </div>
                 </div>

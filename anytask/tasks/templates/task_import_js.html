@@ -18,13 +18,15 @@
         $('#button_task_contest_id_clear').click(function() {
             $('#get_tasks').show();
             $('#task_contest_body').hide();
+            $('#task_contest_id_editable').show();
             $('#task_contest_id_readonly').hide();
             $('#contest_problems').empty();
             $('#task_contest_id').removeAttr("readonly");
-            $('#contest_problems').closest('.form-group').removeClass('has-success has-error');
-            $('#task_contest_id_error_text').closest('.form-group').removeClass('has-success has-error');
+            $('#contest_problems').closest('.form-group').removeClass('has-success has-danger');
+            $('#task_contest_id_error_text').closest('.form-group').removeClass('has-success has-danger');
+            $('#task_contest_id').removeClass('form-control-success form-control-danger');
             $('#task_contest_id').val('').show().focus().select();
-            $('#task_max_score').val('').closest('.form-group').removeClass('has-success has-error');
+            $('#task_max_score').val('').closest('.form-group').removeClass('has-success has-danger');
             $("#task_group").val($("#task_group option:first").val());
             $('#task_datepicker').val('');
             $('#task_changed_task').attr('checked', false);
@@ -49,12 +51,15 @@
                 }
             },
 
-            highlight: function(label) {
-                $(label).closest('.form-group').removeClass('has-success').addClass('has-error');
+            highlight: function(input) {
+                $(input).removeClass('form-control-success').addClass('form-control-danger');
+                $(input).closest('.form-group').removeClass('has-success').addClass('has-danger');
             },
 
             success: function(label) {
-                label.addClass('valid').closest('.form-group').removeClass('has-error').addClass('has-success');
+                label.addClass('valid');
+                label.closest('.text-help').siblings('.form-control').removeClass('form-control-danger').addClass('form-control-success');
+                label.closest('.form-group').removeClass('has-danger').addClass('has-success');
             },
 
             messages: {
@@ -86,30 +91,33 @@
             if ($('#contest_task_form').valid()) {
                 set_disabled();
                 if ($('#contest_problems').is(':empty')) {
-                    $('#loading_contest_img').css('display', 'inline-block');
+                    $('#get_tasks').hide();
+                    $('#loading_contest_img').show();
                     $('#task_contest_id').attr('readonly', 'readonly');
 
                     $.post('{% url tasks.views.get_contest_problems %}', $(this).serialize(), function(data){
                         var problems = data.problems;
                         if (data.is_error == false) {
                             for (i = 0; i < problems.length; i++) {
-                                $('#contest_problems').append('<li><label class="checkbox" style="padding-top: 1px;font-weight: normal;"><input name="contest_problems[]" type="checkbox" value="'
+                                $('#contest_problems').append('<li><label class="checkbox" style="padding-top: 1px;font-weight: normal;margin-left:15px;"><input style="margin-left:-18px;" name="contest_problems[]" type="checkbox" value="'
                                         + problems[i].id + '">' +
                                         ' ' + problems[i].title +
                                         ': ' + problems[i].name + '</input></label></li>');
                             }
-                            $('#get_tasks').hide();
                             $('#task_contest_body').show();
+                            $('#task_contest_id_editable').hide();
                             $('#task_contest_id_readonly').show();
                             $('#task_contest_id_readonly').find('input').val($('#task_contest_id').val());
                             $('#task_contest_id').hide();
                         }
                         else {
+                            $('#get_tasks').show();
                             $('#task_contest_id_error_text').empty().append(data.error);
-                            $('#task_contest_id_error_text').closest('.form-group').removeClass('has-success').addClass('has-error');
+                            $('#task_contest_id_error_text').closest('.form-group').removeClass('has-success').addClass('has-danger');
+                            $('#task_contest_id').removeClass('form-control-success').addClass('form-control-danger');
                         }
                         remove_disabled();
-                        $('#loading_contest_img').css('display', 'none');
+                        $('#loading_contest_img').hide();
                         $('#task_contest_id').removeAttr('readonly');
                     });
                 }
@@ -118,11 +126,13 @@
                         if (data.is_error == true) {
                             $('#get_tasks').show();
                             $('#task_contest_body').hide();
+                            $('#task_contest_id_editable').show();
                             $('#task_contest_id_readonly').hide();
                             $('#task_contest_id').show();
                             $('#contest_problems').empty();
                             $('#task_contest_id_error_text').empty().append(data.error);
-                            $('#task_contest_id_error_text').closest('.form-group').removeClass('has-success').addClass('has-error');
+                            $('#task_contest_id_error_text').closest('.form-group').removeClass('has-success').addClass('has-danger');
+                            $('#task_contest_id').removeClass('form-control-success').addClass('form-control-danger');
                             remove_disabled();
                         }
                         else {
@@ -140,13 +150,11 @@
     });
 
     function set_disabled() {
-        $('#button_get_tasks').attr('disabled', 'disabled');
         $('#button_cancel_quit').attr('disabled', 'disabled');
         $('#button_save_quit').attr('disabled', 'disabled');
     }
 
     function remove_disabled() {
-        $('#button_get_tasks').removeAttr('disabled');
         $('#button_cancel_quit').removeAttr('disabled');
         $('#button_save_quit').removeAttr('disabled');
     }
