@@ -20,24 +20,19 @@
     {#        <!-- <p><a class="btn btn-primary btn-large">Learn more &raquo;</a></p> -->#}
     {#    </div>#}
 
-    <div class="card-deck-wrapper">
-        <div class="card-deck">
-            {% for school in schools %}
+    <div class="row">
+        {% for school in schools %}
+            <div class="col-md-6">
                 <div class="card">
                     <a class="card-link card-clickable"  href="{% url schools.views.school_page school.link %}">
                         <div class="card-block">
-                            <h1 class="card-title">{{ school.name }}</h1>
+                            <h2 class="card-title">{{ school.name }}</h2>
                             <p class="card-text">Some text.</p>
                         </div>
                     </a>
                 </div>
-
-            {% endfor %}
-        </div>
+            </div>
+        {% endfor %}
     </div>
-
-    <footer>
-        <small class="text-muted pull-xs-right">Пишите нам на <a href="mailto:anytask@yandex.ru">anytask@yandex.ru</a></small>
-    </footer>
 
 {% endblock %}

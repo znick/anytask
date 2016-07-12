@@ -23,9 +23,9 @@
 {% block content %}
     {{ block.super }}
 
-    <div class="card-deck-wrapper">
-        <div class="card-deck">
-            {% for course in courses %}
+    <div class="row">
+        {% for course in courses %}
+            <div class="col-md-4">
                 <div class="card">
                     <a class="card-link card-clickable" href="{{ course.get_absolute_url }}">
                         <div class="card-block">
@@ -34,7 +34,7 @@
                         </div>
                     </a>
                 </div>
-            {% endfor %}
-        </div>
+            </div>
+        {% endfor %}
     </div>
 {% endblock %}

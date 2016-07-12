@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load crispy_forms_tags %}
 
 {% block title %} {{ user_to_show.get_full_name }} {% endblock %}
 
@@ -8,12 +9,23 @@
         $(document).ready(function() {
             $(".table_tasks").tablesorter();
             $(".table_tasks").stickyTableHeaders({fixedOffset: $('.navbar')});
+
+            $('#invites_form_button').click(function () {
+                $('#invites_form_button').hide();
+                $('#invites_form').show();
+            });
         });
     </script>
 
 {% endblock %}
 
 {% block content %}
+
+    <style>
+        .table_tasks th {
+            white-space: nowrap
+        }
+    </style>
 
     <div class="card-columns">
         <div class="card">
@@ -89,21 +101,24 @@
             <div class="card">
                 <div class="card-block">
                     <h2 class="card-title">Активация инвайтов в курсы</h2>
-                    <button type="button" class="btn btn-secondary" data-toggle="collapse" data-target="#invites-form">Ввести инвайт</button>
-                    <form action="{% url users.views.profile %}" method="post" id="invites-form" class="form-horizontal {% if invite_form.errors %} collapse in {% else %} collapse {% endif %}">
-                        {% csrf_token %}
-                        <fieldset>
-                            <br>
-                            <div>{{ invite_form }}
-                                {% if invite_form.errors %}
-                                    <span class="help-block">{% for error in invite_form.errors %}{{ error }}{% endfor %}</span>
-                                {% endif %}
-                            </div> <br>
-                            <div>
-                                <button type="submit" class="btn btn-primary">Применить</button>
-                            </div>
-                        </fieldset>
-                    </form>
+                    <button id="invites_form_button" type="button" class="btn btn-secondary {% if invite_form.errors %}collapse{% else %}in collapse{% endif %}"  style="margin-bottom: 1rem;">Ввести инвайт</button>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <form action="{% url users.views.profile %}" method="post" id="invites_form" class="{% if invite_form.errors %}in collapse{% else %}collapse{% endif %}">
+                                {% csrf_token %}
+
+                                <div class="col-md-9">
+                                    {{ invite_form|crispy }}
+                                    {#                                {% if invite_form.errors %}#}
+                                    {#                                    <span class="text-help">{% for error in invite_form.errors %}{{ error }}{% endfor %}</span>#}
+                                    {#                                {% endif %}#}
+                                </div>
+                                <div class="col-md-3">
+                                    <button type="submit" class="btn btn-primary">Ок</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
         {% endif %}
@@ -146,11 +161,11 @@
                 <table class="table table_tasks">
                     <thead>
                     <tr>
-                        <th>Задача</th>
-                        <th>Курс</th>
-                        <th>Обновлена</th>
-                        <th>Статус</th>
-                        <th>Оценка</th>
+                        <th>Задача<i class="fa fa-fw fa-sort"></i></th>
+                        <th>Курс<i class="fa fa-fw fa-sort"></i></th>
+                        <th>Обновлена<i class="fa fa-fw fa-sort"></i></th>
+                        <th>Статус<i class="fa fa-fw fa-sort"></i></th>
+                        <th>Оценка<i class="fa fa-fw fa-sort"></i></th>
                     </tr>
                     </thead>
                     <tbody>

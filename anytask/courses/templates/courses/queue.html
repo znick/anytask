@@ -39,12 +39,18 @@
 {% block content %}
     {{ block.super }}
 
+    <style>
+        .table_queue th {
+            white-space: nowrap
+        }
+    </style>
+
     <div class="row">
         <div class="col-md-2">
-            <div class="card card-block" id="filters" style="position: fixed;width:11.5rem;">
+            <div class="card card-block" id="filters" style="position: absolute;width:11.5rem;">
                 <form action="" method="get" >
                     <div style="padding-right: .9375rem;padding-left: .9375rem;">
-                    {{ filter.form|crispy }}
+                        {{ filter.form|crispy }}
                     </div>
                     <div class="form-group">
                         <button id="button_filter" class="btn btn-secondary pull-xs-right" type="submit">Применить</button>
@@ -59,12 +65,12 @@
                     <thead>
                     <tr style="background-color: #ffffff;">
                         <th>#</th>
-                        <th>id <i class="fa fa-fw fa-sort"></i></th>
-                        <th>Студент <i class="fa fa-fw fa-sort"></i></th>
-                        <th>Задача <i class="fa fa-fw fa-sort"></i></th>
-                        <th>Обновлена <i class="fa fa-fw fa-sort"></i></th>
-                        <th>Оценка <i class="fa fa-fw fa-sort"></i></th>
-                        <th>Ответственный <i class="fa fa-fw fa-sort"></i></th>
+                        <th>id<i class="fa fa-fw fa-sort"></i></th>
+                        <th>Студент<i class="fa fa-fw fa-sort"></i></th>
+                        <th>Задача<i class="fa fa-fw fa-sort"></i></th>
+                        <th>Обновлена<i class="fa fa-fw fa-sort"></i></th>
+                        <th>Оценка<i class="fa fa-fw fa-sort"></i></th>
+                        <th>Ответственный<i class="fa fa-fw fa-sort"></i></th>
                     </tr>
                     </thead>
                     <tbody>

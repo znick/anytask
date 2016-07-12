@@ -14,17 +14,22 @@
         <script src="http://malsup.github.io/jquery.form.js"></script>
         <script src="{{ STATIC_URL }}jquery.tablesorter/jquery.tablesorter.min.js"></script>
         <script src="{{ STATIC_URL }}jquery-metadata/jquery.metadata.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/js/bootstrap-select.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/js/i18n/defaults-ru_RU.min.js"></script>
+
 
         <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" rel="stylesheet">
         <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
         <link href="https://yastatic.net/jquery-ui/1.11.2/themes/base/jquery-ui.min.css" rel="stylesheet">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/smalot-bootstrap-datetimepicker/2.3.11/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/css/bootstrap-select.min.css" rel="stylesheet">
 
         <style type="text/css">
             body {
-                padding-top: 60px;
+                padding-top: 75px;
                 padding-bottom: 40px;
                 background-color: #f5f8fa;
+                margin-bottom: 60px;
             }
 
             .table .no-font-weight {
@@ -82,10 +87,6 @@
                 background-color: #333333;
             }
 
-            .main-container {
-                padding-top: 1rem !important;
-            }
-
             .navbar-blue {
                 background-color: #3097d1;
                 border-color: #1c73a5;
@@ -93,6 +94,28 @@
 
             .card-clickable {
                 color:#373a3c;
+            }
+
+            /* Sticky footer styles
+    -------------------------------------------------- */
+            html {
+                position: relative;
+                min-height: 100%;
+            }
+
+            .footer {
+                position: absolute;
+                bottom: 0;
+                width: 100%;
+                height: 60px;
+                line-height: 60px;
+                background-color: #f5f5f5;
+            }
+
+
+            .footer > .container {
+                padding-right: 15px;
+                padding-left: 15px;
             }
         </style>
 
@@ -150,7 +173,7 @@
     </div>
 </nav>
 
-<div class="container main-container">
+<div class="container">
     {% load django_bootstrap_breadcrumbs %}
     {% load index_messages %}
     {% block breadcrumbs %}
@@ -164,6 +187,13 @@
     {% endblock %}
 
 </div>
+
+<footer class="footer">
+    <div class="container">
+        {% block footer %} {% endblock footer %}
+        <small class="text-muted pull-xs-right">Пишите нам на <a href="mailto:anytask@yandex.ru">anytask@yandex.ru</a></small>
+    </div>
+</footer>
 
 {#<script src="{{ STATIC_URL }}/bootbox.min.js"></script>#}
 

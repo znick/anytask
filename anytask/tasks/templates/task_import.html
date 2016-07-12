@@ -2,12 +2,20 @@
 {% load sanitize_html icon %}
 {% load dict_func %}
 {% load task_taken_func %}
+{% load django_bootstrap_breadcrumbs %}
 
 {% block title %}Импорт | {{ course.name }} | {{ course.year }}{% endblock %}
 
 {% block scripts %}
     {% include "task_import_js.html" %}
 {% endblock scripts %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    {% breadcrumb school.name school.get_absolute_url %}
+    {% breadcrumb course.name course.get_absolute_url %}
+    {% breadcrumb "Импорт задач из Яндекс.Контеста" "" %}
+{% endblock breadcrumbs %}
 
 {% block navbar %}
     <ul class="nav navbar-nav">
@@ -19,6 +27,7 @@
 
 
 {% block content %}
+    {{ block.super }}
     <div id="task_edit" class="card card-block">
         <h2 class="card-title" style="margin-bottom:1rem;">Импорт задач из Яндекс.Контеста</h2>
 
