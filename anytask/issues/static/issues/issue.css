@@ -1,18 +1,15 @@
-.history
-{
+.history {
     list-style: none;
     margin: 0;
     padding: 0;
 }
 
-.history li
-{
+.history li {
     /*margin: 10px 0;*/
     padding: 10px 15px;
 }
 
-.history-body
-{
+.history-body {
     border-radius: 9px;
     position: relative;
     padding: 10px 15px;
@@ -24,19 +21,47 @@
     font-size: 85%;
 }
 
-/*.history .after_deadline*/
-/*{*/
-    /*border-color: #ce4844;*/
+.history .after_deadline {
+    border: 0.5px dotted #ce4844;
+}
+
+/*.mine:before {*/
+    /*position: absolute;*/
+    /*top: 16px;*/
+    /*right: -8px;*/
+    /*content: '';*/
+    /*display: inline-block;*/
+    /*width: 0;*/
+    /*height: 0;*/
+    /*margin-right: 2px;*/
+    /*vertical-align: middle;*/
+    /*border-top: 6px solid transparent;*/
+    /*border-bottom: 6px solid transparent;*/
+    /*border-left: 6px solid lightblue;*/
 /*}*/
+/*.not_mine:before {*/
+    /*position: absolute;*/
+    /*top: 16px;*/
+    /*left: -8px;*/
+    /*content: '';*/
+    /*display: inline-block;*/
+    /*width: 0;*/
+    /*height: 0;*/
+    /*margin-left: 2px;*/
+    /*vertical-align: middle;*/
+    /*border-top: 6px solid transparent;*/
+    /*border-bottom: 6px solid transparent;*/
+    /*border-right: 6px solid #f5f8fa;*/
+/*}*/
+
 
 /*.history li .primary-font*/
 /*{*/
-    /*color: black;*/
-    /*margin-left: 0px;*/
+/*color: black;*/
+/*margin-left: 0px;*/
 /*}*/
 
-.history .mine
-{
+.history .mine {
     color: #fff;
     background-color: lightblue;
     /*float: left!important;*/
@@ -44,8 +69,7 @@
 
 }
 
-.history .user_img
-{
+.history .user_img {
     padding: 0px 0px 0px 0px;
     text-align: center;
     /*width: 42px;*/
@@ -53,36 +77,33 @@
 }
 
 /*.history .mine + .mine {*/
-    /*margin-top: 5px;*/
+/*margin-top: 5px;*/
 /*}*/
 
-.history .not_mine
-{
+.history .not_mine {
     background-color: #f5f8fa;
     /*float: right!important;*/
 }
 
 /*.history .not_mine + .not_mine {*/
-    /*margin-top: 5px;*/
+/*margin-top: 5px;*/
 /*}*/
 
-.history .files
-{
+.history .files {
     text-align: right;
 }
 
 /*.history li .history-body p*/
 /*{*/
-    /*margin: 0;*/
-    /*color: black;*/
+/*margin: 0;*/
+/*color: black;*/
 /*}*/
 
 /*a.user*/
 /*{*/
-    /*color: #c67605;*/
+/*color: #c67605;*/
 /*}*/
 
-textarea
-{
+textarea {
     resize: vertical;
 }

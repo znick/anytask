@@ -38,13 +38,13 @@
                 </div>
             {% endif %}
 
-            <li class="{% if issue.task.deadline_time < event.timestamp and event.author.username == issue.student.username %} after_deadline {% endif %}">
+            <li>
                 <div class="row">
                     <div class="user_img col-md-1 {% if event.author == user %}pull-xs-right{% else %}pull-xs-left{% endif %}">
                         <i class="fa {% if event.author == user %}fa-empire{% else %}fa-rebel{% endif %} fa-3x" aria-hidden="true"></i>
                     </div>
                     <div class="col-md-11">
-                        <div class="{% if event.author == user %}mine{% else %}not_mine{% endif %} history-body">
+                        <div class="{% if event.author == user %}mine{% else %}not_mine{% endif %} history-body {% if issue.task.deadline_time < event.timestamp  %} after_deadline {% endif %}">
                             {% autoescape off %}
                                 {{ event.get_message|urlize|sanitize }}
                             {% endautoescape %}
