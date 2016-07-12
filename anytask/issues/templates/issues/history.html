@@ -37,35 +37,35 @@
                     выделяться красным цветом.
                 </div>
             {% endif %}
-            {% if event.author == user %}
-                <li class="mine {% if issue.task.deadline_time < event.timestamp and event.author.username == issue.student.username %} after_deadline {% endif %}">
-                    {% else %}
-                <li class="not_mine {% if issue.task.deadline_time < event.timestamp and event.author.username == issue.student.username  %} after_deadline {% endif %}">
-            {% endif %}
-        <div class="history-body">
-            <div class="header">
-                <strong class="primary-font">
-                    {{ event.author.last_name }} {{ event.author.first_name }}
-                </strong>
-                <small class="pull-xs-right text-muted">
-                    <i class="fa fa-clock-o fa-flip-horizontal"></i> {{ event.timestamp|date:"d M H:i" }}
-                </small>
-            </div>
-            {% autoescape off %}
-                <p>
-                    {{ event.get_message|urlize|sanitize }}
-                </p>
-            {% endautoescape %}
-            {% if event.file_set.all %}
-                <div class="files">
-                    <i class="fa fa-file-o"></i>
-                    {% for file in event.file_set.all %}
-                        <a href={% link_to_open file course user %}>{{ file.filename }}</a>
-                    {% endfor %}
+
+            <li class="{% if issue.task.deadline_time < event.timestamp and event.author.username == issue.student.username %} after_deadline {% endif %}">
+                <div class="row">
+                    <div class="user_img col-md-1 {% if event.author == user %}pull-xs-right{% else %}pull-xs-left{% endif %}">
+                        <i class="fa {% if event.author == user %}fa-empire{% else %}fa-rebel{% endif %} fa-3x" aria-hidden="true"></i>
+                    </div>
+                    <div class="col-md-11">
+                        <div class="{% if event.author == user %}mine{% else %}not_mine{% endif %} history-body">
+                            {% autoescape off %}
+                                {{ event.get_message|urlize|sanitize }}
+                            {% endautoescape %}
+                            {% if event.file_set.all %}
+                                <div class="files">
+
+                                    <i class="fa fa-file-o"></i>
+                                    {% for file in event.file_set.all %}
+                                        <a href={% link_to_open file course user %}>{{ file.filename }}</a>
+                                    {% endfor %}
+
+                                </div>
+                            {% endif %}
+                        </div>
+                        <small class="author">
+                            {{ event.author.last_name }} {{ event.author.first_name }}&nbsp;
+                            <i class="fa fa-clock-o fa-flip-horizontal"></i> {{ event.timestamp|date:"d M H:i" }}
+                        </small>
+                    </div>
                 </div>
-            {% endif %}
-        </div>
-        </li>
+            </li>
             {% if event.is_omg %}
                 <li class="change">
                     {{ event.field.title }} changed to {{ event.value }} by {{ event.author.last_name }} {{ event.author.first_name }}

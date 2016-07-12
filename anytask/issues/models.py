@@ -342,7 +342,7 @@ class IssueFilter(django_filters.FilterSet):
     except:
         issue_statuses = [(0,(u'------------'))]
 
-    status = django_filters.MultipleChoiceFilter(label=u'Статус', choices=issue_statuses, widget=forms.CheckboxSelectMultiple)
+    status = django_filters.MultipleChoiceFilter(label=u'Статус', choices=issue_statuses, widget=forms.SelectMultiple)
     update_time = django_filters.DateRangeFilter(label=u'Дата последнего изменения')
     responsible = django_filters.ChoiceFilter(label=u'Ответственный')
     followers = django_filters.MultipleChoiceFilter(label=u'Наблюдатели', widget=forms.CheckboxSelectMultiple)

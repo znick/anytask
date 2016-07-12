@@ -160,7 +160,7 @@
                 <h2 class="card-title">Мои задачи</h2>
                 <table class="table table_tasks">
                     <thead>
-                    <tr>
+                    <tr style="background-color: #ffffff;">
                         <th>Задача<i class="fa fa-fw fa-sort"></i></th>
                         <th>Курс<i class="fa fa-fw fa-sort"></i></th>
                         <th>Обновлена<i class="fa fa-fw fa-sort"></i></th>
@@ -179,7 +179,7 @@
                                 {% endif %}
                             </td>
                             <td><a href="{{ issue.task.course.get_absolute_url }}">{{ issue.task.course }}</a></td>
-                            <td> {{ issue.update_time|date:"d M H:i" }} </td>
+                            <td><i class="fa fa-clock-o fa-flip-horizontal"></i> {{ issue.update_time|date:"d M H:i" }} </td>
                             <td> {{ issue.get_status }} </td>
                             <td> {{ issue.score }} </td>
                         </tr>

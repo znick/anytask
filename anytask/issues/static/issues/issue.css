@@ -7,51 +7,80 @@
 
 .history li
 {
-    padding: 20px;
-    margin: 10px 0;
-    border: 1px solid #eee;
-    border-radius: 5px
+    /*margin: 10px 0;*/
+    padding: 10px 15px;
 }
 
-
-.history .after_deadline
+.history-body
 {
-    border-color: #ce4844;
+    border-radius: 9px;
+    position: relative;
+    padding: 10px 15px;
+    background-color: #f5f8fa;
 }
 
-.history li .primary-font
-{
-    color: black;
-    margin-left: 0px;
+.author {
+    color: #9da9b0;
+    font-size: 85%;
 }
+
+/*.history .after_deadline*/
+/*{*/
+    /*border-color: #ce4844;*/
+/*}*/
+
+/*.history li .primary-font*/
+/*{*/
+    /*color: black;*/
+    /*margin-left: 0px;*/
+/*}*/
 
 .history .mine
 {
-    border-right-width: 5px;
-    border-right-color: #3a87ad
+    color: #fff;
+    background-color: lightblue;
+    /*float: left!important;*/
+    /*display: table-cell;*/
+
 }
+
+.history .user_img
+{
+    padding: 0px 0px 0px 0px;
+    text-align: center;
+    /*width: 42px;*/
+    /*border-radius: 50%;*/
+}
+
+/*.history .mine + .mine {*/
+    /*margin-top: 5px;*/
+/*}*/
 
 .history .not_mine
 {
-    border-left-color: #468847;
-    border-left-width: 5px
+    background-color: #f5f8fa;
+    /*float: right!important;*/
 }
+
+/*.history .not_mine + .not_mine {*/
+    /*margin-top: 5px;*/
+/*}*/
 
 .history .files
 {
     text-align: right;
 }
 
-.history li .history-body p
-{
-    margin: 0;
-    color: black;
-}
+/*.history li .history-body p*/
+/*{*/
+    /*margin: 0;*/
+    /*color: black;*/
+/*}*/
 
-a.user
-{
-    color: #c67605;
-}
+/*a.user*/
+/*{*/
+    /*color: #c67605;*/
+/*}*/
 
 textarea
 {

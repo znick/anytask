@@ -44,6 +44,9 @@ from filemanager import FileManager
 from settings import UPLOAD_ROOT
 import os.path
 
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, HTML
+
 import json
 
 logger = logging.getLogger('django.request')
@@ -79,6 +82,14 @@ def queue_page(request, course_id):
         request.session[course_id_as_str] = f.form.data
     elif course_id_as_str in request.session:
         f.form.data = request.session.get(course_id_as_str)
+
+    f.form.helper = FormHelper(f.form)
+    f.form.helper.form_method = 'get'
+    # f.form.helper.label_class = 'col-md-4'
+    f.form.helper.field_class = 'selectpicker'
+    f.form.helper.layout.append(HTML(u"""<div class="form-group row">
+                                           <button id="button_filter" class="btn btn-secondary pull-xs-right" type="submit">Применить</button>
+                                         </div>"""))
 
     context = {
         'course': course,

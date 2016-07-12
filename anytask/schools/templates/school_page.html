@@ -16,8 +16,7 @@
 
 {% block breadcrumbs %}
     {{ block.super }}
-    {% breadcrumb school.name "schools.views.school_page" school.link %}
-    {% breadcrumb "Активные курсы" "" %}
+    {% breadcrumb school.name "schools.views.school_page" "" %}
 {% endblock breadcrumbs %}
 
 {% block content %}
