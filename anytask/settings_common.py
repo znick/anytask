@@ -166,7 +166,7 @@ RB_SYMLINK_DIR = '/var/lib/anytask/repos/'
 RB_EXTENSIONS = ['.py', '.py2', '.py3', '.cpp', '.sage', '.m', '.java', '.h', '.cs', '.sh', '.c', '.txt', '.fs', '.hpp', '.cc', '.rkt', '.sql']
 
 CONTEST_API_URL = 'https://api.contest.yandex.net/anytask/'
-CONTEST_OAUTH = 'OAUTH'
+CONTEST_OAUTH = '97ecf82381824bbb90a4c2b716d32294'
 CONTEST_OAUTH_ID = 'OAUTH_ID'
 CONTEST_OAUTH_PASSWORD = 'OAUTH_PASSWORD'
 CONTEST_EXTENSIONS = {'.py':'python2_6', '.py2':'python2_6', '.py3':'python3', '.cpp':'gcc0x', '.java':'java8', '.h':'gcc0x', '.cs':'mono_csharp', '.c':'plain_c'} #Actually python2_6 is python 2.7

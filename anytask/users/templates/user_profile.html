@@ -150,11 +150,9 @@
         {# </table> #}
 
         {# {% endfor %} #}
-
-
-
     </div>
-    {% if issues %}
+
+    {% if issues and request.user == user_to_show %}
         <div class="card">
             <div class="card-block">
                 <h2 class="card-title">Мои задачи</h2>
