@@ -1,7 +1,5 @@
 <script src="{{ STATIC_URL }}jquery.validate.min.js"></script>
 <script src="http://malsup.github.io/jquery.form.js"></script>
-{#<script src="{{ STATIC_URL }}jquery.tablesorter/jquery.tablesorter.min.js"></script>#}
-{#<script src="{{ STATIC_URL }}jquery.stickytableheaders.min.js"></script>#}
 <script type="text/javascript" src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap4.min.js"></script>
 {#<script type="text/javascript" src="https://cdn.datatables.net/colreorder/1.3.2/js/dataTables.colReorder.min.js"></script>#}
@@ -13,9 +11,6 @@
 
 <script type="text/javascript">
     $(document).ready(function() {
-        $(".zui-wrapper").show();
-        $(".loading_table_img").hide();
-
         var table_results = $(".table_results").each(function () {
             var t = $(this).DataTable( {
                 scrollY: 400,
@@ -49,19 +44,28 @@
                 deferRender: true,
                 columnDefs: [
                     {
+                        "targets": 0,
                         "searchable": false,
-                        "orderable": false,
-                        "width": "110%",
-                        "targets": 0
+                        "orderable": false
                     },
                     {
-                        "width": "110%",
-                        "targets": 1
-                    } ],
+                        "targets": 'html-type',
+                        "type": "html"
+                    },
+                    {
+                        "targets": 'html-num-type',
+                        "type": "html-num"
+                    },
+                ],
                 order: [[ 1, 'asc' ]],
                 fixedColumns:   {
                     leftColumns: 2
                 },
+                initComplete: function( settings, json ) {
+                    $(".zui-wrapper").show();
+                    $(".loading_table_img").hide();
+                },
+
             });
             t.on( 'order.dt search.dt', function () {
                 t.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
@@ -101,7 +105,7 @@
                         var sum_mark_span = $(form).closest('td').siblings('.sum-score').find('span');
                         var sum_mark = parseFloat(sum_mark_span.text()) + mark_diff;
                         $(sum_mark_span).text(sum_mark.toFixed(1));
-                        $(mark_value).find('span').text(data.mark);
+                        $(mark_value).find('span').removeClass('label-default').addClass('label-success').text(data.mark);
                         $(form).hide();
                         $(mark_value).show();
                     });

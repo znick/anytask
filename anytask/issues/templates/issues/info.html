@@ -10,7 +10,7 @@
 <div id="accordion2">
     {% for field in issue_fields %}
         {% if field.is_visible and field.name != 'run_id' or field.is_visible and teacher_or_staff %}
-            <div class="card">
+            <div class="card" style="margin-bottom: .3rem;">
                 <div class="card-header">
                     <div class="row col-wrap">
                         <div class="col-md-5">

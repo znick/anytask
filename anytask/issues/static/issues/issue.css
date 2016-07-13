@@ -22,37 +22,42 @@
 }
 
 .history .after_deadline {
-    border: 0.5px dotted #ce4844;
+    border: 1px solid #ce4844;
 }
 
-/*.mine:before {*/
-    /*position: absolute;*/
-    /*top: 16px;*/
-    /*right: -8px;*/
-    /*content: '';*/
-    /*display: inline-block;*/
-    /*width: 0;*/
-    /*height: 0;*/
-    /*margin-right: 2px;*/
-    /*vertical-align: middle;*/
-    /*border-top: 6px solid transparent;*/
-    /*border-bottom: 6px solid transparent;*/
-    /*border-left: 6px solid lightblue;*/
-/*}*/
-/*.not_mine:before {*/
-    /*position: absolute;*/
-    /*top: 16px;*/
-    /*left: -8px;*/
-    /*content: '';*/
-    /*display: inline-block;*/
-    /*width: 0;*/
-    /*height: 0;*/
-    /*margin-left: 2px;*/
-    /*vertical-align: middle;*/
-    /*border-top: 6px solid transparent;*/
-    /*border-bottom: 6px solid transparent;*/
-    /*border-right: 6px solid #f5f8fa;*/
-/*}*/
+.mine:before {
+    position: absolute;
+    top: 16px;
+    right: -8px;
+    content: '';
+    display: inline-block;
+    width: 0;
+    height: 0;
+    margin-right: 2px;
+    vertical-align: middle;
+    border-top: 6px solid transparent;
+    border-bottom: 6px solid transparent;
+    border-left: 6px solid lightblue;
+}
+.not_mine:before {
+    position: absolute;
+    top: 16px;
+    left: -8px;
+    content: '';
+    display: inline-block;
+    width: 0;
+    height: 0;
+    margin-left: 2px;
+    vertical-align: middle;
+    border-top: 6px solid transparent;
+    border-bottom: 6px solid transparent;
+    border-right: 6px solid #f5f8fa;
+}
+
+.after_deadline:before {
+     border-left-color:  #ce4844;
+     border-right-color:  #ce4844;
+}
 
 
 /*.history li .primary-font*/
@@ -62,7 +67,7 @@
 /*}*/
 
 .history .mine {
-    color: #fff;
+    /*color: #fff;*/
     background-color: lightblue;
     /*float: left!important;*/
     /*display: table-cell;*/

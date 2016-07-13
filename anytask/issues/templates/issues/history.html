@@ -44,7 +44,7 @@
                         <i class="fa {% if event.author == user %}fa-empire{% else %}fa-rebel{% endif %} fa-3x" aria-hidden="true"></i>
                     </div>
                     <div class="col-md-11">
-                        <div class="{% if event.author == user %}mine{% else %}not_mine{% endif %} history-body {% if issue.task.deadline_time < event.timestamp  %} after_deadline {% endif %}">
+                        <div class="{% if event.author == user %}mine{% else %}not_mine{% endif %} history-body {% if issue.task.deadline_time < event.timestamp and event.author.username == issue.student.username %} after_deadline {% endif %}">
                             {% autoescape off %}
                                 {{ event.get_message|urlize|sanitize }}
                             {% endautoescape %}
