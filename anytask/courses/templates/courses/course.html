@@ -37,20 +37,20 @@
         <br>
     {% endif %}
 
-    <div class = "breadcrumb_button">
-        {% if not user_is_teacher and course.can_be_chosen_by_extern%}
-            {% if user_is_attended_special_course %}
-                <button type="button" class="btn btn-danger" OnClick="javascript:set_spectial_course_attend({{ course.id }}, 'remove');">
-                    Отписаться
-                </button>
-            {% else %}
-                <button type="button" class="btn btn-success" OnClick="javascript:set_spectial_course_attend({{ course.id }},'add');">
-                    Записаться
-                </button>
-            {% endif %}
-            <br>
-        {% endif %}
-    </div>
+{#    <div class = "breadcrumb_button">#}
+{#        {% if not user_is_teacher and course.can_be_chosen_by_extern%}#}
+{#            {% if user_is_attended_special_course %}#}
+{#                <button type="button" class="btn btn-danger" OnClick="javascript:set_spectial_course_attend({{ course.id }}, 'remove');">#}
+{#                    Отписаться#}
+{#                </button>#}
+{#            {% else %}#}
+{#                <button type="button" class="btn btn-success" OnClick="javascript:set_spectial_course_attend({{ course.id }},'add');">#}
+{#                    Записаться#}
+{#                </button>#}
+{#            {% endif %}#}
+{#            <br>#}
+{#        {% endif %}#}
+{#    </div>#}
     Преподаватели:
     {% for teacher in course.get_teachers %}
         <a href="{% url users.views.profile teacher.username %}">{{ teacher.last_name }} {{ teacher.first_name }}</a>{% if not forloop.last %},{% endif %}

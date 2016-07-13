@@ -86,7 +86,7 @@ def queue_page(request, course_id):
     f.form.helper = FormHelper(f.form)
     f.form.helper.form_method = 'get'
     # f.form.helper.label_class = 'col-md-4'
-    f.form.helper.field_class = 'selectpicker'
+    # f.form.helper.field_class = 'selectpicker'
     f.form.helper.layout.append(HTML(u"""<div class="form-group row">
                                            <button id="button_filter" class="btn btn-secondary pull-xs-right" type="submit">Применить</button>
                                          </div>"""))

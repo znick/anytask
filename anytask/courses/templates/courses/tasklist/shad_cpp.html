@@ -9,41 +9,66 @@
 {% endblock scripts %}
 
 <style type = "text/css">
-    .zui-wrapper {
-        position: relative;
+    {#    .zui-wrapper {#}
+    {#        position: relative;#}
+    {#    }#}
+    {#    .zui-scroller {#}
+    {#        margin-left: 215px;#}
+    {#        overflow-x: scroll;#}
+    {#    }#}
+    {#        .zui-sticky-col {#}
+    {##}
+    {#            border-top: none !important;#}
+    {#            border-right: solid !important;#}
+    {#        }#}
+    {#    .num-col {#}
+    {#        position: absolute;#}
+    {#        border-top: none !important;#}
+    {#        left: 0px;#}
+    {#        width: 30px;#}
+    {#    }#}
+    .table_results tr {
+        vertical-align: middle;
     }
-    .zui-scroller {
-        margin-left: 215px;
-        overflow-x: scroll;
+
+    .table_results td {
+        padding: .3rem;
     }
-    .zui-sticky-col {
-        position: absolute;
-        border-top: none !important;
-        border-right: solid !important;
-        left: 30px;
-        width: 185px;
+
+    .table_results tr.odd td.sticky-col{
+        background-color: #f1f1f1;
     }
-    .num-col {
-        position: absolute;
-        border-top: none !important;
-        left: 0px;
-        width: 30px;
+
+    .table_results tr.even td.sticky-col{
+        background-color: #fafafa;
     }
+
+    .table_results tr.odd.table-info td.sticky-col{
+        background-color: #d9edf7;
+    }
+
+    .table_results tr.even.table-info td.sticky-col{
+        background-color: #d9edf7;
+    }
+
+
 </style>
 
 {% for group,student_information in group_information.items %}
-
     <div class="card card-block">
         {% ifnotequal group course.group_with_extern %}
-        <h2 class="card-title">{{ group.name }}</h2>
-    {% endifnotequal %}
-        <div class="zui-wrapper">
+            <h2 class="card-title">{{ group.name }}</h2>
+        {% endifnotequal %}
+        <div class="loading_table_img"  style="text-align: center">
+            <span class="fa fa-circle-o-notch fa-spin fa-3x fa-fw" style="opacity:0.2;filter: alpha(opacity=20);color:#000000;"></span>
+        </div>
+        <div class="zui-wrapper collapse" style="margin-top: -2.8rem;">
             <div class="zui-scroller">
-                <table class="table table-striped table-bordered table-sm table_results css-serial" id="table_results">
+                <table class="table table-striped table-bordered table_results order-column hover" cellspacing="0"  id="table_results" >
                     <thead>
                     <tr>
-                        <th class="no-font-weight num-col">#</th>
-                        <th class="no-font-weight zui-sticky-col"><b>Студент</b></th>
+                        <th class="no-font-weight" style="text-align: center; width: auto">#</th>
+                        <th class="no-font-weight zui-sticky-col" style="width: auto"><b>Студент</b></th>
                         {% for task in group_tasks|key:group %}
                             {% if not task.is_hidden or user_is_teacher %}
                                 <th align="center" class="{sorter: false} no-font-weight">
@@ -70,15 +95,15 @@
                     </thead>
                     <tbody>
                     {% for student, task_x_task_takens, student_summ_score, mark_id, student_course_mark in student_information %}
-                        <tr>
-                            <td align="center" class="num-col">&nbsp;</td>
-                            <td class="zui-sticky-col">{{ student.last_name }}&nbsp;{{ student.first_name }}</td>
+                        <tr class="{% if user.username == student.username %}table-info{% endif %}">
+                            <td class="sticky-col" align="center"></td>
+                            <td class="sticky-col">{{ student.last_name }}&nbsp;{{ student.first_name }}</td>
                             {% for task in group_tasks|key:group %}
                                 {% if not task.is_hidden or user_is_teacher %}
                                     <td align="center" class="student_{{ student.id }}">
                                         {% if not task.is_hidden and user_is_teacher or user.username == student.username %}
                                             {% ifnotequal task.type task.TYPE_SIMPLE %}
-                                                <a class="btn-small" href="/issue/get_or_create/{{task.id}}/{{student.id}}">
+                                                <a  href="/issue/get_or_create/{{task.id}}/{{student.id}}">
                                                     {# <span class="label {% if task_x_task_takens|score:task %} {% if task_x_task_takens|score:task == task.score_max %} label-success {% else %} label-info {% endif %} {% endif %}"> #}
                       <span class="label
                         {{ task_x_task_takens|label_type:task }}">
@@ -149,7 +174,7 @@
                                             <input type="hidden" name="course_id" value="{{ course.id }}"/>
                                             <input type="hidden" name="group_id" value="{{ group.id }}"/>
                                             <input type="hidden" name="student_id" value="{{ student.id }}"/>
-                                            <select class="selectpicker" style="margin:0;width:auto;height: 20px;line-height: 14px;font-size:12px;padding: 2px 6px;" name="mark_id">
+                                            <select style="margin:0;width:auto;height: 1rem;line-height: 1rem;font-size:12px;padding: 2px 6px;" name="mark_id">
                                                 <option value=-1>--</option>
                                                 {% for mark in course_mark_system_vals %}
                                                     <option value={{ mark.id }} {% ifequal mark_id mark.id %}selected{% endifequal %}>{{ mark }}</option>
