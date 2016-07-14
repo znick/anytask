@@ -32,8 +32,6 @@
     .table_results tr.even.table-info td.sticky-col{
         background-color: #d9edf7;
     }
-
-
 </style>
 
 {% for group,student_information in group_information.items %}
@@ -158,7 +156,7 @@
                                         <select style="margin:0;width:auto;height: 1rem;line-height: 1rem;font-size:12px;padding: 2px 6px;" name="mark_id">
                                             <option value=-1>--</option>
                                             {% for mark in course_mark_system_vals %}
-                                                <option value={{ mark.id }} {% ifequal mark_id mark.id %}selected{% endifequal %}>{{ mark }}</option>
+                                                <option value="{{ mark.id }}" {% ifequal mark_id mark.id %}selected="selected"{% endifequal %}>{{ mark }}</option>
                                             {% endfor %}
                                         </select>
                                     </form>

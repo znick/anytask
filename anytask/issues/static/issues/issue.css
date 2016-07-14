@@ -17,11 +17,6 @@
     word-wrap: break-word;
 }
 
-.author {
-    color: #9da9b0;
-    font-size: 85%;
-}
-
 .history .after_deadline {
     border: 1px solid #ce4844;
 }
