@@ -38,12 +38,6 @@ def issue_label_type(d, task):
                 return 'label-success'
             if d[task.id].status == Issue.STATUS_NEED_INFO:
                 return 'label-info'
-    return 'label-default'
+            return 'label-default'
+    return 'label-default no-issue'
 
-
-@register.filter(name='label_type_simple_task')
-def issue_label_type(d, task):
-    if task.id in d:
-        if isinstance(d[task.id], Issue):
-            return 'label-success'
-    return 'label-default'

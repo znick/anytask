@@ -39,7 +39,7 @@
 {% for group,student_information in group_information.items %}
     <div class="card card-block">
         {% ifnotequal group course.group_with_extern %}
-            <h2 class="card-title">{{ group.name }}</h2>
+            <h2 class="card-title">{% if group.name %}{{ group.name }}{% else %}&nbsp;{% endif %}</h2>
         {% endifnotequal %}
         <div class="loading_table_img"  style="text-align: center">
             <span class="fa fa-circle-o-notch fa-spin fa-3x fa-fw" style="opacity:0.2;filter: alpha(opacity=20);color:#000000;"></span>
@@ -52,7 +52,7 @@
                     <th class="no-font-weight"><b>Студент</b></th>
                     {% for task in group_tasks|key:group %}
                         {% if not task.is_hidden or user_is_teacher %}
-                            <th align="center" class="no-font-weight">
+                            <th align="center" class="no-font-weight  dom-number">
                                 <a {% if task.is_hidden %} style="color:gray" {% endif %} href="javascript:get_task_modal({{task.id}}, '{{task.title|escapejs}}',
                     '{{task.task_text|safe|escapejs}}',
                      {% if task.deadline_time %} '{{task.deadline_time|date:'d-m-Y H:i'}}' {% else %}''{% endif %})">
@@ -64,11 +64,11 @@
                     {% empty %}
                         <th></th>
                     {% endfor %}
-                    <th class="no-font-weight">
+                    <th class="no-font-weight dom-number">
                         Суммарный балл <span class="label label-inverse">{{ group_x_max_score|key:group }}</span>
                     </th>
                     {% if course.mark_system %}
-                        <th class="no-font-weight">
+                        <th class="no-font-weight dom-select-text">
                             Итоговая оценка
                         </th>
                     {% endif %}
@@ -78,10 +78,10 @@
                 {% for student, task_x_task_takens, student_summ_score, mark_id, student_course_mark in student_information %}
                     <tr class="{% if user.username == student.username %}table-info{% endif %}">
                         <td class="sticky-col" align="center"></td>
-                        <td class="sticky-col html-type">{{ student.last_name }}&nbsp;{{ student.first_name }}</td>
+                        <td class="sticky-col">{{ student.last_name }}&nbsp;{{ student.first_name }}</td>
                         {% for task in group_tasks|key:group %}
                             {% if not task.is_hidden or user_is_teacher %}
-                                <td align="center" class="student_{{ student.id }} html-num-type">
+                                <td align="center" class="student_{{ student.id }}">
                                     {% if not task.is_hidden and user_is_teacher or user.username == student.username %}
                                         {% ifnotequal task.type task.TYPE_SIMPLE %}
                                             <a  href="/issue/get_or_create/{{task.id}}/{{student.id}}">
@@ -93,7 +93,7 @@
                                             </a>
                                         {% else %}
                                             <div {% if user_is_teacher %}class="task-mark-value"{% endif %}>
-                                                <span class="label {{ task_x_task_takens|label_type_simple_task:task }}">
+                                                <span class="label {{ task_x_task_takens|label_type:task }}">
                                                   {{ task_x_task_takens|score:task }}
                                                 </span>
                                             </div>
@@ -136,14 +136,14 @@
                         {% empty %}
                             <td>{{ student.last_name }}&nbsp;{{ student.first_name }}</td>
                         {% endfor %}
-                        <td class="sum-score html-num-type">
+                        <td class="sum-score">
                             {# <span class="label {% if student_summ_score %} {% if student_summ_score == group_x_max_score|key:group %} label-success {% else %} label-info {% endif %} {% else %} label-important {% endif %}"> #}
               <span class="label label-inverse">
                 {{ student_summ_score }}
               </span>
                         </td>
                         {% if course_mark_system_vals %}
-                            <td class="html-type">
+                            <td>
                                 <div {% if user_is_teacher %}class="mark-value in collapse"{% endif %}>
                     <span class="label label-success">
                     {{ student_course_mark }}

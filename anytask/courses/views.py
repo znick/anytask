@@ -660,6 +660,13 @@ def set_task_mark(request):
 
     mark = float(request.POST['mark_value'])
     issue.set_byname('mark', mark)
+    if mark <= 0:
+        issue.set_byname('status', issue.STATUS_REWORK)
+        label = 'label-danger'
+    else:
+        issue.set_byname('status', issue.STATUS_ACCEPTED)
+        label = 'label-success'
+    issue.set_byname('mark', mark)
 
-    return HttpResponse(json.dumps({'mark': mark}),
+    return HttpResponse(json.dumps({'mark': mark, 'label': label}),
                         content_type="application/json")

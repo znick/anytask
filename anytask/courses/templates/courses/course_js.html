@@ -10,8 +10,23 @@
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedcolumns/3.2.2/css/fixedColumns.bootstrap4.min.css"/>
 
 <script type="text/javascript">
+    $.fn.dataTable.ext.order['dom-number'] = function  ( settings, col )
+    {
+        return this.api().column( col, {order:'index'} ).nodes().map( function ( td, i ) {
+            return $('span', td).hasClass('no-issue') ? -1 : $('span', td).text() * 1.0;
+        } );
+    };
+
+    $.fn.dataTable.ext.order['dom-select-text'] = function  ( settings, col )
+    {
+        return this.api().column( col, {order:'index'} ).nodes().map( function ( td, i ) {
+            return $('select', td).val();
+        } );
+    };
+
     $(document).ready(function() {
-        var table_results = $(".table_results").each(function () {
+        var table_results = {};
+        $(".table_results").each(function (i) {
             var t = $(this).DataTable( {
                 scrollY: 400,
                 scrollX: true,
@@ -49,12 +64,12 @@
                         "orderable": false
                     },
                     {
-                        "targets": 'html-type',
-                        "type": "html"
+                        "targets": "dom-number",
+                        "orderDataType": "dom-number",
                     },
                     {
-                        "targets": 'html-num-type',
-                        "type": "html-num"
+                        "targets": "dom-select-text",
+                        "orderDataType": "dom-select-text",
                     },
                 ],
                 order: [[ 1, 'asc' ]],
@@ -65,14 +80,13 @@
                     $(".zui-wrapper").show();
                     $(".loading_table_img").hide();
                 },
-
             });
             t.on( 'order.dt search.dt', function () {
                 t.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
                     cell.innerHTML = i+1;
                 } );
             } ).draw();
-
+            {#            table_results['table_results_' + (i + 1)] = t;#}
         });
 
         $('.task-mark-value').click(function() {
@@ -105,7 +119,7 @@
                         var sum_mark_span = $(form).closest('td').siblings('.sum-score').find('span');
                         var sum_mark = parseFloat(sum_mark_span.text()) + mark_diff;
                         $(sum_mark_span).text(sum_mark.toFixed(1));
-                        $(mark_value).find('span').removeClass('label-default').addClass('label-success').text(data.mark);
+                        $(mark_value).find('span').removeClass('label-default no-issue').addClass(data.label).text(data.mark);
                         $(form).hide();
                         $(mark_value).show();
                     });
