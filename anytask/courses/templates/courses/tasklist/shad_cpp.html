@@ -76,7 +76,7 @@
                 {% for student, task_x_task_takens, student_summ_score, mark_id, student_course_mark in student_information %}
                     <tr class="{% if user.username == student.username %}table-info{% endif %}">
                         <td class="sticky-col" align="center"></td>
-                        <td class="sticky-col">{{ student.last_name }}&nbsp;{{ student.first_name }}</td>
+                        <td class="sticky-col"><a class="card-link" href="{{ student.get_absolute_url }}" style="color:#373a3c;">{{ student.last_name }}&nbsp;{{ student.first_name }}</a></td>
                         {% for task in group_tasks|key:group %}
                             {% if not task.is_hidden or user_is_teacher %}
                                 <td align="center" class="student_{{ student.id }}">
@@ -132,7 +132,7 @@
                                 </td>
                             {% endif %}
                         {% empty %}
-                            <td>{{ student.last_name }}&nbsp;{{ student.first_name }}</td>
+                            <td>&nbsp;</td>
                         {% endfor %}
                         <td class="sum-score">
                             {# <span class="label {% if student_summ_score %} {% if student_summ_score == group_x_max_score|key:group %} label-success {% else %} label-info {% endif %} {% else %} label-important {% endif %}"> #}
