@@ -41,7 +41,7 @@
             <li>
                 <div class="row">
                     <div class="{% if event.author == user %}col-md-12{% else %}col-md-offset-1 col-md-11{% endif %}">
-                        <strong>{{ event.author.last_name }} {{ event.author.first_name }}&nbsp;</strong>
+                        <strong><a class="card-link" href="{{ event.author.get_absolute_url }}" style="color:#373a3c;">{{ event.author.last_name }} {{ event.author.first_name }}</a>&nbsp;</strong>
                         <small class="text-muted">
                             <i class="fa fa-clock-o fa-flip-horizontal"></i> {{ event.timestamp|date:"d M H:i" }}
                         </small>
