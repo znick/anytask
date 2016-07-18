@@ -66,7 +66,7 @@ def profile(request, username=None, year=None):
 
     groups = user_to_show.group_set.filter(year=current_year)
 
-    courses = Course.objects.filter(groups=groups, year=current_year)
+    courses = Course.objects.filter(is_active=True, year=current_year).filter(groups__in=groups)
 
     can_sync_contest = False
     for course in Course.objects.filter(is_active=True):
