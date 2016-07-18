@@ -124,7 +124,7 @@
                         var sum_mark_span = $(form).closest('td').siblings('.sum-score').find('span');
                         var sum_mark = parseFloat(sum_mark_span.text()) + mark_diff;
                         $(sum_mark_span).text(sum_mark.toFixed(1));
-                        $(mark_value).find('span').removeClass('label-default no-issue').addClass(data.label).text(data.mark);
+                        $(mark_value).find('span').removeClass('label-default label-danger label-success no-issue').addClass(data.label).text(data.mark);
                         $(form).hide();
                         $(mark_value).show();
                     });
