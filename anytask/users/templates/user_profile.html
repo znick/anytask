@@ -41,10 +41,11 @@
         <div class="card-deck">
             <div class="card">
                 <div class="card-block">
-                    <h2 class="card-title">
+                    <h3 class="card-title">
                         {{ user_to_show.get_full_name }}
+                        <br>
                         <small class="text-muted">{{ user_to_show.email }}</small>
-                    </h2>
+                    </h3>
                     {% if user == user_to_show and can_generate_invites %}
                         <a class="card-link" href="#" onclick="window.open('{% url invites.views.generate_invites %}','_blank','height=331,width=769,status=yes,toolbar=no,menubar=no,location=no');return false;">Сгенерировать инвайты</a>
                     {% endif %}

@@ -102,6 +102,7 @@
                 $(mark_form).find('.form-group').removeClass('has-success has-danger');
                 $(mark_form).show();
                 $(mark_form).find('[name="mark_value"]').focus().select();
+                $(mark_form).data('blur', false);
             }
         });
 
@@ -113,8 +114,9 @@
 
         $('.task-mark-form').each( function(){
             var form = $(this);
-            form.focusout(function() {
-                form.submit();
+            form.find('[name="mark_value"]').blur(function() {
+                if (!$(form).data('blur'))
+                    form.submit();
             });
             form.validate({
                 submitHandler: function(form) {
@@ -126,6 +128,8 @@
                         $(sum_mark_span).text(sum_mark.toFixed(1));
                         $(mark_value).find('span').removeClass('label-default label-danger label-success no-issue').addClass(data.label).text(data.mark);
                         $(form).hide();
+                        $(form).find('[name="mark_value"]').blur();
+                        $(form).data('blur', true);
                         $(mark_value).show();
                     });
                 },
