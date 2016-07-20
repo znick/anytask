@@ -31,11 +31,13 @@ def issue_label_type(d, task):
     if d.has_key(task.id):
         if isinstance(d[task.id], Issue):
             if d[task.id].status == Issue.STATUS_REWORK:
-                return 'label-important'
+                return 'label-danger'
             if d[task.id].status == Issue.STATUS_VERIFICATION:
                 return 'label-warning'
             if d[task.id].status == Issue.STATUS_ACCEPTED:
                 return 'label-success'
             if d[task.id].status == Issue.STATUS_NEED_INFO:
                 return 'label-info'
-    return ''
+            return 'label-default'
+    return 'label-default no-issue'
+

@@ -118,6 +118,8 @@ def issue_page(request, issue_id):
         'first_event_after_deadline': first_event_after_deadline,
         'show_top_alert': show_top_alert,
         'teacher_or_staff': user_is_teacher_or_staff(request.user, issue),
+        'school': issue.task.course.school_set.all()[0],
+        'visible_queue': issue.task.course.user_can_see_queue(request.user),
     }
 
     return render_to_response('issues/issue.html', context, context_instance=RequestContext(request))

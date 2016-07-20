@@ -4,166 +4,170 @@
 
 {% block scripts %}
 
-  {% include "courses/task_js.html" %}
+    {% include "courses/course_js.html" %}
 
 {% endblock scripts %}
 
 <style type = "text/css">
-.zui-wrapper {
-    position: relative;
-}
-.zui-scroller {
-    margin-left: 226px;
-    overflow-x: scroll;
-}
-.zui-sticky-col {
-    position: absolute;
-    border-top: none;
-    border-right: solid;
-    left: 30px;
-    width: 185px;
-}
-.num-col {
-    position: absolute;
-    left: 0px;
-    width: 20px;
-}
+    .table_results td {
+        vertical-align: middle;
+    }
+
+    .table_results td {
+        padding: .3rem;
+    }
+
+    .table_results tr.odd td.sticky-col{
+        background-color: #f1f1f1;
+    }
+
+    .table_results tr.even td.sticky-col{
+        background-color: #fafafa;
+    }
+
+    .table_results tr.odd.table-info td.sticky-col{
+        background-color: #d9edf7;
+    }
+
+    .table_results tr.even.table-info td.sticky-col{
+        background-color: #d9edf7;
+    }
 </style>
 
-<div class="row">
-  <div class="span12">
-    {% for group,student_information in group_information.items %}
-      {% ifnotequal group course.group_with_extern %}
-        <b>{{ group.name }}</b>
-      {% endifnotequal %}
-    <div class="zui-wrapper">
-     <div class="zui-scroller">
-      <table class="table table-striped table-bordered table-condensed table_results css-serial" id="table_results">
-        <thead>
-        <tr>
-          <th class="no-font-weight num-col">#</th>
-          <th class="no-font-weight zui-sticky-col"><b>Студент</b></th>
-          {% for task in group_tasks|key:group %}
-            {% if not task.is_hidden or user_is_teacher %}
-              <th align="center" class="{sorter: false} no-font-weight">
-                  <a {% if task.is_hidden %} style="color:gray" {% endif %} href="javascript:get_task_modal({{task.id}}, '{{task.title|escapejs}}',
+{% for group,student_information in group_information.items %}
+    <div class="card card-block">
+        {% ifnotequal group course.group_with_extern %}
+            <h3 class="card-title">{% if group.name %}{{ group.name }}{% else %}&nbsp;{% endif %}</h3>
+        {% endifnotequal %}
+        <div class="loading_table_img"  style="text-align: center">
+            <span class="fa fa-circle-o-notch fa-spin fa-3x fa-fw" style="opacity:0.2;filter: alpha(opacity=20);color:#000000;"></span>
+        </div>
+        <div class="zui-wrapper collapse" style="margin-top: -2.8rem;">
+            <table class="table table-striped table-bordered table_results order-column hover" cellspacing="0"  id="table_results_{{ forloop.counter }}" >
+                <thead>
+                <tr>
+                    <th class="no-font-weight" style="text-align: center;">#</th>
+                    <th class="no-font-weight"><b>Студент</b></th>
+                    {% for task in group_tasks|key:group %}
+                        {% if not task.is_hidden or user_is_teacher %}
+                            <th align="center" class="no-font-weight  dom-number">
+                                <a {% if task.is_hidden %} style="color:gray" {% endif %} href="javascript:get_task_modal({{task.id}}, '{{task.title|escapejs}}',
                     '{{task.task_text|safe|escapejs}}',
                      {% if task.deadline_time %} '{{task.deadline_time|date:'d-m-Y H:i'}}' {% else %}''{% endif %})">
-                    {{ task.title }}
-                  </a>
-                <span class="label {% if not task.is_hidden %} label-inverse {% endif %}">{{ task.score_max }}</span>
-              </th>
-            {% endif %}
-          {% empty %}
-            <th></th>
-          {% endfor %}
-          <th class="no-font-weight">
-            Суммарный балл <span class="label label-inverse">{{ group_x_max_score|key:group }}</span>
-          </th>
-          {% if course.mark_system %}
-            <th class="no-font-weight">
-              Итоговая оценка
-            </th>
-          {% endif %}
-        </tr>
-        </thead>
-        <tbody>
-        {% for student, task_x_task_takens, student_summ_score, mark_id, student_course_mark in student_information %}
-          <tr>
-            <td align="center" class="num-col">&nbsp;</td>
-            <td class="zui-sticky-col">{{ student.last_name }}&nbsp;{{ student.first_name }}</td>
-            {% for task in group_tasks|key:group %}
-              {% if not task.is_hidden or user_is_teacher %}
-                <td align="center" class="student_{{ student.id }}">
-                  {% if not task.is_hidden and user_is_teacher or user.username == student.username %}
-                    {% ifnotequal task.type task.TYPE_SIMPLE %}
-                      <a class="btn-small" href="/issue/get_or_create/{{task.id}}/{{student.id}}">
-                        {# <span class="label {% if task_x_task_takens|score:task %} {% if task_x_task_takens|score:task == task.score_max %} label-success {% else %} label-info {% endif %} {% endif %}"> #}
-                      <span class="label
-                        {{ task_x_task_takens|label_type:task }}">
-                        {{ task_x_task_takens|score:task }}
-                      </span>
-                      </a>
-                    {% else %}
-                      <div {% if user_is_teacher %}class="task-mark-value"{% endif %}>
-                        <span class="label">
-                          {{ task_x_task_takens|score:task }}
-                        </span>
-                      </div>
-                      {% if user_is_teacher %}
-                        <form method="post" class="task-mark-form hide" style="margin:0">
-                          {% csrf_token %}
-                          <fieldset class="control-group" style="margin:0;">
-                            <input type="hidden" name="task_id" value="{{task.id}}"/>
-                            <input type="hidden" name="student_id" value="{{student.id}}"/>
-                            <input type="hidden" name="mark_max" class="mark_max" value="{{ task.score_max }}">
-                            <input name="mark_value" type="text" maxlength="25" size="5" style="margin:0;width:22px;height:18px;line-height:14px;font-size:12px;padding:0px 2px;" autocomplete="off" value="{{ task_x_task_takens|score:task }}">
-                            <span class="hide"></span>
-                          </fieldset>
-                        </form>
-                      {% endif %}
-                    {% endifnotequal %}
-                  {% else %}
-                    {% if task.is_hidden %}
-                      <span class="label">{{ task_x_task_takens|score:task }}</span>
-                    {% else %}
-                      <span class="label
-                        {{ task_x_task_takens|label_type:task }}">
-                        {{ task_x_task_takens|score:task }}
-                      </span>
+                                    {{ task.title }}
+                                </a>
+                                <span class="label {% if not task.is_hidden %} label-inverse {% else %} label-default {% endif %}">{{ task.score_max }}</span>
+                            </th>
+                        {% endif %}
+                    {% empty %}
+                        <th></th>
+                    {% endfor %}
+                    <th class="no-font-weight dom-number">
+                        Суммарный балл <span class="label label-inverse">{{ group_x_max_score|key:group }}</span>
+                    </th>
+                    {% if course.mark_system %}
+                        <th class="no-font-weight dom-select-text">
+                            Итоговая оценка
+                        </th>
                     {% endif %}
-                  {% endif %}
+                </tr>
+                </thead>
+                <tbody>
+                {% for student, task_x_task_takens, student_summ_score, mark_id, student_course_mark in student_information %}
+                    <tr class="{% if user.username == student.username %}table-info{% endif %}">
+                        <td class="sticky-col" align="center"></td>
+                        <td class="sticky-col"><a class="card-link" href="{{ student.get_absolute_url }}" style="color:#373a3c;">{{ student.last_name }}&nbsp;{{ student.first_name }}</a></td>
+                        {% for task in group_tasks|key:group %}
+                            {% if not task.is_hidden or user_is_teacher %}
+                                <td align="center" class="student_{{ student.id }}">
+                                    {% if not task.is_hidden and user_is_teacher or user.username == student.username %}
+                                        {% ifnotequal task.type task.TYPE_SIMPLE %}
+                                            <a  href="/issue/get_or_create/{{task.id}}/{{student.id}}">
+                                                {# <span class="label {% if task_x_task_takens|score:task %} {% if task_x_task_takens|score:task == task.score_max %} label-success {% else %} label-info {% endif %} {% endif %}"> #}
+                                                <span class="label
+                                                  {{ task_x_task_takens|label_type:task }}">
+                                                  {{ task_x_task_takens|score:task }}
+                                                </span>
+                                            </a>
+                                        {% else %}
+                                            <div {% if user_is_teacher %}class="task-mark-value"{% endif %}>
+                                                <span class="label {{ task_x_task_takens|label_type:task }}">
+                                                  {{ task_x_task_takens|score:task }}
+                                                </span>
+                                            </div>
+                                            {% if user_is_teacher %}
+                                                <form method="post" class="task-mark-form collapse" style="margin:0;">
+                                                    {% csrf_token %}
+                                                    <fieldset class="form-group" style="margin:0;">
+                                                        <input type="hidden" name="task_id" value="{{task.id}}"/>
+                                                        <input type="hidden" name="student_id" value="{{student.id}}"/>
+                                                        <input type="hidden" name="mark_max" class="mark_max" value="{{ task.score_max }}">
+                                                        <input class="form-control" name="mark_value" type="text" maxlength="25" size="5" style="margin:0;width:22px;height:18px;line-height:14px;font-size:12px;padding:0px 2px;" autocomplete="off" value="{{ task_x_task_takens|score:task }}">
+                                                        <span class="text-help" style="display: none;"></span>
+                                                    </fieldset>
+                                                </form>
+                                            {% endif %}
+                                        {% endifnotequal %}
+                                    {% else %}
+                                        {% if task.is_hidden %}
+                                            <span class="label label-default ">{{ task_x_task_takens|score:task }}</span>
+                                        {% else %}
+                                            <span class="label
+                        {{ task_x_task_takens|label_type:task }}">
+                        {{ task_x_task_takens|score:task }}
+                      </span>
+                                        {% endif %}
+                                    {% endif %}
 
-{#                  {% if task_x_task_takens|comment:task %}#}
-{#                    <a class="icon-comment" href="javascript:get_modal_comment('{{task_x_task_takens|comment:task|safe|sanitize|escapejs }}')"></a>#}
-{#                  {% endif %}#}
+                                    {#                  {% if task_x_task_takens|comment:task %}#}
+                                    {#                    <a class="icon-comment" href="javascript:get_modal_comment('{{task_x_task_takens|comment:task|safe|sanitize|escapejs }}')"></a>#}
+                                    {#                  {% endif %}#}
 
 
-                  {% if user.username == student.username %}
-                    <a class="{{ task_x_task_takens|get_task_taken:task|icon}}"></a>
-                  {% elif task.can_score %}
-                    <a class="{{ task_x_task_takens|get_task_taken:task|icon}}"></a>
-                  {% endif %}
-                </td>
-              {% endif %}
-            {% empty %}
-              <td>{{ student.last_name }}&nbsp;{{ student.first_name }}</td>
-            {% endfor %}
-            <td class="sum-score">
-              {# <span class="label {% if student_summ_score %} {% if student_summ_score == group_x_max_score|key:group %} label-success {% else %} label-info {% endif %} {% else %} label-important {% endif %}"> #}
+                                    {% if user.username == student.username %}
+                                        <a class="{{ task_x_task_takens|get_task_taken:task|icon}}"></a>
+                                    {% elif task.can_score %}
+                                        <a class="{{ task_x_task_takens|get_task_taken:task|icon}}"></a>
+                                    {% endif %}
+                                </td>
+                            {% endif %}
+                        {% empty %}
+                            <td>&nbsp;</td>
+                        {% endfor %}
+                        <td class="sum-score">
+                            {# <span class="label {% if student_summ_score %} {% if student_summ_score == group_x_max_score|key:group %} label-success {% else %} label-info {% endif %} {% else %} label-important {% endif %}"> #}
               <span class="label label-inverse">
                 {{ student_summ_score }}
               </span>
-            </td>
-            {% if course_mark_system_vals %}
-              <td>
-                <div {% if user_is_teacher %}class="mark-value in collapse"{% endif %}>
+                        </td>
+                        {% if course_mark_system_vals %}
+                            <td>
+                                <div {% if user_is_teacher %}class="mark-value in collapse"{% endif %}>
                     <span class="label label-success">
                     {{ student_course_mark }}
                   </span>
-                </div>
-                {% if user_is_teacher %}
-                  <form method="post" class="mark-form collapse" style="margin:0">
-                    {% csrf_token %}
-                    <input type="hidden" name="course_id" value="{{ course.id }}"/>
-                    <input type="hidden" name="group_id" value="{{ group.id }}"/>
-                    <input type="hidden" name="student_id" value="{{ student.id }}"/>
-                    <select class="selectpicker" style="margin:0;width:auto;height: 20px;line-height: 14px;font-size:12px;padding: 2px 6px;" name="mark_id">
-                        <option value=-1>--</option>
-                      {% for mark in course_mark_system_vals %}
-                        <option value={{ mark.id }} {% ifequal mark_id mark.id %}selected{% endifequal %}>{{ mark }}</option>
-                      {% endfor %}
-                    </select>
-                  </form>
-                {% endif %}
-              </td>
-            {% endif %}
-          </tr>
-        {% endfor %}
-        </tbody>
-      </table>
+                                </div>
+                                {% if user_is_teacher %}
+                                    <form method="post" class="mark-form collapse" style="margin:0">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="course_id" value="{{ course.id }}"/>
+                                        <input type="hidden" name="group_id" value="{{ group.id }}"/>
+                                        <input type="hidden" name="student_id" value="{{ student.id }}"/>
+                                        <select style="margin:0;width:auto;height: 1rem;line-height: 1rem;font-size:12px;padding: 2px 6px;" name="mark_id">
+                                            <option value=-1>--</option>
+                                            {% for mark in course_mark_system_vals %}
+                                                <option value="{{ mark.id }}" {% ifequal mark_id mark.id %}selected="selected"{% endifequal %}>{{ mark }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </form>
+                                {% endif %}
+                            </td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
-    </div>
-    {% endfor %}
-  </div>
-</div>
+{% endfor %}
+

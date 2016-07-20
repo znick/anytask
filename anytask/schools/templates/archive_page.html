@@ -3,23 +3,38 @@
 
 {% block title %}{{ school.name }}{% endblock %}
 
+{% block navbar %}
+    <ul class="nav navbar-nav">
+        <li class="nav-item">
+            <a class="nav-link" href="{% url schools.views.school_page school.link %}">Активные курсы</a>
+        </li>
+        <li class="nav-item active">
+            <a class="nav-link" href="">Архив</a>
+        </li>
+    </ul>
+{% endblock navbar %}
+
 {% block breadcrumbs %}
-  {{ block.super }}
-  {% breadcrumb school.name "schools.views.school_page" school.link %}
-  {% breadcrumb "Архив" "" %}
+    {{ block.super }}
+    {% breadcrumb school.name "schools.views.school_page" school.link %}
+    {% breadcrumb "Архив" "" %}
 {% endblock breadcrumbs %}
 
 {% block content %}
-  {{ block.super }}
+    {{ block.super }}
 
-<div class="row">
-  <div class="span6">
-    <h2>Архив</h2>
-      <ul type="circle">
+    <div class="row">
         {% for course in courses %}
-        <li><a href="{{ course.get_absolute_url }}">{{ course.name }}</a></li>
+            <div class="col-md-4">
+                <div class="card">
+                    <a class="card-link card-clickable" href="{{ course.get_absolute_url }}">
+                        <div class="card-block">
+                            <h3 class="card-title">{{ course.name }}</h3>
+{#                            <p class="card-text">Some text.</p>#}
+                        </div>
+                    </a>
+                </div>
+            </div>
         {% endfor %}
-      </ul>
-  </div>
-</div>
+    </div>
 {% endblock %}

@@ -2,7 +2,12 @@
 <script src="{{ STATIC_URL }}jquery.validate.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function() {
-        $('#rb_ext_select').multiselect();
+        $('#rb_ext_select').multiselect({
+            search: {
+                left: '<input type="text" name="q" class="form-control" placeholder="Поиск..." />',
+                right: '<input type="text" name="q" class="form-control" placeholder="Поиск..." />',
+            }
+        });
 
         $('#course_settings_form').change(function() {
             $('#course_settings_form_error_text').empty();
@@ -32,17 +37,24 @@
 
             },
 
-            highlight: function(label) {
-                $(label).closest('.control-group').removeClass('success').addClass('error');
+            highlight: function(input) {
+                $(input).removeClass('form-control-success').addClass('form-control-danger');
+                $(input).closest('.form-group').removeClass('has-success').addClass('has-danger');
             },
 
             success: function(label) {
-                label.addClass('valid').closest('.control-group').addClass('success');
+                label.addClass('valid');
+                label.closest('.text-help').siblings('.form-control').removeClass('form-control-danger').addClass('form-control-success');
+                label.closest('.form-group').removeClass('has-danger').addClass('has-success');
             },
 
             messages: {
 
             },
+
+            errorPlacement: function(error, element) {
+                $(element).siblings('small.text-help').empty().append(error);
+            }
         });
 
         $('#button_cancel_quit').click(function() {

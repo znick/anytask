@@ -1,164 +1,191 @@
 {% extends "base.html" %}
+{% load crispy_forms_tags %}
 
 {% block title %} {{ user_to_show.get_full_name }} {% endblock %}
 
 {% block scripts %}
-  <script src="{{ STATIC_URL }}jquery.stickytableheaders.min.js"></script>
-  <script type="text/javascript">
-    $(document).ready(function() {
-      $(".table_tasks").tablesorter();
-      $(".table_tasks").stickyTableHeaders({fixedOffset: $('.navbar')});
-    });
-  </script>
+    <script src="{{ STATIC_URL }}jquery.stickytableheaders.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#invites_form_button').click(function () {
+                $('#invites_form_button').hide();
+                $('#invites_form').show();
+            });
+        });
+    </script>
 
 {% endblock %}
 
+{% block navbar %}
+    <ul class="nav navbar-nav">
+        <li class="nav-item active">
+            <a class="nav-link" href="">Профиль</a>
+        </li>
+        {% if request.user == user_to_show %}
+            <li class="nav-item">
+                <a class="nav-link" href="{% url users.views.my_tasks %}">Мои задачи</a>
+            </li>
+        {% endif %}
+    </ul>
+{% endblock navbar %}
+
 {% block content %}
 
-  <div class="row">
-    <div class="span9">
-      <div class="profile_part">
-      <h2>{{ user_to_show.get_full_name }}</h2>
-      {% if user == user_to_show and can_generate_invites %}
-        <a href="#" onclick="window.open('{% url invites.views.generate_invites %}','_blank','height=331,width=640,status=yes,toolbar=no,menubar=no,location=no');return false;">Сгенерировать инвайты</a>
-        <br>
-      {% endif %}
+    <style>
+        .card-deck-wrapper {
+            margin-bottom: 1rem;
+        }
+    </style>
 
-      {% if teacher_in_courses %}
-        <p>E-mail: {{ user_to_show.email }}</p>
-        Преподаватель в курсах:
-        <ul>
-          {% for course in teacher_in_courses %}
-            <li><a href="{{ course.get_absolute_url }}">{{ course }}</a></li>
-          {% endfor %}
-        </ul>
-
-      {% endif %}
-
-      {% if groups %}
-      Состоит в группах:
-        <ul>
-          {% for group in groups %}
-            <li>{{ group }}</li>
-          {% endfor %}
-        </ul>
-      {% endif %}
-      </div>
-      {% if request.user == user_to_show %}
-        {% if can_sync_contest %}
-            <div class="profile_part">
-            <h3>Привязать профиль Яндекс.Контеста</h3>
-            {% if not user_profile.ya_contest_oauth %}
-            <div class="alert alert-warning">
-              <strong>Привязать можно только один профиль!</strong> Для того, чтобы отвязать свой профиль обратитесь к <a href="mailto:anytask@yandex.ru">администратору</a>.
+    <div class="card-deck-wrapper">
+        <div class="card-deck">
+            <div class="card">
+                <div class="card-block">
+                    <h3 class="card-title">
+                        {{ user_to_show.get_full_name }}
+                        <br>
+                        <small class="text-muted">{{ user_to_show.email }}</small>
+                    </h3>
+                    {% if user == user_to_show and can_generate_invites %}
+                        <a class="card-link" href="#" onclick="window.open('{% url invites.views.generate_invites %}','_blank','height=331,width=769,status=yes,toolbar=no,menubar=no,location=no');return false;">Сгенерировать инвайты</a>
+                    {% endif %}
+                </div>
             </div>
-            <a href="/user/ya_oauth_request/contest" type="button" class="btn">
-              Привязать
-            </a>
-            {% else %}
-            <div class="alert alert-success">
-              <strong>Вы привязали Я.Контест.</strong> Теперь все посылки в соревнования будут отправляться от Вашего имени.
-              Для того, чтобы отвязать свой профиль обратитесь к <a href="mailto:anytask@yandex.ru">администратору</a>.
-            </div>
-    {#        <a href="/user/ya_oauth_disable/contest" type="button" class="btn">#}
-    {#          Отменить привязку Я.Контеста#}
-    {#        </a>#}
+
+            {% if request.user == user_to_show %}
+                {% if can_sync_contest %}
+                    {% if not user_profile.ya_contest_oauth %}
+                        <div class="card card-inverse card-warning">
+                            <div class="card-block">
+                                <h3 class="card-title">Привязать профиль Яндекс.Контеста</h3>
+                                <p class="card-text">
+                                    <strong>Привязать можно только один профиль!</strong> Для того, чтобы отвязать свой профиль обратитесь к <a href="mailto:anytask@yandex.ru">администратору</a>
+                                </p>
+                                <a href="/user/ya_oauth_request/contest" type="button" class="btn btn-secondary">
+                                    Привязать
+                                </a>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="card card-inverse card-success">
+                            <div class="card-block">
+                                <h3 class="card-title">Привязать профиль Яндекс.Контеста</h3>
+                                <p class="card-text">
+                                    <strong>Вы привязали Я.Контест.</strong> Теперь все посылки в соревнования будут отправляться от Вашего имени. Для того, чтобы отвязать свой профиль обратитесь к <a href="mailto:anytask@yandex.ru">администратору</a>.
+                                </p>
+                                {#        <a href="/user/ya_oauth_disable/contest" type="button" class="btn btn-secondary">#}
+                                {#          Отменить привязку Я.Контеста#}
+                                {#        </a>#}
+                            </div>
+                        </div>
+                    {% endif %}
+                    {#        <a href="/user/ya_oauth_request/passport" type="button" class="btn btn-secondary">#}
+                    {#          Войти через Яндекс#}
+                    {#        </a>#}
+                {% endif %}
+
+                <div class="card">
+                    <div class="card-block">
+                        <h3 class="card-title">Активация инвайтов в курсы</h3>
+                        <button id="invites_form_button" type="button" class="btn btn-secondary {% if invite_form.errors %}collapse{% else %}in collapse{% endif %}"  style="margin-bottom: 1rem;">Ввести инвайт</button>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <form action="{% url users.views.profile %}" method="post" id="invites_form" class="{% if invite_form.errors %}in collapse{% else %}collapse{% endif %}">
+                                    {% csrf_token %}
+
+                                    <div class="col-md-9">
+                                        {{ invite_form|crispy }}
+                                        {#                                {% if invite_form.errors %}#}
+                                        {#                                    <span class="text-help">{% for error in invite_form.errors %}{{ error }}{% endfor %}</span>#}
+                                        {#                                {% endif %}#}
+                                    </div>
+                                    <div class="col-md-3">
+                                        <button type="submit" class="btn btn-primary">Ок</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             {% endif %}
-    {#        <a href="/user/ya_oauth_request/passport" type="button" class="btn">#}
-    {#          Войти через Яндекс#}
-    {#        </a>#}
-            </div>
-        {% endif %}
-
-      <div class="profile_part">
-      <h3>Активация инвайтов в курсы</h3>
-      <button type="button" class="btn" data-toggle="collapse" data-target="#invites-form">
-        Ввести инвайт
-      </button>
-      <form action="{% url users.views.profile %}" method="post" id="invites-form" class="form-horizontal {% if invite_form.errors %} collapse in {% else %} collapse {% endif %}">
-          {% csrf_token %}
-          <fieldset>
-            <br>
-            <div>{{ invite_form }}
-              {% if invite_form.errors %}
-                <span class="help-block">
-                  {% for error in invite_form.errors %}{{ error }}{% endfor %}
-                </span>
-              {% endif %}
-            </div> <br>
-            <div>
-              <button type="submit" class="btn btn-primary">Применить</button>
-            </div>
-          </fieldset>
-      </form>
-      </div>
-      {% endif %}
-
-      {# {% for course,scores,tasks_list in user_course_information %} #}
-        {# <a href="{{ course.get_absolute_url }}">{{ course.name }}</a> #}
-        {# <span class="label label-info">{{ scores }}</span> #}
-
-        {# <table class="table table-striped"> #}
-          {# <tbody> #}
-          {# {% for task,max_score,score,task_end_date in tasks_list %} #}
-            {# <tr> #}
-              {# <td style="width:65%"> #}
-                {# {{task.title}} #}
-              {# </td> #}
-              {# <td style="width:15%"> #}
-                {# <span class="label label-success">{{max_score}}</span> #}
-              {# </td> #}
-              {# <td style="width:20%"> #}
-                {# {% if score > 0 %} #}
-                  {# <span class="label {% if score == task.score_max %} label-success{% endif %}">{{score}}</span> #}
-                {# {% else %} #}
-                  {# {{ task_end_date|date:"d.m.Y" }} #}
-                {# {% endif %} #}
-              {# </td> #}
-            {# </tr> #}
-          {# {% endfor %} #}
-          {# </tbody> #}
-        {# </table> #}
-
-      {# {% endfor %} #}
-      {% if issues %}
-        <div class="profile_part">
-        <h3>Мои задачи</h3>
-        <table class="table table_tasks">
-          <thead>
-            <tr>
-              <th>Задача</th>
-              <th>Курс</th>
-              <th>Обновлена</th>
-              <th>Статус</th>
-              <th>Оценка</th>
-            </tr>
-          </thead>
-          <tbody>
-          {% for issue in issues %}
-          <tr onclick="location.href='{% if issue.task.has_issue_access %}{{ issue.get_absolute_url }}{% else %}#{% endif %}'">
-            <td>
-              {% if issue.task.has_issue_access %}
-                <a href="{{ issue.get_absolute_url }}">{{ issue.task }}</a>
-              {% else %}
-                {{ issue.task }}
-              {% endif %}
-            </td>
-            <td><a href="{{ issue.task.course.get_absolute_url }}">{{ issue.task.course }}</a></td>
-            <td> {{ issue.update_time|date:"d M H:i" }} </td>
-            <td> {{ issue.get_status }} </td>
-            <td> {{ issue.score }} </td>
-          </tr>
-          {% endfor %}
-          </tbody>
-        </table>
         </div>
-      {% endif %}
-
-      <p>
-        Если какие-либо данные неверны, обратитесь к <a href="mailto:anytask@yandex.ru">администратору</a>.
-      </p>
-
     </div>
-  </div>
+
+    <div class="card-deck-wrapper">
+        <div class="card-deck">
+            {% if teacher_in_courses %}
+                <div class="card">
+                    <div class="card-block">
+                        <h3 class="card-title">Преподаватель в курсах</h3>
+                        <ul class="list-group list-group-flush">
+                            {% for course in teacher_in_courses %}
+                                <li class="list-group-item"><a href="{{ course.get_absolute_url }}">{{ course }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if courses %}
+                <div class="card">
+                    <div class="card-block">
+                        <h3 class="card-title">Состоит в курсах</h3>
+                        <ul class="list-group list-group-flush">
+                            {% for course in courses %}
+                                <li class="list-group-item"><a href="{{ course.get_absolute_url }}">{{ course }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if groups %}
+                <div class="card">
+                    <div class="card-block">
+                        <h3 class="card-title">Состоит в группах</h3>
+                        <ul class="list-group list-group-flush">
+                            {% for group in groups %}
+                                <li class="list-group-item">{{ group }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <footer>
+        <small class="text-muted pull-xs-right">
+            Если какие-либо данные неверны, обратитесь к <a href="mailto:anytask@yandex.ru">администратору</a>.
+        </small>
+    </footer>
+
+    {# {% for course,scores,tasks_list in user_course_information %} #}
+    {# <a href="{{ course.get_absolute_url }}">{{ course.name }}</a> #}
+    {# <span class="label label-info">{{ scores }}</span> #}
+
+    {# <table class="table table-striped"> #}
+    {# <tbody> #}
+    {# {% for task,max_score,score,task_end_date in tasks_list %} #}
+    {# <tr> #}
+    {# <td style="width:65%"> #}
+    {# {{task.title}} #}
+    {# </td> #}
+    {# <td style="width:15%"> #}
+    {# <span class="label label-success">{{max_score}}</span> #}
+    {# </td> #}
+    {# <td style="width:20%"> #}
+    {# {% if score > 0 %} #}
+    {# <span class="label {% if score == task.score_max %} label-success{% endif %}">{{score}}</span> #}
+    {# {% else %} #}
+    {# {{ task_end_date|date:"d.m.Y" }} #}
+    {# {% endif %} #}
+    {# </td> #}
+    {# </tr> #}
+    {# {% endfor %} #}
+    {# </tbody> #}
+    {# </table> #}
+
+    {# {% endfor %} #}
+
 {% endblock %}

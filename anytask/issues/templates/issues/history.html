@@ -4,79 +4,90 @@
 <script type="text/javascript">
 
     $(document).on("click", "#old_comments_button", function() {
-        $('#top_alert').toggle();
+        if($("#top_alert").hasClass("clicked")) {
+            $("#top_alert").show();
+            $("#top_alert").removeClass("clicked");
+        } else {
+            $("#top_alert").hide();
+            $("#top_alert").addClass("clicked");
+        }
     });
 
 </script>
-<div class="row-fluid">
-  <ul class="history">
-    {% if issue.get_history.count > events_to_show %}
-    <li>
-    <button id="old_comments_button" type="button" class="btn" data-toggle="collapse" data-target="#old_comments">
-      Предыдущие сообщения
-    </button>
-    </li>
-      {% if issue.update_time > issue.task.deadline_time and show_top_alert %}
-        <div id="top_alert" class="alert alert-danger">
-          <strong>Срок сдачи задания истек!</strong> Все сообщения, отправленные студентом позже срока сдачи, будут
-         выделяться красным цветом.
-        </div>
-      {% endif %}
-    <div id="old_comments" class="collapse">
-    {% endif %}
-    {% for event in issue.get_history %}
-      {% if event.id == first_event_after_deadline.id %}
-        <div id="event_alert" class="alert alert-danger">
-          <strong>Срок сдачи задания истек!</strong> Все сообщения, отправленные студентом позже срока сдачи, будут
-         выделяться красным цветом.
-        </div>
-      {% endif %}
-      {% if event.author == user %}
-        <li class="mine {% if issue.task.deadline_time < event.timestamp and event.author.username == issue.student.username %} after_deadline {% endif %}">
-      {% else %}
-        <li class="not_mine {% if issue.task.deadline_time < event.timestamp and event.author.username == issue.student.username  %} after_deadline {% endif %}">
-      {% endif %}
-        <div class="history-body">
-          <div class="header">
-            <strong class="primary-font">
-              {{ event.author.last_name }} {{ event.author.first_name }}
-            </strong>
-            <small class="pull-right text-muted">
-              <i class="icon-time"></i> {{ event.timestamp|date:"d M H:i" }}
-            </small>
-          </div>
-          {% autoescape off %}
-          <p>
-            {{ event.get_message|urlize|sanitize }}
-          </p>
-          {% endautoescape %}
-          {% if event.file_set.all %}
-            <div class="files">
-              <i class="icon-file"></i>
-              {% for file in event.file_set.all %}
-                <a href={% link_to_open file course user %}>{{ file.filename }}</a>
-              {% endfor %}
-            </div>
-          {% endif %}
-        </div>
-      </li>
-      {% if event.is_omg %}
-        <li class="change">
-          {{ event.field.title }} changed to {{ event.value }} by {{ event.author.last_name }} {{ event.author.first_name }}
-        </li>
-      {% endif %}
+<div class="card card-block">
+    <ul class="history">
+        {% if issue.get_history.count > events_to_show %}
+            <li>
+                <button id="old_comments_button" type="button" class="btn btn-secondary" data-toggle="collapse" data-target="#old_comments">
+                    Предыдущие сообщения
+                </button>
+            </li>
+            {% if issue.update_time > issue.task.deadline_time and show_top_alert %}
+                <div id="top_alert" class="alert alert-danger">
+                    <strong>Срок сдачи задания истек!</strong> Все сообщения, отправленные студентом позже срока сдачи, будут
+                    выделяться красным цветом.
+                </div>
+            {% endif %}
+            <div id="old_comments" class="collapse">
+        {% endif %}
+        {% for event in issue.get_history %}
+            {% if event.id == first_event_after_deadline.id %}
+                <div id="event_alert" class="alert alert-danger">
+                    <strong>Срок сдачи задания истек!</strong> Все сообщения, отправленные студентом позже срока сдачи, будут
+                    выделяться красным цветом.
+                </div>
+            {% endif %}
+
+            <li>
+                <div class="row">
+                    <div class="{% if event.author == user %}col-md-12{% else %}col-md-offset-1 col-md-11{% endif %}">
+                        <strong><a class="card-link" href="{{ event.author.get_absolute_url }}" style="color:#373a3c;">{{ event.author.last_name }} {{ event.author.first_name }}</a>&nbsp;</strong>
+                        <small class="text-muted">
+                            <i class="fa fa-clock-o fa-flip-horizontal"></i> {{ event.timestamp|date:"d M H:i" }}
+                        </small>
+                    </div>
+                    <div class="user_img col-md-1 {% if event.author == user %}pull-xs-right{% else %}pull-xs-left{% endif %}">
+                        <img src="https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mm&f=y" style="border-radius: 50%;width: 50px;border: 1px solid #c3c3c3;">
+{#                        <i class="fa {% if event.author == user %}fa-empire{% else %}fa-rebel{% endif %} fa-3x" aria-hidden="true"></i>#}
+                    </div>
+                    <div class="col-md-11">
+                        <div class="{% if event.author == user %}mine{% else %}not_mine{% endif %} history-body {% if issue.task.deadline_time < event.timestamp and event.author.username == issue.student.username %} after_deadline {% endif %}">
+                            {% autoescape off %}
+                                {{ event.get_message|urlize|sanitize }}
+                            {% endautoescape %}
+                            {% if event.file_set.all %}
+                                <div class="files">
+
+                                    <i class="fa fa-file-o"></i>
+                                    {% for file in event.file_set.all %}
+                                        <a href={% link_to_open file course user %}>{{ file.filename }}</a>
+                                    {% endfor %}
+
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </li>
+            {% if event.is_omg %}
+                <li class="change">
+                    {{ event.field.title }} changed to {{ event.value }} by {{ event.author.last_name }} {{ event.author.first_name }}
+                </li>
+            {% endif %}
 
 
-      {% if forloop.revcounter0 == events_to_show %}
-      </div>
-      {% endif %}
+            {% if forloop.revcounter0 == events_to_show %}
+                </div>
+            {% endif %}
 
 
-    {% endfor %}
-  </ul>
+        {% endfor %}
+    </ul>
 </div>
 
-<div class="row-fluid">
-  {% load jfutags %}
-  {% jfu 'file_uploader.html' 'jfu_upload' %}
+<div>
+    {% load jfutags %}
+    {% jfu 'file_uploader.html' 'jfu_upload' %}
 </div>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/js/bootstrap.min.js"></script>

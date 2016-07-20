@@ -2,37 +2,48 @@
 {% load django_bootstrap_breadcrumbs %}
 
 {% block scripts %}
-  <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}issues/issue.css">
-  {% include "issues/issue_js.html" %}
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}issues/issue.css">
+    {% include "issues/issue_js.html" %}
 {% endblock %}
 
 
 {% block title %}{{ issue.task }} | {{ issue.student.last_name }}
-{{ issue.student.first_name }} {% endblock %}
+    {{ issue.student.first_name }} {% endblock %}
 
 {% block breadcrumbs %}
-{{ block.super }}
-{% breadcrumb course.year course.year.get_absolute_url %}
-{% breadcrumb course.name course.get_absolute_url %}
-{% if teacher_or_staff %}
-  {% breadcrumb "очередь" course.get_absolute_url|add:"/queue" %}
-{% endif %}
-{% breadcrumb issue "" %}
+    {{ block.super }}
+    {% breadcrumb school.name school.get_absolute_url %}
+    {% breadcrumb course.name course.get_absolute_url %}
+    {% breadcrumb issue "" %}
+
 {% endblock breadcrumbs %}
 
-{% block content %}
-{{ block.super }}
+{% block navbar %}
+    <ul class="nav navbar-nav">
+        <li class="nav-item">
+            <a class="nav-link" href="{{ course.get_absolute_url }}">Список задач</a>
+        </li>
+        {% if visible_queue %}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ course.get_absolute_url }}/queue">Очередь на проверку</a>
+            </li>
+        {% endif %}
+    </ul>
+{% endblock navbar %}
 
-<div class="row">
-  <div class="span8">
-    {% include "issues/history.html" %}
-  </div>
-  <div class="span4">
-    {% include "issues/info.html" %}
-  </div>
-</div>
+{% block content %}
+    {{ block.super }}
+
+    <div class="row">
+        <div class="col-sm-8">
+            {% include "issues/history.html" %}
+        </div>
+        <div class="col-sm-4">
+            {% include "issues/info.html" %}
+        </div>
+    </div>
 {% endblock content %}
 
 <h1>
-  Issue page
+    Issue page
 </h1>

@@ -44,6 +44,9 @@ from filemanager import FileManager
 from settings import UPLOAD_ROOT
 import os.path
 
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, HTML
+
 import json
 
 logger = logging.getLogger('django.request')
@@ -80,10 +83,19 @@ def queue_page(request, course_id):
     elif course_id_as_str in request.session:
         f.form.data = request.session.get(course_id_as_str)
 
+    f.form.helper = FormHelper(f.form)
+    f.form.helper.form_method = 'get'
+    # f.form.helper.label_class = 'col-md-4'
+    # f.form.helper.field_class = 'selectpicker'
+    f.form.helper.layout.append(HTML(u"""<div class="form-group row">
+                                           <button id="button_filter" class="btn btn-secondary pull-xs-right" type="submit">Применить</button>
+                                         </div>"""))
+
     context = {
-        'course' : course,
-        'user_is_teacher' : course.user_is_teacher(request.user),
+        'course': course,
+        'user_is_teacher': course.user_is_teacher(request.user),
         'filter': f,
+        'school': course.school_set.all()[0],
     }
     return render_to_response('courses/queue.html', context, context_instance=RequestContext(request))
 
@@ -105,6 +117,7 @@ def course_page(request, course_id):
     context['tasklist_template'] = 'courses/tasklist/shad_cpp.html'
     context['task_types'] = dict(Task().TASK_TYPE_CHOICES).items()
     context['show_hidden_tasks'] = request.session.get(str(request.user.id) + '_' + str(course.id) + '_show_hidden_tasks', False)
+    context['school'] = course.school_set.all()[0]
 
     return render_to_response('courses/course.html', context, context_instance=RequestContext(request))
 
@@ -517,9 +530,10 @@ def course_settings(request, course_id):
     if not course.user_is_teacher(request.user):
         return HttpResponseForbidden()
 
-    context = {'course' : course,
-               'visible_queue' : course.user_can_see_queue(request.user),
-               'user_is_teacher' : course.user_is_teacher(request.user),
+    context = {'course': course,
+               'visible_queue': course.user_can_see_queue(request.user),
+               'user_is_teacher': course.user_is_teacher(request.user),
+               'school': course.school_set.all()[0],
     }
 
     if request.method != "POST":
@@ -646,6 +660,13 @@ def set_task_mark(request):
 
     mark = float(request.POST['mark_value'])
     issue.set_byname('mark', mark)
+    if mark <= 0:
+        issue.set_byname('status', issue.STATUS_REWORK)
+        label = 'label-danger'
+    else:
+        issue.set_byname('status', issue.STATUS_ACCEPTED)
+        label = 'label-success'
+    issue.set_byname('mark', mark)
 
-    return HttpResponse(json.dumps({'mark': mark}),
+    return HttpResponse(json.dumps({'mark': mark, 'label': label}),
                         content_type="application/json")

@@ -5,37 +5,34 @@
 
 {% block content %}
 
-{% index_message %}
+    {% index_message %}
 
-<div class="hero-unit">
-  <h1>Anytask</h1>
-  <p>
-  &beta;-версия
-  </p>
-  <p>
-  AnyTask — платформа для взаимодействия преподавателей и студентов в процессе обучения.
+    {#    <div class="jumbotron">#}
+    {#        <h1 class="display-3">Anytask</h1>#}
+    {#        <p class="lead">&beta;-версия</p>#}
+    {#        <p>#}
+    {#            Платформа для взаимодействия преподавателей и студентов в процессе обучения.#}
+    {##}
+    {# AnyTask &#151; сервис для учета выполнения студентами программы по #}
+    {# учебным курсам.  #}
+    {# <a href="/about">>></a> #}
+    {#        </p>#}
+    {#        <!-- <p><a class="btn btn-primary btn-large">Learn more &raquo;</a></p> -->#}
+    {#    </div>#}
 
-  {# AnyTask &#151; сервис для учета выполнения студентами программы по #}
-  {# учебным курсам.  #}
-  {# <a href="/about">>></a> #}
-  </p>
-  <!-- <p><a class="btn btn-primary btn-large">Learn more &raquo;</a></p> -->
-</div>
+    <div class="row">
+        {% for school in schools %}
+            <div class="col-md-6">
+                <div class="card">
+                    <a class="card-link card-clickable"  href="{% url schools.views.school_page school.link %}">
+                        <div class="card-block">
+                            <h3 class="card-title">{{ school.name }}</h3>
+{#                            <p class="card-text">Some text.</p>#}
+                        </div>
+                    </a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
 
-<div class="row">
-  <div class="span6">
-    <ul>
-      {% for school in schools %}
-      <li>
-      <a href="{% url schools.views.school_page school.link %}"><h2>{{ school.name }}</h2></a>
-      </li>
-      {% endfor %}
-    </ul>
-  </div>
-</div>
-<div class="pull-right">
-  <footer>
-    <p><small>Пишите нам на <a href="mailto:anytask@yandex.ru">anytask@yandex.ru</a></small></p>
-  </footer>
-</div>
 {% endblock %}

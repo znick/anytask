@@ -1,28 +1,109 @@
 <script src="{{ STATIC_URL }}jquery.validate.min.js"></script>
 <script src="http://malsup.github.io/jquery.form.js"></script>
-<script src="{{ STATIC_URL }}jquery.tablesorter/jquery.tablesorter.min.js"></script>
-<script src="{{ STATIC_URL }}jquery.stickytableheaders.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap4.min.js"></script>
+{#<script type="text/javascript" src="https://cdn.datatables.net/colreorder/1.3.2/js/dataTables.colReorder.min.js"></script>#}
+<script type="text/javascript" src="https://cdn.datatables.net/fixedcolumns/3.2.2/js/dataTables.fixedColumns.min.js"></script>
+
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap4.min.css"/>
+{#<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/colreorder/1.3.2/css/colReorder.bootstrap4.min.css"/>#}
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedcolumns/3.2.2/css/fixedColumns.bootstrap4.min.css"/>
+
 <script type="text/javascript">
+    $.fn.dataTable.ext.order['dom-number'] = function  ( settings, col )
+    {
+        return this.api().column( col, {order:'index'} ).nodes().map( function ( td, i ) {
+            return $('span', td).hasClass('no-issue') ? -1 : $('span', td).text() * 1.0;
+        } );
+    };
+
+    $.fn.dataTable.ext.order['dom-select-text'] = function  ( settings, col )
+    {
+        return this.api().column( col, {order:'index'} ).nodes().map( function ( td, i ) {
+            return $('select option:selected', td).text();
+        } );
+    };
+
+    $.fn.dataTable.ext.type.search.selectText = function ( data ) {
+        return !data ? '' : $('select option:selected', $(data)).text()
+    };
 
     $(document).ready(function() {
-        // Here we select for <table> elements universally,
-        // but you can definitely fine tune your selector
-        $(".table_results").tablesorter();
-        $(".table_results").stickyTableHeaders({fixedOffset: $('.navbar')});
+        var table_results = {};
+        $(".table_results").each(function (i) {
+            var t = $(this).DataTable( {
+                scrollY: '25.75rem',
+                scrollX: true,
+                scrollCollapse: true,
+                paging: false,
+                language: {
+                    "decimal":        "",
+                    "emptyTable":     "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Пустая таблица",
+                    "info":           "_TOTAL_ студента(ов)",
+                    "infoEmpty":      "0 студентов",
+                    "infoFiltered":   "(из _MAX_)",
+                    "infoPostFix":    "",
+                    "thousands":      ",",
+                    "lengthMenu":     "Показать _MENU_ студентов",
+                    "loadingRecords": "Загрузка...",
+                    "processing":     "Вычисление...",
+                    "search":         "Поиск:",
+                    "zeroRecords":    "Ничего не найдено",
+                    "paginate": {
+                        "first":      "Первая",
+                        "last":       "Последняя",
+                        "next":       "Вперед",
+                        "previous":   "Назад"
+                    },
+                    "aria": {
+                        "sortAscending":  ": activate to sort column ascending",
+                        "sortDescending": ": activate to sort column descending"
+                    }
+                },
+                deferRender: true,
+                columnDefs: [
+                    {
+                        "targets": 0,
+                        "searchable": false,
+                        "orderable": false
+                    },
+                    {
+                        "targets": "dom-number",
+                        "orderDataType": "dom-number",
+                    },
+                    {
+                        "targets": "dom-select-text",
+                        "orderDataType": "dom-select-text",
+                        "type": "selectText",
+                    },
+                ],
+                order: [[ 1, 'asc' ]],
+                fixedColumns:   {
+                    leftColumns: 2
+                },
+                initComplete: function( settings, json ) {
+                    $(".zui-wrapper").show();
+                    $(".loading_table_img").hide();
+                },
+            });
+            t.on( 'order.dt search.dt', function () {
+                t.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
+                    cell.innerHTML = i+1;
+                } );
+            } ).draw();
+            {#            table_results['table_results_' + (i + 1)] = t;#}
+        });
 
         $('.task-mark-value').click(function() {
             if (!$('.task-mark-form').data('is_error')) {
                 $(this).hide();
 
                 var mark_form = $(this).closest('td').find('.task-mark-form');
-                $(mark_form).find('.control-group').removeClass('success error');
+                $(mark_form).find('.form-group').removeClass('has-success has-danger');
                 $(mark_form).show();
                 $(mark_form).find('[name="mark_value"]').focus().select();
+                $(mark_form).data('blur', false);
             }
-        });
-
-        $('#modal_task_description').on('shown',function(){
-            $(this).find('.modal-body').attr('style','max-height:'+($(window).height()*0.6)+'px !important;');
         });
 
         jQuery.validator.addMethod("lt_max", function(value, element) {
@@ -33,8 +114,9 @@
 
         $('.task-mark-form').each( function(){
             var form = $(this);
-            form.focusout(function() {
-                form.submit();
+            form.find('[name="mark_value"]').blur(function() {
+                if (!$(form).data('blur'))
+                    form.submit();
             });
             form.validate({
                 submitHandler: function(form) {
@@ -44,8 +126,10 @@
                         var sum_mark_span = $(form).closest('td').siblings('.sum-score').find('span');
                         var sum_mark = parseFloat(sum_mark_span.text()) + mark_diff;
                         $(sum_mark_span).text(sum_mark.toFixed(1));
-                        $(mark_value).find('span').text(data.mark);
+                        $(mark_value).find('span').removeClass('label-default label-danger label-success no-issue').addClass(data.label).text(data.mark);
                         $(form).hide();
+                        $(form).find('[name="mark_value"]').blur();
+                        $(form).data('blur', true);
                         $(mark_value).show();
                     });
                 },
@@ -58,18 +142,19 @@
                     }
                 },
 
-                highlight: function (label) {
+                highlight: function(input) {
                     $('.task-mark-form').data('is_error', true);
-                    $(label).closest('.control-group').removeClass('success').addClass('error');
+                    $(input).closest('.form-group').removeClass('has-success').addClass('has-danger');
                 },
 
-                success: function (label) {
+                success: function(label) {
                     $('.task-mark-form').data('is_error', false);
-                    label.addClass('valid').closest('.control-group').removeClass('error').addClass('success');
+                    label.addClass('valid');
+                    label.closest('.form-group').removeClass('has-danger').addClass('has-success');
                 },
 
                 errorPlacement: function(error, element) {
-                    $(element).siblings('span.hide').empty().append(error);
+                    $(element).siblings('span.text-help').empty().append(error);
                 }
             });
         });

@@ -16,11 +16,11 @@
 {% endblock %}
 
 {% block JS_JQUERY %}
-<script src="https://maxcdn.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+{#<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>#}
 {% endblock %}
 
 {% block CSS_BOOTSTRAP %}
-<link href="https://maxcdn.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
+{#<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">#}
 {% endblock %}
 
 
@@ -44,7 +44,7 @@
         <input type="hidden" name="redirect" value="{{ STATIC_URL }}demo/jQuery-File-Upload/">
     </noscript>
     <input type="hidden" name="form_name" value="comment_form">
-    <textarea rows="4" name="comment" id="id_comment" cols="40" class="span12"></textarea>
+    <textarea rows="4" name="comment" id="id_comment" cols="40" class="form-control col-md-12" style="margin-bottom: 10px;"></textarea>
     <input type="hidden" name="issue_id" value="{{ issue.id }}">
     {% block UPLOAD_FORM_BUTTON_BAR %}
     <div class="fileupload-buttonbar">
@@ -52,7 +52,7 @@
      The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload.
     {% endcomment %}
 
-        <div class="span12">
+        <div class="col-md-12" style="padding: 0">
 
             {% comment %}
              The fileinput-button span is used to style the file input field as button.
@@ -82,7 +82,7 @@
             {% if teacher_or_staff or issue.status != issue.STATUS_ACCEPTED and issue.status != issue.STATUS_NEED_INFO %}
                 <div class="drop-zone" id="drop-zone" ondragenter="this.style.background='#E0E0E0';" ondragleave="this.style.background='white';" ondrop="this.style.background='white';">
 
-                <span class="btn drop-btn fileinput-button" id="drop-btn">
+                <span class="btn btn-secondary drop-btn fileinput-button" id="drop-btn">
                     <span>Выберите файлы</span>
 
                     {% block FILE_INPUT %}
@@ -105,9 +105,9 @@
 
             {% block UPLOAD_FORM_BUTTON_BAR_CONTROL %}
             {% if issue.status == issue.STATUS_ACCEPTED or issue.status == issue.STATUS_NEED_INFO and not teacher_or_staff %}
-                <button class="btn btn-info pull-right" formaction="#" style="margin-top: 10px; margin-left: 10px;" type="submit" name="need_info">Задать вопрос</button>
+                <button class="btn btn-info pull-xs-right" formaction="#" style="margin-top: 10px; margin-left: 10px;" type="submit" name="need_info">Задать вопрос</button>
             {% else %}
-                <button style="margin-top: 10px;" type="submit" name="update_issue" class="btn btn-primary pull-right">
+                <button style="margin-top: 10px;" type="submit" name="update_issue" class="btn btn-primary pull-xs-right">
                     <span>Отправить</span>
                 </button>
             {% endif %}
@@ -157,12 +157,9 @@
         {{ JQ_OPEN }} } else if (o.files.valid && !i) { {{ JQ_CLOSE }}
 
             <td>
-                <div
-                    class="progress progress-success progress-striped active".
-                    role="progressbar" aria-valuemin="0" aria-valuemax="100".
-                    aria-valuenow="0">
-                    <div class="bar" style="width:0%;"></div>
-                </div>
+                <progress class="progress">
+                    <div class="progress-bar progress-bar-success progress-bar-striped active bar" role="progressbar" style="width:0%"></div>
+                </progress>
             </td>
 
             <td class="cancel">{{ JQ_OPEN }} if (!o.options.autoUpload) { {{ JQ_CLOSE }}
@@ -185,14 +182,14 @@
                     {{ JQ_OPEN }} if (file.delete_with_credentials) { {{ JQ_CLOSE }}
                          data-xhr-fields='{"withCredentials":true}'
                     {{ JQ_OPEN }} } {{ JQ_CLOSE }}>
-                <i class="icon-remove icon-white"></i>
+                <i class="fa fa-times" style="color:#FFFFFF"></i>
                 <span></span>
             </button>
         </td>
         <td>
         {{ JQ_OPEN }} if (file.send_to_contest) { {{ JQ_CLOSE }}
             <div class="alert alert-success" role="alert">Выберите компилятор для отправки в контест</div>
-            <select id='compiler' name="compiler_for_{{ JQ_OPEN }}=file.pk{{ JQ_CLOSE }}">
+            <select id='compiler' name="compiler_for_{{ JQ_OPEN }}=file.pk{{ JQ_CLOSE }}" class="form-control">
                 {{ JQ_OPEN }} if (file.chosen_compiler) { {{ JQ_CLOSE }}
                     <option value="{{ JQ_OPEN }}=file.chosen_compiler{{ JQ_CLOSE }}"> {{ JQ_OPEN }}=file.chosen_compiler{{ JQ_CLOSE }} </option>
                 {{ JQ_OPEN }} } {{ JQ_CLOSE }}

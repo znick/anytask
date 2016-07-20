@@ -3,7 +3,7 @@
 import re
 
 from django.conf import settings
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm, SetPasswordForm, PasswordChangeForm
 from django.contrib.sites.models import RequestSite
 from django.contrib.sites.models import Site
 from django import forms
@@ -13,7 +13,8 @@ from registration import signals
 from registration.forms import RegistrationForm, RegistrationFormUniqueEmail
 from registration.models import RegistrationProfile
 
-from django_bootstrap.forms import BootstrapMixin
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, HTML
 
 from invites.models import Invite
 
@@ -27,11 +28,27 @@ def parse_email(email):
     return m.group(1), m.group(2).lower() #username, domain
 
 
-class AnytaskLoginForm(BootstrapMixin, AuthenticationForm):
+class AnytaskLoginForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):
-        BootstrapMixin.__init__(self, *args, **kwargs)
         AuthenticationForm.__init__(self, *args, **kwargs)
-        self.fields['username'].label = u"Login"
+        self.fields['username'].label = u"Логин"
+
+        self.helper = FormHelper(self)
+        self.helper.form_action = '/accounts/login/'
+        self.helper.label_class = 'col-md-4'
+        self.helper.field_class = 'col-md-8'
+        self.helper.layout.append(HTML(u"""<div class="form-group row" style="margin-bottom: 16px;margin-top: -16px;">
+                                             <div class="col-md-offset-4 col-md-8">
+                                               <a href="{% url django.contrib.auth.views.password_reset %}"><small class="text-muted">Забыли пароль?</small></a>
+                                             </div>
+                                           </div>
+                                           <div class="form-group row">
+                                             <div class="col-md-offset-4 col-md-8">
+                                               <button type="submit" class="btn btn-secondary">Войти</button>
+                                               <input type="hidden" name="next" value="{{ next }}" />
+                                             </div>
+                                           </div>"""))
+
 
     def clean_username(self):
         username = self.cleaned_data.get('username', '')
@@ -41,6 +58,46 @@ class AnytaskLoginForm(BootstrapMixin, AuthenticationForm):
         if email_domain and email_domain not in settings.REGISTRATION_ALLOWED_DOMAINS:
             raise forms.ValidationError("Bad email")
         return email_username
+
+
+class AnytaskPasswordResetForm(PasswordResetForm):
+    def __init__(self, *args, **kwargs):
+        PasswordResetForm.__init__(self, *args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.label_class = 'col-md-5'
+        self.helper.field_class = 'col-md-7'
+        self.helper.layout.append(HTML(u"""<div class="form-group row">
+                                             <div class="col-md-offset-5 col-md-7">
+                                               <button type="submit" class="btn btn-secondary">Сбросить</button>
+                                             </div>
+                                           </div>"""))
+
+
+class AnytaskSetPasswordForm(SetPasswordForm):
+    def __init__(self, *args, **kwargs):
+        SetPasswordForm.__init__(self, *args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.label_class = 'col-md-4'
+        self.helper.field_class = 'col-md-8'
+        self.helper.layout.append(HTML(u"""<div class="form-group row">
+                                             <div class="col-md-offset-4 col-md-8">
+                                               <button type="submit" class="btn btn-secondary">Применить</button>
+                                             </div>
+                                           </div>"""))
+
+
+class AnytaskPasswordChangeForm(PasswordChangeForm):
+    def __init__(self, *args, **kwargs):
+        PasswordChangeForm.__init__(self, *args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.label_class = 'col-md-5'
+        self.helper.field_class = 'col-md-7'
+        self.helper.layout.append(HTML(u"""<div class="form-group row">
+                                             <div class="col-md-offset-5 col-md-7">
+                                               <button type="submit" class="btn btn-secondary">Изменить</button>
+                                             </div>
+                                           </div>"""))
+
 
 class RegistrationFormWithNames(RegistrationForm):
     first_name = forms.CharField(widget=forms.TextInput(attrs=attrs_dict), label="Имя")
@@ -78,8 +135,19 @@ class RegistrationFormWithNames(RegistrationForm):
 class RegistrationFormWithNamesUniqEmail(RegistrationFormWithNames, RegistrationFormUniqueEmail):
     pass
 
-class BootStrapRegistrationFormWithNames(BootstrapMixin, RegistrationFormWithNamesUniqEmail):
-    pass
+class BootStrapRegistrationFormWithNames(RegistrationFormWithNamesUniqEmail):
+    def __init__(self, *args, **kwargs):
+        RegistrationFormWithNamesUniqEmail.__init__(self, *args, **kwargs)
+
+        self.helper = FormHelper(self)
+        self.helper.label_class = 'col-md-4'
+        self.helper.field_class = 'col-md-8'
+        self.helper.layout.append(HTML(u"""<div class="form-group row">
+                                             <div class="col-md-offset-4 col-md-8">
+                                               <button type="submit" class="btn btn-secondary">Зарегистрироваться</button>
+                                             </div>
+                                           </div>"""))
+
 
 
 class DefaultBackend(object):

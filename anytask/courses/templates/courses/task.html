@@ -1,29 +1,35 @@
-<div class="modal modal-lg hide" id="modal_task_description">
-    <div id="modal_task_desc_text">
-        <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"><i class="icon-remove"></i></button>
-                <h3 id="modal_header_task_descr" style="display: inline-block; "></h3>
+<div class="modal" id="modal_task_description" tabindex="-1" role="dialog" aria-labelledby="modal_header_task_descr" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4  class="modal-title" id="modal_header_task_descr" style="display: inline-block; "></h4>
                 {% if user_is_teacher %}
                     <a id="modal_task_descr_edit_button" type="button" style="opacity:0.2;filter: alpha(opacity=20);color:#000000;display: inline-block;vertical-align: super;margin-left: 5px;"><i class="fa fa-edit fa-lg"></i></a>
                 {% endif %}
-            <div id="modal_header_deadline_time"></div>
-        </div>
-        <div class="modal-body">
-            <div id="modal_body_task_descr"></div>
+                <div id="modal_header_deadline_time"></div>
+            </div>
+            <div class="modal-body">
+                <div id="modal_body_task_descr"></div>
+            </div>
         </div>
     </div>
 </div>
 
-<div class="modal modal-lg hide" id="modal_course_information">
-    <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">×</button>
-        <h3 id="modal_course_information_header">Описание курса</h3>
-    </div>
-    <div class="modal-body" style="max-height: none;">
-        <textarea class='input-xlarge' style="width: 98%" id='course_information' rows='13' cols='800' name='text'></textarea>
-    </div>
-    <div class="modal-footer">
-        <a href="#" class="btn" data-dismiss="modal">Close</a>
-        <a href="#" class="btn btn-primary" id="modal_course_info_ok" data-loading-text="Updating...">OK</a>
+<div class="modal" id="modal_course_information" tabindex="-1" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="modal_course_information_header">Описание курса</h4>
+            </div>
+            <div class="modal-body" style="max-height: none;">
+                <textarea class='input-xlarge form-control' style="width: 100%;resize: none;" id='course_information' rows='13' cols='800' name='text'></textarea>
+            </div>
+            <div class="modal-footer">
+                <a href="#" class="btn btn-secondary" data-dismiss="modal">Закрыть</a>
+                <a href="#" class="btn btn-primary" id="modal_course_info_ok" data-loading-text="Сохранение...">Сохранить</a>
+            </div>
+        </div>
     </div>
 </div>

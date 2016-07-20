@@ -1,76 +1,83 @@
-<div class="accordion" id="accordion2">
-  {% for field in issue_fields %}
-    {% if field.is_visible and field.name != 'run_id' or field.is_visible and teacher_or_staff %}
-      <div class="accordion-group">
-        <div class="accordion-heading">
-          <div class="row-fluid col-wrap">
-            <div class="span4">
-              <div class="pull-right">
-                {% if field.editable %}
-                  <a href="#" data-toggle="collapse" data-target="#collapse{{ forloop.counter }}">{{ field.title }}</a>:
-                {% else %}
-                  {{ field.title }}:
-                {% endif %}
-              </div>
-            </div>
-            <div class="span8">
-              {% autoescape off %}
-              {% if field.repr  or field.repr == 0 %}
-                  {{ field.repr }}
-                {% else %}
-                  ---
-                {% endif %}
-              {% endautoescape %}
-            </div>
-          </div>
-        </div>
-        <div id="collapse{{ forloop.counter }}" class="accordion-body collapse">
-          <div class="accordion-inner">
-            <form method="post" id="{{ field.name }}_form" enctype="multipart/form-data">
-              {% csrf_token %}
-              <fieldset class="control-group">
-                <input type="hidden" name="form_name" value="{{ field.name }}_form">
-                {% if field.name == 'mark' %}
-                  <input type="hidden" id="max_mark" value="{{ issue.task.score_max }}">
-                {% endif %}
-                {{ field.form }}
-                {% if field.name == 'mark' %}
-                  <span class="help-inline" id="mark_edit_error_text"></span>
-                {% endif %}
-                <br>
-                <button type="submit" class="btn">Отправить</button>
-                {% if field.name == 'responsible_name' or field.name == 'followers_names' %}
-                  <button type="submit" class="btn" name="Me">Я</button>
-                {% endif %}
-                {% if field.name == 'mark' %}
-                  <button type="submit" class="btn" name="Accepted">Зачтено</button>
-                {% endif %}
-              </fieldset>
-            </form>
-          </div>
-        </div>
-      </div>
-    {% endif %}
-  {% endfor %}
-      <div class="accordion-group">
-        <div class="accordion-heading">
-          <div class="row-fluid col-wrap">
-            <div class="span4">
-              <div class="pull-right">
-                  Дата сдачи:
-              </div>
-            </div>
-            <div class="span8">
-                {{ issue.task.deadline_time|date:'d-m-Y H:i' }} {% if issue.task.deadline_time %} MSK UTC+3 {% endif %}
-            </div>
-          </div>
-          </div>
-        </div>
-      </div>
+{% load crispy_forms_tags %}
 
-    {% if issue.task.course.send_to_contest_from_users and not issue.student.get_profile.ya_contest_oauth and user.id == issue.student.id %}
+<style>
+    .card-header {
+        background-color: #FFFFFF;
+    }
+</style>
+
+
+<div id="accordion2">
+    {% for field in issue_fields %}
+        {% if field.is_visible and field.name != 'run_id' or field.is_visible and teacher_or_staff %}
+            <div class="card" style="margin-bottom: .3rem;">
+                <div class="card-header">
+                    <div class="row col-wrap">
+                        <div class="col-md-5">
+                            {% if field.editable %}
+                                <a href="#" data-toggle="collapse" data-target="#collapse{{ forloop.counter }}">{{ field.title }}</a>:
+                            {% else %}
+                                {{ field.title }}:
+                            {% endif %}
+                        </div>
+                        <div class="col-md-7">
+                            {% autoescape off %}
+                                {% if field.repr  or field.repr == 0 %}
+                                    {{ field.repr }}
+                                {% else %}
+                                    ---
+                                {% endif %}
+                            {% endautoescape %}
+                        </div>
+                    </div>
+                </div>
+                <div id="collapse{{ forloop.counter }}" class="collapse">
+                    <div class="card-block">
+                        <form method="post" id="{{ field.name }}_form" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="form-group col-md-12" id="{{ field.name }}_fieldset_id">
+                                <input type="hidden" name="form_name" value="{{ field.name }}_form">
+                                {% if field.name == 'mark' %}
+                                    <input type="hidden" id="max_mark" value="{{ issue.task.score_max }}">
+                                {% endif %}
+                                {{ field.form|crispy }}
+                                {% if field.name == 'mark' %}
+                                    <small class="text-help" style="margin-top: 0px;" id="mark_edit_error_text"></small>
+                                {% endif %}
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-secondary">Отправить</button>
+                                {% if field.name == 'responsible_name' or field.name == 'followers_names' %}
+                                    <button type="submit" class="btn btn-secondary" name="Me">Я</button>
+                                {% endif %}
+                                {% if field.name == 'mark' %}
+                                    <button type="submit" class="btn btn-secondary" name="Accepted">Зачтено</button>
+                                {% endif %}
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    {% endfor %}
+    <div class="card">
+        <div class="card-header">
+            <div class="row col-wrap">
+                <div class="col-md-4">
+                    <div class="pull-xs-right">
+                        Дата сдачи:
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    {{ issue.task.deadline_time|date:'d-m-Y H:i' }} {% if issue.task.deadline_time %} MSK UTC+3 {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if issue.task.course.send_to_contest_from_users and not issue.student.get_profile.ya_contest_oauth and user.id == issue.student.id %}
     <div class="alert alert-info">
         <strong>Отправляйте в Я.Контест от своего Яндекс аккаунта!</strong> Все, что нужно - привязать к своему <a href="{% url users.views.profile %}">профилю </a> Я.Контест.
     </div>
-    {% endif %}
-
+{% endif %}

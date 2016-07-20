@@ -26,12 +26,15 @@
                 }
             },
 
-            highlight: function (label) {
-                $(label).closest('.control-group').removeClass('success').addClass('error');
+            highlight: function(input) {
+                $(input).removeClass('form-control-success').addClass('form-control-danger');
+                $('#mark_fieldset_id').removeClass('has-success').addClass('has-danger');
             },
 
-            success: function (label) {
-                label.addClass('valid').closest('.control-group').removeClass('error').addClass('success');
+            success: function(label) {
+                label.addClass('valid');
+                $('#id_mark').removeClass('form-control-danger').addClass('form-control-success');
+                $('#mark_fieldset_id').removeClass('has-danger').addClass('has-success');
             },
 
             messages: {

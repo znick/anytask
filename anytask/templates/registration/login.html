@@ -1,18 +1,19 @@
 {% extends "base.html" %}
+{% load crispy_forms_tags %}
+
 {% block title %}Вход{% endblock %}
 
 {% block content %}
+    <style>
+        .asteriskField {
+            display: none;
+        }
+    </style>
 
-<h1>Вход</h1>
-
-<form method="post" action="{% url django.contrib.auth.views.login %}" class="form-horizontal">
-{% csrf_token %}
-{{ form }}
-<input type="submit" value="Войти" />
-<input type="hidden" name="next" value="{{ next }}" />
-</form>
-<br/>
-<a href="{% url django.contrib.auth.views.password_reset %}">Забыли пароль?</a>
+    <div class="card card-block" style="width: 30%">
+        <h3 class="card-title">Вход</h3>
+        {% crispy form %}
+    </div>
 
 {% endblock %}
 

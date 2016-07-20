@@ -37,7 +37,8 @@ def task_create_page(request, course_id):
         'task_types': Task().TASK_TYPE_CHOICES,
         'contest_integrated': course.contest_integrated,
         'rb_integrated': course.rb_integrated,
-        'hide_contest_settings': True if not course.contest_integrated else False
+        'hide_contest_settings': True if not course.contest_integrated else False,
+        'school': course.school_set.all()[0],
     }
 
     return render_to_response('task_create_or_edit.html', context, context_instance=RequestContext(request))
@@ -51,7 +52,8 @@ def task_import_page(request, course_id):
         return HttpResponseForbidden
 
     context = {
-        'course': course
+        'course': course,
+        'school': course.school_set.all()[0],
     }
 
     return render_to_response('task_import.html', context, context_instance=RequestContext(request))
@@ -74,7 +76,8 @@ def task_edit_page(request, task_id):
         'task_types': task.TASK_TYPE_CHOICES,
         'contest_integrated': task.contest_integrated,
         'rb_integrated': task.rb_integrated,
-        'hide_contest_settings': True if not task.contest_integrated or task.type == task.TYPE_SIMPLE else False
+        'hide_contest_settings': True if not task.contest_integrated or task.type == task.TYPE_SIMPLE else False,
+        'school': task.course.school_set.all()[0],
     }
 
     return render_to_response('task_create_or_edit.html', context, context_instance=RequestContext(request))

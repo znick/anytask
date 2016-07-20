@@ -3,86 +3,89 @@
 {% block title %}Создание инвайтов{% endblock %}
 
 {% block scripts %}
-	<script src="{{ STATIC_URL }}jquery.validate.min.js"></script>
-	<script src="http://malsup.github.io/jquery.form.js"></script>
-	
-	<script type="text/javascript">
-		$(document).ready(function() {
-			$('#invites-form').validate(
-			{
-				/*submitHandler: function(form) {
-					$(form).ajaxSubmit();
-				},*/
-				
-				rules: {
-					number_of_invites: {
-						required : true,
-						digits : true,
-						range : [1, 50],
-					},
-				},
-				
-				highlight: function(label) {
-					$(label).closest('.control-group').removeClass('success').addClass('error');
-				},
-				
-				success: function(label) {
-					label.addClass('valid').closest('.control-group').addClass('success');
-				},
-				
-				messages: {
-					number_of_invites: {
-						required: "Необходимо указать, какое число инвайтов вы хотите сгенерировать",
-						range : "Число инвайтов не может быть больше 50",
-						digits : "Количество инвайтов должно быть целым числом"
-					},
-				},
-				
-				errorPlacement: function(error, element) {
-					$('#error_text').append(error);
-				}
-			});
-		});
+    <script src="{{ STATIC_URL }}jquery.validate.min.js"></script>
 
-	</script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#invites-form').validate(
+                    {
+                        /*submitHandler: function(form) {
+                         $(form).ajaxSubmit();
+                         },*/
+
+                        rules: {
+                            number_of_invites: {
+                                required : true,
+                                digits : true,
+                                range : [1, 50],
+                            },
+                            group_id: {
+                                required : true,
+                            },
+                        },
+
+                        highlight: function(input) {
+                            $(input).removeClass('form-control-success').addClass('form-control-danger');
+                            $(input).closest('.form-group').removeClass('has-success').addClass('has-danger');
+                        },
+
+                        success: function(label) {
+                            label.addClass('valid');
+                            label.closest('.text-help').siblings('.form-control').removeClass('form-control-danger').addClass('form-control-success');
+                            label.closest('.form-group').removeClass('has-danger').addClass('has-success');
+                        },
+
+                        messages: {
+                            number_of_invites: {
+                                required: "Необходимо указать, какое число инвайтов вы хотите сгенерировать",
+                                range : "Число инвайтов должно быть больше 0 и меньше 50",
+                                digits : "Количество инвайтов должно быть целым числом"
+                            },
+                            group_id: {
+                                required: "Необходимо указать группу",
+                            },
+                        },
+
+                        errorPlacement: function(error, element) {
+                            $(element).siblings('small.text-help').empty().append(error);
+                        }
+                    });
+        });
+
+    </script>
 {% endblock %}
 
 {% block content %}
 
-<div class="row">
-      <div class="span12">
-        <h2>Создание инвайтов</h2>
-        <form action="{% url invites.views.generate_invites %}" method="post" id="invites-form" class="form-horizontal">
-        	{% csrf_token %}
-        	<fieldset>
-		       	<div class="control-group" style="display: none;">
-		       		<label class="control-label" for="number_of_invites">Количество инвайтов:</label>
-		       		<div class="controls">
-		       			<input type="text" value="1" name="number_of_invites" class="input-mini" id="number_of_invites">
-		       			<span class="help-inline" id="error_text"></span>
-		       		</div>
-		       		<!-- <span class="help-inline btn-small">*За один раз может быть сгенерированно не более 50 инвайтов</span> -->
-		       	</div>
-		       	
-		       	<div id="group_options">
-		       		Группа, для которой создаем инвайт:&nbsp;
-		       		<select id="groups" name="group_id">
-		       			{% for group in groups %}
-		       				<option value="{{ group.id }}">{{ group.name }}</option>
-		       			{% endfor %}
-		       		</select>
-		       	</div> 
-
-		       	<div>
-		       		<button type="submit" class="btn btn-primary">OK</button>
-		       		<!-- <a href="#" class="btn btn-primary" id="generate_invites_ok" data-loading-text="Updating...">OK</a>-->
-		       	</div>
-	       	</fieldset>
-       	</form>
-       	<p>
-       		Если необходимой группы нет в списке, обратитесь к <a href="mailto:anytask@yandex.ru">администратору</a>.
-       	</p>
-     </div>
-</div>
+    <div class="card card-block" >
+        <h3 class="card-title">Создание инвайтов</h3>
+        <form action="{% url invites.views.generate_invites %}" method="post" id="invites-form">
+            {% csrf_token %}
+            <div class="form-group row" style="display: none;"i>
+                <label class="form-control-label col-sm-3" for="number_of_invites">Количество инвайтов</label>
+                <div class="controls col-sm-3">
+                    <input class="form-control" type="text" value="1" name="number_of_invites" class="input-sm" id="number_of_invites">
+                    <small class="text-help" id="error_text"></small>
+                </div>
+            </div>
+            <div class="form-group row" id="group_options">
+                <label for="groups" class="col-sm-3">Группа, для которой создаем инвайт</label>
+                <div class="controls col-sm-3">
+                    <select id="groups" name="group_id" class="form-control">
+                        {% for group in groups %}
+                            <option value="{{ group.id }}">{{ group.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <small class="text-help"></small>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-offset-3 col-sm-3">
+                    <button type="submit" class="btn btn-secondary">Создать</button>
+                </div>
+            </div>
+        </form>
+        <p class="help-block">Если необходимой группы нет в списке, обратитесь к <a href="mailto:anytask@yandex.ru">администратору</a>.</p>
+    </div>
 
 {% endblock %}

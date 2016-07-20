@@ -66,14 +66,14 @@ def profile(request, username=None, year=None):
 
     groups = user_to_show.group_set.filter(year=current_year)
 
+    courses = Course.objects.filter(is_active=True, year=current_year).filter(groups__in=groups)
+
     can_sync_contest = False
     for course in Course.objects.filter(is_active=True):
         if course.get_user_group(user) and course.send_to_contest_from_users:
             can_sync_contest = True
 
     can_generate_invites = user_to_show == user and Invite.user_can_generate_invite(user)
-
-    issues = Issue.objects.filter(student=user_to_show).order_by('task__course')
 
     if request.method == 'POST':
         invite_form = InviteActivationForm(request.POST)
@@ -89,11 +89,11 @@ def profile(request, username=None, year=None):
 
     context = {
         'user_to_show'              : user_to_show,
+        'courses'                   : courses,
         'groups'                    : groups,
         # 'user_course_information'   : user_course_information,
         'teacher_in_courses'        : teacher_in_courses,
         'can_generate_invites'      : can_generate_invites,
-        'issues'                    : issues,
         'invite_form'               : invite_form,
         'user_profile'              : user_profile,
         'can_sync_contest'          : can_sync_contest,
@@ -183,3 +183,17 @@ def add_user_to_group(request):
     group.save()
 
     return HttpResponse("OK")
+
+
+@login_required
+def my_tasks(request):
+    user = request.user
+
+    issues = Issue.objects.filter(student=user).order_by('task__course')
+
+    context = {
+        'issues': issues,
+    }
+
+    return render_to_response('my_tasks.html', context, context_instance=RequestContext(request))
+
