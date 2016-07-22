@@ -7,8 +7,7 @@
 {% endblock %}
 
 
-{% block title %}{{ issue.task }} | {{ issue.student.last_name }}
-    {{ issue.student.first_name }} {% endblock %}
+{% block title %}{{ issue.task }} | {{ issue.student.last_name }} {{ issue.student.first_name }} {% endblock %}
 
 {% block breadcrumbs %}
     {{ block.super }}

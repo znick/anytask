@@ -26,7 +26,7 @@ def task_create_page(request, course_id):
     course = get_object_or_404(Course, id=course_id)
 
     if not course.user_is_teacher(request.user):
-        return HttpResponseForbidden
+        return HttpResponseForbidden()
 
     if request.method == 'POST':
         return task_create_ot_edit(request, course)
@@ -49,7 +49,7 @@ def task_import_page(request, course_id):
     course = get_object_or_404(Course, id=course_id)
 
     if not course.user_is_teacher(request.user):
-        return HttpResponseForbidden
+        return HttpResponseForbidden()
 
     context = {
         'course': course,
@@ -64,7 +64,7 @@ def task_edit_page(request, task_id):
     task = get_object_or_404(Task, id=task_id)
 
     if not task.course.user_is_teacher(request.user):
-        return HttpResponseForbidden
+        return HttpResponseForbidden()
 
     if request.method == 'POST':
         return task_create_ot_edit(request, task.course, task_id)
