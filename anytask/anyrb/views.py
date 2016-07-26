@@ -6,16 +6,16 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpResponse
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template.context import RequestContext
-from issues.models import Issue, Event
+from issues.models import Issue
 from issues.model_issue_field import IssueField
 
 
 @csrf_exempt
 def message_from_rb(request, review_id):
-    field = get_object_or_404(IssueField, name='review_id')
-    for event in Event.objects.filter(field_id=field.id):
-        if event.issue.get_byname('review_id') == review_id:
-            issue = event.issue
+
+    for one_issue in Issue.objects.filter(task__rb_integrated=True):
+        if one_issue.get_byname('review_id') == review_id:
+            issue = one_issue
             break
 
     if request.method == 'POST':
