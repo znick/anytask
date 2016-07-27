@@ -14,7 +14,7 @@
                 $('#invites_form').show();
             });
             {%  if user_to_show == user %}
-            $('#avatar').click(function () {
+            $('.edit-icon').click(function () {
                 $('#edit-avatar').attr({src: $('#avatar').attr('src')});
                 $('#modal_avatar_edit').modal('show');
                 input_avatar = $('#input-avatar');
@@ -79,6 +79,22 @@
         .card-deck-wrapper {
             margin-bottom: 1rem;
         }
+        .user_img {
+            position: relative;
+            display: inline-block;
+        }
+
+        .user_img:hover .edit-icon {
+            display: block;
+        }
+
+        .edit-icon {
+            text-align: center;
+            position: absolute;
+            right: 10%;
+            top: 0;
+            display: none;
+        }
     </style>
 
     <div class="card-deck-wrapper">
@@ -87,6 +103,11 @@
                 <div class="card-block">
                     <h3 class="card-title">
                         <div class="user_img pull-xs-left">
+                            {% if request.user == user_to_show %}
+                                <label class="edit-icon btn btn-secondary btn-sm">
+                                    <i class="fa fa fa-pencil"></i>
+                                </label>
+                            {% endif %}
                             <img id="avatar" class="avatar" src="{% if not user_to_show.get_profile.avatar %}https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mm&f=y
                                   {% else %}{{ user_to_show.get_profile.avatar.url }}{% endif %}"
                                   style="width: 100px; height:100px; margin: 0 1rem 1rem 0;">
