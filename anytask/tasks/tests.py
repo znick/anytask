@@ -15,6 +15,7 @@ from groups.models import Group
 from years.models import Year
 from tasks.models import Task
 
+from mock import patch, MagicMock
 from BeautifulSoup import BeautifulSoup
 from datetime import datetime, timedelta
 from django.core.urlresolvers import reverse
@@ -395,3 +396,75 @@ class ViewsTest(TestCase):
         # get page
         response = client.get(reverse('tasks.views.task_edit_page', kwargs={'task_id': self.task.id}))
         self.assertEqual(response.status_code, 403, "Only teacher can get task_edit_page")
+
+    @patch('tasks.views.get_contest_info')
+    def test_import_contest(self, mock_get_contest_problems):
+        client = self.client
+        post_data = {'contest_id_for_task': '1100',
+                     'course_id': '1',
+                     'contest_problems[]': ['1', '3'],
+                     'max_score': '10',
+                     'task_group_id': '1',
+                     'deadline': '05-07-2016 05:30',
+                     'changed_task': 'on',
+                     'rb_integrated': 'on',
+                     'hidden_task': 'on'}
+
+        problems = [{'problemId': '1',
+                     'problemTitle': 'Task1',
+                     'statement': 'text1',
+                     'alias': 'A'},
+                    {'problemId': '2',
+                     'problemTitle': 'Task2',
+                     'statement': 'text2',
+                     'alias': 'B'},
+                    {'problemId': '3',
+                     'problemTitle': 'Task3',
+                     'statement': 'text3',
+                     'alias': 'C'}]
+
+        # login
+        self.assertTrue(client.login(username=self.teacher.username, password=self.teacher_password),
+                        "Can't login via teacher")
+
+        # get contest_task_import page with known error
+        mock_get_contest_problems.return_value = (False, "You're not allowed to view this contest.")
+        response = client.post(reverse('tasks.views.contest_task_import'), post_data)
+        self.assertEqual(response.status_code, 200, "Can't get get_contest_info via teacher")
+        self.assertEqual(response.content,
+                         '{"is_error": true, "error": "\u0423 anytask \u043d\u0435\u0442 '
+                         '\u043f\u0440\u0430\u0432 \u043d\u0430 \u0434\u0430\u043d\u043d\u044b\u0439 '
+                         '\u043a\u043e\u043d\u0442\u0435\u0441\u0442"}',
+                         'Wrong response text')
+
+        # get contest_task_import page with unknown error
+        mock_get_contest_problems.return_value = (False, "404")
+        response = client.post(reverse('tasks.views.contest_task_import'), post_data)
+        self.assertEqual(response.status_code, 403, "Must be forbidden")
+
+        # get contest_task_import page with unknown error
+        mock_get_contest_problems.return_value = (True, {'problems': problems})
+        response = client.post(reverse('tasks.views.contest_task_import'), post_data)
+        save_result_html(response.content)
+        self.assertEqual(response.status_code, 200, "Can't get get_contest_info via teacher")
+        self.assertEqual(response.content, 'OK', 'Wrong response text')
+
+        tasks = Task.objects.exclude(id=1)
+        self.assertEqual(len(tasks), 2, 'Wrong number of tasks')
+        problems_idx = 0
+        for idx, task in enumerate(tasks):
+            self.assertEqual(task.title, problems[problems_idx]['problemTitle'], 'Wrong task title')
+            self.assertEqual(task.course, self.course)
+            self.assertEqual(task.group, self.group)
+            self.assertEqual(task.weight, idx + 1)
+            self.assertEqual(task.is_hidden, True)
+            self.assertIsNone(task.parent_task)
+            self.assertEqual(task.task_text, problems[problems_idx]['statement'])
+            self.assertEqual(task.contest_integrated, True)
+            self.assertEqual(task.rb_integrated, True)
+            self.assertEqual(task.type, Task.TYPE_FULL)
+            self.assertEqual(task.deadline_time, datetime.strptime(post_data['deadline'], '%d-%m-%Y %H:%M'))
+            self.assertEqual(str(task.contest_id), post_data['contest_id_for_task'])
+            self.assertEqual(task.problem_id, problems[problems_idx]['alias'])
+            self.assertEqual(task.sended_notify, False)
+            problems_idx = 2

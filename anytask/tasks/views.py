@@ -188,12 +188,12 @@ def task_create_ot_edit(request, course, task_id=None):
 
 @login_required
 def get_contest_problems(request):
+    if request.method != 'POST':
+        return HttpResponseForbidden()
+
     course = get_object_or_404(Course, id=request.POST['course_id'])
 
     if not course.user_can_edit_course(request.user):
-        return HttpResponseForbidden()
-
-    if request.method != 'POST':
         return HttpResponseForbidden()
 
     contest_id = request.POST['contest_id']
