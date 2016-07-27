@@ -41,17 +41,21 @@
             <li>
                 <div class="row">
                     <div class="{% if event.author == user %}col-md-12{% else %}col-md-offset-1 col-md-11{% endif %}">
-                        <strong><a class="card-link" href="{{ event.author.get_absolute_url }}" style="color:#373a3c;">{{ event.author.last_name }} {{ event.author.first_name }}</a>&nbsp;</strong>
+                        <strong><a class="card-link" href="{{ event.author.get_absolute_url }}" style="color:#373a3c;">
+                            {{ event.author.last_name }} {{ event.author.first_name }}</a>&nbsp;</strong>
                         <small class="text-muted">
                             <i class="fa fa-clock-o fa-flip-horizontal"></i> {{ event.timestamp|date:"d M H:i" }}
                         </small>
                     </div>
                     <div class="user_img col-md-1 {% if event.author == user %}pull-xs-right{% else %}pull-xs-left{% endif %}">
-                        <img src="https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mm&f=y" style="border-radius: 50%;width: 50px;border: 1px solid #c3c3c3;">
+                        <img class="avatar" src="{% if not event.author.get_profile.avatar %}https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mm&f=y
+                        {% else %}{{ event.author.get_profile.avatar.url }}{% endif %}" style="width: 50px; height: 50px;">
 {#                        <i class="fa {% if event.author == user %}fa-empire{% else %}fa-rebel{% endif %} fa-3x" aria-hidden="true"></i>#}
                     </div>
                     <div class="col-md-11">
-                        <div class="{% if event.author == user %}mine{% else %}not_mine{% endif %} history-body {% if issue.task.deadline_time < event.timestamp and event.author.username == issue.student.username %} after_deadline {% endif %}">
+                        <div class="{% if event.author == user %}mine{% else %}not_mine{% endif %} history-body
+                        {% if issue.task.deadline_time < event.timestamp and event.author.username == issue.student.username %}
+                        after_deadline {% endif %}">
                             {% autoescape off %}
                                 {{ event.get_message|urlize|sanitize }}
                             {% endautoescape %}
