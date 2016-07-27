@@ -83,8 +83,6 @@ def profile(request, username=None, year=None):
     invite_form = InviteActivationForm()
 
     if request.method == 'POST':
-        print request.POST
-        print request.FILES
         if 'update-avatar' in request.POST:
             if 'input-avatar' in request.FILES:
                 user_profile.avatar = request.FILES['input-avatar']

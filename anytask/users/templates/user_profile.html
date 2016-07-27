@@ -33,10 +33,11 @@
             });
 
             $('#dismiss-avatar').click(function () {
-                $('#edit-avatar').attr({src: 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mm&f=y'});
+                var gravatar_link = 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mm&f=y';
+                $('#edit-avatar').attr({src: gravatar_link});
                 input_avatar = $('#input-avatar');
                 input_avatar.replaceWith(input_avatar.val('').clone(true));
-                $('#gravatar-link').val('');
+                $('#gravatar-link').val(gravatar_link);
             });
 
         });
