@@ -14,8 +14,10 @@ from courses.models import Course, IssueField
 from groups.models import Group
 from years.models import Year
 from tasks.models import Task
-from issues.models import Issue
+from issues.models import Issue, File, Event
 
+from django.core.files.uploadedfile import SimpleUploadedFile
+from mock import patch
 from BeautifulSoup import BeautifulSoup
 from datetime import datetime, timedelta
 from django.core.urlresolvers import reverse
@@ -800,3 +802,119 @@ class ViewsTest(TestCase):
         self.assertNotIn('after_deadline',
                          history[1].find('div', 'history-body')['class'].split(' '),
                          'Wrong deadline end comment color')
+
+    @patch('anyrb.common.AnyRB.upload_review')
+    def test_upload_review_with_student(self, mock_upload_review):
+        client = self.client
+        issue = Issue.objects.create(task_id=self.task.id, student_id=self.student.id)
+        event_create_file = Event.objects.create(issue=issue, field=IssueField.objects.get(name='file'))
+        File.objects.create(file=SimpleUploadedFile('test_rb.py', 'some text'), event=event_create_file)
+        User.objects.create_user(username='anytask.monitoring', password='password')
+        self.task.rb_integrated = True
+        self.task.save()
+
+        # login
+        self.assertTrue(client.login(username=self.student.username, password=self.student_password),
+                        "Can't login via teacher")
+
+        # post rb error
+        mock_upload_review.return_value = None
+        response = client.post(reverse('issues.views.upload'),
+                               {'comment': 'test_comment',
+                                'files[]': '',
+                                'pk_test_rb.py': '1',
+                                'issue_id': str(issue.id),
+                                'form_name': 'comment_form',
+                                'update_issue': ''}, follow=True)
+        self.assertEqual(response.status_code, 200, "Can't get upload via student")
+        self.assertEqual(len(response.redirect_chain), 1, "Must be redirect")
+
+        html = BeautifulSoup(response.content)
+        container = html.body.find('div', 'container', recursive=False)
+
+        # history
+        history = container.find('ul', 'history')('li')
+        self.assertEqual(len(history), 1, 'History len is not 1')
+        self.assertEqual(history[0].strong.a['href'],
+                         '/users/student/',
+                         'Wrong comment author link')
+        self.assertEqual(history[0].strong.a.string.strip().strip('\n'),
+                         'student_last_name student_name',
+                         'Wrong comment author name')
+        comment_body = history[0].find('div', 'history-body').next
+        self.assertEqual(comment_body.string.strip().strip('\n'),
+                         'test_comment',
+                         'Wrong comment text')
+        comment_body = comment_body.next.next
+        self.assertEqual(comment_body.string.strip().strip('\n'),
+                         u'Ошибка отправки в Review Board.',
+                         'Wrong comment text about RB')
+        comment_body = comment_body.next
+        self.assertEqual(comment_body.a.string.strip().strip('\n'),
+                         'test_rb.py',
+                         'Wrong filename in comment')
+
+        # post rb no error
+        mock_upload_review.return_value = 1
+        response = client.post(reverse('issues.views.upload'),
+                               {'comment': 'test_comment',
+                                'files[]': '',
+                                'pk_test_rb.py': '1',
+                                'issue_id': str(issue.id),
+                                'form_name': 'comment_form',
+                                'update_issue': ''}, follow=True)
+        self.assertEqual(response.status_code, 200, "Can't get upload via student")
+        self.assertEqual(len(response.redirect_chain), 1, "Must be redirect")
+
+        html = BeautifulSoup(response.content)
+        container = html.body.find('div', 'container', recursive=False)
+
+        # history
+        history = container.find('ul', 'history')('li')
+        self.assertEqual(len(history), 2, 'History len is not 2')
+        self.assertEqual(history[1].strong.a['href'],
+                         '/users/student/',
+                         'Wrong comment author link')
+        self.assertEqual(history[1].strong.a.string.strip().strip('\n'),
+                         'student_last_name student_name',
+                         'Wrong comment author name')
+        comment_body = history[1].find('div', 'history-body')
+        self.assertEqual(comment_body.next.string.strip().strip('\n'),
+                         'test_comment',
+                         'Wrong comment text')
+        self.assertEqual(comment_body.a.string.strip().strip('\n'),
+                         u'Review request 1',
+                         'Wrong comment text about RB')
+        self.assertEqual(comment_body.find('div', 'files').a.string.strip().strip('\n'),
+                         'test_rb.py',
+                         'Wrong filename in comment')
+
+        # changes from rb
+        issue.set_byname('review_id', 1)
+        response = client.post(reverse('anyrb.views.message_from_rb', kwargs={'review_id': '1'}),
+                               {'author': 'teacher'}, follow=True)
+        self.assertEqual(response.status_code, 201, "Can't get message_from_rb via student")
+
+        response = client.get(reverse('issues.views.issue_page',
+                                      kwargs={'issue_id': issue.id}))
+        self.assertEqual(response.status_code, 200, "Can't get upload via student")
+
+        html = BeautifulSoup(response.content)
+        container = html.body.find('div', 'container', recursive=False)
+
+        # history
+        history = container.find('ul', 'history')('li')
+        self.assertEqual(len(history), 3, 'History len is not 3')
+        self.assertEqual(history[2].strong.a['href'],
+                         '/users/teacher/',
+                         'Wrong comment author link')
+        self.assertEqual(history[2].strong.a.string.strip().strip('\n'),
+                         'teacher_last_name teacher_name',
+                         'Wrong comment author name')
+        comment_body = history[2].find('div', 'history-body').strong
+        self.assertEqual(comment_body.next.string.strip().strip('\n'),
+                         u'Добавлен новый комментарий в',
+                         'Wrong comment text')
+        self.assertEqual(comment_body.a.string.strip().strip('\n'),
+                         u'Review request 1',
+                         'Wrong comment text about RB')

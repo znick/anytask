@@ -445,7 +445,6 @@ class ViewsTest(TestCase):
         # get contest_task_import page with unknown error
         mock_get_contest_problems.return_value = (True, {'problems': problems})
         response = client.post(reverse('tasks.views.contest_task_import'), post_data)
-        save_result_html(response.content)
         self.assertEqual(response.status_code, 200, "Can't get get_contest_info via teacher")
         self.assertEqual(response.content, 'OK', 'Wrong response text')
 
