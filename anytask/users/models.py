@@ -7,6 +7,8 @@ from datetime import datetime
 from years.common import get_current_year
 from groups.models import Group
 
+from anytask.storage import OverwriteStorage
+
 import os
 
 
@@ -18,7 +20,7 @@ class UserProfile(models.Model):
     user = models.ForeignKey(User, db_index=True, null=False, blank=False, unique=True)
     second_name = models.CharField(max_length=128, db_index=True, null=True, blank=True)
 
-    avatar = models.ImageField('profile picture', upload_to=get_upload_path, blank=True, null=True)
+    avatar = models.ImageField('profile picture', upload_to=get_upload_path, blank=True, null=True, storage=OverwriteStorage())
     birth_date = models.DateField(blank=True, null=True)
 
     unit = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)

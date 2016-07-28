@@ -84,12 +84,12 @@ def profile(request, username=None, year=None):
 
     if request.method == 'POST':
         if 'update-avatar' in request.POST:
+            filename = 'avatar'
             if 'input-avatar' in request.FILES:
-                user_profile.avatar = request.FILES['input-avatar']
+                image_content = request.FILES['input-avatar']
+                user_profile.avatar.save(filename, image_content)
             elif request.POST['gravatar-link']:
-                gravatar_url = request.POST['gravatar-link']
-                image_content = ContentFile(requests.get(gravatar_url).content)
-                filename = os.path.basename(gravatar_url)
+                image_content = ContentFile(requests.get(request.POST['gravatar-link']).content)
                 user_profile.avatar.save(filename, image_content)
 
             user_profile.save()
