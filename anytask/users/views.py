@@ -6,6 +6,8 @@ from django.conf import settings
 from django.http import Http404
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
+from django.core.files.base import ContentFile
+
 
 from users.models import UserProfile
 from django.contrib.auth.models import User
@@ -23,6 +25,7 @@ import datetime
 import operator
 import yandex_oauth
 import requests
+import os
 
 
 @login_required
@@ -75,17 +78,28 @@ def profile(request, username=None, year=None):
 
     can_generate_invites = user_to_show == user and Invite.user_can_generate_invite(user)
 
-    if request.method == 'POST':
-        invite_form = InviteActivationForm(request.POST)
-        if invite_form.is_valid():
-            invite = get_object_or_404(Invite, key=invite_form.cleaned_data['invite'])
-            if invite.group:
-                invite.group.students.add(user)
-                invite.invited_users.add(user)
-    else:
-        invite_form = InviteActivationForm()
-
     user_profile = user.get_profile()
+
+    invite_form = InviteActivationForm()
+
+    if request.method == 'POST':
+        if 'update-avatar' in request.POST:
+            if 'input-avatar' in request.FILES:
+                user_profile.avatar = request.FILES['input-avatar']
+            elif request.POST['gravatar-link']:
+                gravatar_url = request.POST['gravatar-link']
+                image_content = ContentFile(requests.get(gravatar_url).content)
+                filename = os.path.basename(gravatar_url)
+                user_profile.avatar.save(filename, image_content)
+
+            user_profile.save()
+        else:
+            invite_form = InviteActivationForm(request.POST)
+            if invite_form.is_valid():
+                invite = get_object_or_404(Invite, key=invite_form.cleaned_data['invite'])
+                if invite.group:
+                    invite.group.students.add(user)
+                    invite.invited_users.add(user)
 
     context = {
         'user_to_show'              : user_to_show,

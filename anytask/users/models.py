@@ -7,11 +7,18 @@ from datetime import datetime
 from years.common import get_current_year
 from groups.models import Group
 
+import os
+
+
+def get_upload_path(instance, filename):
+    return os.path.join('images', 'user_%d' % instance.user.id, filename)
+
+
 class UserProfile(models.Model):
     user = models.ForeignKey(User, db_index=True, null=False, blank=False, unique=True)
     second_name = models.CharField(max_length=128, db_index=True, null=True, blank=True)
 
-    avatar = models.ImageField('profile picture', upload_to='static/media/images/avatars/', blank=True, null=True)
+    avatar = models.ImageField('profile picture', upload_to=get_upload_path, blank=True, null=True)
     birth_date = models.DateField(blank=True, null=True)
 
     unit = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
