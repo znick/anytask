@@ -14,23 +14,22 @@ from django.contrib.auth.models import User
 from tasks.models import TaskTaken
 from years.models import Year
 from groups.models import Group
-from courses.models import Course
+from courses.models import Course, StudentCourseMark
 from invites.models import Invite
 from issues.models import Issue
+from tasks.models import Task
 from users.forms import InviteActivationForm
 
 from years.common import get_current_year
 
-import datetime
-import operator
 import yandex_oauth
 import requests
-import os
 
 
 @login_required
 def users_redirect(request, username):
     return redirect('users.views.profile', username=username, permanent=True)
+
 
 @login_required
 def profile(request, username=None, year=None):
@@ -115,6 +114,7 @@ def profile(request, username=None, year=None):
 
     return render_to_response('user_profile.html', context, context_instance=RequestContext(request))
 
+
 @login_required
 def profile_settings(request, username=None):
     user = request.user
@@ -129,6 +129,7 @@ def profile_settings(request, username=None):
 
     return render_to_response('user_settings.html', context, context_instance=RequestContext(request))
 
+
 def ya_oauth_request(request, type_of_oauth):
 
     if type_of_oauth == 'contest':
@@ -140,6 +141,7 @@ def ya_oauth_request(request, type_of_oauth):
     ya_oauth = yandex_oauth.OAuthYandex(OAUTH,PASSWORD)
 
     return redirect(ya_oauth.get_code())
+
 
 def ya_oauth_response(request, type_of_oauth):
     if request.method == 'GET':
@@ -166,6 +168,7 @@ def ya_oauth_response(request, type_of_oauth):
     else:
         HttpResponseForbidden()
 
+
 def ya_oauth_disable(request, type_of_oauth):
     user = request.user
     user_profile = user.get_profile()
@@ -177,6 +180,7 @@ def ya_oauth_disable(request, type_of_oauth):
     user_profile.save()
 
     return redirect('users.views.profile')
+
 
 def add_user_to_group(request):
     user = request.user
@@ -211,3 +215,51 @@ def my_tasks(request):
 
     return render_to_response('my_tasks.html', context, context_instance=RequestContext(request))
 
+
+@login_required
+def user_courses(request, username=None, year=None):
+    user = request.user
+
+    user_to_show = user
+    if username:
+        user_to_show = get_object_or_404(User, username=username)
+
+    if year:
+        current_year = get_object_or_404(Year, start_year=year)
+    else:
+        current_year = get_current_year()
+
+    groups = user_to_show.group_set.filter(year=current_year)
+
+    courses = Course.objects.filter(is_active=True, year=current_year).filter(groups__in=groups)
+
+    course_statistics = []
+
+    for course in courses:
+
+        tasks = Task.objects.filter(Q(course=course) & (Q(group__in=groups) | Q(group=None)) & Q(is_hidden=False))
+        issues = Issue.objects.filter(student=user_to_show).filter(task__in=tasks)
+
+        if StudentCourseMark.objects.filter(student=user_to_show, course=course):
+            mark = StudentCourseMark.objects.get(student=user_to_show, course=course).mark
+        else:
+            mark = '--'
+
+        new_course_statistics = {}
+        new_course_statistics['name'] = course.name
+        new_course_statistics['url'] = course.get_absolute_url()
+        new_course_statistics['issues_with_accepted'] = issues.filter(status='accepted').count()
+        new_course_statistics['issues_with_rework'] = issues.filter(status='rework').count()
+        new_course_statistics['issues_with_verification'] = issues.filter(status='verification').count()
+        new_course_statistics['tasks'] = tasks.count
+        new_course_statistics['mark'] = mark
+
+        course_statistics.append(new_course_statistics)
+
+    context = {
+        'course_statistics' : course_statistics,
+        'user_to_show'      : user_to_show,
+        'user'              : user,
+    }
+
+    return render_to_response('user_courses.html', context, context_instance=RequestContext(request))
