@@ -29,10 +29,11 @@
     };
 
     $(document).ready(function() {
-        var table_results = {};
+        var table_min_height = '30vh';
+        var table_max_height = '72vh';
         $(".table_results").each(function (i) {
             var t = $(this).DataTable( {
-                scrollY: '25.75rem',
+                scrollY: table_min_height,
                 scrollX: true,
                 scrollCollapse: true,
                 paging: false,
@@ -83,6 +84,7 @@
                 },
                 initComplete: function( settings, json ) {
                     $(".zui-wrapper").show();
+                    $(".btn-table-fullscreen").css('display', 'inline-block');
                     $(".loading_table_img").hide();
                 },
             });
@@ -91,7 +93,32 @@
                     cell.innerHTML = i+1;
                 } );
             } ).draw();
-            {#            table_results['table_results_' + (i + 1)] = t;#}
+        });
+
+        $('.btn-table-fullscreen').click(function() {
+            if ($('i', this).hasClass('fa-expand')) {
+                $('i', this).removeClass('fa-expand').addClass('fa-compress');
+                $(this).data('scroll_pos', $(window).scrollTop());
+                $(this).closest('.card.card-block').addClass('item-fullscreen');
+                $(window).scrollTop(0);
+                $('html, body').css({
+                    'overflow': 'hidden',
+                    'height': '100%'
+                });
+                $('.dataTables_scrollBody',  $(this).closest('.card.card-block')).css('max-height', table_max_height);
+                $('#' + $(this).attr('for')).DataTable().draw();
+            }
+            else {
+                $('i', this).removeClass('fa-compress').addClass('fa-expand');
+                $(this).closest('.card.card-block').removeClass('item-fullscreen');
+                $('html, body').css({
+                    'overflow': 'auto',
+                    'height': 'auto'
+                });
+                $(window).scrollTop($(this).data('scroll_pos'));
+                $('.dataTables_scrollBody',  $(this).closest('.card.card-block')).css('max-height', table_min_height);
+                $('#' + $(this).attr('for')).DataTable().draw();
+            }
         });
 
         $('.task-mark-value').click(function() {
