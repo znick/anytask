@@ -121,7 +121,9 @@
 
             .item-fullscreen {
                 position: absolute;
-                height: 90%;
+                height: -moz-calc(100% - 100px);
+                height: -webkit-calc(100% - 100px);
+                height: calc(100% - 100px);
                 width: 100%;
                 top: 2.8rem;
                 right: 0;
