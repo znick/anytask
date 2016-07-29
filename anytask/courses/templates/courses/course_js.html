@@ -30,7 +30,7 @@
 
     $(document).ready(function() {
         var table_min_height = '30vh';
-        var table_max_height = '75vh';
+        var table_max_height = '72vh';
         $(".table_results").each(function (i) {
             var t = $(this).DataTable( {
                 scrollY: table_min_height,
@@ -84,6 +84,7 @@
                 },
                 initComplete: function( settings, json ) {
                     $(".zui-wrapper").show();
+                    $(".btn-table-fullscreen").css('display', 'inline-block');
                     $(".loading_table_img").hide();
                 },
             });
@@ -94,7 +95,7 @@
             } ).draw();
         });
 
-        $('.table-fullscreen').click(function() {
+        $('.btn-table-fullscreen').click(function() {
             if ($('i', this).hasClass('fa-expand')) {
                 $('i', this).removeClass('fa-expand').addClass('fa-compress');
                 $(this).data('scroll_pos', $(window).scrollTop());
