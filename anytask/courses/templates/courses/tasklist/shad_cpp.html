@@ -37,8 +37,9 @@
 {% for group,student_information in group_information.items %}
     <div class="card card-block">
         {% ifnotequal group course.group_with_extern %}
-            <h3 class="card-title">{% if group.name %}{{ group.name }}{% else %}&nbsp;{% endif %}</h3>
+            <h3 class="card-title" style="display: inline-block; ">{% if group.name %}{{ group.name }}{% else %}&nbsp;{% endif %}</h3>
         {% endifnotequal %}
+        <button class="btn btn-secondary table-fullscreen" type="button" for="table_results_{{ forloop.counter }}" style="display: inline-block;vertical-align: top;margin-left: 5px;"><i class="fa fa-expand fa-lg"></i></button>
         <div class="loading_table_img"  style="text-align: center">
             <span class="fa fa-circle-o-notch fa-spin fa-3x fa-fw" style="opacity:0.2;filter: alpha(opacity=20);color:#000000;"></span>
         </div>
