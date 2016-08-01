@@ -3,6 +3,15 @@
 
 {% block title %}Anytask{% endblock %}
 
+{% block scripts %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.matchHeight/0.7.0/jquery.matchHeight-min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('.card-centered').matchHeight();
+        });
+    </script>
+{% endblock %}
+
 {% block content %}
 
     {% index_message %}
@@ -25,9 +34,9 @@
             <div class="col-md-6">
                 <div class="card">
                     <a class="card-link card-clickable"  href="{% url schools.views.school_page school.link %}">
-                        <div class="card-block">
+                        <div class="card-block card-centered">
                             <h3 class="card-title">{{ school.name }}</h3>
-{#                            <p class="card-text">Some text.</p>#}
+                            {#                            <p class="card-text">Some text.</p>#}
                         </div>
                     </a>
                 </div>

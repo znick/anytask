@@ -12,7 +12,9 @@
 
 {% block breadcrumbs %}
     {{ block.super }}
-    {% breadcrumb school.name school.get_absolute_url %}
+    {% if school %}
+        {% breadcrumb school.name school.get_absolute_url %}
+    {% endif %}
     {% breadcrumb course.name course.get_absolute_url %}
     {% breadcrumb "Импорт задач из Яндекс.Контеста" "" %}
 {% endblock breadcrumbs %}
@@ -29,7 +31,7 @@
 {% block content %}
     {{ block.super }}
     <div id="task_edit" class="card card-block">
-        <h3 class="card-title" style="margin-bottom:1rem;">Импорт задач из Яндекс.Контеста</h3>
+        <h4 class="card-title" style="margin-bottom:1rem;">Импорт задач из Яндекс.Контеста</h4>
 
         <form id="contest_task_form">
             {% csrf_token %}

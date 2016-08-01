@@ -12,7 +12,9 @@
 
 {% block breadcrumbs %}
     {{ block.super }}
-    {% breadcrumb school.name school.get_absolute_url %}
+    {% if school %}
+        {% breadcrumb school.name school.get_absolute_url %}
+    {% endif %}
     {% breadcrumb course.name course.get_absolute_url %}
     {% if is_create %}
         {% breadcrumb "Создание задачи" "" %}
@@ -35,7 +37,7 @@
     <div class="row">
         <div class="col-md-12">
             <div id="task_edit" class="card card-block">
-                <h3 class="card-title" style="margin-bottom:1rem;">{% if is_create %}Создание задачи{% else %}Редактирование задачи{% endif %}</h3>
+                <h4 class="card-title" style="margin-bottom:1rem;">{% if is_create %}Создание задачи{% else %}Редактирование задачи{% endif %}</h4>
 
                 <form method="post" id="task_edit_form" >
                     {% csrf_token %}
@@ -154,7 +156,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">×</button>
-                    <h3 class="modal-title" id="modal_task_header"></h3>
+                    <h4 class="modal-title" id="modal_task_header"></h4>
                     <div id="modal_task_deadline"></div>
                 </div>
                 <div class="modal-body">
