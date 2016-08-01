@@ -40,6 +40,11 @@
 
 {% block content %}
     {{ block.super }}
+    <style>
+        .asteriskField {
+            display: none;
+        }
+    </style>
     <form id="course_settings_form" action="{{ request.get_full_path }}" method="POST" >
         {% csrf_token %}
         <div class="card-deck-wrapper">
