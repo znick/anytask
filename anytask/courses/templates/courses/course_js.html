@@ -30,7 +30,6 @@
 
     $(document).ready(function() {
         var table_min_height = '30vh';
-        var table_max_height = '72vh';
         $(".table_results").each(function (i) {
             var t = $(this).DataTable( {
                 scrollY: table_min_height,
@@ -96,27 +95,28 @@
         });
 
         $('.btn-table-fullscreen').click(function() {
+            var card = $(this).closest('.card.card-block');
             if ($('i', this).hasClass('fa-expand')) {
                 $('i', this).removeClass('fa-expand').addClass('fa-compress');
                 $(this).data('scroll_pos', $(window).scrollTop());
-                $(this).closest('.card.card-block').addClass('item-fullscreen');
+                card.addClass('item-fullscreen');
                 $(window).scrollTop(0);
                 $('html, body').css({
                     'overflow': 'hidden',
                     'height': '100%'
                 });
-                $('.dataTables_scrollBody',  $(this).closest('.card.card-block')).css('max-height', table_max_height);
+                $('.dataTables_scrollBody',  card).css('max-height', card.height() - 130 + 'px');
                 $('#' + $(this).attr('for')).DataTable().draw();
             }
             else {
                 $('i', this).removeClass('fa-compress').addClass('fa-expand');
-                $(this).closest('.card.card-block').removeClass('item-fullscreen');
+                card.removeClass('item-fullscreen');
                 $('html, body').css({
                     'overflow': 'auto',
                     'height': 'auto'
                 });
                 $(window).scrollTop($(this).data('scroll_pos'));
-                $('.dataTables_scrollBody',  $(this).closest('.card.card-block')).css('max-height', table_min_height);
+                $('.dataTables_scrollBody',  card).css('max-height', table_min_height);
                 $('#' + $(this).attr('for')).DataTable().draw();
             }
         });
