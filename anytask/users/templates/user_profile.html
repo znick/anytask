@@ -111,7 +111,7 @@
         <div class="card-deck">
             <div class="card">
                 <div class="card-block">
-                    <h4 class="card-title">
+                    <h5 class="card-title">
                         <div class="user_img pull-xs-left">
                             {% if request.user == user_to_show %}
                                 <label class="edit-icon btn btn-secondary btn-sm">
@@ -125,7 +125,7 @@
                         {{ user_to_show.get_full_name }}
                         <br>
                         <small class="text-muted">{{ user_to_show.email }}</small>
-                    </h4>
+                    </h5>
                     {% if user == user_to_show and can_generate_invites %}
                         <a class="card-link" href="#" onclick="window.open('{% url invites.views.generate_invites %}','_blank','height=331,width=769,status=yes,toolbar=no,menubar=no,location=no');return false;">Сгенерировать инвайты</a>
                     {% endif %}
@@ -137,7 +137,7 @@
                     {% if not user_profile.ya_contest_oauth %}
                         <div class="card card-inverse card-warning">
                             <div class="card-block">
-                                <h4 class="card-title">Привязать профиль Яндекс.Контеста</h4>
+                                <h5 class="card-title">Привязать профиль Яндекс.Контеста</h5>
                                 <p class="card-text">
                                     <strong>Привязать можно только один профиль!</strong> Для того, чтобы отвязать свой профиль обратитесь к <a href="mailto:anytask@yandex.ru">администратору</a>
                                 </p>
@@ -149,7 +149,7 @@
                     {% else %}
                         <div class="card card-inverse card-success">
                             <div class="card-block">
-                                <h4 class="card-title">Привязать профиль Яндекс.Контеста</h4>
+                                <h5 class="card-title">Привязать профиль Яндекс.Контеста</h5>
                                 <p class="card-text">
                                     <strong>Вы привязали Я.Контест.</strong> Теперь все посылки в соревнования будут отправляться от Вашего имени. Для того, чтобы отвязать свой профиль обратитесь к <a href="mailto:anytask@yandex.ru">администратору</a>.
                                 </p>
@@ -166,7 +166,7 @@
 
                 <div class="card">
                     <div class="card-block">
-                        <h4 class="card-title">Активация инвайтов в курсы</h4>
+                        <h5 class="card-title">Активация инвайтов в курсы</h5>
                         <button id="invites_form_button" type="button" class="btn btn-secondary {% if invite_form.errors %}collapse{% else %}in collapse{% endif %}"  style="margin-bottom: 1rem;">Ввести инвайт</button>
                         <div class="row">
                             <div class="col-md-12">
@@ -196,7 +196,7 @@
             {% if teacher_in_courses %}
                 <div class="card">
                     <div class="card-block">
-                        <h4 class="card-title">Преподаватель в курсах</h4>
+                        <h5 class="card-title">Преподаватель в курсах</h5>
                         <ul class="list-group list-group-flush">
                             {% for course in teacher_in_courses %}
                                 <li class="list-group-item"><a href="{{ course.get_absolute_url }}">{{ course }}</a></li>
@@ -209,7 +209,7 @@
             {% if courses %}
                 <div class="card">
                     <div class="card-block">
-                        <h4 class="card-title">Состоит в курсах</h4>
+                        <h5 class="card-title">Состоит в курсах</h5>
                         <ul class="list-group list-group-flush">
                             {% for course in courses %}
                                 <li class="list-group-item"><a href="{{ course.get_absolute_url }}">{{ course }}</a></li>
@@ -222,7 +222,7 @@
             {% if groups %}
                 <div class="card">
                     <div class="card-block">
-                        <h4 class="card-title">Состоит в группах</h4>
+                        <h5 class="card-title">Состоит в группах</h5>
                         <ul class="list-group list-group-flush">
                             {% for group in groups %}
                                 <li class="list-group-item">{{ group }}</li>
@@ -240,7 +240,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title" id="modal_avatar_edit_header">Выбор аватара</h4>
+                        <h5 class="modal-title" id="modal_avatar_edit_header">Выбор аватара</h5>
                     </div>
                     <div class="modal-body" style="max-height: none;">
                         <div class="row" style="text-align: center;">
