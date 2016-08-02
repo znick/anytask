@@ -1,5 +1,6 @@
 <script src="{{ STATIC_URL }}jquery.validate.min.js"></script>
 <script src="http://malsup.github.io/jquery.form.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.sticky/1.0.3/jquery.sticky.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap4.min.js"></script>
 {#<script type="text/javascript" src="https://cdn.datatables.net/colreorder/1.3.2/js/dataTables.colReorder.min.js"></script>#}
@@ -29,6 +30,16 @@
     };
 
     $(document).ready(function() {
+        $("#btn_group_edit_course").sticky({
+            topSpacing: $('.navbar').outerHeight()
+        });
+        $("#btn_group_edit_course").on('sticky-start', function() {
+            $("#btn_group_edit_course").css('background-color', '#fff');
+        });
+        $("#btn_group_edit_course").on('sticky-end', function() {
+            $("#btn_group_edit_course").css('background-color', '#e5e5e5');
+        });
+
         var table_min_height = '30vh';
         $(".table_results").each(function (i) {
             var t = $(this).DataTable( {
@@ -137,11 +148,11 @@
 
         jQuery.validator.addMethod("valid_num", function(value, element) {
             if (value == '-')
-                    return true;
+                return true;
             if (!$.isNumeric(value))
-                    return false;
+                return false;
             if (value.indexOf('x') !== -1 || value.indexOf('X') !== -1)
-                    return false;
+                return false;
             value = parseFloat(value);
             var max = parseFloat($(element).siblings('.mark_max').val());
             return value >= 0 && value <= max;
