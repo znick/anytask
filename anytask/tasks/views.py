@@ -31,6 +31,8 @@ def task_create_page(request, course_id):
     if request.method == 'POST':
         return task_create_ot_edit(request, course)
 
+    schools = course.school_set.all()
+
     context = {
         'is_create': True,
         'course': course,
@@ -38,7 +40,7 @@ def task_create_page(request, course_id):
         'contest_integrated': course.contest_integrated,
         'rb_integrated': course.rb_integrated,
         'hide_contest_settings': True if not course.contest_integrated else False,
-        'school': course.school_set.all()[0],
+        'school': schools[0] if schools else '',
     }
 
     return render_to_response('task_create_or_edit.html', context, context_instance=RequestContext(request))
@@ -51,9 +53,11 @@ def task_import_page(request, course_id):
     if not course.user_is_teacher(request.user):
         return HttpResponseForbidden
 
+    schools = course.school_set.all()
+
     context = {
         'course': course,
-        'school': course.school_set.all()[0],
+        'school': schools[0] if schools else '',
     }
 
     return render_to_response('task_import.html', context, context_instance=RequestContext(request))
@@ -69,6 +73,8 @@ def task_edit_page(request, task_id):
     if request.method == 'POST':
         return task_create_ot_edit(request, task.course, task_id)
 
+    schools = task.course.school_set.all()
+
     context = {
         'is_create': False,
         'course': task.course,
@@ -77,7 +83,7 @@ def task_edit_page(request, task_id):
         'contest_integrated': task.contest_integrated,
         'rb_integrated': task.rb_integrated,
         'hide_contest_settings': True if not task.contest_integrated or task.type == task.TYPE_SIMPLE else False,
-        'school': task.course.school_set.all()[0],
+        'school': schools[0] if schools else '',
     }
 
     return render_to_response('task_create_or_edit.html', context, context_instance=RequestContext(request))

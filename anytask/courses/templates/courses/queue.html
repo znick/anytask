@@ -9,7 +9,9 @@
 
 {% block breadcrumbs %}
     {{ block.super }}
-    {% breadcrumb school.name school.get_absolute_url %}
+    {% if school %}
+        {% breadcrumb school.name school.get_absolute_url %}
+    {% endif %}
     {% breadcrumb course.name course.get_absolute_url %}
     {% breadcrumb "Очередь на проверку" "" %}
 {% endblock breadcrumbs %}

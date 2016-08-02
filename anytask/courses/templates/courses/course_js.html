@@ -83,7 +83,7 @@
                 },
                 initComplete: function( settings, json ) {
                     $(".zui-wrapper").show();
-                    $(".btn-table-fullscreen").css('display', 'inline-block');
+                    $(".btn-table-fullscreen").css('display', 'table-cell');
                     $(".loading_table_img").hide();
                 },
             });
@@ -95,6 +95,7 @@
         });
 
         $('.btn-table-fullscreen').click(function() {
+            $(this).blur();
             var card = $(this).closest('.card.card-block');
             if ($('i', this).hasClass('fa-expand')) {
                 $('i', this).removeClass('fa-expand').addClass('fa-compress');
@@ -105,7 +106,8 @@
                     'overflow': 'hidden',
                     'height': '100%'
                 });
-                $('.dataTables_scrollBody',  card).css('max-height', card.height() - 130 + 'px');
+                $('.dataTables_scrollBody',  card).css('max-height',
+                        card.height() - $('.card-title-block', card).height() - 100 + 'px');
                 $('#' + $(this).attr('for')).DataTable().draw();
             }
             else {
@@ -133,10 +135,16 @@
             }
         });
 
-        jQuery.validator.addMethod("lt_max", function(value, element) {
-            var value = parseFloat(value);
+        jQuery.validator.addMethod("valid_num", function(value, element) {
+            if (value == '-')
+                    return true;
+            if (!$.isNumeric(value))
+                    return false;
+            if (value.indexOf('x') !== -1 || value.indexOf('X') !== -1)
+                    return false;
+            value = parseFloat(value);
             var max = parseFloat($(element).siblings('.mark_max').val());
-            return isNaN(value) || value <= max;
+            return value >= 0 && value <= max;
         });
 
         $('.task-mark-form').each( function(){
@@ -163,9 +171,7 @@
                 rules: {
                     mark_value: {
                         required : true,
-                        number: true,
-                        min: 0,
-                        lt_max: true
+                        valid_num: true
                     }
                 },
 

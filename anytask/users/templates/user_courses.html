@@ -47,8 +47,8 @@
 
     <div class="card">
         <div class="card-block">
-            <h3 class="card-title"> {%  if user_to_show != user %} Текущая успеваемость {{ user_to_show.get_full_name }}
-            {% else %}Мои курсы{% endif %}</h3>
+            <h4 class="card-title"> {%  if user_to_show != user %} Текущая успеваемость {{ user_to_show.get_full_name }}
+            {% else %}Мои курсы{% endif %}</h4>
             {% if course_statistics %}
                 <table class="table table_courses">
                     <thead>
