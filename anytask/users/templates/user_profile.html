@@ -23,6 +23,10 @@
             });
             {% endif %}
 
+            $('#avatar').click(function () {
+                $('#modal_avatar_view').modal('show');
+            });
+
             $('#get-gravatar').click(function () {
                 var gravatar_link = 'https://www.gravatar.com/avatar/' + SparkMD5.hash('{{ user_to_show.email }}') + '?d=identicon';
                 $('#edit-avatar').attr({src: gravatar_link});
@@ -280,6 +284,30 @@
             </div>
         </div>
     {% endif %}
+    <div class="modal" id="modal_avatar_view" tabindex="-1" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h5 class="modal-title" id="modal_avatar_edit_header">Просмотр аватара</h5>
+                </div>
+                <div class="modal-body" style="max-height: none;">
+                    <div class="row" style="text-align: center;">
+                        <div class="col-sm-12" >
+                            <img class="avatar" id="edit-avatar" src="{% if not user_to_show.get_profile.avatar %}
+                            https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mm&f=y{% else %}
+                            {{ user_to_show.get_profile.avatar.url }}{% endif %}"
+                                     style="object-fit: contain; border-radius: 0; width: 100%; height: auto">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" class="btn btn-secondary btn-sm" data-dismiss="modal">Закрыть</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <footer>
         <small class="text-muted pull-xs-right">
