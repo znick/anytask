@@ -37,7 +37,7 @@
     <div class="row">
         <div class="col-md-12">
             <div id="task_edit" class="card card-block">
-                <h4 class="card-title" style="margin-bottom:1rem;">{% if is_create %}Создание задачи{% else %}Редактирование задачи{% endif %}</h4>
+                <h5 class="card-title" style="margin-bottom:1rem;">{% if is_create %}Создание задачи{% else %}Редактирование задачи{% endif %}</h5>
 
                 <form method="post" id="task_edit_form" >
                     {% csrf_token %}
@@ -156,7 +156,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">×</button>
-                    <h4 class="modal-title" id="modal_task_header"></h4>
+                    <h5 class="modal-title" id="modal_task_header"></h5>
                     <div id="modal_task_deadline"></div>
                 </div>
                 <div class="modal-body">
