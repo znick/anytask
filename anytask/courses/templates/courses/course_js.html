@@ -5,6 +5,7 @@
 <script type="text/javascript" src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap4.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/colreorder/1.3.2/js/dataTables.colReorder.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/fixedcolumns/3.2.2/js/dataTables.fixedColumns.min.js"></script>
+<script type="text/javascript" src="https://fastcdn.org/Readmore.js/2.1.0/readmore.min.js"></script>
 
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap4.min.css"/>
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/colreorder/1.3.2/css/colReorder.bootstrap4.min.css"/>
@@ -30,6 +31,14 @@
     };
 
     $(document).ready(function() {
+
+        $('#course-information').readmore({
+            speed: 200,
+            collapsedHeight: 100,
+            moreLink: '<small><a href="#">Развернуть <i class="fa fa-chevron-down"></a></small>',
+            lessLink: '<small><a href="#">Свернуть <i class="fa fa-chevron-up"></a></small>'
+         }).show();
+
         $("#btn_group_edit_course").sticky({
             topSpacing: $('.navbar').outerHeight()
         });
@@ -251,6 +260,7 @@
             });
             modal_button_ok.data('div_group_id', div_group_id);
             var group = $('.group-sortable');
+            group.data('table', $(this).data('table'));
             group.data('deleting', []);
             group.data('backup_html', $('ul', $(div_group_id)).html());
             $(div_group_id).show();
@@ -268,8 +278,6 @@
                 $('.group-sortable').data('changed', true);
             }
         }).disableSelection();
-
-        $('.group-sortable').data('deleted', []);
 
         $('.task-delete').click(function () {
             delete_task($(this));
@@ -317,6 +325,9 @@
                 {#                        window.location.reload();#}
                 {#                    });#}
 
+                var deleted_id = $('ul', $(div_group_id)).attr('name');
+                if (group.data(deleted_id) === undefined)
+                    group.data(deleted_id, []);
                 var new_order = $.map($('ul', div_group_id).sortable( "toArray",  {attribute: "data-index"}),
                         function(value){
                             return parseInt(value, 10);
@@ -324,7 +335,7 @@
                 var prefix_cols = [0, 1];
                 var task_count = new_order.length;
 
-                new_order = prefix_cols.concat(new_order).concat(group.data('deleting')).concat(group.data('deleted'));
+                new_order = prefix_cols.concat(new_order).concat(group.data('deleting')).concat(group.data(deleted_id));
 
                 var postfix_cols = [new_order.length];
                 if ($('ul', div_group_id).data('marksystem'))
@@ -332,14 +343,14 @@
 
                 new_order = new_order.concat(postfix_cols);
 
-                var table = $("#table_results_1").DataTable();
+                var table = $(group.data('table')).DataTable();
                 table.columns(group.data('deleting')).visible(false);
                 table.colReorder.order(new_order);
 
                 var deleted = [];
                 for (var i = 0; i < group.data('deleting').length; ++i)
                     deleted = deleted.concat([task_count + prefix_cols.length + i]);
-                group.data('deleted', deleted.concat(group.data('deleted')));
+                group.data(deleted_id, deleted.concat(group.data(deleted_id)));
                 modal_button_ok.closest('.modal').modal('hide');
                 modal_button_ok.html(modal_button_ok.data('resetText'));
                 modal_button_ok.removeClass(d).removeAttr(d).prop(d, false)

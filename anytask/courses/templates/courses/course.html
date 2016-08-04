@@ -49,6 +49,14 @@
         <div class="col-md-12 col-xs-12">
             <div class="card card-block">
                 <h5 class="card-title">{{ course.name }}</h5>
+
+                <p class="card-text" style="border-bottom: 1px solid #e5e5e5;">
+                    Преподаватели:
+                    {% for teacher in course.get_teachers %}
+                        <a href="{% url users.views.profile teacher.username %}">{{ teacher.last_name }} {{ teacher.first_name }}</a>{% if not forloop.last %},{% endif %}
+                    {% endfor %}
+                </p>
+
                 {% if course.can_edit %}
                     <div class="" id="btn_group_edit_course" style="z-index: 1; padding: 6px;border:1px solid #e5e5e5;background-color: #e5e5e5" >
                         <div  class="btn-block" role="group" aria-label="..." style="">
@@ -80,15 +88,8 @@
                     </div>
                 {% endif %}
 
-                <p class="card-text">
-                    Преподаватели:
-                    {% for teacher in course.get_teachers %}
-                        <a href="{% url users.views.profile teacher.username %}">{{ teacher.last_name }} {{ teacher.first_name }}</a>{% if not forloop.last %},{% endif %}
-                    {% endfor %}
-                </p>
-
                 {% if course.information %}
-                    <p class="card-text">
+                    <p id="course-information" class="card-text" style="margin-top: 1rem; margin-bottom: 0; display: none;">
                         {{ course.information|sanitize|safe }}
                     </p>
                 {% endif %}

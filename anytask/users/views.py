@@ -243,7 +243,7 @@ def user_courses(request, username=None, year=None):
         if StudentCourseMark.objects.filter(student=user_to_show, course=course):
             mark = StudentCourseMark.objects.get(student=user_to_show, course=course).mark
         else:
-            mark = '--'
+            mark = None
 
         new_course_statistics = {}
         new_course_statistics['name'] = course.name
@@ -252,7 +252,7 @@ def user_courses(request, username=None, year=None):
         new_course_statistics['issues_with_rework'] = issues.filter(status='rework').count()
         new_course_statistics['issues_with_verification'] = issues.filter(status='verification').count()
         new_course_statistics['tasks'] = tasks.count
-        new_course_statistics['mark'] = mark
+        new_course_statistics['mark'] = mark if mark else '--'
 
         course_statistics.append(new_course_statistics)
 

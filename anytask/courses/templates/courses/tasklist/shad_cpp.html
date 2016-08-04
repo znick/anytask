@@ -79,7 +79,7 @@
                     {% endifnotequal %}
                     <button class="btn btn-secondary btn-table-fullscreen" type="button" for="#table_results_{{ forloop.counter }}" style="display: none;vertical-align: top;margin: 2px; padding: 6px;"><i class="fa fa-expand fa-lg"></i></button>
                     {% if user_is_teacher %}
-                        <button class="btn btn-secondary btn-table-edit" type="button" data-toggle="modal" data-target="#modal_table_edit" for="#group_sort_{{ group.id }}" style="display: none;vertical-align: top;margin: 2px;padding: 6px"><i class="fa fa-pencil fa-lg"></i></button>
+                        <button class="btn btn-secondary btn-table-edit" type="button" data-toggle="modal" data-target="#modal_table_edit" for="#group_sort_{{ group.id }}" data-table="#table_results_{{ forloop.counter }}" style="display: none;vertical-align: top;margin: 2px;padding: 6px"><i class="fa fa-pencil fa-lg"></i></button>
                     {% endif %}
                 </div>
             </div>
