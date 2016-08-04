@@ -32,6 +32,41 @@
     .table_results tr.even.table-info td.sticky-col{
         background-color: #d9edf7;
     }
+
+    .group-sortable {
+        list-style-type: none;
+        margin: 0 0 1rem 0;
+        padding: 0;
+    }
+    .group-sortable li {
+        margin: 0 5px 5px 5px;
+        padding: 5px;
+        word-wrap: break-word;
+    }
+    .ui-state-default {
+        background: inherit;
+        background-color: #f6f6f6;
+        font-weight: inherit;
+        color: inherit;
+    }
+    .ui-state-default .task-delete{
+        position:absolute;
+        right: 0px;
+        padding-right: 3px;
+        top: 50%;
+        transform: translateY(-50%);
+        -webkit-transform: translateY(-50%);
+        -ms-transform: translateY(-50%);
+
+    }
+    .ui-state-default .task-delete .fa {
+        color:#333333;
+        line-height: inherit;
+    }
+
+    .ui-state-default .task-delete:hover .fa {
+        color:#d9534f;
+    }
 </style>
 
 {% for group,student_information in group_information.items %}
@@ -42,7 +77,10 @@
                     {% ifnotequal group course.group_with_extern %}
                         <h5 class="card-title" style="display: table-cell;margin: 0;vertical-align: middle;">{% if group.name %}{{ group.name }}{% else %}&nbsp;{% endif %}</h5>
                     {% endifnotequal %}
-                    <button class="btn btn-secondary btn-table-fullscreen" type="button" for="table_results_{{ forloop.counter }}" style="display: none;vertical-align: top;margin-left: 5px; padding: 6px;"><i class="fa fa-expand fa-lg"></i></button>
+                    <button class="btn btn-secondary btn-table-fullscreen" type="button" for="#table_results_{{ forloop.counter }}" style="display: none;vertical-align: top;margin: 2px; padding: 6px;"><i class="fa fa-expand fa-lg"></i></button>
+                    {% if user_is_teacher %}
+                        <button class="btn btn-secondary btn-table-edit" type="button" data-toggle="modal" data-target="#modal_table_edit" for="#group_sort_{{ group.id }}" style="display: none;vertical-align: top;margin: 2px;padding: 6px"><i class="fa fa-pencil fa-lg"></i></button>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -178,3 +216,35 @@
     </div>
 {% endfor %}
 
+<div class="modal" id="modal_table_edit" tabindex="-1" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="modal_table_edit_header">Итоговая таблица</h4>
+            </div>
+            <div class="modal-body" style="max-height: none;">
+                <p>Изменение порядка столбцов в итоговой таблице курса, а также их удаление(удалять можно только те задачи, в которых не было комментариев).</p>
+                {% for group, tasks in group_tasks.iteritems %}
+                    <div id="group_sort_{{ group.id }}" class="collapse">
+                        <p style="font-weight: bold">{{ group.name }}</p>
+                        <ul class="group-sortable" name="group_sort_{{ group.id }}" data-taskcount="{{ tasks.count }}" data-marksystem="{% if course_mark_system_vals %}true{% endif %}">
+                            {% for task in tasks %}
+                                <li class="ui-state-default" name="task_sort_{{ task.id }}" value="{{ task.id }}" style="padding-right: 20px;position: relative;cursor: -webkit-grab;">
+                                    <span>{{ task.title }}|{{ task.group }}</span>
+                                    {% if task|can_be_deleted %}
+                                        <a class="task-delete pull-xs-right" type="button" style="cursor: pointer"><i class="fa fa-trash-o"></i></a>
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                <button class="btn btn-primary" id="modal_table_edit_ok" data-dismiss="modal" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Сохранение">Сохранить</button>
+            </div>
+        </div>
+    </div>
+</div>

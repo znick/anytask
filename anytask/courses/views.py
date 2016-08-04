@@ -679,3 +679,42 @@ def set_task_mark(request):
 
     return HttpResponse(json.dumps({'mark': mark, 'label': label}),
                         content_type="application/json")
+
+
+@login_required
+def change_table_tasks_pos(request):
+    if request.method != 'POST':
+        return HttpResponseForbidden()
+
+    # print request.POST
+    return HttpResponseForbidden()
+
+    # user = request.user
+    # course = get_object_or_404(Course, id=request.POST['course_id'])
+    #
+    # if not course.user_can_edit_course(request.user):
+    #     return HttpResponseForbidden()
+    #
+    # group_x_task_list = {}
+    # show_hidden_tasks = request.session.get(str(request.user.id) + '_' + str(course.id) + '_show_hidden_tasks', False)
+    #
+    # for group in course.groups.all().order_by('name'):
+    #     if show_hidden_tasks:
+    #         group_x_task_list[group] = Task.objects.filter(Q(course=course) &
+    #                                                        (Q(group=group) | Q(group=None))
+    #                                                        ).order_by('weight').select_related()
+    #     else:
+    #         group_x_task_list[group] = Task.objects.filter(Q(course=course) &
+    #                                                        (Q(group=group) | Q(group=None)) &
+    #                                                        Q(is_hidden=False)
+    #                                                        ).order_by('weight').select_related()
+    #
+    #     for task in group_x_task_list[group]:
+    #
+    #         if not task.is_hidden:
+    #             group_x_max_score[group] += task.score_max
+    #         if task.task_text is None:
+    #             task.task_text = ''
+    #
+    # return HttpResponse(json.dumps({'mark': mark, 'label': label}),
+    #                      content_type="application/json")
