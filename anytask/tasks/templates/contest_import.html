@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% load sanitize_html icon %}
+{% load dict_func %}
+{% load task_taken_func %}
+{% load django_bootstrap_breadcrumbs %}
+
+{% block title %}Импорт | {{ course.name }} | {{ course.year }}{% endblock %}
+
+{% block scripts %}
+    {% include "task_import_js.html" %}
+{% endblock scripts %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    {% if school %}
+        {% breadcrumb school.name school.get_absolute_url %}
+    {% endif %}
+    {% breadcrumb course.name course.get_absolute_url %}
+    {% breadcrumb "Импорт соревнования из Яндекс.Контеста" "" %}
+{% endblock breadcrumbs %}
+
+{% block navbar %}
+    <ul class="nav navbar-nav">
+        <li class="nav-item">
+            <a class="nav-link" id="course_url" href="{{ course.get_absolute_url }}">Список задач</a>
+        </li>
+    </ul>
+{% endblock navbar %}
+
+
+{% block content %}
+    {{ block.super }}
+    <div id="task_edit" class="card card-block">
+        <h5 class="card-title" style="margin-bottom:1rem;">Импорт соревнования из Яндекс.Контеста</h5>
+
+        <form id="contest_task_form">
+            {% csrf_token %}
+            <input id='course_id' name="course_id" type='hidden' value="{{ course.id }}">
+            <div class="form-group row">
+                <label class="col-sm-3 form-control-label" for="task_contest_id">ID контеста</label>
+                <div class="controls col-sm-3">
+                    <div id="task_contest_id_editable">
+                        <input class="form-control" id='task_contest_id' name="contest_id" type='text' maxlength='25' size='20'>
+                        <small class="text-help" id="task_contest_id_error_text"></small>
+                    </div>
+                    <div class="input-group" id="task_contest_id_readonly" style="display: none;">
+                        <input class="form-control" name="contest_id_for_task" type='text' maxlength='25' size='20' readonly style="cursor: default;">
+                        <span class="input-group-addon" id='button_task_contest_id_clear' style="cursor: pointer;"><i class="fa fa-times fa-lg"></i></span>
+                    </div>
+                </div>
+                <div id="get_tasks" class="in collapse">
+                    <button id="button_get_tasks" type="submit" class="btn btn-secondary">Получить список задач</button>
+                </div>
+                <div id="loading_contest_img" class="col-sm-1 collapse" style="margin-top:0.6rem">
+                    <span class="fa fa-circle-o-notch fa-spin fa-lg fa-fw" style="opacity:0.2;filter: alpha(opacity=20);color:#000000;"></span>
+                </div>
+            </div>
+
+            <div class="collapse" id="task_contest_body">
+                <div class="form-group row">
+                    <div class="controls col-sm-offset-3 col-sm-3">
+                        <ol id='contest_problems' name="contest_problems_id"style="white-space: nowrap;"></ol>
+                        <small class="text-help" id="contest_problems_error_text"></small>
+                    </div>
+                </div>
+                <div hidden class="form-group row">
+                    <input class="form-control" id='task_max_score' name='max_score' type='text' maxlength='25' size='20'>
+                </div>
+                <div hidden class="form-group row">
+                    <div class="controls col-sm-3">
+                        <select class="form-control" id='task_group' name="task_group_id">
+                            <option value=""> Для всех групп </option>
+                            {% for group in course.groups.all %}
+                                <option value="{{ group.id }}">{{ group.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div hidden class="form-group row">
+                    <input class="form-control" id='task_edit_datepicker' name='deadline' type='text'  readonly value="{{task.deadline_time|date:'d-m-Y H:i'}}" style="background-color: white; cursor: pointer">
+                </div>
+                <div hidden class="form-group row">
+                    <input type="checkbox" name="rb_integrated" id="task_edit_rb_integrated"  {% if rb_integrated %}checked{% endif %}>
+                </div>
+                <div class="form-group row" style="margin:0;">
+                    <div id="task_submit_error_text"></div>
+                    <div class="btn-group pull-xs-right" role="group">
+                        <button type="button" id="button_cancel_quit" class="btn btn-secondary">Отменить и выйти</button>
+                        <button type="submit" id="button_save_quit" class="btn btn-primary">Сохранить и выйти</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock %}

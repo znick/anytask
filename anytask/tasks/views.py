@@ -62,6 +62,22 @@ def task_import_page(request, course_id):
 
     return render_to_response('task_import.html', context, context_instance=RequestContext(request))
 
+@login_required
+def contest_import_page(request, course_id):
+    course = get_object_or_404(Course, id=course_id)
+
+    if not course.user_is_teacher(request.user):
+        return HttpResponseForbidden
+
+    schools = course.school_set.all()
+
+    context = {
+        'course': course,
+        'school': schools[0] if schools else '',
+    }
+
+    return render_to_response('contest_import.html', context, context_instance=RequestContext(request))
+
 
 @login_required
 def task_edit_page(request, task_id):
@@ -243,7 +259,12 @@ def contest_task_import(request):
 
     contest_id = int(request.POST['contest_id_for_task'])
 
-    max_score = int(request.POST['max_score'])
+    max_score = request.POST['max_score']
+
+    if max_score:
+        max_score = int(max_score)
+    else:
+        max_score = None
 
     task_group = request.POST['task_group_id']
     if task_group:
@@ -252,10 +273,12 @@ def contest_task_import(request):
         task_group = None
 
     task_deadline = request.POST['deadline']
+
     if task_deadline:
         task_deadline = datetime.datetime.strptime(task_deadline, '%d-%m-%Y %H:%M')
     else:
         task_deadline = None
+
     changed_task = False
     if 'changed_task' in request.POST:
         changed_task = True
@@ -280,6 +303,10 @@ def contest_task_import(request):
     tasks = []
 
     got_info, contest_info = get_contest_info(contest_id)
+    problem_req = requests.get(settings.CONTEST_API_URL + 'problems?contestId=' + str(contest_id),
+                               headers={'Authorization': 'OAuth ' + settings.CONTEST_OAUTH})
+    problems = {problem['id']:problem['score'] for problem in problem_req.json()['result']['problems']}
+
     if got_info:
         contest_problems = dict(request.POST)['contest_problems[]']
         for problem in contest_info['problems']:
@@ -288,6 +315,7 @@ def contest_task_import(request):
                 tasks[-1]['task_title'] = problem['problemTitle']
                 tasks[-1]['task_text'] = problem['statement']
                 tasks[-1]['problem_id'] = problem['alias']
+                tasks[-1]['max_score'] = problems[problem['problemId']]
     elif "You're not allowed to view this contest." in contest_info:
         return HttpResponse(json.dumps({'is_error': True,
                                         'error': u"У anytask нет прав на данный контест"}),
@@ -322,7 +350,11 @@ def contest_task_import(request):
         real_task.weight = max_weight
         real_task.title = task['task_title']
         real_task.task_text = task['task_text']
-        real_task.score_max = max_score
+
+        if max_score:
+            real_task.score_max = max_score
+        else:
+            real_task.score_max = task['max_score']
 
         real_task.contest_integrated = True
         real_task.contest_id = contest_id
