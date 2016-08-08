@@ -57,10 +57,12 @@ def task_import_page(request, course_id):
 
     context = {
         'course': course,
+        'rb_integrated': course.rb_integrated,
         'school': schools[0] if schools else '',
     }
 
     return render_to_response('task_import.html', context, context_instance=RequestContext(request))
+
 
 @login_required
 def contest_import_page(request, course_id):
@@ -73,6 +75,7 @@ def contest_import_page(request, course_id):
 
     context = {
         'course': course,
+        'rb_integrated': course.rb_integrated,
         'school': schools[0] if schools else '',
     }
 
