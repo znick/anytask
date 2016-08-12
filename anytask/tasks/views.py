@@ -325,7 +325,7 @@ def contest_task_import(request):
                 tasks[-1]['task_title'] = problem['problemTitle']
                 tasks[-1]['task_text'] = problem['statement']
                 tasks[-1]['problem_id'] = problem['alias']
-                tasks[-1]['max_score'] = problems[problem['problemId']] if not max_score else max_score
+                tasks[-1]['max_score'] = problems[problem['problemId']]
     elif "You're not allowed to view this contest." in contest_info:
         return HttpResponse(json.dumps({'is_error': True,
                                         'error': u"У anytask нет прав на данный контест"}),
@@ -363,8 +363,10 @@ def contest_task_import(request):
 
         if max_score:
             real_task.score_max = max_score
-        else:
+        elif task['max_score']:
             real_task.score_max = task['max_score']
+        else:
+            real_task.score_max = 0
 
         real_task.contest_integrated = True
         real_task.contest_id = contest_id
