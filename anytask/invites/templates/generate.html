@@ -58,7 +58,7 @@
 {% block content %}
 
     <div class="card card-block" >
-        <h3 class="card-title">Создание инвайтов</h3>
+        <h5 class="card-title">Создание инвайтов</h5>
         <form action="{% url invites.views.generate_invites %}" method="post" id="invites-form">
             {% csrf_token %}
             <div class="form-group row" style="display: none;"i>

@@ -91,11 +91,13 @@ def queue_page(request, course_id):
                                            <button id="button_filter" class="btn btn-secondary pull-xs-right" type="submit">Применить</button>
                                          </div>"""))
 
+    schools = course.school_set.all()
+
     context = {
         'course': course,
         'user_is_teacher': course.user_is_teacher(request.user),
         'filter': f,
-        'school': course.school_set.all()[0],
+        'school': schools[0] if schools else '',
     }
     return render_to_response('courses/queue.html', context, context_instance=RequestContext(request))
 
@@ -113,11 +115,12 @@ def course_page(request, course_id):
         return render_to_response('course_private_forbidden.html', {"course" : course}, context_instance=RequestContext(request))
 
     tasklist_context = get_tasklist_context(request, course)
+    schools = course.school_set.all()
     context = tasklist_context
     context['tasklist_template'] = 'courses/tasklist/shad_cpp.html'
     context['task_types'] = dict(Task().TASK_TYPE_CHOICES).items()
     context['show_hidden_tasks'] = request.session.get(str(request.user.id) + '_' + str(course.id) + '_show_hidden_tasks', False)
-    context['school'] = course.school_set.all()[0]
+    context['school'] = schools[0] if schools else ''
 
     return render_to_response('courses/course.html', context, context_instance=RequestContext(request))
 
@@ -331,10 +334,12 @@ def course_settings(request, course_id):
     if not course.user_is_teacher(request.user):
         return HttpResponseForbidden()
 
+    schools = course.school_set.all()
+
     context = {'course': course,
                'visible_queue': course.user_can_see_queue(request.user),
                'user_is_teacher': course.user_is_teacher(request.user),
-               'school': course.school_set.all()[0],
+               'school': schools[0] if schools else '',
     }
 
     if request.method != "POST":
@@ -427,14 +432,18 @@ def set_task_mark(request):
 
     issue, created = Issue.objects.get_or_create(task_id=task_id, student_id=request.POST['student_id'])
 
-    mark = float(request.POST['mark_value'])
-    issue.set_byname('mark', mark)
-    if mark <= 0:
-        issue.set_byname('status', issue.STATUS_REWORK)
-        label = 'label-danger'
+    mark = 0
+    if request.POST['mark_value'] == '-':
+        issue.set_byname('status', issue.STATUS_NEW)
+        label = 'label-default'
     else:
-        issue.set_byname('status', issue.STATUS_ACCEPTED)
-        label = 'label-success'
+        mark = float(request.POST['mark_value'])
+        if mark <= 0:
+            issue.set_byname('status', issue.STATUS_REWORK)
+            label = 'label-danger'
+        else:
+            issue.set_byname('status', issue.STATUS_ACCEPTED)
+            label = 'label-success'
     issue.set_byname('mark', mark)
 
     return HttpResponse(json.dumps({'mark': mark, 'label': label}),

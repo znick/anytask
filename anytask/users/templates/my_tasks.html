@@ -22,6 +22,9 @@
         <li class="nav-item">
             <a class="nav-link active" href="">Мои задачи</a>
         </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{% url users.views.user_courses username=user %}">Мои курсы</a>
+        </li>
     </ul>
 {% endblock navbar %}
 
@@ -35,7 +38,7 @@
 
     <div class="card">
         <div class="card-block">
-            <h3 class="card-title">Мои задачи</h3>
+            <h5 class="card-title">Мои задачи</h5>
             {% if issues %}
                 <table class="table table_tasks">
                     <thead>

@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %} {{ user_to_show.get_full_name }} {% endblock %}
+
+{% block scripts %}
+    <script src="{{ STATIC_URL }}jquery.stickytableheaders.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $(".table_courses").tablesorter();
+            $(".table_courses").stickyTableHeaders({fixedOffset: $('.navbar')});
+        });
+    </script>
+
+{% endblock %}
+
+{% block navbar %}
+    <ul class="nav navbar-nav">
+        {%  if user_to_show == user %}
+            <li class="nav-item">
+                <a class="nav-link" href="{% url users.views.profile %}">Профиль</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url users.views.my_tasks %}">Мои задачи</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" href="">Мои курсы</a>
+            </li>
+        {% else %}
+            <li class="nav-item">
+                <a class="nav-link" href="{% url users.views.profile user_to_show %}">Профиль студента</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" href="">Курсы студента</a>
+            </li>
+        {% endif %}
+    </ul>
+{% endblock navbar %}
+
+{% block content %}
+
+    <style>
+        .table_courses th {
+            white-space: nowrap
+        }
+    </style>
+
+    <div class="card">
+        <div class="card-block">
+            <h5 class="card-title"> {%  if user_to_show != user %} Текущая успеваемость {{ user_to_show.get_full_name }}
+            {% else %}Мои курсы{% endif %}</h5>
+            {% if course_statistics %}
+                <table class="table table_courses">
+                    <thead>
+                    <tr style="background-color: #ffffff;">
+                        <th>Курс<i class="fa fa-fw fa-sort"></i></th>
+                        <th>Зачтено<i class="fa fa-fw fa-sort"></i></th>
+                        <th>На проверке<i class="fa fa-fw fa-sort"></i></th>
+                        <th>На доработке<i class="fa fa-fw fa-sort"></i></th>
+                        <th>Всего задач<i class="fa fa-fw fa-sort"></i></th>
+                        <th>Итоговая оценка<i class="fa fa-fw fa-sort"></i></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for course in course_statistics %}
+                        <tr onclick="location.href='{% if issue.task.has_issue_access %}{{ issue.get_absolute_url }}{% else %}#{% endif %}'">
+                            <td>
+                                <a href="{{ course.url }}">{{ course.name }}</a>
+                            </td>
+                            <td><h5><label class="label label-success">{{ course.issues_with_accepted }}</label></h5></td>
+                            <td><h5><label class="label label-warning">{{ course.issues_with_rework }}</label></h5></td>
+                            <td><h5><label class="label label-danger">{{ course.issues_with_verification }}</label></h5></td>
+                            <td><h5><label class="label label-inverse">{{ course.tasks }}</label></h5></td>
+                            <td><h5><label class="label label-success">{{ course.mark }}</label></h5></td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="card-text">Нет ни одного курса</p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

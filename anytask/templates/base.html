@@ -53,9 +53,9 @@
                 top: 63px;
             }
 
-{#            table {#}
-{#            //table-layout: fixed;#}
-{#            }#}
+            {#            table {#}
+            {#            //table-layout: fixed;#}
+            {#            }#}
 
             /* Automatic Serial Number Row */
             .css-serial {
@@ -118,6 +118,36 @@
                 padding-right: 15px;
                 padding-left: 15px;
             }
+
+            .item-fullscreen {
+                position: absolute;
+                height: -moz-calc(100% - 100px);
+                height: -webkit-calc(100% - 100px);
+                height: calc(100% - 100px);
+                width: 100%;
+                top: 2.8rem;
+                right: 0;
+                z-index:100;
+            }
+
+            .card-block.card-centered {
+                display: table;
+                margin-right: auto;
+                margin-left: auto;
+                text-align: center;
+            }
+
+            .card-block.card-centered .card-title{
+                display: table-cell;
+                vertical-align: middle;
+            }
+
+            @media (min-width: 1900px ) {
+                .container {
+                    max-width: 1400px;
+                }
+            }
+
         </style>
 
     {% endblock %}

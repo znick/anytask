@@ -1,7 +1,9 @@
 <script src="{{ STATIC_URL }}jquery.validate.min.js"></script>
 <script src="http://malsup.github.io/jquery.form.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.sticky/1.0.3/jquery.sticky.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap4.min.js"></script>
+<script type="text/javascript" src="https://fastcdn.org/Readmore.js/2.1.0/readmore.min.js"></script>
 {#<script type="text/javascript" src="https://cdn.datatables.net/colreorder/1.3.2/js/dataTables.colReorder.min.js"></script>#}
 <script type="text/javascript" src="https://cdn.datatables.net/fixedcolumns/3.2.2/js/dataTables.fixedColumns.min.js"></script>
 
@@ -29,10 +31,28 @@
     };
 
     $(document).ready(function() {
-        var table_results = {};
+
+        $('#course-information').readmore({
+            speed: 200,
+            collapsedHeight: 100,
+            moreLink: '<small><a href="#">Развернуть <i class="fa fa-chevron-down"></a></small>',
+            lessLink: '<small><a href="#">Свернуть <i class="fa fa-chevron-up"></a></small>'
+         }).show();
+
+        $("#btn_group_edit_course").sticky({
+            topSpacing: $('.navbar').outerHeight()
+        });
+        $("#btn_group_edit_course").on('sticky-start', function() {
+            $("#btn_group_edit_course").css('background-color', '#fff');
+        });
+        $("#btn_group_edit_course").on('sticky-end', function() {
+            $("#btn_group_edit_course").css('background-color', '#e5e5e5');
+        });
+
+        var table_min_height = '30vh';
         $(".table_results").each(function (i) {
             var t = $(this).DataTable( {
-                scrollY: '25.75rem',
+                scrollY: table_min_height,
                 scrollX: true,
                 scrollCollapse: true,
                 paging: false,
@@ -83,6 +103,7 @@
                 },
                 initComplete: function( settings, json ) {
                     $(".zui-wrapper").show();
+                    $(".btn-table-fullscreen").css('display', 'table-cell');
                     $(".loading_table_img").hide();
                 },
             });
@@ -91,7 +112,35 @@
                     cell.innerHTML = i+1;
                 } );
             } ).draw();
-            {#            table_results['table_results_' + (i + 1)] = t;#}
+        });
+
+        $('.btn-table-fullscreen').click(function() {
+            $(this).blur();
+            var card = $(this).closest('.card.card-block');
+            if ($('i', this).hasClass('fa-expand')) {
+                $('i', this).removeClass('fa-expand').addClass('fa-compress');
+                $(this).data('scroll_pos', $(window).scrollTop());
+                card.addClass('item-fullscreen');
+                $(window).scrollTop(0);
+                $('html, body').css({
+                    'overflow': 'hidden',
+                    'height': '100%'
+                });
+                $('.dataTables_scrollBody',  card).css('max-height',
+                        card.height() - $('.card-title-block', card).height() - 100 + 'px');
+                $('#' + $(this).attr('for')).DataTable().draw();
+            }
+            else {
+                $('i', this).removeClass('fa-compress').addClass('fa-expand');
+                card.removeClass('item-fullscreen');
+                $('html, body').css({
+                    'overflow': 'auto',
+                    'height': 'auto'
+                });
+                $(window).scrollTop($(this).data('scroll_pos'));
+                $('.dataTables_scrollBody',  card).css('max-height', table_min_height);
+                $('#' + $(this).attr('for')).DataTable().draw();
+            }
         });
 
         $('.task-mark-value').click(function() {
@@ -106,10 +155,16 @@
             }
         });
 
-        jQuery.validator.addMethod("lt_max", function(value, element) {
-            var value = parseFloat(value);
+        jQuery.validator.addMethod("valid_num", function(value, element) {
+            if (value == '-')
+                return true;
+            if (!$.isNumeric(value))
+                return false;
+            if (value.indexOf('x') !== -1 || value.indexOf('X') !== -1)
+                return false;
+            value = parseFloat(value);
             var max = parseFloat($(element).siblings('.mark_max').val());
-            return isNaN(value) || value <= max;
+            return value >= 0 && value <= max;
         });
 
         $('.task-mark-form').each( function(){
@@ -136,9 +191,7 @@
                 rules: {
                     mark_value: {
                         required : true,
-                        number: true,
-                        min: 0,
-                        lt_max: true
+                        valid_num: true
                     }
                 },
 

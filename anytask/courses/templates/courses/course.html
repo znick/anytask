@@ -8,7 +8,9 @@
 
 {% block breadcrumbs %}
     {{ block.super }}
-    {% breadcrumb school.name school.get_absolute_url %}
+    {% if school %}
+        {% breadcrumb school.name school.get_absolute_url %}
+    {% endif %}
     {% breadcrumb course.name "" %}
 {% endblock breadcrumbs %}
 
@@ -32,73 +34,92 @@
 
 {% block content %}
     {{ block.super }}
-    {% if course.information %}
-        <span class="course-information">{{ course.information|sanitize|safe }}</span>
-        <br>
-    {% endif %}
 
-    {#    <div class = "breadcrumb_button">#}
-    {#        {% if not user_is_teacher and course.can_be_chosen_by_extern%}#}
-    {#            {% if user_is_attended_special_course %}#}
-    {#                <button type="button" class="btn btn-danger" OnClick="javascript:set_spectial_course_attend({{ course.id }}, 'remove');">#}
-    {#                    Отписаться#}
-    {#                </button>#}
-    {#            {% else %}#}
-    {#                <button type="button" class="btn btn-success" OnClick="javascript:set_spectial_course_attend({{ course.id }},'add');">#}
-    {#                    Записаться#}
-    {#                </button>#}
-    {#            {% endif %}#}
-    {#            <br>#}
-    {#        {% endif %}#}
-    {#    </div>#}
-    <div class="course_teachers">
-        Преподаватели:
-        {% for teacher in course.get_teachers %}
-            <a href="{% url users.views.profile teacher.username %}">{{ teacher.last_name }} {{ teacher.first_name }}</a>{% if not forloop.last %},{% endif %}
-        {% endfor %}
-        <br />
+    <style>
+        .sticky-wrapper {
+            margin-left: -1.25rem;
+            margin-right: -1.25rem;
+        }
+        #btn_group_edit_course .btn {
+            margin: 2px auto;
+        }
+    </style>
+
+    <div class="row">
+        <div class="col-md-12 col-xs-12">
+            <div class="card card-block">
+                <h5 class="card-title">{{ course.name }}</h5>
+
+                <p class="card-text course_teachers" style="border-bottom: 1px solid #e5e5e5;">
+                    Преподаватели:
+                    {% for teacher in course.get_teachers %}
+                        <a href="{% url users.views.profile teacher.username %}">{{ teacher.last_name }} {{ teacher.first_name }}</a>{% if not forloop.last %},{% endif %}
+                    {% endfor %}
+                </p>
+
+                {% if course.can_edit %}
+                    <div class="" id="btn_group_edit_course" style="z-index: 1; padding: 6px;border:1px solid #e5e5e5;background-color: #e5e5e5" >
+                        <div  class="btn-block" role="group" aria-label="..." style="">
+                            <a class="btn btn-secondary btn-sm" href="javascript:get_edit_course_modal({{ course.id }}, {% if course.information %} '{{course.information|escapejs}}' {% else %} '' {% endif %});">
+                                {% if course.information %}
+                                    Редактировать информацию о курсе
+                                {% else %}
+                                    Добавить информацию о курсе
+                                {% endif %}
+                            </a>
+                            <a class="btn btn-secondary btn-sm" href="/task/create/{{ course.id }}" role="button">
+                                Добавить задачу
+                            </a>
+                            {% if course.contest_integrated %}
+                                <a class="btn btn-secondary btn-sm" href="/task/import/{{ course.id }}" role="button">
+                                    Импортировать задачу из Я.Контеста
+                                </a>
+                            {% endif %}
+                            {% if visible_hide_button %}
+                                <a class="btn btn-secondary btn-sm" href="javascript:change_visibility_hidden_tasks({{ course.id }});" role="button">
+                                    {% if show_hidden_tasks %}
+                                        Не показывать скрытые задачи
+                                    {% else %}
+                                        Показать скрытые задачи
+                                    {% endif %}
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+
+                {% if course.information %}
+                    <p id="course-information" class="card-text" style="margin-top: 1rem; margin-bottom: 0; display: none;">
+                        {{ course.information|sanitize|safe }}
+                    </p>
+                {% endif %}
+
+
+                {#    <div class = "breadcrumb_button">#}
+                {#        {% if not user_is_teacher and course.can_be_chosen_by_extern%}#}
+                {#            {% if user_is_attended_special_course %}#}
+                {#                <button type="button" class="btn btn-danger" OnClick="javascript:set_spectial_course_attend({{ course.id }}, 'remove');">#}
+                {#                    Отписаться#}
+                {#                </button>#}
+                {#            {% else %}#}
+                {#                <button type="button" class="btn btn-success" OnClick="javascript:set_spectial_course_attend({{ course.id }},'add');">#}
+                {#                    Записаться#}
+                {#                </button>#}
+                {#            {% endif %}#}
+                {#            <br>#}
+                {#        {% endif %}#}
+                {#    </div>#}
+            </div>
+        </div>
     </div>
 
-    {% if course.can_edit %}
-        <div class="btn-group btn-block" role="group" aria-label="...">
-            <a class="btn btn-secondary" href="javascript:get_edit_course_modal({{ course.id }}, {% if course.information %} '{{course.information|escapejs}}' {% else %} '' {% endif %});">
-                {% if course.information %}
-                    Редактировать информацию о курсе
-                {% else %}
-                    Добавить информацию о курсе
-                {% endif %}
-            </a>
-            <a class="btn btn-secondary" href="/task/create/{{ course.id }}" role="button">
-                Добавить задачу
-            </a>
-            {% if course.contest_integrated %}
-                <a class="btn btn-secondary" href="/task/import/{{ course.id }}" role="button">
-                    Импортировать задачу из Я.Контеста
-                </a>
-            {% endif %}
-            {% if visible_hide_button %}
-                <a class="btn btn-secondary" href="javascript:change_visibility_hidden_tasks({{ course.id }});" role="button">
-                    {% if show_hidden_tasks %}
-                        Не показывать скрытые задачи
-                    {% else %}
-                        Показать скрытые задачи
-                    {% endif %}
-                </a>
-            {% endif %}
-        </div>
-        <br>
-
-    {% endif %}
-
-    <br />
-
     <h5>
-        <a class="label label-default">Новый</a>
-        <a class="label label-danger">На доработке</a>
-        <a class="label label-warning">На проверке</a>
-        <a class="label label-success">Зачтено</a>
-        <a class="label label-info">Требуется информация</a>
-        <a class="label label-inverse">Суммарный балл</a>
+        <span class="label label-default">Новый</span>
+        <span class="label label-danger">На доработке</span>
+        <span class="label label-warning">На проверке</span>
+        <span class="label label-success">Зачтено</span>
+        <span class="label label-info">Требуется информация</span>
+        <span class="label label-inverse">Суммарный балл</span>
     </h5>
 
     {% include "courses/task.html" %}

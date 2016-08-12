@@ -110,6 +110,8 @@ def issue_page(request, issue_id):
                 show_top_alert = True
             break
 
+    schools = issue.task.course.school_set.all()
+
     context = {
         'issue': issue,
         'issue_fields': issue_fields,
@@ -118,7 +120,7 @@ def issue_page(request, issue_id):
         'first_event_after_deadline': first_event_after_deadline,
         'show_top_alert': show_top_alert,
         'teacher_or_staff': user_is_teacher_or_staff(request.user, issue),
-        'school': issue.task.course.school_set.all()[0],
+        'school': schools[0] if schools else '',
         'visible_queue': issue.task.course.user_can_see_queue(request.user),
     }
 

@@ -1,4 +1,4 @@
-anytask
+Anytask [![Build Status](https://travis-ci.org/znick/anytask.svg?branch=anytask-279)](https://travis-ci.org/znick/anytask)
 =======
 
 
