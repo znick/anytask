@@ -4,4 +4,4 @@ python:
 install:
   - pip install -r requirements_local.txt
 script:
-  – python manage.py test courses tasks issues
+  python manage.py test courses tasks issues
