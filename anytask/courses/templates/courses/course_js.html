@@ -114,13 +114,31 @@
                 } );
             } ).draw();
 
-            $('.word-wrap').each(function (i) {
+            $('.word-wrap').each(function (index) {
                 var title_text = $.trim($('a', this).text());
                 var title_text_splited = title_text.split(' ');
                 var needed_len = 20;
-                if (title_text_splited.length > 2 && title_text.length > needed_len) {
-                    $(this).css({
 
+                if (title_text_splited.length > 2 && title_text.length > needed_len) {
+                    var line = $.trim($('span', this).text()).length + 1.5;
+                    var word_counter = 0;
+                    var true_width = 0;
+                    for (var i = title_text_splited.length - 1; i >= 0; --i) {
+                        var word_length = title_text_splited[i].length + 1;
+                        line += word_length;
+                        word_counter++;
+                        if (line > needed_len) {
+                            line--;
+                            if (word_counter > 1)
+                                line -= word_length;
+
+                            true_width = Math.max(true_width, line);
+                            line = 0;
+                            word_counter = 0;
+                        }
+                    }
+                    $(this).css({
+                        'min-width': true_width + 'ch',
                         'word-wrap': 'break-word',
                         'white-space': 'normal'
                     });
