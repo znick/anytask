@@ -120,25 +120,30 @@
                 var needed_len = 20;
 
                 if (title_text_splited.length > 2 && title_text.length > needed_len) {
-                    var line = $.trim($('span', this).text()).length + 1.5;
+                    var max_score = $.trim($('span', this).text()).length + 1.5;
+                    var line = 0;
                     var word_counter = 0;
-                    var true_width = 0;
-                    for (var i = title_text_splited.length - 1; i >= 0; --i) {
+                    var true_width = -1;
+                    var last_line = 0;
+                    for (var i = 0; i < title_text_splited.length; ++i) {
                         var word_length = title_text_splited[i].length + 1;
                         line += word_length;
+                        last_line = line;
                         word_counter++;
                         if (line > needed_len) {
-                            line--;
-                            if (word_counter > 1)
+                            if (word_counter > 1) {
                                 line -= word_length;
+                                i--;
+                            }
 
                             true_width = Math.max(true_width, line);
                             line = 0;
                             word_counter = 0;
                         }
                     }
+                    last_line = last_line + max_score - 1;
                     $(this).css({
-                        'min-width': true_width + 'ch',
+                        'min-width': Math.max(true_width, last_line)  + 'ch',
                         'word-wrap': 'break-word',
                         'white-space': 'normal'
                     });
