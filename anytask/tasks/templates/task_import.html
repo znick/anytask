@@ -16,7 +16,7 @@
         {% breadcrumb school.name school.get_absolute_url %}
     {% endif %}
     {% breadcrumb course.name course.get_absolute_url %}
-    {% breadcrumb "Импорт задач из Яндекс.Контеста" "" %}
+    {% breadcrumb "Импорт задачи из Яндекс.Контеста" "" %}
 {% endblock breadcrumbs %}
 
 {% block navbar %}
@@ -31,7 +31,7 @@
 {% block content %}
     {{ block.super }}
     <div id="task_edit" class="card card-block">
-        <h5 class="card-title" style="margin-bottom:1rem;">Импорт задач из Яндекс.Контеста</h5>
+        <h5 class="card-title" style="margin-bottom:1rem;">Импорт задачи из Яндекс.Контеста</h5>
 
         <form id="contest_task_form">
             {% csrf_token %}
@@ -59,7 +59,7 @@
             <div class="collapse" id="task_contest_body">
                 <div class="form-group row">
                     <div class="controls col-sm-offset-3 col-sm-3">
-                        <ol id='contest_problems' name="contest_problems_id"style="white-space: nowrap;"></ol>
+                        <ol id='contest_problems' name="contest_problems_id" style="white-space: nowrap;"></ol>
                         <small class="text-help" id="contest_problems_error_text"></small>
                     </div>
                 </div>
@@ -110,8 +110,18 @@
                         <input type="checkbox" name="hidden_task" id="task_edit_hidden_task">
                     </div>
                 </div>
-                <div class="form-group row" style="margin:0;">
+                <div class="form-group row">
+                    <label class="col-sm-3 form-control-label" for="task_edit_body">Формулировка</label>
+                    <br>
+                    <div class="controls col-sm-12" style="padding-top: 15px">
+                        <textarea class='input-xlarge form-control' style="max-width:100%;width:100%;height:200px;"
+                                  id='task_edit_body' name='task_text'>{{ task.task_text }}</textarea>
+                    </div>
+                </div>
+                <div class="form-group row" style="margin:0px;">
                     <div id="task_submit_error_text"></div>
+                    <button type="button" id="button_preview" class="btn btn-secondary pull-xs-left">Предпросмотр
+                    </button>
                     <div class="btn-group pull-xs-right" role="group">
                         <button type="button" id="button_cancel_quit" class="btn btn-secondary">Отменить и выйти</button>
                         <button type="submit" id="button_save_quit" class="btn btn-primary">Сохранить и выйти</button>

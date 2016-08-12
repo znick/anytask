@@ -35,6 +35,46 @@
 
         });
 
+        $('#contest_problems').change(function() {
+            $.post('{% url tasks.views.get_contest_problems %}', $('#contest_task_form').serialize(), function (data) {
+                var problems = data.problems;
+                if (data.is_error == false) {
+                    for (i = 0; i < problems.length; i++) {
+                        if($('input:radio:checked').val() == problems[i].id){
+                            $('#task_max_score').val(problems[i].score);
+                        }
+                        if($('input:radio:checked').val() == problems[i].problemId){
+                            $('#task_edit_body').val(problems[i].statement);
+                        }
+                    }
+                    $('#task_contest_body').show();
+                    $('#task_contest_id_editable').hide();
+                    $('#task_contest_id_readonly').show();
+                    $('#task_contest_id_readonly').find('input').val($('#task_contest_id').val());
+                    $('#task_contest_id').hide();
+                }
+                else {
+                    $('#get_tasks').show();
+                    $('#task_contest_id_error_text').empty().append(data.error);
+                    $('#task_contest_id_error_text').closest('.form-group').removeClass('has-success').addClass('has-danger');
+                    $('#task_contest_id').removeClass('form-control-success').addClass('form-control-danger');
+                }
+                remove_disabled();
+                $('#loading_contest_img').hide();
+                $('#task_contest_id').removeAttr('readonly');
+            });
+        });
+
+        $('#task_edit_get_max_score_from_contest').change(function(){
+            if ( $('#task_max_score').prop('disabled') ){
+                $('#task_max_score').prop('disabled', false)
+            }
+            else {
+                $('#task_max_score').prop('disabled', true).val('').closest('.form-group').removeClass('has-success has-danger');
+                $('#task_max_score_error_text').text('')
+            }
+        });
+
         $('#contest_task_form').validate({
             rules: {
                 max_score: {
@@ -103,12 +143,14 @@
                         var problems = data.problems;
                         if (data.is_error == false) {
                             for (i = 0; i < problems.length; i++) {
-                                $('#contest_problems').append('<li><label class="checkbox" style="padding-top: 1px;' +
-                                        'font-weight: normal;margin-left:15px;"><input class="checkbox_contest_problem" ' +
-                                        'style="margin-left:-18px;" name="contest_problems[]" type="checkbox" value="'
-                                        + problems[i].id + '" checked>' +
-                                        ' ' + problems[i].title +
-                                        ': ' + problems[i].name + '</input></label></li>');
+                                if (problems[i].title){
+                                    $('#contest_problems').append('<li><label class="checkbox" style="padding-top: 1px;' +
+                                            'font-weight: normal;margin-left:15px;"><input class="checkbox_contest_problem" ' +
+                                            'style="margin-left:-18px;" name="contest_problems[]" type="{% if contest_import %}checkbox" checked{% else %}radio"{% endif %} value="'
+                                            + problems[i].id + '">' +
+                                            ' ' + problems[i].title +
+                                            ': ' + problems[i].name + '</input></label></li>');
+                                }
                             }
                             $('#task_contest_body').show();
                             $('#task_contest_id_editable').hide();

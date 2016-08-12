@@ -63,10 +63,22 @@
                         <small class="text-help" id="contest_problems_error_text"></small>
                     </div>
                 </div>
-                <div hidden class="form-group row">
-                    <input class="form-control" id='task_max_score' name='max_score' type='text' maxlength='25' size='20'>
+                <div class="form-group row">
+                    <label class="col-sm-3 form-control-label" for="task_max_score">Максимальный балл</label>
+                    <div class="controls col-sm-3">
+                        <input disabled class="form-control" id='task_max_score' name='max_score' type='text' maxlength='25' size='20'>
+                        <small class="text-help" id="task_max_score_error_text"></small>
+                        <label class="form-control-label" for="task_edit_get_max_score_from_contest"
+                               style="font-weight: normal;white-space: nowrap;padding: 0px 3px 0px 0px;">
+                            <input checked type="checkbox" name="get_max_score_from_contest"
+                                   id="task_edit_get_max_score_from_contest"
+                                   style="margin-left: 3px;">
+                            <small class="text-muted">Брать из Я.Контеста</small>
+                    </label>
+                    </div>
                 </div>
-                <div hidden class="form-group row">
+                <div class="form-group row">
+                    <label class="col-sm-3 form-control-label" for="task_group">Группа</label>
                     <div class="controls col-sm-3">
                         <select class="form-control" id='task_group' name="task_group_id">
                             <option value=""> Для всех групп </option>
@@ -76,11 +88,34 @@
                         </select>
                     </div>
                 </div>
-                <div hidden class="form-group row">
-                    <input class="form-control" id='task_edit_datepicker' name='deadline' type='text'  readonly value="{{task.deadline_time|date:'d-m-Y H:i'}}" style="background-color: white; cursor: pointer">
+                <div class="form-group row">
+                    <label class="col-sm-3 form-control-label" for="task_edit_datepicker">Дата сдачи</label>
+                    <div class="controls col-sm-3">
+                        <div class="input-group date task_datetime">
+                            <input class="form-control" id='task_edit_datepicker' name='deadline' type='text'  readonly value="{{task.deadline_time|date:'d-m-Y H:i'}}" style="background-color: white; cursor: pointer">
+                            <span class="input-group-addon" style="cursor: pointer;"><i class="fa fa-times fa-lg"></i></span>
+                            <span class="input-group-addon" style="cursor: pointer;"><i class="fa fa-calendar fa-lg"></i></span>
+                        </div>
+                        <small class="text-help" id="task_edit_datepicker_error_text"></small>
+                        <div id="task_edit_label_for_changed_task" class="collapse">
+                            <label class="form-control-label" for="task_edit_changed_task" style="font-weight: normal;white-space: nowrap;padding: 0px 3px 0px 0px;">
+                                <input type="checkbox" name="changed_task" id="task_edit_changed_task" style="margin-left: 3px;">
+                                <small class="text-muted">Уведомить студентов об изменении срока сдачи</small>
+                            </label>
+                        </div>
+                    </div>
                 </div>
-                <div hidden class="form-group row">
-                    <input type="checkbox" name="rb_integrated" id="task_edit_rb_integrated"  {% if rb_integrated %}checked{% endif %}>
+                <div class="form-group row">
+                    <label class="col-sm-3 form-control-label" for="task_edit_rb_integrated">Интеграция с Review Board</label>
+                    <div class="controls col-sm-3" style="padding-top: 5px">
+                        <input type="checkbox" name="rb_integrated" id="task_edit_rb_integrated"  {% if rb_integrated %}checked{% endif %}>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-3 form-control-label" for="task_edit_hidden_task">Скрыть задачу</label>
+                    <div class="controls col-sm-3" style="padding-top: 5px">
+                        <input type="checkbox" name="hidden_task" id="task_edit_hidden_task">
+                    </div>
                 </div>
                 <div class="form-group row" style="margin:0;">
                     <div id="task_submit_error_text"></div>
