@@ -174,7 +174,7 @@ class ViewsTest(TestCase):
         # form
         div_task_id = container.find('div', {'id': 'task_edit'})
         self.assertIsNotNone(div_task_id, "No main div with id 'task_edit'")
-        self.assertEqual(container.find('h3', 'card-title').string,
+        self.assertEqual(container.find('h5', 'card-title').string,
                          u'Создание задачи',
                          "Wrong card title")
 
@@ -282,7 +282,7 @@ class ViewsTest(TestCase):
         # form
         div_task_id = container.find('div', {'id': 'task_edit'})
         self.assertIsNotNone(div_task_id, "No main div with id 'task_edit'")
-        self.assertEqual(container.find('h3', 'card-title').string,
+        self.assertEqual(container.find('h5', 'card-title').string,
                          u'Редактирование задачи',
                          "Wrong card title")
 

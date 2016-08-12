@@ -242,13 +242,13 @@ class ViewsTest(TestCase):
         self.assertIsNone(container.find('span', 'course-information'))
 
         # teachers
-        teachers = container.find('div', 'course_teachers')('a')
+        teachers = container.find('p', 'course_teachers')('a')
         self.assertEqual(len(teachers), 1)
         self.assertEqual(teachers[0]['href'], u'/accounts/profile/teacher')
         self.assertEqual(teachers[0].string.strip().strip('\n'), u'teacher_last_name teacher_name')
 
         # edit course button
-        btn_group = container.find('div', 'btn-group')
+        btn_group = container.find('div', {'id': 'btn_group_edit_course'})
         self.assertIsNotNone(btn_group)
         btn_group = btn_group('a')
         self.assertEqual(len(btn_group), 2)
@@ -353,7 +353,7 @@ class ViewsTest(TestCase):
         # course information
         html = BeautifulSoup(response.content)
         container = html.body.find('div', 'container', recursive=False)
-        self.assertEqual(container.find('span', 'course-information').string.strip().strip('\n'), 'course_information')
+        self.assertEqual(container.find('p', {'id': 'course-information'}).string.strip().strip('\n'), 'course_information')
 
     def test_course_settings_with_teacher(self):
         client = self.client
@@ -445,7 +445,7 @@ class ViewsTest(TestCase):
         container = html.body.find('div', 'container', recursive=False)
 
         # edit course button
-        btn_group = container.find('div', 'btn-group')
+        btn_group = container.find('div', {'id': 'btn_group_edit_course'})
         self.assertIsNotNone(btn_group)
         btn_group = btn_group('a')
         self.assertEqual(len(btn_group), 3)
@@ -478,7 +478,7 @@ class ViewsTest(TestCase):
         container = html.body.find('div', 'container', recursive=False)
 
         # edit course button
-        btn_group = container.find('div', 'btn-group')
+        btn_group = container.find('div', {'id': 'btn_group_edit_course'})
         self.assertIsNotNone(btn_group)
         btn_group = btn_group('a')
         self.assertEqual(len(btn_group), 3)
@@ -723,7 +723,7 @@ class ViewsTest(TestCase):
         self.assertIsNone(container.find('span', 'course-information'))
 
         # teachers
-        teachers = container.find('div', 'course_teachers')('a')
+        teachers = container.find('p', 'course_teachers')('a')
         self.assertEqual(len(teachers), 1)
         self.assertEqual(teachers[0]['href'], u'/accounts/profile/teacher')
         self.assertEqual(teachers[0].string.strip().strip('\n'), u'teacher_last_name teacher_name')

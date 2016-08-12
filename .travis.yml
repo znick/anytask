@@ -1,0 +1,7 @@
+language: python
+python:
+  - "2.7"
+install:
+  - pip install -r requirements_local.txt
+script:
+  – python manage.py test courses tasks issues
