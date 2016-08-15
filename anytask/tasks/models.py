@@ -51,6 +51,8 @@ class Task(models.Model):
 
     sended_notify = models.BooleanField(db_index=True, null=False, blank=False, default=True)
 
+    one_file_upload = models.BooleanField(db_index=False, null=False, blank=False, default=False)
+
     def __unicode__(self):
         return unicode(self.title)
 

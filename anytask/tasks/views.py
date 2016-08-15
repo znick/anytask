@@ -131,6 +131,10 @@ def task_create_ot_edit(request, course, task_id=None):
     if 'rb_integrated' in request.POST and task_type != Task().TYPE_SIMPLE:
         rb_integrated = True
 
+    one_file_upload = False
+    if 'one_file_upload' in request.POST:
+        one_file_upload = True
+
     hidden_task = False
     if 'hidden_task' in request.POST:
         hidden_task = True
@@ -173,6 +177,8 @@ def task_create_ot_edit(request, course, task_id=None):
         task.problem_id = problem_id
 
     task.rb_integrated = rb_integrated
+
+    task.one_file_upload = one_file_upload
 
     task.is_hidden = hidden_task
     if task.parent_task:
