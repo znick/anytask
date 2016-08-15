@@ -1,12 +1,57 @@
-<script src="{{ STATIC_URL }}multiselect.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.quicksearch/2.3.0/jquery.quicksearch.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/multi-select/0.9.12/js/jquery.multi-select.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/multi-select/0.9.12/css/multi-select.min.css" rel="stylesheet">
+
 <script src="{{ STATIC_URL }}jquery.validate.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function() {
-        $('#rb_ext_select').multiselect({
-            search: {
-                left: '<input type="text" name="q" class="form-control" placeholder="Поиск..." />',
-                right: '<input type="text" name="q" class="form-control" placeholder="Поиск..." />',
-            }
+        $('#rb_ext_select').multiSelect({
+            selectableHeader: '<input type="text" class="form-control form-control-sm" style="margin-bottom: 5px;" autocomplete="off" placeholder="Поиск...">',
+            selectionHeader: '<input type="text" class="form-control form-control-sm" style="margin-bottom: 5px;" autocomplete="off" placeholder="Поиск...">',
+            selectableFooter: '<button type="button" id="rb_ext_select_rightAll" class="btn btn-secondary btn-block" style="margin-top: 5px;"><i class="fa fa-forward fa"></i></button>',
+            selectionFooter: '<button type="button" id="rb_ext_select_leftAll" class="btn btn-secondary btn-block" style="margin-top: 5px;"><i class="fa fa-backward fa"></i></button>',
+            afterInit: function(ms){
+                $('rb_ext_select').show();
+                var that = this,
+                        $selectableSearch = that.$selectableUl.prev(),
+                        $selectionSearch = that.$selectionUl.prev(),
+                        selectableSearchString = '#'+that.$container.attr('id')+' .ms-elem-selectable:not(.ms-selected)',
+                        selectionSearchString = '#'+that.$container.attr('id')+' .ms-elem-selection.ms-selected';
+
+                that.qs1 = $selectableSearch.quicksearch(selectableSearchString)
+                        .on('keydown', function(e){
+                            if (e.which === 40){
+                                that.$selectableUl.focus();
+                                return false;
+                            }
+                        });
+
+                that.qs2 = $selectionSearch.quicksearch(selectionSearchString)
+                        .on('keydown', function(e){
+                            if (e.which == 40){
+                                that.$selectionUl.focus();
+                                return false;
+                            }
+                        });
+            },
+            afterSelect: function(){
+                this.qs1.cache();
+                this.qs2.cache();
+            },
+            afterDeselect: function(){
+                this.qs1.cache();
+                this.qs2.cache();
+            },
+            keepOrder: true
+        });
+
+        $('#rb_ext_select_rightAll').click(function(){
+            $('#rb_ext_select').multiSelect('select_all');
+            return false;
+        });
+        $('#rb_ext_select_leftAll').click(function(){
+            $('#rb_ext_select').multiSelect('deselect_all');
+            return false;
         });
 
         $('#course_settings_form').change(function() {
