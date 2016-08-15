@@ -50,7 +50,7 @@
             <div class="card card-block">
                 <h5 class="card-title">{{ course.name }}</h5>
 
-                <p class="card-text" style="border-bottom: 1px solid #e5e5e5;">
+                <p class="card-text course_teachers" style="border-bottom: 1px solid #e5e5e5;">
                     Преподаватели:
                     {% for teacher in course.get_teachers %}
                         <a href="{% url users.views.profile teacher.username %}">{{ teacher.last_name }} {{ teacher.first_name }}</a>{% if not forloop.last %},{% endif %}
