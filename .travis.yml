@@ -5,8 +5,8 @@ install:
   - pip install pip==6.1.1
   - pip install -r requirements_local.txt
 script:
-  - mkdir -m 777 /var/lib/anytask/
+  - sudo mkdir -m 777 /var/lib/anytask/
   - cd /var/lib/anytask/
   - git clone https://github.com/gebetix/repos
-  - cd ~/anytask
+  - cd ~/anytask/anytask
   - python manage.py test courses tasks issues
