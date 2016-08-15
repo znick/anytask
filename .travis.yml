@@ -8,5 +8,5 @@ script:
   - sudo mkdir -m 777 /var/lib/anytask/
   - cd /var/lib/anytask/
   - git clone https://github.com/gebetix/repos
-  - cd build/znick/anytask/anytask
+  - cd ~/build/znick/anytask/anytask
   - python manage.py test courses tasks issues
