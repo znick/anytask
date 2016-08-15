@@ -23,19 +23,23 @@
                 </button>
             </li>
             {% if issue.update_time > issue.task.deadline_time and show_top_alert %}
-                <div id="top_alert" class="alert alert-danger">
-                    <strong>Срок сдачи задания истек!</strong> Все сообщения, отправленные студентом позже срока сдачи, будут
-                    выделяться красным цветом.
-                </div>
+                <li>
+                    <div id="top_alert" class="alert alert-danger">
+                        <strong>Срок сдачи задания истек!</strong> Все сообщения, отправленные студентом позже срока сдачи, будут
+                        выделяться красным цветом.
+                    </div>
+                </li>
             {% endif %}
             <div id="old_comments" class="collapse">
         {% endif %}
         {% for event in issue.get_history %}
             {% if event.id == first_event_after_deadline.id %}
-                <div id="event_alert" class="alert alert-danger">
-                    <strong>Срок сдачи задания истек!</strong> Все сообщения, отправленные студентом позже срока сдачи, будут
-                    выделяться красным цветом.
-                </div>
+                <li>
+                    <div id="event_alert" class="alert alert-danger">
+                        <strong>Срок сдачи задания истек!</strong> Все сообщения, отправленные студентом позже срока сдачи, будут
+                        выделяться красным цветом.
+                    </div>
+                </li>
             {% endif %}
 
             <li>
