@@ -133,7 +133,7 @@ def get_or_create(request, task_id, student_id):
     #    return HttpResponseForbidden()
 
     issue, created = Issue.objects.get_or_create(task_id=task_id, student_id=student_id)
-        
+
     data = {
         'issue_url': issue.get_absolute_url(),
     }

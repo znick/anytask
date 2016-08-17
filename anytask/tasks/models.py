@@ -8,7 +8,7 @@ from django.db.models.signals import post_save, pre_delete
 from courses.models import Course
 from groups.models import Group
 
-from django.db.models import Q
+from django.db.models import Q, Max
 
 from django.contrib.auth.models import User
 
@@ -149,6 +149,19 @@ class Task(models.Model):
     def has_issue_access(self):
         return self.type != self.TYPE_SIMPLE
 
+    def set_position_in_new_group(self, groups=None):
+        if not groups:
+            groups = self.course.groups.all()
+        else:
+            groups = [groups]
+
+        for group in list(groups):
+            task_related, created = TaskGroupRelations.objects.get_or_create(task=self, group=group)
+            if created:
+                max_position = TaskGroupRelations.objects.filter(group=group).aggregate(Max('position'))['position__max']
+                task_related.position = max_position + 1 if max_position else 0
+                task_related.save()
+
 
 class TaskLog(models.Model):
     title = models.CharField(max_length=254, db_index=True, null=True, blank=True)
@@ -273,6 +286,16 @@ class TaskTakenLog(models.Model):
 
     def __unicode__(self):
         return unicode(self.task) + " (" + unicode(self.user) + ")"
+
+
+class TaskGroupRelations(models.Model):
+    task = models.ForeignKey(Task, db_index=False, null=False, blank=False)
+    group = models.ForeignKey(Group, db_index=False, null=False, blank=False)
+
+    position = models.IntegerField(db_index=False, null=False, blank=False, default=0)
+
+    class Meta:
+        unique_together = ("task", "group")
 
 
 def task_save_to_log_post_save(sender, instance, created, **kwargs):

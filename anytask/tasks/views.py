@@ -9,7 +9,7 @@ from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidde
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
-from tasks.models import TaskTaken
+from tasks.models import TaskTaken, TaskGroupRelations
 from django.contrib.auth.decorators import login_required
 from django.db.models import Max
 from anycontest.common import get_contest_info
@@ -143,15 +143,6 @@ def task_create_ot_edit(request, course, task_id=None):
     else:
         task = Task()
         task.course = course
-        max_weight_query = Task.objects.filter(course=course)
-        if task_group:
-            max_weight_query = max_weight_query.filter(group=task_group)
-        # if parent:
-        #     max_weight_query = max_weight_query.filter(parent_task=parent)
-        _, max_weight = max_weight_query.aggregate(Max('weight')).items()[0]
-        if max_weight is None:
-            max_weight = 0
-        task.weight = max_weight + 1
 
     task.title = task_title
     task.score_max = max_score
@@ -186,6 +177,8 @@ def task_create_ot_edit(request, course, task_id=None):
 
     task.updated_by = request.user
     task.save()
+
+    task.set_position_in_new_group(task_group)
 
     return HttpResponse(json.dumps({'page_title': task.title + ' | ' + course.name + ' | ' + str(course.year),
                                     'redirect_page': '/task/edit/' + str(task.id) if not task_id else None}),
@@ -299,17 +292,6 @@ def contest_task_import(request):
         return HttpResponseForbidden()
 
     for task in tasks:
-        max_weight_query = Task.objects.filter(course=course)
-        if task_group:
-            max_weight_query = max_weight_query.filter(group=task_group)
-        # if parent:
-        #     max_weight_query = max_weight_query.filter(parent_task=parent)
-
-        _, max_weight = max_weight_query.aggregate(Max('weight')).items()[0]
-        if max_weight is None:
-            max_weight = 0
-        max_weight += 1
-
         real_task = Task()
         real_task.course = course
         real_task.group = task_group
@@ -319,7 +301,6 @@ def contest_task_import(request):
         else:
             real_task.sended_notify = True
         real_task.deadline_time = task_deadline
-        real_task.weight = max_weight
         real_task.title = task['task_title']
         real_task.task_text = task['task_text']
         real_task.score_max = max_score
@@ -333,6 +314,7 @@ def contest_task_import(request):
         real_task.is_hidden = hidden_task
         real_task.updated_by = request.user
         real_task.save()
+        real_task.set_position_in_new_group(task_group)
 
     return HttpResponse("OK")
 
