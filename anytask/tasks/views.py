@@ -252,8 +252,9 @@ def get_contest_problems(request):
     else:
         problems = problem_req['result']['problems']
 
-    contest_info = contest_info['problems']
-    problems = problems + contest_info
+    contest_info_problems = contest_info['problems']
+    contest_info_deadline = contest_info['endTime'] if 'endTime' in contest_info else None
+    problems = problems + contest_info_problems + [{'deadline':contest_info_deadline}]
 
     return HttpResponse(json.dumps({'problems': problems,
                                     'is_error': is_error,
@@ -315,7 +316,8 @@ def contest_task_import(request):
     got_info, contest_info = get_contest_info(contest_id)
     problem_req = requests.get(settings.CONTEST_API_URL + 'problems?contestId=' + str(contest_id),
                                headers={'Authorization': 'OAuth ' + settings.CONTEST_OAUTH})
-    problems = {problem['id']:problem['score'] for problem in problem_req.json()['result']['problems']}
+    problems_with_score = {problem['id']:problem['score'] if 'score' in problem else None for problem in problem_req.json()['result']['problems']}
+    problems_with_end = {problem['id']:problem['end'] if 'end' in problem else None for problem in problem_req.json()['result']['problems']}
 
     if got_info:
         contest_problems = dict(request.POST)['contest_problems[]']
@@ -325,7 +327,8 @@ def contest_task_import(request):
                 tasks[-1]['task_title'] = problem['problemTitle']
                 tasks[-1]['task_text'] = problem['statement']
                 tasks[-1]['problem_id'] = problem['alias']
-                tasks[-1]['max_score'] = problems[problem['problemId']]
+                tasks[-1]['max_score'] = problems_with_score[problem['problemId']]
+                tasks[-1]['deadline_time'] = problems_with_end[problem['problemId']]
     elif "You're not allowed to view this contest." in contest_info:
         return HttpResponse(json.dumps({'is_error': True,
                                         'error': u"У anytask нет прав на данный контест"}),
@@ -356,7 +359,14 @@ def contest_task_import(request):
             real_task.sended_notify = False
         else:
             real_task.sended_notify = True
-        real_task.deadline_time = task_deadline
+
+        if task_deadline:
+            real_task.deadline_time = task_deadline
+        elif task['deadline_time']:
+            real_task.deadline_time = datetime.datetime.strptime(task['deadline_time'], '%Y-%m-%dT%H:%M')
+        else:
+            real_task.deadline_time = None
+
         real_task.weight = max_weight
         real_task.title = task['task_title']
         real_task.task_text = task['task_text']

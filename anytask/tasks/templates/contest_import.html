@@ -59,7 +59,7 @@
             <div class="collapse" id="task_contest_body">
                 <div class="form-group row">
                     <div class="controls col-sm-offset-3 col-sm-3">
-                        <ol id='contest_problems' name="contest_problems_id"style="white-space: nowrap;"></ol>
+                        <ol id='contest_problems' name="contest_problems_id" style="white-space: nowrap;"></ol>
                         <small class="text-help" id="contest_problems_error_text"></small>
                     </div>
                 </div>
@@ -74,7 +74,7 @@
                                    id="task_edit_get_max_score_from_contest"
                                    style="margin-left: 3px;">
                             <small class="text-muted">Брать из Я.Контеста</small>
-                    </label>
+                        </label>
                     </div>
                 </div>
                 <div class="form-group row">
@@ -92,11 +92,18 @@
                     <label class="col-sm-3 form-control-label" for="task_edit_datepicker">Дата сдачи</label>
                     <div class="controls col-sm-3">
                         <div class="input-group date task_datetime">
-                            <input class="form-control" id='task_edit_datepicker' name='deadline' type='text'  readonly value="{{task.deadline_time|date:'d-m-Y H:i'}}" style="background-color: white; cursor: pointer">
+                            <input disabled class="form-control" id='task_edit_datepicker' name='deadline' type='text' readonly value="{{task.deadline_time|date:'d-m-Y H:i'}}" style="background-color: #eceeef; cursor: pointer">
                             <span class="input-group-addon" style="cursor: pointer;"><i class="fa fa-times fa-lg"></i></span>
                             <span class="input-group-addon" style="cursor: pointer;"><i class="fa fa-calendar fa-lg"></i></span>
                         </div>
                         <small class="text-help" id="task_edit_datepicker_error_text"></small>
+                        <label class="form-control-label" for="task_edit_get_deadline_from_contest"
+                               style="font-weight: normal;white-space: nowrap;padding: 0px 3px 0px 0px;">
+                            <input checked type="checkbox" name="get_deadline_from_contest"
+                                   id="task_edit_get_deadline_from_contest"
+                                   style="margin-left: 3px;">
+                            <small class="text-muted">Брать из Я.Контеста</small>
+                        </label>
                         <div id="task_edit_label_for_changed_task" class="collapse">
                             <label class="form-control-label" for="task_edit_changed_task" style="font-weight: normal;white-space: nowrap;padding: 0px 3px 0px 0px;">
                                 <input type="checkbox" name="changed_task" id="task_edit_changed_task" style="margin-left: 3px;">
@@ -112,7 +119,7 @@
                     </div>
                 </div>
                 <div class="form-group row">
-                    <label class="col-sm-3 form-control-label" for="task_edit_hidden_task">Скрыть задачу</label>
+                    <label class="col-sm-3 form-control-label" for="task_edit_hidden_task">Скрыть задачи</label>
                     <div class="controls col-sm-3" style="padding-top: 5px">
                         <input type="checkbox" name="hidden_task" id="task_edit_hidden_task">
                     </div>
