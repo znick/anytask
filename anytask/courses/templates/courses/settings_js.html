@@ -54,6 +54,17 @@
             return false;
         });
 
+        $(".checkbox-block").click(function() {
+            var checkbox = $(this).siblings('input');
+            checkbox.prop('checked', !checkbox.is(':checked'));
+            $('#default_task_one_file_upload').closest('div').collapse('toggle');
+        });
+
+        $('#show_task_one_file_upload').change(function () {
+            $('#default_task_one_file_upload').closest('div').collapse('toggle');
+        });
+
+
         $('#course_settings_form').change(function() {
             $('#course_settings_form_error_text').empty();
         });

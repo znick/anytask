@@ -121,6 +121,9 @@ class Course(models.Model):
 
     mark_system = models.ForeignKey(CourseMarkSystem, db_index=False, null=True, blank=True)
 
+    show_task_one_file_upload = models.BooleanField(db_index=False, null=False, blank=False, default=False)
+    default_task_one_file_upload = models.BooleanField(db_index=False, null=False, blank=False, default=False)
+
     def __unicode__(self):
         return unicode(self.name)
 

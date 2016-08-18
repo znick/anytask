@@ -270,6 +270,10 @@ def contest_task_import(request):
     if 'rb_integrated' in request.POST:
         rb_integrated = True
 
+    one_file_upload = False
+    if 'one_file_upload' in request.POST:
+        one_file_upload = True
+
     hidden_task = False
     if 'hidden_task' in request.POST:
         hidden_task = True
@@ -335,6 +339,8 @@ def contest_task_import(request):
         real_task.problem_id = task['problem_id']
 
         real_task.rb_integrated = rb_integrated
+
+        real_task.one_file_upload = one_file_upload
 
         real_task.is_hidden = hidden_task
         real_task.updated_by = request.user
