@@ -328,6 +328,12 @@ def default_teachers_generate_form(course, post_data=None):
     return groups_forms
 
 
+def get_filename_extensions(course):
+    extensions = FilenameExtension.objects.all().order_by('name')
+    course_extensions = course.filename_extensions.all()
+    return [(ext, True) if ext in course_extensions else (ext, False) for ext in extensions]
+
+
 @login_required
 def course_settings(request, course_id):
     course = get_object_or_404(Course, id=course_id)
@@ -345,16 +351,14 @@ def course_settings(request, course_id):
     if request.method != "POST":
         form = DefaultTeacherForm(course)
         context['form'] = form
-        context['file_extensions'] = FilenameExtension.objects.all()
-        context['file_extensions_course'] = course.filename_extensions.all()
+        context['file_extensions'] = get_filename_extensions(course)
         return render_to_response('courses/settings.html', context, context_instance=RequestContext(request))
 
     form = DefaultTeacherForm(course, request.POST)
     context['form'] = form
 
     if not form.is_valid():
-        context['file_extensions'] = FilenameExtension.objects.all()
-        context['file_extensions_course'] = course.filename_extensions.all()
+        context['file_extensions'] = get_filename_extensions(course)
         return render_to_response('courses/settings.html', context, context_instance=RequestContext(request))
 
     for group_key, teacher_id in form.cleaned_data.iteritems():
