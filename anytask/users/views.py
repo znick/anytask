@@ -92,6 +92,13 @@ def profile(request, username=None, year=None):
                 user_profile.avatar.save(filename, image_content)
 
             user_profile.save()
+        elif 'update-info' in request.POST:
+            try:
+                user_info = request.POST['user-info'].strip()
+            except ValueError:  # not int
+                return HttpResponseForbidden()
+            user_profile.info = user_info
+            user_profile.save()
         else:
             invite_form = InviteActivationForm(request.POST)
             if invite_form.is_valid():
