@@ -24,6 +24,7 @@ from years.common import get_current_year
 
 import yandex_oauth
 import requests
+import json
 
 
 @login_required
@@ -43,7 +44,16 @@ def profile(request, username=None, year=None):
     user_teacher_in_courses = Course.objects.filter(is_active=True).filter(teachers=user)
     if user_to_show != user:
         if len(teacher_in_courses) == 0 and len(user_teacher_in_courses) == 0:
-            raise PermissionDenied
+            for group in user.group_set.all():
+                in_course = False
+                for course in group.course_set.all():
+                    if course.get_user_group(user_to_show):
+                        in_course = True
+                        break
+                if in_course:
+                    break
+            else:
+                raise PermissionDenied
 
     if year:
         current_year = get_object_or_404(Year, start_year=year)
@@ -263,3 +273,26 @@ def user_courses(request, username=None, year=None):
     }
 
     return render_to_response('user_courses.html', context, context_instance=RequestContext(request))
+
+
+@login_required
+def activate_invite(request):
+    user = request.user
+    if request.method != 'POST':
+        return HttpResponseForbidden()
+
+    invite_form = InviteActivationForm(request.POST)
+    if invite_form.is_valid():
+        invite = get_object_or_404(Invite, key=invite_form.cleaned_data['invite'])
+        if invite.group:
+            invite.group.students.add(user)
+            invite.invited_users.add(user)
+
+    else:
+        data = dict(invite_form.errors)
+        data['is_error'] = True
+        return HttpResponse(json.dumps(data),
+                            content_type="application/json")
+
+    return HttpResponse(json.dumps({"is_error": False}),
+                        content_type="application/json")

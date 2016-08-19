@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% load django_bootstrap_breadcrumbs %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ course.name }} | {{ course.year }}{% endblock %}
+
+{% block scripts %}
+    <script src="{{ STATIC_URL }}jquery.validate.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#invites_form').validate({
+                submitHandler: function(form) {
+                    $('#invites_form').ajaxSubmit({
+                        success: function (data) {
+                            if (data.is_error) {
+                                $('#id_invite').removeClass('form-control-success').addClass('form-control-danger')
+                                        .closest('.form-group').removeClass('has-success').addClass('has-danger');
+                                $('#id_invite').siblings('small.text-help').empty().append(data.invite);
+                            }
+                            else {
+                                $('#id_invite').removeClass('form-control-danger').addClass('form-control-success')
+                                        .closest('.form-group').removeClass('has-danger').addClass('has-success');
+                                window.location.reload();
+                            }
+                        },
+                        error: function (data) {
+                            $('#id_invite').removeClass('form-control-success').addClass('form-control-danger')
+                                    .closest('.form-group').removeClass('has-success').addClass('has-danger');
+                            $('#id_invite').siblings('small.text-help').empty().append('Ошибка: '+ data.status);
+                        }
+                    });
+                },
+                rules: {
+                    invite: {
+                        required : true
+                    }
+                },
+
+                highlight: function(input) {
+                    $(input).removeClass('form-control-success').addClass('form-control-danger');
+                    $(input).closest('.form-group').removeClass('has-success').addClass('has-danger');
+                },
+
+                success: function(label) {
+                    label.addClass('valid');
+                    label.closest('.text-help').siblings('.form-control').removeClass('form-control-danger');
+                    label.closest('.form-group').removeClass('has-danger');
+                },
+
+                messages: {
+                    invite: {
+                        required : "Необходимо указать инвайт"
+                    }
+                },
+
+                errorPlacement: function(error, element) {
+                    $(element).siblings('small.text-help').empty().append(error);
+                }
+            });
+        });
+    </script>
+{% endblock scripts %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    {% if school %}
+        {% breadcrumb school.name school.get_absolute_url %}
+    {% endif %}
+    {% breadcrumb course.name "" %}
+{% endblock breadcrumbs %}
+
+{% block content %}
+    {{ block.super }}
+
+    <div class="row">
+        <div class="col-md-6 col-sm-12">
+            <div class="card card-block">
+                <h5 class="card-title">Доступ к этому курсу ограничен</h5>
+                <p class="card-text">У Вас нет доступа к этому курсу. Если у Вас есть инвайт, то введите его в поле ниже.</p>
+                <form id="invites_form" action="{% url users.views.activate_invite %}" method="post">
+                    <div class="row">
+                        {% csrf_token %}
+                        {% for field in invite_form %}
+                            <div class="form-group col-md-9" style="height: 3rem">
+                                <div class="controls">
+                                    <input class="form-control" id='{{ field.id_for_label }}' name='{{ field.html_name }}' type='text' placeholder="Введите инвайт...">
+                                    <small class="text-help" id="{{ field.id_for_label }}_error_text">&nbsp;</small>
+                                </div>
+                            </div>
+                        {% endfor %}
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-secondary">Ок</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}
