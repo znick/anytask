@@ -320,7 +320,7 @@ def contest_task_import(request):
     problems = []
     if 'result' in problem_req.json():
         problems = problem_req.json()['result']['problems']
-        
+
     problems_with_score = {problem['id']:problem['score'] if 'score' in problem else None for problem in problems}
     problems_with_end = {problem['id']:problem['end'] if 'end' in problem else None for problem in problems}
 
@@ -332,8 +332,15 @@ def contest_task_import(request):
                 tasks[-1]['task_title'] = problem['problemTitle']
                 tasks[-1]['task_text'] = problem['statement']
                 tasks[-1]['problem_id'] = problem['alias']
-                tasks[-1]['max_score'] = problems_with_score[problem['problemId']]
-                tasks[-1]['deadline_time'] = problems_with_end[problem['problemId']]
+                if problems_with_score:
+                    tasks[-1]['max_score'] = problems_with_score[problem['problemId']]
+                else:
+                    tasks[-1]['max_score'] = None
+                if problems_with_end:
+                    tasks[-1]['deadline_time'] = problems_with_end[problem['problemId']]
+                else:
+                    tasks[-1]['deadline_time'] = None
+
     elif "You're not allowed to view this contest." in contest_info:
         return HttpResponse(json.dumps({'is_error': True,
                                         'error': u"У anytask нет прав на данный контест"}),
