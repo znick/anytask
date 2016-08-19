@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
+{% load sanitize_html %}
 
 {% block title %} {{ user_to_show.get_full_name }} {% endblock %}
 
@@ -105,7 +106,7 @@
         .edit-icon {
             text-align: center;
             position: absolute;
-            right: 10%;
+            right: 13%;
             top: 0;
             display: none;
         }
@@ -118,8 +119,8 @@
                     <h5 class="card-title">
                         <div class="user_img pull-xs-left">
                             {% if request.user == user_to_show %}
-                                <label class="edit-icon btn btn-secondary btn-sm">
-                                    <i class="fa fa fa-pencil"></i>
+                                <label class="edit-icon btn btn-secondary btn-sm" style="padding: 6px 8px;">
+                                    <i class="fa fa-pencil"></i>
                                 </label>
                             {% endif %}
                             <img id="avatar" class="avatar" src="{% if not user_to_show.get_profile.avatar %}https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mm&f=y
@@ -197,6 +198,27 @@
 
     <div class="card-deck-wrapper">
         <div class="card-deck">
+            <div class="card">
+                <div class="card-block">
+                    <h5 class="card-title">
+                        О себе
+                        {% if user == user_to_show %}
+                            <label type="button" class="btn btn-secondary btn-sm" style="padding: 6px 8px;" data-toggle="modal" data-target="#modal_user_info_edit">
+                                <i class="fa fa-pencil"></i>
+                            </label>
+                        {% endif %}
+                    </h5>
+                    <p class="card-text">
+                        {% if user_to_show.get_profile.info %}{{ user_to_show.get_profile.info|sanitize|safe }}
+                        {% else %}Пока здесь ничего нет :( {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-deck-wrapper">
+        <div class="card-deck">
             {% if teacher_in_courses %}
                 <div class="card">
                     <div class="card-block">
@@ -239,7 +261,7 @@
     </div>
 
     {% if user == user_to_show %}
-        <div class="modal" id="modal_avatar_edit" tabindex="-1" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
+        <div class="modal fade" id="modal_avatar_edit" tabindex="-1" role="dialog" aria-labelledby="modal_avatar_edit_header" aria-hidden="true">
             <div class="modal-dialog modal-sm" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -283,8 +305,29 @@
                 </div>
             </div>
         </div>
+
+        <div class="modal fade" id="modal_user_info_edit" tabindex="-1" role="dialog" aria-labelledby="modal_user_info_header" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h5 class="modal-title" id="modal_user_info_header">О себе</h5>
+                    </div>
+                    <div class="modal-body" style="max-height: none;">
+                        <form method="post" id="user-info-form" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <textarea class='input-xlarge form-control' style="width: 100%;resize: none;" id='user_info' rows='13' name='user-info'>{% if user_to_show.get_profile.info %}{{ user_to_show.get_profile.info|sanitize|safe }}{% endif %}</textarea>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="#" class="btn btn-secondary" data-dismiss="modal">Закрыть</a>
+                        <button type="submit" name="update-info" form="user-info-form" class="btn btn-primary btn-sm" id="modal_user_info_ok" data-loading-text="Сохранение...">Сохранить</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     {% endif %}
-    <div class="modal" id="modal_avatar_view" tabindex="-1" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
+    <div class="modal fade" id="modal_avatar_view" tabindex="-1" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
         <div class="modal-dialog modal-sm" role="document">
             <div class="modal-content">
                 <div class="modal-header">
