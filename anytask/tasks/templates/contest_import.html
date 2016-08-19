@@ -16,7 +16,7 @@
         {% breadcrumb school.name school.get_absolute_url %}
     {% endif %}
     {% breadcrumb course.name course.get_absolute_url %}
-    {% breadcrumb "Импорт задачи из Яндекс.Контеста" "" %}
+    {% breadcrumb "Импорт соревнования из Яндекс.Контеста" "" %}
 {% endblock breadcrumbs %}
 
 {% block navbar %}
@@ -31,7 +31,7 @@
 {% block content %}
     {{ block.super }}
     <div id="task_edit" class="card card-block">
-        <h5 class="card-title" style="margin-bottom:1rem;">Импорт задачи из Яндекс.Контеста</h5>
+        <h5 class="card-title" style="margin-bottom:1rem;">Импорт соревнования из Яндекс.Контеста</h5>
 
         <form id="contest_task_form">
             {% csrf_token %}
@@ -59,18 +59,22 @@
             <div class="collapse" id="task_contest_body">
                 <div class="form-group row">
                     <div class="controls col-sm-offset-3 col-sm-3">
-                        <ol id='contest_problems' name="contest_problems_id" class="radio_problems" style="white-space: nowrap;"></ol>
+                        <ol id='contest_problems' name="contest_problems_id" style="white-space: nowrap;"></ol>
                         <small class="text-help" id="contest_problems_error_text"></small>
                     </div>
                 </div>
                 <div class="form-group row">
                     <label class="col-sm-3 form-control-label" for="task_max_score">Максимальный балл</label>
                     <div class="controls col-sm-3">
-                        <input class="form-control" id='task_max_score' name='max_score' type='text' maxlength='25' size='20'>
+                        <input disabled class="form-control" id='task_max_score' name='max_score' type='text' maxlength='25' size='20'>
                         <small class="text-help" id="task_max_score_error_text"></small>
-                    </div>
-                    <div id="loading_max_score_img" class="col-sm-1 collapse" style="margin-top:0.6rem">
-                        <span class="fa fa-circle-o-notch fa-spin fa-lg fa-fw" style="opacity:0.2;filter: alpha(opacity=20);color:#000000;"></span>
+                        <label class="form-control-label" for="task_edit_get_max_score_from_contest"
+                               style="font-weight: normal;white-space: nowrap;padding: 0px 3px 0px 0px;">
+                            <input checked type="checkbox" name="get_max_score_from_contest"
+                                   id="task_edit_get_max_score_from_contest"
+                                   style="margin-left: 3px;">
+                            <small class="text-muted">Брать из Я.Контеста</small>
+                        </label>
                     </div>
                 </div>
                 <div class="form-group row">
@@ -88,11 +92,18 @@
                     <label class="col-sm-3 form-control-label" for="task_edit_datepicker">Дата сдачи</label>
                     <div class="controls col-sm-3">
                         <div class="input-group date task_datetime">
-                            <input class="form-control" id='task_edit_datepicker' name='deadline' type='text'  readonly value="{{task.deadline_time|date:'d-m-Y H:i'}}" style="background-color: white; cursor: pointer">
+                            <input disabled class="form-control" id='task_edit_datepicker' name='deadline' type='text' readonly value="{{task.deadline_time|date:'d-m-Y H:i'}}" style="background-color: #eceeef; cursor: pointer">
                             <span class="input-group-addon" style="cursor: pointer;"><i class="fa fa-times fa-lg"></i></span>
                             <span class="input-group-addon" style="cursor: pointer;"><i class="fa fa-calendar fa-lg"></i></span>
                         </div>
                         <small class="text-help" id="task_edit_datepicker_error_text"></small>
+                        <label class="form-control-label" for="task_edit_get_deadline_from_contest"
+                               style="font-weight: normal;white-space: nowrap;padding: 0px 3px 0px 0px;">
+                            <input checked type="checkbox" name="get_deadline_from_contest"
+                                   id="task_edit_get_deadline_from_contest"
+                                   style="margin-left: 3px;">
+                            <small class="text-muted">Брать из Я.Контеста</small>
+                        </label>
                         <div id="task_edit_label_for_changed_task" class="collapse">
                             <label class="form-control-label" for="task_edit_changed_task" style="font-weight: normal;white-space: nowrap;padding: 0px 3px 0px 0px;">
                                 <input type="checkbox" name="changed_task" id="task_edit_changed_task" style="margin-left: 3px;">
@@ -108,23 +119,13 @@
                     </div>
                 </div>
                 <div class="form-group row">
-                    <label class="col-sm-3 form-control-label" for="task_edit_hidden_task">Скрыть задачу</label>
+                    <label class="col-sm-3 form-control-label" for="task_edit_hidden_task">Скрыть задачи</label>
                     <div class="controls col-sm-3" style="padding-top: 5px">
                         <input type="checkbox" name="hidden_task" id="task_edit_hidden_task">
                     </div>
                 </div>
-                <div class="form-group row">
-                    <label class="col-sm-3 form-control-label" for="task_edit_body">Формулировка</label>
-                    <br>
-                    <div class="controls col-sm-12" style="padding-top: 15px">
-                        <textarea class='input-xlarge form-control' style="max-width:100%;width:100%;height:200px;"
-                                  id='task_edit_body' name='task_text'>{{ task.task_text }}</textarea>
-                    </div>
-                </div>
-                <div class="form-group row" style="margin:0px;">
+                <div class="form-group row" style="margin:0;">
                     <div id="task_submit_error_text"></div>
-                    <button type="button" id="button_preview" class="btn btn-secondary pull-xs-left">Предпросмотр
-                    </button>
                     <div class="btn-group pull-xs-right" role="group">
                         <button type="button" id="button_cancel_quit" class="btn btn-secondary">Отменить и выйти</button>
                         <button type="submit" id="button_save_quit" class="btn btn-primary">Сохранить и выйти</button>
@@ -133,20 +134,4 @@
             </div>
         </form>
     </div>
-
-    <div id="modal_task_preview" class="modal" tabindex="-1" role="dialog" aria-labelledby="modal_task_header" aria-hidden="true">
-        <div class="modal-dialog modal-lg"  role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">×</button>
-                    <h5 class="modal-title" id="modal_task_header"></h5>
-                    <div id="modal_task_deadline"></div>
-                </div>
-                <div class="modal-body">
-                    <div id="modal_task_body"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
 {% endblock %}

@@ -12,7 +12,7 @@ from django.contrib.auth.models import User
 from tasks.models import TaskTaken
 from django.contrib.auth.decorators import login_required
 from django.db.models import Max
-from anycontest.common import get_contest_info
+from anycontest.common import get_contest_info, FakeResponse
 from django.conf import settings
 
 import datetime
@@ -20,6 +20,11 @@ import requests
 
 import json
 
+
+def merge_two_dicts(x, y):
+    z = x.copy()
+    z.update(y)
+    return z
 
 @login_required
 def task_create_page(request, course_id):
@@ -43,7 +48,7 @@ def task_create_page(request, course_id):
         'school': schools[0] if schools else '',
     }
 
-    return render_to_response('task_create_or_edit.html', context, context_instance=RequestContext(request))
+    return render_to_response('task_create.html', context, context_instance=RequestContext(request))
 
 
 @login_required
@@ -57,10 +62,30 @@ def task_import_page(request, course_id):
 
     context = {
         'course': course,
+        'rb_integrated': course.rb_integrated,
         'school': schools[0] if schools else '',
     }
 
     return render_to_response('task_import.html', context, context_instance=RequestContext(request))
+
+
+@login_required
+def contest_import_page(request, course_id):
+    course = get_object_or_404(Course, id=course_id)
+
+    if not course.user_is_teacher(request.user):
+        return HttpResponseForbidden
+
+    schools = course.school_set.all()
+
+    context = {
+        'course': course,
+        'rb_integrated': course.rb_integrated,
+        'school': schools[0] if schools else '',
+        'contest_import': True,
+    }
+
+    return render_to_response('contest_import.html', context, context_instance=RequestContext(request))
 
 
 @login_required
@@ -86,7 +111,7 @@ def task_edit_page(request, task_id):
         'school': schools[0] if schools else '',
     }
 
-    return render_to_response('task_create_or_edit.html', context, context_instance=RequestContext(request))
+    return render_to_response('task_edit.html', context, context_instance=RequestContext(request))
 
 
 def task_create_ot_edit(request, course, task_id=None):
@@ -227,6 +252,10 @@ def get_contest_problems(request):
     else:
         problems = problem_req['result']['problems']
 
+    contest_info_problems = contest_info['problems']
+    contest_info_deadline = contest_info['endTime'] if 'endTime' in contest_info else None
+    problems = problems + contest_info_problems + [{'deadline':contest_info_deadline}]
+
     return HttpResponse(json.dumps({'problems': problems,
                                     'is_error': is_error,
                                     'error': error}),
@@ -243,7 +272,10 @@ def contest_task_import(request):
 
     contest_id = int(request.POST['contest_id_for_task'])
 
-    max_score = int(request.POST['max_score'])
+    if 'max_score' in request.POST:
+        max_score = int(request.POST['max_score'])
+    else:
+        max_score = None
 
     task_group = request.POST['task_group_id']
     if task_group:
@@ -252,10 +284,12 @@ def contest_task_import(request):
         task_group = None
 
     task_deadline = request.POST['deadline']
+
     if task_deadline:
         task_deadline = datetime.datetime.strptime(task_deadline, '%d-%m-%Y %H:%M')
     else:
         task_deadline = None
+
     changed_task = False
     if 'changed_task' in request.POST:
         changed_task = True
@@ -280,6 +314,16 @@ def contest_task_import(request):
     tasks = []
 
     got_info, contest_info = get_contest_info(contest_id)
+    problem_req = FakeResponse()
+    problem_req = requests.get(settings.CONTEST_API_URL + 'problems?contestId=' + str(contest_id),
+                               headers={'Authorization': 'OAuth ' + settings.CONTEST_OAUTH})
+    problems = []
+    if 'result' in problem_req.json():
+        problems = problem_req.json()['result']['problems']
+
+    problems_with_score = {problem['id']:problem['score'] if 'score' in problem else None for problem in problems}
+    problems_with_end = {problem['id']:problem['end'] if 'end' in problem else None for problem in problems}
+
     if got_info:
         contest_problems = dict(request.POST)['contest_problems[]']
         for problem in contest_info['problems']:
@@ -288,6 +332,15 @@ def contest_task_import(request):
                 tasks[-1]['task_title'] = problem['problemTitle']
                 tasks[-1]['task_text'] = problem['statement']
                 tasks[-1]['problem_id'] = problem['alias']
+                if problems_with_score:
+                    tasks[-1]['max_score'] = problems_with_score[problem['problemId']]
+                else:
+                    tasks[-1]['max_score'] = None
+                if problems_with_end:
+                    tasks[-1]['deadline_time'] = problems_with_end[problem['problemId']]
+                else:
+                    tasks[-1]['deadline_time'] = None
+
     elif "You're not allowed to view this contest." in contest_info:
         return HttpResponse(json.dumps({'is_error': True,
                                         'error': u"У anytask нет прав на данный контест"}),
@@ -318,11 +371,24 @@ def contest_task_import(request):
             real_task.sended_notify = False
         else:
             real_task.sended_notify = True
-        real_task.deadline_time = task_deadline
+
+        if task_deadline:
+            real_task.deadline_time = task_deadline
+        elif task['deadline_time']:
+            real_task.deadline_time = datetime.datetime.strptime(task['deadline_time'], '%Y-%m-%dT%H:%M')
+        else:
+            real_task.deadline_time = None
+
         real_task.weight = max_weight
         real_task.title = task['task_title']
         real_task.task_text = task['task_text']
-        real_task.score_max = max_score
+
+        if max_score:
+            real_task.score_max = max_score
+        elif task['max_score']:
+            real_task.score_max = task['max_score']
+        else:
+            real_task.score_max = 0
 
         real_task.contest_integrated = True
         real_task.contest_id = contest_id
