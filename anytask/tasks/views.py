@@ -12,7 +12,7 @@ from django.contrib.auth.models import User
 from tasks.models import TaskTaken
 from django.contrib.auth.decorators import login_required
 from django.db.models import Max
-from anycontest.common import get_contest_info
+from anycontest.common import get_contest_info, FakeResponse
 from django.conf import settings
 
 import datetime
@@ -314,10 +314,15 @@ def contest_task_import(request):
     tasks = []
 
     got_info, contest_info = get_contest_info(contest_id)
+    problem_req = FakeResponse()
     problem_req = requests.get(settings.CONTEST_API_URL + 'problems?contestId=' + str(contest_id),
                                headers={'Authorization': 'OAuth ' + settings.CONTEST_OAUTH})
-    problems_with_score = {problem['id']:problem['score'] if 'score' in problem else None for problem in problem_req.json()['result']['problems']}
-    problems_with_end = {problem['id']:problem['end'] if 'end' in problem else None for problem in problem_req.json()['result']['problems']}
+    problems = []
+    if 'result' in problem_req.json():
+        problems = problem_req.json()['result']['problems']
+        
+    problems_with_score = {problem['id']:problem['score'] if 'score' in problem else None for problem in problems}
+    problems_with_end = {problem['id']:problem['end'] if 'end' in problem else None for problem in problems}
 
     if got_info:
         contest_problems = dict(request.POST)['contest_problems[]']
