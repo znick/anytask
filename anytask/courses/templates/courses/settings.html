@@ -33,7 +33,7 @@
         {% endif %}
         {% if user_is_teacher %}
             <li class="nav-item active">
-                <a class="nav-link" href="{% url courses.views.course_settings course.id %}">Настройки</a>
+                <a class="nav-link" href="">Настройки</a>
             </li>
         {% endif %}
     </ul>
@@ -51,40 +51,23 @@
         {% csrf_token %}
         <div class="card-deck-wrapper">
             <div class="card-deck">
-                <div class="card card-block" style="width: 40%">
+                <div class="card card-block" style="width: 50%">
                     <h5 class="card-title">Преподаватели</h5>
                     <p class="card-text">Эти преподаватели будут назначаться проверяющими во время перехода задачи в статус "на проверке", если другой преподаватель не был назначен ранее</p>
-                    <div class="col-md-5">
+                    <div class="col-md-12">
                         {{ form|crispy }}
                     </div>
                 </div>
                 {% if course.is_rb_integrated %}
-                    <div class="card card-block" style="width: 60%">
+                    <div class="card card-block" style="width: 50%">
                         <h5 class="card-title">Review Board</h5>
                         <p class="card-text">Расширения файлов</p>
                         <div class="col-md-12">
-                            <div class="form-group row">
-                                <div class="col-md-5">
-                                    <select name="rb_extensions_from[]" id="rb_ext_select" class="form-control" size="7" multiple="multiple" style="margin-bottom: 0px;height: 150px;">
-                                        {% for file_ext in file_extensions %}
-                                            <option value="{{ file_ext.id }}">{{ file_ext.name }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                                <div class="col-md-2" style="margin-top: 27px;">
-                                    <button type="button" id="rb_ext_select_rightAll" class="btn btn-secondary btn-block"><i class="fa fa-forward fa"></i></button>
-                                    <button type="button" id="rb_ext_select_rightSelected" class="btn btn-secondary btn-block"><i class="fa fa-chevron-right fa"></i></button>
-                                    <button type="button" id="rb_ext_select_leftSelected" class="btn btn-secondary btn-block"><i class="fa fa-chevron-left fa"></i></button>
-                                    <button type="button" id="rb_ext_select_leftAll" class="btn btn-secondary btn-block"><i class="fa fa-backward fa"></i></button>
-                                </div>
-                                <div class="col-md-5">
-                                    <select name="rb_extensions[]" id="rb_ext_select_to" class="form-control" size="7" multiple="multiple" style="height: 150px;">
-                                        {% for file_ext in file_extensions_course %}
-                                            <option value="{{ file_ext.id }}">{{ file_ext.name }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                            </div>
+                            <select name="rb_extensions[]" id="rb_ext_select" class="form-control" size="7" multiple="multiple" style="display: none;">
+                                {% for file_ext, selected in file_extensions %}
+                                    <option value="{{ file_ext.id }}" {% if selected %}selected{% endif %}>{{ file_ext.name }}</option>
+                                {% endfor %}
+                            </select>
                         </div>
                     </div>
                 {% endif %}

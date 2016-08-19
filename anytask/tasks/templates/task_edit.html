@@ -105,14 +105,14 @@
                             <div class="form-group row">
                                 <label class="col-sm-3 form-control-label" for="task_edit_contest_id">ID контеста</label>
                                 <div class="controls col-sm-3">
-                                    <input class="form-control" id='task_edit_contest_id' name='contest_id' type='text' maxlength='25' size='20' {% if hide_contest_settings %}class="collapse"{% endif %} value="{{ task.contest_id }}">
+                                    <input class="form-control {% if hide_contest_settings %}collapse{% endif %}" id='task_edit_contest_id' name='contest_id' type='text' maxlength='25' size='20' value="{{ task.contest_id }}">
                                     <small class="text-help" id="task_edit_contest_id_error_text"></small>
                                 </div>
                             </div>
                             <div class="form-group row">
                                 <label class="col-sm-3 form-control-label" for="task_edit_problem_id">Литера задачи в контесте</label>
                                 <div class="controls col-sm-3">
-                                    <input class="form-control" id='task_edit_problem_id' name='problem_id' type='text' maxlength='25' size='20' {% if hide_contest_settings %}class="collapse"{% endif %} value="{{ task.problem_id }}">
+                                    <input class="form-control {% if hide_contest_settings %}collapse{% endif %}" id='task_edit_problem_id' name='problem_id' type='text' maxlength='25' size='20' value="{{ task.problem_id }}">
                                     <small class="text-help" id="task_edit_problem_id_error_text"></small>
                                 </div>
                             </div>

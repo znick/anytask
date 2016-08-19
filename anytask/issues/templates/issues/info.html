@@ -13,14 +13,14 @@
             <div class="card" style="margin-bottom: .3rem;">
                 <div class="card-header">
                     <div class="row col-wrap">
-                        <div class="col-md-5">
+                        <div class="col-md-5 accordion2-label">
                             {% if field.editable %}
                                 <a href="#" data-toggle="collapse" data-target="#collapse{{ forloop.counter }}">{{ field.title }}</a>:
                             {% else %}
                                 {{ field.title }}:
                             {% endif %}
                         </div>
-                        <div class="col-md-7">
+                        <div class="col-md-7 accordion2-result">
                             {% autoescape off %}
                                 {% if field.repr  or field.repr == 0 %}
                                     {{ field.repr }}
@@ -31,44 +31,46 @@
                         </div>
                     </div>
                 </div>
-                <div id="collapse{{ forloop.counter }}" class="collapse">
-                    <div class="card-block">
-                        <form method="post" id="{{ field.name }}_form" enctype="multipart/form-data">
-                            {% csrf_token %}
-                            <div class="form-group col-md-12" id="{{ field.name }}_fieldset_id">
-                                <input type="hidden" name="form_name" value="{{ field.name }}_form">
-                                {% if field.name == 'mark' %}
-                                    <input type="hidden" id="max_mark" value="{{ issue.task.score_max }}">
-                                {% endif %}
-                                {{ field.form|crispy }}
-                                {% if field.name == 'mark' %}
-                                    <small class="text-help" style="margin-top: 0px;" id="mark_edit_error_text"></small>
-                                {% endif %}
-                            </div>
-                            <div class="form-group">
-                                <button type="submit" class="btn btn-secondary">Отправить</button>
-                                {% if field.name == 'responsible_name' or field.name == 'followers_names' %}
-                                    <button type="submit" class="btn btn-secondary" name="Me">Я</button>
-                                {% endif %}
-                                {% if field.name == 'mark' %}
-                                    <button type="submit" class="btn btn-secondary" name="Accepted">Зачтено</button>
-                                {% endif %}
-                            </div>
-                        </form>
+                {% if field.editable %}
+                    <div id="collapse{{ forloop.counter }}" class="collapse">
+                        <div class="card-block">
+                            <form method="post" id="{{ field.name }}_form" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <div class="form-group col-md-12" id="{{ field.name }}_fieldset_id">
+                                    <input type="hidden" name="form_name" value="{{ field.name }}_form">
+                                    {% if field.name == 'mark' %}
+                                        <input type="hidden" id="max_mark" value="{{ issue.task.score_max }}">
+                                    {% endif %}
+                                    {{ field.form|crispy }}
+                                    {% if field.name == 'mark' %}
+                                        <small class="text-help" style="margin-top: 0px;" id="mark_edit_error_text"></small>
+                                    {% endif %}
+                                </div>
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-secondary">Отправить</button>
+                                    {% if field.name == 'responsible_name' or field.name == 'followers_names' %}
+                                        <button type="submit" class="btn btn-secondary" name="Me">Я</button>
+                                    {% endif %}
+                                    {% if field.name == 'mark' %}
+                                        <button type="submit" class="btn btn-secondary" name="Accepted">Зачтено</button>
+                                    {% endif %}
+                                </div>
+                            </form>
+                        </div>
                     </div>
-                </div>
+                {% endif %}
             </div>
         {% endif %}
     {% endfor %}
     <div class="card">
         <div class="card-header">
             <div class="row col-wrap">
-                <div class="col-md-4">
+                <div class="col-md-4 accordion2-label">
                     <div class="pull-xs-right">
                         Дата сдачи:
                     </div>
                 </div>
-                <div class="col-md-8">
+                <div class="col-md-8 accordion2-result">
                     {{ issue.task.deadline_time|date:'d-m-Y H:i' }} {% if issue.task.deadline_time %} MSK UTC+3 {% endif %}
                 </div>
             </div>

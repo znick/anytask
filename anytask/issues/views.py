@@ -133,20 +133,6 @@ def get_or_create(request, task_id, student_id):
     #    return HttpResponseForbidden()
 
     issue, created = Issue.objects.get_or_create(task_id=task_id, student_id=student_id)
-
-    data = {
-        'issue_url': issue.get_absolute_url(),
-    }
-
-    return render_to_response('issues/issue.html', context, context_instance=RequestContext(request))
-
-
-@login_required
-def get_or_create(request, task_id, student_id):
-    #if not request.is_ajax():
-    #    return HttpResponseForbidden()
-
-    issue, created = Issue.objects.get_or_create(task_id=task_id, student_id=student_id)
         
     data = {
         'issue_url': issue.get_absolute_url(),

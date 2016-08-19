@@ -37,7 +37,7 @@
             collapsedHeight: 100,
             moreLink: '<small><a href="#">Развернуть <i class="fa fa-chevron-down"></a></small>',
             lessLink: '<small><a href="#">Свернуть <i class="fa fa-chevron-up"></a></small>'
-         }).show();
+        }).show();
 
         $("#btn_group_edit_course").sticky({
             topSpacing: $('.navbar').outerHeight()
@@ -106,12 +106,51 @@
                     $(".btn-table-fullscreen").css('display', 'table-cell');
                     $(".loading_table_img").hide();
                 },
+                autoWidth: false
             });
             t.on( 'order.dt search.dt', function () {
                 t.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
                     cell.innerHTML = i+1;
                 } );
             } ).draw();
+
+            $('.word-wrap').each(function (index) {
+                var title_text = $.trim($('a', this).text());
+                var title_text_splited = title_text.split(' ');
+                var needed_len = 20;
+
+                if (title_text_splited.length > 2 && title_text.length > needed_len) {
+                    var max_score = $.trim($('span', this).text()).length + 1.5;
+                    var line = 0;
+                    var word_counter = 0;
+                    var true_width = -1;
+                    var last_line = 0;
+                    for (var i = 0; i < title_text_splited.length; ++i) {
+                        var word_length = title_text_splited[i].length + 1;
+                        line += word_length;
+                        last_line = line;
+                        word_counter++;
+                        if (line > needed_len) {
+                            if (word_counter > 1) {
+                                line -= word_length;
+                                i--;
+                            }
+
+                            true_width = Math.max(true_width, line);
+                            line = 0;
+                            word_counter = 0;
+                        }
+                    }
+                    last_line = last_line + max_score - 1;
+                    $(this).css({
+                        'min-width': Math.max(true_width, last_line)  + 'ch',
+                        'word-wrap': 'break-word',
+                        'white-space': 'normal'
+                    });
+                }
+            });
+            t.draw();
+
         });
 
         $('.btn-table-fullscreen').click(function() {
@@ -127,7 +166,7 @@
                     'height': '100%'
                 });
                 $('.dataTables_scrollBody',  card).css('max-height',
-                        card.height() - $('.card-title-block', card).height() - 100 + 'px');
+                        card.height() - $('.table_results thead', card).height() - 90 + 'px');
                 $('#' + $(this).attr('for')).DataTable().draw();
             }
             else {
