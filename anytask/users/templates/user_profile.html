@@ -61,6 +61,11 @@
                 $('#gravatar-link').val('');
             }
         }
+        
+        function get_edit_user_info_modal(user_info) {
+            $('#user_info').val(user_info);
+            $('#modal_user_info_edit').modal('show');
+        }
     </script>
 
 {% endblock %}
@@ -203,9 +208,9 @@
                     <h5 class="card-title">
                         О себе
                         {% if user == user_to_show %}
-                            <label type="button" class="btn btn-secondary btn-sm" style="padding: 6px 8px;" data-toggle="modal" data-target="#modal_user_info_edit">
+                            <a type="button" class="btn btn-secondary btn-sm" style="padding: 6px 8px;" href="javascript:get_edit_user_info_modal({% if user_to_show.get_profile.info %}'{{user_to_show.get_profile.info|escapejs}}'{% else %}''{% endif %});">
                                 <i class="fa fa-pencil"></i>
-                            </label>
+                            </a>
                         {% endif %}
                     </h5>
                     <p class="card-text">
@@ -316,12 +321,12 @@
                     <div class="modal-body" style="max-height: none;">
                         <form method="post" id="user-info-form" enctype="multipart/form-data">
                             {% csrf_token %}
-                            <textarea class='input-xlarge form-control' style="width: 100%;resize: none;" id='user_info' rows='13' name='user-info'>{% if user_to_show.get_profile.info %}{{ user_to_show.get_profile.info|sanitize|safe }}{% endif %}</textarea>
+                            <textarea class='input-xlarge form-control' style="width: 100%;resize: none;" id='user_info' rows='13' name='user-info'></textarea>
                         </form>
                     </div>
                     <div class="modal-footer">
                         <a href="#" class="btn btn-secondary" data-dismiss="modal">Закрыть</a>
-                        <button type="submit" name="update-info" form="user-info-form" class="btn btn-primary btn-sm" id="modal_user_info_ok" data-loading-text="Сохранение...">Сохранить</button>
+                        <button type="submit" name="update-info" form="user-info-form" class="btn btn-primary" id="modal_user_info_ok" data-loading-text="Сохранение...">Сохранить</button>
                     </div>
                 </div>
             </div>
