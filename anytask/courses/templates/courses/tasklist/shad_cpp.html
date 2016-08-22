@@ -82,9 +82,9 @@
                     {% ifnotequal group course.group_with_extern %}
                         <h5 class="card-title" style="display: table-cell;margin: 0;vertical-align: middle;">{% if group.name %}{{ group.name }}{% else %}&nbsp;{% endif %}</h5>
                     {% endifnotequal %}
-                    <button class="btn btn-secondary btn-table-fullscreen" type="button" for="#table_results_{{ forloop.counter }}" style="display: none;vertical-align: top;margin: 2px; padding: 6px;"><i class="fa fa-expand fa-lg"></i></button>
+                    <button class="btn btn-secondary btn-table-fullscreen" type="button" for="#table_results_{{ group.id }}" style="display: none;vertical-align: top;margin: 2px; padding: 6px;"><i class="fa fa-expand fa-lg"></i></button>
                     {% if user_is_teacher %}
-                        <button class="btn btn-secondary btn-table-edit" type="button" data-toggle="modal" data-target="#modal_table_edit" for="#group_sort_{{ group.id }}" data-table="#table_results_{{ forloop.counter }}" style="display: none;vertical-align: top;margin: 2px;padding: 6px"><i class="fa fa-pencil fa-lg"></i></button>
+                        <button class="btn btn-secondary btn-table-edit" type="button" data-toggle="modal" data-target="#modal_table_edit" for="#group_sort_{{ group.id }}" data-table="#table_results_{{ group.id }}" style="display: none;vertical-align: top;margin: 2px;padding: 6px"><i class="fa fa-pencil fa-lg"></i></button>
                     {% endif %}
                 </div>
             </div>
@@ -93,7 +93,7 @@
             <span class="fa fa-circle-o-notch fa-spin fa-3x fa-fw" style="opacity:0.2;filter: alpha(opacity=20);color:#000000;"></span>
         </div>
         <div class="zui-wrapper collapse" style="margin-top: -2.8rem;">
-            <table class="table table-striped table-bordered table_results order-column hover" cellspacing="0"  id="table_results_{{ forloop.counter }}">
+            <table class="table table-striped table-bordered table_results order-column hover" cellspacing="0"  id="table_results_{{ group.id }}">
                 <thead>
                 <tr>
                     <th class="no-font-weight" style="text-align: center;">#</th>
@@ -231,7 +231,7 @@
             <div class="modal-body" style="max-height: none;">
                 <p>Изменение порядка столбцов в итоговой таблице курса, а также их удаление(удалять можно только те задачи, в которых не было комментариев).</p>
                 {% for group, tasks in group_tasks.iteritems %}
-                    <div id="group_sort_{{ group.id }}" data-group="{{ group.id }}" data-table="#table_results_{{ forloop.counter }}" data-marksystem="{% if course_mark_system_vals %}true{% endif %}" class="collapse">
+                    <div id="group_sort_{{ group.id }}" data-group="{{ group.id }}" data-table="#table_results_{{ group.id }}" data-marksystem="{% if course_mark_system_vals %}true{% endif %}" class="collapse">
                         <p style="font-weight: bold">{{ group.name }}</p>
                         <ul class="group-sortable" name="group_sort_{{ group.id }}">
                             {% for task in tasks %}
