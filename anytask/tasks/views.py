@@ -289,10 +289,9 @@ def contest_task_import(request):
     else:
         task_group = None
 
-    task_deadline = request.POST['deadline']
-
-    if task_deadline:
-        task_deadline = datetime.datetime.strptime(task_deadline, '%d-%m-%Y %H:%M')
+    if 'deadline' in request.POST:
+        task_deadline = request.POST['deadline']
+        task_deadline = datetime.datetime.strptime(task_deadline, '%d-%m-%Y %H:%M') if task_deadline else None
     else:
         task_deadline = None
 
