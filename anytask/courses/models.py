@@ -111,7 +111,7 @@ class Course(models.Model):
 
     full_transcript = models.BooleanField(db_index=False, null=False, blank=False, default=True)
 
-    private = models.BooleanField(db_index=False, null=False, blank=False, default=False)
+    private = models.BooleanField(db_index=False, null=False, blank=False, default=True)
 
     added_time = models.DateTimeField(auto_now_add=True, default=datetime.now)
     update_time = models.DateTimeField(auto_now=True, default=datetime.now)

@@ -35,6 +35,7 @@ from anysvn.common import svn_log_rev_message, svn_log_head_revision, get_svn_ex
 from anyrb.common import AnyRB
 from anycontest.common import get_contest_info
 from issues.models import Issue, Event, IssueFilter
+from users.forms import InviteActivationForm
 
 from common.ordered_dict import OrderedDict
 
@@ -110,12 +111,17 @@ def course_page(request, course_id):
     """
 
     course = get_object_or_404(Course, id=course_id)
+    schools = course.school_set.all()
 
     if course.private and not course.user_is_attended(request.user):
-        return render_to_response('course_private_forbidden.html', {"course" : course}, context_instance=RequestContext(request))
+        return render_to_response('courses/course_forbidden.html',
+                                  {"course": course,
+                                   'school': schools[0] if schools else '',
+                                   'invite_form': InviteActivationForm()},
+                                  context_instance=RequestContext(request))
 
     tasklist_context = get_tasklist_context(request, course)
-    schools = course.school_set.all()
+
     context = tasklist_context
     context['tasklist_template'] = 'courses/tasklist/shad_cpp.html'
     context['task_types'] = dict(Task().TASK_TYPE_CHOICES).items()
