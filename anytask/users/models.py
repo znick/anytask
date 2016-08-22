@@ -23,6 +23,8 @@ class UserProfile(models.Model):
     avatar = models.ImageField('profile picture', upload_to=get_upload_path, blank=True, null=True, storage=OverwriteStorage())
     birth_date = models.DateField(blank=True, null=True)
 
+    info = models.TextField(default="", blank=True, null=True)
+
     unit = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
     position = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
     academic_degree = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
