@@ -57,7 +57,8 @@
         $(".checkbox-block").click(function() {
             var checkbox = $(this).siblings('input');
             checkbox.prop('checked', !checkbox.is(':checked'));
-            $('#default_task_one_file_upload').closest('div').collapse('toggle');
+            if (checkbox.attr('id') == 'show_task_one_file_upload')
+                $('#default_task_one_file_upload').closest('div').collapse('toggle');
         });
 
         $('#show_task_one_file_upload').change(function () {
