@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template import RequestContext
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound
@@ -284,10 +286,19 @@ def activate_invite(request):
     invite_form = InviteActivationForm(request.POST)
     if invite_form.is_valid():
         invite = get_object_or_404(Invite, key=invite_form.cleaned_data['invite'])
-        if invite.group:
+        if 'course_id' in request.POST:
+            course = get_object_or_404(Course, id=int(request.POST['course_id']))
+            if invite.group and invite.group in course.groups.all():
+                invite.group.students.add(user)
+                invite.invited_users.add(user)
+            else:
+                return HttpResponse(json.dumps({'is_error': True,
+                                                'invite': u'Инвайт относится к другому курсу.'}),
+                                    content_type="application/json")
+
+        elif invite.group:
             invite.group.students.add(user)
             invite.invited_users.add(user)
-
     else:
         data = dict(invite_form.errors)
         data['is_error'] = True

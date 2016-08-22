@@ -80,6 +80,7 @@
                 <form id="invites_form" action="{% url users.views.activate_invite %}" method="post">
                     <div class="row">
                         {% csrf_token %}
+                        <input type="hidden" name="course_id" value="{{ course.id }}">
                         {% for field in invite_form %}
                             <div class="form-group col-md-9" style="height: 3rem">
                                 <div class="controls">
