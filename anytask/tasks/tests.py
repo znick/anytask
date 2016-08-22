@@ -399,11 +399,11 @@ class ViewsTest(TestCase):
         self.assertEqual(response.status_code, 403, "Only teacher can get task_edit_page")
 
     @patch('tasks.views.get_contest_info')
-    def test_import_contest(self, mock_get_contest_problems):
+    def test_import_contest(self, mock_get_contest_info):
         client = self.client
         post_data = {'contest_id_for_task': '1100',
                      'course_id': '1',
-                     'contest_problems[]': ['1', '3'],
+                     'contest_problems[]': ['1055/2013_02_24/rqW5cRAAgR', '1055/2013_02_24/NuAYb8aSXw'],
                      'max_score': '10',
                      'task_group_id': '1',
                      'deadline': '05-07-2016 05:30',
@@ -411,15 +411,15 @@ class ViewsTest(TestCase):
                      'rb_integrated': 'on',
                      'hidden_task': 'on'}
 
-        problems = [{'problemId': '1',
+        problems = [{'problemId': '1055/2013_02_24/rqW5cRAAgR',
                      'problemTitle': 'Task1',
                      'statement': 'text1',
                      'alias': 'A'},
-                    {'problemId': '2',
+                    {'problemId': '1055/2013_02_24/9GxnHhigh2',
                      'problemTitle': 'Task2',
                      'statement': 'text2',
                      'alias': 'B'},
-                    {'problemId': '3',
+                    {'problemId': '1055/2013_02_24/NuAYb8aSXw',
                      'problemTitle': 'Task3',
                      'statement': 'text3',
                      'alias': 'C'}]
@@ -429,7 +429,7 @@ class ViewsTest(TestCase):
                         "Can't login via teacher")
 
         # get contest_task_import page with known error
-        mock_get_contest_problems.return_value = (False, "You're not allowed to view this contest.")
+        mock_get_contest_info.return_value = (False, "You're not allowed to view this contest.")
         response = client.post(reverse('tasks.views.contest_task_import'), post_data)
         self.assertEqual(response.status_code, 200, "Can't get get_contest_info via teacher")
         self.assertEqual(response.content,
@@ -439,12 +439,12 @@ class ViewsTest(TestCase):
                          'Wrong response text')
 
         # get contest_task_import page with unknown error
-        mock_get_contest_problems.return_value = (False, "404")
+        mock_get_contest_info.return_value = (False, "404")
         response = client.post(reverse('tasks.views.contest_task_import'), post_data)
         self.assertEqual(response.status_code, 403, "Must be forbidden")
 
         # get contest_task_import page with unknown error
-        mock_get_contest_problems.return_value = (True, {'problems': problems})
+        mock_get_contest_info.return_value = (True, {'problems': problems})
         response = client.post(reverse('tasks.views.contest_task_import'), post_data)
         self.assertEqual(response.status_code, 200, "Can't get get_contest_info via teacher")
         self.assertEqual(response.content, 'OK', 'Wrong response text')

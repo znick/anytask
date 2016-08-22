@@ -58,33 +58,41 @@
                 </p>
 
                 {% if course.can_edit %}
-                    <div class="" id="btn_group_edit_course" style="z-index: 1; padding: 6px;border:1px solid #e5e5e5;background-color: #e5e5e5" >
-                        <div  class="btn-block" role="group" aria-label="..." style="">
-                            <a class="btn btn-secondary btn-sm" href="javascript:get_edit_course_modal({{ course.id }}, {% if course.information %} '{{course.information|escapejs}}' {% else %} '' {% endif %});">
-                                {% if course.information %}
-                                    Редактировать информацию о курсе
-                                {% else %}
-                                    Добавить информацию о курсе
-                                {% endif %}
-                            </a>
-                            <a class="btn btn-secondary btn-sm" href="/task/create/{{ course.id }}" role="button">
-                                Добавить задачу
-                            </a>
-                            {% if course.contest_integrated %}
-                                <a class="btn btn-secondary btn-sm" href="/task/import/{{ course.id }}" role="button">
-                                    Импортировать задачу из Я.Контеста
-                                </a>
+                    <div  id="btn_group_edit_course" style="z-index: 1; padding: 6px;border:1px solid #e5e5e5;background-color: #e5e5e5" >
+                        <a class="btn btn-secondary btn-sm" href="javascript:get_edit_course_modal({{ course.id }}, {% if course.information %} '{{course.information|escapejs}}' {% else %} '' {% endif %});">
+                            {% if course.information %}
+                                Редактировать информацию о курсе
+                            {% else %}
+                                Добавить информацию о курсе
                             {% endif %}
-                            {% if visible_hide_button %}
-                                <a class="btn btn-secondary btn-sm" href="javascript:change_visibility_hidden_tasks({{ course.id }});" role="button">
-                                    {% if show_hidden_tasks %}
-                                        Не показывать скрытые задачи
-                                    {% else %}
-                                        Показать скрытые задачи
-                                    {% endif %}
-                                </a>
+                        </a>
+                        <div class="btn-group">
+                            <a type="button" class="btn btn-secondary btn-sm" href="/task/create/{{ course.id }}">Добавить задачу</a>
+                            {% if course.contest_integrated %}
+                                <button type="button"
+                                        style="height: 1.95rem;"
+                                        class="btn btn-secondary dropdown-toggle dropdown-toggle-split"
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <span class="sr-only">Toggle Dropdown</span>
+                                </button>
+                                <div style="font-size: .875rem;" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <a class="dropdown-item" href="/task/import/{{ course.id }}" role="button">
+                                        Импорт задачи из Я.Контеста
+                                    </a>
+                                    <a class="dropdown-item" href="/task/contest_import/{{ course.id }}">Импорт
+                                        соревнования из Я.Контеста</a>
+                                </div>
                             {% endif %}
                         </div>
+                        {% if visible_hide_button %}
+                            <a class="btn btn-secondary btn-sm" href="javascript:change_visibility_hidden_tasks({{ course.id }});" role="button">
+                                {% if show_hidden_tasks %}
+                                    Не показывать скрытые задачи
+                                {% else %}
+                                    Показать скрытые задачи
+                                {% endif %}
+                            </a>
+                        {% endif %}
                     </div>
                 {% endif %}
 
