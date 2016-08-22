@@ -294,15 +294,17 @@
         $('.btn-table-edit').click(function () {
             var div_group_id = $(this).attr('for');
             var modal_button_ok = $('#modal_table_edit_ok');
-            $('li', $(div_group_id)).each(function (i, e) {
-                $(this).attr('data-index', i + 2);
-            });
             modal_button_ok.data('div_group_id', div_group_id);
             modal_button_ok.data('btn_clicked', false);
             var group = $('.group-sortable');
-            group.data('table', $(this).data('table'));
+            $(group).each(function () {
+                $('li', this).each(function (i, e) {
+                    $(this).attr('data-index', i + 2);
+                });
+            });
             group.data('deleting', []);
             group.data('deleting_ids', []);
+            group.data('deleting_id_in_all_groups', []);
             group.data('backup_html', $('ul', $(div_group_id)).html());
             group.data('changed', false);
             $(div_group_id).show();
@@ -322,11 +324,15 @@
         }).disableSelection();
 
         $('#modal_table_edit').on("click", '.task-delete', function() {
-            if (confirm('Удаленную задачу невозможно восстановить. Вы уверены, что хотить удалить?'))
+            if (confirm('Удаленную задачу невозможно восстановить. Вы уверены, что хотить удалить?')) {
+                var group = $('.group-sortable');
+                var li = $(this).closest('li');
                 $(this).closest('li').remove();
-            var group = $('.group-sortable');
-            group.data('deleting',  group.data('deleting').concat($(this).closest('li').data('index')));
-            group.data('deleting_ids',  group.data('deleting_ids').concat($(this).closest('li').val()));
+                group.data('deleting', group.data('deleting').concat(li.data('index')));
+                if (li.data('all_group'))
+                    group.data('deleting_id_in_all_groups', group.data('deleting_id_in_all_groups').concat(li.val()));
+                group.data('deleting_ids', group.data('deleting_ids').concat(li.val()));
+            }
         });
 
         $('#modal_table_edit').on('hide.bs.modal', function (e) {
@@ -366,32 +372,23 @@
                             'task_deleted': group.data('deleting_ids')
                         })
                         .done(function (msg) {
-                            var deleted_id = $('ul', $(div_group_id)).attr('name');
-                            if (group.data(deleted_id) === undefined)
-                                group.data(deleted_id, []);
-                            var new_order = $.map($('ul', div_group_id).sortable("toArray", {attribute: "data-index"}),
-                                    function (value) {
-                                        return parseInt(value, 10);
-                                    });
-                            var prefix_cols = [0, 1];
-                            var task_count = new_order.length;
+                            change_table_column_order(div_group_id, group.data('deleting'));
 
-                            new_order = prefix_cols.concat(new_order).concat(group.data('deleting')).concat(group.data(deleted_id));
+                            if (group.data('deleting_id_in_all_groups').length)
+                                group.closest('div').each(function () {
+                                    if ($(this).attr('id') != div_group_id.attr('id')) {
+                                        var current_div = $(this);
+                                        var deleting_index = $.map(group.data('deleting_id_in_all_groups'),
+                                                function (value) {
+                                                    var li = $('li[value=' + value + ']', current_div);
+                                                    var index = li.data('index');
+                                                    li.remove();
+                                                    return index;
+                                                });
+                                        change_table_column_order($(this), deleting_index);
+                                    }
+                                });
 
-                            var postfix_cols = [new_order.length];
-                            if ($('ul', div_group_id).data('marksystem'))
-                                postfix_cols = postfix_cols.concat(new_order.length + 1);
-
-                            new_order = new_order.concat(postfix_cols);
-
-                            var table = $(group.data('table')).DataTable();
-                            table.columns(group.data('deleting')).visible(false);
-                            table.colReorder.order(new_order);
-
-                            var deleted = [];
-                            for (var i = 0; i < group.data('deleting').length; ++i)
-                                deleted = deleted.concat([task_count + prefix_cols.length + i]);
-                            group.data(deleted_id, deleted.concat(group.data(deleted_id)));
                             modal_button_ok.closest('.modal').modal('hide');
                             modal_button_ok.html(modal_button_ok.data('resetText'));
                             modal_button_ok.removeClass(d).removeAttr(d).prop(d, false)
@@ -475,5 +472,34 @@
                     window.location.reload();
                 });
 
+    }
+
+    function change_table_column_order(div_group_id, deleting_tasks) {
+        div_group_id = $(div_group_id);
+        if (div_group_id.data('deleted') === undefined)
+            div_group_id.data('deleted', []);
+        var new_order = $.map($('ul', div_group_id).sortable("toArray", {attribute: "data-index"}),
+                function (value) {
+                    return parseInt(value, 10);
+                });
+        var prefix_cols = [0, 1];
+        var task_count = new_order.length;
+
+        new_order = prefix_cols.concat(new_order).concat(deleting_tasks).concat(div_group_id.data('deleted'));
+
+        var postfix_cols = [new_order.length];
+        if (div_group_id.data('marksystem'))
+            postfix_cols = postfix_cols.concat(new_order.length + 1);
+
+        new_order = new_order.concat(postfix_cols);
+
+        var table = $(div_group_id.data('table')).DataTable();
+        table.columns(deleting_tasks).visible(false);
+        table.colReorder.order(new_order);
+
+        var deleted = [];
+        for (var i = 0; i < deleting_tasks.length; ++i)
+            deleted = deleted.concat([task_count + prefix_cols.length + i]);
+        div_group_id.data('deleted', deleted.concat(div_group_id.data('deleted')));
     }
 </script>

@@ -221,7 +221,7 @@
     </div>
 {% endfor %}
 
-<div class="modal" id="modal_table_edit" tabindex="-1" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
+<div class="modal fade" id="modal_table_edit" tabindex="-1" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
     <div class="modal-dialog modal-sm" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -231,11 +231,11 @@
             <div class="modal-body" style="max-height: none;">
                 <p>Изменение порядка столбцов в итоговой таблице курса, а также их удаление(удалять можно только те задачи, в которых не было комментариев).</p>
                 {% for group, tasks in group_tasks.iteritems %}
-                    <div id="group_sort_{{ group.id }}" data-group="{{ group.id }}" class="collapse">
+                    <div id="group_sort_{{ group.id }}" data-group="{{ group.id }}" data-table="#table_results_{{ forloop.counter }}" data-marksystem="{% if course_mark_system_vals %}true{% endif %}" class="collapse">
                         <p style="font-weight: bold">{{ group.name }}</p>
-                        <ul class="group-sortable" name="group_sort_{{ group.id }}"  data-marksystem="{% if course_mark_system_vals %}true{% endif %}">
+                        <ul class="group-sortable" name="group_sort_{{ group.id }}">
                             {% for task in tasks %}
-                                <li class="ui-state-default" name="task_sort_{{ task.id }}" value="{{ task.id }}" style="padding-right: 20px;position: relative;cursor: -webkit-grab;">
+                                <li class="ui-state-default" name="task_sort_{{ task.id }}" data-all_group="{% if not task.group %}true{% endif%}" value="{{ task.id }}" style="padding-right: 20px;position: relative;cursor: -webkit-grab;">
                                     <span>{{ task.title }}</span>
                                     {% if task|can_be_deleted %}
                                         <a class="task-delete pull-xs-right" type="button" style="cursor: pointer"><i class="fa fa-trash-o"></i></a>
