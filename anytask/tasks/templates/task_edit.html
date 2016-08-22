@@ -140,12 +140,12 @@
                         </div>
                     </div>
                     {% if course.show_task_one_file_upload %}
-                        <div class="form-group row">
+                        <div class="form-group row collapse {% if rb_integrated %}in{% endif %}">
                             <label class="col-sm-3 form-control-label" for="task_edit_one_file_upload">Отправлять только один файл
                                 <a tabindex="0" data-toggle="popover" data-trigger="hover" data-content="Имя файла будет изменено на upload. Расширение останется исходное." type="button"><i class="fa fa-question-circle help-button" aria-hidden="true"></i></a>
                             </label>
                             <div class="controls col-sm-3" style="padding-top: 5px">
-                                <input type="checkbox" name="one_file_upload" id="task_edit_one_file_upload" {% if task.one_file_upload or is_create and course.default_task_one_file_upload %}checked{% endif %}>
+                                <input type="checkbox" name="one_file_upload" id="task_edit_one_file_upload"  {% if task.one_file_upload or is_create and course.default_task_one_file_upload %}checked{% endif %}>
                             </div>
                         </div>
                     {% endif %}

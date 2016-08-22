@@ -40,7 +40,17 @@
                 $("#task_edit_problem_id").hide();
                 $("#task_edit_rb_integrated").hide();
             }
+        });
 
+        $('#task_edit_rb_integrated').change(function() {
+            if ($(this).is(':checked')) {
+                $("#task_edit_one_file_upload").closest('div.form-group').collapse('show');
+                $('#task_edit_one_file_upload').show();
+            }
+            else {
+                $("#task_edit_one_file_upload").closest('div.form-group').collapse('hide');
+                $('#task_edit_one_file_upload').hide();
+            }
         });
 
 {#        $('#task_edit_contest_integrated').change(function() {#}

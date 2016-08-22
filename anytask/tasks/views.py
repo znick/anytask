@@ -74,7 +74,7 @@ def contest_import_page(request, course_id):
     course = get_object_or_404(Course, id=course_id)
 
     if not course.user_is_teacher(request.user):
-        return HttpResponseForbidden
+        return HttpResponseForbidden()
 
     schools = course.school_set.all()
 
@@ -157,7 +157,7 @@ def task_create_ot_edit(request, course, task_id=None):
         rb_integrated = True
 
     one_file_upload = False
-    if 'one_file_upload' in request.POST:
+    if 'one_file_upload' in request.POST and rb_integrated:
         one_file_upload = True
 
     hidden_task = False
@@ -304,7 +304,7 @@ def contest_task_import(request):
         rb_integrated = True
 
     one_file_upload = False
-    if 'one_file_upload' in request.POST:
+    if 'one_file_upload' in request.POST and rb_integrated:
         one_file_upload = True
 
     hidden_task = False
