@@ -162,8 +162,9 @@ class Task(models.Model):
             task_related, created = TaskGroupRelations.objects.get_or_create(task=self, group=group)
 
             if created:
-                max_position = TaskGroupRelations.objects.filter(group=group).aggregate(Max('position'))['position__max']
-                task_related.position = max_position + 1 if max_position else 0
+                max_position = TaskGroupRelations.objects.filter(group=group).exclude(id=task_related.id)\
+                    .aggregate(Max('position'))['position__max']
+                task_related.position = max_position + 1 if max_position is not None else 0
             else:
                 task_related.deleted = False
             task_related.save()
@@ -304,6 +305,9 @@ class TaskGroupRelations(models.Model):
 
     class Meta:
         unique_together = ("task", "group")
+
+    def __unicode__(self):
+        return ' '.join([unicode(self.task), unicode(self.group), unicode(self.position)])
 
 
 def task_save_to_log_post_save(sender, instance, created, **kwargs):
