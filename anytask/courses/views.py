@@ -154,11 +154,11 @@ def tasklist_shad_cpp(request, course):
         student_x_task_x_task_takens = {}
 
         if show_hidden_tasks:
-            group_x_task_list[group] = [x.task for x in TaskGroupRelations.objects.select_related('task').filter(
-                Q(task__course=course) & Q(group=group)).order_by('position')]
+            group_x_task_list[group] = [x.task for x in TaskGroupRelations.objects.select_related('task')
+                .filter(task__course=course, group=group, deleted=False).order_by('position')]
         else:
-            group_x_task_list[group] = [x.task for x in TaskGroupRelations.objects.select_related('task').filter(
-                Q(task__course=course) & Q(group=group) & Q(task__is_hidden=False)).order_by('position')]
+            group_x_task_list[group] = [x.task for x in TaskGroupRelations.objects.select_related('task')
+                .filter(task__course=course, group=group, deleted=False, task__is_hidden=False).order_by('position')]
 
         group_x_max_score.setdefault(group, 0)
 

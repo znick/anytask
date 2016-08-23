@@ -154,13 +154,19 @@ class Task(models.Model):
             groups = self.course.groups.all()
         else:
             groups = [groups]
+            for task_related in TaskGroupRelations.objects.filter(task=self).exclude(group__in=groups):
+                task_related.deleted = True
+                task_related.save()
 
         for group in list(groups):
             task_related, created = TaskGroupRelations.objects.get_or_create(task=self, group=group)
+
             if created:
                 max_position = TaskGroupRelations.objects.filter(group=group).aggregate(Max('position'))['position__max']
                 task_related.position = max_position + 1 if max_position else 0
-                task_related.save()
+            else:
+                task_related.deleted = False
+            task_related.save()
 
 
 class TaskLog(models.Model):
@@ -293,6 +299,8 @@ class TaskGroupRelations(models.Model):
     group = models.ForeignKey(Group, db_index=False, null=False, blank=False)
 
     position = models.IntegerField(db_index=False, null=False, blank=False, default=0)
+
+    deleted = models.BooleanField(db_index=False, null=False, blank=False, default=False)
 
     class Meta:
         unique_together = ("task", "group")
