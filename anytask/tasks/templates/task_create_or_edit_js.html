@@ -2,6 +2,14 @@
 <script src="http://malsup.github.io/jquery.form.js"></script>
 <script type="text/javascript">
     $(document).ready(function() {
+        $('[data-toggle="popover"]').popover({
+            trigger: 'hover',
+            template: '<div class="popover" role="tooltip">' +
+            '<div class="popover-arrow"></div>' +
+            '<div class="popover-content"></div>' +
+            '</div>'
+        });
+
         $('.task_datetime').datetimepicker({
             bootcssVer: 3,
             format: 'dd-mm-yyyy hh:ii',
@@ -34,18 +42,18 @@
 
         });
 
-{#        $('#task_edit_contest_integrated').change(function() {#}
-{#            if ($('#task_edit_contest_integrated').is(':checked')) {#}
-{#                $('#contest_integrated_body').collapse('show');#}
-{#                $("#task_edit_contest_id").show();#}
-{#                $("#task_edit_problem_id").show();#}
-{#            }#}
-{#            else {#}
-{#                $('#contest_integrated_body').collapse('hide');#}
-{#                $("#task_edit_contest_id").hide();#}
-{#                $("#task_edit_problem_id").hide();#}
-{#            }#}
-{#        });#}
+        {#        $('#task_edit_contest_integrated').change(function() {#}
+        {#            if ($('#task_edit_contest_integrated').is(':checked')) {#}
+        {#                $('#contest_integrated_body').collapse('show');#}
+        {#                $("#task_edit_contest_id").show();#}
+        {#                $("#task_edit_problem_id").show();#}
+        {#            }#}
+        {#            else {#}
+        {#                $('#contest_integrated_body').collapse('hide');#}
+        {#                $("#task_edit_contest_id").hide();#}
+        {#                $("#task_edit_problem_id").hide();#}
+        {#            }#}
+        {#        });#}
 
         $('#task_edit_form').change(function() {
             $('#task_submit_error_text').empty();

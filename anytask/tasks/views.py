@@ -4,6 +4,7 @@ from django.shortcuts import render_to_response, get_object_or_404, redirect
 from tasks.models import Task
 from courses.models import Course
 from groups.models import Group
+from issues.models import Issue
 from django.template import RequestContext
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.core.exceptions import ObjectDoesNotExist
@@ -98,6 +99,23 @@ def task_edit_page(request, task_id):
     if request.method == 'POST':
         return task_create_ot_edit(request, task.course, task_id)
 
+    task_group = []
+    show_help_msg_task_group = False
+    groups = task.course.groups.all()
+    for group in groups:
+        if Issue.objects.filter(task=task, student__in=group.students.all()).count():
+            task_group.append(group)
+            if len(task_group) > 1:
+                task_group = []
+                show_help_msg_task_group = True
+                break
+        else:
+            show_help_msg_task_group = True
+    else:
+        if not task_group:
+            task_group = groups
+            show_help_msg_task_group = False
+
     schools = task.course.school_set.all()
 
     context = {
@@ -105,6 +123,8 @@ def task_edit_page(request, task_id):
         'course': task.course,
         'task': task,
         'task_types': task.TASK_TYPE_CHOICES,
+        'task_group': task_group,
+        'show_help_msg_task_group': show_help_msg_task_group,
         'contest_integrated': task.contest_integrated,
         'rb_integrated': task.rb_integrated,
         'hide_contest_settings': True if not task.contest_integrated or task.type == task.TYPE_SIMPLE else False,
