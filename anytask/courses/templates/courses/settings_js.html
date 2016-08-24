@@ -58,11 +58,11 @@
             var checkbox = $(this).siblings('input');
             checkbox.prop('checked', !checkbox.is(':checked'));
             if (checkbox.attr('id') == 'show_task_one_file_upload')
-                $('#default_task_one_file_upload').closest('div').collapse('toggle');
+                $('#default_task_one_file_upload').closest('div').toggle();
         });
 
         $('#show_task_one_file_upload').change(function () {
-            $('#default_task_one_file_upload').closest('div').collapse('toggle');
+            $('#default_task_one_file_upload').closest('div').toggle();
         });
 
 
