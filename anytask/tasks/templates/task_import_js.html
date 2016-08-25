@@ -36,6 +36,13 @@
             }
         });
 
+        $("#task_edit_one_file_upload").closest('div.form-group').on('show.bs.collapse hide.bs.collapse', function(e) {
+            $('#task_edit_rb_integrated').attr('disabled', 'disabled');
+            $('#task_edit_rb_integrated').css('cursor', 'default');
+        }).on('shown.bs.collapse hidden.bs.collapse', function(e) {
+            $('#task_edit_rb_integrated').removeAttr('disabled');
+        });
+
         $('#button_task_contest_id_clear').click(function() {
             $('#get_tasks').show();
             $('#task_contest_body').hide();
