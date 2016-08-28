@@ -9,9 +9,27 @@
         ],
         {% block JS_OPTS %}
             autoUpload: true,
-            maxNumberOfFiles: 10,
+            {% if issue.task.one_file_upload %}
+                maxNumberOfFiles: 1,
+                add: function (e, data) {
+                    if (!$('#fileupload').data('uploaded')) {
+                        $('#fileupload').data('uploaded', true);
+                        data.submit();
+                    }
+                },
+                always: function() {
+                    $('#fileupload').data('uploaded', false);
+                },
+            {% else %}
+                maxNumberOfFiles: 10,
+            {% endif %}
             dropZone: $(".drop-zone"),
         {% endblock %}
+    });
+
+    $('.fileupload-buttonbar').on("click", '.delete', function() {
+        $('#filenmae_changed_alert').hide();
+        $('.drop-zone').show();
     });
 {% endblock %}
 
@@ -61,7 +79,6 @@
             {% block UPLOAD_FORM_BUTTON_BAR_ADD %}
             <style type = "text/css">
             .drop-zone {
-              cursor: point;
               border: 2px dashed rgba(0,0,0,.3);
               border-radius: 10px;
               font-family: Arial;
@@ -76,21 +93,31 @@
               float: none;
             }
             </style>
+            <div id="filenmae_changed_alert" class="alert alert-warning alert-dismissible" role="alert" style="display: none;margin-bottom: 0;">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                Имя файла было изменено. Можно отправлять только один файл.
+            </div>
             <table style="margin-bottom: 0px;" role="presentation" class="table table-striped">
                <tbody class="files" data-toggle="modal-gallery" data-target="#modal-gallery"></tbody>
             </table>
             {% if teacher_or_staff or issue.status != issue.STATUS_ACCEPTED and issue.status != issue.STATUS_NEED_INFO %}
-                <div class="drop-zone" id="drop-zone" ondragenter="this.style.background='#E0E0E0';" ondragleave="this.style.background='white';" ondrop="this.style.background='white';">
+                <div class="drop-zone" id="drop-zone" ondragenter="this.style.background='#E0E0E0';" ondragleave="this.style.background='';" ondrop="this.style.background='';">
 
                 <span class="btn btn-secondary drop-btn fileinput-button" id="drop-btn">
-                    <span>Выберите файлы</span>
+                    <span>{% if issue.task.one_file_upload %}Выберите файл{% else %}Выберите файлы{% endif %}</span>
 
                     {% block FILE_INPUT %}
                     {% comment %}
                         The file input for the upload form.
                     {% endcomment %}
                     <input
-                        type="file" name="files[]" multiple
+                        type="file" name="files[]"
+
+                        {% if not issue.task.one_file_upload %}
+                            multiple
+                        {% endif %}
 
                         {% if accepted_mime_types %}
                             accept = '{{ accepted_mime_types|join:"," }}'
@@ -175,6 +202,12 @@
 {% endblock %}
 
 {% block JS_DOWNLOAD_TEMPLATE_DELETE %}
+        {{ JQ_OPEN }}
+            if (file.one_file_upload) {
+                $('#filenmae_changed_alert').show();
+                $('.drop-zone').hide();
+            }
+        {{ JQ_CLOSE }}
         <td>
             <button class="btn btn-danger delete" data-type="{{ JQ_OPEN }}=file.delete_type{{ JQ_CLOSE }}"
                     data-url="{{ JQ_OPEN }}=file.delete_url{{ JQ_CLOSE }}"

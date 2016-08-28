@@ -30,6 +30,20 @@
 
 {% block content %}
     {{ block.super }}
+    <style>
+        .help-button {
+            opacity:0.2;
+            filter: alpha(opacity=20);
+            color:#000000;
+        }
+        .help-button:hover {
+            opacity:0.7;
+            filter: alpha(opacity=70);
+        }
+        input[type=checkbox], input[type=radio] {
+            margin-top: 7px;
+        }
+    </style>
     <div id="task_edit" class="card card-block">
         <h5 class="card-title" style="margin-bottom:1rem;">Импорт соревнования из Яндекс.Контеста</h5>
 
@@ -118,6 +132,16 @@
                         <input type="checkbox" name="rb_integrated" id="task_edit_rb_integrated"  {% if rb_integrated %}checked{% endif %}>
                     </div>
                 </div>
+                {% if course.show_task_one_file_upload %}
+                    <div class="form-group row collapse {% if rb_integrated %}in{% endif %}">
+                        <label class="col-sm-3 form-control-label" for="task_edit_one_file_upload">Отправлять только один файл
+                            <a tabindex="0" data-toggle="popover" data-trigger="hover" data-content="Имя файла будет изменено на upload. Расширение останется исходное." type="button"><i class="fa fa-question-circle help-button" aria-hidden="true"></i></a>
+                        </label>
+                        <div class="controls col-sm-3" style="padding-top: 5px">
+                            <input type="checkbox" name="one_file_upload" id="task_edit_one_file_upload"  {% if task.one_file_upload or is_create and course.default_task_one_file_upload %}checked{% endif %}>
+                        </div>
+                    </div>
+                {% endif %}
                 <div class="form-group row">
                     <label class="col-sm-3 form-control-label" for="task_edit_hidden_task">Скрыть задачи</label>
                     <div class="controls col-sm-3" style="padding-top: 5px">

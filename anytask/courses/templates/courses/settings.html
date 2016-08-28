@@ -51,7 +51,7 @@
         {% csrf_token %}
         <div class="card-deck-wrapper">
             <div class="card-deck">
-                <div class="card card-block" style="width: 50%">
+                <div class="card card-block" style="width: 33%">
                     <h5 class="card-title">Преподаватели</h5>
                     <p class="card-text">Эти преподаватели будут назначаться проверяющими во время перехода задачи в статус "на проверке", если другой преподаватель не был назначен ранее</p>
                     <div class="col-md-12">
@@ -59,7 +59,7 @@
                     </div>
                 </div>
                 {% if course.is_rb_integrated %}
-                    <div class="card card-block" style="width: 50%">
+                    <div class="card card-block" style="width: 33%">
                         <h5 class="card-title">Review Board</h5>
                         <p class="card-text">Расширения файлов</p>
                         <div class="col-md-12">
@@ -71,6 +71,25 @@
                         </div>
                     </div>
                 {% endif %}
+                <div class="card card-block" style="width: 33%">
+                    <h5 class="card-title">Настройка задач</h5>
+                    <p class="card-text">Скрытие полей и установка значений по умолчанию</p>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <div class="row">
+                                <p class="card-text">Отправлять один файл</p>
+                                <div class="col-md-12">
+                                    <input type="checkbox" name="show_task_one_file_upload" id="show_task_one_file_upload" {% if course.show_task_one_file_upload %}checked{% endif %}>
+                                    <label class="checkbox-block">Отображать настройку</label>
+                                </div>
+                                <div class="col-md-12 collapse {% if course.show_task_one_file_upload %}in{% endif %}">
+                                    <input type="checkbox" name="default_task_one_file_upload" id="default_task_one_file_upload" {% if course.default_task_one_file_upload %}checked{% endif %}>
+                                    <label class="checkbox-block">Значение по умолчанию</label>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
         <div style="margin-top: 1rem;">
