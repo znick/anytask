@@ -56,6 +56,7 @@ class CreateTest(TestCase):
         task.contest_id = 1234
         task.problem_id = 'A'
         task.sended_notify = False
+        task.one_file_upload = True
         task.save()
         task_id = task.id
 
@@ -76,6 +77,7 @@ class CreateTest(TestCase):
         self.assertEqual(task.contest_id, 1234)
         self.assertEqual(task.problem_id, 'A')
         self.assertEqual(task.sended_notify, False)
+        self.assertEqual(task.one_file_upload, True)
 
 class ViewsTest(TestCase):
     def setUp(self):
@@ -226,6 +228,7 @@ class ViewsTest(TestCase):
                                 'contest_id': '1234',
                                 'problem_id': 'A',
                                 'rb_integrated': 'on',
+                                'one_file_upload': 'on',
                                 'hidden_task': 'on',
                                 'task_text': 'task_text'})
         self.assertEqual(response.status_code, 200)
@@ -248,6 +251,7 @@ class ViewsTest(TestCase):
         self.assertEqual(created_task.contest_id, 1234, 'Created task wrong contest_id')
         self.assertEqual(created_task.problem_id, 'A', 'Created task wrong problem_id')
         self.assertEqual(created_task.sended_notify, False, 'Created task wrong sended_notify')
+        self.assertEqual(created_task.one_file_upload, True, 'Created task wrong one_file_upload')
         task_pos = TaskGroupRelations.objects.filter(task=created_task)
         self.assertEqual(len(task_pos), 1, 'Created task TaskGroupRelations len not 1')
         self.assertEqual(task_pos[0].group, self.group, 'Created task TaskGroupRelations groups not equal')
@@ -301,12 +305,9 @@ class ViewsTest(TestCase):
         form_checkbox = div_task_id.form('input', {'type': 'checkbox'})
         self.assertFalse(form_checkbox[0].has_key('checked'),
                          "form checkbox id='{}' checked".format(form_checkbox[0]['id']))
-        self.assertTrue(form_checkbox[1].has_key('checked'),
-                        "form checkbox id='{}' not checked".format(form_checkbox[1]['id']))
-        self.assertTrue(form_checkbox[2].has_key('checked'),
-                        "form checkbox id='{}' not checked".format(form_checkbox[2]['id']))
-        self.assertTrue(form_checkbox[3].has_key('checked'),
-                        "form checkbox id='{}' not checked".format(form_checkbox[3]['id']))
+        for i in range(1, len(form_checkbox)):
+            self.assertTrue(form_checkbox[i].has_key('checked'),
+                            "form checkbox id='{}' not checked".format(form_checkbox[i]['id']))
 
         form_select_group = div_task_id.form.find('select', {'id': 'task_edit_group'})('option')
         self.assertEqual(len(form_select_group), 2, "form select group len not 2")

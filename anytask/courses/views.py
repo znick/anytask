@@ -381,6 +381,18 @@ def course_settings(request, course_id):
     else:
         course.filename_extensions.clear()
 
+    if 'show_task_one_file_upload' in request.POST:
+        course.show_task_one_file_upload = True
+    else:
+        course.show_task_one_file_upload = False
+
+    if 'default_task_one_file_upload' in request.POST:
+        course.default_task_one_file_upload = True
+    else:
+        course.default_task_one_file_upload = False
+
+    course.save()
+
     return HttpResponseRedirect('')
 
 

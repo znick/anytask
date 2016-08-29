@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import user_passes_test, login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 import json
-import os   
+import os
 from django.conf import settings
 from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpResponse
 from django.shortcuts import render_to_response, get_object_or_404, redirect
@@ -137,7 +137,7 @@ def get_or_create(request, task_id, student_id):
     data = {
         'issue_url': issue.get_absolute_url(),
     }
-    
+
     return HttpResponseRedirect("/issue/"+str(issue.id))#(json.dumps(data), content_type='application/json')
 
 
@@ -153,6 +153,7 @@ def upload(request):
     if 'update_issue' in request.POST:
         event_value = {'files':[], 'comment':'', 'compilers':[]}
         event_value['comment'] = request.POST['comment']
+        file_counter = 0
         for field, value in dict(request.POST).iteritems():
             if 'compiler' in field:
                 pk = int(field[13:])
@@ -164,10 +165,12 @@ def upload(request):
             if 'pk' in field:
                 pk = int(value[0])
                 file = File.objects.get(pk = pk)
+                file_counter += 1
                 event_value['files'].append(file.file)
                 event_value['compilers'].append(None)
 
-        issue.set_byname('comment', event_value, request.user)
+        if not (issue.task.one_file_upload and file_counter > 1):
+            issue.set_byname('comment', event_value, request.user)
 
         return redirect(issue_page, issue_id=int(request.POST['issue_id']))
 
@@ -191,7 +194,14 @@ def upload(request):
                     chosen_compiler = settings.CONTEST_EXTENSIONS[ext]
                     problem_compilers.remove(chosen_compiler)
 
-    file.name = unidecode(file.name)
+    one_file_upload = False
+    if issue.task.one_file_upload:
+        filename, extension = os.path.splitext(file.name)
+        file.name = 'upload' + extension
+        one_file_upload = True
+    else:
+        file.name = unidecode(file.name)
+
     instance = File(file=file, event=event)
     instance.save()
 
@@ -211,6 +221,8 @@ def upload(request):
         'chosen_compiler' : chosen_compiler,
         'pk': instance.pk,
         'send_to_contest': send_to_contest,
+
+        'one_file_upload': one_file_upload,
     }
 
     return UploadResponse(request, file_dict)
