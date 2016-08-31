@@ -23,3 +23,4 @@ yandex-oauth-py
 xmltodict
 django-crispy-forms
 django-htmlmin
+django-colorfield

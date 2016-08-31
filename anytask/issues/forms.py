@@ -51,6 +51,24 @@ def get_followers_form(field_name, request, issue, data=None, *args, **kwargs):
     return _form(field_name, request, issue, data, *args, **kwargs)
 
 
+def get_status_choice(issue):
+    statuses = []
+    for status in issue.task.course.issue_mark_system.statuses.all():
+        statuses.append((status.id, status.name))
+
+    return statuses
+
+
+def status_id2status(status_id):
+    from issues.model_issue_field import IssueStatusField
+    return IssueStatusField.objects.get(id=status_id)
+
+
+def get_status_form(field_name, request, issue, data=None, *args, **kwargs):
+    class _form(DefaultForm):
+        status = forms.TypedChoiceField(get_status_choice(issue), coerce=status_id2status, label='', required=False)
+    return _form(field_name, request, issue, data, *args, **kwargs)
+
 
 class MultiFileInput(forms.FileInput):
     def render(self, name, value, attrs=None):
@@ -129,21 +147,21 @@ class MarkForm(DefaultForm):
                             widget=forms.TextInput(attrs=float_field_attrs),
                             required=False)
 
-class StatusForm(DefaultForm):
-
-    STATUS_NEW = 'new'
-    STATUS_REWORK = 'rework'
-    STATUS_VERIFICATION = 'verification'
-    STATUS_ACCEPTED = 'accepted'
-
-    ISSUE_STATUSES = (
-        # (STATUS_NEW, _(u'Новый')),
-        (STATUS_REWORK, _(u'На доработке')),
-        (STATUS_VERIFICATION, _(u'На проверке')),
-        (STATUS_ACCEPTED, _(u'Зачтено')),
-    )
-
-    status = forms.ChoiceField(choices=ISSUE_STATUSES, label="", required=False)
+# class StatusForm(DefaultForm):
+#
+#     STATUS_NEW = 'new'
+#     STATUS_REWORK = 'rework'
+#     STATUS_VERIFICATION = 'verification'
+#     STATUS_ACCEPTED = 'accepted'
+#
+#     ISSUE_STATUSES = (
+#         # (STATUS_NEW, _(u'Новый')),
+#         (STATUS_REWORK, _(u'На доработке')),
+#         (STATUS_VERIFICATION, _(u'На проверке')),
+#         (STATUS_ACCEPTED, _(u'Зачтено')),
+#     )
+#
+#     status = forms.ChoiceField(choices=ISSUE_STATUSES, label="", required=False)
 
 
 class FileForm(DefaultForm):

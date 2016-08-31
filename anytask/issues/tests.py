@@ -15,6 +15,7 @@ from groups.models import Group
 from years.models import Year
 from tasks.models import Task
 from issues.models import Issue, File, Event
+from issues.model_issue_field import IssueStatusField
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from mock import patch
@@ -45,12 +46,14 @@ class CreateTest(TestCase):
         followers = [User.objects.create_user(username='follower1',
                                               password='password')]
 
+        status = IssueStatusField.objects.get(tag=Issue.STATUS_ACCEPTED)
+
         issue = Issue()
         issue.student = student
         issue.task = task
         issue.mark = 3
         issue.responsible = responsible
-        issue.status = Issue.STATUS_ACCEPTED
+        issue.status = status
         issue.save()
         issue.followers = followers
         issue.save()
@@ -63,7 +66,7 @@ class CreateTest(TestCase):
         self.assertEqual(issue.task, task)
         self.assertEqual(issue.mark, 3)
         self.assertEqual(issue.responsible, responsible)
-        self.assertEqual(issue.status, Issue.STATUS_ACCEPTED)
+        self.assertEqual(issue.status, status)
         self.assertItemsEqual(issue.followers.all(), followers)
 
 
@@ -475,6 +478,7 @@ class ViewsTest(TestCase):
         response = client.post(reverse('issues.views.issue_page', kwargs={'issue_id': issue.id}),
                                {'form_name': 'status_form',
                                 'status': 'rework'}, follow=True)
+        print response
         self.assertEqual(response.status_code, 200, "Can't get issue_page via teacher")
         self.assertEqual(len(response.redirect_chain), 1, "Must be redirect")
 

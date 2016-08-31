@@ -35,6 +35,7 @@ from anysvn.common import svn_log_rev_message, svn_log_head_revision, get_svn_ex
 from anyrb.common import AnyRB
 from anycontest.common import get_contest_info
 from issues.models import Issue, Event, IssueFilter
+from issues.model_issue_field import IssueStatusField
 from users.forms import InviteActivationForm
 
 from common.ordered_dict import OrderedDict
@@ -144,6 +145,7 @@ def tasklist_shad_cpp(request, course):
     group_x_student_x_task_takens = OrderedDict()
     group_x_task_list = {}
     group_x_max_score = {}
+    default_teacher = {}
     show_hidden_tasks = request.session.get(str(request.user.id) + '_' + str(course.id) + '_show_hidden_tasks', False)
 
     task = Task()
@@ -197,6 +199,12 @@ def tasklist_shad_cpp(request, course):
 
         group_x_student_x_task_takens[group] = student_x_task_x_task_takens
 
+        try:
+            default_teacher[group] = DefaultTeacher.objects.get(course=course, group=group).teacher.get_full_name()
+        except DefaultTeacher.DoesNotExist:
+            default_teacher[group] = None
+
+
     group_x_student_information = OrderedDict()
     for group,student_x_task_x_task_takens in group_x_student_x_task_takens.iteritems():
         group_x_student_information.setdefault(group, [])
@@ -221,6 +229,7 @@ def tasklist_shad_cpp(request, course):
         'group_information': group_x_student_information,
         'group_tasks': group_x_task_list,
         'group_x_max_score': group_x_max_score,
+        'default_teacher': default_teacher,
 
         'user': user,
         'user_is_attended': user_is_attended,
@@ -456,17 +465,16 @@ def set_task_mark(request):
 
     mark = 0
     if request.POST['mark_value'] == '-':
-        issue.set_byname('status', issue.STATUS_NEW)
-        label = 'label-default'
+        issue.set_status_by_tag(issue.STATUS_NEW)
     else:
         mark = float(request.POST['mark_value'])
         if mark <= 0:
-            issue.set_byname('status', issue.STATUS_REWORK)
-            label = 'label-danger'
+            issue.set_status_by_tag(issue.STATUS_REWORK)
         else:
-            issue.set_byname('status', issue.STATUS_ACCEPTED)
-            label = 'label-success'
+            issue.set_status_by_tag(issue.STATUS_ACCEPTED)
+
     issue.set_byname('mark', mark)
 
-    return HttpResponse(json.dumps({'mark': mark, 'label': label}),
+    return HttpResponse(json.dumps({'mark': mark,
+                                    'color': issue.status.color}),
                         content_type="application/json")

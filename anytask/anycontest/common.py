@@ -160,11 +160,11 @@ def comment_verdict(issue, verdict, comment):
     event = issue.create_event(field, author=author)
     event.value = comment
     event.save()
-    if issue.status != issue.STATUS_ACCEPTED:
+    if issue.status.tag != issue.STATUS_ACCEPTED:
         if verdict:
-            issue.set_byname('status', issue.STATUS_VERIFICATION)
+            issue.set_status_by_tag(issue.STATUS_VERIFICATION)
         else:
-            issue.set_byname('status', issue.STATUS_REWORK)
+            issue.set_status_by_tag(issue.STATUS_REWORK)
     issue.save()
 
 

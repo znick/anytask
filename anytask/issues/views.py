@@ -84,7 +84,7 @@ def issue_page(request, issue_id):
                             if request.user not in value:
                                 value.append(request.user)
                     if 'Accepted' in request.POST:
-                        issue.set_byname('status', 'accepted')
+                        issue.set_status_by_tag(Issue.STATUS_ACCEPTED)
 
                     if field.name == 'comment':
                         value = {
@@ -92,7 +92,7 @@ def issue_page(request, issue_id):
                             'files': request.FILES.getlist('files')
                         }
                         if 'need_info' in request.POST:
-                            issue.set_byname('status', 'need_info')
+                            issue.set_status_by_tag(Issue.STATUS_NEED_INFO)
 
                     issue.set_field(field, value, request.user)
                     return HttpResponseRedirect('')

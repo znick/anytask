@@ -1,4 +1,5 @@
 {% load crispy_forms_tags %}
+{% load issue_info %}
 
 <style>
     .card-header {
@@ -36,12 +37,26 @@
                         <div class="card-block">
                             <form method="post" id="{{ field.name }}_form" enctype="multipart/form-data">
                                 {% csrf_token %}
-                                <div class="form-group col-md-12" id="{{ field.name }}_fieldset_id">
+                                <div class="form-group {% if field.name != 'status' %}col-md-12{% endif %}" id="{{ field.name }}_fieldset_id">
                                     <input type="hidden" name="form_name" value="{{ field.name }}_form">
                                     {% if field.name == 'mark' %}
                                         <input type="hidden" id="max_mark" value="{{ issue.task.score_max }}">
                                     {% endif %}
-                                    {{ field.form|crispy }}
+                                    {% if field.name == 'status' %}
+                                        {% for f in field.form %}
+                                            {% if f.is_hidden %}
+                                                {{ f }}
+                                            {% else %}
+                                                <select id='{{ f.id_for_label }}' name='{{ f.html_name }}' class="selectpicker">
+                                                    {% for val, show_val in f.field.choices %}
+                                                        <option data-content="<span class='label' style='top: 0;background-color:{{ val|label_color }};'>{{ show_val }}</span>" value="{{ val }}" {% if show_val == field.repr%}selected{% endif %}>{{ show_val }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% else %}
+                                        {{ field.form|crispy }}
+                                    {% endif %}
                                     {% if field.name == 'mark' %}
                                         <small class="text-help" style="margin-top: 0px;" id="mark_edit_error_text"></small>
                                     {% endif %}
