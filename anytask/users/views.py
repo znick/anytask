@@ -270,7 +270,7 @@ def user_courses(request, username=None, year=None):
 
         new_course_statistics['issues_count'] = []
         for status in course.issue_mark_system.statuses.all():
-            new_course_statistics['issues_count'].append((status, issues.filter(status=status).count()))
+            new_course_statistics['issues_count'].append((status, issues.filter(status_field=status).count()))
 
         new_course_statistics['tasks'] = tasks.count
         new_course_statistics['mark'] = mark if mark else '--'

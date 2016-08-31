@@ -39,5 +39,5 @@ def issue_have_issue(d, task):
 def issue_label_color(d, task):
     if d.has_key(task.id):
         if isinstance(d[task.id], Issue):
-            return d[task.id].status.color
+            return d[task.id].status_field.color
     return IssueStatusField.COLOR_DEFAULT

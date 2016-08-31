@@ -53,7 +53,7 @@ class CreateTest(TestCase):
         issue.task = task
         issue.mark = 3
         issue.responsible = responsible
-        issue.status = status
+        issue.status_field = status
         issue.save()
         issue.followers = followers
         issue.save()
@@ -66,7 +66,7 @@ class CreateTest(TestCase):
         self.assertEqual(issue.task, task)
         self.assertEqual(issue.mark, 3)
         self.assertEqual(issue.responsible, responsible)
-        self.assertEqual(issue.status, status)
+        self.assertEqual(issue.status_field, status)
         self.assertItemsEqual(issue.followers.all(), followers)
 
 

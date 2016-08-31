@@ -76,8 +76,8 @@ class Issue(models.Model):
         (STATUS_NEED_INFO, _(u'Требуется информация')),
     )
 
-    status_text = models.CharField(max_length=20, choices=ISSUE_STATUSES, default=STATUS_NEW)
-    status = models.ForeignKey(IssueStatusField, db_index=True, null=False, blank=False, default=1)
+    status = models.CharField(max_length=20, choices=ISSUE_STATUSES, default=STATUS_NEW)
+    status_field = models.ForeignKey(IssueStatusField, db_index=True, null=False, blank=False, default=1)
 
     def score(self):
         field = get_object_or_404(IssueField, id=8)
@@ -90,7 +90,7 @@ class Issue(models.Model):
         return mark
 
     def get_status(self):
-        return self.status.name
+        return self.status_field.name
 
     def last_comment(self):
         field = get_object_or_404(IssueField, id=1)
@@ -166,7 +166,7 @@ class Issue(models.Model):
         if name == 'task_name':
             return self.task
         if name == 'status':
-            return self.status
+            return self.status_field
         if name == 'max_mark':
             return self.task.score_max
         if name == 'mark':
@@ -259,7 +259,7 @@ class Issue(models.Model):
                                 sent, message = upload_contest(event, ext, uploaded_file, compiler_id=value['compilers'][file_id])
                                 if sent:
                                     value['comment'] += u"Отправлено на проверку в Я.Контест"
-                                    if self.status.tag != self.STATUS_ACCEPTED:
+                                    if self.status_field.tag != self.STATUS_ACCEPTED:
                                         self.set_byname('status', IssueStatusField.objects.get(
                                             pk=IssueStatusField.AUTO_VERIFICATION_ID))
                                 else:
@@ -289,8 +289,8 @@ class Issue(models.Model):
                     self.update_time = datetime.now()
                     value = value['comment']
 
-                if self.status.tag != self.STATUS_AUTO_VERIFICATION and self.status.tag != self.STATUS_ACCEPTED:
-                    if author == self.student and self.status.tag != self.STATUS_NEED_INFO and sent:
+                if self.status_field.tag != self.STATUS_AUTO_VERIFICATION and self.status_field.tag != self.STATUS_ACCEPTED:
+                    if author == self.student and self.status_field.tag != self.STATUS_NEED_INFO and sent:
                         self.set_status_by_tag(self.STATUS_VERIFICATION)
                     if author == self.responsible:
                         self.set_status_by_tag(self.STATUS_REWORK)
@@ -301,12 +301,12 @@ class Issue(models.Model):
                 if review_id != '':
                     if value.tag == self.STATUS_ACCEPTED:
                         update_status_review_request(review_id,'submitted')
-                    elif self.status.tag == self.STATUS_ACCEPTED:
+                    elif self.status_field.tag == self.STATUS_ACCEPTED:
                         update_status_review_request(review_id,'pending')
             except:
                 pass
 
-            self.status = value
+            self.status_field = value
             value = self.get_status()
 
         elif name == 'mark':
@@ -315,7 +315,7 @@ class Issue(models.Model):
             value = normalize_decimal(value)
             self.mark = float(value)
             value = str(value)
-            if self.status.tag != self.STATUS_ACCEPTED and self.status.tag != self.STATUS_NEW:
+            if self.status_field.tag != self.STATUS_ACCEPTED and self.status_field.tag != self.STATUS_NEW:
                 self.set_status_by_tag(self.STATUS_REWORK)
 
         self.save()
@@ -350,7 +350,7 @@ class Issue(models.Model):
         return reverse('issues.views.issue_page', args=[str(self.id)])
 
 class IssueFilter(django_filters.FilterSet):
-    status = django_filters.MultipleChoiceFilter(label=u'Статус', widget=forms.CheckboxSelectMultiple)
+    status_field = django_filters.MultipleChoiceFilter(label=u'Статус', widget=forms.CheckboxSelectMultiple)
     update_time = django_filters.DateRangeFilter(label=u'Дата последнего изменения')
     responsible = django_filters.ChoiceFilter(label=u'Ответственный')
     followers = django_filters.MultipleChoiceFilter(label=u'Наблюдатели', widget=forms.CheckboxSelectMultiple)
@@ -373,11 +373,11 @@ class IssueFilter(django_filters.FilterSet):
         status_choices.insert(0, (status_field.id, _(status_field.name)))
         status_field = IssueStatusField.objects.get(pk=IssueStatusField.NEW_ID)
         status_choices.insert(0, (status_field.id, _(status_field.name)))
-        self.filters['status'].field.choices = tuple(status_choices)
+        self.filters['status_field'].field.choices = tuple(status_choices)
 
     class Meta:
         model = Issue
-        fields = ['status', 'responsible', 'followers', 'update_time']
+        fields = ['status_field', 'responsible', 'followers', 'update_time']
 
 class Event(models.Model):
     issue = models.ForeignKey(Issue, null=False, blank=False)
