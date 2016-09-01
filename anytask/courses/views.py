@@ -200,7 +200,7 @@ def tasklist_shad_cpp(request, course):
         group_x_student_x_task_takens[group] = student_x_task_x_task_takens
 
         try:
-            default_teacher[group] = DefaultTeacher.objects.get(course=course, group=group).teacher.get_full_name()
+            default_teacher[group] = DefaultTeacher.objects.get(course=course, group=group).teacher
         except DefaultTeacher.DoesNotExist:
             default_teacher[group] = None
 
@@ -476,5 +476,5 @@ def set_task_mark(request):
     issue.set_byname('mark', mark)
 
     return HttpResponse(json.dumps({'mark': mark,
-                                    'color': issue.status.color}),
+                                    'color': issue.status_field.color}),
                         content_type="application/json")
