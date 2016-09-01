@@ -131,7 +131,7 @@
             {% endblock %}
 
             {% block UPLOAD_FORM_BUTTON_BAR_CONTROL %}
-            {% if issue.status_field.tag == issue.STATUS_ACCEPTED or issue.status_field.tag == issue.STATUS_NEED_INFO and not teacher_or_staff %}
+            {% if issue.status_field.tag == issue.STATUS_ACCEPTED and not teacher_or_staff or issue.status_field.tag == issue.STATUS_NEED_INFO and not teacher_or_staff %}
                 <button class="btn btn-info pull-xs-right" formaction="#" style="margin-top: 10px; margin-left: 10px;" type="submit" name="need_info">Задать вопрос</button>
             {% else %}
                 <button style="margin-top: 10px;" type="submit" name="update_issue" class="btn btn-primary pull-xs-right">

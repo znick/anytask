@@ -234,19 +234,19 @@ class ViewsTest(TestCase):
         self.assertEqual(forms[2].find('input', {'name': 'form_name'})['value'],
                          'status_form',
                          '6th issue field input form_name wrong')
-        self.assertEqual(len(forms[2]('option')), 3, '6th issue field select option len is not 3')
-        self.assertEqual(forms[2]('option')[0]['value'], 'rework', '6th issue field select 1st option value wrong')
-        self.assertEqual(forms[2]('option')[0].string.strip().strip('\n'),
-                         u'На доработке',
-                         '6th issue field select 1st option text wrong')
-        self.assertEqual(forms[2]('option')[1]['value'], 'verification', '6th issue field select 2nd option value wrong')
-        self.assertEqual(forms[2]('option')[1].string.strip().strip('\n'),
-                         u'На проверке',
-                         '6th issue field select 2nd option text wrong')
-        self.assertEqual(forms[2]('option')[2]['value'], 'accepted', '6th issue field select 3rd option value wrong')
-        self.assertEqual(forms[2]('option')[2].string.strip().strip('\n'),
-                         u'Зачтено',
-                         '6th issue field select 3rd option text wrong')
+        self.assertEqual(len(forms[2]('option')), 3, '6th issue field select option len is not 4')
+        self.assertIn('value="3"', str(forms[2]('option')[0]), '6th issue field select 1st option value wrong')
+        self.assertIn(u'На проверке',
+                      unicode(forms[2]('option')[0]),
+                      '6th issue field select 1st option text wrong')
+        self.assertIn('value="4"', str(forms[2]('option')[1]), '6th issue field select 2st option value wrong')
+        self.assertIn(u'На доработке',
+                      unicode(forms[2]('option')[1]),
+                      '6th issue field select 2st option text wrong')
+        self.assertIn('value="5"', str(forms[2]('option')[2]), '6th issue field select 3st option value wrong')
+        self.assertIn(u'Зачтено',
+                      unicode(forms[2]('option')[2]),
+                      '6th issue field select 3st option text wrong')
         self.assertEqual(len(forms[2]('button')), 1, '6th issue field button len is not 1')
         self.assertEqual(forms[2]('button')[0].string.strip().strip('\n'),
                          u'Отправить',
@@ -477,7 +477,7 @@ class ViewsTest(TestCase):
         # post
         response = client.post(reverse('issues.views.issue_page', kwargs={'issue_id': issue.id}),
                                {'form_name': 'status_form',
-                                'status': 'rework'}, follow=True)
+                                'status': '4'}, follow=True)
         print response
         self.assertEqual(response.status_code, 200, "Can't get issue_page via teacher")
         self.assertEqual(len(response.redirect_chain), 1, "Must be redirect")

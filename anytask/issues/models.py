@@ -61,11 +61,15 @@ class Issue(models.Model):
     followers = models.ManyToManyField(User, null=True, blank=True)
 
     STATUS_NEW = 'new'
+    STATUS_AUTO_VERIFICATION = 'auto_verification'
+    STATUS_NEED_INFO = 'need_info'
+    HIDDEN_STATUSES = {STATUS_NEW: IssueStatusField.objects.get(pk=1),
+                       STATUS_AUTO_VERIFICATION: IssueStatusField.objects.get(pk=2),
+                       STATUS_NEED_INFO: IssueStatusField.objects.get(pk=6)}
+    
     STATUS_REWORK = 'rework'
     STATUS_VERIFICATION = 'verification'
     STATUS_ACCEPTED = 'accepted'
-    STATUS_AUTO_VERIFICATION = 'auto_verification'
-    STATUS_NEED_INFO = 'need_info'
 
     ISSUE_STATUSES = (
         (STATUS_NEW, _(u'Новый')),
@@ -203,10 +207,8 @@ class Issue(models.Model):
         return event
 
     def set_status_by_tag(self, tag, author=None):
-        if tag == self.STATUS_NEW:
-            return self.set_byname('status', IssueStatusField.objects.get(pk=IssueStatusField.NEW_ID))
-        elif tag == self.STATUS_AUTO_VERIFICATION:
-            return self.set_byname('status', IssueStatusField.objects.get(pk=IssueStatusField.AUTO_VERIFICATION_ID))
+        if tag in Issue.HIDDEN_STATUSES:
+            return self.set_byname('status', Issue.HIDDEN_STATUSES[tag])
         else:
             status = self.task.course.issue_mark_system.statuses.filter(tag=tag)
             if status:

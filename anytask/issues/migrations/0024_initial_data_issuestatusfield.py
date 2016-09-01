@@ -25,28 +25,27 @@ class Migration(SchemaMigration):
                                 'color': '#F0AD4E',
                                 'hidden': False}).save()
         # pk 4
-        orm.IssueStatusField(**{'name': u'Зачтено',
-                                'tag': 'accepted',
-                                'color': '#5CB85C',
-                                'hidden': False}).save()
-        # pk 5
         orm.IssueStatusField(**{'name': u'На доработке',
                                 'tag': 'rework',
                                 'color': '#D9534F',
+                                'hidden': False}).save()
+        # pk 5
+        orm.IssueStatusField(**{'name': u'Зачтено',
+                                'tag': 'accepted',
+                                'color': '#5CB85C',
                                 'hidden': False}).save()
         # pk 6
         orm.IssueStatusField(**{'name': u'Требуется информация',
                                 'tag': 'need_info',
                                 'color': '#5BC0DE',
-                                'hidden': False}).save()
+                                'hidden': True}).save()
 
         # default IssueStatusSystem
         orm.IssueStatusSystem(**{'name': u'Стандартная система'}).save()
         issue_status_system = orm.IssueStatusSystem.objects.get(pk=1)
         issue_status_system.statuses = [orm.IssueStatusField.objects.get(pk=3),
                                         orm.IssueStatusField.objects.get(pk=4),
-                                        orm.IssueStatusField.objects.get(pk=5),
-                                        orm.IssueStatusField.objects.get(pk=6)]
+                                        orm.IssueStatusField.objects.get(pk=5)]
         issue_status_system.save()
 
     def backwards(self, orm):
