@@ -195,6 +195,12 @@ class Issue(models.Model):
             if ret:
                 ret = ret.id #Hack hack hack :\
             return ret
+        if field.name == 'status':
+            if ret.id not in Issue.HIDDEN_STATUSES.values():
+                ret = ret.id
+            else:
+                ret = None
+            return ret
         return ret
 
     def create_event(self, field, author):
@@ -352,15 +358,15 @@ class Issue(models.Model):
         return reverse('issues.views.issue_page', args=[str(self.id)])
 
 class IssueFilter(django_filters.FilterSet):
-    status_field = django_filters.MultipleChoiceFilter(label=u'Статус', widget=forms.CheckboxSelectMultiple)
+    status_field = django_filters.MultipleChoiceFilter(label=u'Статус', widget=forms.SelectMultiple)
     update_time = django_filters.DateRangeFilter(label=u'Дата последнего изменения')
     responsible = django_filters.ChoiceFilter(label=u'Ответственный')
-    followers = django_filters.MultipleChoiceFilter(label=u'Наблюдатели', widget=forms.CheckboxSelectMultiple)
+    followers = django_filters.MultipleChoiceFilter(label=u'Наблюдатели', widget=forms.SelectMultiple)
     task = django_filters.ChoiceFilter(label=u'Задача')
 
     def set_course(self, course):
         teacher_choices = [(teacher.id, _(teacher.get_full_name())) for teacher in course.get_teachers()]
-        teacher_choices.insert(0,(u'', _(u'Любой')))
+        teacher_choices.insert(0, (u'', _(u'Любой')))
         self.filters['responsible'].field.choices = tuple(teacher_choices)
 
         teacher_choices.pop(0)
@@ -371,10 +377,9 @@ class IssueFilter(django_filters.FilterSet):
         self.filters['task'].field.choices = tuple(task_choices)
 
         status_choices = [(status.id, _(status.name)) for status in course.issue_mark_system.statuses.all()]
-        status_field = IssueStatusField.objects.get(pk=IssueStatusField.AUTO_VERIFICATION_ID)
-        status_choices.insert(0, (status_field.id, _(status_field.name)))
-        status_field = IssueStatusField.objects.get(pk=IssueStatusField.NEW_ID)
-        status_choices.insert(0, (status_field.id, _(status_field.name)))
+        for status_id in sorted(Issue.HIDDEN_STATUSES.values(), reverse=True):
+            status_field = IssueStatusField.objects.get(pk=status_id)
+            status_choices.insert(0, (status_field.id, _(status_field.name)))
         self.filters['status_field'].field.choices = tuple(status_choices)
 
     class Meta:

@@ -4,6 +4,8 @@
 {% load sanitize_html icon %}
 {% load dict_func %}
 {% load task_taken_func %}
+{% load issue_info %}
+{% load form_func %}
 
 {% block title %}{{ course.name }} | {{ course.year }}{% endblock %}
 
@@ -51,7 +53,37 @@
         <div class="col-md-2">
             <div class="card card-block" id="filters" style="min-width:11.5rem;">
                 <div style="padding: 0px 15px 0px 15px;">
-                    {% crispy filter.form %}
+                    <form method="get">
+                        {% for f in filter.form %}
+                            {% if f.is_hidden %}
+                                {{ f }}
+                            {% else %}
+                                <div class="form-group row">
+                                    <label for="{{ f.id_for_label }}" class="control-label ">{{ f.label }}</label>
+                                    <div class="controls">
+                                        <select id='{{ f.id_for_label }}' name='{{ f.html_name }}' class="selectpicker form-control"
+                                                {% if f.name == 'status_field' %}
+                                                multiple
+                                                title="Любой"
+                                                {% elif f.name == 'followers' %}
+                                                multiple
+                                                title="Любые"
+                                                {% endif %}>
+                                            {% for val, show_val in f.field.choices %}
+                                                <option
+                                                        value="{{ val }}"
+                                                        {{ filter.form.data|field_in_data:f|selected:val }}
+                                                >
+                                                    {{ show_val }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div> </div>
+                            {% endif %}
+                        {% endfor %}
+                        <div class="form-group row">
+                            <button id="button_filter" class="btn btn-secondary pull-xs-right" type="submit">Применить</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

@@ -11,7 +11,7 @@ from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template.context import RequestContext
 from issues.forms import FileForm
 from issues.models import Issue, Event, File
-from issues.model_issue_field import IssueField
+from issues.model_issue_field import IssueField, IssueStatusField
 
 from django.core.urlresolvers import reverse
 from django.views import generic
@@ -84,7 +84,10 @@ def issue_page(request, issue_id):
                             if request.user not in value:
                                 value.append(request.user)
                     if 'Accepted' in request.POST:
-                        issue.set_status_by_tag(Issue.STATUS_ACCEPTED)
+                        if request.POST['Accepted']:
+                            issue.set_byname('status', IssueStatusField.objects.get(pk=request.POST['Accepted']))
+                        else:
+                            issue.set_status_by_tag(Issue.STATUS_ACCEPTED)
 
                     if field.name == 'comment':
                         value = {
@@ -110,6 +113,10 @@ def issue_page(request, issue_id):
                 show_top_alert = True
             break
 
+    statuses_accepted = issue.task.course.issue_mark_system.statuses.filter(tag=Issue.STATUS_ACCEPTED)
+    if len(statuses_accepted) < 2:
+        statuses_accepted = None
+
     schools = issue.task.course.school_set.all()
 
     context = {
@@ -122,6 +129,7 @@ def issue_page(request, issue_id):
         'teacher_or_staff': user_is_teacher_or_staff(request.user, issue),
         'school': schools[0] if schools else '',
         'visible_queue': issue.task.course.user_can_see_queue(request.user),
+        'statuses_accepted': statuses_accepted,
     }
 
     return render_to_response('issues/issue.html', context, context_instance=RequestContext(request))

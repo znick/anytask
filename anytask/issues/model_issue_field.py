@@ -98,10 +98,6 @@ class FieldStatusPlugin(FieldDefaultPlugin):
     def get_form(cls, *args, **kwargs):
         return get_status_form(*args, **kwargs)
 
-    @staticmethod
-    def get_default_value(field_name):
-        return u'Новый'
-
 
 class FieldResponsiblePlugin(FieldDefaultPlugin):
     PLUGIN_NAME = "FieldResponsiblePlugin"
