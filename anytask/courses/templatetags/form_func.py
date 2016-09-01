@@ -1,8 +1,6 @@
 from BeautifulSoup import BeautifulSoup, Comment
 from django import template
-from django.utils.translation import ugettext as _
-from issues.models import Issue
-from issues.model_issue_field import IssueStatusField
+from django.http import QueryDict
 
 
 register = template.Library()
@@ -10,8 +8,9 @@ register = template.Library()
 
 @register.filter(name='field_in_data')
 def form_selected_value(data, field):
-    print data
-    return data.getlist(field.name)
+    if isinstance(data, QueryDict):
+        return data.getlist(field.name)
+    return []
 
 
 @register.filter(name='selected')
