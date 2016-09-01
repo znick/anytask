@@ -63,9 +63,9 @@ class Issue(models.Model):
     STATUS_NEW = 'new'
     STATUS_AUTO_VERIFICATION = 'auto_verification'
     STATUS_NEED_INFO = 'need_info'
-    HIDDEN_STATUSES = {STATUS_NEW: IssueStatusField.objects.get(pk=1),
-                       STATUS_AUTO_VERIFICATION: IssueStatusField.objects.get(pk=2),
-                       STATUS_NEED_INFO: IssueStatusField.objects.get(pk=6)}
+    HIDDEN_STATUSES = {STATUS_NEW: 1,
+                       STATUS_AUTO_VERIFICATION: 2,
+                       STATUS_NEED_INFO: 6}
     
     STATUS_REWORK = 'rework'
     STATUS_VERIFICATION = 'verification'
@@ -208,7 +208,7 @@ class Issue(models.Model):
 
     def set_status_by_tag(self, tag, author=None):
         if tag in Issue.HIDDEN_STATUSES:
-            return self.set_byname('status', Issue.HIDDEN_STATUSES[tag])
+            return self.set_byname('status', IssueStatusField.objects.get(id=Issue.HIDDEN_STATUSES[tag]))
         else:
             status = self.task.course.issue_mark_system.statuses.filter(tag=tag)
             if status:

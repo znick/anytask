@@ -647,7 +647,7 @@ class ViewsTest(TestCase):
                                 'mark_max': task.score_max,
                                 'mark_value': '3'})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content, '{"color": "' + IssueStatusField.objects.get(pk=4).color + '", "mark": 3.0}')
+        self.assertEqual(response.content, '{"color": "' + IssueStatusField.objects.get(pk=5).color + '", "mark": 3.0}')
 
         # get course page
         response = client.get(reverse('courses.views.course_page', kwargs={'course_id': self.course.id}))
@@ -929,7 +929,7 @@ class ViewsTest(TestCase):
                                 'mark_max': task.score_max,
                                 'mark_value': '3'})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content, '{"color": "' + IssueStatusField.objects.get(pk=4).color + '", "mark": 3.0}')
+        self.assertEqual(response.content, '{"color": "' + IssueStatusField.objects.get(pk=5).color + '", "mark": 3.0}')
 
         # get course page
         self.assertTrue(client.login(username=self.student.username, password=self.student_password))
