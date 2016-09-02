@@ -309,7 +309,22 @@ class Issue(models.Model):
                     if author == self.student and self.status_field.tag != self.STATUS_NEED_INFO and sent:
                         self.set_status_by_tag(self.STATUS_VERIFICATION)
                     if author == self.responsible:
-                        self.set_status_by_tag(self.STATUS_REWORK)
+                        if self.status_field.tag == self.STATUS_NEED_INFO:
+                            status_field = get_object_or_404(IssueField, name='status')
+                            status_events = Event.objects\
+                                .filter(issue_id=self.id, field=status_field)\
+                                .exclude(author__isnull=True)\
+                                .order_by('-timestamp')
+
+                            if status_events:
+                                status_prev = self.task.course.issue_mark_system.statuses\
+                                    .filter(name=status_events[0].value)
+                                if status_prev:
+                                    self.set_field(status_field, status_prev[0])
+                                else:
+                                    self.set_status_by_tag(self.STATUS_REWORK)
+                        else:
+                            self.set_status_by_tag(self.STATUS_REWORK)
 
         elif name == 'status':
             try:

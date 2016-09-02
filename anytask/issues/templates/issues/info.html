@@ -79,12 +79,8 @@
     <div class="card">
         <div class="card-header">
             <div class="row col-wrap">
-                <div class="col-md-4 accordion2-label">
-                    <div class="pull-xs-right">
-                        Дата сдачи:
-                    </div>
-                </div>
-                <div class="col-md-8 accordion2-result">
+                <div class="col-md-5 accordion2-label">Дата сдачи:</div>
+                <div class="col-md-7 accordion2-result">
                     {{ issue.task.deadline_time|date:'d-m-Y H:i' }} {% if issue.task.deadline_time %} MSK UTC+3 {% endif %}
                 </div>
             </div>
