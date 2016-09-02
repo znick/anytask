@@ -561,7 +561,7 @@ class ViewsTest(TestCase):
 
         # history
         history = container.find('ul', 'history')('li')
-        self.assertEqual(len(history), 1, 'History len is not 1')
+        self.assertEqual(len(history), 2, 'History len is not 2')
         self.assertEqual(history[0].strong.a['href'],
                          '/users/teacher/',
                          'Wrong comment author link')
@@ -569,6 +569,15 @@ class ViewsTest(TestCase):
                          'teacher_last_name teacher_name',
                          'Wrong comment author name')
         self.assertEqual(history[0].find('div', 'history-body').string.strip().strip('\n'),
+                         u'Статус изменен: Зачтено',
+                         'Wrong comment text')
+        self.assertEqual(history[1].strong.a['href'],
+                         '/users/teacher/',
+                         'Wrong comment author link')
+        self.assertEqual(history[1].strong.a.string.strip().strip('\n'),
+                         'teacher_last_name teacher_name',
+                         'Wrong comment author name')
+        self.assertEqual(history[1].find('div', 'history-body').string.strip().strip('\n'),
                          u'Оценка изменена на 3',
                          'Wrong comment text')
 
