@@ -270,7 +270,7 @@ class ViewsTest(TestCase):
                          u'Зачтено',
                          '7th issue field 2st button wrong ')
 
-        self.assertEqual(labels[7].div.string.strip().strip('\n'), u'Дата сдачи:', '8th issue field label wrong')
+        self.assertEqual(labels[7].string.strip().strip('\n'), u'Дата сдачи:', '8th issue field label wrong')
         self.assertEqual(results[7].string.strip().strip('\n'), '', '8th issue field text wrong')
 
     def test_post_responsible_name_form_send_button_with_teacher(self):
@@ -694,7 +694,7 @@ class ViewsTest(TestCase):
         self.assertEqual(labels[6].string.strip().strip('\n'), u'Оценка:', '7th issue field label text wrong')
         self.assertEqual(results[6].string.strip().strip('\n'), '0', '7th issue field text wrong')
 
-        self.assertEqual(labels[7].div.string.strip().strip('\n'), u'Дата сдачи:', '8th issue field label wrong')
+        self.assertEqual(labels[7].string.strip().strip('\n'), u'Дата сдачи:', '8th issue field label wrong')
         self.assertEqual(results[7].string.strip().strip('\n'), '', '8th issue field text wrong')
 
     def test_comment_with_student(self):
