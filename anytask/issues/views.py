@@ -85,9 +85,11 @@ def issue_page(request, issue_id):
                                 value.append(request.user)
                     if 'Accepted' in request.POST:
                         if request.POST['Accepted']:
-                            issue.set_byname('status', IssueStatusField.objects.get(pk=request.POST['Accepted']))
+                            issue.set_byname('status',
+                                             IssueStatusField.objects.get(pk=request.POST['Accepted']),
+                                             request.user)
                         else:
-                            issue.set_status_by_tag(Issue.STATUS_ACCEPTED)
+                            issue.set_status_by_tag(Issue.STATUS_ACCEPTED, request.user)
 
                     if field.name == 'comment':
                         value = {

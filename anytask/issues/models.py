@@ -357,11 +357,12 @@ class Issue(models.Model):
     def get_absolute_url(self):
         return reverse('issues.views.issue_page', args=[str(self.id)])
 
+
 class IssueFilter(django_filters.FilterSet):
-    status_field = django_filters.MultipleChoiceFilter(label=u'Статус', widget=forms.SelectMultiple)
+    status_field = django_filters.MultipleChoiceFilter(label=u'Статус', widget=forms.CheckboxSelectMultiple)
     update_time = django_filters.DateRangeFilter(label=u'Дата последнего изменения')
     responsible = django_filters.ChoiceFilter(label=u'Ответственный')
-    followers = django_filters.MultipleChoiceFilter(label=u'Наблюдатели', widget=forms.SelectMultiple)
+    followers = django_filters.MultipleChoiceFilter(label=u'Наблюдатели', widget=forms.CheckboxSelectMultiple)
     task = django_filters.ChoiceFilter(label=u'Задача')
 
     def set_course(self, course):

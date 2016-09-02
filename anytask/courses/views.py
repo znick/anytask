@@ -85,6 +85,14 @@ def queue_page(request, course_id):
     elif course_id_as_str in request.session:
         f.form.data = request.session.get(course_id_as_str)
 
+    f.form.helper = FormHelper(f.form)
+    f.form.helper.form_method = 'get'
+    # f.form.helper.label_class = 'col-md-4'
+    # f.form.helper.field_class = 'selectpicker'
+    f.form.helper.layout.append(HTML(u"""<div class="form-group row">
+                                           <button id="button_filter" class="btn btn-secondary pull-xs-right" type="submit">Применить</button>
+                                         </div>"""))
+
     schools = course.school_set.all()
 
     context = {
@@ -210,10 +218,10 @@ def tasklist_shad_cpp(request, course):
             mark_id, course_mark = get_course_mark(course, group, student)
 
             group_x_student_information[group].append((student,
-                                                      student_x_task_x_task_takens[student][0],
-                                                      student_x_task_x_task_takens[student][1],
-                                                      mark_id,
-                                                      course_mark))
+                                                       student_x_task_x_task_takens[student][0],
+                                                       student_x_task_x_task_takens[student][1],
+                                                       mark_id,
+                                                       course_mark))
 
     context = {
         'course': course,
@@ -353,7 +361,7 @@ def course_settings(request, course_id):
                'visible_queue': course.user_can_see_queue(request.user),
                'user_is_teacher': course.user_is_teacher(request.user),
                'school': schools[0] if schools else '',
-    }
+               }
 
     if request.method != "POST":
         form = DefaultTeacherForm(course)
