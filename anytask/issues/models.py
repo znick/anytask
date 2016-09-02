@@ -230,6 +230,8 @@ class Issue(models.Model):
         name = field.name
         course = self.task.course
 
+        delete_event = False
+
         if name == 'responsible_name':
             new_responsible = value
 
@@ -239,13 +241,19 @@ class Issue(models.Model):
                     new_followers.append(self.responsible)
                 self.responsible = new_responsible
                 self.followers = new_followers
+            else:
+                delete_event = True
 
             value = value.last_name + ' ' + value.first_name
 
         elif name == 'followers_names':
             if self.responsible and str(self.responsible.id) in value:
                 value.remove(str(self.responsible.id))
+            prev_followers = self.followers
             self.followers = list(value)
+
+            if prev_followers == self.followers:
+                delete_event = True
 
             value = []
             for follower in self.followers.all():
@@ -314,14 +322,22 @@ class Issue(models.Model):
             except:
                 pass
 
-            self.status_field = value
+            if self.status_field != value:
+                self.status_field = value
+            else:
+                delete_event = True
+
             value = self.get_status()
 
         elif name == 'mark':
             if not value:
                 value = 0
             value = normalize_decimal(value)
-            self.mark = float(value)
+            if self.mark != float(value):
+                self.mark = float(value)
+            else:
+                delete_event = True
+
             value = str(value)
             if self.status_field.tag != self.STATUS_ACCEPTED and self.status_field.tag != self.STATUS_NEW:
                 self.set_status_by_tag(self.STATUS_REWORK)
@@ -336,12 +352,14 @@ class Issue(models.Model):
         if default_teacher and (not self.get_byname('responsible_name')):
             self.set_byname('responsible_name', default_teacher)
 
-        event.value = value
-        event.save()
-        event.pull_plugins()
+        if not delete_event:
+            event.value = value
+            event.save()
+            event.pull_plugins()
+        else:
+            event.delete()
 
-
-        pass
+        return
 
     def get_history(self):
         """
