@@ -22,6 +22,10 @@ display_color.short_description = u'Статус'
 display_color.allow_tags = True
 
 
+class IssueAdmin(admin.ModelAdmin):
+    exclude = ('status',)
+
+
 class IssueStatusFieldAdmin(admin.ModelAdmin):
     list_display = (display_color, 'tag')
     exclude = ('hidden',)
@@ -43,7 +47,7 @@ class IssueStatusSystemAdmin(admin.ModelAdmin):
         return super(IssueStatusSystemAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
 
 
-admin.site.register(Issue)
+admin.site.register(Issue, IssueAdmin)
 admin.site.register(Event)
 admin.site.register(IssueField)
 admin.site.register(IssueStatusField, IssueStatusFieldAdmin)
