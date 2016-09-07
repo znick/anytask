@@ -116,8 +116,6 @@ def issue_page(request, issue_id):
             break
 
     statuses_accepted = issue.task.course.issue_mark_system.statuses.filter(tag=Issue.STATUS_ACCEPTED)
-    if len(statuses_accepted) < 2:
-        statuses_accepted = None
 
     schools = issue.task.course.school_set.all()
 

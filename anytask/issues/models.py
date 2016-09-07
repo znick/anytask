@@ -66,10 +66,10 @@ class Issue(models.Model):
     HIDDEN_STATUSES = {STATUS_NEW: 1,
                        STATUS_AUTO_VERIFICATION: 2,
                        STATUS_NEED_INFO: 6}
-    
-    STATUS_REWORK = 'rework'
-    STATUS_VERIFICATION = 'verification'
-    STATUS_ACCEPTED = 'accepted'
+
+    STATUS_REWORK = IssueStatusField.STATUS_REWORK
+    STATUS_VERIFICATION = IssueStatusField.STATUS_VERIFICATION
+    STATUS_ACCEPTED = IssueStatusField.STATUS_ACCEPTED
 
     ISSUE_STATUSES = (
         (STATUS_NEW, _(u'Новый')),
@@ -276,8 +276,7 @@ class Issue(models.Model):
                                 if sent:
                                     value['comment'] += u"Отправлено на проверку в Я.Контест"
                                     if self.status_field.tag != self.STATUS_ACCEPTED:
-                                        self.set_byname('status', IssueStatusField.objects.get(
-                                            pk=IssueStatusField.AUTO_VERIFICATION_ID))
+                                        self.set_status_by_tag(self.STATUS_AUTO_VERIFICATION)
                                 else:
                                     value['comment'] += u"Ошибка отправки в Я.Контест ('{0}').".format(message)
                                     self.followers.add(User.objects.get(username='anytask.monitoring'))

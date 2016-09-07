@@ -14,7 +14,7 @@ class Command(BaseCommand):
     help = "Check contest submissions and comment verdict"
 
     def handle(self, **options):
-        for issue in Issue.objects.filter(status_field_tag=Issue.STATUS_AUTO_VERIFICATION):
+        for issue in Issue.objects.filter(status_field__tag=Issue.STATUS_AUTO_VERIFICATION):
             try:
                 run_id = issue.get_byname('run_id')
                 events = issue.event_set.all().reverse()
