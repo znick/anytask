@@ -25,6 +25,9 @@
         <li class="nav-item">
             <a class="nav-link" href="{% url users.views.user_courses username=user %}">Мои курсы</a>
         </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{% url users.views.profile_settings %}">Настройки</a>
+        </li>
     </ul>
 {% endblock navbar %}
 

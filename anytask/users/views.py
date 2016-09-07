@@ -135,15 +135,20 @@ def profile(request, username=None, year=None):
 
 
 @login_required
-def profile_settings(request, username=None):
+def profile_settings(request):
     user = request.user
 
-    user_to_show = user
-    if username:
-        user_to_show = get_object_or_404(User, username=username)
+    user_profile = user.get_profile()
+
+    if request.method == 'POST':
+        user_profile.show_email = True if 'show_email' in request.POST else False
+        user_profile.send_own_events = True if 'send_own_events' in request.POST else False
+        user_profile.save()
+
+        return HttpResponse("OK")
 
     context = {
-        'user_to_show': user_to_show,
+        'user_profile': user_profile,
     }
 
     return render_to_response('user_settings.html', context, context_instance=RequestContext(request))

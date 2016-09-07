@@ -8,4 +8,5 @@ urlpatterns = patterns('users.views',
     url(r'^ya_oauth_disable/(?P<type_of_oauth>\w+)$', 'ya_oauth_disable'),
     url(r'^(?P<username>.*)/courses', 'user_courses'),
     url(r'^activate_invite$', 'activate_invite'),
+    url(r'^settings$', 'profile_settings'),
 )
