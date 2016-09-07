@@ -57,6 +57,11 @@
         .switch-tab i{
             font-size: 1.2rem
         }
+
+        .card-header {
+            background-color: inherit;
+            border-bottom: none;
+        }
     </style>
 
     {% if tables.0 or tables.1 %}
@@ -79,14 +84,14 @@
                                 <ul class="nav nav-pills" role="tablist">
                                     {% for year, _ in table %}
                                         <li class="nav-item">
-                                            <a class="nav-link {% if year == current_year %}active{% endif %}" data-toggle="pill" href="#{% if forloop.parentloop.first %}courses_{% else %}courses_archive_{% endif %}{{ forloop.counter }}" role="tab">{{ year }}</a>
+                                            <a class="nav-link {% if year == current_year or forloop.last and not table|has_item:current_year %}active{% endif %}" data-toggle="pill" href="#{% if forloop.parentloop.first %}courses_{% else %}courses_archive_{% endif %}{{ forloop.counter }}" role="tab">{{ year }}</a>
                                         </li>
                                     {% endfor %}
                                 </ul>
                             </div>
                             <div class="tab-content">
                                 {% for year, courses_in_year in table %}
-                                    <div class="tab-pane fade {% if year == current_year %}in active{% endif %}" id="{% if forloop.parentloop.first %}courses_{% else %}courses_archive_{% endif %}{{ forloop.counter }}" role="tabpanel">
+                                    <div class="tab-pane fade {% if year == current_year or forloop.last and not table|has_item:current_year  %}in active{% endif %}" id="{% if forloop.parentloop.first %}courses_{% else %}courses_archive_{% endif %}{{ forloop.counter }}" role="tabpanel">
                                         <div class="card-block">
                                             {% for table_id, course_statistics in courses_in_year.iteritems %}
                                                 <table class="table table_courses">

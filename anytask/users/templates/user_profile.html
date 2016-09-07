@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
 {% load sanitize_html %}
+{% load table_func %}
 
 {% block title %} {{ user_to_show.get_full_name }} {% endblock %}
 
@@ -127,6 +128,10 @@
         .switch-tab i{
             font-size: 1.2rem
         }
+
+        .card-header {
+            background-color: inherit;
+        }
     </style>
 
     <div class="card-deck-wrapper">
@@ -249,14 +254,14 @@
                                     <ul class="nav nav-pills" role="tablist">
                                         {% for year, _ in teacher_in_courses %}
                                             <li class="nav-item">
-                                                <a class="nav-link {% if year == current_year %}active{% endif %}" data-toggle="pill" href="#teacher_course_{{ forloop.counter }}" role="tab">{{ year }}</a>
+                                                <a class="nav-link {% if year == current_year or forloop.last and not teacher_in_courses|has_item:current_year %}active{% endif %}" data-toggle="pill" href="#teacher_course_{{ forloop.counter }}" role="tab">{{ year }}</a>
                                             </li>
                                         {% endfor %}
                                     </ul>
                                 </div>
                                 <div class="tab-content">
                                     {% for year, courses in teacher_in_courses %}
-                                        <div class="tab-pane fade {% if year == current_year %}in active{% endif %}" id="teacher_course_{{ forloop.counter }}" role="tabpanel">
+                                        <div class="tab-pane fade {% if year == current_year or forloop.last and not teacher_in_courses|has_item:current_year %}in active{% endif %}" id="teacher_course_{{ forloop.counter }}" role="tabpanel">
                                             <div class="card-block">
                                                 <ul class="list-group list-group-flush">
                                                     {% for course in courses %}
@@ -283,14 +288,14 @@
                                     <ul class="nav nav-pills" role="tablist">
                                         {% for year, _ in teacher_in_courses_archive %}
                                             <li class="nav-item">
-                                                <a class="nav-link {% if year == current_year %}active{% endif %}" data-toggle="pill" href="#teacher_course_archive_{{ forloop.counter }}" role="tab">{{ year }}</a>
+                                                <a class="nav-link {% if year == current_year or forloop.last and not teacher_in_courses_archive|has_item:current_year %}active{% endif %}" data-toggle="pill" href="#teacher_course_archive_{{ forloop.counter }}" role="tab">{{ year }}</a>
                                             </li>
                                         {% endfor %}
                                     </ul>
                                 </div>
                                 <div class="tab-content">
                                     {% for year, courses in teacher_in_courses_archive %}
-                                        <div class="tab-pane fade {% if year == current_year %}in active{% endif %}" id="teacher_course_archive_{{ forloop.counter }}" role="tabpanel">
+                                        <div class="tab-pane fade {% if year == current_year or forloop.last and not teacher_in_courses_archive|has_item:current_year %}in active{% endif %}" id="teacher_course_archive_{{ forloop.counter }}" role="tabpanel">
                                             <div class="card-block">
                                                 <ul class="list-group list-group-flush">
                                                     {% for course in courses %}
@@ -322,14 +327,14 @@
                                     <ul class="nav nav-pills" role="tablist">
                                         {% for year, _ in courses %}
                                             <li class="nav-item">
-                                                <a class="nav-link {% if year == current_year %}active{% endif %}" data-toggle="pill" href="#courses_{{ forloop.counter }}" role="tab">{{ year }}</a>
+                                                <a class="nav-link {% if year == current_year or forloop.last and not courses|has_item:current_year %}active{% endif %}" data-toggle="pill" href="#courses_{{ forloop.counter }}" role="tab">{{ year }}</a>
                                             </li>
                                         {% endfor %}
                                     </ul>
                                 </div>
                                 <div class="tab-content">
                                     {% for year, courses_in_year in courses %}
-                                        <div class="tab-pane fade {% if year == current_year %}in active{% endif %}" id="courses_{{ forloop.counter }}" role="tabpanel">
+                                        <div class="tab-pane fade {% if year == current_year or forloop.last and not courses|has_item:current_year %}in active{% endif %}" id="courses_{{ forloop.counter }}" role="tabpanel">
                                             <div class="card-block">
                                                 <ul class="list-group list-group-flush">
                                                     {% for course in courses_in_year %}
@@ -356,14 +361,14 @@
                                     <ul class="nav nav-pills" role="tablist">
                                         {% for year, _ in courses_archive %}
                                             <li class="nav-item">
-                                                <a class="nav-link {% if year == current_year %}active{% endif %}" data-toggle="pill" href="#courses_archive_{{ forloop.counter }}" role="tab">{{ year }}</a>
+                                                <a class="nav-link {% if year == current_year or forloop.last and not courses_archive|has_item:current_year %}active{% endif %}" data-toggle="pill" href="#courses_archive_{{ forloop.counter }}" role="tab">{{ year }}</a>
                                             </li>
                                         {% endfor %}
                                     </ul>
                                 </div>
                                 <div class="tab-content">
                                     {% for year, courses_in_year in courses_archive %}
-                                        <div class="tab-pane fade {% if year == current_year %}in active{% endif %}" id="courses_archive_{{ forloop.counter }}" role="tabpanel">
+                                        <div class="tab-pane fade {% if year == current_year or forloop.last and not courses_archive|has_item:current_year %}in active{% endif %}" id="courses_archive_{{ forloop.counter }}" role="tabpanel">
                                             <div class="card-block">
                                                 <ul class="list-group list-group-flush">
                                                     {% for course in courses_in_year %}
@@ -389,14 +394,14 @@
                         <ul class="nav nav-pills" role="tablist">
                             {% for year, _ in groups %}
                                 <li class="nav-item">
-                                    <a class="nav-link {% if year == current_year %}active{% endif %}" data-toggle="pill" href="#groups_{{ forloop.counter }}" role="tab">{{ year }}</a>
+                                    <a class="nav-link {% if year == current_year or forloop.last and not groups|has_item:current_year %}active{% endif %}" data-toggle="pill" href="#groups_{{ forloop.counter }}" role="tab">{{ year }}</a>
                                 </li>
                             {% endfor %}
                         </ul>
                     </div>
                     <div class="tab-content">
                         {% for year, groups_in_year in groups %}
-                            <div class="tab-pane fade {% if year == current_year %}in active{% endif %}" id="groups_{{ forloop.counter }}" role="tabpanel">
+                            <div class="tab-pane fade {% if year == current_year or forloop.last and not groups|has_item:current_year %}in active{% endif %}" id="groups_{{ forloop.counter }}" role="tabpanel">
                                 <div class="card-block">
                                     <ul class="list-group list-group-flush">
                                         {% for group in groups_in_year %}
