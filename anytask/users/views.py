@@ -42,20 +42,25 @@ def profile(request, username=None, year=None):
     if username:
         user_to_show = get_object_or_404(User, username=username)
 
-    teacher_in_courses = Course.objects.filter(is_active=True).filter(teachers=user_to_show)
-    user_teacher_in_courses = Course.objects.filter(is_active=True).filter(teachers=user)
     if user_to_show != user:
-        if len(teacher_in_courses) == 0 and len(user_teacher_in_courses) == 0:
-            for group in user.group_set.all():
-                in_course = False
-                for course in group.course_set.all():
-                    if course.get_user_group(user_to_show):
-                        in_course = True
-                        break
-                if in_course:
-                    break
-            else:
-                raise PermissionDenied
+        if not user.is_staff:
+            groups_user_to_show = user_to_show.group_set.all()
+            groups = user.group_set.all()
+            if not (groups_user_to_show & groups):
+                courses_user_to_show = Course.objects.filter(groups__in=groups_user_to_show)
+                courses = Course.objects.filter(groups__in=groups)
+                if not (courses_user_to_show & courses):
+                    for course in courses_user_to_show:
+                        if course.user_is_teacher(user):
+                            break
+                    else:
+                        for course in courses:
+                            if course.user_is_teacher(user_to_show):
+                                break
+                        else:
+                            raise PermissionDenied
+
+    teacher_in_courses = Course.objects.filter(is_active=True).filter(teachers=user_to_show)
 
     if year:
         current_year = get_object_or_404(Year, start_year=year)
