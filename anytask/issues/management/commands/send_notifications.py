@@ -35,8 +35,8 @@ class Command(BaseCommand):
                 messages_author.append(event.author_id)
                 messages_body.append('<div style="margin:20px">' +
                                      '<pre>' +
-                                     event.get_notify_message().replace('}', '}}').replace('{', '{{') + \
-                                     '-' * 79 +
+                                     event.get_notify_message().replace('}', '}}').replace('{', '{{') +
+                                     '\n' + '-' * 79 +
                                      '</pre>' +
                                      '</div>')
                 event.sended_notify = True
@@ -65,7 +65,7 @@ class Command(BaseCommand):
                 excluded_ids = []
                 if issue.student.email:
                     message_body_text = get_message_body(messages_author, messages_body, issue.student)
-                    if not message_body_text:
+                    if message_body_text:
                         message_text = message_header.format(issue.student.first_name,
                                                              get_html_url(issue_url, issue.task.title),
                                                              u'студентом') + \
@@ -78,7 +78,7 @@ class Command(BaseCommand):
                 if issue.responsible:
                     if issue.responsible.email:
                         message_body_text = get_message_body(messages_author, messages_body, issue.responsible)
-                        if not message_body_text:
+                        if message_body_text:
                             message_text = message_header.format(issue.responsible.first_name,
                                                                  get_html_url(issue_url, issue.task.title),
                                                                  u'проверяющим') + \
@@ -91,7 +91,7 @@ class Command(BaseCommand):
                 for follower in issue.followers.exclude(id__in=excluded_ids):
                     if follower.email:
                         message_body_text = get_message_body(messages_author, messages_body, follower)
-                        if not message_body_text:
+                        if message_body_text:
                             message_text = message_header.format(follower.first_name,
                                                                  get_html_url(issue_url, issue.task.title),
                                                                  u'наблюдателем') + \
@@ -108,11 +108,11 @@ class Command(BaseCommand):
 
 def get_message_body(messages_author, messages_body, author):
     s = ''
-    if author.get_profile().send_own_events :
+    if author.get_profile().send_own_events:
         s = ''.join(messages_body)
     else:
-        for author, text in zip(messages_author, messages_body):
-            if author != author.id:
+        for author_id, text in zip(messages_author, messages_body):
+            if author_id != author.id:
                 s += text
     return s
 
