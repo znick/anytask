@@ -48,17 +48,14 @@ def profile(request, username=None, year=None):
             groups = user.group_set.all()
             if not (groups_user_to_show & groups):
                 courses_user_to_show = Course.objects.filter(groups__in=groups_user_to_show)
+                courses_user_to_show_teacher = Course.objects.filter(teachers=user_to_show)
                 courses = Course.objects.filter(groups__in=groups)
-                if not (courses_user_to_show & courses):
-                    for course in courses_user_to_show:
-                        if course.user_is_teacher(user):
-                            break
-                    else:
-                        for course in courses:
-                            if course.user_is_teacher(user_to_show):
-                                break
-                        else:
-                            raise PermissionDenied
+                courses_teacher = Course.objects.filter(teachers=user)
+                if not (courses_user_to_show & courses or
+                        courses_user_to_show_teacher & courses_teacher or
+                        courses_user_to_show_teacher & courses or
+                        courses_teacher & courses_user_to_show):
+                    raise PermissionDenied
 
     teacher_in_courses = Course.objects.filter(is_active=True).filter(teachers=user_to_show)
 
