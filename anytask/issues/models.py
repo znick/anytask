@@ -336,32 +336,6 @@ class Issue(models.Model):
     def get_absolute_url(self):
         return reverse('issues.views.issue_page', args=[str(self.id)])
 
-class IssueFilter(django_filters.FilterSet):
-    try:
-        issue_statuses = Issue.objects.get(pk=1).ISSUE_STATUSES
-    except:
-        issue_statuses = [(0,(u'------------'))]
-
-    status = django_filters.MultipleChoiceFilter(label=u'Статус', choices=issue_statuses, widget=forms.CheckboxSelectMultiple)
-    update_time = django_filters.DateRangeFilter(label=u'Дата последнего изменения')
-    responsible = django_filters.ChoiceFilter(label=u'Ответственный')
-    followers = django_filters.MultipleChoiceFilter(label=u'Наблюдатели', widget=forms.CheckboxSelectMultiple)
-    task = django_filters.ChoiceFilter(label=u'Задача')
-
-    def set_course(self, course):
-        teacher_choices = [(teacher.id, _(teacher.get_full_name())) for teacher in course.get_teachers()]
-        teacher_choices.insert(0,(u'', _(u'Любой')))
-        self.filters['responsible'].field.choices = tuple(teacher_choices)
-        teacher_choices.pop(0)
-        self.filters['followers'].field.choices = tuple(teacher_choices)
-        task_choices = [(task.id, _(task.title)) for task in Task.objects.all().filter(course=course)]
-        task_choices.insert(0, (u'', _(u'Любая')))
-        self.filters['task'].field.choices = tuple(task_choices)
-
-    class Meta:
-        model = Issue
-        fields = ['status', 'responsible', 'followers', 'update_time']
-
 class Event(models.Model):
     issue = models.ForeignKey(Issue, null=False, blank=False)
     author = models.ForeignKey(User, db_index=True, null=True, blank=True)
@@ -402,7 +376,7 @@ class Event(models.Model):
 
     def is_change(self):
         return self.field.name != 'comment'
-        
+
 #    def save(self, *a, **ka):
 #        import traceback
 #        traceback.print_stack()
@@ -417,3 +391,29 @@ class Event(models.Model):
         if self.is_change():
             ret += u' {0}'.format(self.field.name)
         return ret
+
+class IssueFilter(django_filters.FilterSet):
+    try:
+        issue_statuses = Issue.objects.get(pk=1).ISSUE_STATUSES
+    except:
+        issue_statuses = [(0,(u'------------'))]
+
+    status = django_filters.MultipleChoiceFilter(label=u'Статус', choices=issue_statuses, widget=forms.CheckboxSelectMultiple)
+    update_time = django_filters.DateRangeFilter(label=u'Дата последнего изменения')
+    responsible = django_filters.ChoiceFilter(label=u'Ответственный')
+    followers = django_filters.MultipleChoiceFilter(label=u'Наблюдатели', widget=forms.CheckboxSelectMultiple)
+    task = django_filters.ChoiceFilter(label=u'Задача')
+
+    def set_course(self, course):
+        teacher_choices = [(teacher.id, _(teacher.get_full_name())) for teacher in course.get_teachers()]
+        teacher_choices.insert(0,(u'', _(u'Любой')))
+        self.filters['responsible'].field.choices = tuple(teacher_choices)
+        teacher_choices.pop(0)
+        self.filters['followers'].field.choices = tuple(teacher_choices)
+        task_choices = [(task.id, _(task.title)) for task in Task.objects.all().filter(course=course)]
+        task_choices.insert(0, (u'', _(u'Любая')))
+        self.filters['task'].field.choices = tuple(task_choices)
+
+    class Meta:
+        model = Issue
+        fields = ['status', 'responsible', 'followers', 'update_time']
