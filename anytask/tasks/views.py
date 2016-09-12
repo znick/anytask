@@ -390,7 +390,7 @@ def contest_task_import(request):
 
         real_task.weight = max_weight
         real_task.title = task['task_title']
-        real_task.task_text = task['task_text']
+        real_task.task_text = task['task_text'].replace('<table','<table class="table table-sm"').replace('src="', 'src="https://contest.yandex.ru')
 
         if max_score:
             real_task.score_max = max_score
