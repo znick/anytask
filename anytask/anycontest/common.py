@@ -126,10 +126,16 @@ def check_submission(issue):
 
     try:
         run_id = issue.get_byname('run_id')
+        student_profile = issue.student.get_profile()
+        course = issue.task.course
+        if student_profile.ya_contest_oauth and course.send_to_contest_from_users:
+            OAUTH = student_profile.ya_contest_oauth
+        else:
+            OAUTH = settings.CONTEST_OAUTH
         contest_id = issue.task.contest_id
         results_req = requests.get(
             settings.CONTEST_API_URL + 'results?runId=' + str(run_id) + '&contestId=' + str(contest_id),
-            headers={'Authorization': 'OAuth ' + settings.CONTEST_OAUTH})
+            headers={'Authorization': 'OAuth ' + OAUTH})
 
         contest_verdict = results_req.json()['result']['submission']['verdict']
         if contest_verdict == 'ok':
@@ -144,6 +150,19 @@ def check_submission(issue):
             comment = u'Вердикт Я.Контест: ' \
                       + results_req.json()['result']['submission']['verdict'] + '\n' \
                       + results_req.json()['result']['compileLog'][18:]
+            if results_req.json()['result']['tests']:
+                test = results_req.json()['result']['tests'][-1]
+                test_resourses = u'\n<u>Ресурсы</u> ' + str(test['usedTime']) \
+                                 + 'ms/' + '%.2f' % (test['usedMemory']/(1024.*1024)) + 'Mb\n'
+                test_input = u'\n<u>Ввод</u>\n' + test['input'] if test['input'] else ""
+                test_output = u'\n<u>Вывод программы</u>\n' + test['output'] if test['output'] else ""
+                test_answer = u'\n<u>Правильный ответ</u>\n' + test['answer'] if test['answer'] else ""
+                test_error = u'\n<u>Stderr</u>\n' + test['error'] if test['error'] else ""
+                test_message = u'\n<u>Сообщение чекера</u>\n' + test['message'] if test['message'] else ""
+                comment += u'\n<u>Тест ' + str(test['testNumber']) + '</u>' \
+                           + test_resourses + test_input + test_output \
+                           + test_answer + test_error + test_message
+
         logger.info("Contest submission verdict with run_id '%s' got successfully.", run_id)
         got_verdict = True
     except Exception as e:
