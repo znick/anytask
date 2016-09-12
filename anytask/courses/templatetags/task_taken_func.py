@@ -2,6 +2,7 @@ from BeautifulSoup import BeautifulSoup, Comment
 from django import template
 from django.utils.translation import ugettext as _
 from issues.models import Issue
+from tasks.models import Task
 
 
 register = template.Library()
@@ -41,3 +42,12 @@ def issue_label_type(d, task):
             return 'label-default'
     return 'label-default no-issue'
 
+
+@register.filter(name='can_be_deleted')
+def task_can_be_deleted(task):
+    if isinstance(task, Task):
+        if Issue.objects.filter(task=task).count():
+            return False
+        else:
+            return True
+    return False

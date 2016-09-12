@@ -4,12 +4,13 @@ from django.shortcuts import render_to_response, get_object_or_404, redirect
 from tasks.models import Task
 from courses.models import Course
 from groups.models import Group
+from issues.models import Issue
 from django.template import RequestContext
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
-from tasks.models import TaskTaken
+from tasks.models import TaskTaken, TaskGroupRelations
 from django.contrib.auth.decorators import login_required
 from django.db.models import Max
 from anycontest.common import get_contest_info, FakeResponse
@@ -98,6 +99,23 @@ def task_edit_page(request, task_id):
     if request.method == 'POST':
         return task_create_ot_edit(request, task.course, task_id)
 
+    task_group = []
+    show_help_msg_task_group = False
+    groups = task.course.groups.all()
+    for group in groups:
+        if Issue.objects.filter(task=task, student__in=group.students.all()).count():
+            task_group.append(group)
+            if len(task_group) > 1:
+                task_group = []
+                show_help_msg_task_group = True
+                break
+        else:
+            show_help_msg_task_group = True
+    else:
+        if not task_group:
+            task_group = groups
+            show_help_msg_task_group = False
+
     schools = task.course.school_set.all()
 
     context = {
@@ -105,6 +123,8 @@ def task_edit_page(request, task_id):
         'course': task.course,
         'task': task,
         'task_types': task.TASK_TYPE_CHOICES,
+        'task_group': task_group,
+        'show_help_msg_task_group': show_help_msg_task_group,
         'contest_integrated': task.contest_integrated,
         'rb_integrated': task.rb_integrated,
         'hide_contest_settings': True if not task.contest_integrated or task.type == task.TYPE_SIMPLE else False,
@@ -172,15 +192,6 @@ def task_create_ot_edit(request, course, task_id=None):
     else:
         task = Task()
         task.course = course
-        max_weight_query = Task.objects.filter(course=course)
-        if task_group:
-            max_weight_query = max_weight_query.filter(group=task_group)
-        # if parent:
-        #     max_weight_query = max_weight_query.filter(parent_task=parent)
-        _, max_weight = max_weight_query.aggregate(Max('weight')).items()[0]
-        if max_weight is None:
-            max_weight = 0
-        task.weight = max_weight + 1
 
     task.title = task_title
     task.score_max = max_score
@@ -217,6 +228,8 @@ def task_create_ot_edit(request, course, task_id=None):
 
     task.updated_by = request.user
     task.save()
+
+    task.set_position_in_new_group(task_group)
 
     return HttpResponse(json.dumps({'page_title': task.title + ' | ' + course.name + ' | ' + str(course.year),
                                     'redirect_page': '/task/edit/' + str(task.id) if not task_id else None}),
@@ -361,17 +374,6 @@ def contest_task_import(request):
         return HttpResponseForbidden()
 
     for task in tasks:
-        max_weight_query = Task.objects.filter(course=course)
-        if task_group:
-            max_weight_query = max_weight_query.filter(group=task_group)
-        # if parent:
-        #     max_weight_query = max_weight_query.filter(parent_task=parent)
-
-        _, max_weight = max_weight_query.aggregate(Max('weight')).items()[0]
-        if max_weight is None:
-            max_weight = 0
-        max_weight += 1
-
         real_task = Task()
         real_task.course = course
         real_task.group = task_group
@@ -388,7 +390,6 @@ def contest_task_import(request):
         else:
             real_task.deadline_time = None
 
-        real_task.weight = max_weight
         real_task.title = task['task_title']
         real_task.task_text = task['task_text'].replace('<table','<table class="table table-sm"').replace('src="', 'src="https://contest.yandex.ru')
 
@@ -410,6 +411,7 @@ def contest_task_import(request):
         real_task.is_hidden = hidden_task
         real_task.updated_by = request.user
         real_task.save()
+        real_task.set_position_in_new_group(task_group)
 
     return HttpResponse("OK")
 

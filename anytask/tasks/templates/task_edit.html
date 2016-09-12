@@ -71,11 +71,15 @@
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label class="col-sm-3 form-control-label" for="task_edit_group"> Группа</label>
+                        <label class="col-sm-3 form-control-label" for="task_edit_group">Группа
+                            {% if show_help_msg_task_group %}
+                                <a tabindex="0" data-toggle="popover" data-trigger="hover" data-content="Перечень групп зависит от того сдавалась задача или нет" type="button"><i class="fa fa-question-circle help-button" aria-hidden="true"></i></a>
+                            {% endif %}
+                        </label>
                         <div class="controls col-sm-3">
                             <select class="form-control" id='task_edit_group' name="task_group_id">
                                 <option value=""> Для всех групп </option>
-                                {% for group in course.groups.all %}
+                                {% for group in task_group %}
                                     <option value="{{ group.id }}" {% ifequal group.id task.group.id %}selected{% endifequal %}>{{ group.name }}</option>
                                 {% endfor %}
                             </select>
