@@ -28,7 +28,7 @@
     });
 
     $('.fileupload-buttonbar').on("click", '.delete', function() {
-        $('#filenmae_changed_alert').hide();
+        $('#filename_changed_alert').hide();
         $('.drop-zone').show();
     });
 {% endblock %}
@@ -93,7 +93,7 @@
               float: none;
             }
             </style>
-            <div id="filenmae_changed_alert" class="alert alert-warning alert-dismissible" role="alert" style="display: none;margin-bottom: 0;">
+            <div id="filename_changed_alert" class="alert alert-warning alert-dismissible" role="alert" style="display: none;margin-bottom: 0;">
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -204,7 +204,7 @@
 {% block JS_DOWNLOAD_TEMPLATE_DELETE %}
         {{ JQ_OPEN }}
             if (file.one_file_upload) {
-                $('#filenmae_changed_alert').show();
+                $('#filename_changed_alert').show();
                 $('.drop-zone').hide();
             }
         {{ JQ_CLOSE }}

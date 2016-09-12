@@ -3,7 +3,7 @@ from django import template
 from django.utils.translation import ugettext as _
 from issues.models import Issue
 from issues.model_issue_field import IssueStatusField
-
+from tasks.models import Task
 
 register = template.Library()
 
@@ -41,3 +41,13 @@ def issue_label_color(d, task):
         if isinstance(d[task.id], Issue):
             return d[task.id].status_field.color
     return IssueStatusField.COLOR_DEFAULT
+
+
+@register.filter(name='can_be_deleted')
+def task_can_be_deleted(task):
+    if isinstance(task, Task):
+        if Issue.objects.filter(task=task).count():
+            return False
+        else:
+            return True
+    return False

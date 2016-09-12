@@ -88,8 +88,3 @@
     </div>
 </div>
 
-{% if issue.task.course.send_to_contest_from_users and not issue.student.get_profile.ya_contest_oauth and user.id == issue.student.id %}
-    <div class="alert alert-info">
-        <strong>Отправляйте в Я.Контест от своего Яндекс аккаунта!</strong> Все, что нужно - привязать к своему <a href="{% url users.views.profile %}">профилю </a> Я.Контест.
-    </div>
-{% endif %}

@@ -436,7 +436,7 @@ class ViewsTest(TestCase):
 
         Task.objects.create(title='task_title',
                             course=self.course,
-                            is_hidden=True)
+                            is_hidden=True).set_position_in_new_group()
 
         # get course page
         response = client.get(reverse('courses.views.course_page', kwargs={'course_id': self.course.id}))
@@ -606,6 +606,7 @@ class ViewsTest(TestCase):
                                    course=self.course,
                                    score_max=10,
                                    type=Task.TYPE_SIMPLE)
+        task.set_position_in_new_group()
 
         # get course page
         response = client.get(reverse('courses.views.course_page', kwargs={'course_id': self.course.id}))
@@ -887,6 +888,7 @@ class ViewsTest(TestCase):
                                    course=self.course,
                                    score_max=10,
                                    type=Task.TYPE_SIMPLE)
+        task.set_position_in_new_group()
 
         # get course page
         response = client.get(reverse('courses.views.course_page', kwargs={'course_id': self.course.id}))
