@@ -30,7 +30,7 @@ class UserProfile(models.Model):
     academic_degree = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
     academic_title = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
 
-    show_email = models.BooleanField(db_index=False, null=False, blank=False, default=False)
+    show_email = models.BooleanField(db_index=False, null=False, blank=False, default=True)
     send_own_events = models.BooleanField(db_index=False, null=False, blank=False, default=False)
 
     added_time = models.DateTimeField(auto_now_add=True, default=datetime.now)

@@ -137,7 +137,7 @@
                         </div>
                         {{ user_to_show.get_full_name }}
                         <br>
-                        {% if request.user == user_to_show or user_to_show.get_profile.show_email %}
+                        {% if show_email %}
                             <small class="text-muted">{{ user_to_show.email }}</small>
                         {% endif %}
                     </h5>

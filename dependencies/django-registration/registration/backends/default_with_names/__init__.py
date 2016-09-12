@@ -103,7 +103,7 @@ class AnytaskPasswordChangeForm(PasswordChangeForm):
 class RegistrationFormWithNames(RegistrationForm):
     first_name = forms.CharField(widget=forms.TextInput(attrs=attrs_dict), label="Имя")
     last_name = forms.CharField(widget=forms.TextInput(attrs=attrs_dict), label="Фамилия")
-    show_email = forms.BooleanField(required=False, label="Показывать мой e-mail всем пользователям")
+    show_email = forms.BooleanField(required=False, initial=True, label="Показывать мой e-mail всем пользователям")
     #invite = forms.CharField(widget=forms.TextInput(attrs=attrs_dict), label="Инвайт")
 
     def __init__(self, *args, **kwargs):
