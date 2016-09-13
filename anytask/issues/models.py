@@ -445,31 +445,31 @@ class Event(models.Model):
             ret += u' {0}'.format(self.field.name)
         return ret
 
-    class IssueFilter(django_filters.FilterSet):
-        status_field = django_filters.MultipleChoiceFilter(label=u'Статус', widget=forms.CheckboxSelectMultiple)
-        update_time = django_filters.DateRangeFilter(label=u'Дата последнего изменения')
-        responsible = django_filters.ChoiceFilter(label=u'Ответственный')
-        followers = django_filters.MultipleChoiceFilter(label=u'Наблюдатели', widget=forms.CheckboxSelectMultiple)
-        task = django_filters.ChoiceFilter(label=u'Задача')
+class IssueFilter(django_filters.FilterSet):
+    status_field = django_filters.MultipleChoiceFilter(label=u'Статус', widget=forms.CheckboxSelectMultiple)
+    update_time = django_filters.DateRangeFilter(label=u'Дата последнего изменения')
+    responsible = django_filters.ChoiceFilter(label=u'Ответственный')
+    followers = django_filters.MultipleChoiceFilter(label=u'Наблюдатели', widget=forms.CheckboxSelectMultiple)
+    task = django_filters.ChoiceFilter(label=u'Задача')
 
-        def set_course(self, course):
-            teacher_choices = [(teacher.id, _(teacher.get_full_name())) for teacher in course.get_teachers()]
-            teacher_choices.insert(0, (u'', _(u'Любой')))
-            self.filters['responsible'].field.choices = tuple(teacher_choices)
+    def set_course(self, course):
+        teacher_choices = [(teacher.id, _(teacher.get_full_name())) for teacher in course.get_teachers()]
+        teacher_choices.insert(0, (u'', _(u'Любой')))
+        self.filters['responsible'].field.choices = tuple(teacher_choices)
 
-            teacher_choices.pop(0)
-            self.filters['followers'].field.choices = tuple(teacher_choices)
+        teacher_choices.pop(0)
+        self.filters['followers'].field.choices = tuple(teacher_choices)
 
-            task_choices = [(task.id, _(task.title)) for task in Task.objects.all().filter(course=course)]
-            task_choices.insert(0, (u'', _(u'Любая')))
-            self.filters['task'].field.choices = tuple(task_choices)
+        task_choices = [(task.id, _(task.title)) for task in Task.objects.all().filter(course=course)]
+        task_choices.insert(0, (u'', _(u'Любая')))
+        self.filters['task'].field.choices = tuple(task_choices)
 
-            status_choices = [(status.id, _(status.name)) for status in course.issue_mark_system.statuses.all()]
-            for status_id in sorted(Issue.HIDDEN_STATUSES.values(), reverse=True):
-                status_field = IssueStatusField.objects.get(pk=status_id)
-                status_choices.insert(0, (status_field.id, _(status_field.name)))
-            self.filters['status_field'].field.choices = tuple(status_choices)
+        status_choices = [(status.id, _(status.name)) for status in course.issue_mark_system.statuses.all()]
+        for status_id in sorted(Issue.HIDDEN_STATUSES.values(), reverse=True):
+            status_field = IssueStatusField.objects.get(pk=status_id)
+            status_choices.insert(0, (status_field.id, _(status_field.name)))
+        self.filters['status_field'].field.choices = tuple(status_choices)
 
-        class Meta:
-            model = Issue
-            fields = ['status_field', 'responsible', 'followers', 'update_time']
+    class Meta:
+        model = Issue
+        fields = ['status_field', 'responsible', 'followers', 'update_time']
