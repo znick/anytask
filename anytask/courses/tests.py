@@ -11,6 +11,7 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 from schools.models import School
 from courses.models import Course, IssueField, FilenameExtension, CourseMarkSystem, MarkField
+from issues.models import IssueStatus
 from groups.models import Group
 from years.models import Year
 from tasks.models import Task
@@ -647,7 +648,7 @@ class ViewsTest(TestCase):
                                 'mark_max': task.score_max,
                                 'mark_value': '3'})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content, '{"label": "label-success", "mark": 3.0}')
+        self.assertEqual(response.content, '{"color": "' + IssueStatus.objects.get(pk=5).color + '", "mark": 3.0}')
 
         # get course page
         response = client.get(reverse('courses.views.course_page', kwargs={'course_id': self.course.id}))
@@ -930,7 +931,7 @@ class ViewsTest(TestCase):
                                 'mark_max': task.score_max,
                                 'mark_value': '3'})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content, '{"label": "label-success", "mark": 3.0}')
+        self.assertEqual(response.content, '{"color": "' + IssueStatus.objects.get(pk=5).color + '", "mark": 3.0}')
 
         # get course page
         self.assertTrue(client.login(username=self.student.username, password=self.student_password))

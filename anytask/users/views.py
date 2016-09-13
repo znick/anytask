@@ -254,7 +254,7 @@ def user_courses(request, username=None, year=None):
 
     courses = Course.objects.filter(is_active=True, year=current_year).filter(groups__in=groups)
 
-    course_statistics = []
+    tables = {}
 
     for course in courses:
 
@@ -269,16 +269,22 @@ def user_courses(request, username=None, year=None):
         new_course_statistics = {}
         new_course_statistics['name'] = course.name
         new_course_statistics['url'] = course.get_absolute_url()
-        new_course_statistics['issues_with_accepted'] = issues.filter(status='accepted').count()
-        new_course_statistics['issues_with_rework'] = issues.filter(status='rework').count()
-        new_course_statistics['issues_with_verification'] = issues.filter(status='verification').count()
+
+        new_course_statistics['issues_count'] = []
+        for status in course.issue_status_system.statuses.all():
+            new_course_statistics['issues_count'].append((status, issues.filter(status_field=status).count()))
+
         new_course_statistics['tasks'] = tasks.count
         new_course_statistics['mark'] = mark if mark else '--'
 
-        course_statistics.append(new_course_statistics)
+        table_key = course.issue_status_system.id
+        if table_key in tables:
+            tables[table_key].append(new_course_statistics)
+        else:
+            tables[table_key] = [new_course_statistics]
 
     context = {
-        'course_statistics' : course_statistics,
+        'tables'            : tables,
         'user_to_show'      : user_to_show,
         'user'              : user,
     }

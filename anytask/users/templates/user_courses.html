@@ -45,40 +45,51 @@
         }
     </style>
 
-    <div class="card">
-        <div class="card-block">
-            <h5 class="card-title"> {%  if user_to_show != user %} Текущая успеваемость {{ user_to_show.get_full_name }}
-            {% else %}Мои курсы{% endif %}</h5>
-            {% if course_statistics %}
-                <table class="table table_courses">
-                    <thead>
-                    <tr style="background-color: #ffffff;">
-                        <th>Курс<i class="fa fa-fw fa-sort"></i></th>
-                        <th>Зачтено<i class="fa fa-fw fa-sort"></i></th>
-                        <th>На проверке<i class="fa fa-fw fa-sort"></i></th>
-                        <th>На доработке<i class="fa fa-fw fa-sort"></i></th>
-                        <th>Всего задач<i class="fa fa-fw fa-sort"></i></th>
-                        <th>Итоговая оценка<i class="fa fa-fw fa-sort"></i></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for course in course_statistics %}
-                        <tr onclick="location.href='{% if issue.task.has_issue_access %}{{ issue.get_absolute_url }}{% else %}#{% endif %}'">
-                            <td>
-                                <a href="{{ course.url }}">{{ course.name }}</a>
-                            </td>
-                            <td><h5><label class="label label-success">{{ course.issues_with_accepted }}</label></h5></td>
-                            <td><h5><label class="label label-warning">{{ course.issues_with_rework }}</label></h5></td>
-                            <td><h5><label class="label label-danger">{{ course.issues_with_verification }}</label></h5></td>
-                            <td><h5><label class="label label-inverse">{{ course.tasks }}</label></h5></td>
-                            <td><h5><label class="label label-success">{{ course.mark }}</label></h5></td>
+    {% if tables %}
+        {% for table_id, course_statistics in tables.iteritems %}
+            <div class="card">
+                <div class="card-block">
+                    {% if forloop.counter == 1 %}
+                        <h5 class="card-title"> {%  if user_to_show != user %} Текущая успеваемость {{ user_to_show.get_full_name }}
+                        {% else %}Мои курсы{% endif %}</h5>
+                    {% endif %}
+
+                    <table class="table table_courses">
+                        <thead>
+                        <tr style="background-color: #ffffff;">
+                            <th>Курс<i class="fa fa-fw fa-sort"></i></th>
+                            {% for status, sum in course_statistics.0.issues_count %}
+                                <th>{{ status.name }}<i class="fa fa-fw fa-sort"></i></th>
+                            {% endfor %}
+                            <th>Всего задач<i class="fa fa-fw fa-sort"></i></th>
+                            <th>Итоговая оценка<i class="fa fa-fw fa-sort"></i></th>
                         </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            {% else %}
+                        </thead>
+                        <tbody>
+                        {% for course in course_statistics %}
+                            <tr onclick="location.href='{% if issue.task.has_issue_access %}{{ issue.get_absolute_url }}{% else %}#{% endif %}'">
+                                <td>
+                                    <a href="{{ course.url }}">{{ course.name }}</a>
+                                </td>
+                                {% for status, sum in course.issues_count %}
+                                    <td><h5><label class="label" style="background-color: {{ status.color }};">{{ sum }}</label></h5></td>
+                                {% endfor %}
+                                <td><h5><label class="label label-inverse">{{ course.tasks }}</label></h5></td>
+                                <td><h5><label class="label label-success">{{ course.mark }}</label></h5></td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="card">
+            <div class="card-block">
+                <h5 class="card-title"> {%  if user_to_show != user %} Текущая успеваемость {{ user_to_show.get_full_name }}
+                {% else %}Мои курсы{% endif %}</h5>
                 <p class="card-text">Нет ни одного курса</p>
-            {% endif %}
+            </div>
         </div>
-    </div>
+    {% endif %}
 {% endblock %}

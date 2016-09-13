@@ -22,3 +22,4 @@ yandex-oauth-py
 xmltodict
 django-crispy-forms
 mock
+django-colorfield

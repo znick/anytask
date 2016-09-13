@@ -80,7 +80,11 @@
             <div class="col-md-6">
                 <div class="card-title-block" style="display: table; margin-bottom: 0.5rem;">
                     {% ifnotequal group course.group_with_extern %}
-                        <h5 class="card-title" style="display: table-cell;margin: 0;vertical-align: middle;">{% if group.name %}{{ group.name }}{% else %}&nbsp;{% endif %}</h5>
+                        <h5 class="card-title" style="display: table-cell;margin: 0;vertical-align: middle;">{% if group.name %}{{ group.name }}{% else %}&nbsp;{% endif %}
+                        {% if default_teacher|key:group %}
+                            (<a class="card-link" href="{{ default_teacher|get_url:group }}" style="color:#373a3c;">{{ default_teacher|get_name:group }}</a>)
+                        {% endif %}
+                        </h5>
                     {% endifnotequal %}
                     <button class="btn btn-secondary btn-table-fullscreen" type="button" for="#table_results_{{ group.id }}" style="display: none;vertical-align: top;margin: 2px; padding: 6px;"><i class="fa fa-expand fa-lg"></i></button>
                     {% if user_is_teacher %}
@@ -135,13 +139,13 @@
                                             <a  href="/issue/get_or_create/{{task.id}}/{{student.id}}">
                                                 {# <span class="label {% if task_x_task_takens|score:task %} {% if task_x_task_takens|score:task == task.score_max %} label-success {% else %} label-info {% endif %} {% endif %}"> #}
                                                 <span class="label
-                                                  {{ task_x_task_takens|label_type:task }}">
+                                                  {{ task_x_task_takens|have_issue:task }}" style="background-color: {{ task_x_task_takens|label_color:task }};">
                                                   {{ task_x_task_takens|score:task }}
                                                 </span>
                                             </a>
                                         {% else %}
                                             <div {% if user_is_teacher %}class="task-mark-value"{% endif %}>
-                                                <span class="label {{ task_x_task_takens|label_type:task }}">
+                                                <span class="label {{ task_x_task_takens|have_issue:task }}" style="background-color: {{ task_x_task_takens|label_color:task }};">
                                                   {{ task_x_task_takens|score:task }}
                                                 </span>
                                             </div>
@@ -163,7 +167,7 @@
                                             <span class="label label-default ">{{ task_x_task_takens|score:task }}</span>
                                         {% else %}
                                             <span class="label
-                        {{ task_x_task_takens|label_type:task }}">
+                        {{ task_x_task_takens|have_issue:task }}" style="background-color: {{ task_x_task_takens|label_color:task }};">
                         {{ task_x_task_takens|score:task }}
                       </span>
                                         {% endif %}

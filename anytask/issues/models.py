@@ -11,6 +11,7 @@ from django.utils.translation import ugettext as _
 from django.conf import settings
 from django import forms
 from issues.model_issue_field import IssueField
+from issues.model_issue_status import IssueStatus
 from decimal import Decimal
 from anyrb.common import AnyRB
 from anyrb.common import update_status_review_request
@@ -61,11 +62,15 @@ class Issue(models.Model):
     followers = models.ManyToManyField(User, null=True, blank=True)
 
     STATUS_NEW = 'new'
-    STATUS_REWORK = 'rework'
-    STATUS_VERIFICATION = 'verification'
-    STATUS_ACCEPTED = 'accepted'
     STATUS_AUTO_VERIFICATION = 'auto_verification'
     STATUS_NEED_INFO = 'need_info'
+    HIDDEN_STATUSES = {STATUS_NEW: 1,
+                       STATUS_AUTO_VERIFICATION: 2,
+                       STATUS_NEED_INFO: 6}
+
+    STATUS_REWORK = IssueStatus.STATUS_REWORK
+    STATUS_VERIFICATION = IssueStatus.STATUS_VERIFICATION
+    STATUS_ACCEPTED = IssueStatus.STATUS_ACCEPTED
 
     ISSUE_STATUSES = (
         (STATUS_NEW, _(u'Новый')),
@@ -77,6 +82,7 @@ class Issue(models.Model):
     )
 
     status = models.CharField(max_length=20, choices=ISSUE_STATUSES, default=STATUS_NEW)
+    status_field = models.ForeignKey(IssueStatus, db_index=True, null=False, blank=False, default=1)
 
     def score(self):
         field = get_object_or_404(IssueField, id=8)
@@ -89,7 +95,7 @@ class Issue(models.Model):
         return mark
 
     def get_status(self):
-        return dict(self.ISSUE_STATUSES)[self.status]
+        return self.status_field.name
 
     def last_comment(self):
         field = get_object_or_404(IssueField, id=1)
@@ -127,7 +133,7 @@ class Issue(models.Model):
         if name == 'comment':
             return None
         if name == 'status':
-            return dict(self.ISSUE_STATUSES)[self.status]
+            return self.get_status()
         if name == 'mark':
             return self.score()
         if name == 'review_id' and self.task.rb_integrated:
@@ -165,7 +171,7 @@ class Issue(models.Model):
         if name == 'task_name':
             return self.task
         if name == 'status':
-            return self.status
+            return self.status_field
         if name == 'max_mark':
             return self.task.score_max
         if name == 'mark':
@@ -190,6 +196,12 @@ class Issue(models.Model):
             if ret:
                 ret = ret.id #Hack hack hack :\
             return ret
+        if field.name == 'status':
+            if ret.id not in IssueStatus.HIDDEN_STATUSES.values():
+                ret = ret.id
+            else:
+                ret = None
+            return ret
         return ret
 
     def create_event(self, field, author):
@@ -201,6 +213,15 @@ class Issue(models.Model):
 
         return event
 
+    def set_status_by_tag(self, tag, author=None):
+        if tag in IssueStatus.HIDDEN_STATUSES:
+            return self.set_byname('status', IssueStatus.objects.get(id=IssueStatus.HIDDEN_STATUSES[tag]))
+        else:
+            status = self.task.course.issue_status_system.statuses.filter(tag=tag)
+            if status:
+                return self.set_byname('status', status[0], author)
+        return
+
     def set_byname(self, name, value, author=None):
         field = get_object_or_404(IssueField, name=name)
         return self.set_field(field, value, author)
@@ -208,6 +229,9 @@ class Issue(models.Model):
     def set_field(self, field, value, author=None):
         event = self.create_event(field, author)
         name = field.name
+        course = self.task.course
+
+        delete_event = False
 
         if name == 'responsible_name':
             new_responsible = value
@@ -218,13 +242,19 @@ class Issue(models.Model):
                     new_followers.append(self.responsible)
                 self.responsible = new_responsible
                 self.followers = new_followers
+            else:
+                delete_event = True
 
             value = value.last_name + ' ' + value.first_name
 
         elif name == 'followers_names':
             if self.responsible and str(self.responsible.id) in value:
                 value.remove(str(self.responsible.id))
+            prev_followers = self.followers
             self.followers = list(value)
+
+            if prev_followers == self.followers:
+                delete_event = True
 
             value = []
             for follower in self.followers.all():
@@ -246,15 +276,15 @@ class Issue(models.Model):
                                 sent, message = upload_contest(event, ext, uploaded_file, compiler_id=value['compilers'][file_id])
                                 if sent:
                                     value['comment'] += u"Отправлено на проверку в Я.Контест"
-                                    if self.status != self.STATUS_ACCEPTED:
-                                        self.set_byname('status', self.STATUS_AUTO_VERIFICATION)
+                                    if self.status_field.tag != IssueStatus.STATUS_ACCEPTED:
+                                        self.set_status_by_tag(IssueStatus.STATUS_AUTO_VERIFICATION)
                                 else:
                                     value['comment'] += u"Ошибка отправки в Я.Контест ('{0}').".format(message)
                                     self.followers.add(User.objects.get(username='anytask.monitoring'))
                                 break
 
-                    if self.task.rb_integrated and (self.task.course.send_rb_and_contest_together or not self.task.contest_integrated):
-                        for ext in settings.RB_EXTENSIONS + [str(ext.name) for ext in self.task.course.filename_extensions.all()]:
+                    if self.task.rb_integrated and (course.send_rb_and_contest_together or not self.task.contest_integrated):
+                        for ext in settings.RB_EXTENSIONS + [str(ext.name) for ext in course.filename_extensions.all()]:
                             filename, extension = os.path.splitext(file.name)
                             if ext == extension:
                                 anyrb = AnyRB(event)
@@ -275,52 +305,77 @@ class Issue(models.Model):
                     self.update_time = datetime.now()
                     value = value['comment']
 
-                if self.status != self.STATUS_AUTO_VERIFICATION and self.status != self.STATUS_ACCEPTED:
-                    if author == self.student and self.status != self.STATUS_NEED_INFO and sent:
-                        self.set_byname('status', self.STATUS_VERIFICATION)
+                if self.status_field.tag != IssueStatus.STATUS_AUTO_VERIFICATION \
+                        and self.status_field.tag != IssueStatus.STATUS_ACCEPTED:
+                    if author == self.student and self.status_field.tag != IssueStatus.STATUS_NEED_INFO and sent:
+                        self.set_status_by_tag(IssueStatus.STATUS_VERIFICATION)
                     if author == self.responsible:
-                        self.status = self.STATUS_REWORK
+                        if self.status_field.tag == IssueStatus.STATUS_NEED_INFO:
+                            status_field = get_object_or_404(IssueField, name='status')
+                            status_events = Event.objects\
+                                .filter(issue_id=self.id, field=status_field)\
+                                .exclude(author__isnull=True)\
+                                .order_by('-timestamp')
+
+                            if status_events:
+                                status_prev = self.task.course.issue_status_system.statuses\
+                                    .filter(name=status_events[0].value)
+                                if status_prev:
+                                    self.set_field(status_field, status_prev[0])
+                                else:
+                                    self.set_status_by_tag(IssueStatus.STATUS_REWORK)
+                        else:
+                            self.set_status_by_tag(IssueStatus.STATUS_REWORK)
 
         elif name == 'status':
             try:
                 review_id = self.get_byname('review_id')
                 if review_id != '':
-                    if value == self.STATUS_ACCEPTED:
-                        update_status_review_request(review_id,'submitted')
-                    elif self.status == self.STATUS_ACCEPTED:
-                        update_status_review_request(review_id,'pending')
+                    if value.tag == IssueStatus.STATUS_ACCEPTED:
+                        update_status_review_request(review_id, 'submitted')
+                    elif self.status_field.tag == IssueStatus.STATUS_ACCEPTED:
+                        update_status_review_request(review_id, 'pending')
             except:
                 pass
 
-            self.status = value
+            if self.status_field != value:
+                self.status_field = value
+            else:
+                delete_event = True
+
             value = self.get_status()
 
         elif name == 'mark':
             if not value:
                 value = 0
             value = normalize_decimal(value)
-            self.mark = float(value)
+            if self.mark != float(value):
+                self.mark = float(value)
+            else:
+                delete_event = True
+
             value = str(value)
-            if self.status != self.STATUS_ACCEPTED and self.status != self.STATUS_NEW:
-                self.set_byname('status', 'rework')
+            if self.status_field.tag != IssueStatus.STATUS_ACCEPTED and self.status_field.tag != IssueStatus.STATUS_NEW:
+                self.set_status_by_tag(IssueStatus.STATUS_REWORK)
 
         self.save()
 
         if not value:
             value = ''
 
-        course = self.task.course
         group = course.get_user_group(self.student)
         default_teacher = course.get_default_teacher(group)
         if default_teacher and (not self.get_byname('responsible_name')):
             self.set_byname('responsible_name', default_teacher)
 
-        event.value = value
-        event.save()
-        event.pull_plugins()
+        if not delete_event:
+            event.value = value
+            event.save()
+            event.pull_plugins()
+        else:
+            event.delete()
 
-
-        pass
+        return
 
     def get_history(self):
         """
@@ -392,13 +447,9 @@ class Event(models.Model):
             ret += u' {0}'.format(self.field.name)
         return ret
 
-class IssueFilter(django_filters.FilterSet):
-    try:
-        issue_statuses = Issue.objects.get(pk=1).ISSUE_STATUSES
-    except:
-        issue_statuses = [(0,(u'------------'))]
 
-    status = django_filters.MultipleChoiceFilter(label=u'Статус', choices=issue_statuses, widget=forms.CheckboxSelectMultiple)
+class IssueFilter(django_filters.FilterSet):
+    status_field = django_filters.MultipleChoiceFilter(label=u'Статус', widget=forms.CheckboxSelectMultiple)
     update_time = django_filters.DateRangeFilter(label=u'Дата последнего изменения')
     responsible = django_filters.ChoiceFilter(label=u'Ответственный')
     followers = django_filters.MultipleChoiceFilter(label=u'Наблюдатели', widget=forms.CheckboxSelectMultiple)
@@ -406,14 +457,22 @@ class IssueFilter(django_filters.FilterSet):
 
     def set_course(self, course):
         teacher_choices = [(teacher.id, _(teacher.get_full_name())) for teacher in course.get_teachers()]
-        teacher_choices.insert(0,(u'', _(u'Любой')))
+        teacher_choices.insert(0, (u'', _(u'Любой')))
         self.filters['responsible'].field.choices = tuple(teacher_choices)
+
         teacher_choices.pop(0)
         self.filters['followers'].field.choices = tuple(teacher_choices)
+
         task_choices = [(task.id, _(task.title)) for task in Task.objects.all().filter(course=course)]
         task_choices.insert(0, (u'', _(u'Любая')))
         self.filters['task'].field.choices = tuple(task_choices)
 
+        status_choices = [(status.id, _(status.name)) for status in course.issue_status_system.statuses.all()]
+        for status_id in sorted(IssueStatus.HIDDEN_STATUSES.values(), reverse=True):
+            status_field = IssueStatus.objects.get(pk=status_id)
+            status_choices.insert(0, (status_field.id, _(status_field.name)))
+        self.filters['status_field'].field.choices = tuple(status_choices)
+
     class Meta:
         model = Issue
-        fields = ['status', 'responsible', 'followers', 'update_time']
+        fields = ['status_field', 'responsible', 'followers', 'update_time']
