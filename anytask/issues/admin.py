@@ -26,6 +26,7 @@ display_color.allow_tags = True
 class IssueStatusAdmin(admin.ModelAdmin):
     list_display = (display_color, 'tag')
     exclude = ('hidden',)
+    search_fields = ('name',)
 
     def queryset(self, request):
         qs = super(IssueStatusAdmin, self).queryset(request)
