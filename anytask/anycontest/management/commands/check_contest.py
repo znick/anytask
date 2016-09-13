@@ -5,6 +5,7 @@ from django.conf import settings
 from anycontest.common import check_submission, comment_verdict, get_contest_mark
 from anyrb.common import AnyRB
 from issues.models import Event, Issue
+from issues.model_issue_status import IssueStatus
 
 import logging
 
@@ -14,7 +15,7 @@ class Command(BaseCommand):
     help = "Check contest submissions and comment verdict"
 
     def handle(self, **options):
-        for issue in Issue.objects.filter(status_field__tag=Issue.STATUS_AUTO_VERIFICATION):
+        for issue in Issue.objects.filter(status_field__tag=IssueStatus.STATUS_AUTO_VERIFICATION):
             try:
                 run_id = issue.get_byname('run_id')
                 events = issue.event_set.all().reverse()

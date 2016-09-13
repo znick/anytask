@@ -124,7 +124,7 @@
     <h5 style="padding-left: 1px;">
         <span class="label label-default">Новый</span>
         <span class="label label-info">Требуется информация</span>
-        {% for issue_status in course.issue_mark_system.statuses.all %}
+        {% for issue_status in course.issue_status_system.statuses.all %}
             <span class="label" style="background-color: {{ issue_status.color }}">{{ issue_status.name }}</span>
         {% endfor %}
         <span class="label label-inverse">Суммарный балл</span>

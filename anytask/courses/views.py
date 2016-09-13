@@ -35,7 +35,7 @@ from anysvn.common import svn_log_rev_message, svn_log_head_revision, get_svn_ex
 from anyrb.common import AnyRB
 from anycontest.common import get_contest_info
 from issues.models import Issue, Event, IssueFilter
-from issues.model_issue_field import IssueStatusField
+from issues.model_issue_status import IssueStatus
 from users.forms import InviteActivationForm
 
 from common.ordered_dict import OrderedDict
@@ -463,13 +463,13 @@ def set_task_mark(request):
 
     mark = 0
     if request.POST['mark_value'] == '-':
-        issue.set_status_by_tag(issue.STATUS_NEW)
+        issue.set_status_by_tag(IssueStatus.STATUS_NEW)
     else:
         mark = float(request.POST['mark_value'])
         if mark <= 0:
-            issue.set_status_by_tag(issue.STATUS_REWORK)
+            issue.set_status_by_tag(IssueStatus.STATUS_REWORK)
         else:
-            issue.set_status_by_tag(issue.STATUS_ACCEPTED)
+            issue.set_status_by_tag(IssueStatus.STATUS_ACCEPTED)
 
     issue.set_byname('mark', mark)
 

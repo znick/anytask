@@ -15,7 +15,7 @@ from groups.models import Group
 from years.models import Year
 from tasks.models import Task
 from issues.models import Issue, File, Event
-from issues.model_issue_field import IssueStatusField
+from issues.model_issue_status import IssueStatus
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from mock import patch
@@ -46,7 +46,7 @@ class CreateTest(TestCase):
         followers = [User.objects.create_user(username='follower1',
                                               password='password')]
 
-        status = IssueStatusField.objects.get(tag=Issue.STATUS_ACCEPTED)
+        status = IssueStatus.objects.get(tag=Issue.STATUS_ACCEPTED)
 
         issue = Issue()
         issue.student = student

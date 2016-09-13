@@ -271,13 +271,13 @@ def user_courses(request, username=None, year=None):
         new_course_statistics['url'] = course.get_absolute_url()
 
         new_course_statistics['issues_count'] = []
-        for status in course.issue_mark_system.statuses.all():
+        for status in course.issue_status_system.statuses.all():
             new_course_statistics['issues_count'].append((status, issues.filter(status_field=status).count()))
 
         new_course_statistics['tasks'] = tasks.count
         new_course_statistics['mark'] = mark if mark else '--'
 
-        table_key = course.issue_mark_system.id
+        table_key = course.issue_status_system.id
         if table_key in tables:
             tables[table_key].append(new_course_statistics)
         else:

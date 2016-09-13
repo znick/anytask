@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from issues.model_issue_field import IssueField, IssueStatusField, IssueStatusSystem
+from issues.model_issue_field import IssueField
+from issues.model_issue_status import IssueStatus, IssueStatusSystem
 from issues.models import Issue, Event
 from django.contrib import admin
 
@@ -22,12 +23,12 @@ display_color.short_description = u'Статус'
 display_color.allow_tags = True
 
 
-class IssueStatusFieldAdmin(admin.ModelAdmin):
+class IssueStatusAdmin(admin.ModelAdmin):
     list_display = (display_color, 'tag')
     exclude = ('hidden',)
 
     def queryset(self, request):
-        qs = super(IssueStatusFieldAdmin, self).queryset(request)
+        qs = super(IssueStatusAdmin, self).queryset(request)
         # if request.user.is_superuser:
         #     return qs
         return qs.exclude(hidden=True)
@@ -39,12 +40,12 @@ class IssueStatusSystemAdmin(admin.ModelAdmin):
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         if db_field.name == "statuses":
-            kwargs["queryset"] = IssueStatusField.objects.exclude(hidden=True)
+            kwargs["queryset"] = IssueStatus.objects.exclude(hidden=True)
         return super(IssueStatusSystemAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
 
 
 admin.site.register(Issue)
 admin.site.register(Event)
 admin.site.register(IssueField)
-admin.site.register(IssueStatusField, IssueStatusFieldAdmin)
+admin.site.register(IssueStatus, IssueStatusAdmin)
 admin.site.register(IssueStatusSystem, IssueStatusSystemAdmin)
