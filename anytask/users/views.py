@@ -42,8 +42,6 @@ def profile(request, username=None, year=None):
     if username:
         user_to_show = get_object_or_404(User, username=username)
 
-    teacher_in_courses = Course.objects.filter(is_active=True).filter(teachers=user_to_show).distinct()
-    user_teacher_in_courses = Course.objects.filter(is_active=True).filter(teachers=user)
     if user_to_show != user:
         if not user.is_staff:
             groups_user_to_show = user_to_show.group_set.all()
@@ -59,7 +57,7 @@ def profile(request, username=None, year=None):
                         courses_teacher & courses_user_to_show):
                     raise PermissionDenied
 
-    teacher_in_courses = Course.objects.filter(is_active=True).filter(teachers=user_to_show)
+    teacher_in_courses = Course.objects.filter(is_active=True).filter(teachers=user_to_show).distinct()
 
     if year:
         current_year = get_object_or_404(Year, start_year=year)
