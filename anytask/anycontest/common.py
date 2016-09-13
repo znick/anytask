@@ -156,7 +156,10 @@ def check_submission(issue):
                                  + 'ms/' + '%.2f' % (test['usedMemory']/(1024.*1024)) + 'Mb\n'
                 test_input = u'\n<u>Ввод</u>\n' + test['input'] if test['input'] else ""
                 test_output = u'\n<u>Вывод программы</u>\n' + test['output'] if test['output'] else ""
-                test_answer = u'\n<u>Правильный ответ</u>\n' + test['answer'] if test['answer'] else ""
+                if 'answer' in test:
+                    test_answer = u'\n<u>Правильный ответ</u>\n' + test['answer'] if test['answer'] else ""
+                else:
+                    test_answer = ""
                 test_error = u'\n<u>Stderr</u>\n' + test['error'] if test['error'] else ""
                 test_message = u'\n<u>Сообщение чекера</u>\n' + test['message'] if test['message'] else ""
                 comment += u'\n<u>Тест ' + str(test['testNumber']) + '</u>' \
