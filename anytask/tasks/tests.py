@@ -13,7 +13,7 @@ from schools.models import School
 from courses.models import Course
 from groups.models import Group
 from years.models import Year
-from tasks.models import Task
+from tasks.models import Task, TaskGroupRelations
 
 from mock import patch, MagicMock
 from BeautifulSoup import BeautifulSoup
@@ -116,6 +116,7 @@ class ViewsTest(TestCase):
         self.task = Task.objects.create(title='task_title_0',
                                         course=self.course,
                                         score_max=15)
+        self.task.set_position_in_new_group()
 
     def test_task_create_page_anonymously(self):
         client = self.client
@@ -240,7 +241,6 @@ class ViewsTest(TestCase):
         self.assertEqual(created_task.title, 'task_title', 'Created task wrong title')
         self.assertEqual(created_task.course, self.course, 'Created task wrong course')
         self.assertEqual(created_task.group, self.group, 'Created task wrong group')
-        self.assertEqual(created_task.weight, 1, 'Created task wrong weight')
         self.assertEqual(created_task.is_hidden, True, 'Created task wrong is_hidden')
         self.assertIsNone(created_task.parent_task, 'Created task wrong parent_task')
         self.assertEqual(created_task.task_text, 'task_text', 'Created task wrong task_text')
@@ -252,6 +252,11 @@ class ViewsTest(TestCase):
         self.assertEqual(created_task.problem_id, 'A', 'Created task wrong problem_id')
         self.assertEqual(created_task.sended_notify, False, 'Created task wrong sended_notify')
         self.assertEqual(created_task.one_file_upload, True, 'Created task wrong one_file_upload')
+        task_pos = TaskGroupRelations.objects.filter(task=created_task)
+        self.assertEqual(len(task_pos), 1, 'Created task TaskGroupRelations len not 1')
+        self.assertEqual(task_pos[0].group, self.group, 'Created task TaskGroupRelations groups not equal')
+        self.assertEqual(task_pos[0].position, 1, 'Created task TaskGroupRelations position not 1')
+        self.assertFalse(task_pos[0].deleted, 'Created task TaskGroupRelations deleted')
 
         # get edit task page
         response = client.get(reverse('tasks.views.task_edit_page', kwargs={'task_id': created_task.id}))
@@ -456,7 +461,6 @@ class ViewsTest(TestCase):
             self.assertEqual(task.title, problems[problems_idx]['problemTitle'], 'Wrong task title')
             self.assertEqual(task.course, self.course)
             self.assertEqual(task.group, self.group)
-            self.assertEqual(task.weight, idx + 1)
             self.assertEqual(task.is_hidden, True)
             self.assertIsNone(task.parent_task)
             self.assertEqual(task.task_text, problems[problems_idx]['statement'])
@@ -467,4 +471,9 @@ class ViewsTest(TestCase):
             self.assertEqual(str(task.contest_id), post_data['contest_id_for_task'])
             self.assertEqual(task.problem_id, problems[problems_idx]['alias'])
             self.assertEqual(task.sended_notify, False)
+            task_pos = TaskGroupRelations.objects.filter(task=task)
+            self.assertEqual(len(task_pos), 1, 'Created task TaskGroupRelations len not 1')
+            self.assertEqual(task_pos[0].group, self.group, 'Created task TaskGroupRelations groups not equal')
+            self.assertEqual(task_pos[0].position, idx + 1, idx)
+            self.assertFalse(task_pos[0].deleted, 'Created task TaskGroupRelations deleted')
             problems_idx = 2

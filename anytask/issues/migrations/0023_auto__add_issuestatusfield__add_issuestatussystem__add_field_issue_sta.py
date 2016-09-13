@@ -8,15 +8,15 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding model 'IssueStatusField'
-        db.create_table('issues_issuestatusfield', (
+        # Adding model 'IssueStatus'
+        db.create_table('issues_issuestatus', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('name', self.gf('django.db.models.fields.CharField')(max_length=254, db_index=True)),
             ('tag', self.gf('django.db.models.fields.CharField')(max_length=254, null=True, blank=True)),
             ('color', self.gf('colorfield.fields.ColorField')(default='#818A91', max_length=10)),
             ('hidden', self.gf('django.db.models.fields.BooleanField')(default=False)),
         ))
-        db.send_create_signal('issues', ['IssueStatusField'])
+        db.send_create_signal('issues', ['IssueStatus'])
 
         # Adding model 'IssueStatusSystem'
         db.create_table('issues_issuestatussystem', (
@@ -30,19 +30,19 @@ class Migration(SchemaMigration):
         db.create_table(m2m_table_name, (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
             ('issuestatussystem', models.ForeignKey(orm['issues.issuestatussystem'], null=False)),
-            ('issuestatusfield', models.ForeignKey(orm['issues.issuestatusfield'], null=False))
+            ('issuestatus', models.ForeignKey(orm['issues.issuestatus'], null=False))
         ))
-        db.create_unique(m2m_table_name, ['issuestatussystem_id', 'issuestatusfield_id'])
+        db.create_unique(m2m_table_name, ['issuestatussystem_id', 'issuestatus_id'])
 
         # Adding field 'Issue.status_field'
         db.add_column('issues_issue', 'status_field',
-                      self.gf('django.db.models.fields.related.ForeignKey')(default=1, to=orm['issues.IssueStatusField']),
+                      self.gf('django.db.models.fields.related.ForeignKey')(default=1, to=orm['issues.IssueStatus']),
                       keep_default=False)
 
 
     def backwards(self, orm):
-        # Deleting model 'IssueStatusField'
-        db.delete_table('issues_issuestatusfield')
+        # Deleting model 'IssueStatus'
+        db.delete_table('issues_issuestatus')
 
         # Deleting model 'IssueStatusSystem'
         db.delete_table('issues_issuestatussystem')
@@ -105,7 +105,7 @@ class Migration(SchemaMigration):
             'information': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'db_index': 'True'}),
             'issue_fields': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'to': "orm['issues.IssueField']", 'null': 'True', 'blank': 'True'}),
-            'issue_mark_system': ('django.db.models.fields.related.ForeignKey', [], {'default': '1', 'to': "orm['issues.IssueStatusSystem']", 'db_index': 'False'}),
+            'issue_status_system': ('django.db.models.fields.related.ForeignKey', [], {'default': '1', 'to': "orm['issues.IssueStatusSystem']", 'db_index': 'False'}),
             'mark_system': ('django.db.models.fields.related.ForeignKey', [], {'db_index': 'False', 'to': "orm['courses.CourseMarkSystem']", 'null': 'True', 'blank': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '254', 'db_index': 'True'}),
             'name_id': ('django.db.models.fields.CharField', [], {'db_index': 'True', 'max_length': '254', 'null': 'True', 'blank': 'True'}),
@@ -169,7 +169,7 @@ class Migration(SchemaMigration):
             'mark': ('django.db.models.fields.FloatField', [], {'default': '0'}),
             'responsible': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'responsible'", 'null': 'True', 'to': "orm['auth.User']"}),
             'status': ('django.db.models.fields.CharField', [], {'default': "'new'", 'max_length': '20'}),
-            'status_field': ('django.db.models.fields.related.ForeignKey', [], {'default': '1', 'to': "orm['issues.IssueStatusField']"}),
+            'status_field': ('django.db.models.fields.related.ForeignKey', [], {'default': '1', 'to': "orm['issues.IssueStatus']"}),
             'student': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'student'", 'to': "orm['auth.User']"}),
             'task': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['tasks.Task']", 'null': 'True'}),
             'update_time': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'})
@@ -183,8 +183,8 @@ class Migration(SchemaMigration):
             'plugin_version': ('django.db.models.fields.CharField', [], {'default': "'0.1'", 'max_length': '50'}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '250', 'blank': 'True'})
         },
-        'issues.issuestatusfield': {
-            'Meta': {'object_name': 'IssueStatusField'},
+        'issues.issuestatus': {
+            'Meta': {'object_name': 'IssueStatus'},
             'color': ('colorfield.fields.ColorField', [], {'default': "'#818A91'", 'max_length': '10'}),
             'hidden': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
@@ -195,7 +195,7 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'IssueStatusSystem'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '254'}),
-            'statuses': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'to': "orm['issues.IssueStatusField']", 'null': 'True', 'blank': 'True'})
+            'statuses': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'to': "orm['issues.IssueStatus']", 'null': 'True', 'blank': 'True'})
         },
         'tasks.task': {
             'Meta': {'object_name': 'Task'},

@@ -45,17 +45,21 @@ def profile(request, username=None, year=None):
     teacher_in_courses = Course.objects.filter(is_active=True).filter(teachers=user_to_show).distinct()
     user_teacher_in_courses = Course.objects.filter(is_active=True).filter(teachers=user)
     if user_to_show != user:
-        if len(teacher_in_courses) == 0 and len(user_teacher_in_courses) == 0:
-            for group in user.group_set.all():
-                in_course = False
-                for course in group.course_set.all():
-                    if course.get_user_group(user_to_show):
-                        in_course = True
-                        break
-                if in_course:
-                    break
-            else:
-                raise PermissionDenied
+        if not user.is_staff:
+            groups_user_to_show = user_to_show.group_set.all()
+            groups = user.group_set.all()
+            if not (groups_user_to_show & groups):
+                courses_user_to_show = Course.objects.filter(groups__in=groups_user_to_show)
+                courses_user_to_show_teacher = Course.objects.filter(teachers=user_to_show)
+                courses = Course.objects.filter(groups__in=groups)
+                courses_teacher = Course.objects.filter(teachers=user)
+                if not (courses_user_to_show & courses or
+                        courses_user_to_show_teacher & courses_teacher or
+                        courses_user_to_show_teacher & courses or
+                        courses_teacher & courses_user_to_show):
+                    raise PermissionDenied
+
+    teacher_in_courses = Course.objects.filter(is_active=True).filter(teachers=user_to_show)
 
     if year:
         current_year = get_object_or_404(Year, start_year=year)
@@ -299,7 +303,7 @@ def user_courses(request, username=None, year=None):
         new_course_statistics['url'] = course.get_absolute_url()
 
         new_course_statistics['issues_count'] = []
-        for status in course.issue_mark_system.statuses.all():
+        for status in course.issue_status_system.statuses.all():
             new_course_statistics['issues_count'].append((status, issues.filter(status_field=status).count()))
 
         new_course_statistics['tasks'] = tasks.count
@@ -307,7 +311,7 @@ def user_courses(request, username=None, year=None):
 
         is_archive = int(not course.is_active)
         table_year = unicode(course.year)
-        table_key = course.issue_mark_system.id
+        table_key = course.issue_status_system.id
 
         if table_year not in tables[is_archive]:
             tables[is_archive][table_year] = dict()

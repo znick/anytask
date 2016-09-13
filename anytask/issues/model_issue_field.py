@@ -5,29 +5,7 @@ import sys
 
 from django.db import models
 from issues.forms import IntForm, MarkForm, FileForm, CommentForm, get_responsible_form, get_followers_form, get_status_form
-from colorfield.fields import ColorField
 
-class IssueStatusField(models.Model):
-    COLOR_DEFAULT = '#818A91'
-    NEW_ID = 1
-    AUTO_VERIFICATION_ID = 2
-
-    name = models.CharField(max_length=254, db_index=True, null=False, blank=False)
-    tag = models.CharField(max_length=254, db_index=False, null=True, blank=True)
-    color = ColorField(default=COLOR_DEFAULT)
-
-    hidden = models.BooleanField(default=False)
-
-    def __unicode__(self):
-        return u'{0}'.format(self.name)
-
-
-class IssueStatusSystem(models.Model):
-    name = models.CharField(max_length=254, db_index=False, null=False, blank=False)
-    statuses = models.ManyToManyField(IssueStatusField, null=True, blank=True)
-
-    def __unicode__(self):
-        return u'{0}'.format(self.name)
 
 
 class DefaultPlugin(object):

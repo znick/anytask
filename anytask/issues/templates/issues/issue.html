@@ -34,15 +34,21 @@
 
 {% block content %}
     {{ block.super }}
-
-    <div class="row">
-        <div class="col-sm-8">
-            {% include "issues/history.html" %}
+    {% if issue.task.contest_integrated and issue.task.course.send_to_contest_from_users and not issue.student.get_profile.ya_contest_oauth and user.id == issue.student.id %}
+        <div class="alert alert-info">
+            <strong>Отправляйте в Я.Контест от своего Яндекс аккаунта! </strong>Чтобы сдавать данную задачу вам нужно привязать к своему <a
+                href="{% url users.views.profile %}">профилю </a> Я.Контест.
         </div>
-        <div class="col-sm-4">
-            {% include "issues/info.html" %}
+    {% else %}
+        <div class="row">
+            <div class="col-sm-8">
+                {% include "issues/history.html" %}
+            </div>
+            <div class="col-sm-4">
+                {% include "issues/info.html" %}
+            </div>
         </div>
-    </div>
+    {% endif %}
 {% endblock content %}
 
 <h1>

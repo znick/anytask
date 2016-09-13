@@ -6,6 +6,8 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext as _
 
+from issues.model_issue_status import IssueStatus
+
 
 class DefaultForm(forms.Form):
     def __init__(self, field_name, request, issue, data = None, *args, **kwargs):
@@ -53,15 +55,14 @@ def get_followers_form(field_name, request, issue, data=None, *args, **kwargs):
 
 def get_status_choice(issue):
     statuses = []
-    for status in issue.task.course.issue_mark_system.statuses.all():
+    for status in issue.task.course.issue_status_system.statuses.all():
         statuses.append((status.id, status.name))
 
     return statuses
 
 
 def status_id2status(status_id):
-    from issues.model_issue_field import IssueStatusField
-    return IssueStatusField.objects.get(id=status_id)
+    return IssueStatus.objects.get(id=status_id)
 
 
 def get_status_form(field_name, request, issue, data=None, *args, **kwargs):

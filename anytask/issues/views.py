@@ -11,7 +11,8 @@ from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template.context import RequestContext
 from issues.forms import FileForm
 from issues.models import Issue, Event, File
-from issues.model_issue_field import IssueField, IssueStatusField
+from issues.model_issue_field import IssueField
+from issues.model_issue_status import IssueStatus
 
 from django.core.urlresolvers import reverse
 from django.views import generic
@@ -86,7 +87,7 @@ def issue_page(request, issue_id):
                     if 'Accepted' in request.POST:
                         if request.POST['Accepted']:
                             issue.set_byname('status',
-                                             IssueStatusField.objects.get(pk=request.POST['Accepted']),
+                                             IssueStatus.objects.get(pk=request.POST['Accepted']),
                                              request.user)
                         else:
                             issue.set_status_by_tag(Issue.STATUS_ACCEPTED, request.user)
@@ -97,7 +98,7 @@ def issue_page(request, issue_id):
                             'files': request.FILES.getlist('files')
                         }
                         if 'need_info' in request.POST:
-                            issue.set_status_by_tag(Issue.STATUS_NEED_INFO)
+                            issue.set_status_by_tag(IssueStatus.STATUS_NEED_INFO)
 
                     issue.set_field(field, value, request.user)
                     return HttpResponseRedirect('')
@@ -115,9 +116,7 @@ def issue_page(request, issue_id):
                 show_top_alert = True
             break
 
-    statuses_accepted = issue.task.course.issue_mark_system.statuses.filter(tag=Issue.STATUS_ACCEPTED)
-    if len(statuses_accepted) < 2:
-        statuses_accepted = None
+    statuses_accepted = issue.task.course.issue_status_system.statuses.filter(tag=Issue.STATUS_ACCEPTED)
 
     schools = issue.task.course.school_set.all()
 
