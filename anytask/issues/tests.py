@@ -478,7 +478,7 @@ class ViewsTest(TestCase):
         response = client.post(reverse('issues.views.issue_page', kwargs={'issue_id': issue.id}),
                                {'form_name': 'status_form',
                                 'status': '4'}, follow=True)
-        print response
+
         self.assertEqual(response.status_code, 200, "Can't get issue_page via teacher")
         self.assertEqual(len(response.redirect_chain), 1, "Must be redirect")
 
