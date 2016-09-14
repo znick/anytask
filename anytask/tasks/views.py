@@ -327,7 +327,7 @@ def contest_task_import(request):
         one_file_upload = True
 
     accepted_after_contest_ok = False
-    if 'accepted_after_contest_ok' in request.POST and contest_integrated:
+    if 'accepted_after_contest_ok' in request.POST:
         accepted_after_contest_ok = True
 
     hidden_task = False
