@@ -400,6 +400,16 @@ def course_settings(request, course_id):
     else:
         course.default_task_one_file_upload = False
 
+    if 'show_accepted_after_contest_ok' in request.POST:
+        course.show_accepted_after_contest_ok = True
+    else:
+        course.show_accepted_after_contest_ok= False
+
+    if 'default_task_one_file_upload' in request.POST:
+        course.default_accepted_after_contest_ok = True
+    else:
+        course.default_accepted_after_contest_ok = False
+
     course.save()
 
     return HttpResponseRedirect('')
