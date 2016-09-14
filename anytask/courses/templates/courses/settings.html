@@ -80,11 +80,11 @@
                                 <p class="card-text">Отправлять один файл</p>
                                 <div class="col-md-12">
                                     <input type="checkbox" name="show_task_one_file_upload" id="show_task_one_file_upload" {% if course.show_task_one_file_upload %}checked{% endif %}>
-                                    <label class="checkbox-block">Отображать настройку</label>
+                                    <label class="checkbox-block" for="show_task_one_file_upload">Отображать настройку</label>
                                 </div>
                                 <div class="col-md-12 collapse {% if course.show_task_one_file_upload %}in{% endif %}">
                                     <input type="checkbox" name="default_task_one_file_upload" id="default_task_one_file_upload" {% if course.default_task_one_file_upload %}checked{% endif %}>
-                                    <label class="checkbox-block">Значение по умолчанию</label>
+                                    <label class="checkbox-block" for="default_task_one_file_upload">Значение по умолчанию</label>
                                 </div>
                             </div>
                         </li>
@@ -92,11 +92,11 @@
                             <div class="row">
                                 <p class="card-text">Переводить в Зачтено после положительного вердикта Я.Контеста</p>
                                 <div class="col-md-12">
-                                    <input type="checkbox" name="show_task_one_file_upload" id="show_task_one_file_upload" {% if course.show_accepted_after_contest_ok %}checked{% endif %}>
+                                    <input type="checkbox" name="show_accepted_after_contest_ok" id="show_accepted_after_contest_ok" {% if course.show_accepted_after_contest_ok %}checked{% endif %}>
                                     <label class="checkbox-block">Отображать настройку</label>
                                 </div>
                                 <div class="col-md-12 collapse {% if course.show_task_one_file_upload %}in{% endif %}">
-                                    <input type="checkbox" name="default_task_one_file_upload" id="default_task_one_file_upload" {% if course.default_accepted_after_contest_ok %}checked{% endif %}>
+                                    <input type="checkbox" name="default_accepted_after_contest_ok" id="default_accepted_after_contest_ok" {% if course.default_accepted_after_contest_ok %}checked{% endif %}>
                                     <label class="checkbox-block">Значение по умолчанию</label>
                                 </div>
                             </div>
