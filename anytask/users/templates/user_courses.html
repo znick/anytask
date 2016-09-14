@@ -73,7 +73,7 @@
                             <div class="card-header" >
                                 {% if tables|exist:forloop.counter0 %}
                                     <a class="close switch-tab" href="#{% if forloop.first %}course_list_archive{% else %}course_list{% endif %}" role="tab" title='{% if forloop.first %}Активные{% else %}Архив{% endif %}'>
-                                        <i class="fa {% if forloop.first %}fa-file-text-o{% else %}fa-file-archive-o{% endif %}" aria-hidden="true"></i>
+                                        <i class="fa {% if forloop.first %}fa-file-archive-o{% else %}fa-file-text-o{% endif %}" aria-hidden="true"></i>
                                     </a>
                                 {% endif %}
                                 <h5 class="card-title">
