@@ -10,7 +10,7 @@ def another_table_exist(d, index):
 
 
 @register.filter(name='has_item')
-def another_table_exist(d, item):
+def item_in_tuple(d, item):
     for x, y in d:
         if x == item:
             return True
