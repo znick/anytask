@@ -57,7 +57,7 @@ def profile(request, username=None, year=None):
                         courses_teacher & courses_user_to_show):
                     raise PermissionDenied
 
-    teacher_in_courses = Course.objects.filter(is_active=True).filter(teachers=user_to_show)
+    teacher_in_courses = Course.objects.filter(is_active=True).filter(teachers=user_to_show).distinct()
 
     if year:
         current_year = get_object_or_404(Year, start_year=year)
@@ -80,9 +80,9 @@ def profile(request, username=None, year=None):
     # for course in sorted(course_x_tasks.keys(), key=lambda x: x.name):
     #     user_course_information.append((course,course_x_scores[course],course_x_tasks[course]))
 
-    groups = user_to_show.group_set.filter(year=current_year)
+    groups = user_to_show.group_set.all().distinct()
 
-    courses = Course.objects.filter(is_active=True, year=current_year).filter(groups__in=groups)
+    courses = Course.objects.filter(is_active=True).filter(groups__in=groups).distinct()
 
     can_sync_contest = False
     for course in Course.objects.filter(is_active=True):
@@ -121,20 +121,50 @@ def profile(request, username=None, year=None):
                     invite.group.students.add(user)
                     invite.invited_users.add(user)
 
+    teacher_in_courses_archive = Course.objects.filter(is_active=False).filter(teachers=user_to_show).distinct()
+    courses_archive = Course.objects.filter(is_active=False).filter(groups__in=groups).distinct()
+
+    card_width = ''
+    if len(teacher_in_courses or teacher_in_courses_archive) != 0 and \
+       len(courses or courses_archive) != 0 and \
+       len(groups) != 0:
+        card_width = 'col-md-4'
+    elif len(teacher_in_courses or teacher_in_courses_archive) != 0 and len(courses or courses_archive) != 0 or \
+         len(teacher_in_courses or teacher_in_courses_archive) != 0 and len(groups) != 0 or \
+         len(courses or courses_archive) != 0 and len(groups) != 0:
+        card_width = 'col-md-6'
+    else:
+        card_width = 'col-md-12'
+
     context = {
         'user_to_show'              : user_to_show,
-        'courses'                   : courses,
-        'groups'                    : groups,
+        'courses'                   : group_by_year(courses),
+        'courses_archive'           : group_by_year(courses_archive),
+        'groups'                    : group_by_year(groups),
         # 'user_course_information'   : user_course_information,
-        'teacher_in_courses'        : teacher_in_courses,
+        'teacher_in_courses'        : group_by_year(teacher_in_courses),
+        'teacher_in_courses_archive': group_by_year(teacher_in_courses_archive),
+        'current_year'              : unicode(current_year) if current_year is not None else '',
         'can_generate_invites'      : can_generate_invites,
         'invite_form'               : invite_form,
         'user_profile'              : user_profile,
         'can_sync_contest'          : can_sync_contest,
+        'card_width'                : card_width,
     }
 
     return render_to_response('user_profile.html', context, context_instance=RequestContext(request))
 
+
+def group_by_year(objects):
+    group_dict = {}
+    for obj in objects:
+        year = unicode(obj.year)
+        if year in group_dict:
+            group_dict[year].append(obj)
+        else:
+            group_dict[year] = [obj]
+
+    return sorted(group_dict.iteritems())
 
 @login_required
 def profile_settings(request, username=None):
@@ -250,11 +280,11 @@ def user_courses(request, username=None, year=None):
     else:
         current_year = get_current_year()
 
-    groups = user_to_show.group_set.filter(year=current_year)
+    groups = user_to_show.group_set.all()
 
-    courses = Course.objects.filter(is_active=True, year=current_year).filter(groups__in=groups)
+    courses = Course.objects.filter(groups__in=groups).distinct()
 
-    tables = {}
+    tables = [{}, {}]
 
     for course in courses:
 
@@ -266,7 +296,7 @@ def user_courses(request, username=None, year=None):
         else:
             mark = None
 
-        new_course_statistics = {}
+        new_course_statistics = dict()
         new_course_statistics['name'] = course.name
         new_course_statistics['url'] = course.get_absolute_url()
 
@@ -277,14 +307,21 @@ def user_courses(request, username=None, year=None):
         new_course_statistics['tasks'] = tasks.count
         new_course_statistics['mark'] = mark if mark else '--'
 
+        is_archive = int(not course.is_active)
+        table_year = unicode(course.year)
         table_key = course.issue_status_system.id
-        if table_key in tables:
-            tables[table_key].append(new_course_statistics)
+
+        if table_year not in tables[is_archive]:
+            tables[is_archive][table_year] = dict()
+
+        if table_key in tables[is_archive][table_year]:
+            tables[is_archive][table_year][table_key].append(new_course_statistics)
         else:
-            tables[table_key] = [new_course_statistics]
+            tables[is_archive][table_year][table_key] = [new_course_statistics]
 
     context = {
-        'tables'            : tables,
+        'tables'            : [sorted(x.iteritems()) for x in tables],
+        'current_year'      : unicode(current_year) if current_year is not None else '',
         'user_to_show'      : user_to_show,
         'user'              : user,
     }

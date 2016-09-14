@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
 {% load sanitize_html %}
+{% load table_func %}
 
 {% block title %} {{ user_to_show.get_full_name }} {% endblock %}
 
@@ -15,13 +16,13 @@
                 $('#invites_form').show();
             });
             {%  if user_to_show == user %}
-            $('.edit-icon').click(function () {
-                $('#edit-avatar').attr({src: $('#avatar').attr('src')});
-                $('#modal_avatar_edit').modal('show');
-                input_avatar = $('#input-avatar');
-                input_avatar.replaceWith(input_avatar.val('').clone(true));
-                $('#gravatar-link').val('');
-            });
+                $('.edit-icon').click(function () {
+                    $('#edit-avatar').attr({src: $('#avatar').attr('src')});
+                    $('#modal_avatar_edit').modal('show');
+                    input_avatar = $('#input-avatar');
+                    input_avatar.replaceWith(input_avatar.val('').clone(true));
+                    $('#gravatar-link').val('');
+                });
             {% endif %}
 
             $('#avatar').click(function () {
@@ -45,6 +46,10 @@
                 $('#gravatar-link').val(gravatar_link);
             });
 
+            $('.switch-tab').click(function () {
+                $(this).tab('show');
+                $(this).removeClass('active');
+            });
         });
 
         function readURL(input) {
@@ -53,7 +58,7 @@
 
                 reader.onload = function (e) {
                     $('#edit-avatar')
-                        .attr('src', e.target.result)
+                            .attr('src', e.target.result)
                 };
 
                 reader.readAsDataURL(input.files[0]);
@@ -61,7 +66,7 @@
                 $('#gravatar-link').val('');
             }
         }
-        
+
         function get_edit_user_info_modal(user_info) {
             $('#user_info').val(user_info);
             $('#modal_user_info_edit').modal('show');
@@ -115,6 +120,18 @@
             top: 0;
             display: none;
         }
+
+        .card .nav-pills{
+            font-size: 0.8em;
+        }
+
+        .switch-tab i{
+            font-size: 1.5rem
+        }
+
+        .card-header {
+            background-color: inherit;
+        }
     </style>
 
     <div class="card-deck-wrapper">
@@ -130,7 +147,7 @@
                             {% endif %}
                             <img id="avatar" class="avatar" src="{% if not user_to_show.get_profile.avatar %}https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mm&f=y
                                   {% else %}{{ user_to_show.get_profile.avatar.url }}{% endif %}"
-                                  style="width: 100px; height:100px; margin: 0 1rem 1rem 0;">
+                                 style="width: 100px; height:100px; margin: 0 1rem 1rem 0;">
                         </div>
                         {{ user_to_show.get_full_name }}
                         <br>
@@ -222,47 +239,182 @@
         </div>
     </div>
 
-    <div class="card-deck-wrapper">
-        <div class="card-deck">
-            {% if teacher_in_courses %}
-                <div class="card">
-                    <div class="card-block">
-                        <h5 class="card-title">Преподаватель в курсах</h5>
-                        <ul class="list-group list-group-flush">
-                            {% for course in teacher_in_courses %}
-                                <li class="list-group-item"><a href="{{ course.get_absolute_url }}">{{ course }}</a></li>
-                            {% endfor %}
-                        </ul>
+    <div class="row">
+        {% if teacher_in_courses or teacher_in_courses_archive %}
+            <div class="tab-content">
+                {% if teacher_in_courses %}
+                    <div class="tab-pane fade in active" id="teacher_course" role="tabpanel">
+                        <div class="{{ card_width }} col-xs-12 ">
+                            <div class="card">
+                                <div class="card-header" >
+                                    {% if teacher_in_courses_archive %}
+                                        <a class="close switch-tab" href="#teacher_course_archive" role="tab" title='Архив' ><i class="fa fa-file-archive-o" aria-hidden="true"></i></a>
+                                    {% endif %}
+                                    <h5 class="card-title">Преподаватель в курсах</h5>
+                                    <ul class="nav nav-pills" role="tablist">
+                                        {% for year, _ in teacher_in_courses %}
+                                            <li class="nav-item">
+                                                <a class="nav-link {% if year == current_year or forloop.last and not teacher_in_courses|has_item:current_year %}active{% endif %}" data-toggle="pill" href="#teacher_course_{{ forloop.counter }}" role="tab">{{ year }}</a>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                                <div class="tab-content">
+                                    {% for year, courses in teacher_in_courses %}
+                                        <div class="tab-pane fade {% if year == current_year or forloop.last and not teacher_in_courses|has_item:current_year %}in active{% endif %}" id="teacher_course_{{ forloop.counter }}" role="tabpanel">
+                                            <div class="card-block">
+                                                <ul class="list-group list-group-flush">
+                                                    {% for course in courses %}
+                                                        <li class="list-group-item"><a href="{{ course.get_absolute_url }}">{{ course }}</a></li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            {% endif %}
-
-            {% if courses %}
-                <div class="card">
-                    <div class="card-block">
-                        <h5 class="card-title">Состоит в курсах</h5>
-                        <ul class="list-group list-group-flush">
-                            {% for course in courses %}
-                                <li class="list-group-item"><a href="{{ course.get_absolute_url }}">{{ course }}</a></li>
-                            {% endfor %}
-                        </ul>
+                {% endif %}
+                {% if teacher_in_courses_archive %}
+                    <div class="tab-pane fade {% if not teacher_in_courses %}in active{% endif %}" id="teacher_course_archive" role="tabpanel">
+                        <div class="{{ card_width }} col-xs-12 ">
+                            <div class="card">
+                                <div class="card-header" >
+                                    {% if teacher_in_courses %}
+                                        <a class="close switch-tab" href="#teacher_course" role="tab" title='Активные'><i class="fa fa-file-text-o" aria-hidden="true"></i></a>
+                                    {% endif %}
+                                    <h5 class="card-title">Преподаватель в курсах (Архив)</h5>
+                                    <ul class="nav nav-pills" role="tablist">
+                                        {% for year, _ in teacher_in_courses_archive %}
+                                            <li class="nav-item">
+                                                <a class="nav-link {% if year == current_year or forloop.last and not teacher_in_courses_archive|has_item:current_year %}active{% endif %}" data-toggle="pill" href="#teacher_course_archive_{{ forloop.counter }}" role="tab">{{ year }}</a>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                                <div class="tab-content">
+                                    {% for year, courses in teacher_in_courses_archive %}
+                                        <div class="tab-pane fade {% if year == current_year or forloop.last and not teacher_in_courses_archive|has_item:current_year %}in active{% endif %}" id="teacher_course_archive_{{ forloop.counter }}" role="tabpanel">
+                                            <div class="card-block">
+                                                <ul class="list-group list-group-flush">
+                                                    {% for course in courses %}
+                                                        <li class="list-group-item"><a href="{{ course.get_absolute_url }}">{{ course }}</a></li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            {% endif %}
+                {% endif %}
+            </div>
+        {% endif %}
 
-            {% if groups %}
+        {% if courses or courses_archive %}
+            <div class="tab-content">
+                {% if courses %}
+                    <div class="tab-pane fade in active" id="course_list" role="tabpanel">
+                        <div class="{{ card_width }} col-xs-12 ">
+                            <div class="card">
+                                <div class="card-header" >
+                                    {% if courses_archive %}
+                                        <a class="close switch-tab" href="#course_list_archive" role="tab" title='Архив'><i class="fa fa-file-archive-o" aria-hidden="true"></i></a>
+                                    {% endif %}
+                                    <h5 class="card-title">Состоит в курсах</h5>
+                                    <ul class="nav nav-pills" role="tablist">
+                                        {% for year, _ in courses %}
+                                            <li class="nav-item">
+                                                <a class="nav-link {% if year == current_year or forloop.last and not courses|has_item:current_year %}active{% endif %}" data-toggle="pill" href="#courses_{{ forloop.counter }}" role="tab">{{ year }}</a>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                                <div class="tab-content">
+                                    {% for year, courses_in_year in courses %}
+                                        <div class="tab-pane fade {% if year == current_year or forloop.last and not courses|has_item:current_year %}in active{% endif %}" id="courses_{{ forloop.counter }}" role="tabpanel">
+                                            <div class="card-block">
+                                                <ul class="list-group list-group-flush">
+                                                    {% for course in courses_in_year %}
+                                                        <li class="list-group-item"><a href="{{ course.get_absolute_url }}">{{ course }}</a></li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                {% if courses_archive %}
+                    <div class="tab-pane fade {% if not courses %}in active{% endif %}" id="course_list_archive" role="tabpanel">
+                        <div class="{{ card_width }} col-xs-12 ">
+                            <div class="card">
+                                <div class="card-header" >
+                                    {% if courses %}
+                                        <a class="close switch-tab" href="#course_list" role="tab" title='Архив'><i class="fa fa-file-text-o" aria-hidden="true"></i></a>
+                                    {% endif %}
+                                    <h5 class="card-title">Состоит в курсах (Архив)</h5>
+                                    <ul class="nav nav-pills" role="tablist">
+                                        {% for year, _ in courses_archive %}
+                                            <li class="nav-item">
+                                                <a class="nav-link {% if year == current_year or forloop.last and not courses_archive|has_item:current_year %}active{% endif %}" data-toggle="pill" href="#courses_archive_{{ forloop.counter }}" role="tab">{{ year }}</a>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                                <div class="tab-content">
+                                    {% for year, courses_in_year in courses_archive %}
+                                        <div class="tab-pane fade {% if year == current_year or forloop.last and not courses_archive|has_item:current_year %}in active{% endif %}" id="courses_archive_{{ forloop.counter }}" role="tabpanel">
+                                            <div class="card-block">
+                                                <ul class="list-group list-group-flush">
+                                                    {% for course in courses_in_year %}
+                                                        <li class="list-group-item"><a href="{{ course.get_absolute_url }}">{{ course }}</a></li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        {% if groups %}
+            <div class="{{ card_width }} col-xs-12 ">
                 <div class="card">
-                    <div class="card-block">
+                    <div class="card-header" >
                         <h5 class="card-title">Состоит в группах</h5>
-                        <ul class="list-group list-group-flush">
-                            {% for group in groups %}
-                                <li class="list-group-item">{{ group }}</li>
+                        <ul class="nav nav-pills" role="tablist">
+                            {% for year, _ in groups %}
+                                <li class="nav-item">
+                                    <a class="nav-link {% if year == current_year or forloop.last and not groups|has_item:current_year %}active{% endif %}" data-toggle="pill" href="#groups_{{ forloop.counter }}" role="tab">{{ year }}</a>
+                                </li>
                             {% endfor %}
                         </ul>
                     </div>
+                    <div class="tab-content">
+                        {% for year, groups_in_year in groups %}
+                            <div class="tab-pane fade {% if year == current_year or forloop.last and not groups|has_item:current_year %}in active{% endif %}" id="groups_{{ forloop.counter }}" role="tabpanel">
+                                <div class="card-block">
+                                    <ul class="list-group list-group-flush">
+                                        {% for group in groups_in_year %}
+                                            <li class="list-group-item">{{ group.name }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
                 </div>
-            {% endif %}
-        </div>
+            </div>
+        {% endif %}
     </div>
 
     {% if user == user_to_show %}
@@ -345,7 +497,7 @@
                             <img class="avatar" id="edit-avatar" src="{% if not user_to_show.get_profile.avatar %}
                             https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mm&f=y{% else %}
                             {{ user_to_show.get_profile.avatar.url }}{% endif %}"
-                                     style="object-fit: contain; border-radius: 0; width: 100%; height: auto">
+                                 style="object-fit: contain; border-radius: 0; width: 100%; height: auto">
                         </div>
                     </div>
                 </div>

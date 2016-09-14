@@ -23,6 +23,10 @@ display_color.short_description = u'Статус'
 display_color.allow_tags = True
 
 
+class IssueAdmin(admin.ModelAdmin):
+    exclude = ('status',)
+
+
 class IssueStatusAdmin(admin.ModelAdmin):
     list_display = (display_color, 'tag')
     exclude = ('hidden',)
