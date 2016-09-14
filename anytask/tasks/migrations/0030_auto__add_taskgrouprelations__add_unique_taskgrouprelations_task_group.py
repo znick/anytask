@@ -71,6 +71,7 @@ class Migration(SchemaMigration):
             'added_time': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'auto_now_add': 'True', 'blank': 'True'}),
             'can_be_chosen_by_extern': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'contest_integrated': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'default_task_one_file_upload': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'filename_extensions': ('django.db.models.fields.related.ManyToManyField', [], {'blank': 'True', 'related_name': "'filename_extensions_set'", 'null': 'True', 'symmetrical': 'False', 'to': "orm['courses.FilenameExtension']"}),
             'full_transcript': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'group_with_extern': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'course_with_extern'", 'null': 'True', 'db_index': 'False', 'to': "orm['groups.Group']"}),
@@ -79,13 +80,15 @@ class Migration(SchemaMigration):
             'information': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'db_index': 'True'}),
             'issue_fields': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'to': "orm['issues.IssueField']", 'null': 'True', 'blank': 'True'}),
+            'issue_status_system': ('django.db.models.fields.related.ForeignKey', [], {'default': '1', 'to': "orm['issues.IssueStatusSystem']", 'db_index': 'False'}),
             'mark_system': ('django.db.models.fields.related.ForeignKey', [], {'db_index': 'False', 'to': "orm['courses.CourseMarkSystem']", 'null': 'True', 'blank': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '254', 'db_index': 'True'}),
             'name_id': ('django.db.models.fields.CharField', [], {'db_index': 'True', 'max_length': '254', 'null': 'True', 'blank': 'True'}),
-            'private': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'private': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'rb_integrated': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'send_rb_and_contest_together': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'send_to_contest_from_users': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'show_task_one_file_upload': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'teachers': ('django.db.models.fields.related.ManyToManyField', [], {'blank': 'True', 'related_name': "'course_teachers_set'", 'null': 'True', 'symmetrical': 'False', 'to': "orm['auth.User']"}),
             'update_time': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'auto_now': 'True', 'blank': 'True'}),
             'year': ('django.db.models.fields.related.ForeignKey', [], {'default': '2016', 'to': "orm['years.Year']"})
@@ -125,6 +128,20 @@ class Migration(SchemaMigration):
             'plugin_version': ('django.db.models.fields.CharField', [], {'default': "'0.1'", 'max_length': '50'}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '250', 'blank': 'True'})
         },
+        'issues.issuestatus': {
+            'Meta': {'object_name': 'IssueStatus'},
+            'color': ('colorfield.fields.ColorField', [], {'default': "'#818A91'", 'max_length': '10'}),
+            'hidden': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '254', 'db_index': 'True'}),
+            'tag': ('django.db.models.fields.CharField', [], {'max_length': '254', 'null': 'True', 'blank': 'True'})
+        },
+        'issues.issuestatussystem': {
+            'Meta': {'object_name': 'IssueStatusSystem'},
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '254'}),
+            'statuses': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'to': "orm['issues.IssueStatus']", 'null': 'True', 'blank': 'True'})
+        },
         'tasks.task': {
             'Meta': {'object_name': 'Task'},
             'added_time': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'auto_now_add': 'True', 'blank': 'True'}),
@@ -135,6 +152,7 @@ class Migration(SchemaMigration):
             'group': ('django.db.models.fields.related.ForeignKey', [], {'default': 'None', 'to': "orm['groups.Group']", 'null': 'True', 'db_index': 'False', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'is_hidden': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'db_index': 'True'}),
+            'one_file_upload': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'parent_task': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'parent_task_set'", 'null': 'True', 'to': "orm['tasks.Task']"}),
             'problem_id': ('django.db.models.fields.CharField', [], {'db_index': 'True', 'max_length': '128', 'null': 'True', 'blank': 'True'}),
             'rb_integrated': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
