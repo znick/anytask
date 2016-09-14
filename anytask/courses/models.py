@@ -121,6 +121,10 @@ class Course(models.Model):
 
     mark_system = models.ForeignKey(CourseMarkSystem, db_index=False, null=True, blank=True)
 
+
+    show_accepted_after_contest_ok = models.BooleanField(db_index=False, null=False, blank=False, default=False)
+    default_accepted_after_contest_ok = models.BooleanField(db_index=False, null=False, blank=False, default=False)
+
     show_task_one_file_upload = models.BooleanField(db_index=False, null=False, blank=False, default=False)
     default_task_one_file_upload = models.BooleanField(db_index=False, null=False, blank=False, default=False)
 

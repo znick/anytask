@@ -180,6 +180,10 @@ def task_create_ot_edit(request, course, task_id=None):
     if 'one_file_upload' in request.POST and rb_integrated:
         one_file_upload = True
 
+    accepted_after_contest_ok = False
+    if 'accepted_after_contest_ok' in request.POST and contest_integrated:
+        accepted_after_contest_ok = True
+
     hidden_task = False
     if 'hidden_task' in request.POST:
         hidden_task = True
@@ -215,6 +219,8 @@ def task_create_ot_edit(request, course, task_id=None):
     task.rb_integrated = rb_integrated
 
     task.one_file_upload = one_file_upload
+
+    task.accepted_after_contest_ok = accepted_after_contest_ok
 
     task.is_hidden = hidden_task
     if task.parent_task:
@@ -320,6 +326,10 @@ def contest_task_import(request):
     if 'one_file_upload' in request.POST and rb_integrated:
         one_file_upload = True
 
+    accepted_after_contest_ok = False
+    if 'accepted_after_contest_ok' in request.POST:
+        accepted_after_contest_ok = True
+
     hidden_task = False
     if 'hidden_task' in request.POST:
         hidden_task = True
@@ -407,6 +417,8 @@ def contest_task_import(request):
         real_task.rb_integrated = rb_integrated
 
         real_task.one_file_upload = one_file_upload
+
+        real_task.accepted_after_contest_ok = accepted_after_contest_ok
 
         real_task.is_hidden = hidden_task
         real_task.updated_by = request.user
