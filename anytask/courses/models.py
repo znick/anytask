@@ -5,7 +5,6 @@ import json
 from django.core.urlresolvers import reverse
 from django.db import models
 from datetime import datetime
-from django.utils.translation import ugettext as _
 from django.contrib.auth.models import User
 from django.db.models.signals import m2m_changed
 from django.conf import settings
@@ -13,6 +12,7 @@ from django.db.models.signals import post_save
 from django.db.models import Q
 
 from groups.models import Group
+from issues.model_issue_status import IssueStatusSystem
 from issues.model_issue_field import IssueField
 from years.models import Year
 from anyrb.common import RbReviewGroup
@@ -121,8 +121,14 @@ class Course(models.Model):
 
     mark_system = models.ForeignKey(CourseMarkSystem, db_index=False, null=True, blank=True)
 
+
+    show_accepted_after_contest_ok = models.BooleanField(db_index=False, null=False, blank=False, default=False)
+    default_accepted_after_contest_ok = models.BooleanField(db_index=False, null=False, blank=False, default=False)
+
     show_task_one_file_upload = models.BooleanField(db_index=False, null=False, blank=False, default=False)
     default_task_one_file_upload = models.BooleanField(db_index=False, null=False, blank=False, default=False)
+
+    issue_status_system = models.ForeignKey(IssueStatusSystem, db_index=False, null=False, blank=False, default=1)
 
     def __unicode__(self):
         return unicode(self.name)

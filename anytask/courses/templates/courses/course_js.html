@@ -3,12 +3,12 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.sticky/1.0.3/jquery.sticky.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap4.min.js"></script>
-<script type="text/javascript" src="https://fastcdn.org/Readmore.js/2.1.0/readmore.min.js"></script>
-{#<script type="text/javascript" src="https://cdn.datatables.net/colreorder/1.3.2/js/dataTables.colReorder.min.js"></script>#}
+<script type="text/javascript" src="https://cdn.datatables.net/colreorder/1.3.2/js/dataTables.colReorder.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/fixedcolumns/3.2.2/js/dataTables.fixedColumns.min.js"></script>
+<script type="text/javascript" src="https://fastcdn.org/Readmore.js/2.1.0/readmore.min.js"></script>
 
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap4.min.css"/>
-{#<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/colreorder/1.3.2/css/colReorder.bootstrap4.min.css"/>#}
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/colreorder/1.3.2/css/colReorder.bootstrap4.min.css"/>
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedcolumns/3.2.2/css/fixedColumns.bootstrap4.min.css"/>
 
 <script type="text/javascript">
@@ -104,9 +104,13 @@
                 initComplete: function( settings, json ) {
                     $(".zui-wrapper").show();
                     $(".btn-table-fullscreen").css('display', 'table-cell');
+                    $(".btn-table-edit").css('display', 'table-cell');
                     $(".loading_table_img").hide();
                 },
-                autoWidth: false
+                autoWidth: false,
+                colReorder: {
+                    fixedColumnsLeft: 999999,
+                },
             });
             t.on( 'order.dt search.dt', function () {
                 t.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
@@ -167,7 +171,7 @@
                 });
                 $('.dataTables_scrollBody',  card).css('max-height',
                         card.height() - $('.table_results thead', card).height() - 90 + 'px');
-                $('#' + $(this).attr('for')).DataTable().draw();
+                $($(this).attr('for')).DataTable().draw();
             }
             else {
                 $('i', this).removeClass('fa-compress').addClass('fa-expand');
@@ -178,7 +182,7 @@
                 });
                 $(window).scrollTop($(this).data('scroll_pos'));
                 $('.dataTables_scrollBody',  card).css('max-height', table_min_height);
-                $('#' + $(this).attr('for')).DataTable().draw();
+                $($(this).attr('for')).DataTable().draw();
             }
         });
 
@@ -220,7 +224,7 @@
                         var sum_mark_span = $(form).closest('td').siblings('.sum-score').find('span');
                         var sum_mark = parseFloat(sum_mark_span.text()) + mark_diff;
                         $(sum_mark_span).text(sum_mark.toFixed(1));
-                        $(mark_value).find('span').removeClass('label-default label-danger label-success no-issue').addClass(data.label).text(data.mark);
+                        $(mark_value).find('span').removeClass('label-default no-issue').text(data.mark).css('background-color', data.color);
                         $(form).hide();
                         $(form).find('[name="mark_value"]').blur();
                         $(form).data('blur', true);
@@ -285,6 +289,112 @@
             $.post('{% url courses.views.set_course_mark %}', $(this).serialize(), function(data){
                 $($(mark_value).find('span')).text(data.mark);
             });
+        });
+
+        $('.btn-table-edit').click(function () {
+            var div_group_id = $(this).attr('for');
+            var modal_button_ok = $('#modal_table_edit_ok');
+            modal_button_ok.data('div_group_id', div_group_id);
+            modal_button_ok.data('btn_clicked', false);
+            var group = $('.group-sortable');
+            $(group).each(function () {
+                $('li', this).each(function (i, e) {
+                    $(this).attr('data-index', i + 2);
+                });
+            });
+            group.data('deleting', []);
+            group.data('deleting_ids', []);
+            group.data('deleting_id_in_all_groups', []);
+            group.data('backup_html', $('ul', $(div_group_id)).html());
+            group.data('changed', false);
+            $(div_group_id).show();
+        });
+
+        $('.group-sortable').sortable({
+            placeholder: 'ui-state-highlight',
+            cursor: '-webkit-grabbing',
+            axis: "y",
+            delay: 150,
+            activate: function( event, ui ) {
+                $('.ui-state-highlight').css('height', $(ui.helper).height());
+            },
+            change: function( event, ui ) {
+                $('.group-sortable').data('changed', true);
+            }
+        }).disableSelection();
+
+        $('#modal_table_edit').on("click", '.task-delete', function() {
+            if (confirm('Удаленную задачу невозможно восстановить. Вы уверены, что хотить удалить?')) {
+                var group = $('.group-sortable');
+                var li = $(this).closest('li');
+                $(this).closest('li').remove();
+                group.data('deleting', group.data('deleting').concat(li.data('index')));
+                if (li.data('all_group'))
+                    group.data('deleting_id_in_all_groups', group.data('deleting_id_in_all_groups').concat(li.val()));
+                group.data('deleting_ids', group.data('deleting_ids').concat(li.val()));
+            }
+        });
+
+        $('#modal_table_edit').on('hide.bs.modal', function (e) {
+            var group = $('.group-sortable');
+            var modal_button_ok = $('#modal_table_edit_ok');
+            var div_group_id = $(modal_button_ok.data('div_group_id'));
+            if ((group.data('changed') || group.data('deleting').length) && !modal_button_ok.data('btn_clicked'))
+                if (confirm('Сохранить изменения?')) {
+                    modal_button_ok.click();
+                }
+                else {
+                    $('ul', div_group_id).html(group.data('backup_html'));
+                }
+            $(modal_button_ok.data('div_group_id')).hide();
+        });
+
+        $('#modal_table_edit_ok').click(function () {
+            var modal_button_ok = $('#modal_table_edit_ok');
+            var d = 'disabled';
+
+            modal_button_ok.data('btn_clicked', true);
+            modal_button_ok.data('resetText', modal_button_ok.html());
+            modal_button_ok.html(modal_button_ok.data('loadingText'));
+            modal_button_ok.addClass(d).attr(d, d).prop(d, true);
+
+            setTimeout($.proxy(function () {
+                var modal_button_ok = $('#modal_table_edit_ok');
+                var div_group_id = $(modal_button_ok.data('div_group_id'));
+                var group = $('.group-sortable');
+
+                $.post('{% url courses.views.change_table_tasks_pos %}',
+                        {
+                            'csrfmiddlewaretoken': '{{ csrf_token }}',
+                            'course_id': {{ course.id }},
+                            'group_id': div_group_id.data('group'),
+                            'task_order': group.data('changed') ? $('ul', div_group_id).sortable("toArray", {attribute: "value"}) : [],
+                            'task_deleted': group.data('deleting_ids')
+                        })
+                        .done(function (msg) {
+                            change_table_column_order(div_group_id, group.data('deleting'));
+
+                            if (group.data('deleting_id_in_all_groups').length)
+                                group.closest('div').each(function () {
+                                    if ($(this).attr('id') != div_group_id.attr('id')) {
+                                        var current_div = $(this);
+                                        var deleting_index = $.map(group.data('deleting_id_in_all_groups'),
+                                                function (value) {
+                                                    var li = $('li[value=' + value + ']', current_div);
+                                                    var index = li.data('index');
+                                                    li.remove();
+                                                    return index;
+                                                });
+                                        change_table_column_order($(this), deleting_index);
+                                    }
+                                });
+
+                            modal_button_ok.closest('.modal').modal('hide');
+                            modal_button_ok.html(modal_button_ok.data('resetText'));
+                            modal_button_ok.removeClass(d).removeAttr(d).prop(d, false)
+
+                        });
+            }, modal_button_ok), 0);
         });
     });
 
@@ -362,5 +472,34 @@
                     window.location.reload();
                 });
 
+    }
+
+    function change_table_column_order(div_group_id, deleting_tasks) {
+        div_group_id = $(div_group_id);
+        if (div_group_id.data('deleted') === undefined)
+            div_group_id.data('deleted', []);
+        var new_order = $.map($('ul', div_group_id).sortable("toArray", {attribute: "data-index"}),
+                function (value) {
+                    return parseInt(value, 10);
+                });
+        var prefix_cols = [0, 1];
+        var task_count = new_order.length;
+
+        new_order = prefix_cols.concat(new_order).concat(deleting_tasks).concat(div_group_id.data('deleted'));
+
+        var postfix_cols = [new_order.length];
+        if (div_group_id.data('marksystem'))
+            postfix_cols = postfix_cols.concat(new_order.length + 1);
+
+        new_order = new_order.concat(postfix_cols);
+
+        var table = $(div_group_id.data('table')).DataTable();
+        table.columns(deleting_tasks).visible(false);
+        table.colReorder.order(new_order);
+
+        var deleted = [];
+        for (var i = 0; i < deleting_tasks.length; ++i)
+            deleted = deleted.concat([task_count + prefix_cols.length + i]);
+        div_group_id.data('deleted', deleted.concat(div_group_id.data('deleted')));
     }
 </script>

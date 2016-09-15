@@ -71,11 +71,15 @@
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label class="col-sm-3 form-control-label" for="task_edit_group"> Группа</label>
+                        <label class="col-sm-3 form-control-label" for="task_edit_group">Группа
+                            {% if show_help_msg_task_group %}
+                                <a tabindex="0" data-toggle="popover" data-trigger="hover" data-content="Перечень групп зависит от того сдавалась задача или нет" type="button"><i class="fa fa-question-circle help-button" aria-hidden="true"></i></a>
+                            {% endif %}
+                        </label>
                         <div class="controls col-sm-3">
                             <select class="form-control" id='task_edit_group' name="task_group_id">
                                 <option value=""> Для всех групп </option>
-                                {% for group in course.groups.all %}
+                                {% for group in task_group %}
                                     <option value="{{ group.id }}" {% ifequal group.id task.group.id %}selected{% endifequal %}>{{ group.name }}</option>
                                 {% endfor %}
                             </select>
@@ -146,6 +150,14 @@
                             </label>
                             <div class="controls col-sm-3" style="padding-top: 5px">
                                 <input type="checkbox" name="one_file_upload" id="task_edit_one_file_upload"  {% if task.one_file_upload or is_create and course.default_task_one_file_upload %}checked{% endif %}>
+                            </div>
+                        </div>
+                    {% endif %}
+                    {% if course.show_accepted_after_contest_ok %}
+                        <div class="form-group row collapse {% if contest_integrated %}in{% endif %}">
+                            <label class="col-sm-3 form-control-label" for="task_edit_accepted_after_contest_ok">Переводить в статус Зачтено после положительного вердикта Я.Контеста</label>
+                            <div class="controls col-sm-3" style="padding-top: 5px">
+                                <input type="checkbox" name="accepted_after_contest_ok" id="task_edit_accepted_after_contest_ok"  {% if task.accepted_after_contest_ok or is_create and course.default_accepted_after_contest_ok %}checked{% endif %}>
                             </div>
                         </div>
                     {% endif %}

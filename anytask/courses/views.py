@@ -25,7 +25,7 @@ import requests
 
 from courses.models import Course, DefaultTeacher, StudentCourseMark, MarkField, FilenameExtension
 from groups.models import Group
-from tasks.models import TaskTaken, Task
+from tasks.models import TaskTaken, Task, TaskGroupRelations
 from tasks.views import update_status_check
 from years.models import Year
 from years.common import get_current_year
@@ -35,6 +35,7 @@ from anysvn.common import svn_log_rev_message, svn_log_head_revision, get_svn_ex
 from anyrb.common import AnyRB
 from anycontest.common import get_contest_info
 from issues.models import Issue, Event, IssueFilter
+from issues.model_issue_status import IssueStatus
 from users.forms import InviteActivationForm
 
 from common.ordered_dict import OrderedDict
@@ -144,6 +145,7 @@ def tasklist_shad_cpp(request, course):
     group_x_student_x_task_takens = OrderedDict()
     group_x_task_list = {}
     group_x_max_score = {}
+    default_teacher = {}
     show_hidden_tasks = request.session.get(str(request.user.id) + '_' + str(course.id) + '_show_hidden_tasks', False)
 
     task = Task()
@@ -154,14 +156,12 @@ def tasklist_shad_cpp(request, course):
         student_x_task_x_task_takens = {}
 
         if show_hidden_tasks:
-            group_x_task_list[group] = Task.objects.filter(Q(course=course) &
-                                                           (Q(group=group) | Q(group=None))
-                                                           ).order_by('weight').select_related()
+            group_x_task_list[group] = [x.task for x in TaskGroupRelations.objects.select_related('task')
+                .filter(task__course=course, group=group, deleted=False).order_by('position')]
         else:
-            group_x_task_list[group] = Task.objects.filter(Q(course=course) &
-                                                           (Q(group=group) | Q(group=None)) &
-                                                           Q(is_hidden=False)
-                                                           ).order_by('weight').select_related()
+            group_x_task_list[group] = [x.task for x in TaskGroupRelations.objects.select_related('task')
+                .filter(task__course=course, group=group, deleted=False, task__is_hidden=False).order_by('position')]
+
         group_x_max_score.setdefault(group, 0)
 
         for task in group_x_task_list[group]:
@@ -197,6 +197,12 @@ def tasklist_shad_cpp(request, course):
 
         group_x_student_x_task_takens[group] = student_x_task_x_task_takens
 
+        try:
+            default_teacher[group] = DefaultTeacher.objects.get(course=course, group=group).teacher
+        except DefaultTeacher.DoesNotExist:
+            default_teacher[group] = None
+
+
     group_x_student_information = OrderedDict()
     for group,student_x_task_x_task_takens in group_x_student_x_task_takens.iteritems():
         group_x_student_information.setdefault(group, [])
@@ -210,10 +216,10 @@ def tasklist_shad_cpp(request, course):
             mark_id, course_mark = get_course_mark(course, group, student)
 
             group_x_student_information[group].append((student,
-                                                      student_x_task_x_task_takens[student][0],
-                                                      student_x_task_x_task_takens[student][1],
-                                                      mark_id,
-                                                      course_mark))
+                                                       student_x_task_x_task_takens[student][0],
+                                                       student_x_task_x_task_takens[student][1],
+                                                       mark_id,
+                                                       course_mark))
 
     context = {
         'course': course,
@@ -221,6 +227,7 @@ def tasklist_shad_cpp(request, course):
         'group_information': group_x_student_information,
         'group_tasks': group_x_task_list,
         'group_x_max_score': group_x_max_score,
+        'default_teacher': default_teacher,
 
         'user': user,
         'user_is_attended': user_is_attended,
@@ -352,7 +359,7 @@ def course_settings(request, course_id):
                'visible_queue': course.user_can_see_queue(request.user),
                'user_is_teacher': course.user_is_teacher(request.user),
                'school': schools[0] if schools else '',
-    }
+               }
 
     if request.method != "POST":
         form = DefaultTeacherForm(course)
@@ -392,6 +399,16 @@ def course_settings(request, course_id):
         course.default_task_one_file_upload = True
     else:
         course.default_task_one_file_upload = False
+
+    if 'show_accepted_after_contest_ok' in request.POST:
+        course.show_accepted_after_contest_ok = True
+    else:
+        course.show_accepted_after_contest_ok= False
+
+    if 'default_task_one_file_upload' in request.POST:
+        course.default_accepted_after_contest_ok = True
+    else:
+        course.default_accepted_after_contest_ok = False
 
     course.save()
 
@@ -456,17 +473,50 @@ def set_task_mark(request):
 
     mark = 0
     if request.POST['mark_value'] == '-':
-        issue.set_byname('status', issue.STATUS_NEW)
-        label = 'label-default'
+        issue.set_status_by_tag(IssueStatus.STATUS_NEW)
     else:
         mark = float(request.POST['mark_value'])
         if mark <= 0:
-            issue.set_byname('status', issue.STATUS_REWORK)
-            label = 'label-danger'
+            issue.set_status_by_tag(IssueStatus.STATUS_REWORK)
         else:
-            issue.set_byname('status', issue.STATUS_ACCEPTED)
-            label = 'label-success'
+            issue.set_status_by_tag(IssueStatus.STATUS_ACCEPTED)
+
     issue.set_byname('mark', mark)
 
-    return HttpResponse(json.dumps({'mark': mark, 'label': label}),
+    return HttpResponse(json.dumps({'mark': mark,
+                                    'color': issue.status_field.color}),
                         content_type="application/json")
+
+
+@login_required
+def change_table_tasks_pos(request):
+    if request.method != 'POST':
+        return HttpResponseForbidden()
+
+    course = get_object_or_404(Course, id=int(request.POST['course_id']))
+    if not course.user_is_teacher(request.user):
+        return HttpResponseForbidden()
+
+    group = get_object_or_404(Group, id=int(request.POST['group_id']))
+
+    if 'task_deleted[]' in request.POST:
+        task_deleted = map(lambda x: int(x), dict(request.POST)['task_deleted[]'])
+        for task in Task.objects.filter(id__in=task_deleted):
+            if not Issue.objects.filter(task=task).count():
+                try:
+                    task.delete()
+                    TaskGroupRelations.objects.get(task=task, group=group).delete()
+                except TaskGroupRelations.DoesNotExist:
+                    pass
+            else:
+                return HttpResponseForbidden()
+
+    if 'task_order[]' in request.POST:
+        task_order = map(lambda x: int(x), dict(request.POST)['task_order[]'])
+
+        for task_relations in TaskGroupRelations.objects.select_related('task') \
+                .filter(task__id__in=task_order).filter(group=group):
+            task_relations.position = task_order.index(task_relations.task.id)
+            task_relations.save()
+
+    return HttpResponse("OK")

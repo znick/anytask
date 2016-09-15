@@ -28,7 +28,7 @@
     });
 
     $('.fileupload-buttonbar').on("click", '.delete', function() {
-        $('#filenmae_changed_alert').hide();
+        $('#filename_changed_alert').hide();
         $('.drop-zone').show();
     });
 {% endblock %}
@@ -93,7 +93,7 @@
               float: none;
             }
             </style>
-            <div id="filenmae_changed_alert" class="alert alert-warning alert-dismissible" role="alert" style="display: none;margin-bottom: 0;">
+            <div id="filename_changed_alert" class="alert alert-warning alert-dismissible" role="alert" style="display: none;margin-bottom: 0;">
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -102,7 +102,7 @@
             <table style="margin-bottom: 0px;" role="presentation" class="table table-striped">
                <tbody class="files" data-toggle="modal-gallery" data-target="#modal-gallery"></tbody>
             </table>
-            {% if teacher_or_staff or issue.status != issue.STATUS_ACCEPTED and issue.status != issue.STATUS_NEED_INFO %}
+            {% if teacher_or_staff or issue.status_field.tag != issue.status_field.STATUS_ACCEPTED and issue.status_field.tag != issue.status_field.STATUS_NEED_INFO %}
                 <div class="drop-zone" id="drop-zone" ondragenter="this.style.background='#E0E0E0';" ondragleave="this.style.background='';" ondrop="this.style.background='';">
 
                 <span class="btn btn-secondary drop-btn fileinput-button" id="drop-btn">
@@ -131,7 +131,7 @@
             {% endblock %}
 
             {% block UPLOAD_FORM_BUTTON_BAR_CONTROL %}
-            {% if issue.status == issue.STATUS_ACCEPTED or issue.status == issue.STATUS_NEED_INFO and not teacher_or_staff %}
+            {% if issue.status_field.tag == issue.status_field.STATUS_ACCEPTED and not teacher_or_staff or issue.status_field.tag == issue.status_field.STATUS_NEED_INFO and not teacher_or_staff %}
                 <button class="btn btn-info pull-xs-right" formaction="#" style="margin-top: 10px; margin-left: 10px;" type="submit" name="need_info">Задать вопрос</button>
             {% else %}
                 <button style="margin-top: 10px;" type="submit" name="update_issue" class="btn btn-primary pull-xs-right">
@@ -204,7 +204,7 @@
 {% block JS_DOWNLOAD_TEMPLATE_DELETE %}
         {{ JQ_OPEN }}
             if (file.one_file_upload) {
-                $('#filenmae_changed_alert').show();
+                $('#filename_changed_alert').show();
                 $('.drop-zone').hide();
             }
         {{ JQ_CLOSE }}

@@ -144,6 +144,7 @@ INSTALLED_APPS = (
     'schools',
     'jfu',
     'django_filters',
+    'colorfield',
 )
 
 AUTH_PROFILE_MODULE = "users.UserProfile"

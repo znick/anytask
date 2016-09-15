@@ -4,7 +4,8 @@ import inspect
 import sys
 
 from django.db import models
-from issues.forms import IntForm, StatusForm, MarkForm, FileForm, CommentForm, get_responsible_form, get_followers_form
+from issues.forms import IntForm, MarkForm, FileForm, CommentForm, get_responsible_form, get_followers_form, get_status_form
+
 
 
 class DefaultPlugin(object):
@@ -70,15 +71,10 @@ class FieldMarkPlugin(FieldDefaultPlugin):
 class FieldStatusPlugin(FieldDefaultPlugin):
     PLUGIN_NAME = "FieldStatusPlugin"
     PLUGIN_VERSION = "1.0"
-    FORM = StatusForm
 
     @classmethod
     def get_form(cls, *args, **kwargs):
-        return cls.FORM(*(args[:3]), **kwargs)
-
-    @staticmethod
-    def get_default_value(field_name):
-        return u'Новый'
+        return get_status_form(*args, **kwargs)
 
 
 class FieldResponsiblePlugin(FieldDefaultPlugin):

@@ -15,6 +15,7 @@ from groups.models import Group
 from years.models import Year
 from tasks.models import Task
 from issues.models import Issue, File, Event
+from issues.model_issue_status import IssueStatus
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from mock import patch
@@ -45,12 +46,14 @@ class CreateTest(TestCase):
         followers = [User.objects.create_user(username='follower1',
                                               password='password')]
 
+        status = IssueStatus.objects.get(tag=Issue.STATUS_ACCEPTED)
+
         issue = Issue()
         issue.student = student
         issue.task = task
         issue.mark = 3
         issue.responsible = responsible
-        issue.status = Issue.STATUS_ACCEPTED
+        issue.status_field = status
         issue.save()
         issue.followers = followers
         issue.save()
@@ -63,7 +66,7 @@ class CreateTest(TestCase):
         self.assertEqual(issue.task, task)
         self.assertEqual(issue.mark, 3)
         self.assertEqual(issue.responsible, responsible)
-        self.assertEqual(issue.status, Issue.STATUS_ACCEPTED)
+        self.assertEqual(issue.status_field, status)
         self.assertItemsEqual(issue.followers.all(), followers)
 
 
@@ -231,19 +234,19 @@ class ViewsTest(TestCase):
         self.assertEqual(forms[2].find('input', {'name': 'form_name'})['value'],
                          'status_form',
                          '6th issue field input form_name wrong')
-        self.assertEqual(len(forms[2]('option')), 3, '6th issue field select option len is not 3')
-        self.assertEqual(forms[2]('option')[0]['value'], 'rework', '6th issue field select 1st option value wrong')
-        self.assertEqual(forms[2]('option')[0].string.strip().strip('\n'),
-                         u'На доработке',
-                         '6th issue field select 1st option text wrong')
-        self.assertEqual(forms[2]('option')[1]['value'], 'verification', '6th issue field select 2nd option value wrong')
-        self.assertEqual(forms[2]('option')[1].string.strip().strip('\n'),
-                         u'На проверке',
-                         '6th issue field select 2nd option text wrong')
-        self.assertEqual(forms[2]('option')[2]['value'], 'accepted', '6th issue field select 3rd option value wrong')
-        self.assertEqual(forms[2]('option')[2].string.strip().strip('\n'),
-                         u'Зачтено',
-                         '6th issue field select 3rd option text wrong')
+        self.assertEqual(len(forms[2]('option')), 3, '6th issue field select option len is not 4')
+        self.assertIn('value="3"', str(forms[2]('option')[0]), '6th issue field select 1st option value wrong')
+        self.assertIn(u'На проверке',
+                      unicode(forms[2]('option')[0]),
+                      '6th issue field select 1st option text wrong')
+        self.assertIn('value="4"', str(forms[2]('option')[1]), '6th issue field select 2st option value wrong')
+        self.assertIn(u'На доработке',
+                      unicode(forms[2]('option')[1]),
+                      '6th issue field select 2st option text wrong')
+        self.assertIn('value="5"', str(forms[2]('option')[2]), '6th issue field select 3st option value wrong')
+        self.assertIn(u'Зачтено',
+                      unicode(forms[2]('option')[2]),
+                      '6th issue field select 3st option text wrong')
         self.assertEqual(len(forms[2]('button')), 1, '6th issue field button len is not 1')
         self.assertEqual(forms[2]('button')[0].string.strip().strip('\n'),
                          u'Отправить',
@@ -267,7 +270,7 @@ class ViewsTest(TestCase):
                          u'Зачтено',
                          '7th issue field 2st button wrong ')
 
-        self.assertEqual(labels[7].div.string.strip().strip('\n'), u'Дата сдачи:', '8th issue field label wrong')
+        self.assertEqual(labels[7].string.strip().strip('\n'), u'Дата сдачи:', '8th issue field label wrong')
         self.assertEqual(results[7].string.strip().strip('\n'), '', '8th issue field text wrong')
 
     def test_post_responsible_name_form_send_button_with_teacher(self):
@@ -474,7 +477,8 @@ class ViewsTest(TestCase):
         # post
         response = client.post(reverse('issues.views.issue_page', kwargs={'issue_id': issue.id}),
                                {'form_name': 'status_form',
-                                'status': 'rework'}, follow=True)
+                                'status': '4'}, follow=True)
+
         self.assertEqual(response.status_code, 200, "Can't get issue_page via teacher")
         self.assertEqual(len(response.redirect_chain), 1, "Must be redirect")
 
@@ -557,7 +561,7 @@ class ViewsTest(TestCase):
 
         # history
         history = container.find('ul', 'history')('li')
-        self.assertEqual(len(history), 1, 'History len is not 1')
+        self.assertEqual(len(history), 2, 'History len is not 2')
         self.assertEqual(history[0].strong.a['href'],
                          '/users/teacher/',
                          'Wrong comment author link')
@@ -565,6 +569,15 @@ class ViewsTest(TestCase):
                          'teacher_last_name teacher_name',
                          'Wrong comment author name')
         self.assertEqual(history[0].find('div', 'history-body').string.strip().strip('\n'),
+                         u'Статус изменен: Зачтено',
+                         'Wrong comment text')
+        self.assertEqual(history[1].strong.a['href'],
+                         '/users/teacher/',
+                         'Wrong comment author link')
+        self.assertEqual(history[1].strong.a.string.strip().strip('\n'),
+                         'teacher_last_name teacher_name',
+                         'Wrong comment author name')
+        self.assertEqual(history[1].find('div', 'history-body').string.strip().strip('\n'),
                          u'Оценка изменена на 3',
                          'Wrong comment text')
 
@@ -681,7 +694,7 @@ class ViewsTest(TestCase):
         self.assertEqual(labels[6].string.strip().strip('\n'), u'Оценка:', '7th issue field label text wrong')
         self.assertEqual(results[6].string.strip().strip('\n'), '0', '7th issue field text wrong')
 
-        self.assertEqual(labels[7].div.string.strip().strip('\n'), u'Дата сдачи:', '8th issue field label wrong')
+        self.assertEqual(labels[7].string.strip().strip('\n'), u'Дата сдачи:', '8th issue field label wrong')
         self.assertEqual(results[7].string.strip().strip('\n'), '', '8th issue field text wrong')
 
     def test_comment_with_student(self):

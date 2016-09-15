@@ -142,6 +142,14 @@
                         </div>
                     </div>
                 {% endif %}
+                {% if course.show_accepted_after_contest_ok %}
+                    <div class="form-group row">
+                        <label class="col-sm-3 form-control-label" for="task_edit_accepted_after_contest_ok">Переводить в статус Зачтено после положительного вердикта Я.Контеста</label>
+                        <div class="controls col-sm-3" style="padding-top: 5px">
+                            <input type="checkbox" name="accepted_after_contest_ok" id="task_edit_accepted_after_contest_ok"  {% if task.accepted_after_contest_ok or is_create and course.default_accepted_after_contest_ok %}checked{% endif %}>
+                        </div>
+                    </div>
+                {% endif %}
                 <div class="form-group row">
                     <label class="col-sm-3 form-control-label" for="task_edit_hidden_task">Скрыть задачи</label>
                     <div class="controls col-sm-3" style="padding-top: 5px">
