@@ -24,3 +24,5 @@ xmltodict
 django-crispy-forms
 django-htmlmin
 django-colorfield
+django-haystack==2.4.1
+Whoosh

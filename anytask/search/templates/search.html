@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}Результаты поиска{% endblock %}
+
+{% block content %}
+    {% if user_profiles or courses %}
+        {% if user_profiles %}
+            <div class="row">
+            <div class="col-md-4 col-xs-12">
+                <div class="card">
+                    <div class="card-block">
+                        <h5 class="card-title">Пользователи</h5>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        {% for fullname, username, ya_login, url in user_profiles %}
+                            <a class="card-link card-clickable" href="{{ url }}">
+                                <li class="list-group-item">
+                                    <table class="user_profiles">
+                                        <tr>
+                                            <td rowspan="2" style="padding-right: 10px;">
+                                                {{ fullname }}
+                                            </td>
+                                            <td>
+                                                {{ username }}@
+                                            </td>
+                                        </tr>
+                                        {% if ya_login %}
+                                            <tr>
+                                                <td>
+                                                    {{ ya_login }}@ <small class="text-muted">Я.Контест</small>
+                                                </td>
+                                            </tr>
+                                        {% endif %}
+                                    </table>
+                                </li>
+                            </a>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        {% endif %}
+        {% if courses %}
+            <div class="col-md-4 col-xs-12">
+                <div class="card">
+                    <div class="card-block">
+                        <h5 class="card-title">Курсы</h5>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        {% for name, year, url in courses %}
+                            <a class="card-link card-clickable" href="{{ url }}">
+                                <li class="list-group-item">{{ name }} {{ year }}</li>
+                            </a>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="col-md-4 col-xs-12">
+            <div class="card">
+                <div class="card-block">
+                    <p class="card-text">
+                        По запросу "{{ query }}" ничего не найдено.
+                    </p>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
