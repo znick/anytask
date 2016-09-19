@@ -13,10 +13,13 @@ from issues.model_issue_field import IssueField
 @csrf_exempt
 def message_from_rb(request, review_id):
 
-    for one_issue in Issue.objects.filter(task__rb_integrated=True):
-        if one_issue.get_byname('review_id') == review_id:
-            issue = one_issue
-            break
+    for one_issue in Issue.objects.filter(task__rb_integrated=True).order_by('-update_time'):
+        try:
+            if one_issue.get_byname('review_id') == review_id:
+                issue = one_issue
+                break
+        except:
+            pass
 
     if request.method == 'POST':
         value = {'files':[], 'comment':''}
