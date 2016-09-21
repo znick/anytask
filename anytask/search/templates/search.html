@@ -53,7 +53,7 @@
                     Минимальная длина запроса должна быть больше 3 символов.
                 {% else %}
                     {% if user_profiles or courses %}
-                        По запросу "{{ query }}" найдено {{ user_profiles|length }} студента(ов) и {{ courses|length }} курса(ов).
+                        По запросу "{{ query }}" найдено {{ user_profiles|length }} пользователя(ей) и {{ courses|length }} курса(ов).
                     {% else %}
                         По запросу "{{ query }}" ничего не найдено.
                     {% endif %}
@@ -105,13 +105,15 @@
                                                 {{ up.user.username }}@ <small class="text-muted">Anytask</small>
                                             </td>
                                         </tr>
-                                        {% if up.ya_login %}
-                                            <tr>
-                                                <td></td>
-                                                <td>
-                                                    {{ up.ya_login }}@ <small class="text-muted">Я.Контест</small>
-                                                </td>
-                                            </tr>
+                                        {% if user_is_teacher or user.is_staff %}
+                                            {% if up.ya_login  %}
+                                                <tr>
+                                                    <td></td>
+                                                    <td>
+                                                        {{ up.ya_login }}@ <small class="text-muted">Я.Контест</small>
+                                                    </td>
+                                                </tr>
+                                            {% endif %}
                                         {% endif %}
                                     </table>
                                 </li>

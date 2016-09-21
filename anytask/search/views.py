@@ -18,6 +18,8 @@ def search_page(request):
     query = request.GET.get('q', '')
 
     context = {
+        'user': request.user,
+        'user_is_teacher': True if Course.objects.filter(teachers=user).count() else False,
         'query': query,
         'user_profiles': search_users(query, user)[1],
         'courses': search_courses(query, user)[1],
