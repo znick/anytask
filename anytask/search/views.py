@@ -81,7 +81,9 @@ def search_users(query, user, max_result=None):
                 result.append([user_to_show.get_full_name(),
                                user_to_show.username,
                                sg.object.ya_login if user_is_teacher else '',
-                               user_to_show.get_absolute_url()])
+                               user_to_show.get_absolute_url(),
+                               sg.object.avatar.url if sg.object.avatar else '',
+                               user_to_show.email])
                 result_objs.append(sg.object)
 
                 if len(result) == max_result:
@@ -92,7 +94,9 @@ def search_users(query, user, max_result=None):
                 result.append([sg.object.user.get_full_name(),
                                sg.object.user.username,
                                sg.object.ya_login,
-                               sg.object.user.get_absolute_url()])
+                               sg.object.user.get_absolute_url(),
+                               sg.object.avatar.url if sg.object.avatar else '',
+                               sg.object.user.email])
                 result_objs.append(sg.object)
 
     return result, result_objs
@@ -116,6 +120,11 @@ def search_courses(query, user, max_result=None):
         user_is_staff = user.is_staff
         sgs_name = SearchQuerySet().models(Course)
 
+        if max_result:
+            sgs_name = sgs_name.filter(is_active=True)
+        else:
+            sgs_name = sgs_name.order_by('-is_active')
+
         if not user_is_staff:
             groups = user.group_set.all()
             courses_ids = (Course.objects.filter(groups__in=groups) | Course.objects.filter(teachers=user)) \
@@ -128,7 +137,8 @@ def search_courses(query, user, max_result=None):
         for sg in sgs_name[:max_result]:
             result.append([unicode(sg.object.name),
                            unicode(sg.object.year),
-                           sg.object.get_absolute_url()])
+                           sg.object.get_absolute_url(),
+                           [sch.name for sch in sg.object.school_set.all()]])
             result_objs.append(sg.object)
 
     return result, result_objs

@@ -7,6 +7,7 @@ from courses.models import Course
 class CourseIndex(indexes.SearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)
     course_id = indexes.IntegerField(model_attr='id')
+    is_active = indexes.BooleanField(model_attr='is_active')
 
     name_auto = indexes.NgramField(model_attr='name')
 

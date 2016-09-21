@@ -23,6 +23,16 @@
         <link href="{{ STATIC_URL }}typeahead.css" rel="stylesheet">
 
         <script type="text/javascript">
+            if (!String.prototype.format) {
+                String.prototype.format =  function(){
+                    var args = arguments;
+                    return this.replace(/\{(\d+)\}/g, function(m, n){
+                        if (m == "{" + "{") { return "{"; }
+                        if (m == "}" + "}") { return "}"; }
+                        return args[n];
+                    });
+                };
+            }
             $(function() {
                 var user_profiles_bloodhound = new Bloodhound({
                     datumTokenizer: function(datum) {
@@ -38,7 +48,9 @@
                                     'fullname': user[0],
                                     'username': user[1],
                                     'ya_login': user[2],
-                                    'url': user[3]
+                                    'url': user[3],
+                                    'avatar': user[4],
+                                    'email': user[5]
                                 };
                             });
                         }
@@ -57,7 +69,8 @@
                                 return {
                                     'name': user[0],
                                     'year': user[1],
-                                    'url': user[2]
+                                    'url': user[2],
+                                    'schools': user[3]
                                 };
                             });
                         }
@@ -74,25 +87,26 @@
                             displayKey: 'fullname',
                             source: user_profiles_bloodhound.ttAdapter(),
                             templates: {
-                                header: '<h5 class="search-model-name">Пользователи</h5>',
+                                header: '<h6 class="search-model-name">Пользователи</h6>',
                                 suggestion: function(data) {
-                                    var q = data._query.toLowerCase();
-                                    var ya_login = data.ya_login.toLowerCase();
-                                    var username = data.username.toLowerCase();
-                                    var show_ya_login = false;
-                                    var show_username = false;
+                                    var table_html = '<div class="sgs-result-up" data-url="{0}"><table>' +
+                                            '<tr><td style="padding-right: 10px;"><img class="avatar" src="{1}" style="width: 30px; height: 30px;"></td>' +
+                                            '<td><div><strong>{2}</strong></div>{3}</td></tr>' +
+                                            '<tr><td></td><td><strong>Логины</strong></td></tr>' +
+                                            '<tr><td></td><td>{4}@ <small class="text-muted">Anytask</small></td></tr>' +
+                                            '{5}' +
+                                            '</table></div>';
+                                    var email_html = '';
+                                    var ya_login_html = '';
+                                    var avatar = data.avatar;
 
-                                    if (ya_login.indexOf(q) >= 0) {
-                                        show_ya_login = true;
-                                    }
-                                    else if (username.indexOf(q) >= 0)
-                                        show_username = true;
-
-                                    if (show_ya_login)
-                                        return '<div data-url="' + data.url + '">' + data.fullname + ' ' + data.ya_login + '@ <small class="text-muted">Я.Контест</small></div>';
-                                    if (show_username)
-                                        return '<div data-url="' + data.url + '">' + data.fullname + ' ' + data.username + '@</div>';
-                                    return '<div data-url="' + data.url + '">' + data.fullname + '</div>'
+                                    if (!avatar)
+                                        avatar = 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mm&f=y';
+                                    if (data.email)
+                                        email_html = '<div class="sgs-email">{0}</div>'.format(data.email);
+                                    if (data.ya_login)
+                                        ya_login_html = '<tr><td></td><td>{0}@ <small class="text-muted">Я.Контест</small></td></tr>'.format(data.ya_login);
+                                    return table_html.format(data.url, avatar, data.fullname, email_html, data.username, ya_login_html)
                                 },
                                 {#                            footer: '<div><a href="#">Все результаты</a></div>'#}
                             }
@@ -102,9 +116,15 @@
                             displayKey: 'name',
                             source: courses_bloodhound.ttAdapter(),
                             templates: {
-                                header: '<h5 class="search-model-name">Курсы</h5>',
+                                header: '<h6 class="search-model-name">Курсы</h6>',
                                 suggestion: function(data) {
-                                    return '<div data-url="' + data.url + '">' + data.name + ' ' + data.year +'</div>';
+                                    var schools_html = '';
+                                    for (var i = 0; i < data.schools.length; ++i)
+                                        schools_html += '<div>{0}</div>'.format(data.schools[i]);
+                                    var course_html = '<div data-url="{0}"><div class="sgs-result-course"><strong>{1} {2}</strong></div>' +
+                                            '<div class="sgs-result-course">{3}</div></div>';
+
+                                    return course_html.format(data.url, data.name, data.year, schools_html);
                                 },
                                 {#                            footer: '<div><a href="#">Все результаты</a></div>'#}
                             }
@@ -337,6 +357,23 @@
                     width: 100%;
                 }
             }
+
+            .sgs-result-up table tr:first-child,
+            .sgs-result-course:first-child{
+                font-size: 0.9rem;
+            }
+            .sgs-result-up table tr .sgs-email{
+                padding-bottom: 10px;
+            }
+            .sgs-result-up table tr .sgs-email .tt-highlight,
+            .sgs-result-course div{
+                font-weight: normal;
+            }
+            .sgs-result-up table tr .sgs-email,
+            .sgs-result-up table tr,
+            .sgs-result-course{
+                font-size: 0.7rem;
+            }
         </style>
 
     {% endblock %}
@@ -380,7 +417,7 @@
                         </li>
                     </ul>
                     {% block main_search %}
-                        <div class="nav-form-search pull-xs-right col-xs-12 col-md-3">
+                        <div class="nav-form-search pull-xs-right col-xs-12 col-md-4">
                             <form class="navbar-form" role="search" method="get" action="{% url search.views.search_page %}">
                                 <div class="input-group">
                                     <input class="typeahead form-control" name="q" type="text" placeholder="Найти...">
