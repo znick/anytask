@@ -19,8 +19,8 @@ def search_page(request):
 
     context = {
         'query': query,
-        'user_profiles': search_users(query, user),
-        'courses': search_courses(query, user),
+        'user_profiles': search_users(query, user)[1],
+        'courses': search_courses(query, user)[1],
     }
     return render_to_response('search.html', context, context_instance=RequestContext(request))
 
@@ -30,13 +30,14 @@ def ajax_search_users(request):
     if 'q' not in request.GET:
         return HttpResponseForbidden()
 
-    result = search_users(request.GET.get('q', ''), request.user, 3)
+    result, _ = search_users(request.GET.get('q', ''), request.user, 3)
 
     return HttpResponse(json.dumps({'result': result}), content_type='application/json')
 
 
 def search_users(query, user, max_result=None):
     result = []
+    result_objs = []
 
     if query:
         user_is_staff = user.is_staff
@@ -79,16 +80,20 @@ def search_users(query, user, max_result=None):
                                user_to_show.username,
                                sg.object.ya_login if user_is_teacher else '',
                                user_to_show.get_absolute_url()])
+                result_objs.append(sg.object)
 
                 if len(result) == max_result:
                     break
 
         else:
-            result = [[result.object.user.get_full_name(),
-                       result.object.user.username,
-                       result.object.ya_login,
-                       result.object.user.get_absolute_url()] for result in sgs[:max_result]]
-    return result
+            for sg in sgs[:max_result]:
+                result.append([sg.object.user.get_full_name(),
+                               sg.object.user.username,
+                               sg.object.ya_login,
+                               sg.object.user.get_absolute_url()])
+                result_objs.append(sg.object)
+
+    return result, result_objs
 
 
 @login_required()
@@ -96,13 +101,14 @@ def ajax_search_courses(request):
     if 'q' not in request.GET:
         return HttpResponseForbidden()
 
-    result = search_courses(request.GET.get('q', ''), request.user, 3)
+    result, _ = search_courses(request.GET.get('q', ''), request.user, 3)
 
     return HttpResponse(json.dumps({'result': result}), content_type='application/json')
 
 
 def search_courses(query, user, max_result=None):
     result = []
+    result_objs = []
 
     if query:
         user_is_staff = user.is_staff
@@ -116,8 +122,11 @@ def search_courses(query, user, max_result=None):
             sgs_name = sgs_name.filter(course_id__in=courses_ids).autocomplete(name_auto=query)
         else:
             sgs_name = sgs_name.autocomplete(name_auto=query)
-        result = [[unicode(result.object.name),
-                   unicode(result.object.year),
-                   result.object.get_absolute_url()] for result in sgs_name[:max_result]]
 
-    return result
+        for sg in sgs_name[:max_result]:
+            result.append([unicode(sg.object.name),
+                           unicode(sg.object.year),
+                           sg.object.get_absolute_url()])
+            result_objs.append(sg.object)
+
+    return result, result_objs

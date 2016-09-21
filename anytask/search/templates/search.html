@@ -2,69 +2,148 @@
 
 {% block title %}Результаты поиска{% endblock %}
 
+{% block main_search %}{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('.typeahead').typeahead('val','{{ query }}');
+            $('img.avatar').hover(
+                    function() {
+                        $(this).closest('tr').find('.fullname').addClass('hover');
+                    },
+                    function() {
+                        $(this).closest('tr').find('.fullname').removeClass('hover');
+                    }
+            );
+        });
+    </script>
+
+{% endblock %}
+
 {% block content %}
-    {% if user_profiles or courses %}
-        {% if user_profiles %}
-            <div class="row">
-            <div class="col-md-4 col-xs-12">
-                <div class="card">
-                    <div class="card-block">
-                        <h5 class="card-title">Пользователи</h5>
+    <style>
+        table.user_profiles tr:first-child{
+            font-size: 1rem;
+        }
+        div.result-info,
+        table.user_profiles tr{
+            font-size: 0.8rem;
+        }
+        a.fullname.hover {
+            color: #014c8c;
+        }
+    </style>
+
+    <div class="card">
+        <div class="card-block">
+            <h5 class="card-title">Результаты поиска</h5>
+            <div class="form-search">
+                <form class="navbar-form" role="search" method="get" action="{% url search.views.search_page %}">
+                    <div class="input-group">
+                        <input class="typeahead form-control" name="q" type="text" placeholder="Найти...">
+                        <div class="input-group-btn">
+                            <button class="btn btn-secondary" type="submit"><i class="fa fa-search" style="line-height: 1.5"></i></button>
+                        </div>
                     </div>
-                    <ul class="list-group list-group-flush">
-                        {% for fullname, username, ya_login, url in user_profiles %}
-                            <a class="card-link card-clickable" href="{{ url }}">
+                </form>
+            </div>
+            <small class="text-muted">
+                {% if query|length < 3 %}
+                    Минимальная длина запроса должна быть больше 3 символов.
+                {% else %}
+                    {% if user_profiles or courses %}
+                        По запросу "{{ query }}" найдено {{ user_profiles|length }} студента(ов) и {{ courses|length }} курса(ов).
+                    {% else %}
+                        По запросу "{{ query }}" ничего не найдено.
+                    {% endif %}
+                {% endif %}
+            </small>
+        </div>
+    </div>
+    {% if user_profiles or courses %}
+        <div class="row">
+            {% if user_profiles %}
+                <div class="col-md-4 col-xs-12">
+                    <div class="card">
+                        <div class="card-block" style="padding-bottom: 0">
+                            <h5 class="card-title">Пользователи</h5>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            {% for up in user_profiles %}
                                 <li class="list-group-item">
                                     <table class="user_profiles">
                                         <tr>
-                                            <td rowspan="2" style="padding-right: 10px;">
-                                                {{ fullname }}
+                                            <td style="padding-right: 10px;">
+                                                <a class="card-link card-clickable" href="{{ up.user.get_absolute_url }}">
+                                                    <img class="avatar" src="{% if not up.avatar %}https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mm&f=y{% else %}{{ up.avatar.url }}{% endif %}" style="width: 50px; height: 50px;">
+                                                </a>
                                             </td>
                                             <td>
-                                                {{ username }}@
+                                                <a class="card-link card-clickable fullname" href="{{ up.user.get_absolute_url }}">
+                                                    <b>{{ up.user.get_full_name }}</b>
+                                                </a>
                                             </td>
                                         </tr>
-                                        {% if ya_login %}
+                                        {% if up.user.email %}
                                             <tr>
+                                                <td></td>
                                                 <td>
-                                                    {{ ya_login }}@ <small class="text-muted">Я.Контест</small>
+                                                    <a class="card-link card-clickable" href="mailto:{{ up.user.email }}">{{ up.user.email }}</a>
+                                                </td>
+                                            </tr>
+                                        {% endif %}
+                                        <tr>
+                                            <td></td>
+                                            <td>
+                                                <b>Логины</b>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td>
+                                                {{ up.user.username }}@ <small class="text-muted">Anytask</small>
+                                            </td>
+                                        </tr>
+                                        {% if up.ya_login %}
+                                            <tr>
+                                                <td></td>
+                                                <td>
+                                                    {{ up.ya_login }}@ <small class="text-muted">Я.Контест</small>
                                                 </td>
                                             </tr>
                                         {% endif %}
                                     </table>
                                 </li>
-                            </a>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
-        {% endif %}
-        {% if courses %}
-            <div class="col-md-4 col-xs-12">
-                <div class="card">
-                    <div class="card-block">
-                        <h5 class="card-title">Курсы</h5>
+                            {% endfor %}
+                        </ul>
                     </div>
-                    <ul class="list-group list-group-flush">
-                        {% for name, year, url in courses %}
-                            <a class="card-link card-clickable" href="{{ url }}">
-                                <li class="list-group-item">{{ name }} {{ year }}</li>
-                            </a>
-                        {% endfor %}
-                    </ul>
                 </div>
-            </div>
-        {% endif %}
-    {% else %}
-        <div class="col-md-4 col-xs-12">
-            <div class="card">
-                <div class="card-block">
-                    <p class="card-text">
-                        По запросу "{{ query }}" ничего не найдено.
-                    </p>
+            {% endif %}
+            {% if courses %}
+                <div class="col-md-4 col-xs-12">
+                    <div class="card">
+                        <div class="card-block" style="padding-bottom: 0">
+                            <h5 class="card-title">Курсы</h5>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            {% for course in courses %}
+                                <li class="list-group-item">
+                                    <a class="card-link card-clickable" href="{{ course.get_absolute_url }}">
+                                        <b>{{ course.name }} {{ course.year }}</b>
+                                    </a>
+                                    <div class="result-info">
+                                        {% for school in course.school_set.all %}
+                                            <a class="card-link card-clickable" href="{{ school.get_absolute_url }}">{{ school.name }}</a>
+                                        {% endfor %}
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
                 </div>
-            </div>
+            {% endif %}
         </div>
     {% endif %}
-</div>
+
 {% endblock %}

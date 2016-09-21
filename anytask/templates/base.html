@@ -66,10 +66,12 @@
 
                 $('.typeahead').typeahead({
                             highlight: true,
+                            hint:false,
                             minLength: 3
                         },
                         {
                             name: 'user_profiles',
+                            displayKey: 'fullname',
                             source: user_profiles_bloodhound.ttAdapter(),
                             templates: {
                                 header: '<h5 class="search-model-name">Пользователи</h5>',
@@ -97,6 +99,7 @@
                         },
                         {
                             name: 'courses',
+                            displayKey: 'name',
                             source: courses_bloodhound.ttAdapter(),
                             templates: {
                                 header: '<h5 class="search-model-name">Курсы</h5>',
@@ -106,14 +109,8 @@
                                 {#                            footer: '<div><a href="#">Все результаты</a></div>'#}
                             }
                         }
-                );
-
-                $(document).on('click', 'div.tt-selectable', function(event){
-                    event.preventDefault();
-                    var input = $(this).closest('form[role="search"]').find('input[name="q"]');
-                    input.val($(this).text());
-
-                    window.location = $(this).data('url');
+                ).on('typeahead:select', function(ev, suggestion) {
+                    window.location = suggestion.url;
                 });
 
                 $(document).on('click', '.nav-form-search form[role="search"]:not(.active) button[type="submit"]', function(event) {
@@ -382,17 +379,18 @@
                             </div>
                         </li>
                     </ul>
-                    <div class="nav-form-search pull-xs-right col-xs-12 col-md-3">
-                        <form class="navbar-form" role="search" method="get" action="{% url search.views.search_page %}">
-                            <div class="input-group">
-                                <input class="typeahead form-control" name="q" type="text" placeholder="Найти...">
-                                <div class="input-group-btn">
-                                    <button class="btn" type="submit"><i class="fa fa-search" style="line-height: 1.5"></i></button>
+                    {% block main_search %}
+                        <div class="nav-form-search pull-xs-right col-xs-12 col-md-3">
+                            <form class="navbar-form" role="search" method="get" action="{% url search.views.search_page %}">
+                                <div class="input-group">
+                                    <input class="typeahead form-control" name="q" type="text" placeholder="Найти...">
+                                    <div class="input-group-btn">
+                                        <button class="btn" type="submit"><i class="fa fa-search" style="line-height: 1.5"></i></button>
+                                    </div>
                                 </div>
-                            </div>
-                        </form>
-                    </div>
-
+                            </form>
+                        </div>
+                    {% endblock %}
                 {% else %}
                     <ul class="nav navbar-nav pull-xs-right">
                         <li class="nav-item">
