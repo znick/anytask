@@ -3,6 +3,7 @@ from django.test import TestCase
 
 from registration import forms
 
+from django.utils import translation
 
 class RegistrationFormTests(TestCase):
     """
@@ -41,10 +42,11 @@ class RegistrationFormTests(TestCase):
             ]
 
         for invalid_dict in invalid_data_dicts:
-            form = forms.RegistrationForm(data=invalid_dict['data'])
-            self.failIf(form.is_valid())
-            self.assertEqual(form.errors[invalid_dict['error'][0]],
-                             invalid_dict['error'][1])
+            with translation.override('en'):
+                form = forms.RegistrationForm(data=invalid_dict['data'])
+                self.failIf(form.is_valid())
+                self.assertEqual(form.errors[invalid_dict['error'][0]],
+                                 invalid_dict['error'][1])
 
         form = forms.RegistrationForm(data={'username': 'foo',
                                             'email': 'foo@example.com',
