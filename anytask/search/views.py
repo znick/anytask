@@ -32,7 +32,7 @@ def ajax_search_users(request):
     if 'q' not in request.GET:
         return HttpResponseForbidden()
 
-    max_result = 1
+    max_result = 3
     result, _ = search_users(request.GET.get('q', ''), request.user, max_result + 1)
 
     return HttpResponse(json.dumps({'result': result[:max_result],
@@ -45,7 +45,7 @@ def ajax_search_courses(request):
     if 'q' not in request.GET:
         return HttpResponseForbidden()
 
-    max_result = 1
+    max_result = 3
 
     result, _ = search_courses(request.GET.get('q', ''), request.user, max_result + 1)
 
