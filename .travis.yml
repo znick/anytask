@@ -9,4 +9,4 @@ script:
   - cd /var/lib/anytask/
   - git clone https://github.com/gebetix/repos
   - cd ~/build/znick/anytask/anytask
-  - python manage.py test courses tasks issues
+  - python manage.py test courses tasks issues users
