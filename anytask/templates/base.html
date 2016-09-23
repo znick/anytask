@@ -43,6 +43,7 @@
                         wildcard: '%QUERY',
                         url: '{% url search.views.ajax_search_users %}?q=%QUERY',
                         transform: function(response) {
+                            $('.typeahead').data('up_limited', response.is_limited);
                             return $.map(response.result, function(user) {
                                 return {
                                     'fullname': user[0],
@@ -65,6 +66,7 @@
                         wildcard: '%QUERY',
                         url: '{% url search.views.ajax_search_courses %}?q=%QUERY',
                         transform: function(response) {
+                            $('.typeahead').data('course_limited', response.is_limited);
                             return $.map(response.result, function(user) {
                                 return {
                                     'name': user[0],
@@ -140,17 +142,20 @@
                 }).on('typeahead:render', function (event, items, isAsync, datasetName) {
                     if (items) {
                         var menu = $(this).siblings('.tt-menu');
-                        if (!$('.search-show-more', menu).length)
-                            $(menu).append("<div class='search-show-more'><button type='submit'>Все результаты</button></div>");
+
+                        if ($('.typeahead').data('course_limited') || $('.typeahead').data('up_limited')) {
+                            if (!$('.search-show-more', menu).length)
+                                $(menu).append("<div class='search-show-more'><button type='submit'>Все результаты</button></div>");
+                        }
+                        else
+                            $('.search-show-more', menu).remove();
                     }
                 });
 
                 $('.tt-menu').on("mouseleave", function() {
                             $(this).find('.tt-cursor').removeClass('tt-cursor');
                         }
-                );
-
-                $('.tt-menu').on("mouseenter", 'div.search-show-more', function() {
+                ).on("mouseenter", 'div.search-show-more', function() {
                             $(this).closest('.tt-menu').find('.tt-cursor').removeClass('tt-cursor');
                         }
                 );

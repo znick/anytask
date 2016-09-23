@@ -32,9 +32,26 @@ def ajax_search_users(request):
     if 'q' not in request.GET:
         return HttpResponseForbidden()
 
-    result, _ = search_users(request.GET.get('q', ''), request.user, 3)
+    max_result = 1
+    result, _ = search_users(request.GET.get('q', ''), request.user, max_result + 1)
 
-    return HttpResponse(json.dumps({'result': result}), content_type='application/json')
+    return HttpResponse(json.dumps({'result': result[:max_result],
+                                    'is_limited': True if len(result) > max_result else False}),
+                        content_type='application/json')
+
+
+@login_required()
+def ajax_search_courses(request):
+    if 'q' not in request.GET:
+        return HttpResponseForbidden()
+
+    max_result = 1
+
+    result, _ = search_courses(request.GET.get('q', ''), request.user, max_result + 1)
+
+    return HttpResponse(json.dumps({'result': result[:max_result],
+                                    'is_limited': True if len(result) > max_result else False}),
+                        content_type='application/json')
 
 
 def search_users(query, user, max_result=None):
@@ -100,16 +117,6 @@ def search_users(query, user, max_result=None):
                 result_objs.append(sg.object)
 
     return result, result_objs
-
-
-@login_required()
-def ajax_search_courses(request):
-    if 'q' not in request.GET:
-        return HttpResponseForbidden()
-
-    result, _ = search_courses(request.GET.get('q', ''), request.user, 3)
-
-    return HttpResponse(json.dumps({'result': result}), content_type='application/json')
 
 
 def search_courses(query, user, max_result=None):
