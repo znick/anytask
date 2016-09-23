@@ -70,7 +70,8 @@
                                     'name': user[0],
                                     'year': user[1],
                                     'url': user[2],
-                                    'schools': user[3]
+                                    'schools': user[3],
+                                    'is_active': user[4]
                                 };
                             });
                         }
@@ -79,7 +80,7 @@
 
                 $('.typeahead').typeahead({
                             highlight: true,
-                            hint:false,
+                            hint: false,
                             minLength: 3
                         },
                         {
@@ -119,19 +120,41 @@
                                 header: '<h6 class="search-model-name">Курсы</h6>',
                                 suggestion: function(data) {
                                     var schools_html = '';
+                                    var archive_html = '';
+
+                                    if (!data.is_active)
+                                        archive_html = '<small class="text-muted">Архив</small>';
+
                                     for (var i = 0; i < data.schools.length; ++i)
                                         schools_html += '<div>{0}</div>'.format(data.schools[i]);
-                                    var course_html = '<div data-url="{0}"><div class="sgs-result-course"><strong>{1} {2}</strong></div>' +
-                                            '<div class="sgs-result-course">{3}</div></div>';
+                                    var course_html = '<div data-url="{0}"><div class="sgs-result-course"><strong>{1} {2}</strong>{3}</div>' +
+                                            '<div class="sgs-result-course">{4}</div></div>';
 
-                                    return course_html.format(data.url, data.name, data.year, schools_html);
+                                    return course_html.format(data.url, data.name, data.year, archive_html, schools_html);
                                 },
-                                {#                            footer: '<div><a href="#">Все результаты</a></div>'#}
+                                {#                                                                                            footer: '<div><a href="#">Все результаты</a></div>'#}
                             }
                         }
                 ).on('typeahead:select', function(ev, suggestion) {
                     window.location = suggestion.url;
+                }).on('typeahead:render', function (event, items, isAsync, datasetName) {
+                    if (items) {
+                        var menu = $(this).siblings('.tt-menu');
+                        if (!$('.search-show-more', menu).length)
+                            $(menu).append("<div class='search-show-more'><button type='submit'>Все результаты</button></div>");
+                    }
                 });
+
+                $('.tt-menu').on("mouseleave", function() {
+                            $(this).find('.tt-cursor').removeClass('tt-cursor');
+                        }
+                );
+
+                $('.tt-menu').on("mouseenter", 'div.search-show-more', function() {
+                            $(this).closest('.tt-menu').find('.tt-cursor').removeClass('tt-cursor');
+                        }
+                );
+
 
                 $(document).on('click', '.nav-form-search form[role="search"]:not(.active) button[type="submit"]', function(event) {
                     event.preventDefault();
@@ -281,9 +304,25 @@
                 }
             }
 
-            .search-model-name {
-                margin: 0 20px 5px 20px;
+            .nav-form-search .tt-dropdown-menu, .tt-menu,
+            .form-search .tt-dropdown-menu, .tt-menu {
+                padding: 0;
+            }
+
+            .nav-form-search .search-model-name,
+            .form-search .search-model-name {
+                margin: 5px 20px 5px 20px;
                 padding: 3px 0;
+            }
+
+            .nav-form-search .tt-suggestion,
+            .form-search .tt-suggestion {
+                padding: 5px 20px 5px 20px;
+                border-top: 1px solid #ccc;
+            }
+
+            .nav-form-search .tt-suggestion:last-child,
+            .form-search .tt-suggestion:last-child {
                 border-bottom: 1px solid #ccc;
             }
 
@@ -373,6 +412,37 @@
             .sgs-result-up table tr,
             .sgs-result-course{
                 font-size: 0.7rem;
+            }
+
+            .search-show-more button {
+                width: 100%;
+                color: #333333;
+                background-color: transparent;
+                border-color: transparent;
+                padding: 8px 12px;
+                border-radius: 0;
+                border-width: 0;
+                box-shadow: none;
+                outline: none;
+            }
+            .form-search .search-show-more button {
+                text-align: left;
+            }
+
+            .search-show-more button:focus,
+            .search-show-more button:active,
+            .search-show-more button:hover {
+                color: #262626;
+                background-color: #f5f5f5;
+                border-color: transparent;
+                padding: 8px 12px;
+                border-radius: 0;
+                border-width: 0;
+                box-shadow: none;
+                cursor: pointer;
+                text-decoration: none;
+                outline: 0;
+
             }
         </style>
 

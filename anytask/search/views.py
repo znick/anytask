@@ -118,12 +118,7 @@ def search_courses(query, user, max_result=None):
 
     if query:
         user_is_staff = user.is_staff
-        sgs_name = SearchQuerySet().models(Course)
-
-        if max_result:
-            sgs_name = sgs_name.filter(is_active=True)
-        else:
-            sgs_name = sgs_name.order_by('-is_active')
+        sgs_name = SearchQuerySet().models(Course).order_by('-is_active')
 
         if not user_is_staff:
             groups = user.group_set.all()
@@ -138,7 +133,8 @@ def search_courses(query, user, max_result=None):
             result.append([unicode(sg.object.name),
                            unicode(sg.object.year),
                            sg.object.get_absolute_url(),
-                           [sch.name for sch in sg.object.school_set.all()]])
+                           [sch.name for sch in sg.object.school_set.all()],
+                           sg.object.is_active])
             result_objs.append(sg.object)
 
     return result, result_objs
