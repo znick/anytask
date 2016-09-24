@@ -40,10 +40,6 @@ LOGGING = {
 }
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-MEDIA_ROOT = '/var/lib/anytask/media'
-UPLOAD_ROOT = '/var/lib/anytask/upload'
-STATIC_ROOT = '/var/lib/anytask/static'
-
 
 # local overrides (optional)
 import os
