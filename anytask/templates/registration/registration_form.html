@@ -3,16 +3,160 @@
 
 {% block title %}Регистрация{% endblock %}
 
+{% block scripts %}
+    <script src="{{ STATIC_URL }}jquery.validate.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $('#reg_form').change(function () {
+                $("#reg_form_alert").alert('close');
+            });
+
+            jQuery.validator.addMethod("username_characters", function(value, element) {
+                return this.optional(element) || /^[A-Za-z0-9\.\+\-\_]+$/i.test(value);
+            });
+
+            jQuery.validator.addMethod("name_characters", function(value, element) {
+                return this.optional(element) || /^[A-Za-zА-Яа-я\.\- ]+$/i.test(value);
+            });
+
+
+            $('#reg_form').validate({
+                submitHandler: function(form) {
+                    form.submit();
+                },
+                rules: {
+                    username: {
+                        required : true,
+                        remote: "{% url registration.views.ajax_check_username %}",
+                        username_characters : true
+                    },
+                    first_name: {
+                        required : true,
+                        name_characters : true
+                    },
+                    last_name: {
+                        required : true,
+                        name_characters : true
+                    },
+                    email: {
+                        required : true,
+                        email : true,
+                        remote: "{% url registration.views.ajax_check_email %}"
+                    },
+                    password1: {
+                        required : true
+                    },
+                    password2: {
+                        required : true,
+                        equalTo: "#id_password1"
+                    }
+                },
+
+                highlight: function(input) {
+                    $(input).removeClass('form-control-success').addClass('form-control-danger');
+                    $(input).closest('.form-group').removeClass('has-success').addClass('has-danger');
+                },
+
+                success: function(label) {
+                    label.addClass('valid').html('&nbsp;');
+                    label.closest('.text-help').siblings('.form-control').removeClass('form-control-danger').addClass('form-control-success');
+                    label.closest('.form-group').removeClass('has-danger').addClass('has-success');
+                },
+
+                messages: {
+                    username: {
+                        required : "Обязательное поле",
+                        remote : "Пользователь с таким именем уже существует",
+                        username_characters : "Только латинские буквы, цифры и '.-+_'"
+                    },
+                    first_name: {
+                        required : "Обязательное поле",
+                        name_characters : "Только буквы"
+                    },
+                    last_name: {
+                        required : "Обязательное поле",
+                        name_characters : "Только буквы"
+                    },
+                    email: {
+                        required : "Обязательное поле",
+                        email : "Введите корректный адрес",
+                        remote : "Пользователь с таким адресом уже существует. <a class='text-muted' href='{% url django.contrib.auth.views.login %}'>Войдите</a>"
+                    },
+                    password1: {
+                        required : "Обязательное поле"
+                    },
+                    password2: {
+                        required : "Обязательное поле",
+                        equalTo : "Пароли не совпадают"
+                    }
+                },
+
+                errorPlacement: function(error, element) {
+                    $(element).siblings('small.text-help').html(error);
+                }
+            });
+        });
+    </script>
+{% endblock scripts %}
+
 {% block content %}
     <style>
         .asteriskField {
             display: none;
         }
+
+        small.text-help .error {
+            margin: 0;
+        }
     </style>
 
-    <div class="card card-block" style="width: 50%">
-        <h5 class="card-title">Регистрация</h5>
-        {% crispy form %}
+    <div class="row">
+        <div class="col-md-7 col-sm-10 col-xs-12">
+            <div class="card">
+                <div class="card-block">
+                    <h5 class="card-title">Регистрация</h5>
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger alert-dismissible fade in" id="reg_form_alert">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            <ul>
+                                {% for error in form.non_field_errors %}
+                                    <li>{{ error|escape }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                    <form method="post" id="reg_form">
+                        {% csrf_token %}
+                        {% for field in form %}
+                            {% if field.is_hidden %}
+                                {{ field }}
+                            {% else %}
+                                <div class="form-group row {% if field.errors %}has-danger{% endif %}">
+                                    <label for="id_username" class="control-label col-md-4">{{ field.label }}</label>
+                                    <div class="controls col-md-8">
+                                        <input class="form-control {% if field.errors %}form-control-danger{% endif %}" id='{{ field.id_for_label }}' name='{{ field.html_name }}' type='{{ field.field.widget.input_type }}' value="{% if field.value%}{{ field.value }}{% endif %}">
+                                        <small class="text-help" id="{{ field.id_for_label }}_error_text">
+                                            {% if not field.errors %}&nbsp;{% endif %}
+                                            {% for error in field.errors %}
+                                                <label for="{{ field.id_for_label }}" generated="true" class="error">{{ error  }}</label>
+                                            {% endfor %}
+                                        </small>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                        <div class="form-group row">
+                            <div class="col-md-offset-4 col-md-8">
+                                <button type="submit" class="btn btn-secondary">Зарегистрироваться</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 
 {% endblock %}
