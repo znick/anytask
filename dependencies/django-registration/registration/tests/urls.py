@@ -79,4 +79,5 @@ urlpatterns = patterns('',
                            {'template': 'registration/test_template_name.html'},
                            name='registration_test_custom_success_url'),
                        (r'', include('registration.backends.default.urls')),
+                       (r'', include('registration.backends.default_with_names.urls')),
                        )

@@ -24,6 +24,7 @@ from django.views.generic.simple import direct_to_template
 from registration.backends.default_with_names import AnytaskLoginForm, AnytaskPasswordResetForm, AnytaskSetPasswordForm, AnytaskPasswordChangeForm
 from registration.views import activate
 from registration.views import register
+from registration.views import ajax_check_username, ajax_check_email
 
 from django.contrib.auth import views as auth_views
 
@@ -52,6 +53,10 @@ urlpatterns = patterns('',
                            direct_to_template,
                            {'template': 'registration/registration_closed.html'},
                            name='registration_disallowed'),
+                       url(r'^register/ajax_check_username/$',
+                           ajax_check_username),
+                       url(r'^register/ajax_check_email/$',
+                           ajax_check_email),
                        url(r'^login/$',
                            auth_views.login,
                            {'template_name': 'registration/login.html', 'authentication_form' : AnytaskLoginForm},
