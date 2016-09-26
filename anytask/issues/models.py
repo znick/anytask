@@ -363,10 +363,10 @@ class Issue(models.Model):
         if not value:
             value = ''
 
-        group = course.get_user_group(self.student)
-        default_teacher = course.get_default_teacher(group)
-        if default_teacher and (not self.get_byname('responsible_name')):
-            self.set_byname('responsible_name', default_teacher)
+        for group in course.groups.filter(students=self.student):
+            default_teacher = course.get_default_teacher(group)
+            if default_teacher and (not self.get_byname('responsible_name')):
+                self.set_byname('responsible_name', default_teacher)
 
         if not delete_event:
             event.value = value
