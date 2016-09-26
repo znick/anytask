@@ -3,6 +3,7 @@ import requests
 import logging
 import os
 import xmltodict
+from BeautifulSoup import BeautifulStoneSoup
 
 from time import sleep
 from django.conf import settings
@@ -156,12 +157,26 @@ def check_submission(issue):
                                  + 'ms/' + '%.2f' % (test['usedMemory']/(1024.*1024)) + 'Mb\n'
                 test_input = u'\n<u>Ввод</u>\n' + test['input'] if test['input'] else ""
                 test_output = u'\n<u>Вывод программы</u>\n' + test['output'] if test['output'] else ""
+                if 'input' in test:
+                    test_input = u'\n<u>Ввод</u>\n' + test['input'] if test['input'] else ""
+                else:
+                    test_input = ""
+                if 'output' in test:
+                    test_output = u'\n<u>Вывод программы</u>\n' + test['output'] if test['output'] else ""
+                else:
+                    test_output = ""
                 if 'answer' in test:
                     test_answer = u'\n<u>Правильный ответ</u>\n' + test['answer'] if test['answer'] else ""
                 else:
                     test_answer = ""
-                test_error = u'\n<u>Stderr</u>\n' + test['error'] if test['error'] else ""
-                test_message = u'\n<u>Сообщение чекера</u>\n' + test['message'] if test['message'] else ""
+                if 'error' in test:
+                    test_error = u'\n<u>Stderr</u>\n' + test['error'] if test['error'] else ""
+                else:
+                    test_error = ""
+                if 'message' in test:
+                    test_message = u'\n<u>Сообщение чекера</u>\n' + test['message'] if test['message'] else ""
+                else:
+                    test_message = ""
                 comment += u'\n<u>Тест ' + str(test['testNumber']) + '</u>' \
                            + test_resourses + test_input + test_output \
                            + test_answer + test_error + test_message
@@ -193,30 +208,50 @@ def comment_verdict(issue, verdict, comment):
 def get_contest_mark(contest_id, problem_id, ya_login):
     results_req = FakeResponse()
     contest_mark = None
+    user_id = None
     try:
         results_req = requests.get(
            'https://contest.yandex.ru/action/api/download-log?contestId=' + str(contest_id) + '&snarkKey=spike')
-        contest_dict = xmltodict.parse(results_req.content)
+        try:
+            contest_dict = xmltodict.parse(results_req.content)
 
-        users = contest_dict['contestLog']['users']['user']
+            users = contest_dict['contestLog']['users']['user']
 
-        user_id = None
-        for user in users:
-            if user['@loginName'] == ya_login:
-                user_id = user['@id']
-                break
+            for user in users:
+                if user['@loginName'] == ya_login:
+                    user_id = user['@id']
+                    break
 
-        submits = contest_dict['contestLog']['events']['submit']
-        submits.reverse()
+            submits = contest_dict['contestLog']['events']['submit']
+            submits.reverse()
 
-        for submit in submits:
-            if submit['@userId'] == user_id and submit['@problemTitle'] == problem_id and submit['@verdict'] == 'OK':
-                contest_mark = submit['@score']
-                break
+            for submit in submits:
+                if submit['@userId'] == user_id and submit['@problemTitle'] == problem_id and submit['@verdict'] == 'OK':
+                    contest_mark = submit['@score']
+                    break
+        except:
+            soup = BeautifulStoneSoup(results_req.content)
+            users = soup.contestlog.users.user
+
+            while users:
+                if users != '\n':
+                    if users['loginname'] == ya_login:
+                        user_id = users['id']
+                        break
+                users = users.next
+
+            submits = soup.contestlog.events.submit
+
+            while submits:
+                if submits != '\n' and submits.name != 'testinglog' and submits.has_key('userid'):
+                    if submits['userid'] == user_id and submits['problemtitle'] == problem_id and submits['verdict'] == 'OK':
+                        contest_mark = submits['score']
+                        break
+                submits = submits.next
 
     except Exception as e:
         logger.exception("Exception while request to Contest: '%s' : '%s', Exception: '%s'",
-                             results_req.url, results_req.json(), e)
+                             results_req.url, e)
     return contest_mark
 
 
