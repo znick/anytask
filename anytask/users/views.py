@@ -11,7 +11,7 @@ from django.core.exceptions import PermissionDenied
 from django.core.files.base import ContentFile
 
 
-from users.models import UserProfile
+from users.models import UserProfile, IssueFilterStudent
 from django.contrib.auth.models import User
 from tasks.models import TaskTaken
 from years.models import Year
@@ -23,6 +23,9 @@ from tasks.models import Task
 from users.forms import InviteActivationForm
 
 from years.common import get_current_year
+
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, HTML
 
 import yandex_oauth
 import requests
@@ -257,11 +260,26 @@ def add_user_to_group(request):
 @login_required
 def my_tasks(request):
     user = request.user
+    issues = Issue.objects.filter(student=user).order_by('-update_time')
 
-    issues = Issue.objects.filter(student=user).order_by('task__course')
+    user_as_str = str(user.username) + '_tasks_filter'
+
+    f = IssueFilterStudent(request.GET, issues)
+    f.set_user(user)
+
+    if f.form.data:
+        request.session[user_as_str] = f.form.data
+    elif user_as_str in request.session:
+        f.form.data = request.session.get(user_as_str)
+
+    f.form.helper = FormHelper(f.form)
+    f.form.helper.form_method = 'get'
+    f.form.helper.layout.append(HTML(u"""<div class="form-group row">
+                                           <button id="button_filter" class="btn btn-secondary pull-xs-right" type="submit">Применить</button>
+                                         </div>"""))
 
     context = {
-        'issues': issues,
+        'filter': f,
     }
 
     return render_to_response('my_tasks.html', context, context_instance=RequestContext(request))
