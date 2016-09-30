@@ -52,10 +52,12 @@ class UserProfile(models.Model):
         return Group.objects.filter(year=get_current_year()).filter(students=self.user).count() > 0
 
     def __unicode__(self):
-            return unicode(self.user)
+        return unicode(self.user)
 
 
 class IssueFilterStudent(django_filters.FilterSet):
+    is_active = django_filters.ChoiceFilter(label=u'Тип курса', name='task__course__is_active')
+    years = django_filters.MultipleChoiceFilter(label=u'Год курса', name='task__course__year', widget=forms.CheckboxSelectMultiple)
     courses = django_filters.MultipleChoiceFilter(label=u'Курс', name='task__course', widget=forms.CheckboxSelectMultiple)
     responsible = django_filters.MultipleChoiceFilter(label=u'Преподаватели', widget=forms.CheckboxSelectMultiple)
     status_field = django_filters.MultipleChoiceFilter(label=u'Статус', widget=forms.CheckboxSelectMultiple)
@@ -65,11 +67,13 @@ class IssueFilterStudent(django_filters.FilterSet):
         groups = user.group_set.all()
         courses = Course.objects.filter(groups__in=groups)
 
-        course_choices = []
+        course_choices = set()
+        year_choices = set()
         teacher_set = set()
         status_set = set()
         for course in courses:
-            course_choices.append((course.id, _(course.name)))
+            course_choices.add((course.id, _(course.name)))
+            year_choices.add((course.year.id, _(unicode(course.year))))
 
             for teacher in course.get_teachers():
                 teacher_set.add(teacher)
@@ -77,6 +81,10 @@ class IssueFilterStudent(django_filters.FilterSet):
             for status in course.issue_status_system.statuses.all():
                 status_set.add(status)
 
+        self.filters['is_active'].field.choices = ((u'', _(u'Любой')),
+                                                   (1, _(u'Активный')),
+                                                   (0, _(u'Архив')))
+        self.filters['years'].field.choices = tuple(year_choices)
         self.filters['courses'].field.choices = tuple(course_choices)
 
         teacher_choices = [(teacher.id, _(teacher.get_full_name())) for teacher in teacher_set]
@@ -90,7 +98,7 @@ class IssueFilterStudent(django_filters.FilterSet):
 
     class Meta:
         model = Issue
-        fields = ['status_field', 'responsible', 'courses', 'update_time']
+        fields = ['status_field', 'responsible', 'courses', 'update_time', 'years', 'is_active']
 
 
 def create_user_profile(sender, instance, created, **kwargs):
