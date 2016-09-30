@@ -239,7 +239,7 @@
                         <p style="font-weight: bold">{{ group.name }}</p>
                         <ul class="group-sortable" name="group_sort_{{ group.id }}">
                             {% for task in tasks %}
-                                <li class="ui-state-default" name="task_sort_{{ task.id }}" data-all_group="{% if not task.group %}true{% endif%}" value="{{ task.id }}" style="padding-right: 20px;position: relative;cursor: -webkit-grab;">
+                                <li class="ui-state-default" name="task_sort_{{ task.id }}" data-task_groups='[{% for task_group in task.groups.all %}"group_sort_{{ task_group.id }}"{% if not forloop.last %}, {% endif %}{% endfor %}]' value="{{ task.id }}" style="padding-right: 20px;position: relative;cursor: -webkit-grab;">
                                     <span>{{ task.title }}</span>
                                     {% if task|can_be_deleted %}
                                         <a class="task-delete pull-xs-right" type="button" style="cursor: pointer"><i class="fa fa-trash-o"></i></a>

@@ -19,6 +19,8 @@ class Task(models.Model):
     title = models.CharField(max_length=254, db_index=True, null=True, blank=True)
     course = models.ForeignKey(Course, db_index=True, null=False, blank=False)
     group = models.ForeignKey(Group, db_index=False, null=True, blank=True, default=None)
+    groups = models.ManyToManyField(Group, null=False, blank=False, related_name='groups_set')
+
     weight = models.IntegerField(db_index=True, null=False, blank=False, default=0)
 
     is_hidden = models.BooleanField(db_index=True, null=False, blank=False, default=False)
@@ -156,7 +158,6 @@ class Task(models.Model):
         if not groups:
             groups = self.course.groups.all()
         else:
-            groups = [groups]
             for task_related in TaskGroupRelations.objects.filter(task=self).exclude(group__in=groups):
                 task_related.deleted = True
                 task_related.save()
@@ -177,6 +178,8 @@ class TaskLog(models.Model):
     title = models.CharField(max_length=254, db_index=True, null=True, blank=True)
     course = models.ForeignKey(Course, db_index=False, null=False, blank=False)
     group = models.ForeignKey(Group, db_index=False, null=True, blank=True, default=None)
+    groups = models.ManyToManyField(Group, null=False, blank=False, related_name='groups_log_set')
+
     weight = models.IntegerField(db_index=False, null=False, blank=False, default=0)
 
     parent_task = models.ForeignKey('self', db_index=True, null=True, blank=True, related_name='parent_task_set')

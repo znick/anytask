@@ -304,7 +304,7 @@
             });
             group.data('deleting', []);
             group.data('deleting_ids', []);
-            group.data('deleting_id_in_all_groups', []);
+            group.data('deleting_id_in_other_groups', {});
             group.data('backup_html', $('ul', $(div_group_id)).html());
             group.data('changed', false);
             $(div_group_id).show();
@@ -327,10 +327,21 @@
             if (confirm('Удаленную задачу невозможно восстановить. Вы уверены, что хотить удалить?')) {
                 var group = $('.group-sortable');
                 var li = $(this).closest('li');
+                var current_group = $(this).closest('div').prop('id');
+                var task_groups = li.data('task_groups');
+                var deleting_id_in_other_groups = group.data('deleting_id_in_other_groups');
                 $(this).closest('li').remove();
                 group.data('deleting', group.data('deleting').concat(li.data('index')));
-                if (li.data('all_group'))
-                    group.data('deleting_id_in_all_groups', group.data('deleting_id_in_all_groups').concat(li.val()));
+
+                if (task_groups.indexOf(current_group) != -1)
+                    task_groups.splice(task_groups.indexOf(current_group), 1);
+                for (var i = 0; i < task_groups.length; ++i) {
+                    if (task_groups[i] in deleting_id_in_other_groups)
+                        deleting_id_in_other_groups[task_groups[i]].concat(li.val());
+                    else
+                        deleting_id_in_other_groups[task_groups[i]] = [li.val()];
+                }
+                group.data('deleting_id_in_other_groups', deleting_id_in_other_groups);
                 group.data('deleting_ids', group.data('deleting_ids').concat(li.val()));
             }
         });
@@ -373,21 +384,20 @@
                         })
                         .done(function (msg) {
                             change_table_column_order(div_group_id, group.data('deleting'));
+                            var other_groups = group.data('deleting_id_in_other_groups');
+                            var other_groups_keys = Object.keys(group.data('deleting_id_in_other_groups'));
 
-                            if (group.data('deleting_id_in_all_groups').length)
-                                group.closest('div').each(function () {
-                                    if ($(this).attr('id') != div_group_id.attr('id')) {
-                                        var current_div = $(this);
-                                        var deleting_index = $.map(group.data('deleting_id_in_all_groups'),
-                                                function (value) {
-                                                    var li = $('li[value=' + value + ']', current_div);
-                                                    var index = li.data('index');
-                                                    li.remove();
-                                                    return index;
-                                                });
-                                        change_table_column_order($(this), deleting_index);
-                                    }
-                                });
+                            for (var i = 0; i < other_groups_keys.length; ++i) {
+                                var div = $('#' + other_groups_keys[i]);
+                                var deleting_index = $.map(other_groups[other_groups_keys[i]],
+                                        function (value) {
+                                            var li = $('li[value=' + value + ']', div);
+                                            var index = li.data('index');
+                                            li.remove();
+                                            return index;
+                                        });
+                                change_table_column_order(div, deleting_index);
+                            }
 
                             modal_button_ok.closest('.modal').modal('hide');
                             modal_button_ok.html(modal_button_ok.data('resetText'));

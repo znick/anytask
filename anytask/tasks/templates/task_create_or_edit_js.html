@@ -1,5 +1,9 @@
 <script src="{{ STATIC_URL }}jquery.validate.min.js"></script>
 <script src="http://malsup.github.io/jquery.form.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.min.js"></script>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/css/bootstrap-multiselect.css" rel="stylesheet">
+
 <script type="text/javascript">
     $(document).ready(function() {
         $('[data-toggle="popover"]').popover({
@@ -77,7 +81,11 @@
             $('#task_edit_form').data('changed', true);
         });
 
-        $('#task_edit_form').validate({
+        $.validator.addMethod("required_with_disabled", function(value, element) {
+            return value? true: false;
+        });
+
+        var form_validator = $('#task_edit_form').validate({
             submitHandler: function(form) {
                 if ($('#task_edit_form').data('changed')) {
                     $('#task_edit_form').ajaxSubmit({
@@ -117,6 +125,7 @@
                         redirect();
                 }
             },
+            ignore: ':hidden:not("#task_edit_group")',
             rules: {
                 max_score: {
                     required : true,
@@ -134,6 +143,9 @@
                 },
                 problem_id: {
                     required : true
+                },
+                'task_group_id[]': {
+                    required_with_disabled : true
                 }
             },
 
@@ -165,12 +177,95 @@
                 },
                 problem_id: {
                     required : "Необходимо указать литеру задачи контеста"
+                },
+                'task_group_id[]': {
+                    required_with_disabled : "Необходимо выбрать группу"
                 }
             },
 
             errorPlacement: function(error, element) {
                 $(element).siblings('small.text-help').empty().append(error);
             }
+        });
+
+        $('select:not([multiple="multiple"])').multiselect({
+            buttonClass: 'btn btn-secondary btn-block',
+            templates: {
+                ul: '<ul class="multiselect-container dropdown-menu" style="left:inherit;top: inherit;"></ul>',
+                li: '<li><a tabindex="0" class="dropdown-item"><label></label></a></li>'
+            },
+            maxHeight: 200,
+            buttonContainer: '<div style="width:100%;" class="multiselect-dropdown" />',
+            buttonWidth: '100%',
+        });
+
+        $('#task_edit_group').multiselect({
+            buttonClass: 'btn btn-secondary btn-block',
+            templates: {
+                ul: '<ul class="multiselect-container dropdown-menu" style="left:inherit;top: inherit;"></ul>',
+                li: '<li><a tabindex="0" class="dropdown-item"><label></label></a></li>'
+            },
+            includeSelectAllOption: true,
+            selectAllText: 'Для всех групп',
+            allSelectedText: 'Для всех групп',
+            selectAllName: 'task_group_id_all',
+            selectAllValue: 'on',
+            maxHeight: 200,
+            buttonContainer: '<div style="width:100%;" class="multiselect-dropdown"/>',
+            buttonWidth: '100%',
+            buttonTitle: function(options, select) {
+                var labels = [];
+
+                if (options.length === 0) {
+                    return 'Не выбрано ни одной группы';
+                }
+                else if (options.length === $('option', select).length) {
+                    return 'Для всех групп';
+                }
+                else {
+                    options.each(function () {
+                        labels.push($(this).text());
+                    });
+                }
+                return labels.join(', ');
+            },
+            buttonText: function(options, select) {
+                if (options.length === 0) {
+                    return 'Не выбрано ни одной группы';
+                }
+                else if (options.length === $('option', select).length) {
+                    return 'Для всех групп';
+                }
+                else if (options.length > 1) {
+                    return 'Выбрано несколько групп - ' + options.length;
+                }
+                else {
+                    var labels = [];
+                    options.each(function() {
+                        if ($(this).attr('label') !== undefined) {
+                            labels.push($(this).attr('label'));
+                        }
+                        else {
+                            labels.push($(this).html());
+                        }
+                    });
+                    return labels.join(', ') + '';
+                }
+            },
+            onInitialized: function(option, checked, select) {
+                $('#task_edit').closest('.row').collapse('show');
+                var input = $('#task_edit_group');
+                $('label.error', input).removeClass('valid');
+                input.removeClass('form-control-success');
+                input.closest('.form-group').removeClass('has-success');
+            },
+            onChange: function(option, checked, select) {
+                form_validator.element('#task_edit_group');
+            },
+            onSelectAll: function() {
+                form_validator.element('#task_edit_group');
+            }
+
         });
 
         $('#button_preview').click(function() {
