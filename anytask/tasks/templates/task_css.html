@@ -52,4 +52,29 @@
     .controls .multiselect-container li.disabled .checkbox{
         color: #777;
     }
+
+    .multiselect-dropdown .dropdown-toggle{
+        text-align: left;
+    }
+
+    .multiselect-dropdown .dropdown-toggle::after{
+        position: absolute;
+        left: 87%;
+        top: 30%;
+    }
+
+    @media (min-width: 595px) {
+        .multiselect-dropdown .dropdown-toggle::after{
+            position: absolute;
+            left: 90%;
+            top: 30%;
+        }
+    }
+    @media (min-width: 1700px) {
+        .multiselect-dropdown .dropdown-toggle::after{
+            position: absolute;
+            left: 92%;
+            top: 30%;
+        }
+    }
 </style>

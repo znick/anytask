@@ -72,6 +72,31 @@
     .ui-state-default .task-delete:hover .fa {
         color:#d9534f;
     }
+
+    .ui-state-delete {
+        background-color: #ff856a;
+        border-color: #ae574b;
+    }
+
+    .popover-content ul {
+        margin-bottom: 0;
+        list-style: none;
+    }
+    .popover-content label.checkbox.disabled {
+        color: #777;
+    }
+    .popover-content li:last-child label {
+        margin-bottom: 0;
+    }
+    .popover-footer {
+        padding: 5px;
+        text-align: right;
+        border-top: 1px solid #e5e5e5;
+    }
+    .popover-footer .btn+.btn {
+        margin-bottom: 0;
+        margin-left: 5px;
+    }
 </style>
 
 {% for group,student_information in group_information.items %}
@@ -81,9 +106,9 @@
                 <div class="card-title-block" style="display: table; margin-bottom: 0.5rem;">
                     {% ifnotequal group course.group_with_extern %}
                         <h5 class="card-title" style="display: table-cell;margin: 0;vertical-align: middle;">{% if group.name %}{{ group.name }}{% else %}&nbsp;{% endif %}
-                        {% if default_teacher|key:group %}
-                            (<a class="card-link" href="{{ default_teacher|get_url:group }}" style="color:#373a3c;">{{ default_teacher|get_name:group }}</a>)
-                        {% endif %}
+                            {% if default_teacher|key:group %}
+                                (<a class="card-link" href="{{ default_teacher|get_url:group }}" style="color:#373a3c;">{{ default_teacher|get_name:group }}</a>)
+                            {% endif %}
                         </h5>
                     {% endifnotequal %}
                     <button class="btn btn-secondary btn-table-fullscreen" type="button" for="#table_results_{{ group.id }}" style="display: none;vertical-align: top;margin: 2px; padding: 6px;"><i class="fa fa-expand fa-lg"></i></button>
@@ -190,7 +215,7 @@
                         {% endfor %}
                         <td class="sum-score">
                             {# <span class="label {% if student_summ_score %} {% if student_summ_score == group_x_max_score|key:group %} label-success {% else %} label-info {% endif %} {% else %} label-important {% endif %}"> #}
-              <span class="label label-inverse">
+                            <span class="label label-inverse">
                 {{ student_summ_score }}
               </span>
                         </td>
@@ -236,14 +261,14 @@
                 <p>Изменение порядка столбцов в итоговой таблице курса, а также их удаление(удалять можно только те задачи, в которых не было комментариев).</p>
                 {% for group, tasks in group_tasks.iteritems %}
                     <div id="group_sort_{{ group.id }}" data-group="{{ group.id }}" data-table="#table_results_{{ group.id }}" data-marksystem="{% if course_mark_system_vals %}true{% endif %}" class="collapse">
-                        <p style="font-weight: bold">{{ group.name }}</p>
+                        <p  class="modal-group-name" style="font-weight: bold">{{ group.name }}</p>
                         <ul class="group-sortable" name="group_sort_{{ group.id }}">
                             {% for task in tasks %}
-                                <li class="ui-state-default" name="task_sort_{{ task.id }}" data-task_groups='[{% for task_group in task.groups.all %}"group_sort_{{ task_group.id }}"{% if not forloop.last %}, {% endif %}{% endfor %}]' value="{{ task.id }}" style="padding-right: 20px;position: relative;cursor: -webkit-grab;">
+                                <li class="ui-state-default" name="task_sort_{{ task.id }}" value="{{ task.id }}" style="padding-right: 20px;position: relative;cursor: -webkit-grab;">
                                     <span>{{ task.title }}</span>
-                                    {% if task|can_be_deleted %}
-                                        <a class="task-delete pull-xs-right" type="button" style="cursor: pointer"><i class="fa fa-trash-o"></i></a>
-                                    {% endif %}
+                                    <a class="task-delete pull-xs-right" data-name="task_delete_{{ task.id }}" {% autoescape off %}{{ task|group_info }}{% endautoescape %} style="cursor: pointer" tabindex="0" data-toggle="popover" type="button">
+                                        <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                    </a>
                                 </li>
                             {% endfor %}
                         </ul>

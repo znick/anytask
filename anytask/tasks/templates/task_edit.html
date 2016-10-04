@@ -66,7 +66,7 @@
                         <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
                             <select class="form-control" id='task_edit_group' name="task_group_id[]" multiple="multiple">
                                 {% for group in course.groups.all %}
-                                    <option value="{{ group.id }}" {% if group in task.groups.all %}selected{% endif %} {% if group in groups_required %}disabled{% endif %} >{{ group.name }}</option>
+                                    <option value="{{ group.id }}" {% if group in task.groups.all %}selected {% if group in groups_required %}disabled{% endif %}{% endif %} >{{ group.name }}</option>
                                 {% endfor %}
                             </select>
                             <small class="text-help" id="task_group_id_error_text"></small>
