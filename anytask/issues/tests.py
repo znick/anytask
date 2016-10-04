@@ -182,7 +182,7 @@ class ViewsTest(TestCase):
         self.assertEqual(results[0].a.string.strip().strip('\n'), 'course_name', '1st issue field link text wrong')
 
         self.assertEqual(labels[1].string.strip().strip('\n'), u'Задача:', '2nd issue field label wrong')
-        self.assertEqual(results[1].string.strip().strip('\n'), 'task_title', '2nd issue field text wrong')
+        self.assertEqual(results[1].a.string.strip().strip('\n'), 'task_title', '2nd issue field text wrong')
 
         self.assertEqual(labels[2].string.strip().strip('\n'), u'Студент:', '3rd issue field label wrong')
         self.assertEqual(results[2].a['href'], '/users/student/', '3rd issue field link wrong')
@@ -674,7 +674,7 @@ class ViewsTest(TestCase):
         self.assertEqual(results[0].a.string.strip().strip('\n'), 'course_name', '1st issue field link text wrong')
 
         self.assertEqual(labels[1].string.strip().strip('\n'), u'Задача:', '2nd issue field label wrong')
-        self.assertEqual(results[1].string.strip().strip('\n'), 'task_title', '2nd issue field text wrong')
+        self.assertEqual(results[1].a.string.strip().strip('\n'), 'task_title', '2nd issue field text wrong')
 
         self.assertEqual(labels[2].string.strip().strip('\n'), u'Студент:', '3rd issue field label wrong')
         self.assertEqual(results[2].a['href'], '/users/student/', '3rd issue field link wrong')
