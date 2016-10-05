@@ -2,6 +2,7 @@ from BeautifulSoup import BeautifulSoup, Comment
 from django import template
 from django.utils.translation import ugettext as _
 
+import re
 
 register = template.Library()
 
@@ -24,6 +25,18 @@ def sanitize_html(value):
             tag.hidden = True
         tag.attrs = [(attr, val) for attr, val in tag.attrs
                      if attr in valid_attrs]
-    return soup.renderContents().decode('utf8').replace('javascript:', '').replace("\n",'<br/>')
+    msg = ''
+    msg_split = re.split(r'(<pre>(.*?)</pre>)',
+                         soup.renderContents().decode('utf8').replace('javascript:', ''),
+                         flags=re.I | re.M | re.S)
+    i = 0
+    while i in range(len(msg_split)):
+        if msg_split[i].startswith('<pre>'):
+            msg += msg_split[i]
+            i += 1
+        else:
+            msg += msg_split[i].replace('\n', '<br/>')
+        i += 1
 
+    return msg
 register.filter('sanitize', sanitize_html)
