@@ -69,6 +69,9 @@ def upload_contest(event, extension, file, compiler_id=None):
             reg_req = requests.get(
                 settings.CONTEST_API_URL + 'status?contestId=' + str(contest_id),
                 headers={'Authorization': 'OAuth ' + OAUTH})
+            if 'error' in reg_req.json():
+                return False, reg_req.json()["error"]["message"]
+
             if not reg_req.json()['result']['isRegistered']:
                 reg_req = requests.get(
                     settings.CONTEST_API_URL + 'register-user?uidToRegister=' + str(student_profile.ya_uid) +
@@ -155,8 +158,6 @@ def check_submission(issue):
                 test = results_req.json()['result']['tests'][-1]
                 test_resourses = u'\n<u>Ресурсы</u> ' + str(test['usedTime']) \
                                  + 'ms/' + '%.2f' % (test['usedMemory']/(1024.*1024)) + 'Mb\n'
-                test_input = u'\n<u>Ввод</u>\n' + test['input'] if test['input'] else ""
-                test_output = u'\n<u>Вывод программы</u>\n' + test['output'] if test['output'] else ""
                 if 'input' in test:
                     test_input = u'\n<u>Ввод</u>\n' + test['input'] if test['input'] else ""
                 else:
