@@ -230,7 +230,7 @@ def ya_oauth_response(request, type_of_oauth):
         HttpResponseForbidden()
 
 
-def ya_oauth_disable(request, type_of_oauth):
+def ya_oauth_disable(request):
     user = request.user
     user_profile = user.get_profile()
     if type_of_oauth == 'contest':
@@ -242,7 +242,7 @@ def ya_oauth_disable(request, type_of_oauth):
 
     return redirect('users.views.profile')
 
-def ya_oauth_forbidden(request, type_of_oauth):
+def ya_oauth_forbidden(request):
     context = {
         'oauth_error_text'              : "Данный профиль уже привязан к аккаунту другого пользователя на Anytask!",
     }
