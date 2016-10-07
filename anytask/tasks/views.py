@@ -100,21 +100,22 @@ def task_edit_page(request, task_id):
         return task_create_ot_edit(request, task.course, task_id)
 
     task_group = []
-    show_help_msg_task_group = False
     groups = task.course.groups.all()
-    for group in groups:
-        if Issue.objects.filter(task=task, student__in=group.students.all()).count():
-            task_group.append(group)
-            if len(task_group) > 1:
-                task_group = []
-                show_help_msg_task_group = True
-                break
+    if task.group:
+        if Issue.objects.filter(task=task, student__in=task.group.students.all()).count():
+            task_group.append(task.group)
         else:
-            show_help_msg_task_group = True
-    else:
-        if not task_group:
             task_group = groups
-            show_help_msg_task_group = False
+    else:
+        for group in groups:
+            if Issue.objects.filter(task=task, student__in=group.students.all()).count():
+                task_group.append(group)
+                if len(task_group) > 1:
+                    task_group = []
+                    break
+        else:
+            if not task_group:
+                task_group = groups
 
     schools = task.course.school_set.all()
 
@@ -124,7 +125,7 @@ def task_edit_page(request, task_id):
         'task': task,
         'task_types': task.TASK_TYPE_CHOICES,
         'task_group': task_group,
-        'show_help_msg_task_group': show_help_msg_task_group,
+        'show_help_msg_task_group': True if len(task_group) != len(groups) else False,
         'contest_integrated': task.contest_integrated,
         'rb_integrated': task.rb_integrated,
         'hide_contest_settings': True if not task.contest_integrated or task.type == task.TYPE_SIMPLE else False,
