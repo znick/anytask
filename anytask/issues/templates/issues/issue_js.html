@@ -23,6 +23,11 @@
             }
         });
 
+        $('#modal_task_description_btn').click(function (e) {
+            $('#modal_task_description').modal('show');
+            e.preventDefault();
+        });
+
         jQuery.validator.addMethod("lt_max", function(value, element) {
             var value = parseFloat(value);
             var max = parseFloat($('#max_mark').val());
