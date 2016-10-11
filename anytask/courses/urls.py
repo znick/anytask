@@ -12,4 +12,5 @@ urlpatterns = patterns('courses.views',
     url(r'^set_course_mark$', 'set_course_mark'),
     url(r'^set_task_mark$', 'set_task_mark'),
     url(r'^change_table_tasks_pos', 'change_table_tasks_pos'),
+    url(r'^ajax_update_contest_tasks/$', 'ajax_update_contest_tasks'),
 )

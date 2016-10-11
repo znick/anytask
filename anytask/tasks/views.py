@@ -277,9 +277,9 @@ def get_contest_problems(request):
     else:
         problems = problem_req['result']['problems']
 
-    contest_info_problems = contest_info['problems']
-    contest_info_deadline = contest_info['endTime'] if 'endTime' in contest_info else None
-    problems = problems + contest_info_problems + [{'deadline':contest_info_deadline}]
+        contest_info_problems = contest_info['problems']
+        contest_info_deadline = contest_info['endTime'] if 'endTime' in contest_info else None
+        problems = problems + contest_info_problems + [{'deadline': contest_info_deadline}]
 
     return HttpResponse(json.dumps({'problems': problems,
                                     'is_error': is_error,

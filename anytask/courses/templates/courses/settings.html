@@ -46,32 +46,58 @@
         .asteriskField {
             display: none;
         }
+
+        .ms-container {
+            width: 100%;
+        }
+
+        #card_contest .form-group .btn-div {
+            margin-top: 1rem;
+        }
+
+        @media (min-width: 992px) {
+            #card_contest .form-group .btn-div {
+                margin-top: 0;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .row .col-sm-12:not(:last-child) {
+                padding-right: 0;
+            }
+
+            .row .col-sm-12:first-child {
+                padding-right: 0;
+            }
+        }
     </style>
     <form id="course_settings_form" action="{{ request.get_full_path }}" method="POST" >
         {% csrf_token %}
-        <div class="card-deck-wrapper">
-            <div class="card-deck">
-                <div class="card card-block" style="width: 33%">
+        <div class="row" >
+            <div class="col-md-6 col-sm-12">
+                <div class="card card-block" >
                     <h5 class="card-title">Преподаватели</h5>
                     <p class="card-text">Эти преподаватели будут назначаться проверяющими во время перехода задачи в статус "на проверке", если другой преподаватель не был назначен ранее</p>
-                    <div class="col-md-12">
-                        {{ form|crispy }}
-                    </div>
+                    {% for field in form %}
+                        {% if field.is_hidden %}
+                            {{ field }}
+                        {% else %}
+                            <div class="form-group">
+                                <label for="{{ field.id_for_label }}" class="control-label">{{ field.label }}</label>
+                                <div class="controls">
+                                    <select id='{{ field.id_for_label }}' name='{{ field.html_name }}' class="form-control">
+                                        {% for val, show_val in field.field.choices %}
+                                            <option value="{{ val }}" {% if field.value == val %}selected{% endif %}>{{ show_val }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
                 </div>
-                {% if course.is_rb_integrated %}
-                    <div class="card card-block" style="width: 33%">
-                        <h5 class="card-title">Review Board</h5>
-                        <p class="card-text">Расширения файлов</p>
-                        <div class="col-md-12">
-                            <select name="rb_extensions[]" id="rb_ext_select" class="form-control" size="7" multiple="multiple" style="display: none;">
-                                {% for file_ext, selected in file_extensions %}
-                                    <option value="{{ file_ext.id }}" {% if selected %}selected{% endif %}>{{ file_ext.name }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-                {% endif %}
-                <div class="card card-block" style="width: 33%">
+            </div>
+            <div class="col-md-6 col-sm-12">
+                <div class="card card-block">
                     <h5 class="card-title">Настройка задач</h5>
                     <p class="card-text">Скрытие полей и установка значений по умолчанию</p>
                     <ul class="list-group list-group-flush">
@@ -105,6 +131,44 @@
                 </div>
             </div>
         </div>
+        {% if course.is_rb_integrated or tasks_contest %}
+            <div class="row">
+                {% if tasks_contest %}
+                    <div class="col-lg-6 col-md-5 col-sm-12">
+                        <div class="card card-block" id="card_contest">
+                            <h5 class="card-title">Яндекс.Контест</h5>
+                            <p class="card-text">Обновить название, максимальный балл, дату сдачи и формулировку для задач</p>
+                            <div class="form-group row" style="display: none;" >
+                                <div class="controls col-lg-8 col-md-12">
+                                    <select name="tasks_contest[]" id="tasks_contest_select" class="form-control" multiple="multiple">
+                                        {% for task in tasks_contest %}
+                                            <option value="{{ task.id }}" selected>{{ task.title }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="btn-div col-lg-4 col-md-12">
+                                    <button type="button" id="update_tasks_btn" class="btn btn-secondary" style="display: inline">Обновить</button>
+                                </div>
+                            </div>
+                            <div id="update_submit_error_text" style="margin-top: 1rem"></div>
+                        </div>
+                    </div>
+                {% endif %}
+                {% if course.is_rb_integrated %}
+                    <div class="col-lg-6 col-md-7 col-sm-12">
+                        <div class="card card-block">
+                            <h5 class="card-title">Review Board</h5>
+                            <p class="card-text">Расширения файлов</p>
+                            <select name="rb_extensions[]" id="rb_ext_select" class="form-control" size="7" multiple="multiple" style="display: none;">
+                                {% for file_ext, selected in file_extensions %}
+                                    <option value="{{ file_ext.id }}" {% if selected %}selected{% endif %}>{{ file_ext.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        {% endif %}
         <div style="margin-top: 1rem;">
             <div id="course_settings_form_error_text"></div>
             <div class="btn-group pull-xs-right" role="group">

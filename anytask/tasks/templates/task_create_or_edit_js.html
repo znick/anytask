@@ -94,6 +94,8 @@
                             else if (data.redirect_page)
                                 window.location.replace(data.redirect_page);
                             $(document).prop('title', data.page_title);
+                            if ($('#task_edit_contest_integrated').is(':checked'))
+                                $('#update_contest_block').show();
                         },
                         error: function (data) {
                             $('#task_submit_error_text').html('<div  class="alert alert-danger alert-dismissible" role ="alert" id="edit_task_err">' +

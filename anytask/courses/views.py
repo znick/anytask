@@ -33,7 +33,7 @@ from course_statistics import CourseStatistics
 from score import TaskInfo
 from anysvn.common import svn_log_rev_message, svn_log_head_revision, get_svn_external_url, svn_log_min_revision
 from anyrb.common import AnyRB
-from anycontest.common import get_contest_info
+from anycontest.common import get_contest_info, FakeResponse
 from issues.models import Issue, Event, IssueFilter
 from issues.model_issue_status import IssueStatus
 from users.forms import InviteActivationForm
@@ -359,6 +359,7 @@ def course_settings(request, course_id):
                'visible_queue': course.user_can_see_queue(request.user),
                'user_is_teacher': course.user_is_teacher(request.user),
                'school': schools[0] if schools else '',
+               'tasks_contest': course.task_set.filter(contest_integrated=True) if course.is_contest_integrated() else [],
                }
 
     if request.method != "POST":
@@ -520,3 +521,60 @@ def change_table_tasks_pos(request):
             task_relations.save()
 
     return HttpResponse("OK")
+
+
+@login_required
+def ajax_update_contest_tasks(request):
+    if not request.is_ajax():
+        return HttpResponseForbidden()
+
+    if 'tasks_contest[]' not in request.POST:
+        return HttpResponseForbidden()
+
+    response = {'is_error': False,
+                'tasks': ''}
+    contest_responses = {}
+    response['tasks_title'] = {}
+
+    for task in Task.objects.filter(id__in=dict(request.POST)['tasks_contest[]']):
+        alias = task.problem_id
+        contest_id = task.contest_id
+
+        if contest_id not in contest_responses:
+            got_info, contest_info = get_contest_info(contest_id)
+            if not got_info:
+                response['is_error'] = True
+                response['tasks'] += task.title + '; '
+                continue
+
+            problem_req = FakeResponse()
+            problem_req = requests.get(settings.CONTEST_API_URL + 'problems?contestId=' + str(contest_id),
+                                       headers={'Authorization': 'OAuth ' + settings.CONTEST_OAUTH})
+            problems = []
+            if 'result' in problem_req.json():
+                problems = problem_req.json()['result']['problems']
+
+            contest_responses[contest_id] = [contest_info, problems]
+
+        for problem in contest_responses[contest_id][0]['problems']:
+            if problem['alias'] == alias:
+                task.title = problem['problemTitle']
+                task.task_text = problem['statement']
+                if 'endTime' in contest_responses[contest_id][0]:
+                    deadline = contest_responses[contest_id][0]['endTime'].split('+')[0]
+                    task.deadline_time = datetime.datetime.strptime(deadline, '%Y-%m-%dT%H:%M:%S.%f')
+                else:
+                    task.deadline_time = None
+                break
+
+        for problem in contest_responses[contest_id][1]:
+            if problem['title'] == alias:
+                if 'score' in problem:
+                    task.score_max = problem['score']
+
+        task.save()
+
+        response['tasks_title'][task.id] = task.title
+
+    return HttpResponse(json.dumps(response),
+                        content_type="application/json")
