@@ -3,6 +3,7 @@ from django.conf.urls import patterns, url
 
 urlpatterns = patterns('courses.views',
     url(r'^(?P<course_id>\d+)$', 'course_page'),
+    url(r'^(?P<course_id>\d+)/seminar/(?P<task_id>\d+)$', 'seminar_page'),
     url(r'^(?P<course_id>\d+)/queue$', 'queue_page'),
     url(r'^year/(?P<year>\d+)', 'courses_list'),
     url(r'^edit_course_information', 'edit_course_information'),

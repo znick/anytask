@@ -350,9 +350,18 @@ class Issue(models.Model):
                 value = 0
             value = normalize_decimal(value)
             if self.mark != float(value):
+                if self.task.parent_task is not None:
+                    parent_task_issue = Issue.objects.get(student=self.student, task=self.task.parent_task)
+                    parent_task_issue.mark -= self.mark
+                    parent_task_issue.mark += float(value)
+                    parent_task_issue.save()
+
                 self.mark = float(value)
             else:
                 delete_event = True
+
+
+
 
             value = str(value)
             if self.status_field.tag != IssueStatus.STATUS_ACCEPTED and self.status_field.tag != IssueStatus.STATUS_NEW:

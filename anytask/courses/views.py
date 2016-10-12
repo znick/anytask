@@ -121,7 +121,7 @@ def course_page(request, course_id):
                                    'invite_form': InviteActivationForm()},
                                   context_instance=RequestContext(request))
 
-    tasklist_context = get_tasklist_context(request, course)
+    tasklist_context = tasklist_shad_cpp(request, course)
 
     context = tasklist_context
     context['tasklist_template'] = 'courses/tasklist/shad_cpp.html'
@@ -131,12 +131,48 @@ def course_page(request, course_id):
 
     return render_to_response('courses/course.html', context, context_instance=RequestContext(request))
 
+def seminar_page(request, course_id, task_id):
+    """Page with course related information
+    contexts:
+        - tasklist
+        - tasks_description
+    """
 
-def tasklist_shad_cpp(request, course):
+    course = get_object_or_404(Course, id=course_id)
+    task = get_object_or_404(Task, id=task_id)
+    schools = course.school_set.all()
+
+    if course.private and not course.user_is_attended(request.user):
+        return render_to_response('courses/course_forbidden.html',
+                                  {"course": course,
+                                   'school': schools[0] if schools else '',
+                                   'invite_form': InviteActivationForm()},
+                                  context_instance=RequestContext(request))
+
+    tasklist_context = tasklist_shad_cpp(request, course, task)
+
+    context = tasklist_context
+    context['tasklist_template'] = 'courses/tasklist/shad_cpp.html'
+    context['task_types'] = dict(Task().TASK_TYPE_CHOICES).items()
+    context['school'] = schools[0] if schools else ''
+
+    return render_to_response('courses/course.html', context, context_instance=RequestContext(request))
+
+
+def tasklist_shad_cpp(request, course, seminar=None):
 
     user = request.user
     user_is_attended = False
     user_is_attended_special_course = False
+    is_seminar = False
+
+    if seminar:
+        is_seminar = True
+        groups = [seminar.group]
+        if not groups[0]:
+            groups = course.groups.all().order_by('name')
+    else:
+        groups = course.groups.all().order_by('name')
 
     course.can_edit = course.user_can_edit_course(user)
     if course.can_be_chosen_by_extern:
@@ -148,19 +184,18 @@ def tasklist_shad_cpp(request, course):
     default_teacher = {}
     show_hidden_tasks = request.session.get(str(request.user.id) + '_' + str(course.id) + '_show_hidden_tasks', False)
 
-    task = Task()
-    task.is_shown = None
-    task.is_hidden = None
-
-    for group in course.groups.all().order_by('name'):
+    for group in groups:
         student_x_task_x_task_takens = {}
 
-        if show_hidden_tasks:
-            group_x_task_list[group] = [x.task for x in TaskGroupRelations.objects.select_related('task')
-                .filter(task__course=course, group=group, deleted=False).order_by('position')]
+        if is_seminar:
+            tasks_for_groups = TaskGroupRelations.objects.filter(task__course=course, group=group, deleted=False, task__parent_task=seminar).order_by('position').select_related('task')
         else:
-            group_x_task_list[group] = [x.task for x in TaskGroupRelations.objects.select_related('task')
-                .filter(task__course=course, group=group, deleted=False, task__is_hidden=False).order_by('position')]
+            tasks_for_groups = TaskGroupRelations.objects.filter(task__course=course, group=group, deleted=False, task__parent_task=None).order_by('position').select_related('task')
+
+        if show_hidden_tasks:
+            group_x_task_list[group] = [x.task for x in tasks_for_groups]
+        else:
+            group_x_task_list[group] = [x.task for x in tasks_for_groups if not x.task.is_hidden]
 
         group_x_max_score.setdefault(group, 0)
 
@@ -234,8 +269,10 @@ def tasklist_shad_cpp(request, course):
         'user_is_attended_special_course': user_is_attended_special_course,
         'user_is_teacher': course.user_is_teacher(user),
 
+        'seminar': seminar,
         'visible_queue': course.user_can_see_queue(user),
-        'visible_hide_button': Task.objects.filter(Q(course=course) & Q(is_hidden=True)).order_by('weight').count()
+        'visible_hide_button': Task.objects.filter(Q(course=course) & Q(is_hidden=True)).count(),
+        'show_hidden_tasks' : show_hidden_tasks
     }
 
     return context

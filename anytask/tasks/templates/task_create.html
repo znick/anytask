@@ -66,7 +66,7 @@
                             </select>
                         </div>
                     </div>
-                    <div id='contest_rb_body' class="{% if is_create or task.type != task.TYPE_SIMPLE %}in{% endif %} collapse">
+                    <div id='contest_rb_body' class="{% if is_create or task.type != task.TYPE_SIMPLE and task.type != task.TYPE_SEMINAR %}in{% endif %} collapse">
                         <div class="form-group row">
                             <label class="col-sm-3 form-control-label" for="task_edit_rb_integrated">Интеграция с Review
                                 Board</label>
@@ -126,7 +126,31 @@
                             </select>
                         </div>
                     </div>
-
+                    <div id='parent_body' class="{% if is_create or task.type != task.TYPE_SEMINAR %}in{% endif %} collapse">
+                        <div class="form-group row">
+                            <label class="col-sm-3 form-control-label" for="task_edit_parent">Родительская задача</label>
+                            <div class="controls col-sm-3" style="padding-top: 5px">
+                                <select class="form-control" name="parent_id" id="task_edit_parent">
+                                    <option value=""> --- </option>
+                                    {% for seminar in seminar_tasks %}
+                                        <option value="{{ seminar.id }}" {% ifequal seminar.id task.parent_task.id %}selected{% endifequal %}>{{ seminar.title }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div id='children_body' class="collapse">
+                        <div class="form-group row">
+                            <label class="col-sm-3 form-control-label" for="task_edit_children"> Подзадачи </label>
+                            <div class="controls col-sm-3" style="padding-top: 5px">
+                                <select class="form-control" id="task_edit_children" multiple>
+                                    {% for not_seminar in not_seminar_tasks %}
+                                        <option value="{{ not_seminar.id }}" {% if not_seminar.id in task.children.all %}selected{% endif %}>{{ not_seminar.title }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
                     <div class="form-group row">
                         <label class="col-sm-3 form-control-label" for="task_edit_datepicker">Дата сдачи</label>
                         <div class="controls col-sm-3">

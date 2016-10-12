@@ -11,7 +11,10 @@
     {% if school %}
         {% breadcrumb school.name school.get_absolute_url %}
     {% endif %}
-    {% breadcrumb course.name "" %}
+    {% breadcrumb course.name course.get_absolute_url %}
+    {% if seminar %}
+        {% breadcrumb seminar.title "" %}
+    {% endif %}
 {% endblock breadcrumbs %}
 
 {% block navbar %}
@@ -48,7 +51,7 @@
     <div class="row">
         <div class="col-md-12 col-xs-12">
             <div class="card card-block">
-                <h5 class="card-title">{{ course.name }}</h5>
+                <h5 class="card-title">{% if not seminar %} {{ course.name }} {% else %} {{ seminar.title }} {% endif %}</h5>
 
                 <p class="card-text course_teachers" style="border-bottom: 1px solid #e5e5e5;">
                     Преподаватели:
@@ -57,7 +60,7 @@
                     {% endfor %}
                 </p>
 
-                {% if course.can_edit %}
+                {% if course.can_edit and not seminar %}
                     <div  id="btn_group_edit_course" style="z-index: 1; padding: 6px;border:1px solid #e5e5e5;background-color: #e5e5e5" >
                         <a class="btn btn-secondary btn-sm" href="javascript:get_edit_course_modal({{ course.id }}, {% if course.information %} '{{course.information|escapejs}}' {% else %} '' {% endif %});">
                             {% if course.information %}
