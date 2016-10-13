@@ -51,8 +51,46 @@
             width: 100%;
         }
 
+        .multiselect-container li:not(.multiselect-item) {
+            padding-left: 20px;
+        }
+
+        .multiselect-container li.multiselect-group label {
+            padding-left: 40px;
+        }
+
         #card_contest .form-group .btn-div {
             margin-top: 1rem;
+        }
+
+        .output-block{
+            max-height: 30rem;
+            overflow: auto;
+            margin-top: 1rem;
+        }
+
+        .output-block div:first-child {
+            border-top-left-radius: 0.25rem;
+            border-top-right-radius: 0.25rem;
+        }
+
+        .output-block div:last-child {
+            border-bottom-right-radius: 0.25rem;
+            border-bottom-left-radius: 0.25rem;
+        }
+
+        .output-success {
+            display: none;
+            color: #3c763d;
+            background-color: #dff0d8;
+            padding: 15px;
+        }
+
+        .output-danger {
+            display: none;
+            color: #a94442;
+            background-color: #f2dede;
+            padding: 15px;
         }
 
         @media (min-width: 992px) {
@@ -141,16 +179,25 @@
                             <div class="form-group row" style="display: none;" >
                                 <div class="controls col-lg-8 col-md-12">
                                     <select name="tasks_contest[]" id="tasks_contest_select" class="form-control" multiple="multiple">
-                                        {% for task in tasks_contest %}
-                                            <option value="{{ task.id }}" selected>{{ task.title }}</option>
+                                        {% for contest_id, tasks in tasks_contest.iteritems %}
+                                            <optgroup label="{{ contest_id }}">
+                                                {% for task in tasks %}
+                                                    <option value="{{ task.id }}" selected>{{ task.title }}</option>
+                                                {% endfor %}
+                                            </optgroup>
                                         {% endfor %}
                                     </select>
                                 </div>
                                 <div class="btn-div col-lg-4 col-md-12">
-                                    <button type="button" id="update_tasks_btn" class="btn btn-secondary" style="display: inline">Обновить</button>
+                                    <button type="button" id="update_tasks_btn" class="btn btn-secondary btn-block" style="display: inline">Обновить</button>
                                 </div>
                             </div>
-                            <div id="update_submit_error_text" style="margin-top: 1rem"></div>
+                            <div class="text-xs-center" id="progress_contest_update_caption"></div>
+                            <progress class="progress progress-info" id="progress_contest_update" value="0" max="0" style="display: none"></progress>
+                            <div class="output-block">
+                                <div id="update_submit_success_text" class="output-success" ></div>
+                                <div id="update_submit_error_text" class="output-danger"></div>
+                            </div>
                         </div>
                     </div>
                 {% endif %}

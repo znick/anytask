@@ -355,11 +355,16 @@ def course_settings(request, course_id):
 
     schools = course.school_set.all()
 
+    tasks_contest = {}
+    if course.is_contest_integrated():
+        for task in course.task_set.filter(contest_integrated=True, is_hidden=False):
+            tasks_contest[task.contest_id] = tasks_contest.get(task.contest_id, list()) + [task]
+
     context = {'course': course,
                'visible_queue': course.user_can_see_queue(request.user),
                'user_is_teacher': course.user_is_teacher(request.user),
                'school': schools[0] if schools else '',
-               'tasks_contest': course.task_set.filter(contest_integrated=True) if course.is_contest_integrated() else [],
+               'tasks_contest': tasks_contest,
                }
 
     if request.method != "POST":
@@ -528,53 +533,65 @@ def ajax_update_contest_tasks(request):
     if not request.is_ajax():
         return HttpResponseForbidden()
 
-    if 'tasks_contest[]' not in request.POST:
+    if 'tasks_contest[]' not in request.POST or 'contest_id' not in request.POST:
         return HttpResponseForbidden()
 
+    contest_id = int(request.POST['contest_id'])
+
     response = {'is_error': False,
-                'tasks': ''}
-    contest_responses = {}
-    response['tasks_title'] = {}
+                'contest_id': contest_id,
+                'error': '',
+                'tasks_title': {}}
 
-    for task in Task.objects.filter(id__in=dict(request.POST)['tasks_contest[]']):
-        alias = task.problem_id
-        contest_id = task.contest_id
+    got_info, contest_info = get_contest_info(contest_id)
+    if got_info:
+        problem_req = FakeResponse()
+        problem_req = requests.get(settings.CONTEST_API_URL + 'problems?contestId=' + str(contest_id),
+                                   headers={'Authorization': 'OAuth ' + settings.CONTEST_OAUTH})
+        problems = []
+        if 'error' in problem_req:
+            response['is_error'] = True
+            if 'IndexOutOfBoundsException' in problem_req['error']['name']:
+                response['error'] = u'Такого контеста не существует'
+            else:
+                response['error'] = u'Ошибка Я.Контеста: ' + problem_req['error']['message']
+        if 'result' in problem_req.json():
+            problems = problem_req.json()['result']['problems']
 
-        if contest_id not in contest_responses:
-            got_info, contest_info = get_contest_info(contest_id)
-            if not got_info:
-                response['is_error'] = True
-                response['tasks'] += task.title + '; '
+        contest_responses = [contest_info, problems]
+    else:
+        response['is_error'] = True
+        if "You're not allowed to view this contest." in contest_info:
+            response['error'] = u"У anytask нет прав на данный контест"
+        elif "Contest with specified id does not exist." in contest_info:
+            response['error'] = u'Такого контеста не существует'
+        else:
+            response['error'] = u'Ошибка Я.Контеста: ' + contest_info
+
+    if not response['is_error']:
+        for task in Task.objects.filter(id__in=dict(request.POST)['tasks_contest[]']):
+            alias = task.problem_id
+            if contest_id != task.contest_id:
                 continue
 
-            problem_req = FakeResponse()
-            problem_req = requests.get(settings.CONTEST_API_URL + 'problems?contestId=' + str(contest_id),
-                                       headers={'Authorization': 'OAuth ' + settings.CONTEST_OAUTH})
-            problems = []
-            if 'result' in problem_req.json():
-                problems = problem_req.json()['result']['problems']
+            for problem in contest_responses[0]['problems']:
+                if problem['alias'] == alias:
+                    task.title = problem['problemTitle']
+                    task.task_text = problem['statement']
+                    if 'endTime' in contest_responses[0]:
+                        deadline = contest_responses[0]['endTime'].split('+')[0]
+                        task.deadline_time = datetime.datetime.strptime(deadline, '%Y-%m-%dT%H:%M:%S.%f')
+                    else:
+                        task.deadline_time = None
+                    break
 
-            contest_responses[contest_id] = [contest_info, problems]
+            for problem in contest_responses[1]:
+                if problem['title'] == alias:
+                    if 'score' in problem:
+                        task.score_max = problem['score']
 
-        for problem in contest_responses[contest_id][0]['problems']:
-            if problem['alias'] == alias:
-                task.title = problem['problemTitle']
-                task.task_text = problem['statement']
-                if 'endTime' in contest_responses[contest_id][0]:
-                    deadline = contest_responses[contest_id][0]['endTime'].split('+')[0]
-                    task.deadline_time = datetime.datetime.strptime(deadline, '%Y-%m-%dT%H:%M:%S.%f')
-                else:
-                    task.deadline_time = None
-                break
-
-        for problem in contest_responses[contest_id][1]:
-            if problem['title'] == alias:
-                if 'score' in problem:
-                    task.score_max = problem['score']
-
-        task.save()
-
-        response['tasks_title'][task.id] = task.title
+            task.save()
+            response['tasks_title'][task.id] = task.title
 
     return HttpResponse(json.dumps(response),
                         content_type="application/json")

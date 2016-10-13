@@ -1,11 +1,11 @@
 <script src="{{ STATIC_URL }}jquery.validate.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.quicksearch/2.3.0/jquery.quicksearch.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/multi-select/0.9.12/js/jquery.multi-select.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.min.js"></script>
+<script src="{{ STATIC_URL }}bootstrap-multiselect.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.matchHeight/0.7.0/jquery.matchHeight-min.js" type="text/javascript"></script>
 
 <link href="https://cdnjs.cloudflare.com/ajax/libs/multi-select/0.9.12/css/multi-select.min.css" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/css/bootstrap-multiselect.css" rel="stylesheet">
+<link href="{{ STATIC_URL }}bootstrap-multiselect.css" rel="stylesheet">
 
 <script type="text/javascript">
     $(document).ready(function() {
@@ -74,6 +74,7 @@
                 ul: '<ul class="multiselect-container dropdown-menu" style="left:inherit;top: inherit;"></ul>',
                 li: '<li><a tabindex="0" class="dropdown-item"><label></label></a></li>'
             },
+            enableClickableOptGroups: true,
             includeSelectAllOption: true,
             selectAllText: 'Все задачи',
             allSelectedText: 'Все задачи',
@@ -120,66 +121,93 @@
                     return labels.join(', ') + '';
                 }
             },
-            onInitialized: function(option, checked, select) {
+            onInitialized: function(option, dropdown, select) {
+                $('.multiselect-group a', dropdown).prop('tabindex', '0').addClass('dropdown-item').find('label').addClass('checkbox');
                 $('#tasks_contest_select').closest('.form-group').show();
             },
         });
 
+        var form_submitting = false;
         $('#update_tasks_btn').click(function () {
             if (!$('#tasks_contest_select').serialize())
                 return;
 
             var d = 'disabled';
-            var btn_update = $(this);
+            var $btn_update = $(this);
             var $form = $('#task_update_form');
-            var req_data = $form.serialize();
 
-            btn_update.data('reset_text', btn_update.html());
-            btn_update.html("&nbsp;<i class='fa fa-circle-o-notch fa-spin fa-fw'></i>&nbsp;");
-            btn_update.addClass(d).attr(d, d).prop(d, true);
-            btn_update.closest('.form-group').find('.multiselect').addClass(d).attr(d, d).prop(d, true);
+            form_submitting = true;
+
+            $btn_update.data('reset_text', $btn_update.html());
+            $btn_update.html("&nbsp;<i class='fa fa-circle-o-notch fa-spin fa-fw'></i>&nbsp;");
+            $btn_update.addClass(d).attr(d, d).prop(d, true);
+            $btn_update.closest('.form-group').find('.multiselect').addClass(d).attr(d, d).prop(d, true);
             $('input', $form).addClass(d).attr(d, d).prop(d, true).closest('label').addClass(d);
-            $('#update_submit_error_text').html('');
-            $.post('{% url courses.views.ajax_update_contest_tasks %}', $('input[name="csrfmiddlewaretoken"], #tasks_contest_select').serialize(), function(data){
-                if (data.is_error == false) {
-                    $('#update_submit_error_text').html('<div class="alert alert-success alert-dismissible fade in" role ="alert" id="edit_task_err">' +
-                            '                            <button type="button" class="close" data-dismiss="alert" aria-label="Закрыть">' +
-                            '                               <span aria-hidden="true">&times;</span>' +
-                            '                            </button>' +
-                            '                            <span>Задачи обновлены.</span>' +
-                            '                          </div>');
-                    for (var key in data.tasks_title) {
-                        if (data.tasks_title.hasOwnProperty(key)) {
-                            $('option[value="' + key + '"]', '#tasks_contest_select').text(data.tasks_title[key])
-                        }
-                    }
-                    $('#tasks_contest_select').multiselect('rebuild');
-                }
-                else {
-                    var err_text = data.tasks ? 'Ошибка обновления задач: ' + data.tasks: 'Произошла ошибка при получении данных.';
-                    $('#update_submit_error_text').html('<div class="alert alert-danger alert-dismissible fade in" role ="alert" id="user_settings_err">' +
-                            '                           <button type="button" class="close" data-dismiss="alert" aria-label="Закрыть">' +
-                            '                             <span aria-hidden="true">&times;</span>' +
-                            '                           </button>' +
-                            '                           <span>' + err_text + '</span>' +
-                            '                         </div>');
-                }
-            })
-                    .fail(function () {
-                        $('#update_submit_error_text').html('<div class="alert alert-danger alert-dismissible fade in" role ="alert" id="user_settings_err">' +
-                                '                           <button type="button" class="close" data-dismiss="alert" aria-label="Закрыть">' +
-                                '                             <span aria-hidden="true">&times;</span>' +
-                                '                           </button>' +
-                                '                           <span>Произошла ошибка при получении данных.</span>' +
-                                '                         </div>');
-                    })
-                    .always(function () {
-                        btn_update.html(btn_update.data('reset_text'));
-                        btn_update.removeClass(d).removeAttr(d).prop(d, false);
-                        btn_update.closest('.form-group').find('.multiselect').removeClass(d).removeAttr(d).prop(d, false);
-                    });
+            $('#update_submit_success_text').hide().html('');
+            $('#update_submit_error_text').hide().html('');
+
+            var tasks = {};
+            $('optgroup', '#tasks_contest_select').each(function () {
+                var $selected = $('option:selected', this).map(function(){
+                    return $(this).val();
+                }).get();
+                if ($selected.length)
+                    tasks[$(this).prop('label')] = $selected;
+            });
+
+            var tasks_keys = Object.keys(tasks);
+            var ajax_req = [];
+            var $progress = $('#progress_contest_update');
+            var $progress_caption = $("#progress_contest_update_caption");
+
+            $progress_caption.html('Обновление задач... <span>0</span>%');
+            $progress.prop('max', tasks_keys.length);
+            $progress.val(0);
+            $progress.show();
+
+            for(i = 0; i < tasks_keys.length; ++i) {
+                ajax_req.push($.post('{% url courses.views.ajax_update_contest_tasks %}',
+                        {   'csrfmiddlewaretoken': '{{ csrf_token }}',
+                            'contest_id': tasks_keys[i],
+                            'tasks_contest[]': tasks[tasks_keys[i]]})
+                        .always(function () {
+                            $progress.val($progress.val() + 1);
+                            $progress_caption.find('span').text(Math.floor(parseInt($progress.val(), 10) / parseInt($progress.prop('max'), 10) * 100));
+                        })
+                        .done(function (data) {
+                            var alert_text = '<div><strong>Контест ' + data.contest_id + '. </strong>';
+                            if (data.is_error == false) {
+                                alert_text += 'Задачи обновлены';
+                                $('#update_submit_success_text').show().append(alert_text + '</div>');
+                                for (var key in data.tasks_title) {
+                                    if (data.tasks_title.hasOwnProperty(key)) {
+                                        $('option[value="' + key + '"]', '#tasks_contest_select').text(data.tasks_title[key])
+                                    }
+                                }
+                            }
+                            else {
+                                var err_text = data.error ? data.error: 'Произошла ошибка при получении данных.';
+                                $('#update_submit_error_text').show().append(alert_text +  err_text + '</div>');
+                            }
+                        })
+                        .fail(function () {
+                            $('#update_submit_error_text').show().append('<div><strong>' + arguments[2] + '</strong></div>');
+                        }));
+            }
+            $.when.apply(null, ajax_req).always(function () {
+                form_submitting = false;
+                $('#tasks_contest_select').multiselect('rebuild');
+                $btn_update.html($btn_update.data('reset_text'));
+                $btn_update.removeClass(d).removeAttr(d).prop(d, false);
+                $btn_update.closest('.form-group').find('.multiselect').removeClass(d).removeAttr(d).prop(d, false);
+                $('.multiselect-group a', $('#tasks_contest_select').closest('.controls ')).prop('tabindex', '0').addClass('dropdown-item').find('label').addClass('checkbox');
+            });
         });
 
+        $(window).bind('beforeunload', function() {
+            if (form_submitting)
+                return 'show';
+        });
 
         $('#course_settings_form').change(function() {
             $('#course_settings_form_error_text').empty();
