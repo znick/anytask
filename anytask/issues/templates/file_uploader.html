@@ -132,9 +132,11 @@
 
             {% block UPLOAD_FORM_BUTTON_BAR_CONTROL %}
             {% if issue.status_field.tag == issue.status_field.STATUS_ACCEPTED and not teacher_or_staff or issue.status_field.tag == issue.status_field.STATUS_NEED_INFO and not teacher_or_staff %}
-                <button class="btn btn-info pull-xs-right" formaction="#" style="margin-top: 10px; margin-left: 10px;" type="submit" name="need_info">Задать вопрос</button>
+                <input type="hidden" name="need_info" value="" />
+                <button class="btn btn-info pull-xs-right" formaction="#" style="margin-top: 10px; margin-left: 10px;" type="submit">Задать вопрос</button>
             {% else %}
-                <button style="margin-top: 10px;" type="submit" name="update_issue" class="btn btn-primary pull-xs-right">
+                <input type="hidden" name="update_issue" value="" />
+                <button style="margin-top: 10px;" type="submit" class="btn btn-primary pull-xs-right">
                     <span>Отправить</span>
                 </button>
             {% endif %}
