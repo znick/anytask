@@ -14,7 +14,7 @@
             }
         });
 
-        $('form').submit(function(e){
+        $('div.container form:not(.navbar-form)').submit(function(e){
             var d = 'disabled';
             if ($(this).valid()) {
                 $(this).find('button[type="submit"]:first').attr(d, d).prop(d, true).html("<span class='fa fa-circle-o-notch fa-spin fa-fw'></span> Сохранение");
