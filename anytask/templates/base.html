@@ -494,10 +494,12 @@
                         </li>
                     </ul>
                     {% block main_search %}
-                        <div class="nav-form-search pull-xs-right col-xs-12 col-md-4">
+                        <div class="nav-form-search pull-xs-right col-xs-12 col-md-3 col-lg-4">
                             <form class="navbar-form" role="search" method="get" action="{% url search.views.search_page %}">
                                 <div class="input-group">
-                                    <input class="typeahead form-control" name="q" type="text" placeholder="Найти...">
+                                    <div style="width: 100%">
+                                        <input class="typeahead form-control" name="q" type="text" placeholder="Найти...">
+                                    </div>
                                     <div class="input-group-btn">
                                         <button class="btn" type="submit"><i class="fa fa-search" style="line-height: 1.5"></i></button>
                                     </div>

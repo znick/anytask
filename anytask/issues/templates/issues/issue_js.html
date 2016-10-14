@@ -14,10 +14,10 @@
             }
         });
 
-        $('form').submit(function(e){
+        $('div.container form:not(.navbar-form)').submit(function(e){
             var d = 'disabled';
             if ($(this).valid()) {
-                $(this).find('button[type="submit"]:first').attr(d, d).prop(d, true).html("<i class='fa fa-circle-o-notch fa-spin fa-fw'></i> Сохранение");
+                $(this).find('button[type="submit"]:first').attr(d, d).prop(d, true).html("<span class='fa fa-circle-o-notch fa-spin fa-fw'></span> Сохранение");
                 $(this).find('button[type="submit"]:not(:first)').hide();
                 $(this).find('.dropdown-submit').hide();
             }
