@@ -19,11 +19,13 @@ class IssueStatus(models.Model):
     STATUS_REWORK = 'rework'
     STATUS_VERIFICATION = 'verification'
     STATUS_ACCEPTED = 'accepted'
+    STATUS_SEMINAR = 'seminar'
 
     ISSUE_STATUSES = (
         (STATUS_REWORK, _(STATUS_REWORK)),
         (STATUS_VERIFICATION, _(STATUS_VERIFICATION)),
-        (STATUS_ACCEPTED, _(STATUS_ACCEPTED))
+        (STATUS_ACCEPTED, _(STATUS_ACCEPTED)),
+        (STATUS_SEMINAR, _(STATUS_SEMINAR))
     )
 
     name = models.CharField(max_length=254, db_index=True, null=False, blank=False)
