@@ -122,6 +122,8 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.admin',
+    'whoosh',
+    'haystack',
     'south',
     'common',
     'users',
@@ -145,6 +147,7 @@ INSTALLED_APPS = (
     'jfu',
     'django_filters',
     'colorfield',
+    'search',
 )
 
 AUTH_PROFILE_MODULE = "users.UserProfile"
@@ -196,3 +199,10 @@ MAX_FILE_SIZE = 100*1024*1024
 EMAIL_DEFAULT_BCC = None
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
+        'PATH': os.path.join(PROJECT_PATH, 'search/whoosh'),
+    },
+}
