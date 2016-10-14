@@ -152,7 +152,11 @@ def task_edit_page(request, task_id):
 
 def task_create_ot_edit(request, course, task_id=None):
     task_title = request.POST['task_title'].strip()
-    max_score = int(request.POST['max_score'])
+
+    if 'max_score' in request.POST:
+        max_score = int(request.POST['max_score'])
+    else:
+        max_score = None
 
     task_group = request.POST['task_group_id']
     if task_group:

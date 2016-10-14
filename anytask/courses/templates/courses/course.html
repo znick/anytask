@@ -11,8 +11,10 @@
     {% if school %}
         {% breadcrumb school.name school.get_absolute_url %}
     {% endif %}
-    {% breadcrumb course.name course.get_absolute_url %}
-    {% if seminar %}
+    {% if not seminar %}
+        {% breadcrumb course.name "" %}
+    {% else %}
+        {% breadcrumb course.name course.get_absolute_url %}
         {% breadcrumb seminar.title "" %}
     {% endif %}
 {% endblock breadcrumbs %}

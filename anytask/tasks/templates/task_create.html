@@ -108,7 +108,7 @@
                             <small class="text-help" id="task_edit_header_error_text"></small>
                         </div>
                     </div>
-                    <div class="form-group row">
+                    <div id='max_score_body' class="{% if is_create or task.type != task.TYPE_SEMINAR %}in{% endif %} collapse form-group row">
                         <label class="col-sm-3 form-control-label" for="task_edit_max_score">Максимальный балл</label>
                         <div class="controls col-sm-3">
                             <input class="form-control" id='task_edit_max_score' name='max_score' type='text' maxlength='25' size='20' value="{{ task.score_max }}">
@@ -151,7 +151,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form-group row">
+                    <div id='deadline_body' class="{% if is_create or task.type != task.TYPE_SEMINAR %}in{% endif %} form-group row">
                         <label class="col-sm-3 form-control-label" for="task_edit_datepicker">Дата сдачи</label>
                         <div class="controls col-sm-3">
                             <div class="input-group date task_datetime">

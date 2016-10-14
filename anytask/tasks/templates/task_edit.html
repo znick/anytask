@@ -63,6 +63,7 @@
                             <small class="text-help" id="task_edit_header_error_text"></small>
                         </div>
                     </div>
+                    {% if is_create or task.type != task.TYPE_SEMINAR %}
                     <div class="form-group row">
                         <label class="col-sm-3 form-control-label" for="task_edit_max_score">Максимальный балл</label>
                         <div class="controls col-sm-3">
@@ -70,6 +71,7 @@
                             <small class="text-help" id="task_edit_max_score_error_text"></small>
                         </div>
                     </div>
+                    {% endif %}
                     <div class="form-group row">
                         <label class="col-sm-3 form-control-label" for="task_edit_group">Группа
                             {% if show_help_msg_task_group %}
@@ -85,7 +87,7 @@
                             </select>
                         </div>
                     </div>
-
+                    {% if is_create or task.type != task.TYPE_SEMINAR %}
                     <div class="form-group row">
                         <label class="col-sm-3 form-control-label" for="task_edit_datepicker">Дата сдачи</label>
                         <div class="controls col-sm-3">
@@ -103,6 +105,7 @@
                             </div>
                         </div>
                     </div>
+                    {% endif %}
                     <div class="form-group row">
                         <label class="col-sm-3 form-control-label" for="task_edit_type"> Тип задачи</label>
                         <div class="controls col-sm-3">

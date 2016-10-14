@@ -20,11 +20,10 @@
                 filterClearBtn: '<span class="input-group-btn"><button class="btn btn-secondary btn-block multiselect-clear-filter" type="button"><i class="fa fa-times"></i></button></span>'
             },
             includeSelectAllOption: true,
+            selectAllJustVisible: false,
             enableCaseInsensitiveFiltering: true,
             selectAllText: 'Все задачи',
             allSelectedText: 'Все задачи',
-            selectAllName: 'task_chilren_all',
-            selectAllValue: true,
             maxHeight: 200,
             buttonContainer: '<div style="width:100%;" class="multiselect-dropdown"/>',
             buttonWidth: '100%',
@@ -77,6 +76,8 @@
                 $("#task_edit_contest_id").show();
                 $("#task_edit_problem_id").show();
                 $("#task_edit_rb_integrated").show();
+                $("#max_score_body").collapse('show');
+                $("#deadline_body").collapse('show');
                 $("#parent_body").show();
                 $("#children_body").hide();
             }
@@ -86,6 +87,8 @@
                 $("#task_edit_contest_id").hide();
                 $("#task_edit_problem_id").hide();
                 $("#task_edit_rb_integrated").hide();
+                $("#max_score_body").collapse('show');
+                $("#deadline_body").collapse('show');
                 $("#parent_body").show();
                 $("#children_body").hide();
             }
@@ -95,6 +98,8 @@
                 $("#task_edit_contest_id").hide();
                 $("#task_edit_problem_id").hide();
                 $("#task_edit_rb_integrated").hide();
+                $("#max_score_body").collapse('hide');
+                $("#deadline_body").collapse('hide')
                 $("#parent_body").hide();
                 $("#children_body").show();
             }
