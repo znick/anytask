@@ -110,7 +110,9 @@
                      {% if task.deadline_time %} '{{task.deadline_time|date:'d-m-Y H:i'}}' {% else %}''{% endif %})">
                                     {{ task.title }}
                                 </a>
+                                {% if task.type != task.TYPE_SEMINAR %}
                                 <span class="label {% if not task.is_hidden %} label-inverse {% else %} label-default {% endif %}">{{ task.score_max }}</span>
+                                {% endif %}
                             </th>
                         {% endif %}
                     {% empty %}

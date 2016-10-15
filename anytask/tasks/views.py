@@ -5,6 +5,7 @@ from tasks.models import Task
 from courses.models import Course
 from groups.models import Group
 from issues.models import Issue
+from issues.model_issue_status import IssueStatus
 from django.template import RequestContext
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.core.exceptions import ObjectDoesNotExist
@@ -40,11 +41,12 @@ def task_create_page(request, course_id):
     schools = course.school_set.all()
     seminar_tasks = Task.objects.filter(type=Task().TYPE_SEMINAR).filter(course=course)
     not_seminar_tasks = Task.objects.filter(~Q(type=Task().TYPE_SEMINAR)).filter(course=course)
+    has_seminar = course.issue_status_system.statuses.filter(tag=IssueStatus.STATUS_SEMINAR).count()
 
     context = {
         'is_create': True,
         'course': course,
-        'task_types': Task().TASK_TYPE_CHOICES,
+        'task_types':  Task().TASK_TYPE_CHOICES if has_seminar else Task().TASK_TYPE_CHOICES[:-1],
         'seminar_tasks': seminar_tasks,
         'not_seminar_tasks': not_seminar_tasks,
         'contest_integrated': course.contest_integrated,
@@ -156,7 +158,7 @@ def task_create_ot_edit(request, course, task_id=None):
     if 'max_score' in request.POST:
         max_score = int(request.POST['max_score'])
     else:
-        max_score = None
+        max_score = 0
 
     task_group = request.POST['task_group_id']
     if task_group:
@@ -181,8 +183,8 @@ def task_create_ot_edit(request, course, task_id=None):
         else:
             children = children
 
-    task_deadline = request.POST['deadline']
-    if task_deadline:
+    if 'deadline' in request.POST:
+        task_deadline = request.POST['deadline']
         task_deadline = datetime.datetime.strptime(task_deadline, '%d-%m-%Y %H:%M')
     else:
         task_deadline = None
