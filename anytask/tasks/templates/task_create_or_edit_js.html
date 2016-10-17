@@ -1,13 +1,58 @@
 <script src="{{ STATIC_URL }}jquery.validate.min.js"></script>
 <script src="http://malsup.github.io/jquery.form.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.min.js"></script>
 <script type="text/javascript">
-    $(document).ready(function() {
+    $(document).ready(function () {
         $('[data-toggle="popover"]').popover({
             trigger: 'hover',
             template: '<div class="popover" role="tooltip">' +
             '<div class="popover-arrow"></div>' +
             '<div class="popover-content"></div>' +
             '</div>'
+        });
+
+        $("#task_edit_children").multiselect({
+            buttonClass: 'btn btn-secondary btn-block',
+            templates: {
+                ul: '<ul class="multiselect-container dropdown-menu" style="left:inherit;top: inherit;"></ul>',
+                li: '<li><a tabindex="0" class="dropdown-item"><label></label></a></li>',
+                filter: '<li class="multiselect-item filter"><div class="input-group"><span class="input-group-addon"><i class="fa fa-search"></i></span><input class="form-control multiselect-search" type="text"></div></li>',
+                filterClearBtn: '<span class="input-group-btn"><button class="btn btn-secondary btn-block multiselect-clear-filter" type="button"><i class="fa fa-times"></i></button></span>'
+            },
+            includeSelectAllOption: true,
+            selectAllJustVisible: false,
+            enableCaseInsensitiveFiltering: true,
+            selectAllText: 'Все задачи',
+            allSelectedText: 'Все задачи',
+            maxHeight: 200,
+            buttonContainer: '<div style="width:100%;" class="multiselect-dropdown"/>',
+            buttonWidth: '100%',
+            checkboxName: function(option) {
+                return 'children[]';
+            },
+            buttonText: function (options, select) {
+                if (options.length === 0) {
+                    return 'Не выбрано ни одной задачи';
+                }
+                else if (options.length === $('option', select).length) {
+                    return 'Все задачи';
+                }
+                else if (options.length > 1) {
+                    return 'Выбрано несколько задач - ' + options.length;
+                }
+                else {
+                    var labels = [];
+                    options.each(function () {
+                        if ($(this).attr('label') !== undefined) {
+                            labels.push($(this).attr('label'));
+                        }
+                        else {
+                            labels.push($(this).html());
+                        }
+                    });
+                    return labels.join(', ') + '';
+                }
+            }
         });
 
         $('.task_datetime').datetimepicker({
@@ -24,24 +69,43 @@
             $('#task_edit_label_for_changed_task').show()
         });
 
-        $('#task_edit_type').change(function() {
-            if ($('#task_edit_type').val() != 'Only mark') {
+        $('#task_edit_type').change(function () {
+            if ($('#task_edit_type').val() === 'All') {
                 $('#contest_rb_body').collapse('show');
                 $("#task_edit_contest_integrated").show();
                 $("#task_edit_contest_id").show();
                 $("#task_edit_problem_id").show();
                 $("#task_edit_rb_integrated").show();
+                $("#max_score_body").collapse('show');
+                $("#deadline_body").collapse('show');
+                $("#parent_body").show();
+                $("#children_body").hide();
             }
-            else {
+            else if ($('#task_edit_type').val() === 'Only mark') {
                 $('#contest_rb_body').collapse('hide');
                 $("#task_edit_contest_integrated").hide();
                 $("#task_edit_contest_id").hide();
                 $("#task_edit_problem_id").hide();
                 $("#task_edit_rb_integrated").hide();
+                $("#max_score_body").collapse('show');
+                $("#deadline_body").collapse('show');
+                $("#parent_body").show();
+                $("#children_body").hide();
+            }
+            else if ($('#task_edit_type').val() === 'Seminar') {
+                $('#contest_rb_body').collapse('hide');
+                $("#task_edit_contest_integrated").hide();
+                $("#task_edit_contest_id").hide();
+                $("#task_edit_problem_id").hide();
+                $("#task_edit_rb_integrated").hide();
+                $("#max_score_body").collapse('hide');
+                $("#deadline_body").collapse('hide')
+                $("#parent_body").hide();
+                $("#children_body").show();
             }
         });
 
-        $('#task_edit_rb_integrated').change(function() {
+        $('#task_edit_rb_integrated').change(function () {
             if ($(this).is(':checked')) {
                 $("#task_edit_one_file_upload").closest('div.form-group').collapse('show');
                 $('#task_edit_one_file_upload').show();
@@ -52,10 +116,10 @@
             }
         });
 
-        $("#task_edit_one_file_upload").closest('div.form-group').on('show.bs.collapse hide.bs.collapse', function(e) {
+        $("#task_edit_one_file_upload").closest('div.form-group').on('show.bs.collapse hide.bs.collapse', function (e) {
             $('#task_edit_rb_integrated').attr('disabled', 'disabled');
             $('#task_edit_rb_integrated').css('cursor', 'default');
-        }).on('shown.bs.collapse hidden.bs.collapse', function(e) {
+        }).on('shown.bs.collapse hidden.bs.collapse', function (e) {
             $('#task_edit_rb_integrated').removeAttr('disabled');
         });
 
@@ -72,13 +136,13 @@
             }
         });
 
-        $('#task_edit_form').change(function() {
+        $('#task_edit_form').change(function () {
             $('#task_submit_error_text').empty();
             $('#task_edit_form').data('changed', true);
         });
 
         $('#task_edit_form').validate({
-            submitHandler: function(form) {
+            submitHandler: function (form) {
                 if ($('#task_edit_form').data('changed')) {
                     $('#task_edit_form').ajaxSubmit({
                         success: function (data) {
@@ -121,30 +185,30 @@
             },
             rules: {
                 max_score: {
-                    required : true,
-                    number : true,
-                    min : 0,
-                    digits : true
+                    required: true,
+                    number: true,
+                    min: 0,
+                    digits: true
                 },
                 task_title: {
-                    required : true,
-                    maxlength : 254
+                    required: true,
+                    maxlength: 254
                 },
                 contest_id: {
-                    required : true,
-                    number : true
+                    required: true,
+                    number: true
                 },
                 problem_id: {
-                    required : true
+                    required: true
                 }
             },
 
-            highlight: function(input) {
+            highlight: function (input) {
                 $(input).removeClass('form-control-success').addClass('form-control-danger');
                 $(input).closest('.form-group').removeClass('has-success').addClass('has-danger');
             },
 
-            success: function(label) {
+            success: function (label) {
                 label.addClass('valid');
                 label.closest('.text-help').siblings('.form-control').removeClass('form-control-danger').addClass('form-control-success');
                 label.closest('.form-group').removeClass('has-danger').addClass('has-success');
@@ -152,45 +216,45 @@
 
             messages: {
                 max_score: {
-                    required : "Необходимо указать максимальный балл",
-                    number : "Максимальный балл должен быть натуральным числом",
-                    min : "Максимальный балл должен быть больше или равен 0",
-                    digits : "Максимальный балл должен быть натуральным числом"
+                    required: "Необходимо указать максимальный балл",
+                    number: "Максимальный балл должен быть натуральным числом",
+                    min: "Максимальный балл должен быть больше или равен 0",
+                    digits: "Максимальный балл должен быть натуральным числом"
                 },
                 task_title: {
-                    required : "Название у задачи необходимо",
-                    maxlength : "Не так много"
+                    required: "Название у задачи необходимо",
+                    maxlength: "Не так много"
                 },
                 contest_id: {
-                    required : "Необходимо указать номер контеста",
-                    number : "Номер контеста должен натуральным числом"
+                    required: "Необходимо указать номер контеста",
+                    number: "Номер контеста должен натуральным числом"
                 },
                 problem_id: {
-                    required : "Необходимо указать литеру задачи контеста"
+                    required: "Необходимо указать литеру задачи контеста"
                 }
             },
 
-            errorPlacement: function(error, element) {
+            errorPlacement: function (error, element) {
                 $(element).siblings('small.text-help').empty().append(error);
             }
         });
 
-        $('#button_preview').click(function() {
+        $('#button_preview').click(function () {
             description_preview();
         });
 
-        $('#button_cancel_quit').click(function() {
+        $('#button_cancel_quit').click(function () {
             redirect();
         });
 
-        $('#button_save').click(function() {
+        $('#button_save').click(function () {
             set_disabled();
             $('#task_edit_form').data('quit', false);
             $('#task_edit_form').submit();
             remove_disabled();
         });
 
-        $('#button_save_quit').click(function() {
+        $('#button_save_quit').click(function () {
             set_disabled();
             $('#task_edit_form').data('quit', true);
             $('#task_edit_form').submit();

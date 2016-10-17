@@ -23,7 +23,7 @@ class Task(models.Model):
 
     is_hidden = models.BooleanField(db_index=True, null=False, blank=False, default=False)
 
-    parent_task = models.ForeignKey('self', db_index=True, null=True, blank=True, related_name='parent_task_set')
+    parent_task = models.ForeignKey('self', db_index=True, null=True, blank=True, related_name='children')
 
     task_text = models.TextField(null=True, blank=True, default=None)
 
@@ -34,9 +34,11 @@ class Task(models.Model):
 
     TYPE_FULL = 'All'
     TYPE_SIMPLE = 'Only mark'
+    TYPE_SEMINAR = 'Seminar'
     TASK_TYPE_CHOICES = (
         (TYPE_FULL, u'с обсуждением'),
         (TYPE_SIMPLE, u'только оценка'),
+        (TYPE_SEMINAR, u'семинар'),
     )
     type = models.CharField(db_index=False, max_length=128, choices=TASK_TYPE_CHOICES, default=TYPE_FULL)
 

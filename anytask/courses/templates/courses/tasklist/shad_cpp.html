@@ -110,7 +110,9 @@
                      {% if task.deadline_time %} '{{task.deadline_time|date:'d-m-Y H:i'}}' {% else %}''{% endif %})">
                                     {{ task.title }}
                                 </a>
+                                {% if task.type != task.TYPE_SEMINAR %}
                                 <span class="label {% if not task.is_hidden %} label-inverse {% else %} label-default {% endif %}">{{ task.score_max }}</span>
+                                {% endif %}
                             </th>
                         {% endif %}
                     {% empty %}
@@ -135,7 +137,7 @@
                             {% if not task.is_hidden or user_is_teacher %}
                                 <td align="center" class="student_{{ student.id }}">
                                     {% if not task.is_hidden and user_is_teacher or user.username == student.username %}
-                                        {% ifnotequal task.type task.TYPE_SIMPLE %}
+                                        {% if task.type == task.TYPE_FULL %}
                                             <a  href="/issue/get_or_create/{{task.id}}/{{student.id}}">
                                                 {# <span class="label {% if task_x_task_takens|score:task %} {% if task_x_task_takens|score:task == task.score_max %} label-success {% else %} label-info {% endif %} {% endif %}"> #}
                                                 <span class="label
@@ -143,7 +145,7 @@
                                                   {{ task_x_task_takens|score:task }}
                                                 </span>
                                             </a>
-                                        {% else %}
+                                        {% elif task.type == task.TYPE_SIMPLE  %}
                                             <div {% if user_is_teacher %}class="task-mark-value"{% endif %}>
                                                 <span class="label {{ task_x_task_takens|have_issue:task }}" style="background-color: {{ task_x_task_takens|label_color:task }};">
                                                   {{ task_x_task_takens|score:task }}
@@ -161,7 +163,14 @@
                                                     </fieldset>
                                                 </form>
                                             {% endif %}
-                                        {% endifnotequal %}
+                                        {% elif task.type == task.TYPE_SEMINAR %}
+                                              {% if task.children.count != 0 %} <a  href="{{ course.id }}/seminar/{{task.id}}"> {% endif %}
+                                                 <span class="label
+                                                  {{ task_x_task_takens|have_issue:task }}" style="background-color: {{ task_x_task_takens|label_color:task }};">
+                                                  {{ task_x_task_takens|score:task }}
+                                                </span>
+                                            </a>
+                                        {% endif %}
                                     {% else %}
                                         {% if task.is_hidden %}
                                             <span class="label label-default ">{{ task_x_task_takens|score:task }}</span>
@@ -174,7 +183,7 @@
                                     {% endif %}
 
                                     {#                  {% if task_x_task_takens|comment:task %}#}
-                                    {#                    <a class="icon-comment" href="javascript:get_modal_comment('{{task_x_task_takens|comment:task|safe|sanitize|escapejs }}')"></a>#}
+                                    {#         А           <a class="icon-comment" href="javascript:get_modal_comment('{{task_x_task_takens|comment:task|safe|sanitize|escapejs }}')"></a>#}
                                     {#                  {% endif %}#}
 
 
@@ -252,7 +261,7 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
-                <button class="btn btn-primary" id="modal_table_edit_ok" data-dismiss="modal" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Сохранение">Сохранить</button>
+                <button class="btn btn-primary" id="modal_table_edit_ok" data-dismiss="modal" data-loading-text="<span class='fa fa-circle-o-notch fa-spin'></span> Сохранение">Сохранить</button>
             </div>
         </div>
     </div>
