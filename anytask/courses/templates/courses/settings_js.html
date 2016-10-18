@@ -6,6 +6,8 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/multi-select/0.9.12/css/multi-select.min.css" rel="stylesheet">
 
 <script type="text/javascript">
+    $.fn.matchHeight._maintainScroll = true;
+
     $(document).ready(function() {
         $('.card').matchHeight();
 
@@ -60,10 +62,12 @@
 
         $('#show_task_one_file_upload').change(function () {
             $('#default_task_one_file_upload').closest('div').toggle();
+            $.fn.matchHeight._update();
         });
 
         $('#show_accepted_after_contest_ok').change(function () {
             $('#default_accepted_after_contest_ok').closest('div').toggle();
+            $.fn.matchHeight._update();
         });
 
         $('#tasks_with_contest_select').multiselect({
@@ -168,10 +172,6 @@
                         {   'csrfmiddlewaretoken': '{{ csrf_token }}',
                             'contest_id': tasks_keys[i],
                             'tasks_with_contest[]': tasks[tasks_keys[i]]})
-                        .always(function () {
-                            $progress.val($progress.val() + 1);
-                            $progress_caption.find('span').text(Math.floor(parseInt($progress.val(), 10) / parseInt($progress.prop('max'), 10) * 100));
-                        })
                         .done(function (data) {
                             var alert_text = '<div><strong>Контест ' + data.contest_id + '. </strong>';
                             if (data.is_error == false) {
@@ -190,6 +190,11 @@
                         })
                         .fail(function () {
                             $('#update_submit_error_text').show().append('<div><strong>' + arguments[2] + '</strong></div>');
+                        })
+                        .always(function () {
+                            $progress.val($progress.val() + 1);
+                            $progress_caption.find('span').text(Math.floor(parseInt($progress.val(), 10) / parseInt($progress.prop('max'), 10) * 100));
+                            $.fn.matchHeight._update();
                         }));
             }
             $.when.apply(null, ajax_req).always(function () {
