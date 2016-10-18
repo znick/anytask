@@ -140,11 +140,9 @@
 
             form_submitting = true;
 
+            set_disabled();
             $btn_update.data('reset_text', $btn_update.html());
             $btn_update.html("&nbsp;<i class='fa fa-circle-o-notch fa-spin fa-fw'></i>&nbsp;");
-            $btn_update.addClass(d).attr(d, d).prop(d, true);
-            $btn_update.closest('.form-group').find('.multiselect').addClass(d).attr(d, d).prop(d, true);
-            $('input', $form).addClass(d).attr(d, d).prop(d, true).closest('label').addClass(d);
             $('#update_submit_success_text').hide().html('');
             $('#update_submit_error_text').hide().html('');
 
@@ -199,10 +197,10 @@
             }
             $.when.apply(null, ajax_req).always(function () {
                 form_submitting = false;
-                $('#tasks_with_contest_select').multiselect('rebuild');
+                remove_disabled();
                 $btn_update.html($btn_update.data('reset_text'));
-                $btn_update.removeClass(d).removeAttr(d).prop(d, false);
-                $btn_update.closest('.form-group').find('.multiselect').removeClass(d).removeAttr(d).prop(d, false);
+
+                $('#tasks_with_contest_select').multiselect('rebuild');
                 $('.multiselect-group a', $('#tasks_with_contest_select').closest('.controls ')).prop('tabindex', '0').addClass('dropdown-item').find('label').addClass('checkbox');
             });
         });
@@ -226,6 +224,8 @@
                                 '                                   </div>');
                         if ($('#course_settings_form').data('quit'))
                             redirect();
+                        else
+                            remove_disabled();
                     },
                     error: function (data) {
                         $('#course_settings_form_error_text').html('<div  class="alert alert-danger" role ="alert" id="edit_task_err">' +
@@ -261,6 +261,7 @@
         });
 
         $('#button_cancel_quit').click(function() {
+            set_disabled();
             redirect();
         });
 
@@ -268,27 +269,33 @@
             set_disabled();
             $('#course_settings_form').data('quit', false);
             $('#course_settings_form').submit();
-            remove_disabled();
         });
 
         $('#button_save_quit').click(function() {
             set_disabled();
             $('#course_settings_form').data('quit', true);
             $('#course_settings_form').submit();
-            remove_disabled();
         });
     });
 
     function set_disabled() {
-        $('#button_cancel_quit').attr('disabled', 'disabled');
-        $('#button_save').attr('disabled', 'disabled');
-        $('#button_save_quit').attr('disabled', 'disabled');
+        var d = 'disabled';
+
+        $('#update_tasks_btn').addClass(d).attr(d, d).prop(d, true)
+                .closest('.form-group').find('.multiselect').addClass(d).attr(d, d).prop(d, true);
+        $('#button_cancel_quit').addClass(d).attr(d, d).prop(d, true);
+        $('#button_save').addClass(d).attr(d, d).prop(d, true);
+        $('#button_save_quit').addClass(d).attr(d, d).prop(d, true);
     }
 
     function remove_disabled() {
-        $('#button_cancel_quit').removeAttr('disabled');
-        $('#button_save').removeAttr('disabled');
-        $('#button_save_quit').removeAttr('disabled');
+        var d = 'disabled';
+
+        $('#update_tasks_btn').removeClass(d).removeAttr(d).prop(d, false)
+                .closest('.form-group').find('.multiselect').removeClass(d).removeAttr(d).prop(d, false);
+        $('#button_cancel_quit').removeClass(d).removeAttr(d).prop(d, false);
+        $('#button_save').removeClass(d).removeAttr(d).prop(d, false);
+        $('#button_save_quit').removeClass(d).removeAttr(d).prop(d, false);
     }
 
     function redirect() {
