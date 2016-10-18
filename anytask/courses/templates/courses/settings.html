@@ -169,17 +169,17 @@
                 </div>
             </div>
         </div>
-        {% if course.is_rb_integrated or tasks_contest %}
+        {% if course.is_rb_integrated or tasks_with_contest %}
             <div class="row">
-                {% if tasks_contest %}
+                {% if tasks_with_contest %}
                     <div class="col-lg-6 col-md-5 col-sm-12">
                         <div class="card card-block" id="card_contest">
                             <h5 class="card-title">Яндекс.Контест</h5>
                             <p class="card-text">Обновить название, максимальный балл, дату сдачи и формулировку для задач</p>
                             <div class="form-group row" style="display: none;" >
                                 <div class="controls col-lg-8 col-md-12">
-                                    <select name="tasks_contest[]" id="tasks_contest_select" class="form-control" multiple="multiple">
-                                        {% for contest_id, tasks in tasks_contest.iteritems %}
+                                    <select name="tasks_with_contest[]" id="tasks_with_contest_select" class="form-control" multiple="multiple">
+                                        {% for contest_id, tasks in tasks_with_contest.iteritems %}
                                             <optgroup label="{{ contest_id }}">
                                                 {% for task in tasks %}
                                                     <option value="{{ task.id }}" selected>{{ task.title }}</option>

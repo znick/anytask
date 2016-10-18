@@ -392,16 +392,16 @@ def course_settings(request, course_id):
 
     schools = course.school_set.all()
 
-    tasks_contest = {}
+    tasks_with_contest = {}
     if course.is_contest_integrated():
         for task in course.task_set.filter(contest_integrated=True, is_hidden=False):
-            tasks_contest[task.contest_id] = tasks_contest.get(task.contest_id, list()) + [task]
+            tasks_with_contest[task.contest_id] = tasks_with_contest.get(task.contest_id, list()) + [task]
 
     context = {'course': course,
                'visible_queue': course.user_can_see_queue(request.user),
                'user_is_teacher': course.user_is_teacher(request.user),
                'school': schools[0] if schools else '',
-               'tasks_contest': tasks_contest,
+               'tasks_with_contest': tasks_with_contest,
                }
 
     if request.method != "POST":
@@ -570,7 +570,7 @@ def ajax_update_contest_tasks(request):
     if not request.is_ajax():
         return HttpResponseForbidden()
 
-    if 'tasks_contest[]' not in request.POST or 'contest_id' not in request.POST:
+    if 'tasks_with_contest[]' not in request.POST or 'contest_id' not in request.POST:
         return HttpResponseForbidden()
 
     contest_id = int(request.POST['contest_id'])
@@ -606,7 +606,7 @@ def ajax_update_contest_tasks(request):
             response['error'] = u'Ошибка Я.Контеста: ' + contest_info
 
     if not response['is_error']:
-        for task in Task.objects.filter(id__in=dict(request.POST)['tasks_contest[]']):
+        for task in Task.objects.filter(id__in=dict(request.POST)['tasks_with_contest[]']):
             alias = task.problem_id
             if contest_id != task.contest_id:
                 continue
