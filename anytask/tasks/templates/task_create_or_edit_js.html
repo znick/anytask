@@ -1,6 +1,5 @@
 <script src="{{ STATIC_URL }}jquery.validate.min.js"></script>
 <script src="http://malsup.github.io/jquery.form.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
         $('[data-toggle="popover"]').popover({
@@ -158,6 +157,8 @@
                             else if (data.redirect_page)
                                 window.location.replace(data.redirect_page);
                             $(document).prop('title', data.page_title);
+                            if ($('#task_edit_contest_integrated').is(':checked'))
+                                $('#update_contest_block').show();
                         },
                         error: function (data) {
                             $('#task_submit_error_text').html('<div  class="alert alert-danger alert-dismissible" role ="alert" id="edit_task_err">' +

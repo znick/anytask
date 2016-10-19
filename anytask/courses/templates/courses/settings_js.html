@@ -1,10 +1,16 @@
+<script src="{{ STATIC_URL }}jquery.validate.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.quicksearch/2.3.0/jquery.quicksearch.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/multi-select/0.9.12/js/jquery.multi-select.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.matchHeight/0.7.0/jquery.matchHeight-min.js" type="text/javascript"></script>
+
 <link href="https://cdnjs.cloudflare.com/ajax/libs/multi-select/0.9.12/css/multi-select.min.css" rel="stylesheet">
 
-<script src="{{ STATIC_URL }}jquery.validate.min.js"></script>
 <script type="text/javascript">
+    $.fn.matchHeight._maintainScroll = true;
+
     $(document).ready(function() {
+        $('.card').matchHeight();
+
         $('#rb_ext_select').multiSelect({
             selectableHeader: '<input type="text" class="form-control form-control-sm" style="margin-bottom: 5px;" autocomplete="off" placeholder="Поиск...">',
             selectionHeader: '<input type="text" class="form-control form-control-sm" style="margin-bottom: 5px;" autocomplete="off" placeholder="Поиск...">',
@@ -56,12 +62,153 @@
 
         $('#show_task_one_file_upload').change(function () {
             $('#default_task_one_file_upload').closest('div').toggle();
+            $.fn.matchHeight._update();
         });
 
         $('#show_accepted_after_contest_ok').change(function () {
             $('#default_accepted_after_contest_ok').closest('div').toggle();
+            $.fn.matchHeight._update();
         });
 
+        $('#tasks_with_contest_select').multiselect({
+            buttonClass: 'btn btn-secondary btn-block',
+            templates: {
+                ul: '<ul class="multiselect-container dropdown-menu" style="left:inherit;top: inherit;"></ul>',
+                li: '<li><a tabindex="0" class="dropdown-item"><label></label></a></li>'
+            },
+            enableClickableOptGroups: true,
+            includeSelectAllOption: true,
+            selectAllText: 'Все задачи',
+            allSelectedText: 'Все задачи',
+            selectAllName: 'task_group_id_all',
+            selectAllValue: 'on',
+            maxHeight: 200,
+            buttonContainer: '<div style="width:100%;" class="multiselect-dropdown"/>',
+            buttonWidth: '100%',
+            buttonTitle: function(options, select) {
+                var labels = [];
+                if (options.length === 0) {
+                    return 'Не выбрано ни одной задачи';
+                }
+                else if (options.length === $('option', select).length) {
+                    return 'Все задачи';
+                }
+                else {
+                    options.each(function () {
+                        labels.push($(this).text());
+                    });
+                }
+                return labels.join(', ');
+            },
+            buttonText: function(options, select) {
+                if (options.length === 0) {
+                    return 'Не выбрано ни одной задачи';
+                }
+                else if (options.length === $('option', select).length) {
+                    return 'Все задачи';
+                }
+                else if (options.length > 1) {
+                    return 'Выбрано несколько задач - ' + options.length;
+                }
+                else {
+                    var labels = [];
+                    options.each(function() {
+                        if ($(this).attr('label') !== undefined) {
+                            labels.push($(this).attr('label'));
+                        }
+                        else {
+                            labels.push($(this).html());
+                        }
+                    });
+                    return labels.join(', ') + '';
+                }
+            },
+            onInitialized: function(option, dropdown, select) {
+                $('.multiselect-group a', dropdown).prop('tabindex', '0').addClass('dropdown-item').find('label').addClass('checkbox');
+                $('#tasks_with_contest_select').closest('.form-group').show();
+            },
+        });
+
+        var form_submitting = false;
+        $('#update_tasks_btn').click(function () {
+            if (!$('#tasks_with_contest_select').serialize())
+                return;
+
+            var d = 'disabled';
+            var $btn_update = $(this);
+            var $form = $('#task_update_form');
+
+            form_submitting = true;
+
+            set_disabled();
+            $btn_update.data('reset_text', $btn_update.html());
+            $btn_update.html("&nbsp;<i class='fa fa-circle-o-notch fa-spin fa-fw'></i>&nbsp;");
+            $('#update_submit_success_text').hide().html('');
+            $('#update_submit_error_text').hide().html('');
+
+            var tasks = {};
+            $('optgroup', '#tasks_with_contest_select').each(function () {
+                var $selected = $('option:selected', this).map(function(){
+                    return $(this).val();
+                }).get();
+                if ($selected.length)
+                    tasks[$(this).prop('label')] = $selected;
+            });
+
+            var tasks_keys = Object.keys(tasks);
+            var ajax_req = [];
+            var $progress = $('#progress_contest_update');
+            var $progress_caption = $("#progress_contest_update_caption");
+
+            $progress_caption.html('Обновление задач... <span>0</span>%');
+            $progress.prop('max', tasks_keys.length);
+            $progress.val(0);
+            $progress.show();
+
+            for(i = 0; i < tasks_keys.length; ++i) {
+                ajax_req.push($.post('{% url courses.views.ajax_update_contest_tasks %}',
+                        {   'csrfmiddlewaretoken': '{{ csrf_token }}',
+                            'contest_id': tasks_keys[i],
+                            'tasks_with_contest[]': tasks[tasks_keys[i]]})
+                        .done(function (data) {
+                            var alert_text = '<div><strong>Контест ' + data.contest_id + '. </strong>';
+                            if (data.is_error == false) {
+                                alert_text += 'Задачи обновлены';
+                                $('#update_submit_success_text').show().append(alert_text + '</div>');
+                                for (var key in data.tasks_title) {
+                                    if (data.tasks_title.hasOwnProperty(key)) {
+                                        $('option[value="' + key + '"]', '#tasks_with_contest_select').text(data.tasks_title[key])
+                                    }
+                                }
+                            }
+                            else {
+                                var err_text = data.error ? data.error: 'Произошла ошибка при получении данных.';
+                                $('#update_submit_error_text').show().append(alert_text +  err_text + '</div>');
+                            }
+                        })
+                        .fail(function () {
+                            $('#update_submit_error_text').show().append('<div><strong>' + arguments[2] + '</strong></div>');
+                        })
+                        .always(function () {
+                            $progress.val($progress.val() + 1);
+                            $progress_caption.find('span').text(Math.floor(parseInt($progress.val(), 10) / parseInt($progress.prop('max'), 10) * 100));
+                            $.fn.matchHeight._update();
+                        }));
+            }
+            $.when.apply(null, ajax_req).always(function () {
+                form_submitting = false;
+                remove_disabled();
+                $btn_update.html($btn_update.data('reset_text'));
+
+                $('#tasks_with_contest_select').multiselect('rebuild');
+                $('.multiselect-group a', $('#tasks_with_contest_select').closest('.controls ')).prop('tabindex', '0').addClass('dropdown-item').find('label').addClass('checkbox');
+            });
+        });
+
+        $(window).bind('beforeunload', function() {
+            if (form_submitting)
+                return 'show';
+        });
 
         $('#course_settings_form').change(function() {
             $('#course_settings_form_error_text').empty();
@@ -77,6 +224,8 @@
                                 '                                   </div>');
                         if ($('#course_settings_form').data('quit'))
                             redirect();
+                        else
+                            remove_disabled();
                     },
                     error: function (data) {
                         $('#course_settings_form_error_text').html('<div  class="alert alert-danger" role ="alert" id="edit_task_err">' +
@@ -112,6 +261,7 @@
         });
 
         $('#button_cancel_quit').click(function() {
+            set_disabled();
             redirect();
         });
 
@@ -119,27 +269,33 @@
             set_disabled();
             $('#course_settings_form').data('quit', false);
             $('#course_settings_form').submit();
-            remove_disabled();
         });
 
         $('#button_save_quit').click(function() {
             set_disabled();
             $('#course_settings_form').data('quit', true);
             $('#course_settings_form').submit();
-            remove_disabled();
         });
     });
 
     function set_disabled() {
-        $('#button_cancel_quit').attr('disabled', 'disabled');
-        $('#button_save').attr('disabled', 'disabled');
-        $('#button_save_quit').attr('disabled', 'disabled');
+        var d = 'disabled';
+
+        $('#update_tasks_btn').addClass(d).attr(d, d).prop(d, true)
+                .closest('.form-group').find('.multiselect').addClass(d).attr(d, d).prop(d, true);
+        $('#button_cancel_quit').addClass(d).attr(d, d).prop(d, true);
+        $('#button_save').addClass(d).attr(d, d).prop(d, true);
+        $('#button_save_quit').addClass(d).attr(d, d).prop(d, true);
     }
 
     function remove_disabled() {
-        $('#button_cancel_quit').removeAttr('disabled');
-        $('#button_save').removeAttr('disabled');
-        $('#button_save_quit').removeAttr('disabled');
+        var d = 'disabled';
+
+        $('#update_tasks_btn').removeClass(d).removeAttr(d).prop(d, false)
+                .closest('.form-group').find('.multiselect').removeClass(d).removeAttr(d).prop(d, false);
+        $('#button_cancel_quit').removeClass(d).removeAttr(d).prop(d, false);
+        $('#button_save').removeClass(d).removeAttr(d).prop(d, false);
+        $('#button_save_quit').removeClass(d).removeAttr(d).prop(d, false);
     }
 
     function redirect() {
