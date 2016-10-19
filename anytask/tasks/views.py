@@ -185,7 +185,10 @@ def task_create_ot_edit(request, course, task_id=None):
 
     if 'deadline' in request.POST:
         task_deadline = request.POST['deadline']
-        task_deadline = datetime.datetime.strptime(task_deadline, '%d-%m-%Y %H:%M')
+        if task_deadline:
+            task_deadline = datetime.datetime.strptime(task_deadline, '%d-%m-%Y %H:%M')
+        else:
+            task_deadline = None
     else:
         task_deadline = None
     changed_task = False
@@ -358,7 +361,10 @@ def contest_task_import(request):
 
     if 'deadline' in request.POST:
         task_deadline = request.POST['deadline']
-        task_deadline = datetime.datetime.strptime(task_deadline, '%d-%m-%Y %H:%M') if task_deadline else None
+        if task_deadline:
+            task_deadline = datetime.datetime.strptime(task_deadline, '%d-%m-%Y %H:%M')
+        else:
+            task_deadline = None
     else:
         task_deadline = None
 
