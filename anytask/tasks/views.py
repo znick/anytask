@@ -156,7 +156,11 @@ def task_create_ot_edit(request, course, task_id=None):
     task_title = request.POST['task_title'].strip()
 
     if 'max_score' in request.POST:
-        max_score = int(request.POST['max_score'])
+        max_score = request.POST['max_score']
+        if max_score:
+            max_score = int(max_score)
+        else:
+            max_score = 0
     else:
         max_score = 0
 
