@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+
+{% block title %}Результаты поиска{% endblock %}
+
+{% block main_search %}{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('.typeahead').typeahead('val','{{ query }}');
+            $('img.avatar').hover(
+                    function() {
+                        $(this).closest('tr').find('.fullname').addClass('hover');
+                    },
+                    function() {
+                        $(this).closest('tr').find('.fullname').removeClass('hover');
+                    }
+            );
+        });
+    </script>
+
+{% endblock %}
+
+{% block content %}
+    <style>
+        table.user_profiles tr:first-child{
+            font-size: 1rem;
+        }
+        div.result-info,
+        table.user_profiles tr,
+        table.user_profiles tr .search-up-email{
+            font-size: 0.8rem;
+        }
+        table.user_profiles tr .search-up-email{
+            padding-bottom: 10px;
+        }
+        table.user_profiles tr .search-up-email .card-link{
+            margin-left: 0;
+        }
+        a.fullname.hover {
+            color: #014c8c;
+        }
+    </style>
+
+    <div class="card">
+        <div class="card-block">
+            <h5 class="card-title">Результаты поиска</h5>
+            <div class="form-search">
+                <form class="navbar-form" role="search" method="get" action="{% url search.views.search_page %}">
+                    <div class="input-group">
+                        <input class="typeahead form-control" name="q" type="text" placeholder="Найти...">
+                        <div class="input-group-btn">
+                            <button class="btn btn-secondary" type="submit"><i class="fa fa-search" style="line-height: 1.5"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <small class="text-muted">
+                {% if query|length < 3 %}
+                    Минимальная длина запроса должна быть больше 3 символов.
+                {% else %}
+                    {% if user_profiles or courses %}
+                        По запросу "{{ query }}" найдено {{ user_profiles|length }} пользователя(ей) и {{ courses|length }} курса(ов).
+                    {% else %}
+                        По запросу "{{ query }}" ничего не найдено.
+                    {% endif %}
+                {% endif %}
+            </small>
+        </div>
+    </div>
+    {% if user_profiles or courses %}
+        <div class="row">
+            {% if user_profiles %}
+                <div class="col-md-4 col-xs-12">
+                    <div class="card">
+                        <div class="card-block" style="padding-bottom: 0">
+                            <h5 class="card-title">Пользователи</h5>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            {% for up in user_profiles %}
+                                <li class="list-group-item">
+                                    <table class="user_profiles">
+                                        <tr>
+                                            <td style="padding-right: 10px;">
+                                                <a class="card-link card-clickable" href="{{ up.user.get_absolute_url }}">
+                                                    <img class="avatar" src="{% if not up.avatar %}https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mm&f=y{% else %}{{ up.avatar.url }}{% endif %}" style="width: 50px; height: 50px;">
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <a class="card-link card-clickable fullname" href="{{ up.user.get_absolute_url }}">
+                                                    <strong>{{ up.user.get_full_name }}</strong>
+
+                                                    {% if up.user.email %}
+                                                        <div class="search-up-email">
+                                                            <a class="card-link card-clickable" href="mailto:{{ up.user.email }}">{{ up.user.email }}</a>
+                                                        </div>
+                                                    {% endif %}
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td>
+                                                <strong>Логины</strong>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td>
+                                                {{ up.user.username }}@ <small class="text-muted">Anytask</small>
+                                            </td>
+                                        </tr>
+                                        {% if user_is_teacher or user.is_staff %}
+                                            {% if up.ya_login  %}
+                                                <tr>
+                                                    <td></td>
+                                                    <td>
+                                                        {{ up.ya_login }}@ <small class="text-muted">Я.Контест</small>
+                                                    </td>
+                                                </tr>
+                                            {% endif %}
+                                        {% endif %}
+                                    </table>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            {% endif %}
+            {% if courses %}
+                <div class="col-md-4 col-xs-12">
+                    <div class="card">
+                        <div class="card-block" style="padding-bottom: 0">
+                            <h5 class="card-title">Курсы</h5>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            {% for course in courses %}
+                                <li class="list-group-item">
+                                    <a class="card-link card-clickable" href="{{ course.get_absolute_url }}">
+                                        <strong>{{ course.name }} {{ course.year }}</strong>
+                                        {% if not course.is_active %}
+                                            <small class="text-muted">Архив</small>
+                                        {% endif %}
+                                    </a>
+                                    <div class="result-info">
+                                        {% for school in course.school_set.all %}
+                                            <div>
+                                                <a class="card-link card-clickable" href="{{ school.get_absolute_url }}">{{ school.name }}</a>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    {% endif %}
+
+{% endblock %}

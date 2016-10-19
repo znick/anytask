@@ -14,6 +14,20 @@
             }
         });
 
+        $('div.container form:not(.navbar-form)').submit(function(e){
+            var d = 'disabled';
+            if ($(this).valid()) {
+                $(this).find('button[type="submit"]:first').attr(d, d).prop(d, true).html("<span class='fa fa-circle-o-notch fa-spin fa-fw'></span> Сохранение");
+                $(this).find('button[type="submit"]:not(:first)').hide();
+                $(this).find('.dropdown-submit').hide();
+            }
+        });
+
+        $('#modal_task_description_btn').click(function (e) {
+            $('#modal_task_description').modal('show');
+            e.preventDefault();
+        });
+
         jQuery.validator.addMethod("lt_max", function(value, element) {
             var value = parseFloat(value);
             var max = parseFloat($('#max_mark').val());

@@ -1,4 +1,4 @@
-from tasks.models import Task, TaskTaken, TaskTakenLog, TaskLog
+from tasks.models import Task, TaskTaken, TaskTakenLog, TaskLog, TaskGroupRelations
 from django.contrib import admin
 
 class TaskAdmin(admin.ModelAdmin):
@@ -19,7 +19,13 @@ class TaskTakenLogAdmin(admin.ModelAdmin):
     list_display = ('task', 'user', 'status', 'score', 'scored_by', 'added_time', 'update_time')
     list_filter = ('task__course', 'task__course__year__start_year')
 
+class TaskGroupRelationsAdmin(admin.ModelAdmin):
+    list_display = ('task', 'group', 'position', 'deleted')
+    list_filter = ('task__course', 'group')
+    search_fields = ('task__title', 'task__course__name', 'group__name', 'task__task_text')
+
 admin.site.register(Task, TaskAdmin)
 admin.site.register(TaskLog, TaskLogAdmin)
 admin.site.register(TaskTaken, TaskTakenAdmin)
 admin.site.register(TaskTakenLog, TaskTakenLogAdmin)
+admin.site.register(TaskGroupRelations, TaskGroupRelationsAdmin)

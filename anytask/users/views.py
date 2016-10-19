@@ -11,7 +11,7 @@ from django.core.exceptions import PermissionDenied
 from django.core.files.base import ContentFile
 
 
-from users.models import UserProfile
+from users.models import UserProfile, IssueFilterStudent
 from django.contrib.auth.models import User
 from tasks.models import TaskTaken
 from years.models import Year
@@ -23,6 +23,9 @@ from tasks.models import Task
 from users.forms import InviteActivationForm
 
 from years.common import get_current_year
+
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, HTML
 
 import yandex_oauth
 import requests
@@ -208,19 +211,29 @@ def ya_oauth_response(request, type_of_oauth):
 
         ya_oauth = yandex_oauth.OAuthYandex(OAUTH, PASSWORD)
         ya_response = ya_oauth.get_token(int(request.GET['code']))
+        ya_passport_response = requests.get('https://login.yandex.ru/info?json&oauth_token=' + ya_response['access_token'])
 
-        user_profile.ya_contest_oauth = ya_response['access_token']
-        ya_passport_response = requests.get('https://login.yandex.ru/info?json&oauth_token='+ya_response['access_token'])
-        user_profile.ya_uid = ya_passport_response.json()['id']
-        user_profile.ya_login = ya_passport_response.json()['login']
-        user_profile.save()
+        if not user_profile.ya_contest_oauth:
+            users_with_ya_contest_oauth = UserProfile.objects.all().filter(~Q(ya_login=''))
+
+            for user in users_with_ya_contest_oauth:
+                if user.ya_login == ya_passport_response.json()['login'] or user.ya_uid == ya_passport_response.json()['id']:
+                    return redirect('users.views.ya_oauth_forbidden')
+
+        if not user_profile.ya_contest_oauth or user_profile.ya_login == ya_passport_response.json()['login']:
+            user_profile.ya_contest_oauth = ya_response['access_token']
+            user_profile.ya_uid = ya_passport_response.json()['id']
+            user_profile.ya_login = ya_passport_response.json()['login']
+            user_profile.save()
+        else:
+            return redirect('users.views.ya_oauth_changed')
 
         return redirect('users.views.profile')
     else:
         HttpResponseForbidden()
 
 
-def ya_oauth_disable(request, type_of_oauth):
+def ya_oauth_disable(request):
     user = request.user
     user_profile = user.get_profile()
     if type_of_oauth == 'contest':
@@ -231,6 +244,21 @@ def ya_oauth_disable(request, type_of_oauth):
     user_profile.save()
 
     return redirect('users.views.profile')
+
+def ya_oauth_forbidden(request):
+    context = {
+        'oauth_error_text'              : "Данный профиль уже привязан к аккаунту другого пользователя на Anytask!",
+    }
+
+    return render_to_response('oauth_error.html', context, context_instance=RequestContext(request))
+
+
+def ya_oauth_changed(request, type_of_oauth):
+    context = {
+        'oauth_error_text'              : "Можно перепривязать только тот профиль Я.Контеста, который был привязан ранее!",
+    }
+
+    return render_to_response('oauth_error.html', context, context_instance=RequestContext(request))
 
 
 def add_user_to_group(request):
@@ -257,11 +285,26 @@ def add_user_to_group(request):
 @login_required
 def my_tasks(request):
     user = request.user
+    issues = Issue.objects.filter(student=user).order_by('-update_time')
 
-    issues = Issue.objects.filter(student=user).order_by('task__course')
+    user_as_str = str(user.username) + '_tasks_filter'
+
+    f = IssueFilterStudent(request.GET, issues)
+    f.set_user(user)
+
+    if f.form.data:
+        request.session[user_as_str] = f.form.data
+    elif user_as_str in request.session:
+        f.form.data = request.session.get(user_as_str)
+
+    f.form.helper = FormHelper(f.form)
+    f.form.helper.form_method = 'get'
+    f.form.helper.layout.append(HTML(u"""<div class="form-group row">
+                                           <button id="button_filter" class="btn btn-secondary pull-xs-right" type="submit">Применить</button>
+                                         </div>"""))
 
     context = {
-        'issues': issues,
+        'filter': f,
     }
 
     return render_to_response('my_tasks.html', context, context_instance=RequestContext(request))

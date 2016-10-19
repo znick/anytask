@@ -5,6 +5,7 @@ from tasks.models import Task
 from courses.models import Course
 from groups.models import Group
 from issues.models import Issue
+from issues.model_issue_status import IssueStatus
 from django.template import RequestContext
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.core.exceptions import ObjectDoesNotExist
@@ -12,7 +13,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from tasks.models import TaskTaken, TaskGroupRelations
 from django.contrib.auth.decorators import login_required
-from django.db.models import Max
+from django.db.models import Q
 from anycontest.common import get_contest_info, FakeResponse
 from django.conf import settings
 
@@ -38,11 +39,16 @@ def task_create_page(request, course_id):
         return task_create_ot_edit(request, course)
 
     schools = course.school_set.all()
+    seminar_tasks = Task.objects.filter(type=Task().TYPE_SEMINAR).filter(course=course)
+    not_seminar_tasks = Task.objects.filter(~Q(type=Task().TYPE_SEMINAR)).filter(course=course)
+    has_seminar = course.issue_status_system.statuses.filter(tag=IssueStatus.STATUS_SEMINAR).count()
 
     context = {
         'is_create': True,
         'course': course,
-        'task_types': Task().TASK_TYPE_CHOICES,
+        'task_types':  Task().TASK_TYPE_CHOICES if has_seminar else Task().TASK_TYPE_CHOICES[:-1],
+        'seminar_tasks': seminar_tasks,
+        'not_seminar_tasks': not_seminar_tasks,
         'contest_integrated': course.contest_integrated,
         'rb_integrated': course.rb_integrated,
         'hide_contest_settings': True if not course.contest_integrated else False,
@@ -61,10 +67,13 @@ def task_import_page(request, course_id):
 
     schools = course.school_set.all()
 
+    seminar_tasks = Task.objects.filter(type=Task().TYPE_SEMINAR).filter(course=course)
+
     context = {
         'course': course,
         'rb_integrated': course.rb_integrated,
         'school': schools[0] if schools else '',
+        'seminar_tasks': seminar_tasks,
     }
 
     return render_to_response('task_import.html', context, context_instance=RequestContext(request))
@@ -79,9 +88,12 @@ def contest_import_page(request, course_id):
 
     schools = course.school_set.all()
 
+    seminar_tasks = Task.objects.filter(type=Task().TYPE_SEMINAR).filter(course=course)
+
     context = {
         'course': course,
         'rb_integrated': course.rb_integrated,
+        'seminar_tasks': seminar_tasks,
         'school': schools[0] if schools else '',
         'contest_import': True,
     }
@@ -102,20 +114,26 @@ def task_edit_page(request, task_id):
     groups_required = []
     show_help_msg_task_group = False
 
-    for group in task.course.groups.all():
+    groups = task.course.groups.all()
+    for group in groups:
         if Issue.objects.filter(task=task, student__in=group.students.all()).count():
             groups_required.append(group)
             show_help_msg_task_group = True
 
     schools = task.course.school_set.all()
 
+    seminar_tasks = Task.objects.filter(type=Task().TYPE_SEMINAR).filter(course=task.course)
+    not_seminar_tasks = Task.objects.filter(~Q(type=Task().TYPE_SEMINAR)).filter(course=task.course)
+
     context = {
         'is_create': False,
         'course': task.course,
         'task': task,
-        'task_types': task.TASK_TYPE_CHOICES,
+        'task_types': task.TASK_TYPE_CHOICES[-1:] if task.type == task.TYPE_SEMINAR else task.TASK_TYPE_CHOICES[:-1],
         'groups_required': groups_required,
-        'show_help_msg_task_group': show_help_msg_task_group,
+        'show_help_msg_task_group': True if groups_required else False,
+        'seminar_tasks': seminar_tasks,
+        'not_seminar_tasks': not_seminar_tasks,
         'contest_integrated': task.contest_integrated,
         'rb_integrated': task.rb_integrated,
         'hide_contest_settings': True if not task.contest_integrated or task.type == task.TYPE_SIMPLE else False,
@@ -127,21 +145,33 @@ def task_edit_page(request, task_id):
 
 def task_create_ot_edit(request, course, task_id=None):
     task_title = request.POST['task_title'].strip()
-    max_score = int(request.POST['max_score'])
+
+    if 'max_score' in request.POST:
+        max_score = int(request.POST['max_score'])
+    else:
+        max_score = 0
 
     task_groups = Group.objects.filter(id__in=dict(request.POST)['task_group_id[]'])
 
-    # parent_id = request.POST['parent_id']
-    # if not parent_id or parent_id == 'null':
-    #     parent_id = None
-    # else:
-    #     parent_id = int(parent_id)
-    # parent = None
-    # if parent_id is not None:
-    #     parent = get_object_or_404(Task, id = parent_id)
+    parent_id = request.POST['parent_id']
+    if not parent_id or parent_id == 'null':
+        parent_id = None
+    else:
+        parent_id = int(parent_id)
+    parent = None
+    if parent_id is not None:
+        parent = get_object_or_404(Task, id = parent_id)
 
-    task_deadline = request.POST['deadline']
-    if task_deadline:
+    children = None
+    if 'children[]' in request.POST:
+        children = request.POST.getlist('children[]')
+        if not children or children == 'null':
+            children = None
+        else:
+            children = children
+
+    if 'deadline' in request.POST:
+        task_deadline = request.POST['deadline']
         task_deadline = datetime.datetime.strptime(task_deadline, '%d-%m-%Y %H:%M')
     else:
         task_deadline = None
@@ -187,7 +217,7 @@ def task_create_ot_edit(request, course, task_id=None):
     task.title = task_title
     task.score_max = max_score
 
-    # task.parent_task = parent
+    task.parent_task = parent
 
     task.deadline_time = task_deadline
     task.sended_notify = not changed_task
@@ -209,6 +239,16 @@ def task_create_ot_edit(request, course, task_id=None):
     task.accepted_after_contest_ok = accepted_after_contest_ok
 
     task.is_hidden = hidden_task
+
+    task.save()
+
+    for course_task in Task.objects.filter(course=course):
+        if children and course_task.id in map(int, children):
+            course_task.parent_task = task
+        elif course_task.parent_task == task:
+            course_task.parent_task = None
+        course_task.save()
+
     if task.parent_task:
         if task.parent_task.is_hidden:
             task.is_hidden = True
@@ -220,6 +260,14 @@ def task_create_ot_edit(request, course, task_id=None):
 
     task.updated_by = request.user
     task.save()
+
+    if task.type == task.TYPE_SEMINAR:
+        students = task.group.students.all() if task.group else User.objects.filter(group__in=task.course.groups.all()).all()
+        for student in students:
+            issue, created = Issue.objects.get_or_create(task_id=task.id, student_id=student.id)
+            issue.set_status_by_tag('seminar')
+            issue.mark = sum([x.mark for x in Issue.objects.filter(task__parent_task=task, student_id=student.id).all()])
+            issue.save()
 
     task.groups = task_groups
     task.set_position_in_new_group(task_groups)
@@ -264,9 +312,9 @@ def get_contest_problems(request):
     else:
         problems = problem_req['result']['problems']
 
-    contest_info_problems = contest_info['problems']
-    contest_info_deadline = contest_info['endTime'] if 'endTime' in contest_info else None
-    problems = problems + contest_info_problems + [{'deadline':contest_info_deadline}]
+        contest_info_problems = contest_info['problems']
+        contest_info_deadline = contest_info['endTime'] if 'endTime' in contest_info else None
+        problems = problems + contest_info_problems + [{'deadline': contest_info_deadline}]
 
     return HttpResponse(json.dumps({'problems': problems,
                                     'is_error': is_error,
@@ -317,14 +365,14 @@ def contest_task_import(request):
     if 'hidden_task' in request.POST:
         hidden_task = True
 
-    # parent_id = request.POST['parent_id']
-    # if not parent_id or parent_id == 'null':
-    #     parent_id = None
-    # else:
-    #     parent_id = int(parent_id)
-    # parent = None
-    # if parent_id is not None:
-    #     parent = get_object_or_404(Task, id = parent_id)
+    parent_id = request.POST['parent_id']
+    if not parent_id or parent_id == 'null':
+        parent_id = None
+    else:
+        parent_id = int(parent_id)
+    parent = None
+    if parent_id is not None:
+        parent = get_object_or_404(Task, id = parent_id)
 
     tasks = []
 
@@ -369,7 +417,7 @@ def contest_task_import(request):
     for task in tasks:
         real_task = Task()
         real_task.course = course
-        # real_task.parent_task = parent
+        real_task.parent_task = parent
         if changed_task:
             real_task.sended_notify = False
         else:

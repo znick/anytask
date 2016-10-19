@@ -28,7 +28,7 @@ class QueueForm(forms.Form):
     overdue = forms.IntegerField(initial=0, label='Ждут проверки несколько дней')
 
 def get_teacher_choises(course):
-    teachers = [(0, "(None)")]
+    teachers = [(0, "---")]
     for teacher in course.get_teachers():
         teachers.append((teacher.id, teacher.get_full_name()))
     return teachers

@@ -186,6 +186,10 @@
             }
         });
 
+        $('.table_results th a').click(function (e) {
+            e.stopPropagation();
+        });
+
         $('.task-mark-value').click(function() {
             if (!$('.task-mark-form').data('is_error')) {
                 $(this).hide();

@@ -91,6 +91,20 @@
                         <small class="text-help" id="task_group_id_error_text"></small>
                     </div>
                 </div>
+                <div id='parent_body'>
+                    <div class="form-group row">
+                        <label class="col-sm-3 form-control-label" for="task_edit_parent">Родительская задача</label>
+                        <div class="controls col-sm-3" style="padding-top: 5px">
+                            <select class="form-control" name="parent_id" id="task_edit_parent">
+                                <option value=""> ---</option>
+                                {% for seminar in seminar_tasks %}
+                                    <option value="{{ seminar.id }}"
+                                            {% ifequal seminar.id task.parent_task.id %}selected{% endifequal %}>{{ seminar.title }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
                 <div class="form-group row">
                     <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_datepicker">Дата сдачи</label>
                     <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">

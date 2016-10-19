@@ -198,7 +198,7 @@ class ViewsTest(TestCase):
                          'form select group 2nd option text wrong')
 
         form_select_type = div_task_id.form.find('select', {'id': 'task_edit_type'})('option')
-        self.assertEqual(len(form_select_type), 2, "form select type len not 2")
+        self.assertEqual(len(form_select_type), len(Task.TASK_TYPE_CHOICES), "form select type len not 2")
         self.assertEqual(form_select_type[0]['value'], 'All', 'form select type 1st option value wrong')
         self.assertEqual(form_select_type[0].string.strip().strip('\n'),
                          u'с обсуждением',
@@ -226,6 +226,7 @@ class ViewsTest(TestCase):
                                 'rb_integrated': 'on',
                                 'one_file_upload': 'on',
                                 'hidden_task': 'on',
+                                'parent_id': "",
                                 'task_text': 'task_text'})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content,
@@ -406,7 +407,8 @@ class ViewsTest(TestCase):
                      'deadline': '05-07-2016 05:30',
                      'changed_task': 'on',
                      'rb_integrated': 'on',
-                     'hidden_task': 'on'}
+                     'hidden_task': 'on',
+                     'parent_id': ""}
 
         problems = [{'problemId': '1055/2013_02_24/rqW5cRAAgR',
                      'problemTitle': 'Task1',
