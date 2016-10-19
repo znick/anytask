@@ -4,8 +4,10 @@ from django.core.management.base import BaseCommand
 from django.core.mail import get_connection, EmailMultiAlternatives
 from django.contrib.sites.models import Site
 from django.conf import settings
+from django.db.models import Q
 
 from issues.models import Issue
+from issues.models import Event
 import time
 
 
@@ -14,11 +16,13 @@ class Command(BaseCommand):
 
     option_list = BaseCommand.option_list
     def handle(self, **options):
-        issues = Issue.objects.all()
+        all_events = Event.objects.filter(sended_notify=False).exclude(
+            Q(author__isnull=True) | Q(field__name='review_id')).order_by("issue")
+        issues = Issue.objects.filter(event__in=all_events)
         domain = Site.objects.get_current().domain
 
         for issue in issues:
-            events = issue.get_history().exclude(sended_notify=True)
+            events = all_events.filter(issue=issue)
             issue_url = 'http://' + domain + issue.get_absolute_url()
             message_header = '<div>' + \
                              u'<p>Здравствуйте, {0}.<br></p>' + \
