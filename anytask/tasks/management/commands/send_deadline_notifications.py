@@ -6,7 +6,7 @@ from django.contrib.sites.models import Site
 from django.conf import settings
 
 from tasks.models import Task
-from issues.management.send_notifications import send_mass_mail_html
+from issues.management.commands.send_notifications import send_mass_mail_html
 import time
 
 

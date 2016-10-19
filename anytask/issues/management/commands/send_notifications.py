@@ -18,11 +18,11 @@ class Command(BaseCommand):
     def handle(self, **options):
         all_events = Event.objects.filter(sended_notify=False).exclude(
             Q(author__isnull=True) | Q(field__name='review_id')).order_by("issue")
-        issues = Issue.objects.filter(event__in=all_events)
+        issues = Issue.objects.filter(event__in=all_events).all()
         domain = Site.objects.get_current().domain
 
         for issue in issues:
-            events = all_events.filter(issue=issue)
+            events = all_events.filter(issue=issue).all()
             issue_url = 'http://' + domain + issue.get_absolute_url()
             message_header = '<div>' + \
                              u'<p>Здравствуйте, {0}.<br></p>' + \
