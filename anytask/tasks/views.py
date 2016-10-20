@@ -147,7 +147,11 @@ def task_create_ot_edit(request, course, task_id=None):
     task_title = request.POST['task_title'].strip()
 
     if 'max_score' in request.POST:
-        max_score = int(request.POST['max_score'])
+        max_score = request.POST['max_score']
+        if max_score:
+            max_score = int(max_score)
+        else:
+            max_score = 0
     else:
         max_score = 0
 
@@ -172,7 +176,10 @@ def task_create_ot_edit(request, course, task_id=None):
 
     if 'deadline' in request.POST:
         task_deadline = request.POST['deadline']
-        task_deadline = datetime.datetime.strptime(task_deadline, '%d-%m-%Y %H:%M')
+        if task_deadline:
+            task_deadline = datetime.datetime.strptime(task_deadline, '%d-%m-%Y %H:%M')
+        else:
+            task_deadline = None
     else:
         task_deadline = None
     changed_task = False
@@ -341,7 +348,10 @@ def contest_task_import(request):
 
     if 'deadline' in request.POST:
         task_deadline = request.POST['deadline']
-        task_deadline = datetime.datetime.strptime(task_deadline, '%d-%m-%Y %H:%M') if task_deadline else None
+        if task_deadline:
+            task_deadline = datetime.datetime.strptime(task_deadline, '%d-%m-%Y %H:%M')
+        else:
+            task_deadline = None
     else:
         task_deadline = None
 

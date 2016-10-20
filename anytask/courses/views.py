@@ -202,7 +202,10 @@ def tasklist_shad_cpp(request, course, seminar=None):
         for task in group_x_task_list[group]:
 
             if not task.is_hidden:
-                group_x_max_score[group] += task.score_max
+                if task.type == task.TYPE_SEMINAR:
+                    group_x_max_score[group] += sum([x.score_max for x in task.children.all()])
+                else:
+                    group_x_max_score[group] += task.score_max
             if task.task_text is None:
                 task.task_text = ''
 
