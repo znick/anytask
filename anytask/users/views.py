@@ -331,7 +331,7 @@ def user_courses(request, username=None, year=None):
 
     for course in courses:
 
-        tasks = Task.objects.filter(Q(course=course) & (Q(group__in=groups) | Q(group=None)) & Q(is_hidden=False))
+        tasks = Task.objects.filter(course=course, groups__in=groups, is_hidden=False).distinct()
         issues = Issue.objects.filter(student=user_to_show).filter(task__in=tasks)
 
         if StudentCourseMark.objects.filter(student=user_to_show, course=course):

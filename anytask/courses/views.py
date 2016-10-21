@@ -168,9 +168,7 @@ def tasklist_shad_cpp(request, course, seminar=None):
 
     if seminar:
         is_seminar = True
-        groups = [seminar.group]
-        if not groups[0]:
-            groups = course.groups.all().order_by('name')
+        groups = seminar.groups.all().order_by('name')
     else:
         groups = course.groups.all().order_by('name')
 

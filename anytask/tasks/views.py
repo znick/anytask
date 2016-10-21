@@ -112,13 +112,10 @@ def task_edit_page(request, task_id):
         return task_create_ot_edit(request, task.course, task_id)
 
     groups_required = []
-    show_help_msg_task_group = False
-
     groups = task.course.groups.all()
     for group in groups:
         if Issue.objects.filter(task=task, student__in=group.students.all()).count():
             groups_required.append(group)
-            show_help_msg_task_group = True
 
     schools = task.course.school_set.all()
 
@@ -268,16 +265,16 @@ def task_create_ot_edit(request, course, task_id=None):
     task.updated_by = request.user
     task.save()
 
+    task.groups = task_groups
+    task.set_position_in_new_group(task_groups)
+
     if task.type == task.TYPE_SEMINAR:
-        students = task.group.students.all() if task.group else User.objects.filter(group__in=task.course.groups.all()).all()
+        students = User.objects.filter(group__in=task_groups).all()
         for student in students:
             issue, created = Issue.objects.get_or_create(task_id=task.id, student_id=student.id)
             issue.set_status_by_tag('seminar')
             issue.mark = sum([x.mark for x in Issue.objects.filter(task__parent_task=task, student_id=student.id).all()])
             issue.save()
-
-    task.groups = task_groups
-    task.set_position_in_new_group(task_groups)
 
     return HttpResponse(json.dumps({'page_title': task.title + ' | ' + course.name + ' | ' + str(course.year),
                                     'redirect_page': '/task/edit/' + str(task.id) if not task_id else None}),
