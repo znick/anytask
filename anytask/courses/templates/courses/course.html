@@ -4,7 +4,7 @@
 {% load dict_func %}
 {% load task_taken_func %}
 
-{% block title %}{{ course.name }} | {{ course.year }}{% endblock %}
+{% block title %}{{ seminar.title }} | {{ course.name }} | {{ course.year }}{% endblock %}
 
 {% block breadcrumbs %}
     {{ block.super }}
@@ -62,46 +62,56 @@
                     {% endfor %}
                 </p>
 
-                {% if course.can_edit and not seminar %}
+                {% if course.can_edit %}
                     <div  id="btn_group_edit_course" style="z-index: 1; padding: 6px;border:1px solid #e5e5e5;background-color: #e5e5e5" >
-                        <a class="btn btn-secondary btn-sm" href="javascript:get_edit_course_modal({{ course.id }}, {% if course.information %} '{{course.information|escapejs}}' {% else %} '' {% endif %});">
-                            {% if course.information %}
-                                Редактировать информацию о курсе
-                            {% else %}
-                                Добавить информацию о курсе
-                            {% endif %}
-                        </a>
-                        <div class="btn-group">
-                            <a type="button" class="btn btn-secondary btn-sm" href="/task/create/{{ course.id }}">Добавить задачу</a>
-                            {% if course.contest_integrated %}
-                                <button type="button"
-                                        style="height: 1.95rem;"
-                                        class="btn btn-secondary dropdown-toggle dropdown-toggle-split"
-                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <span class="sr-only">Toggle Dropdown</span>
-                                </button>
-                                <div style="font-size: .875rem;" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                    <a class="dropdown-item" href="/task/import/{{ course.id }}" role="button">
-                                        Импорт задачи из Я.Контеста
-                                    </a>
-                                    <a class="dropdown-item" href="/task/contest_import/{{ course.id }}">Импорт
-                                        соревнования из Я.Контеста</a>
-                                </div>
-                            {% endif %}
-                        </div>
-                        {% if visible_hide_button %}
-                            <a class="btn btn-secondary btn-sm" href="javascript:change_visibility_hidden_tasks({{ course.id }});" role="button">
-                                {% if show_hidden_tasks %}
-                                    Не показывать скрытые задачи
+                        {% if seminar %}
+                            <a class="btn btn-secondary btn-sm" href="{% url tasks.views.task_edit_page seminar.id %}">
+                                Редактировать семинар
+                            </a>
+                        {% else %}
+                            <a class="btn btn-secondary btn-sm" href="javascript:get_edit_course_modal({{ course.id }}, {% if course.information %} '{{course.information|escapejs}}' {% else %} '' {% endif %});">
+                                {% if course.information %}
+                                    Редактировать информацию о курсе
                                 {% else %}
-                                    Показать скрытые задачи
+                                    Добавить информацию о курсе
                                 {% endif %}
                             </a>
+                            <div class="btn-group">
+                                <a type="button" class="btn btn-secondary btn-sm" href="/task/create/{{ course.id }}">Добавить задачу</a>
+                                {% if course.contest_integrated %}
+                                    <button type="button"
+                                            style="height: 1.95rem;"
+                                            class="btn btn-secondary dropdown-toggle dropdown-toggle-split"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <span class="sr-only">Toggle Dropdown</span>
+                                    </button>
+                                    <div style="font-size: .875rem;" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                        <a class="dropdown-item" href="/task/import/{{ course.id }}" role="button">
+                                            Импорт задачи из Я.Контеста
+                                        </a>
+                                        <a class="dropdown-item" href="/task/contest_import/{{ course.id }}">Импорт
+                                            соревнования из Я.Контеста</a>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            {% if visible_hide_button %}
+                                <a class="btn btn-secondary btn-sm" href="javascript:change_visibility_hidden_tasks({{ course.id }});" role="button">
+                                    {% if show_hidden_tasks %}
+                                        Не показывать скрытые задачи
+                                    {% else %}
+                                        Показать скрытые задачи
+                                    {% endif %}
+                                </a>
+                            {% endif %}
                         {% endif %}
                     </div>
                 {% endif %}
 
-                {% if course.information %}
+                {% if seminar %}
+                    <p id="course-information" class="card-text" style="margin-top: 1rem; margin-bottom: 0; display: none;">
+                        {{ seminar.task_text|sanitize|safe }}
+                    </p>
+                {% elif course.information %}
                     <p id="course-information" class="card-text" style="margin-top: 1rem; margin-bottom: 0; display: none;">
                         {{ course.information|sanitize|safe }}
                     </p>

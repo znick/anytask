@@ -455,6 +455,10 @@
         });
 
         $('#modal_table_edit_ok').click(function () {
+            var group = $('.group-sortable');
+            if (!(group.data('changed') || !$.isEmptyObject(group.data('deleting_id_in_other_groups'))))
+                return;
+
             var modal_button_ok = $('#modal_table_edit_ok');
             var d = 'disabled';
 
@@ -466,7 +470,6 @@
             setTimeout($.proxy(function () {
                 var modal_button_ok = $('#modal_table_edit_ok');
                 var div_group_id = $(modal_button_ok.data('div_group_id'));
-                var group = $('.group-sortable');
 
                 $.post('{% url courses.views.change_table_tasks_pos %}',
                         {
@@ -480,6 +483,10 @@
                         .done(function (msg) {
                             var other_groups = group.data('deleting_id_in_other_groups');
                             var other_groups_keys = Object.keys(other_groups);
+
+                            if (group.data('changed') && other_groups_keys.indexOf(modal_button_ok.data('div_group_id').split('#')[1]) === -1) {
+                                change_table_column_order(div_group_id, []);
+                            }
 
                             for (var i = 0; i < other_groups_keys.length; ++i) {
                                 var div = $('#' + other_groups_keys[i]);
