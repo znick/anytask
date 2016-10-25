@@ -4,7 +4,7 @@
 {% load dict_func %}
 {% load task_taken_func %}
 
-{% block title %}{{ seminar.title }} | {{ course.name }} | {{ course.year }}{% endblock %}
+{% block title %}{% if seminar %}{{ seminar.title }} | {% endif %}{{ course.name }} | {{ course.year }}{% endblock %}
 
 {% block breadcrumbs %}
     {{ block.super }}
