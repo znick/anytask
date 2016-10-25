@@ -6,6 +6,7 @@ from django.contrib.sites.models import Site
 from django.conf import settings
 
 from tasks.models import Task
+from issues.management.commands.send_notifications import send_mass_mail_html
 import time
 
 
@@ -19,12 +20,8 @@ class Command(BaseCommand):
 
         for task in tasks:
             course_url = 'http://' + domain + task.course.get_absolute_url()
-            groups = []
-            if not task.group:
-                groups = task.course.groups.all()
-            else:
-                groups.append(task.group)
-            for group in groups:
+
+            for group in task.groups.all():
 
                 message_header = '<div>' + \
                                  u'<p>Здравствуйте, {0}.<br></p>' + \
@@ -77,15 +74,3 @@ class Command(BaseCommand):
                 time.sleep(1)
 
             task.save()
-
-
-def send_mass_mail_html(datatuple, fail_silently=False, user=None, password=None, connection=None):
-    connection = connection or \
-                 get_connection(username=user, password=password, fail_silently=fail_silently)
-    messages = []
-    for subject, html, from_email, recipient in datatuple:
-        message = EmailMultiAlternatives(subject, '...', from_email, recipient)
-        message.attach_alternative(html, 'text/html')
-        messages.append(message)
-
-    return connection.send_messages(messages)

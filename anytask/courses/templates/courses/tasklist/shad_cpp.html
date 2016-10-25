@@ -72,6 +72,31 @@
     .ui-state-default .task-delete:hover .fa {
         color:#d9534f;
     }
+
+    .ui-state-delete {
+        background-color: #ff856a;
+        border-color: #ae574b;
+    }
+
+    .popover-content ul {
+        margin-bottom: 0;
+        list-style: none;
+    }
+    .popover-content label.checkbox.disabled {
+        color: #777;
+    }
+    .popover-content li:last-child label {
+        margin-bottom: 0;
+    }
+    .popover-footer {
+        padding: 5px;
+        text-align: right;
+        border-top: 1px solid #e5e5e5;
+    }
+    .popover-footer .btn+.btn {
+        margin-bottom: 0;
+        margin-left: 5px;
+    }
 </style>
 
 {% for group,student_information in group_information.items %}
@@ -81,9 +106,9 @@
                 <div class="card-title-block" style="display: table; margin-bottom: 0.5rem;">
                     {% ifnotequal group course.group_with_extern %}
                         <h5 class="card-title" style="display: table-cell;margin: 0;vertical-align: middle;">{% if group.name %}{{ group.name }}{% else %}&nbsp;{% endif %}
-                        {% if default_teacher|key:group %}
-                            (<a class="card-link" href="{{ default_teacher|get_url:group }}" style="color:#373a3c;">{{ default_teacher|get_name:group }}</a>)
-                        {% endif %}
+                            {% if default_teacher|key:group %}
+                                (<a class="card-link" href="{{ default_teacher|get_url:group }}" style="color:#373a3c;">{{ default_teacher|get_name:group }}</a>)
+                            {% endif %}
                         </h5>
                     {% endifnotequal %}
                     <button class="btn btn-secondary btn-table-fullscreen" type="button" for="#table_results_{{ group.id }}" style="display: none;vertical-align: top;margin: 2px; padding: 6px;"><i class="fa fa-expand fa-lg"></i></button>
@@ -110,7 +135,9 @@
                      {% if task.deadline_time %} '{{task.deadline_time|date:'d-m-Y H:i'}}' {% else %}''{% endif %})">
                                     {{ task.title }}
                                 </a>
+                                {% if task.type != task.TYPE_SEMINAR %}
                                 <span class="label {% if not task.is_hidden %} label-inverse {% else %} label-default {% endif %}">{{ task.score_max }}</span>
+                                {% endif %}
                             </th>
                         {% endif %}
                     {% empty %}
@@ -135,7 +162,7 @@
                             {% if not task.is_hidden or user_is_teacher %}
                                 <td align="center" class="student_{{ student.id }}">
                                     {% if not task.is_hidden and user_is_teacher or user.username == student.username %}
-                                        {% ifnotequal task.type task.TYPE_SIMPLE %}
+                                        {% if task.type == task.TYPE_FULL %}
                                             <a  href="/issue/get_or_create/{{task.id}}/{{student.id}}">
                                                 {# <span class="label {% if task_x_task_takens|score:task %} {% if task_x_task_takens|score:task == task.score_max %} label-success {% else %} label-info {% endif %} {% endif %}"> #}
                                                 <span class="label
@@ -143,7 +170,7 @@
                                                   {{ task_x_task_takens|score:task }}
                                                 </span>
                                             </a>
-                                        {% else %}
+                                        {% elif task.type == task.TYPE_SIMPLE  %}
                                             <div {% if user_is_teacher %}class="task-mark-value"{% endif %}>
                                                 <span class="label {{ task_x_task_takens|have_issue:task }}" style="background-color: {{ task_x_task_takens|label_color:task }};">
                                                   {{ task_x_task_takens|score:task }}
@@ -161,7 +188,14 @@
                                                     </fieldset>
                                                 </form>
                                             {% endif %}
-                                        {% endifnotequal %}
+                                        {% elif task.type == task.TYPE_SEMINAR %}
+                                              {% if task.children.count != 0 %} <a  href="{{ course.id }}/seminar/{{task.id}}"> {% endif %}
+                                                 <span class="label
+                                                  {{ task_x_task_takens|have_issue:task }}" style="background-color: {{ task_x_task_takens|label_color:task }};">
+                                                  {{ task_x_task_takens|score:task }}
+                                                </span>
+                                            </a>
+                                        {% endif %}
                                     {% else %}
                                         {% if task.is_hidden %}
                                             <span class="label label-default ">{{ task_x_task_takens|score:task }}</span>
@@ -174,7 +208,7 @@
                                     {% endif %}
 
                                     {#                  {% if task_x_task_takens|comment:task %}#}
-                                    {#                    <a class="icon-comment" href="javascript:get_modal_comment('{{task_x_task_takens|comment:task|safe|sanitize|escapejs }}')"></a>#}
+                                    {#         А           <a class="icon-comment" href="javascript:get_modal_comment('{{task_x_task_takens|comment:task|safe|sanitize|escapejs }}')"></a>#}
                                     {#                  {% endif %}#}
 
 
@@ -190,7 +224,7 @@
                         {% endfor %}
                         <td class="sum-score">
                             {# <span class="label {% if student_summ_score %} {% if student_summ_score == group_x_max_score|key:group %} label-success {% else %} label-info {% endif %} {% else %} label-important {% endif %}"> #}
-              <span class="label label-inverse">
+                            <span class="label label-inverse">
                 {{ student_summ_score }}
               </span>
                         </td>
@@ -236,14 +270,14 @@
                 <p>Изменение порядка столбцов в итоговой таблице курса, а также их удаление(удалять можно только те задачи, в которых не было комментариев).</p>
                 {% for group, tasks in group_tasks.iteritems %}
                     <div id="group_sort_{{ group.id }}" data-group="{{ group.id }}" data-table="#table_results_{{ group.id }}" data-marksystem="{% if course_mark_system_vals %}true{% endif %}" class="collapse">
-                        <p style="font-weight: bold">{{ group.name }}</p>
+                        <p  class="modal-group-name" style="font-weight: bold">{{ group.name }}</p>
                         <ul class="group-sortable" name="group_sort_{{ group.id }}">
                             {% for task in tasks %}
-                                <li class="ui-state-default" name="task_sort_{{ task.id }}" data-all_group="{% if not task.group %}true{% endif%}" value="{{ task.id }}" style="padding-right: 20px;position: relative;cursor: -webkit-grab;">
+                                <li class="ui-state-default" name="task_sort_{{ task.id }}" value="{{ task.id }}" style="padding-right: 20px;position: relative;cursor: -webkit-grab;">
                                     <span>{{ task.title }}</span>
-                                    {% if task|can_be_deleted %}
-                                        <a class="task-delete pull-xs-right" type="button" style="cursor: pointer"><i class="fa fa-trash-o"></i></a>
-                                    {% endif %}
+                                    <a class="task-delete pull-xs-right" data-name="task_delete_{{ task.id }}" {% autoescape off %}{{ task|group_info }}{% endautoescape %} style="cursor: pointer" tabindex="0" data-toggle="popover" type="button">
+                                        <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                    </a>
                                 </li>
                             {% endfor %}
                         </ul>
@@ -252,7 +286,7 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
-                <button class="btn btn-primary" id="modal_table_edit_ok" data-dismiss="modal" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Сохранение">Сохранить</button>
+                <button class="btn btn-primary" id="modal_table_edit_ok" data-dismiss="modal" data-loading-text="<span class='fa fa-circle-o-notch fa-spin'></span> Сохранение">Сохранить</button>
             </div>
         </div>
     </div>

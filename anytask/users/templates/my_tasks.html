@@ -6,8 +6,25 @@
 {% block scripts %}
     <script src="{{ STATIC_URL }}jquery.stickytableheaders.min.js"></script>
     <script type="text/javascript">
+        $.tablesorter.addParser({
+            id: "customDate",
+            is: function(s) {
+                return /\d{1,2}-\d{1,2}-\d{1,4} \d{1,2}:\d{1,2}/.test(s);
+            },
+            format: function(s) {
+                s = s.replace(/\-/g," ");
+                s = s.replace(/:/g," ");
+                s = $.trim(s).split(" ");
+                return $.tablesorter.formatFloat(new Date(s[2], s[1]-1, s[0], s[3], s[4]).getTime());
+            },
+            type: "numeric"
+        });
         $(document).ready(function() {
-            $(".table_tasks").tablesorter();
+            $(".table_tasks").tablesorter({
+                headers: {
+                    3: { sorter:'customDate' }
+                }
+            });
             $(".table_tasks").stickyTableHeaders({fixedOffset: $('.navbar')});
         });
     </script>
@@ -39,41 +56,66 @@
         }
     </style>
 
-    <div class="card">
-        <div class="card-block">
-            <h5 class="card-title">Мои задачи</h5>
-            {% if issues %}
-                <table class="table table_tasks">
-                    <thead>
-                    <tr style="background-color: #ffffff;">
-                        <th>Задача<i class="fa fa-fw fa-sort"></i></th>
-                        <th>Курс<i class="fa fa-fw fa-sort"></i></th>
-                        <th>Обновлена<i class="fa fa-fw fa-sort"></i></th>
-                        <th>Статус<i class="fa fa-fw fa-sort"></i></th>
-                        <th>Оценка<i class="fa fa-fw fa-sort"></i></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for issue in issues %}
-                        <tr onclick="location.href='{% if issue.task.has_issue_access %}{{ issue.get_absolute_url }}{% else %}#{% endif %}'">
-                            <td>
-                                {% if issue.task.has_issue_access %}
-                                    <a href="{{ issue.get_absolute_url }}">{{ issue.task }}</a>
-                                {% else %}
-                                    {{ issue.task }}
-                                {% endif %}
-                            </td>
-                            <td><a href="{{ issue.task.course.get_absolute_url }}">{{ issue.task.course }}</a></td>
-                            <td><i class="fa fa-clock-o fa-flip-horizontal"></i> {{ issue.update_time|date:"d M H:i" }} </td>
-                            <td> {{ issue.get_status }} </td>
-                            <td> {{ issue.score }} </td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            {% else %}
-                <p class="card-text">Вы не сдавали ни одной задачи</p>
-            {% endif %}
-        </div>
+    <div class="row">
+        {% if filter.count or filter.form.data %}
+            <div class="col-md-2 col-xs-12">
+                <div class="card card-block" id="filters" style="min-width:11.5rem;">
+                    <div style="padding: 0px 15px 0px 15px;">
+                        {% crispy filter.form %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-10 col-xs-12">
+                <div class="card">
+                    <div class="card-block">
+                        <h5 class="card-title">Мои задачи</h5>
+                        {% if filter.count %}
+                            <table class="table table_tasks">
+                                <thead>
+                                <tr style="background-color: #ffffff;">
+                                    <th>Задача<i class="fa fa-fw fa-sort"></i></th>
+                                    <th>Курс<i class="fa fa-fw fa-sort"></i></th>
+                                    <th>Преподаватель<i class="fa fa-fw fa-sort"></i></th>
+                                    <th>Обновлена<i class="fa fa-fw fa-sort"></i></th>
+                                    <th>Статус<i class="fa fa-fw fa-sort"></i></th>
+                                    <th>Оценка<i class="fa fa-fw fa-sort"></i></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for issue in filter %}
+                                    <tr onclick="location.href='{% if issue.task.has_issue_access %}{{ issue.get_absolute_url }}{% else %}#{% endif %}'">
+                                        <td>
+                                            {% if issue.task.has_issue_access %}
+                                                <a href="{{ issue.get_absolute_url }}">{{ issue.task }}</a>
+                                            {% else %}
+                                                {{ issue.task }}
+                                            {% endif %}
+                                        </td>
+                                        <td><a href="{{ issue.task.course.get_absolute_url }}">{{ issue.task.course }}</a></td>
+                                        <td><a href="{{ issue.responsible.get_absolute_url }}">{{ issue.responsible.last_name }} {{ issue.responsible.first_name }}</a></td>
+                                        <td><i class="fa fa-clock-o fa-flip-horizontal"></i> {{ issue.update_time|date:"d-m-Y H:i" }}</td>
+                                        <td> {{ issue.get_status }} </td>
+                                        <td> {{ issue.score }} </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <p class="card-text">Не найдено ни одной задачи</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="col-xs-12">
+                <div class="card">
+                    <div class="card-block">
+                        <h5 class="card-title">Мои задачи</h5>
+                        <p class="card-text">Вы не сдавали ни одной задачи</p>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
     </div>
 {% endblock %}

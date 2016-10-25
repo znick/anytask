@@ -122,6 +122,8 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.admin',
+    'whoosh',
+    'haystack',
     'south',
     'common',
     'users',
@@ -145,12 +147,13 @@ INSTALLED_APPS = (
     'jfu',
     'django_filters',
     'colorfield',
+    'search',
 )
 
 AUTH_PROFILE_MODULE = "users.UserProfile"
 
 ACCOUNT_ACTIVATION_DAYS = 7
-INVITE_EXPIRED_DAYS = 30
+INVITE_EXPIRED_DAYS = 180
 
 RECAPTCHA_PUBLIC_KEY = "01MgZtfgTcrycDEs4Wdvd06g=="
 RECAPTCHA_PRIVATE_KEY = "18ccfac9d336db9817a893ce45751d5a"
@@ -183,7 +186,7 @@ CONTEST_EXTENSIONS_COURSE = {
     }
 }
 
-COURSES_WITH_CONTEST_MARKS = [11, 10]
+COURSES_WITH_CONTEST_MARKS = [11, 10, 65, 85, 93, 82, 79, 80]
 
 PASSPORT_OAUTH = 'OAUTH'
 PASSPORT_OAUTH_PASSWORD = 'PASSWORD'
@@ -193,7 +196,13 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 MAX_FILE_SIZE = 100*1024*1024
 
-REGISTRATION_ALLOWED_DOMAINS = set(('ya.ru', 'yandex.ru', 'yandex.by', 'yandex.com', 'yandex.kz', 'yandex.ua'))
 EMAIL_DEFAULT_BCC = None
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
+        'PATH': os.path.join(PROJECT_PATH, 'search/whoosh'),
+    },
+}

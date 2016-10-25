@@ -4,6 +4,7 @@ import re
 
 from django.conf import settings
 from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm, SetPasswordForm, PasswordChangeForm
+from django.contrib.auth.models import User
 from django.contrib.sites.models import RequestSite
 from django.contrib.sites.models import Site
 from django import forms
@@ -17,22 +18,13 @@ from registration.models import RegistrationProfile
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, HTML
 
-from invites.models import Invite
-
 attrs_dict = { 'class': 'required' }
-
-EMAIL_RE = re.compile(r'''([^@]+)@([^@]+\.[^@]+)''')
-def parse_email(email):
-    m = EMAIL_RE.match(email)
-    if not m:
-        return None, None
-    return m.group(1), m.group(2).lower() #username, domain
 
 
 class AnytaskLoginForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):
         AuthenticationForm.__init__(self, *args, **kwargs)
-        self.fields['username'].label = u"Логин"
+        self.fields['username'].label = u"Логин / E-mail"
 
         self.helper = FormHelper(self)
         self.helper.form_action = '/accounts/login/'
@@ -50,16 +42,21 @@ class AnytaskLoginForm(AuthenticationForm):
                                              </div>
                                            </div>"""))
 
-
     def clean_username(self):
         username = self.cleaned_data.get('username', '')
-        email_username, email_domain = parse_email(username)
-        if not email_username:
-            return username
-        if email_domain and email_domain not in settings.REGISTRATION_ALLOWED_DOMAINS:
-            raise forms.ValidationError("Bad email")
-        return email_username
 
+        if User.objects.filter(username=username).count():
+            return username
+
+        try:
+            user = User.objects.get(email=username)
+        except User.DoesNotExist:
+            return username
+
+        if user.username:
+            return user.username
+
+        return username
 
 class AnytaskPasswordResetForm(PasswordResetForm):
     def __init__(self, *args, **kwargs):
@@ -108,9 +105,10 @@ class RegistrationFormWithNames(RegistrationForm):
 
     def __init__(self, *args, **kwargs):
         super(RegistrationForm, self).__init__(*args, **kwargs)
+        self.fields['username'].label = "Логин"
 
         self.fields.keyOrder = [
-            #'username',
+            'username',
             'first_name',
             'last_name',
             'email',
@@ -119,20 +117,6 @@ class RegistrationFormWithNames(RegistrationForm):
             'password2',
             #'invite',
         ]
-
-    def clean(self):
-        email_username, email_domain = parse_email(self.cleaned_data.get('email', ''))
-        if not email_username:
-            return self.cleaned_data
-        self.cleaned_data['username'] = email_username
-        self.cleaned_data['username'] = RegistrationForm.clean_username(self)
-        return self.cleaned_data
-
-    def clean_email(self):
-        email_username, email_domain = parse_email(self.cleaned_data.get('email', ''))
-        if email_domain not in settings.REGISTRATION_ALLOWED_DOMAINS:
-            raise forms.ValidationError(u"Электронная почта должна быть в доменах {0}".format(", ".join(settings.REGISTRATION_ALLOWED_DOMAINS)))
-        return self.cleaned_data['email']
 
 
 class RegistrationFormWithNamesUniqEmail(RegistrationFormWithNames, RegistrationFormUniqueEmail):

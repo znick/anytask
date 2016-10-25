@@ -215,6 +215,9 @@ class Course(models.Model):
     def is_rb_integrated(self):
         return self.rb_integrated or self.task_set.filter(rb_integrated=True).count()
 
+    def is_contest_integrated(self):
+        return self.contest_integrated or self.task_set.filter(contest_integrated=True).count()
+
 
 class DefaultTeacher(models.Model):
     teacher = models.ForeignKey(User, db_index=False, null=True, blank=True)

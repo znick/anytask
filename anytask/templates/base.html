@@ -14,11 +14,179 @@
         <script src="http://malsup.github.io/jquery.form.js"></script>
         <script src="{{ STATIC_URL }}jquery.tablesorter/jquery.tablesorter.min.js"></script>
         <script src="{{ STATIC_URL }}jquery-metadata/jquery.metadata.js"></script>
+        <script src="{{ STATIC_URL }}bootstrap-multiselect.min.js"></script>
+        <script src="{{ STATIC_URL }}typeahead.bundle.min.js"></script>
 
         <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" rel="stylesheet">
         <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
         <link href="https://yastatic.net/jquery-ui/1.11.2/themes/base/jquery-ui.min.css" rel="stylesheet">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/smalot-bootstrap-datetimepicker/2.3.11/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
+        <link href="{{ STATIC_URL }}bootstrap-multiselect.css" rel="stylesheet">
+        <link href="{{ STATIC_URL }}typeahead.css" rel="stylesheet">
+
+
+        <script type="text/javascript">
+            if (!String.prototype.format) {
+                String.prototype.format =  function(){
+                    var args = arguments;
+                    return this.replace(/\{(\d+)\}/g, function(m, n){
+                        if (m == "{" + "{") { return "{"; }
+                        if (m == "}" + "}") { return "}"; }
+                        return args[n];
+                    });
+                };
+            }
+            $(function() {
+                var user_profiles_bloodhound = new Bloodhound({
+                    datumTokenizer: function(datum) {
+                        return Bloodhound.tokenizers.whitespace(datum.fullname);
+                    },
+                    queryTokenizer: Bloodhound.tokenizers.whitespace,
+                    remote: {
+                        wildcard: '%QUERY',
+                        url: '{% url search.views.ajax_search_users %}?q=%QUERY',
+                        transform: function(response) {
+                            $('.typeahead').data('up_limited', response.is_limited);
+                            return $.map(response.result, function(user) {
+                                return {
+                                    'fullname': user[0],
+                                    'username': user[1],
+                                    'ya_login': user[2],
+                                    'url': user[3],
+                                    'avatar': user[4],
+                                    'email': user[5]
+                                };
+                            });
+                        }
+                    }
+                });
+                var courses_bloodhound = new Bloodhound({
+                    datumTokenizer: function(datum) {
+                        return Bloodhound.tokenizers.whitespace(datum.fullname);
+                    },
+                    queryTokenizer: Bloodhound.tokenizers.whitespace,
+                    remote: {
+                        wildcard: '%QUERY',
+                        url: '{% url search.views.ajax_search_courses %}?q=%QUERY',
+                        transform: function(response) {
+                            $('.typeahead').data('course_limited', response.is_limited);
+                            return $.map(response.result, function(user) {
+                                return {
+                                    'name': user[0],
+                                    'year': user[1],
+                                    'url': user[2],
+                                    'schools': user[3],
+                                    'is_active': user[4]
+                                };
+                            });
+                        }
+                    }
+                });
+
+                $('.typeahead').typeahead({
+                            highlight: true,
+                            hint: false,
+                            minLength: 3
+                        },
+                        {
+                            name: 'user_profiles',
+                            displayKey: 'fullname',
+                            source: user_profiles_bloodhound.ttAdapter(),
+                            templates: {
+                                header: '<h6 class="search-model-name">Пользователи</h6>',
+                                suggestion: function(data) {
+                                    var table_html = '<div class="sgs-result-up" data-url="{0}"><table>' +
+                                            '<tr><td style="padding-right: 10px;"><img class="avatar" src="{1}" style="width: 30px; height: 30px;"></td>' +
+                                            '<td><div><strong>{2}</strong></div>{3}</td></tr>' +
+                                            '<tr><td></td><td><strong>Логины</strong></td></tr>' +
+                                            '<tr><td></td><td>{4}@ <small class="text-muted">Anytask</small></td></tr>' +
+                                            '{5}' +
+                                            '</table></div>';
+                                    var email_html = '';
+                                    var ya_login_html = '';
+                                    var avatar = data.avatar;
+
+                                    if (!avatar)
+                                        avatar = 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mm&f=y';
+                                    if (data.email)
+                                        email_html = '<div class="sgs-email">{0}</div>'.format(data.email);
+                                    if (data.ya_login)
+                                        ya_login_html = '<tr><td></td><td>{0}@ <small class="text-muted">Я.Контест</small></td></tr>'.format(data.ya_login);
+                                    return table_html.format(data.url, avatar, data.fullname, email_html, data.username, ya_login_html)
+                                },
+                                {#                            footer: '<div><a href="#">Все результаты</a></div>'#}
+                            }
+                        },
+                        {
+                            name: 'courses',
+                            displayKey: 'name',
+                            source: courses_bloodhound.ttAdapter(),
+                            templates: {
+                                header: '<h6 class="search-model-name">Курсы</h6>',
+                                suggestion: function(data) {
+                                    var schools_html = '';
+                                    var archive_html = '';
+
+                                    if (!data.is_active)
+                                        archive_html = '<small class="text-muted">Архив</small>';
+
+                                    for (var i = 0; i < data.schools.length; ++i)
+                                        schools_html += '<div>{0}</div>'.format(data.schools[i]);
+                                    var course_html = '<div data-url="{0}"><div class="sgs-result-course"><strong>{1} {2}</strong>{3}</div>' +
+                                            '<div class="sgs-result-course">{4}</div></div>';
+
+                                    return course_html.format(data.url, data.name, data.year, archive_html, schools_html);
+                                },
+                                {#                                                                                            footer: '<div><a href="#">Все результаты</a></div>'#}
+                            }
+                        }
+                ).on('typeahead:select', function(ev, suggestion) {
+                    window.location = suggestion.url;
+                }).on('typeahead:render', function (event, items, isAsync, datasetName) {
+                    if (items) {
+                        var menu = $(this).siblings('.tt-menu');
+
+                        if ($('.typeahead').data('course_limited') || $('.typeahead').data('up_limited')) {
+                            if (!$('.search-show-more', menu).length)
+                                $(menu).append("<div class='search-show-more'><button type='submit'>Все результаты</button></div>");
+                        }
+                        else
+                            $('.search-show-more', menu).remove();
+                    }
+                });
+
+                $('.tt-menu').on("mouseleave", function() {
+                            $(this).find('.tt-cursor').removeClass('tt-cursor');
+                        }
+                ).on("mouseenter", 'div.search-show-more', function() {
+                            $(this).closest('.tt-menu').find('.tt-cursor').removeClass('tt-cursor');
+                        }
+                );
+
+
+                $(document).on('click', '.nav-form-search form[role="search"]:not(.active) button[type="submit"]', function(event) {
+                    event.preventDefault();
+                    var form = $(this).closest('form[role="search"]');
+                    var input = form.find('input[name="q"]');
+                    form.addClass('active');
+                    input.focus();
+
+                });
+
+                $(document).on('click', '.nav-form-search form[role="search"].active button[type="submit"]', function(event) {
+                    event.preventDefault();
+                    var form = $(this).closest('form[role="search"]');
+                    var input = form.find('input[name="q"]');
+                    if (input.val()) {
+                        form.submit();
+                    }
+                    else {
+                        form.removeClass('active');
+                    }
+                });
+
+            });
+        </script>
 
         <style type="text/css">
             body {
@@ -31,6 +199,10 @@
             .table .no-font-weight {
                 font-weight: normal;
                 white-space: nowrap;
+            }
+
+            .multiselect-dropdown button.multiselect-clear-filter i{
+                line-height: inherit;
             }
 
             .sidebar-nav {
@@ -138,12 +310,160 @@
                 vertical-align: middle;
             }
 
+            .multiselect-dropdown button.multiselect-clear-filter i{
+                line-height: inherit;
+            }
+
+            label.disabled {
+                color: #777;
+            }
+
             @media (min-width: 1900px ) {
                 .container {
                     max-width: 1400px;
                 }
             }
 
+            .nav-form-search .tt-dropdown-menu, .tt-menu,
+            .form-search .tt-dropdown-menu, .tt-menu {
+                padding: 0;
+            }
+
+            .nav-form-search .search-model-name,
+            .form-search .search-model-name {
+                margin: 5px 20px 5px 20px;
+                padding: 3px 0;
+            }
+
+            .nav-form-search .tt-suggestion,
+            .form-search .tt-suggestion {
+                padding: 5px 20px 5px 20px;
+                border-top: 1px solid #ccc;
+            }
+
+            .nav-form-search .tt-suggestion:last-child,
+            .form-search .tt-suggestion:last-child {
+                border-bottom: 1px solid #ccc;
+            }
+
+            .nav-form-search input {
+                position: relative;
+            }
+
+            .nav-form-search input {
+                color: rgba(255,255,255,.75);
+                background-color: #3386bf;
+                border-color: #3386bf;
+                padding: 8px 12px;
+                border-radius: 0;
+                border-width: 0;
+                box-shadow: none;
+                outline: none;
+            }
+
+            .nav-form-search button {
+                color: rgba(255,255,255,.5);
+                background-color: #3097d1;
+                border-color: #3097d1;
+                padding: 8px 12px;
+                border-radius: 0;
+                border-width: 0;
+                box-shadow: none;
+                outline: none;
+            }
+
+            .nav-form-search button:focus,
+            .nav-form-search button:active,
+            .nav-form-search button:hover {
+                color: rgba(255,255,255,.75);
+                background-color: #3097d1;
+                border-color: #3097d1;
+                padding: 8px 12px;
+                border-radius: 0;
+                border-width: 0;
+                box-shadow: none;
+                outline: none;
+            }
+
+            .nav-form-search input::-webkit-input-placeholder {
+                color: rgba(255,255,255,.5);
+            ;}
+
+            .nav-form-search input::-moz-placeholder {
+                color: rgba(255,255,255,.5);
+            ;}
+
+            .nav-form-search input:-moz-placeholder {
+                color: rgba(255,255,255,.5);
+            ;}
+
+            .nav-form-search input:-ms-input-placeholder {
+                color: rgba(255,255,255,.5);
+            ;}
+
+            @media (min-width: 768px) {
+                .nav-form-search  form[role="search"] input {
+                    display: none;
+                }
+                .nav-form-search  form[role="search"].active {
+                    width: 100%;
+                }
+                .nav-form-search  form[role="search"].active button,
+                .nav-form-search  form[role="search"].active input {
+                    display: inline;
+                }
+                .nav-form-search  form[role="search"].active input {
+                    width: 100%;
+                }
+            }
+
+            .sgs-result-up table tr:first-child,
+            .sgs-result-course:first-child{
+                font-size: 0.9rem;
+            }
+            .sgs-result-up table tr .sgs-email{
+                padding-bottom: 10px;
+            }
+            .sgs-result-up table tr .sgs-email .tt-highlight,
+            .sgs-result-course div{
+                font-weight: normal;
+            }
+            .sgs-result-up table tr .sgs-email,
+            .sgs-result-up table tr,
+            .sgs-result-course{
+                font-size: 0.7rem;
+            }
+
+            .search-show-more button {
+                width: 100%;
+                color: #333333;
+                background-color: transparent;
+                border-color: transparent;
+                padding: 8px 12px;
+                border-radius: 0;
+                border-width: 0;
+                box-shadow: none;
+                outline: none;
+            }
+            .form-search .search-show-more button {
+                text-align: left;
+            }
+
+            .search-show-more button:focus,
+            .search-show-more button:active,
+            .search-show-more button:hover {
+                color: #262626;
+                background-color: #f5f5f5;
+                border-color: transparent;
+                padding: 8px 12px;
+                border-radius: 0;
+                border-width: 0;
+                box-shadow: none;
+                cursor: pointer;
+                text-decoration: none;
+                outline: 0;
+
+            }
         </style>
 
     {% endblock %}
@@ -187,6 +507,20 @@
                             </div>
                         </li>
                     </ul>
+                    {% block main_search %}
+                        <div class="nav-form-search pull-xs-right col-xs-12 col-md-3 col-lg-4">
+                            <form class="navbar-form" role="search" method="get" action="{% url search.views.search_page %}">
+                                <div class="input-group">
+                                    <div style="width: 100%">
+                                        <input class="typeahead form-control" name="q" type="text" placeholder="Найти...">
+                                    </div>
+                                    <div class="input-group-btn">
+                                        <button class="btn" type="submit"><i class="fa fa-search" style="line-height: 1.5"></i></button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    {% endblock %}
                 {% else %}
                     <ul class="nav navbar-nav pull-xs-right">
                         <li class="nav-item">

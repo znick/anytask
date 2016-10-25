@@ -15,7 +15,7 @@
                     <div class="row col-wrap">
                         <div class="col-md-5 accordion2-label">
                             {% if field.editable %}
-                                <a href="#" data-toggle="collapse" data-target="#collapse{{ forloop.counter }}">{{ field.title }}</a>:
+                                <a href="#" type="button" data-toggle="collapse" data-target="#collapse{{ forloop.counter }}">{{ field.title }}</a>:
                             {% else %}
                                 {{ field.title }}:
                             {% endif %}
@@ -23,7 +23,11 @@
                         <div class="col-md-7 accordion2-result">
                             {% autoescape off %}
                                 {% if field.repr  or field.repr == 0 %}
-                                    {{ field.repr }}
+                                    {% if field.name == 'task_name' %}
+                                        <a href="#" id="modal_task_description_btn">{{ field.repr }}</a>
+                                    {% else %}
+                                        {{ field.repr }}
+                                    {% endif %}
                                 {% else %}
                                     ---
                                 {% endif %}
@@ -53,7 +57,7 @@
                                     {% endif %}
                                     {% if field.name == 'mark' %}
                                         {% if statuses_accepted.count > 1 %}
-                                            <div class="dropdown open" style="display: inline-block;">
+                                            <div class="dropdown dropdown-submit" style="display: inline-block;">
                                                 <button class="btn btn-secondary dropdown-toggle" type="button" id="accepted_btn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                     Статус
                                                 </button>
@@ -82,6 +86,26 @@
                 <div class="col-md-7 accordion2-result">
                     {{ issue.task.deadline_time|date:'d-m-Y H:i' }} {% if issue.task.deadline_time %} MSK UTC+3 {% endif %}
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="modal fade" id="modal_task_description" tabindex="-1" role="dialog" aria-labelledby="modal_header_task_descr" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h5  class="modal-title" id="modal_header_task_descr" style="display: inline-block; ">{{ issue.task.title }}</h5>
+                {% if teacher_or_staff %}
+                    <a id="modal_task_descr_edit_button" href="{% url tasks.views.task_edit_page task_id=issue.task.id %}" type="button" style="opacity:0.2;filter: alpha(opacity=20);color:#000000;display: inline-block;vertical-align: super;margin-left: 5px;"><i class="fa fa-edit fa-lg"></i></a>
+                {% endif %}
+                <div id="modal_header_deadline_time">{% if issue.task.deadline_time %}<strong>Дата сдачи: {{ issue.task.deadline_time|date:'d-m-Y H:i' }} MSK UTC+3 {% endif %}</strong></div>
+            </div>
+            <div class="modal-body">
+                <div id="modal_body_task_descr">{{ issue.task.task_text|safe }}</div>
             </div>
         </div>
     </div>

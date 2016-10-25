@@ -33,7 +33,7 @@ from course_statistics import CourseStatistics
 from score import TaskInfo
 from anysvn.common import svn_log_rev_message, svn_log_head_revision, get_svn_external_url, svn_log_min_revision
 from anyrb.common import AnyRB
-from anycontest.common import get_contest_info
+from anycontest.common import get_contest_info, FakeResponse
 from issues.models import Issue, Event, IssueFilter
 from issues.model_issue_status import IssueStatus
 from users.forms import InviteActivationForm
@@ -121,7 +121,7 @@ def course_page(request, course_id):
                                    'invite_form': InviteActivationForm()},
                                   context_instance=RequestContext(request))
 
-    tasklist_context = get_tasklist_context(request, course)
+    tasklist_context = tasklist_shad_cpp(request, course)
 
     context = tasklist_context
     context['tasklist_template'] = 'courses/tasklist/shad_cpp.html'
@@ -131,12 +131,46 @@ def course_page(request, course_id):
 
     return render_to_response('courses/course.html', context, context_instance=RequestContext(request))
 
+def seminar_page(request, course_id, task_id):
+    """Page with course related information
+    contexts:
+        - tasklist
+        - tasks_description
+    """
 
-def tasklist_shad_cpp(request, course):
+    course = get_object_or_404(Course, id=course_id)
+    task = get_object_or_404(Task, id=task_id)
+    schools = course.school_set.all()
+
+    if course.private and not course.user_is_attended(request.user):
+        return render_to_response('courses/course_forbidden.html',
+                                  {"course": course,
+                                   'school': schools[0] if schools else '',
+                                   'invite_form': InviteActivationForm()},
+                                  context_instance=RequestContext(request))
+
+    tasklist_context = tasklist_shad_cpp(request, course, task)
+
+    context = tasklist_context
+    context['tasklist_template'] = 'courses/tasklist/shad_cpp.html'
+    context['task_types'] = dict(Task().TASK_TYPE_CHOICES).items()
+    context['school'] = schools[0] if schools else ''
+
+    return render_to_response('courses/course.html', context, context_instance=RequestContext(request))
+
+
+def tasklist_shad_cpp(request, course, seminar=None):
 
     user = request.user
     user_is_attended = False
     user_is_attended_special_course = False
+    is_seminar = False
+
+    if seminar:
+        is_seminar = True
+        groups = seminar.groups.all().order_by('name')
+    else:
+        groups = course.groups.all().order_by('name')
 
     course.can_edit = course.user_can_edit_course(user)
     if course.can_be_chosen_by_extern:
@@ -148,26 +182,28 @@ def tasklist_shad_cpp(request, course):
     default_teacher = {}
     show_hidden_tasks = request.session.get(str(request.user.id) + '_' + str(course.id) + '_show_hidden_tasks', False)
 
-    task = Task()
-    task.is_shown = None
-    task.is_hidden = None
-
-    for group in course.groups.all().order_by('name'):
+    for group in groups:
         student_x_task_x_task_takens = {}
 
-        if show_hidden_tasks:
-            group_x_task_list[group] = [x.task for x in TaskGroupRelations.objects.select_related('task')
-                .filter(task__course=course, group=group, deleted=False).order_by('position')]
+        if is_seminar:
+            tasks_for_groups = TaskGroupRelations.objects.filter(task__course=course, group=group, deleted=False, task__parent_task=seminar).order_by('position').select_related('task')
         else:
-            group_x_task_list[group] = [x.task for x in TaskGroupRelations.objects.select_related('task')
-                .filter(task__course=course, group=group, deleted=False, task__is_hidden=False).order_by('position')]
+            tasks_for_groups = TaskGroupRelations.objects.filter(task__course=course, group=group, deleted=False, task__parent_task=None).order_by('position').select_related('task')
+
+        if show_hidden_tasks:
+            group_x_task_list[group] = [x.task for x in tasks_for_groups]
+        else:
+            group_x_task_list[group] = [x.task for x in tasks_for_groups if not x.task.is_hidden]
 
         group_x_max_score.setdefault(group, 0)
 
         for task in group_x_task_list[group]:
 
             if not task.is_hidden:
-                group_x_max_score[group] += task.score_max
+                if task.type == task.TYPE_SEMINAR:
+                    group_x_max_score[group] += sum([x.score_max for x in task.children.all()])
+                else:
+                    group_x_max_score[group] += task.score_max
             if task.task_text is None:
                 task.task_text = ''
 
@@ -234,8 +270,10 @@ def tasklist_shad_cpp(request, course):
         'user_is_attended_special_course': user_is_attended_special_course,
         'user_is_teacher': course.user_is_teacher(user),
 
+        'seminar': seminar,
         'visible_queue': course.user_can_see_queue(user),
-        'visible_hide_button': Task.objects.filter(Q(course=course) & Q(is_hidden=True)).order_by('weight').count()
+        'visible_hide_button': Task.objects.filter(Q(course=course) & Q(is_hidden=True)).count(),
+        'show_hidden_tasks' : show_hidden_tasks
     }
 
     return context
@@ -355,10 +393,16 @@ def course_settings(request, course_id):
 
     schools = course.school_set.all()
 
+    tasks_with_contest = {}
+    if course.is_contest_integrated():
+        for task in course.task_set.filter(contest_integrated=True, is_hidden=False):
+            tasks_with_contest[task.contest_id] = tasks_with_contest.get(task.contest_id, list()) + [task]
+
     context = {'course': course,
                'visible_queue': course.user_can_see_queue(request.user),
                'user_is_teacher': course.user_is_teacher(request.user),
                'school': schools[0] if schools else '',
+               'tasks_with_contest': tasks_with_contest,
                }
 
     if request.method != "POST":
@@ -498,6 +542,23 @@ def change_table_tasks_pos(request):
         return HttpResponseForbidden()
 
     group = get_object_or_404(Group, id=int(request.POST['group_id']))
+    deleting_ids_from_groups = json.loads(request.POST['deleting_ids_from_groups'])
+    if deleting_ids_from_groups:
+        for task_id, group_ids in deleting_ids_from_groups.iteritems():
+
+            group_ids = list(set(group_ids))
+            task = get_object_or_404(Task, id=int(task_id))
+            task_groups = task.groups.filter(id__in=group_ids)
+            for tg in task_groups:
+                if Issue.objects.filter(task=task, student__in=tg.students.all()).count():
+                    return HttpResponseForbidden()
+            task.groups.remove(*task.groups.filter(id__in=group_ids))
+            task.save()
+
+            for task_relations in TaskGroupRelations.objects.filter(task=task, group__id__in=group_ids):
+                task_relations.deleted = True
+                task_relations.save()
+
 
     if 'task_deleted[]' in request.POST:
         task_deleted = map(lambda x: int(x), dict(request.POST)['task_deleted[]'])
@@ -520,3 +581,72 @@ def change_table_tasks_pos(request):
             task_relations.save()
 
     return HttpResponse("OK")
+
+
+@login_required
+def ajax_update_contest_tasks(request):
+    if not request.is_ajax():
+        return HttpResponseForbidden()
+
+    if 'tasks_with_contest[]' not in request.POST or 'contest_id' not in request.POST:
+        return HttpResponseForbidden()
+
+    contest_id = int(request.POST['contest_id'])
+
+    response = {'is_error': False,
+                'contest_id': contest_id,
+                'error': '',
+                'tasks_title': {}}
+
+    got_info, contest_info = get_contest_info(contest_id)
+    if got_info:
+        problem_req = FakeResponse()
+        problem_req = requests.get(settings.CONTEST_API_URL + 'problems?contestId=' + str(contest_id),
+                                   headers={'Authorization': 'OAuth ' + settings.CONTEST_OAUTH})
+        problems = []
+        if 'error' in problem_req:
+            response['is_error'] = True
+            if 'IndexOutOfBoundsException' in problem_req['error']['name']:
+                response['error'] = u'Такого контеста не существует'
+            else:
+                response['error'] = u'Ошибка Я.Контеста: ' + problem_req['error']['message']
+        if 'result' in problem_req.json():
+            problems = problem_req.json()['result']['problems']
+
+        contest_responses = [contest_info, problems]
+    else:
+        response['is_error'] = True
+        if "You're not allowed to view this contest." in contest_info:
+            response['error'] = u"У anytask нет прав на данный контест"
+        elif "Contest with specified id does not exist." in contest_info:
+            response['error'] = u'Такого контеста не существует'
+        else:
+            response['error'] = u'Ошибка Я.Контеста: ' + contest_info
+
+    if not response['is_error']:
+        for task in Task.objects.filter(id__in=dict(request.POST)['tasks_with_contest[]']):
+            alias = task.problem_id
+            if contest_id != task.contest_id:
+                continue
+
+            for problem in contest_responses[0]['problems']:
+                if problem['alias'] == alias:
+                    task.title = problem['problemTitle']
+                    task.task_text = problem['statement']
+                    if 'endTime' in contest_responses[0]:
+                        deadline = contest_responses[0]['endTime'].split('+')[0]
+                        task.deadline_time = datetime.datetime.strptime(deadline, '%Y-%m-%dT%H:%M:%S.%f')
+                    else:
+                        task.deadline_time = None
+                    break
+
+            for problem in contest_responses[1]:
+                if problem['title'] == alias:
+                    if 'score' in problem:
+                        task.score_max = problem['score']
+
+            task.save()
+            response['tasks_title'][task.id] = task.title
+
+    return HttpResponse(json.dumps(response),
+                        content_type="application/json")
