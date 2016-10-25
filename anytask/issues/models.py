@@ -372,11 +372,7 @@ class Issue(models.Model):
         if not value:
             value = ''
 
-        if self.task.group:
-            groups = [self.task.group]
-        else:
-            groups = course.groups.filter(students=self.student)
-        for group in groups:
+        for group in self.task.groups.all():
             default_teacher = course.get_default_teacher(group)
             if default_teacher and (not self.get_byname('responsible_name')):
                 self.set_byname('responsible_name', default_teacher)

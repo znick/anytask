@@ -51,3 +51,19 @@ def task_can_be_deleted(task):
         else:
             return True
     return False
+
+
+@register.filter(name='group_info')
+def task_group_info(task):
+    if isinstance(task, Task):
+        data_task_groups = []
+        data_task_disabled_groups = []
+        for group in task.groups.all():
+            data_task_groups.append(str(group.id))
+            if Issue.objects.filter(task=task, student__in=group.students.all()).count():
+                data_task_disabled_groups.append(str(group.id))
+
+        return " data-task_groups = '[{0}]' data-task_disabled_groups = '[{1}]' " \
+            .format(', '.join(data_task_groups),
+                    ', '.join(data_task_disabled_groups))
+    return ''

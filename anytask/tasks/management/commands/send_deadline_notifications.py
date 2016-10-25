@@ -20,12 +20,8 @@ class Command(BaseCommand):
 
         for task in tasks:
             course_url = 'http://' + domain + task.course.get_absolute_url()
-            groups = []
-            if not task.group:
-                groups = task.course.groups.all()
-            else:
-                groups.append(task.group)
-            for group in groups:
+
+            for group in task.groups.all():
 
                 message_header = '<div>' + \
                                  u'<p>Здравствуйте, {0}.<br></p>' + \

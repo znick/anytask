@@ -295,6 +295,8 @@
             });
         });
 
+        var remaining_groups = {};
+
         $('.btn-table-edit').click(function () {
             var div_group_id = $(this).attr('for');
             var modal_button_ok = $('#modal_table_edit_ok');
@@ -306,9 +308,17 @@
                     $(this).attr('data-index', i + 2);
                 });
             });
-            group.data('deleting', []);
+
+            $("a.task-delete", div_group_id).each(function () {
+                if ($(this).data('task_groups').length === $(this).data('task_disabled_groups').length)
+                    $(this).hide();
+                else
+                    $(this).show();
+            });
+            remaining_groups = {};
             group.data('deleting_ids', []);
-            group.data('deleting_id_in_all_groups', []);
+            group.data('deleting_ids_from_groups', {});
+            group.data('deleting_id_in_other_groups', {});
             group.data('backup_html', $('ul', $(div_group_id)).html());
             group.data('changed', false);
             $(div_group_id).show();
@@ -327,23 +337,121 @@
             }
         }).disableSelection();
 
-        $('#modal_table_edit').on("click", '.task-delete', function() {
-            if (confirm('Удаленную задачу невозможно восстановить. Вы уверены, что хотить удалить?')) {
+        var popover_opts = {
+            trigger: 'manual',
+            html: true,
+            content: function () {
+                var group_ul = '';
+                var groups = $(this).data('task_groups');
+                var not_selected = remaining_groups[$(this).data('name')];
+
+                for (var i = 0; i < groups.length; ++i) {
+                    var is_checked = '';
+                    if (not_selected) {
+                        if (not_selected.indexOf(groups[i]) == -1)
+                            is_checked = 'checked';
+                    }
+
+                    var is_disabled = '';
+                    if ($(this).data('task_disabled_groups').indexOf(groups[i]) > -1)
+                            is_disabled = 'disabled';
+
+                    group_ul += '<li><label class="checkbox '+ is_disabled + '"><input type="checkbox" name="task_group[]" value="' + groups[i] + '" ' +
+                            is_checked + ' ' + is_disabled + '> ' + $('#group_sort_' + groups[i]).find('p.modal-group-name').text() +
+                            '</label></li>';
+                }
+                return '<form action""><ul>' + group_ul + '</ul></form>';
+            },
+            title: "Удалить задачу из следующих групп?",
+            template: '<div class="popover" role="tooltip">' +
+            '<div class="popover-arrow"></div>' +
+            '<h3 class="popover-title"></h3>' +
+            '<div class="popover-content"></div>' +
+            '<div class="popover-footer">' +
+            '<button class="btn btn-secondary" type="button" data-dismiss="popover"><i class="fa fa-times"></i></button>' +
+            '<button class="btn btn-danger task-delete-groups" type="button"><i class="fa fa-trash-o"></i></button>' +
+            '</div>' +
+            '</div>'
+        };
+
+        $('[data-toggle="popover"]').on('shown.bs.popover', function () {
+            $('[data-toggle="popover"]:not([aria-describedby=' + $(this).attr('aria-describedby') + '])').popover('hide');
+        });
+
+        $(document).click(function() {
+            $('[data-toggle="popover"]').popover('hide');
+        });
+
+        $('body').on("click", '.task-delete', function(e) {
+            e.stopPropagation();
+            $(this).popover(popover_opts).popover('show');
+        }).on('click', 'button[data-dismiss="popover"]', function () {
+            $('[data-toggle="popover"]').popover('hide');
+        }).on('click', 'div.popover', function (e) {
+            e.stopPropagation();
+
+        }).on("click", '.task-delete-groups', function() {
+            var task_delete_btn = $('[aria-describedby=' + $(this).closest('.popover').prop('id') + ']');
+            var deleted_groups_ids = [];
+            var remaining_groups_ids = [];
+            $(this).closest('.popover').find('input').each(function(x) {
+                if ($(this).is(':checked') && $(this).is(':not(:disabled)'))
+                    deleted_groups_ids = deleted_groups_ids.concat(parseInt($(this).val(), 10));
+                else
+                    remaining_groups_ids = remaining_groups_ids.concat(parseInt($(this).val(), 10));
+            });
+
+            var confirmed_delete = true;
+            if (remaining_groups_ids.length == 0)
+                if (!confirm('Удаленную задачу невозможно восстановить. Вы уверены, что хотить удалить?'))
+                    confirmed_delete = false;
+            if (confirmed_delete) {
                 var group = $('.group-sortable');
-                var li = $(this).closest('li');
-                $(this).closest('li').remove();
-                group.data('deleting', group.data('deleting').concat(li.data('index')));
-                if (li.data('all_group'))
-                    group.data('deleting_id_in_all_groups', group.data('deleting_id_in_all_groups').concat(li.val()));
-                group.data('deleting_ids', group.data('deleting_ids').concat(li.val()));
+                var li = task_delete_btn.closest('li');
+                var current_group_id = task_delete_btn.closest('div').prop('id').split('_');
+                current_group_id = parseInt(current_group_id[current_group_id.length-1], 10);
+
+                remaining_groups[task_delete_btn.data('name')] = remaining_groups_ids.slice();
+
+                if (remaining_groups_ids.length == 0)
+                    group.data('deleting_ids', group.data('deleting_ids').concat(li.val()));
+                else {
+                    var deleting_ids_from_groups = group.data('deleting_ids_from_groups');
+                    if (li.val() in deleting_ids_from_groups)
+                        deleting_ids_from_groups[li.val()] = deleting_ids_from_groups[li.val()].concat(deleted_groups_ids);
+                    else
+                        deleting_ids_from_groups[li.val()] = deleted_groups_ids;
+                    group.data('deleting_ids_from_groups', deleting_ids_from_groups);
+                }
+
+                if (deleted_groups_ids.indexOf(current_group_id) > -1) {
+                    li.addClass('ui-state-delete');
+                }
+                else {
+                    li.removeClass('ui-state-delete');
+                }
+
+                for (var i = 0; i < deleted_groups_ids.length; ++i) {
+                    var deleting_id_in_other_groups = group.data('deleting_id_in_other_groups');
+                    var name_group = 'group_sort_' + deleted_groups_ids[i];
+                    if (name_group in deleting_id_in_other_groups)
+                        deleting_id_in_other_groups[name_group] = deleting_id_in_other_groups[name_group].concat(li.val());
+                    else
+                        deleting_id_in_other_groups[name_group] = [li.val()];
+                }
+                group.data('deleting_id_in_other_groups', deleting_id_in_other_groups);
+
             }
+            $('[data-toggle="popover"]').popover('hide');
         });
 
         $('#modal_table_edit').on('hide.bs.modal', function (e) {
+            $('[data-toggle="popover"]').popover('hide');
+
             var group = $('.group-sortable');
             var modal_button_ok = $('#modal_table_edit_ok');
             var div_group_id = $(modal_button_ok.data('div_group_id'));
-            if ((group.data('changed') || group.data('deleting').length) && !modal_button_ok.data('btn_clicked'))
+            if ((group.data('changed') || !$.isEmptyObject(group.data('deleting_id_in_other_groups'))) && !modal_button_ok.data('btn_clicked'))
                 if (confirm('Сохранить изменения?')) {
                     modal_button_ok.click();
                 }
@@ -354,6 +462,10 @@
         });
 
         $('#modal_table_edit_ok').click(function () {
+            var group = $('.group-sortable');
+            if (!(group.data('changed') || !$.isEmptyObject(group.data('deleting_id_in_other_groups'))))
+                return;
+
             var modal_button_ok = $('#modal_table_edit_ok');
             var d = 'disabled';
 
@@ -365,7 +477,6 @@
             setTimeout($.proxy(function () {
                 var modal_button_ok = $('#modal_table_edit_ok');
                 var div_group_id = $(modal_button_ok.data('div_group_id'));
-                var group = $('.group-sortable');
 
                 $.post('{% url courses.views.change_table_tasks_pos %}',
                         {
@@ -373,25 +484,35 @@
                             'course_id': {{ course.id }},
                             'group_id': div_group_id.data('group'),
                             'task_order': group.data('changed') ? $('ul', div_group_id).sortable("toArray", {attribute: "value"}) : [],
-                            'task_deleted': group.data('deleting_ids')
+                            'task_deleted': group.data('deleting_ids'),
+                            'deleting_ids_from_groups': JSON.stringify(group.data('deleting_ids_from_groups'))
                         })
                         .done(function (msg) {
-                            change_table_column_order(div_group_id, group.data('deleting'));
+                            var other_groups = group.data('deleting_id_in_other_groups');
+                            var other_groups_keys = Object.keys(other_groups);
 
-                            if (group.data('deleting_id_in_all_groups').length)
-                                group.closest('div').each(function () {
-                                    if ($(this).attr('id') != div_group_id.attr('id')) {
-                                        var current_div = $(this);
-                                        var deleting_index = $.map(group.data('deleting_id_in_all_groups'),
-                                                function (value) {
-                                                    var li = $('li[value=' + value + ']', current_div);
-                                                    var index = li.data('index');
-                                                    li.remove();
-                                                    return index;
-                                                });
-                                        change_table_column_order($(this), deleting_index);
-                                    }
-                                });
+                            if (group.data('changed') && other_groups_keys.indexOf(modal_button_ok.data('div_group_id').split('#')[1]) === -1) {
+                                change_table_column_order(div_group_id, []);
+                            }
+
+                            for (var i = 0; i < other_groups_keys.length; ++i) {
+                                var div = $('#' + other_groups_keys[i]);
+                                var deleting_index = $.map(other_groups[other_groups_keys[i]],
+                                        function (value) {
+                                            var li = $('li[value=' + value + ']', div);
+                                            var index = li.data('index');
+                                            li.remove();
+                                            return index;
+                                        });
+                                change_table_column_order(div, deleting_index);
+                            }
+
+                            var remaining_groups_keys = Object.keys(remaining_groups);
+
+                            for (i = 0; i < remaining_groups_keys.length; ++i) {
+                                var delete_btn = $('a[data-name="' + remaining_groups_keys[i] + '"]');
+                                delete_btn.data('task_groups', remaining_groups[remaining_groups_keys[i]]);
+                            }
 
                             modal_button_ok.closest('.modal').modal('hide');
                             modal_button_ok.html(modal_button_ok.data('resetText'));

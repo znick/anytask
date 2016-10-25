@@ -168,9 +168,7 @@ def tasklist_shad_cpp(request, course, seminar=None):
 
     if seminar:
         is_seminar = True
-        groups = [seminar.group]
-        if not groups[0]:
-            groups = course.groups.all().order_by('name')
+        groups = seminar.groups.all().order_by('name')
     else:
         groups = course.groups.all().order_by('name')
 
@@ -544,6 +542,23 @@ def change_table_tasks_pos(request):
         return HttpResponseForbidden()
 
     group = get_object_or_404(Group, id=int(request.POST['group_id']))
+    deleting_ids_from_groups = json.loads(request.POST['deleting_ids_from_groups'])
+    if deleting_ids_from_groups:
+        for task_id, group_ids in deleting_ids_from_groups.iteritems():
+
+            group_ids = list(set(group_ids))
+            task = get_object_or_404(Task, id=int(task_id))
+            task_groups = task.groups.filter(id__in=group_ids)
+            for tg in task_groups:
+                if Issue.objects.filter(task=task, student__in=tg.students.all()).count():
+                    return HttpResponseForbidden()
+            task.groups.remove(*task.groups.filter(id__in=group_ids))
+            task.save()
+
+            for task_relations in TaskGroupRelations.objects.filter(task=task, group__id__in=group_ids):
+                task_relations.deleted = True
+                task_relations.save()
+
 
     if 'task_deleted[]' in request.POST:
         task_deleted = map(lambda x: int(x), dict(request.POST)['task_deleted[]'])

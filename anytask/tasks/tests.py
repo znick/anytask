@@ -29,10 +29,10 @@ def save_result_html(html):
 class CreateTest(TestCase):
     def test_task_create_filled(self):
         year = Year.objects.create(start_year=2016)
-        group = Group.objects.create(name='name_groups', year=year)
+        group = [Group.objects.create(name='name_groups', year=year)]
         course = Course.objects.create(name='course_name',
                                        year=year)
-        course.groups = [group]
+        course.groups = group
         course.save()
 
         parent_task = Task.objects.create(title='parent_task',
@@ -43,7 +43,6 @@ class CreateTest(TestCase):
         task = Task()
         task.title = 'title'
         task.course = course
-        task.group = group
         task.weight = 1
         task.is_hidden = True
         task.parent_task = parent_task
@@ -58,6 +57,7 @@ class CreateTest(TestCase):
         task.sended_notify = False
         task.one_file_upload = True
         task.save()
+        task.groups = group
         task_id = task.id
 
         task = Task.objects.get(id=task_id)
@@ -65,7 +65,7 @@ class CreateTest(TestCase):
         self.assertIsInstance(task, Task)
         self.assertEqual(task.title, 'title')
         self.assertEqual(task.course, course)
-        self.assertEqual(task.group, group)
+        self.assertItemsEqual(task.groups.all(), group)
         self.assertEqual(task.weight, 1)
         self.assertEqual(task.is_hidden, True)
         self.assertEqual(task.parent_task, parent_task)
@@ -190,14 +190,10 @@ class ViewsTest(TestCase):
             self.assertFalse(checkbox.has_key('checked'), "form checkbox id='{}' not empty".format(checkbox['id']))
 
         form_select_group = div_task_id.form.find('select', {'id': 'task_edit_group'})('option')
-        self.assertEqual(len(form_select_group), 2, "form select group len not 2")
-        self.assertEqual(form_select_group[0]['value'], '', 'form select group 1st option value not empty')
+        self.assertEqual(len(form_select_group), 1, "form select group len not 2")
+        self.assertEqual(form_select_group[0]['value'], '1', 'form select group 1nd option value wrong')
+        self.assertTrue(form_select_group[0].has_key('selected'), 'form select group 1nd option selected')
         self.assertEqual(form_select_group[0].string.strip().strip('\n'),
-                         u'Для всех групп',
-                         'form select group 1st option text wrong')
-        self.assertEqual(form_select_group[1]['value'], '1', 'form select group 2nd option value wrong')
-        self.assertFalse(form_select_group[1].has_key('selected'), 'form select group 2nd option selected')
-        self.assertEqual(form_select_group[1].string.strip().strip('\n'),
                          u'group_name',
                          'form select group 2nd option text wrong')
 
@@ -220,7 +216,7 @@ class ViewsTest(TestCase):
         response = client.post(reverse('tasks.views.task_create_page', kwargs={'course_id': self.course.id}),
                                {'task_title': 'task_title',
                                 'max_score': '10',
-                                'task_group_id': '1',
+                                'task_group_id[]': ['1'],
                                 'deadline': '01-08-2016 0:30',
                                 'changed_task': 'on',
                                 'task_type': 'All',
@@ -241,7 +237,7 @@ class ViewsTest(TestCase):
         created_task = Task.objects.get(id=2)
         self.assertEqual(created_task.title, 'task_title', 'Created task wrong title')
         self.assertEqual(created_task.course, self.course, 'Created task wrong course')
-        self.assertEqual(created_task.group, self.group, 'Created task wrong group')
+        self.assertItemsEqual(created_task.groups.all(), [self.group], 'Created task wrong group')
         self.assertEqual(created_task.is_hidden, True, 'Created task wrong is_hidden')
         self.assertIsNone(created_task.parent_task, 'Created task wrong parent_task')
         self.assertEqual(created_task.task_text, 'task_text', 'Created task wrong task_text')
@@ -311,14 +307,10 @@ class ViewsTest(TestCase):
                             "form checkbox id='{}' not checked".format(form_checkbox[i]['id']))
 
         form_select_group = div_task_id.form.find('select', {'id': 'task_edit_group'})('option')
-        self.assertEqual(len(form_select_group), 2, "form select group len not 2")
-        self.assertEqual(form_select_group[0]['value'], '', 'form select group 1st option value not empty')
+        self.assertEqual(len(form_select_group), 1, "form select group len not 2")
+        self.assertEqual(form_select_group[0]['value'], '1', 'form select group 2nd option value wrong')
+        self.assertTrue(form_select_group[0].has_key('selected'), 'form select group 2nd option selected')
         self.assertEqual(form_select_group[0].string.strip().strip('\n'),
-                         u'Для всех групп',
-                         'form select group 1st option text wrong')
-        self.assertEqual(form_select_group[1]['value'], '1', 'form select group 2nd option value wrong')
-        self.assertTrue(form_select_group[1].has_key('selected'), 'form select group 2nd option selected')
-        self.assertEqual(form_select_group[1].string.strip().strip('\n'),
                          u'group_name',
                          'form select group 2nd option text wrong')
 
@@ -411,7 +403,7 @@ class ViewsTest(TestCase):
                      'course_id': '1',
                      'contest_problems[]': ['1055/2013_02_24/rqW5cRAAgR', '1055/2013_02_24/NuAYb8aSXw'],
                      'max_score': '10',
-                     'task_group_id': '1',
+                     'task_group_id[]': ['1'],
                      'deadline': '05-07-2016 05:30',
                      'changed_task': 'on',
                      'rb_integrated': 'on',
@@ -462,7 +454,7 @@ class ViewsTest(TestCase):
         for idx, task in enumerate(tasks):
             self.assertEqual(task.title, problems[problems_idx]['problemTitle'], 'Wrong task title')
             self.assertEqual(task.course, self.course)
-            self.assertEqual(task.group, self.group)
+            self.assertItemsEqual(task.groups.all(), [self.group])
             self.assertEqual(task.is_hidden, True)
             self.assertIsNone(task.parent_task)
             self.assertEqual(task.task_text, problems[problems_idx]['statement'])
