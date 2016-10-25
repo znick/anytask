@@ -2,12 +2,51 @@
 {# <script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.min.js"></script> #}
 {# <script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/additional-methods.min.js"></script> #}
 <script src="http://malsup.github.io/jquery.form.js"></script>
-{#<script src="{{ STATIC_URL }}bootstrap-select.min.js"></script>#}
-{#<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.11.0/js/i18n/defaults-ru_RU.js"></script>#}
-{#<link rel="stylesheet" href="{{ STATIC_URL }}bootstrap-select.min.css">#}
+<script src='https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.3.0/trumbowyg.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.3.0/langs/ru.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.3.0/plugins/preformatted/trumbowyg.preformatted.min.js'></script>
+
+<link href='https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.3.0/ui/trumbowyg.min.css' rel='stylesheet' />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.3.0/plugins/colors/ui/trumbowyg.colors.min.css' rel='stylesheet' />
 
 <script type="text/javascript">
+    $.trumbowyg.svgPath = '{{ STATIC_URL }}trumbowyg-icons.svg';
+    $.extend(true, $.trumbowyg, {
+        langs: {
+            ru: {
+                superscript: "Надстрочный",
+                subscript: "Подстрочный",
+                preformatted: "Пример кода",
+                removeformat: "Очистить форматирование",
+                undo: 'Отменить',
+                redo: 'Повторить'
+            }
+        }
+    });
+
     $(document).ready(function () {
+        $('#id_comment').trumbowyg({
+            lang: 'ru',
+            btns: [
+                ['formatting'],
+                'btnGrp-design',
+                ['link'],
+                ['insertImage'],
+                'btnGrp-lists',
+                ['horizontalRule'],
+                ['preformatted'],
+                ['removeformat'],
+                ['undo', 'redo']
+            ],
+            resetCss: true,
+            removeformatPasted: true
+        });
+
+        $('div.trumbowyg').on('DOMNodeInserted', '.trumbowyg-modal-box', function(e) {
+            $('.trumbowyg-modal-box input[name="title"]').closest("label").hide();
+            $('.trumbowyg-modal-box input[name="target"]').val('_blank').closest("label").hide();
+        });
+
         $("#id_comment").keydown(function (e) {
             if (e.ctrlKey && e.keyCode == 13) {
                 $("form#comment").submit();
