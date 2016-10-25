@@ -308,6 +308,13 @@
                     $(this).attr('data-index', i + 2);
                 });
             });
+
+            $("a.task-delete", div_group_id).each(function () {
+                if ($(this).data('task_groups').length === $(this).data('task_disabled_groups').length)
+                    $(this).hide();
+                else
+                    $(this).show();
+            });
             remaining_groups = {};
             group.data('deleting_ids', []);
             group.data('deleting_ids_from_groups', {});
