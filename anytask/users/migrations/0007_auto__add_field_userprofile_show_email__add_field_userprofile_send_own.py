@@ -13,8 +13,8 @@ class Migration(SchemaMigration):
                       self.gf('django.db.models.fields.BooleanField')(default=False),
                       keep_default=False)
 
-        # Adding field 'UserProfile.send_own_events'
-        db.add_column('users_userprofile', 'send_own_events',
+        # Adding field 'UserProfile.send_my_own_events'
+        db.add_column('users_userprofile', 'send_my_own_events',
                       self.gf('django.db.models.fields.BooleanField')(default=False),
                       keep_default=False)
 
@@ -23,8 +23,8 @@ class Migration(SchemaMigration):
         # Deleting field 'UserProfile.show_email'
         db.delete_column('users_userprofile', 'show_email')
 
-        # Deleting field 'UserProfile.send_own_events'
-        db.delete_column('users_userprofile', 'send_own_events')
+        # Deleting field 'UserProfile.send_my_own_events'
+        db.delete_column('users_userprofile', 'send_my_own_events')
 
 
     models = {
@@ -75,7 +75,7 @@ class Migration(SchemaMigration):
             'info': ('django.db.models.fields.TextField', [], {'default': "''", 'null': 'True', 'blank': 'True'}),
             'position': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '128', 'null': 'True', 'blank': 'True'}),
             'second_name': ('django.db.models.fields.CharField', [], {'db_index': 'True', 'max_length': '128', 'null': 'True', 'blank': 'True'}),
-            'send_own_events': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'send_my_own_events': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'show_email': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'unit': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '128', 'null': 'True', 'blank': 'True'}),
             'update_time': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'auto_now': 'True', 'blank': 'True'}),

@@ -112,7 +112,7 @@ class Command(BaseCommand):
 
 def get_message_body(messages_author, messages_body, author):
     s = ''
-    if author.get_profile().send_own_events:
+    if author.get_profile().send_my_own_events:
         s = ''.join(messages_body)
     else:
         for author_id, text in zip(messages_author, messages_body):

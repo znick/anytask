@@ -208,7 +208,7 @@ def profile_settings(request):
 
     if request.method == 'POST':
         user_profile.show_email = True if 'show_email' in request.POST else False
-        user_profile.send_own_events = True if 'send_own_events' in request.POST else False
+        user_profile.send_my_own_events = True if 'send_my_own_events' in request.POST else False
         user_profile.save()
 
         return HttpResponse("OK")
