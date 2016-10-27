@@ -97,6 +97,11 @@
         margin-bottom: 0;
         margin-left: 5px;
     }
+    .buttons-html5 {
+        margin: 2px;
+        padding: 6px;
+        line-height: 1rem;
+    }
 </style>
 
 {% for group,student_information in group_information.items %}
@@ -105,7 +110,7 @@
             <div class="col-md-6">
                 <div class="card-title-block" style="display: table; margin-bottom: 0.5rem;">
                     {% ifnotequal group course.group_with_extern %}
-                        <h5 class="card-title" style="display: table-cell;margin: 0;vertical-align: middle;">{% if group.name %}{{ group.name }}{% else %}&nbsp;{% endif %}
+                        <h5 class="card-title" style="display: table-cell;margin: 0;vertical-align: middle;">{% if group.name %}{{ group.name }}&nbsp;{% else %}&nbsp;{% endif %}
                             {% if default_teacher|key:group %}
                                 (<a class="card-link" href="{{ default_teacher|get_url:group }}" style="color:#373a3c;">{{ default_teacher|get_name:group }}</a>)
                             {% endif %}
@@ -113,7 +118,9 @@
                     {% endifnotequal %}
                     <button class="btn btn-secondary btn-table-fullscreen" type="button" for="#table_results_{{ group.id }}" style="display: none;vertical-align: top;margin: 2px; padding: 6px;"><i class="fa fa-expand fa-lg"></i></button>
                     {% if user_is_teacher %}
-                        <button class="btn btn-secondary btn-table-edit" type="button" data-toggle="modal" data-target="#modal_table_edit" for="#group_sort_{{ group.id }}" data-table="#table_results_{{ group.id }}" style="display: none;vertical-align: top;margin: 2px;padding: 6px"><i class="fa fa-pencil fa-lg"></i></button>
+                        <span class="card-title-teacher-buttons">
+                            <button class="btn btn-secondary btn-table-edit" type="button" data-toggle="modal" data-target="#modal_table_edit" for="#group_sort_{{ group.id }}" data-table="#table_results_{{ group.id }}" style="display: none;vertical-align: top;margin: 2px;padding: 6px"><i class="fa fa-pencil fa-lg"></i></button>
+                        </span>
                     {% endif %}
                 </div>
             </div>

@@ -45,20 +45,50 @@ def profile(request, username=None, year=None):
     if username:
         user_to_show = get_object_or_404(User, username=username)
 
+    user_group_user_to_show = False
+    user_course_user_to_show = False
+    user_teach_user_to_show = False
+    user_to_show_teach_user = False
+    user_to_show_user_teachers = False
+    show_email = True
+
     if user_to_show != user:
-        if not user.is_staff:
-            groups_user_to_show = user_to_show.group_set.all()
-            groups = user.group_set.all()
-            if not (groups_user_to_show & groups):
-                courses_user_to_show = Course.objects.filter(groups__in=groups_user_to_show)
-                courses_user_to_show_teacher = Course.objects.filter(teachers=user_to_show)
-                courses = Course.objects.filter(groups__in=groups)
-                courses_teacher = Course.objects.filter(teachers=user)
-                if not (courses_user_to_show & courses or
-                        courses_user_to_show_teacher & courses_teacher or
-                        courses_user_to_show_teacher & courses or
-                        courses_teacher & courses_user_to_show):
-                    raise PermissionDenied
+        groups_user_to_show = user_to_show.group_set.all()
+        groups = user.group_set.all()
+
+        if groups_user_to_show & groups:
+            user_group_user_to_show = True
+
+        courses_user_to_show = Course.objects.filter(groups__in=groups_user_to_show)
+        courses_user_to_show_teacher = Course.objects.filter(teachers=user_to_show)
+        courses = Course.objects.filter(groups__in=groups)
+        courses_teacher = Course.objects.filter(teachers=user)
+
+        if courses_user_to_show & courses:
+            user_course_user_to_show = True
+
+        if courses_user_to_show_teacher & courses_teacher:
+            user_to_show_user_teachers = True
+
+        if courses_user_to_show_teacher & courses:
+            user_to_show_teach_user = True
+
+        if courses_teacher & courses_user_to_show:
+            user_teach_user_to_show = True
+
+        if not (user.is_staff or
+                user_group_user_to_show or
+                user_course_user_to_show or
+                user_to_show_user_teachers or
+                user_to_show_teach_user or
+                user_teach_user_to_show):
+            raise PermissionDenied
+
+        show_email = user.is_staff or \
+                     user_to_show.get_profile().show_email or \
+                     user_teach_user_to_show or \
+                     user_to_show_teach_user
+
 
     teacher_in_courses = Course.objects.filter(is_active=True).filter(teachers=user_to_show).distinct()
 
@@ -153,6 +183,7 @@ def profile(request, username=None, year=None):
         'user_profile'              : user_profile,
         'can_sync_contest'          : can_sync_contest,
         'card_width'                : card_width,
+        'show_email'                : show_email,
     }
 
     return render_to_response('user_profile.html', context, context_instance=RequestContext(request))
@@ -170,15 +201,20 @@ def group_by_year(objects):
     return sorted(group_dict.iteritems())
 
 @login_required
-def profile_settings(request, username=None):
+def profile_settings(request):
     user = request.user
 
-    user_to_show = user
-    if username:
-        user_to_show = get_object_or_404(User, username=username)
+    user_profile = user.get_profile()
+
+    if request.method == 'POST':
+        user_profile.show_email = True if 'show_email' in request.POST else False
+        user_profile.send_my_own_events = True if 'send_my_own_events' in request.POST else False
+        user_profile.save()
+
+        return HttpResponse("OK")
 
     context = {
-        'user_to_show': user_to_show,
+        'user_profile': user_profile,
     }
 
     return render_to_response('user_settings.html', context, context_instance=RequestContext(request))
