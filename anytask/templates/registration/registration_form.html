@@ -134,18 +134,29 @@
                             {% if field.is_hidden %}
                                 {{ field }}
                             {% else %}
-                                <div class="form-group row {% if field.errors %}has-danger{% endif %}">
-                                    <label for="id_username" class="control-label col-md-4">{{ field.label }}</label>
-                                    <div class="controls col-md-8">
-                                        <input class="form-control {% if field.errors %}form-control-danger{% endif %}" id='{{ field.id_for_label }}' name='{{ field.html_name }}' type='{{ field.field.widget.input_type }}' value="{% if field.value%}{{ field.value }}{% endif %}">
-                                        <small class="text-help" id="{{ field.id_for_label }}_error_text">
-                                            {% if not field.errors %}&nbsp;{% endif %}
-                                            {% for error in field.errors %}
-                                                <label for="{{ field.id_for_label }}" generated="true" class="error">{{ error  }}</label>
-                                            {% endfor %}
-                                        </small>
+                                {% if field.name == "show_email" %}
+                                    <div class="form-group row" style="margin-top: -1rem;">
+                                        <div class="col-md-offset-4 col-md-8">
+                                            <label class="form-control-label" for="{{ field.id_for_label }}" style="font-weight: normal;white-space: nowrap;padding: 0px 3px 0px 0px;">
+                                                <input type="checkbox" name="{{ field.html_name }}" id="{{ field.id_for_label }}" style="margin-left: 3px;" {% if field.value%}checked{% endif %}>
+                                                <small class="text-muted">{{ field.label }}</small>
+                                            </label>
+                                        </div>
                                     </div>
-                                </div>
+                                {% else %}
+                                    <div class="form-group row {% if field.errors %}has-danger{% endif %}">
+                                        <label for="{{ field.id_for_label }}" class="control-label col-md-4">{{ field.label }}</label>
+                                        <div class="controls col-md-8">
+                                            <input class="form-control {% if field.errors %}form-control-danger{% endif %}" id='{{ field.id_for_label }}' name='{{ field.html_name }}' type='{{ field.field.widget.input_type }}' value="{% if field.value%}{{ field.value }}{% endif %}">
+                                            <small class="text-help" id="{{ field.id_for_label }}_error_text">
+                                                {% if not field.errors %}&nbsp;{% endif %}
+                                                {% for error in field.errors %}
+                                                    <label for="{{ field.id_for_label }}" generated="true" class="error">{{ error  }}</label>
+                                                {% endfor %}
+                                            </small>
+                                        </div>
+                                    </div>
+                                {% endif %}
                             {% endif %}
                         {% endfor %}
                         <div class="form-group row">
