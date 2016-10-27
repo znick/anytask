@@ -63,7 +63,32 @@
                 scrollX: true,
                 scrollCollapse: true,
                 paging: false,
-                buttons: [{ extend: 'copy', text: 'Скопировать'} , 'pdf', 'csv'],
+                buttons: [
+                    {
+                        extend: 'copy',
+                        text: 'Скопировать',
+                        exportOptions: {
+                            columns: function (idx, data, node) {
+                                return $.inArray('', data) === -1;
+                            }
+                        }
+                    },
+                    {
+                        extend: 'pdf',
+                        exportOptions: {
+                            columns: function (idx, data, node) {
+                                return $.inArray('', data) === -1;
+                            }
+                        }
+                    },
+                    {
+                        extend: 'csv',
+                        exportOptions: {
+                            columns: function (idx, data, node) {
+                                return $.inArray('', data) === -1;
+                            }
+                        }
+                    }],
                 language: {
                     "decimal":        "",
                     "emptyTable":     "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Пустая таблица",
@@ -168,7 +193,7 @@
                     });
                 }
             });
-            t.buttons().container().appendTo($(this).closest('.card').find('.card-title-block'));
+            t.buttons().container().appendTo($(this).closest('.card').find('.card-title-teacher-buttons'));
             t.draw();
 
         });
