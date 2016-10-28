@@ -268,17 +268,6 @@
             e.preventDefault();
         });
 
-        $('select:not([multiple="multiple"])').multiselect({
-            buttonClass: 'btn btn-secondary btn-block',
-            templates: {
-                ul: '<ul class="multiselect-container dropdown-menu" style="left:inherit;top: inherit;"></ul>',
-                li: '<li><a tabindex="0" class="dropdown-item"><label></label></a></li>'
-            },
-            maxHeight: 200,
-            buttonContainer: '<div style="width:100%;" class="multiselect-dropdown" />',
-            buttonWidth: '100%',
-        });
-
         $('#task_group').multiselect({
             buttonClass: 'btn btn-secondary btn-block',
             templates: {
@@ -326,7 +315,7 @@
                             labels.push($(this).attr('label'));
                         }
                         else {
-                            labels.push($(this).html());
+                            labels.push($(this).text());
                         }
                     });
                     return labels.join(', ') + '';
