@@ -289,7 +289,7 @@ def ya_oauth_forbidden(request):
     return render_to_response('oauth_error.html', context, context_instance=RequestContext(request))
 
 
-def ya_oauth_changed(request, type_of_oauth):
+def ya_oauth_changed(request):
     context = {
         'oauth_error_text'              : "Можно перепривязать только тот профиль Я.Контеста, который был привязан ранее!",
     }
