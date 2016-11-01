@@ -6,73 +6,7 @@
 {% block title %} {{ user_to_show.get_full_name }} {% endblock %}
 
 {% block scripts %}
-    <script src="{{ STATIC_URL }}jquery.stickytableheaders.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/spark-md5/2.0.2/spark-md5.min.js"></script>
-    <script type="text/javascript">
-
-        $(document).ready(function() {
-            $('#invites_form_button').click(function () {
-                $('#invites_form_button').hide();
-                $('#invites_form').show();
-            });
-            {%  if user_to_show == user %}
-                $('.edit-icon').click(function () {
-                    $('#edit-avatar').attr({src: $('#avatar').attr('src')});
-                    $('#modal_avatar_edit').modal('show');
-                    input_avatar = $('#input-avatar');
-                    input_avatar.replaceWith(input_avatar.val('').clone(true));
-                    $('#gravatar-link').val('');
-                });
-            {% endif %}
-
-            $('#avatar').click(function () {
-                $('#modal_avatar_view').modal('show');
-            });
-
-            $('#get-gravatar').click(function () {
-                var gravatar_link = 'https://www.gravatar.com/avatar/' + SparkMD5.hash('{{ user_to_show.email }}') + '?d=identicon';
-                $('#edit-avatar').attr({src: gravatar_link});
-                input_avatar = $('#input-avatar');
-                input_avatar.replaceWith(input_avatar.val('').clone(true));
-                $('#gravatar-link').val(gravatar_link);
-
-            });
-
-            $('#dismiss-avatar').click(function () {
-                var gravatar_link = 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mm&f=y';
-                $('#edit-avatar').attr({src: gravatar_link});
-                input_avatar = $('#input-avatar');
-                input_avatar.replaceWith(input_avatar.val('').clone(true));
-                $('#gravatar-link').val(gravatar_link);
-            });
-
-            $('.switch-tab').click(function () {
-                $(this).tab('show');
-                $(this).removeClass('active');
-            });
-        });
-
-        function readURL(input) {
-            if (input.files && input.files[0]) {
-                var reader = new FileReader();
-
-                reader.onload = function (e) {
-                    $('#edit-avatar')
-                            .attr('src', e.target.result)
-                };
-
-                reader.readAsDataURL(input.files[0]);
-
-                $('#gravatar-link').val('');
-            }
-        }
-
-        function get_edit_user_info_modal(user_info) {
-            $('#user_info').val(user_info);
-            $('#modal_user_info_edit').modal('show');
-        }
-    </script>
-
+    {% include "user_profile_js.html" %}
 {% endblock %}
 
 {% block navbar %}
@@ -218,22 +152,22 @@
         </div>
     </div>
 
-    <div class="card-deck-wrapper">
-        <div class="card-deck">
+    <div class="row">
+        <div class="col-xs-12">
             <div class="card">
                 <div class="card-block">
                     <h5 class="card-title">
                         О себе
                         {% if user == user_to_show %}
-                            <a type="button" class="btn btn-secondary btn-sm" style="padding: 6px 8px;" href="javascript:get_edit_user_info_modal({% if user_to_show.get_profile.info %}'{{user_to_show.get_profile.info|escapejs}}'{% else %}''{% endif %});">
+                            <a type="button" class="btn btn-secondary btn-sm" id="user_info_edit_btn" style="padding: 6px 8px;" >
                                 <i class="fa fa-pencil"></i>
                             </a>
                         {% endif %}
                     </h5>
-                    <p class="card-text">
+                    <div class="card-text" id="user_info_body">
                         {% if user_to_show.get_profile.info %}{{ user_to_show.get_profile.info|sanitize|safe }}
                         {% else %}Пока здесь ничего нет :( {% endif %}
-                    </p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -475,10 +409,13 @@
                             {% csrf_token %}
                             <textarea class='input-xlarge form-control' style="width: 100%;resize: none;" id='user_info' rows='13' name='user-info'></textarea>
                         </form>
+                        <div class="alert alert-danger" role ="alert" id="update_user_info_error_text" style="margin: 1rem 0 0 0;">
+                            <span>Произошла ошибка. Попробуйте еще раз.</span>
+                        </div>
                     </div>
                     <div class="modal-footer">
-                        <a href="#" class="btn btn-secondary" data-dismiss="modal">Закрыть</a>
-                        <button type="submit" name="update-info" form="user-info-form" class="btn btn-primary" id="modal_user_info_ok" data-loading-text="Сохранение...">Сохранить</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                        <button type="button" form="user-info-form" class="btn btn-primary" id="modal_user_info_ok" data-loading-text="Сохранение...">Сохранить</button>
                     </div>
                 </div>
             </div>

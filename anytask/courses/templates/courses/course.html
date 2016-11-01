@@ -69,7 +69,7 @@
                                 Редактировать семинар
                             </a>
                         {% else %}
-                            <a class="btn btn-secondary btn-sm" href="javascript:get_edit_course_modal({{ course.id }}, {% if course.information %} '{{course.information|escapejs}}' {% else %} '' {% endif %});">
+                            <a class="btn btn-secondary btn-sm" id="edit_course_info_btn">
                                 {% if course.information %}
                                     Редактировать информацию о курсе
                                 {% else %}
@@ -107,15 +107,13 @@
                     </div>
                 {% endif %}
 
-                {% if seminar %}
-                    <p id="course-information" class="card-text" style="margin-top: 1rem; margin-bottom: 0; display: none;">
+                <div id="course-information" class="card-text" style="margin-top: 1rem; margin-bottom: 0; display: none;">
+                    {% if seminar %}
                         {{ seminar.task_text|sanitize|safe }}
-                    </p>
-                {% elif course.information %}
-                    <p id="course-information" class="card-text" style="margin-top: 1rem; margin-bottom: 0; display: none;">
+                    {% elif course.information %}
                         {{ course.information|sanitize|safe }}
-                    </p>
-                {% endif %}
+                    {% endif %}
+                </div>
 
 
                 {#    <div class = "breadcrumb_button">#}

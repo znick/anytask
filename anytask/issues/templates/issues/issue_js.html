@@ -2,49 +2,64 @@
 {# <script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.min.js"></script> #}
 {# <script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/additional-methods.min.js"></script> #}
 <script src="http://malsup.github.io/jquery.form.js"></script>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.3.0/trumbowyg.min.js'></script>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.3.0/langs/ru.min.js'></script>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.3.0/plugins/preformatted/trumbowyg.preformatted.min.js'></script>
+<script src="{{ STATIC_URL }}tinymce/tinymce.min.js"></script>
+<script src="{{ STATIC_URL }}tinymce/jquery.tinymce.min.js"></script>
+<script src="{{ STATIC_URL }}prism.js"></script>
 
-<link href='https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.3.0/ui/trumbowyg.min.css' rel='stylesheet' />
-<link href='https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.3.0/plugins/colors/ui/trumbowyg.colors.min.css' rel='stylesheet' />
+<link href="{{ STATIC_URL }}prism.css" rel='stylesheet' />
+<link href="{{ STATIC_URL }}tinymce-style-issue-comment.css" rel='stylesheet' />
 
 <script type="text/javascript">
-    $.trumbowyg.svgPath = '{{ STATIC_URL }}trumbowyg-icons.svg';
-    $.extend(true, $.trumbowyg, {
-        langs: {
-            ru: {
-                superscript: "Надстрочный",
-                subscript: "Подстрочный",
-                preformatted: "Пример кода",
-                removeformat: "Очистить форматирование",
-                undo: 'Отменить',
-                redo: 'Повторить'
-            }
-        }
-    });
-
     $(document).ready(function () {
-        $('#id_comment').trumbowyg({
-            lang: 'ru',
-            btns: [
-                ['formatting'],
-                'btnGrp-design',
-                ['link'],
-                ['insertImage'],
-                'btnGrp-lists',
-                ['horizontalRule'],
-                ['preformatted'],
-                ['removeformat'],
-                ['undo', 'redo']
-            ],
-            resetCss: true,
-            removeformatPasted: true
+        $(document).on('focusin', function(e) {
+            if ($(e.target).closest(".mce-window").length) {
+                e.stopImmediatePropagation();
+            }
         });
 
-        $('div.trumbowyg').on('DOMNodeInserted', '.trumbowyg-modal-box', function(e) {
-            $('.trumbowyg-modal-box input[name="title"]').closest("label").hide();
-            $('.trumbowyg-modal-box input[name="target"]').val('_blank').closest("label").hide();
+        var info_width = $('ul.history').closest('.card').innerWidth();
+
+        $("#id_comment").tinymce({
+            language: 'ru',
+            skin: 'bootstrap4',
+            menubar: false,
+            content_css: ['https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css', '{{ STATIC_URL }}tinymce-style-issue-comment.css'],
+            setup: function(editor) {
+                editor.addButton('preview_text', {
+                    icon: false,
+                    text: 'Preview',
+                    cmd: 'mcePreview'
+                });
+                editor.addMenuItem('codesample', {
+                    icon: 'codesample',
+                    text: 'Insert/Edit code sample',
+                    cmd: 'codesample'
+                });
+            },
+            plugins: [
+                'autoresize autosave autolink codesample hr image link lists',
+                'table textpattern wordcount contextmenu preview paste'
+            ],
+            toolbar: 'undo redo | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | image link hr | blockquote codesample table | preview_text',
+            autoresize_bottom_margin: 10,
+            autoresize_overflow_padding: 10,
+            image_description: false,
+            link_assume_external_targets: true,
+            default_link_target: "_blank",
+            target_list: false,
+            link_title: false,
+            table_default_attributes: {
+                "class": 'table table-bordered table-comment'
+            },
+            textpattern_patterns: [
+                {start: '1. ', cmd: 'InsertOrderedList'}
+            ],
+            contextmenu: "link image codesample",
+            paste_auto_cleanup_on_paste : true,
+            paste_remove_styles: true,
+            paste_remove_styles_if_webkit: true,
+            paste_strip_class_attributes: true,
+            plugin_preview_width: info_width
         });
 
         $("#id_comment").keydown(function (e) {

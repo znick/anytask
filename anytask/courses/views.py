@@ -337,10 +337,13 @@ def edit_course_information(request):
     if not course.user_can_edit_course(user):
         return HttpResponseForbidden()
 
+    if course_information and not course_information.startswith(u'<div class="not-sanitize">'):
+        course_information = u'<div class="not-sanitize">' + course_information + u'</div>'
     course.information = course_information
     course.save()
 
-    return HttpResponse("OK")
+    return HttpResponse(json.dumps({'info': course_information}),
+                        content_type="application/json")
 
 @login_required
 def set_spectial_course_attend(request):

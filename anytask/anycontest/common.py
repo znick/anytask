@@ -159,8 +159,8 @@ def check_submission(issue):
             contest_messages = []
             for precompile_check in results_req.json()['result']['precompileChecks']:
                 contest_messages.append(precompile_check['message'])
-            comment = u'<p>Вердикт Я.Контест: precompile-check-failed</p><pre>' +\
-                      escape(u'\n'.join(contest_messages)) +\
+            comment = u'<p>Вердикт Я.Контест: precompile-check-failed</p><pre>' + \
+                      escape(u'\n'.join(contest_messages)) + \
                       u'</pre>'
         else:
             comment = u'<p>Вердикт Я.Контест: ' \
@@ -171,31 +171,31 @@ def check_submission(issue):
                 test_resourses = u'<p><u>Ресурсы</u> ' + str(test['usedTime']) \
                                  + 'ms/' + '%.2f' % (test['usedMemory']/(1024.*1024)) + 'Mb</p>'
                 if 'input' in test:
-                    test_input = u'<p><u>Ввод</u></p><p>' +\
+                    test_input = u'<p><u>Ввод</u></p><p>' + \
                                  escape(test['input']) if test['input'] else ""
                     test_input += '</p>'
                 else:
                     test_input = ""
                 if 'output' in test:
-                    test_output = u'<p><u>Вывод программы</u></p><p>' +\
+                    test_output = u'<p><u>Вывод программы</u></p><p>' + \
                                   escape(test['output']) if test['output'] else ""
                     test_output += '</p>'
                 else:
                     test_output = ""
                 if 'answer' in test:
-                    test_answer = u'<p><u>Правильный ответ</u></p><p>' +\
+                    test_answer = u'<p><u>Правильный ответ</u></p><p>' + \
                                   escape(test['answer']) if test['answer'] else ""
                     test_answer += '</p>'
                 else:
                     test_answer = ""
                 if 'error' in test:
-                    test_error = u'<p><u>Stderr</u></p><p>' +\
+                    test_error = u'<p><u>Stderr</u></p><p>' + \
                                  escape(test['error']) if test['error'] else ""
                     test_error += '</p>'
                 else:
                     test_error = ""
                 if 'message' in test:
-                    test_message = u'<p><u>Сообщение чекера</u></p><p>' +\
+                    test_message = u'<p><u>Сообщение чекера</u></p><p>' + \
                                    escape(test['message']) if test['message'] else ""
                     test_message += '</p>'
                 else:
@@ -218,7 +218,7 @@ def comment_verdict(issue, verdict, comment):
     author, author_get = User.objects.get_or_create(username=issue.student.username)
     field, field_get = IssueField.objects.get_or_create(name='comment')
     event = issue.create_event(field, author=author)
-    event.value = comment
+    event.value = u'<div class="contest-response-comment not-sanitize">' + comment + u'</div>'
     event.save()
     if issue.status_field.tag != issue.status_field.STATUS_ACCEPTED:
         if verdict:
@@ -234,7 +234,7 @@ def get_contest_mark(contest_id, problem_id, ya_login):
     user_id = None
     try:
         results_req = requests.get(
-           'https://contest.yandex.ru/action/api/download-log?contestId=' + str(contest_id) + '&snarkKey=spike')
+            'https://contest.yandex.ru/action/api/download-log?contestId=' + str(contest_id) + '&snarkKey=spike')
         try:
             contest_dict = xmltodict.parse(results_req.content)
 
@@ -274,7 +274,7 @@ def get_contest_mark(contest_id, problem_id, ya_login):
 
     except Exception as e:
         logger.exception("Exception while request to Contest: '%s' : '%s', Exception: '%s'",
-                             results_req.url, e)
+                         results_req.url, e)
     return contest_mark
 
 
