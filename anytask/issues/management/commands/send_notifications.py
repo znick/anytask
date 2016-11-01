@@ -30,29 +30,28 @@ class Command(BaseCommand):
                              u'появились новые комментарии: <br></p>' + \
                              '</div>'
 
-            message_body = []
+            messages_author = []
+            messages_body = []
             empty_message = True
 
             events_to_send = []
             for event in events:
-                message_body.append('<div style="margin:20px">')
-                message_body.append('<pre>')
-                message_body.append(event.get_notify_message().replace('}','}}').replace('{','{{'))
-                message_body.append('-' * 79)
-                message_body.append('</pre>')
-                message_body.append('</div>')
+                messages_author.append(event.author_id)
+                messages_body.append('<div style="margin:20px">' +
+                                     '<pre>' +
+                                     event.get_notify_message().replace('}', '}}').replace('{', '{{') +
+                                     '\n' + '-' * 79 +
+                                     '</pre>' +
+                                     '</div>')
                 event.sended_notify = True
                 events_to_send.append(event)
-
-            if message_body:
                 empty_message = False
 
-            message_body.append('<div>')
-            message_body.append(u'-- <br>')
-            message_body.append(u'С уважением,<br>')
-            message_body.append(u'команда Anytask.<br>')
-            message_body.append('</div>')
-            message = message_header + '\n'.join(message_body)
+            message_footer = '<div>' + \
+                             u'-- <br>' + \
+                             u'С уважением,<br>' + \
+                             u'команда Anytask.<br>' + \
+                             '</div>'
 
             subject = u'Курс: {0} | Задача: {1} | Студент: {2} {3}'.\
                 format(issue.task.course, issue.task.title, issue.student.last_name, issue.student.first_name)
@@ -67,25 +66,59 @@ class Command(BaseCommand):
 
             notify_messages = []
             if not empty_message:
+                excluded_ids = []
                 if issue.student.email:
-                    message_text = message.\
-                        format(issue.student.first_name, get_html_url(issue_url, issue.task.title), u'студентом')
-                    notify_messages.append(get_message(issue.student.email))
+                    message_body_text = get_message_body(messages_author, messages_body, issue.student)
+                    if message_body_text:
+                        message_text = message_header.format(issue.student.first_name,
+                                                             get_html_url(issue_url, issue.task.title),
+                                                             u'студентом') + \
+                                       message_body_text + \
+                                       message_footer
+
+                        notify_messages.append(get_message(issue.student.email))
+                        excluded_ids.append(issue.student.id)
+
                 if issue.responsible:
                     if issue.responsible.email:
-                        message_text = message.\
-                            format(issue.responsible.first_name, get_html_url(issue_url, issue.task.title), u'проверяющим')
-                        notify_messages.append(get_message(issue.responsible.email))
-                for follower in issue.followers.all():
+                        message_body_text = get_message_body(messages_author, messages_body, issue.responsible)
+                        if message_body_text:
+                            message_text = message_header.format(issue.responsible.first_name,
+                                                                 get_html_url(issue_url, issue.task.title),
+                                                                 u'проверяющим') + \
+                                           message_body_text + \
+                                           message_footer
+
+                            notify_messages.append(get_message(issue.responsible.email))
+                            excluded_ids.append(issue.responsible.id)
+
+                for follower in issue.followers.exclude(id__in=excluded_ids):
                     if follower.email:
-                        message_text = message.\
-                            format(follower.first_name, get_html_url(issue_url, issue.task.title), u'наблюдателем')
-                        notify_messages.append(get_message(follower.email))
+                        message_body_text = get_message_body(messages_author, messages_body, follower)
+                        if message_body_text:
+                            message_text = message_header.format(follower.first_name,
+                                                                 get_html_url(issue_url, issue.task.title),
+                                                                 u'наблюдателем') + \
+                                           message_body_text + \
+                                           message_footer
+
+                            notify_messages.append(get_message(follower.email))
                 send_mass_mail_html(notify_messages)
                 time.sleep(1)
 
             for event in events_to_send:
                 event.save()
+
+
+def get_message_body(messages_author, messages_body, author):
+    s = ''
+    if author.get_profile().send_my_own_events:
+        s = ''.join(messages_body)
+    else:
+        for author_id, text in zip(messages_author, messages_body):
+            if author_id != author.id:
+                s += text
+    return s
 
 
 def send_mass_mail_html(datatuple, fail_silently=False, user=None, password=None, connection=None):

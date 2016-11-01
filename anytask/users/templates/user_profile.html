@@ -21,6 +21,9 @@
             <li class="nav-item">
                 <a class="nav-link" href="{% url users.views.user_courses username=user_to_show %}">Мои курсы</a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url users.views.profile_settings %}">Настройки</a>
+            </li>
         {% else %}
             <li class="nav-item active">
                 <a class="nav-link" href="{% url users.views.profile user_to_show %}">Профиль студента</a>
@@ -85,7 +88,9 @@
                         </div>
                         {{ user_to_show.get_full_name }}
                         <br>
-                        <small class="text-muted">{{ user_to_show.email }}</small>
+                        {% if show_email %}
+                            <small class="text-muted">{{ user_to_show.email }}</small>
+                        {% endif %}
                     </h5>
                     {% if user == user_to_show and can_generate_invites %}
                         <a class="card-link" href="#" onclick="window.open('{% url invites.views.generate_invites %}','_blank','height=331,width=769,status=yes,toolbar=no,menubar=no,location=no');return false;">Сгенерировать инвайты</a>

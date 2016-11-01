@@ -226,10 +226,11 @@ class ViewsTest(TestCase):
         navbar_dropdown = navbar.find('li', 'dropdown')
         self.assertEqual(navbar_dropdown.a.span.string.strip().strip('\n'), u'teacher_name teacher_last_name')
         navbar_dropdown_inside = navbar_dropdown.find('div', 'dropdown-menu')('a')
-        self.assertEqual(len(navbar_dropdown_inside), 3)
+        self.assertEqual(len(navbar_dropdown_inside), 4)
         self.assertEqual(navbar_dropdown_inside[0]['href'], u'/accounts/profile')
-        self.assertEqual(navbar_dropdown_inside[1]['href'], u'/accounts/password/change/')
-        self.assertEqual(navbar_dropdown_inside[2]['href'], u'/accounts/logout/')
+        self.assertEqual(navbar_dropdown_inside[1]['href'], u'/user/settings')
+        self.assertEqual(navbar_dropdown_inside[2]['href'], u'/accounts/password/change/')
+        self.assertEqual(navbar_dropdown_inside[3]['href'], u'/accounts/logout/')
 
         # breadcrumbs
         breadcrumbs = container.find('ul', 'breadcrumb')('li')
@@ -708,10 +709,11 @@ class ViewsTest(TestCase):
         navbar_dropdown = navbar.find('li', 'dropdown')
         self.assertEqual(navbar_dropdown.a.span.string.strip().strip('\n'), u'student_name student_last_name')
         navbar_dropdown_inside = navbar_dropdown.find('div', 'dropdown-menu')('a')
-        self.assertEqual(len(navbar_dropdown_inside), 3)
+        self.assertEqual(len(navbar_dropdown_inside), 4)
         self.assertEqual(navbar_dropdown_inside[0]['href'], u'/accounts/profile')
-        self.assertEqual(navbar_dropdown_inside[1]['href'], u'/accounts/password/change/')
-        self.assertEqual(navbar_dropdown_inside[2]['href'], u'/accounts/logout/')
+        self.assertEqual(navbar_dropdown_inside[1]['href'], u'/user/settings')
+        self.assertEqual(navbar_dropdown_inside[2]['href'], u'/accounts/password/change/')
+        self.assertEqual(navbar_dropdown_inside[3]['href'], u'/accounts/logout/')
 
         # breadcrumbs
         breadcrumbs = container.find('ul', 'breadcrumb')('li')

@@ -371,10 +371,10 @@ class Issue(models.Model):
         if not value:
             value = ''
 
-        for group in self.task.groups.all():
-            default_teacher = course.get_default_teacher(group)
-            if default_teacher and (not self.get_byname('responsible_name')):
-                self.set_byname('responsible_name', default_teacher)
+        for group in self.task.groups.filter(students=self.student):
+                default_teacher = course.get_default_teacher(group)
+                if default_teacher and (not self.get_byname('responsible_name')):
+                    self.set_byname('responsible_name', default_teacher)
 
         if not delete_event:
             event.value = value

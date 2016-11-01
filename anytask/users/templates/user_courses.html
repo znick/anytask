@@ -32,6 +32,9 @@
             <li class="nav-item">
                 <a class="nav-link active" href="">Мои курсы</a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url users.views.profile_settings %}">Настройки</a>
+            </li>
         {% else %}
             <li class="nav-item">
                 <a class="nav-link" href="{% url users.views.profile user_to_show %}">Профиль студента</a>

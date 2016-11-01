@@ -9,6 +9,7 @@ from django.contrib.sites.models import RequestSite
 from django.contrib.sites.models import Site
 from django import forms
 from django.shortcuts import get_object_or_404
+from users.models import UserProfile
 
 from registration import signals
 from registration.forms import RegistrationForm, RegistrationFormUniqueEmail
@@ -99,6 +100,7 @@ class AnytaskPasswordChangeForm(PasswordChangeForm):
 class RegistrationFormWithNames(RegistrationForm):
     first_name = forms.CharField(widget=forms.TextInput(attrs=attrs_dict), label="Имя")
     last_name = forms.CharField(widget=forms.TextInput(attrs=attrs_dict), label="Фамилия")
+    show_email = forms.BooleanField(required=False, initial=True, label="Показывать мой e-mail всем пользователям")
     #invite = forms.CharField(widget=forms.TextInput(attrs=attrs_dict), label="Инвайт")
 
     def __init__(self, *args, **kwargs):
@@ -110,6 +112,7 @@ class RegistrationFormWithNames(RegistrationForm):
             'first_name',
             'last_name',
             'email',
+            'show_email',
             'password1',
             'password2',
             #'invite',
@@ -197,7 +200,8 @@ class DefaultBackend(object):
         class of this backend as the sender.
 
         """
-        username, email, password, first_name, last_name = kwargs['username'], kwargs['email'], kwargs['password1'], kwargs['first_name'], kwargs['last_name']
+        username, email, password = kwargs['username'], kwargs['email'], kwargs['password1']
+        first_name, last_name, show_email = kwargs['first_name'], kwargs['last_name'], kwargs['show_email']
         #invite = get_object_or_404(Invite, key=invite_key)
 
         if Site._meta.installed:
@@ -210,6 +214,10 @@ class DefaultBackend(object):
         new_user.first_name = first_name
         new_user.last_name = last_name
         new_user.save()
+
+        new_user_profile = UserProfile.objects.get(user=new_user)
+        new_user_profile.show_email = show_email
+        new_user_profile.save()
 
         #if invite.group:
         #    invite.group.students.add(new_user)

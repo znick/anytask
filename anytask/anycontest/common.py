@@ -215,7 +215,7 @@ def check_submission(issue):
 
 
 def comment_verdict(issue, verdict, comment):
-    author, author_get = User.objects.get_or_create(username=issue.student.username)
+    author = User.objects.get(username="anytask")
     field, field_get = IssueField.objects.get_or_create(name='comment')
     event = issue.create_event(field, author=author)
     event.value = u'<div class="contest-response-comment not-sanitize">' + comment + u'</div>'

@@ -52,14 +52,14 @@
             <li>
                 <div class="row">
                     <div class="{% if event.author == user %}col-xs-12{% else %}col-xs-offset-1 col-xs-11{% endif %}">
-                        <strong><a class="card-link" href="{{ event.author.get_absolute_url }}" style="color:#373a3c;">
+                        <strong><a class="card-link" {% if event.author.username != "anytask" %}href="{{ event.author.get_absolute_url }}"{% endif %} style="color:#373a3c;">
                             {{ event.author.last_name }} {{ event.author.first_name }}</a>&nbsp;</strong>
                         <small class="text-muted">
                             <i class="fa fa-clock-o fa-flip-horizontal"></i> {{ event.timestamp|date:"d M H:i" }}
                         </small>
                     </div>
                     <div class="user_img col-xs-1 {% if event.author == user %}pull-xs-right{% else %}pull-xs-left{% endif %}">
-                        <a class="card-link" href="{{ event.author.get_absolute_url }}">
+                        <a class="card-link" {% if event.author.username != "anytask" %}href="{{ event.author.get_absolute_url }}"{% endif %}>
                             <img class="avatar" src="{% if not event.author.get_profile.avatar %}https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mm&f=y
                         {% else %}{{ event.author.get_profile.avatar.url }}{% endif %}" style="width: 50px; height: 50px;">
                         </a>
