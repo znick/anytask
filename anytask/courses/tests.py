@@ -254,7 +254,6 @@ class ViewsTest(TestCase):
         self.assertIsNotNone(btn_group)
         btn_group = btn_group('a')
         self.assertEqual(len(btn_group), 2)
-        self.assertEqual(btn_group[0]['href'], u"javascript:get_edit_course_modal(1,  '' );")
         self.assertEqual(btn_group[0].string.strip().strip('\n'), u'Добавить информацию о курсе')
         self.assertEqual(btn_group[1]['href'], u'/task/create/1')
 
@@ -346,7 +345,7 @@ class ViewsTest(TestCase):
                                {'course_id': self.course.id,
                                 'course_information': 'course_information'})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content, 'OK')
+        self.assertEqual(response.content, '{"info": "<div class=\\"not-sanitize\\">course_information</div>"}')
 
         # get course page
         response = client.get(reverse('courses.views.course_page', kwargs={'course_id': self.course.id}))
@@ -355,7 +354,8 @@ class ViewsTest(TestCase):
         # course information
         html = BeautifulSoup(response.content)
         container = html.body.find('div', 'container', recursive=False)
-        self.assertEqual(container.find('p', {'id': 'course-information'}).string.strip().strip('\n'), 'course_information')
+        self.assertEqual(container.find('div', {'id': 'course-information'}).find('div', 'not-sanitize')
+                         .string.strip().strip('\n'), 'course_information')
 
     def test_course_settings_with_teacher(self):
         client = self.client
@@ -401,7 +401,6 @@ class ViewsTest(TestCase):
         form_select = form.find('div', 'form-group')('option')
         self.assertEqual(form_select[0]['value'], '0')
         self.assertTrue(form_select[0].has_key('selected'))
-        self.assertEqual(form_select[0]['selected'], 'selected')
         self.assertEqual(form_select[0].string, '---')
         self.assertEqual(form_select[1]['value'], '1')
         self.assertFalse(form_select[1].has_key('selected'))
@@ -418,11 +417,10 @@ class ViewsTest(TestCase):
         # form
         form_select = container.form.find('div', 'form-group')('option')
         self.assertEqual(form_select[0]['value'], '0')
-        self.assertFalse(form_select[0].has_key('selected'), form_select)
+        self.assertFalse(form_select[0].has_key('selected'))
         self.assertEqual(form_select[0].string, '---')
         self.assertEqual(form_select[1]['value'], '1')
         self.assertTrue(form_select[1].has_key('selected'))
-        self.assertEqual(form_select[1]['selected'], 'selected')
         self.assertEqual(form_select[1].string, 'teacher_name teacher_last_name')
 
     def test_change_visibility_hidden_tasks_with_teacher(self):
@@ -451,7 +449,6 @@ class ViewsTest(TestCase):
         self.assertIsNotNone(btn_group)
         btn_group = btn_group('a')
         self.assertEqual(len(btn_group), 3)
-        self.assertEqual(btn_group[0]['href'], u"javascript:get_edit_course_modal(1,  '' );")
         self.assertEqual(btn_group[0].string.strip().strip('\n'), u'Добавить информацию о курсе')
         self.assertEqual(btn_group[1]['href'], u'/task/create/1')
         self.assertEqual(btn_group[2]['href'], u'javascript:change_visibility_hidden_tasks(1);')

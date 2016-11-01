@@ -271,7 +271,7 @@ class ViewsTest(TestCase):
                          '7th issue field 2st button wrong ')
 
         self.assertEqual(labels[7].string.strip().strip('\n'), u'Дата сдачи:', '8th issue field label wrong')
-        self.assertEqual(results[7].string.strip().strip('\n'), '', '8th issue field text wrong')
+        self.assertIsNone(results[7].string, '8th issue field text wrong')
 
     def test_post_responsible_name_form_send_button_with_teacher(self):
         client = self.client
@@ -301,7 +301,7 @@ class ViewsTest(TestCase):
         self.assertEqual(history[0].strong.a.string.strip().strip('\n'),
                          'teacher_last_name teacher_name',
                          'Wrong comment author name')
-        self.assertEqual(history[0].find('div', 'history-body').string.strip().strip('\n'),
+        self.assertEqual(history[0].find('div', 'history-body').find('p').string.strip().strip('\n'),
                          u'Теперь задачу проверяет teacher_last_name teacher_name',
                          'Wrong comment text')
 
@@ -349,7 +349,7 @@ class ViewsTest(TestCase):
         self.assertEqual(history[0].strong.a.string.strip().strip('\n'),
                          'teacher_last_name teacher_name',
                          'Wrong comment author name')
-        self.assertEqual(history[0].find('div', 'history-body').string.strip().strip('\n'),
+        self.assertEqual(history[0].find('div', 'history-body').find('p').string.strip().strip('\n'),
                          u'Теперь задачу проверяет teacher_last_name teacher_name',
                          'Wrong comment text')
 
@@ -397,7 +397,7 @@ class ViewsTest(TestCase):
         self.assertEqual(history[0].strong.a.string.strip().strip('\n'),
                          'teacher_last_name teacher_name',
                          'Wrong comment author name')
-        self.assertEqual(history[0].find('div', 'history-body').string.strip().strip('\n'),
+        self.assertEqual(history[0].find('div', 'history-body').find('p').string.strip().strip('\n'),
                          u'За задачей наблюдают: teacher_last_name teacher_name',
                          'Wrong comment text')
 
@@ -445,7 +445,7 @@ class ViewsTest(TestCase):
         self.assertEqual(history[0].strong.a.string.strip().strip('\n'),
                          'teacher_last_name teacher_name',
                          'Wrong comment author name')
-        self.assertEqual(history[0].find('div', 'history-body').string.strip().strip('\n'),
+        self.assertEqual(history[0].find('div', 'history-body').find('p').string.strip().strip('\n'),
                          u'За задачей наблюдают: teacher_last_name teacher_name',
                          'Wrong comment text')
 
@@ -494,7 +494,7 @@ class ViewsTest(TestCase):
         self.assertEqual(history[0].strong.a.string.strip().strip('\n'),
                          'teacher_last_name teacher_name',
                          'Wrong comment author name')
-        self.assertEqual(history[0].find('div', 'history-body').string.strip().strip('\n'),
+        self.assertEqual(history[0].find('div', 'history-body').find('p').string.strip().strip('\n'),
                          u'Статус изменен: На доработке',
                          'Wrong comment text')
 
@@ -530,7 +530,7 @@ class ViewsTest(TestCase):
         self.assertEqual(history[0].strong.a.string.strip().strip('\n'),
                          'teacher_last_name teacher_name',
                          'Wrong comment author name')
-        self.assertEqual(history[0].find('div', 'history-body').string.strip().strip('\n'),
+        self.assertEqual(history[0].find('div', 'history-body').find('p').string.strip().strip('\n'),
                          u'Оценка изменена на 3',
                          'Wrong comment text')
 
@@ -568,7 +568,7 @@ class ViewsTest(TestCase):
         self.assertEqual(history[0].strong.a.string.strip().strip('\n'),
                          'teacher_last_name teacher_name',
                          'Wrong comment author name')
-        self.assertEqual(history[0].find('div', 'history-body').string.strip().strip('\n'),
+        self.assertEqual(history[0].find('div', 'history-body').find('p').string.strip().strip('\n'),
                          u'Статус изменен: Зачтено',
                          'Wrong comment text')
         self.assertEqual(history[1].strong.a['href'],
@@ -577,7 +577,7 @@ class ViewsTest(TestCase):
         self.assertEqual(history[1].strong.a.string.strip().strip('\n'),
                          'teacher_last_name teacher_name',
                          'Wrong comment author name')
-        self.assertEqual(history[1].find('div', 'history-body').string.strip().strip('\n'),
+        self.assertEqual(history[1].find('div', 'history-body').find('p').string.strip().strip('\n'),
                          u'Оценка изменена на 3',
                          'Wrong comment text')
 
@@ -617,7 +617,7 @@ class ViewsTest(TestCase):
         self.assertEqual(history[0].strong.a.string.strip().strip('\n'),
                          'teacher_last_name teacher_name',
                          'Wrong comment author name')
-        self.assertEqual(history[0].find('div', 'history-body').string.strip().strip('\n'),
+        self.assertEqual(history[0].find('div', 'history-body').find('div', 'not-sanitize').string.strip().strip('\n'),
                          'test_comment',
                          'Wrong comment text')
 
@@ -695,7 +695,7 @@ class ViewsTest(TestCase):
         self.assertEqual(results[6].string.strip().strip('\n'), '0', '7th issue field text wrong')
 
         self.assertEqual(labels[7].string.strip().strip('\n'), u'Дата сдачи:', '8th issue field label wrong')
-        self.assertEqual(results[7].string.strip().strip('\n'), '', '8th issue field text wrong')
+        self.assertIsNone(results[7].string, '8th issue field text wrong')
 
     def test_comment_with_student(self):
         client = self.client
@@ -727,7 +727,7 @@ class ViewsTest(TestCase):
         self.assertEqual(history[0].strong.a.string.strip().strip('\n'),
                          'student_last_name student_name',
                          'Wrong comment author name')
-        self.assertEqual(history[0].find('div', 'history-body').string.strip().strip('\n'),
+        self.assertEqual(history[0].find('div', 'history-body').find('div', 'not-sanitize').string.strip().strip('\n'),
                          'test_comment',
                          'Wrong comment text')
 
@@ -854,7 +854,7 @@ class ViewsTest(TestCase):
         self.assertEqual(history[0].strong.a.string.strip().strip('\n'),
                          'student_last_name student_name',
                          'Wrong comment author name')
-        comment_body = history[0].find('div', 'history-body').next
+        comment_body = history[0].find('div', 'history-body').find('div', 'not-sanitize').next
         self.assertEqual(comment_body.string.strip().strip('\n'),
                          'test_comment',
                          'Wrong comment text')
@@ -892,10 +892,10 @@ class ViewsTest(TestCase):
                          'student_last_name student_name',
                          'Wrong comment author name')
         comment_body = history[1].find('div', 'history-body')
-        self.assertEqual(comment_body.next.string.strip().strip('\n'),
+        self.assertEqual(comment_body.find('div', 'not-sanitize').next.string.strip().strip('\n'),
                          'test_comment',
                          'Wrong comment text')
-        self.assertEqual(comment_body.a.string.strip().strip('\n'),
+        self.assertEqual(comment_body.find('div', 'not-sanitize').a.string.strip().strip('\n'),
                          u'Review request 1',
                          'Wrong comment text about RB')
         self.assertEqual(comment_body.find('div', 'files').a.string.strip().strip('\n'),
