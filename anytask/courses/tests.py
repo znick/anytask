@@ -481,7 +481,6 @@ class ViewsTest(TestCase):
         self.assertIsNotNone(btn_group)
         btn_group = btn_group('a')
         self.assertEqual(len(btn_group), 3)
-        self.assertEqual(btn_group[0]['href'], u"javascript:get_edit_course_modal(1,  '' );")
         self.assertEqual(btn_group[0].string.strip().strip('\n'), u'Добавить информацию о курсе')
         self.assertEqual(btn_group[1]['href'], u'/task/create/1')
         self.assertEqual(btn_group[2]['href'], u'javascript:change_visibility_hidden_tasks(1);')

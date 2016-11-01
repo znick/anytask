@@ -271,7 +271,7 @@ class ViewsTest(TestCase):
                          '7th issue field 2st button wrong ')
 
         self.assertEqual(labels[7].string.strip().strip('\n'), u'Дата сдачи:', '8th issue field label wrong')
-        self.assertIsNone(results[7].string, '8th issue field text wrong')
+        self.assertEqual(results[7].string.strip().strip('\n'), '', '8th issue field text wrong')
 
     def test_post_responsible_name_form_send_button_with_teacher(self):
         client = self.client
@@ -695,7 +695,7 @@ class ViewsTest(TestCase):
         self.assertEqual(results[6].string.strip().strip('\n'), '0', '7th issue field text wrong')
 
         self.assertEqual(labels[7].string.strip().strip('\n'), u'Дата сдачи:', '8th issue field label wrong')
-        self.assertIsNone(results[7].string, '8th issue field text wrong')
+        self.assertEqual(results[7].string.strip().strip('\n'), '', '8th issue field text wrong')
 
     def test_comment_with_student(self):
         client = self.client
@@ -862,7 +862,7 @@ class ViewsTest(TestCase):
         self.assertEqual(comment_body.string.strip().strip('\n'),
                          u'Ошибка отправки в Review Board.',
                          'Wrong comment text about RB')
-        comment_body = comment_body.next
+        comment_body = history[0].find('div', 'history-body').find('div', 'files')
         self.assertEqual(comment_body.a.string.strip().strip('\n'),
                          'test_rb.py',
                          'Wrong filename in comment')

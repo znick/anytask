@@ -335,7 +335,7 @@ class ViewsTest(TestCase):
         response = client.post(reverse('courses.views.change_visibility_hidden_tasks'),
                                {'course_id': self.course.id})
         self.assertEqual(response.status_code, 200, "Can't get change_visibility_hidden_tasks via teacher")
-        self.assertEqual(response.content, '<html><head></head><body>OK</body></html>')
+        self.assertEqual(response.content, 'OK')
         response = client.get(reverse('courses.views.course_page', kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 200, "Can't get course_page via teacher")
 
@@ -447,6 +447,7 @@ class ViewsTest(TestCase):
         mock_get_contest_info.return_value = (True, {'problems': problems})
         response = client.post(reverse('tasks.views.contest_task_import'), post_data)
         self.assertEqual(response.status_code, 200, "Can't get get_contest_info via teacher")
+        self.assertEqual(response.content, 'OK', 'Wrong response text')
 
         tasks = Task.objects.exclude(id=1)
         self.assertEqual(len(tasks), 2, 'Wrong number of tasks')
