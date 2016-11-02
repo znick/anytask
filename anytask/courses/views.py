@@ -26,7 +26,7 @@ import requests
 from courses.models import Course, DefaultTeacher, StudentCourseMark, MarkField, FilenameExtension
 from groups.models import Group
 from tasks.models import TaskTaken, Task, TaskGroupRelations
-from tasks.views import update_status_check
+from tasks.views import update_status_check, prettify_contest_task_text
 from years.models import Year
 from years.common import get_current_year
 from course_statistics import CourseStatistics
@@ -635,7 +635,7 @@ def ajax_update_contest_tasks(request):
             for problem in contest_responses[0]['problems']:
                 if problem['alias'] == alias:
                     task.title = problem['problemTitle']
-                    task.task_text = problem['statement']
+                    task.task_text = prettify_contest_task_text(problem['statement'])
                     if 'endTime' in contest_responses[0]:
                         deadline = contest_responses[0]['endTime'].split('+')[0]
                         task.deadline_time = datetime.datetime.strptime(deadline, '%Y-%m-%dT%H:%M:%S.%f')

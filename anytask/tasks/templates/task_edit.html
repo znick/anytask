@@ -8,6 +8,7 @@
 
 {% block scripts %}
     {% include "task_create_or_edit_js.html" %}
+    {% include "task_tinymce_js.html" %}
     <script type="text/javascript">
         $(document).ready(function() {
             $('#modal_task_update').on('hidden.bs.modal', function (e) {
@@ -58,7 +59,7 @@
 
                             if ($('#update_problem_id').val() == problems[i].alias) {
                                 if ($('input[name="text_update"]', $form).is(':checked'))
-                                    $('#task_edit_body').val(problems[i].statement);
+                                    $('#task_edit_body').val(problems[i].statement.replace(/<table/g, '<table class="table table-sm"').replace(/src="/g, 'src="https://contest.yandex.ru'));
                             }
                         }
                         btn_update.closest('.modal').modal('hide');
@@ -133,13 +134,13 @@
                         </div>
                     </div>
                     {% if is_create or task.type != task.TYPE_SEMINAR %}
-                    <div class="form-group row">
-                        <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_max_score">Максимальный балл</label>
-                        <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
-                            <input class="form-control" id='task_edit_max_score' name='max_score' type='text' maxlength='25' size='20' value="{{ task.score_max }}">
-                            <small class="text-help" id="task_edit_max_score_error_text"></small>
+                        <div class="form-group row">
+                            <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_max_score">Максимальный балл</label>
+                            <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
+                                <input class="form-control" id='task_edit_max_score' name='max_score' type='text' maxlength='25' size='20' value="{{ task.score_max }}">
+                                <small class="text-help" id="task_edit_max_score_error_text"></small>
+                            </div>
                         </div>
-                    </div>
                     {% endif %}
                     <div class="form-group row">
                         <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_group">Группа
@@ -157,23 +158,23 @@
                         </div>
                     </div>
                     {% if is_create or task.type != task.TYPE_SEMINAR %}
-                    <div class="form-group row">
-                        <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_datepicker">Дата сдачи</label>
-                        <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
-                            <div class="input-group date task_datetime">
-                                <input class="form-control" id='task_edit_datepicker' name='deadline' type='text'  readonly value="{{task.deadline_time|date:'d-m-Y H:i'}}" style="background-color: white; cursor: pointer">
-                                <span class="input-group-addon" style="cursor: pointer;"><i class="fa fa-times fa-lg"></i></span>
-                                <span class="input-group-addon" style="cursor: pointer;"><i class="fa fa-calendar fa-lg"></i></span>
-                            </div>
-                            <small class="text-help" id="task_edit_datepicker_error_text"></small>
-                            <div id="task_edit_label_for_changed_task" class="collapse">
-                                <label class="form-control-label" for="task_edit_changed_task" style="font-weight: normal;white-space: nowrap;padding: 0px 3px 0px 0px;">
-                                    <input type="checkbox" name="changed_task" id="task_edit_changed_task" style="margin-left: 3px;">
-                                    <small class="text-muted">Уведомить студентов об изменении срока сдачи</small>
-                                </label>
+                        <div class="form-group row">
+                            <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_datepicker">Дата сдачи</label>
+                            <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
+                                <div class="input-group date task_datetime">
+                                    <input class="form-control" id='task_edit_datepicker' name='deadline' type='text'  readonly value="{{task.deadline_time|date:'d-m-Y H:i'}}" style="background-color: white; cursor: pointer">
+                                    <span class="input-group-addon" style="cursor: pointer;"><i class="fa fa-times fa-lg"></i></span>
+                                    <span class="input-group-addon" style="cursor: pointer;"><i class="fa fa-calendar fa-lg"></i></span>
+                                </div>
+                                <small class="text-help" id="task_edit_datepicker_error_text"></small>
+                                <div id="task_edit_label_for_changed_task" class="collapse">
+                                    <label class="form-control-label" for="task_edit_changed_task" style="font-weight: normal;white-space: nowrap;padding: 0px 3px 0px 0px;">
+                                        <input type="checkbox" name="changed_task" id="task_edit_changed_task" style="margin-left: 3px;">
+                                        <small class="text-muted">Уведомить студентов об изменении срока сдачи</small>
+                                    </label>
+                                </div>
                             </div>
                         </div>
-                    </div>
                     {% endif %}
                     <div class="form-group row">
                         <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_type"> Тип задачи</label>

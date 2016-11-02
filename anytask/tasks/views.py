@@ -326,6 +326,12 @@ def get_contest_problems(request):
                         content_type="application/json")
 
 
+def prettify_contest_task_text(task_text):
+    return task_text \
+        .replace('<table', '<table class="table table-sm"') \
+        .replace('src="', 'src="https://contest.yandex.ru')
+
+
 @login_required
 def contest_task_import(request):
     if not request.method == 'POST':
@@ -380,6 +386,11 @@ def contest_task_import(request):
     parent = None
     if parent_id is not None:
         parent = get_object_or_404(Task, id = parent_id)
+
+    if 'task_text' in request.POST:
+        task_text = request.POST['task_text'].strip()
+    else:
+        task_text = ''
 
     tasks = []
 
@@ -438,7 +449,13 @@ def contest_task_import(request):
             real_task.deadline_time = None
 
         real_task.title = task['task_title']
-        real_task.task_text = task['task_text'].replace('<table','<table class="table table-sm"').replace('src="', 'src="https://contest.yandex.ru')
+
+        if task_text:
+            real_task.task_text = task_text
+        elif task['task_text']:
+            real_task.task_text = prettify_contest_task_text(task['task_text'])
+        else:
+            real_task.task_text = ''
 
         if max_score:
             real_task.score_max = max_score
