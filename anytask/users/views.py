@@ -20,6 +20,7 @@ from courses.models import Course, StudentCourseMark
 from invites.models import Invite
 from issues.models import Issue
 from tasks.models import Task
+from schools.models import School
 from users.forms import InviteActivationForm
 
 from years.common import get_current_year
@@ -45,30 +46,27 @@ def profile(request, username=None, year=None):
     if username:
         user_to_show = get_object_or_404(User, username=username)
 
-    user_group_user_to_show = False
-    user_course_user_to_show = False
-    user_teach_user_to_show = False
-    user_to_show_teach_user = False
-    user_to_show_user_teachers = False
     show_email = True
+    user_above_user_to_show = True
 
     if user_to_show != user:
+        user_teach_user_to_show = False
+        user_to_show_teach_user = False
+        user_school_user_to_show = False
+        user_school_teach_user_to_show = False
+
         groups_user_to_show = user_to_show.group_set.all()
         groups = user.group_set.all()
 
-        if groups_user_to_show & groups:
-            user_group_user_to_show = True
-
         courses_user_to_show = Course.objects.filter(groups__in=groups_user_to_show)
+        schools_user_to_show = School.objects.filter(courses__in=courses_user_to_show)
         courses_user_to_show_teacher = Course.objects.filter(teachers=user_to_show)
+        schools_user_to_show_teacher = School.objects.filter(courses__in=courses_user_to_show_teacher)
+
         courses = Course.objects.filter(groups__in=groups)
+        schools = School.objects.filter(courses__in=courses)
         courses_teacher = Course.objects.filter(teachers=user)
-
-        if courses_user_to_show & courses:
-            user_course_user_to_show = True
-
-        if courses_user_to_show_teacher & courses_teacher:
-            user_to_show_user_teachers = True
+        schools_teacher = School.objects.filter(courses__in=courses_teacher)
 
         if courses_user_to_show_teacher & courses:
             user_to_show_teach_user = True
@@ -76,19 +74,21 @@ def profile(request, username=None, year=None):
         if courses_teacher & courses_user_to_show:
             user_teach_user_to_show = True
 
-        if not (user.is_staff or
-                user_group_user_to_show or
-                user_course_user_to_show or
-                user_to_show_user_teachers or
-                user_to_show_teach_user or
-                user_teach_user_to_show):
+        if (schools_user_to_show | schools_user_to_show_teacher) & (schools | schools_teacher):
+            user_school_user_to_show = True
+
+        if schools_teacher & schools_user_to_show:
+            user_school_teach_user_to_show = True
+
+        if not (user.is_staff or user_school_user_to_show):
             raise PermissionDenied
 
         show_email = user.is_staff or \
                      user_to_show.get_profile().show_email or \
                      user_teach_user_to_show or \
                      user_to_show_teach_user
-
+        user_above_user_to_show = user.is_staff or \
+                                  user_school_teach_user_to_show
 
     teacher_in_courses = Course.objects.filter(is_active=True).filter(teachers=user_to_show).distinct()
 
@@ -96,22 +96,6 @@ def profile(request, username=None, year=None):
         current_year = get_object_or_404(Year, start_year=year)
     else:
         current_year = get_current_year()
-
-    # tasks_taken = TaskTaken.objects.filter(user=user_to_show).filter(Q( Q(status=TaskTaken.STATUS_TAKEN) | Q(status=TaskTaken.STATUS_SCORED))).filter(task__course__is_active=True)
-
-    # course_x_tasks = {}
-    # course_x_scores = {}
-    # for task_taken in tasks_taken:
-    #     course = task_taken.task.course
-    #     course_x_scores.setdefault(course, 0)
-    #     task_end_date = task_taken.added_time + datetime.timedelta(days=course.max_days_without_score)
-    #     course_x_tasks.setdefault(course, [])
-    #     course_x_tasks[course].append((task_taken.task, task_taken.task.score_max, task_taken.score, task_end_date))
-    #     course_x_scores[course] += task_taken.score
-    #
-    # user_course_information = []
-    # for course in sorted(course_x_tasks.keys(), key=lambda x: x.name):
-    #     user_course_information.append((course,course_x_scores[course],course_x_tasks[course]))
 
     groups = user_to_show.group_set.all().distinct()
 
@@ -184,6 +168,7 @@ def profile(request, username=None, year=None):
         'can_sync_contest'          : can_sync_contest,
         'card_width'                : card_width,
         'show_email'                : show_email,
+        'user_above_user_to_show'   : user_above_user_to_show,
     }
 
     return render_to_response('user_profile.html', context, context_instance=RequestContext(request))
@@ -353,6 +338,23 @@ def user_courses(request, username=None, year=None):
     user_to_show = user
     if username:
         user_to_show = get_object_or_404(User, username=username)
+
+    if user_to_show != user:
+        user_school_teach_user_to_show = False
+
+        groups_user_to_show = user_to_show.group_set.all()
+
+        courses_user_to_show = Course.objects.filter(groups__in=groups_user_to_show)
+        schools_user_to_show = School.objects.filter(courses__in=courses_user_to_show)
+
+        courses_teacher = Course.objects.filter(teachers=user)
+        schools_teacher = School.objects.filter(courses__in=courses_teacher)
+
+        if schools_teacher & schools_user_to_show:
+            user_school_teach_user_to_show = True
+
+        if not (user.is_staff or user_school_teach_user_to_show):
+            raise PermissionDenied
 
     if year:
         current_year = get_object_or_404(Year, start_year=year)
