@@ -28,9 +28,11 @@
             <li class="nav-item active">
                 <a class="nav-link" href="{% url users.views.profile user_to_show %}">Профиль студента</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{% url users.views.user_courses username=user_to_show %}">Курсы студента</a>
-            </li>
+            {% if user_above_user_to_show %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url users.views.user_courses username=user_to_show %}">Курсы студента</a>
+                </li>
+            {% endif %}
         {% endif %}
     </ul>
 {% endblock navbar %}
