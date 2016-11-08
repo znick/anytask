@@ -136,7 +136,7 @@
                     <th class="no-font-weight"><b>Студент</b></th>
                     {% for task in group_tasks|key:group %}
                         {% if not task.is_hidden or user_is_teacher %}
-                            <th align="center" class="dom-number word-wrap">
+                            <th align="center" class="{% if task.type == task.TYPE_SIMPLE %}dom-live-number{% else %}dom-number{% endif %} word-wrap">
                                 <a {% if task.is_hidden %} style="color:gray" {% endif %} href="javascript:get_task_modal({{task.id}}, '{{task.title|escapejs}}',
                     '{{task.task_text|safe|escapejs}}',
                      {% if task.deadline_time %} '{{task.deadline_time|date:'d-m-Y H:i'}}' {% else %}''{% endif %})">
