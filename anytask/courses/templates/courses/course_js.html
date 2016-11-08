@@ -11,12 +11,17 @@
 <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.bootstrap4.min.js"></script>
 <script type="text/javascript" src="//cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/pdfmake.min.js"></script>
 <script type="text/javascript" src="//cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js"></script>
+<script src="{{ STATIC_URL }}tinymce/tinymce.min.js"></script>
+<script src="{{ STATIC_URL }}tinymce/jquery.tinymce.min.js"></script>
+<script src="{{ STATIC_URL }}prism.js"></script>
 
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap4.min.css"/>
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/colreorder/1.3.2/css/colReorder.bootstrap4.min.css"/>
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedcolumns/3.2.2/css/fixedColumns.bootstrap4.min.css"/>
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.2.2/css/buttons.bootstrap4.min.css"/>
-
+<link href="{{ STATIC_URL }}prism.css" rel='stylesheet' />
+<link href="{{ STATIC_URL }}tinymce-style-course.css" rel='stylesheet' />
+<link href="{{ STATIC_URL }}tinymce-style-task.css" rel='stylesheet' />
 
 <script type="text/javascript">
     $.fn.dataTable.ext.order['dom-number'] = function  ( settings, col )
@@ -37,14 +42,139 @@
         return !data ? '' : $('select option:selected', $(data)).text()
     };
 
-    $(document).ready(function() {
+    var readmore_opts = {
+        speed: 200,
+        collapsedHeight: 100,
+        moreLink: '<small><a href="#">Развернуть <i class="fa fa-chevron-down"></a></small>',
+        lessLink: '<small><a href="#">Свернуть <i class="fa fa-chevron-up"></a></small>'
+    };
 
-        $('#course-information').readmore({
-            speed: 200,
-            collapsedHeight: 100,
-            moreLink: '<small><a href="#">Развернуть <i class="fa fa-chevron-down"></a></small>',
-            lessLink: '<small><a href="#">Свернуть <i class="fa fa-chevron-up"></a></small>'
-        }).show();
+    $(document).ready(function() {
+        var info_width = $('#course-information').closest('.card').innerWidth();
+
+        $('#course-information').readmore(readmore_opts).show();
+
+        $('#edit_course_info_btn').click(function () {
+            if ($('#course-information').html())
+                tinyMCE.activeEditor.setContent($('#course-information').html());
+            $('#update_course_info_error_text').hide();
+            $("#course_info_edit").data('changed', false);
+            $('#modal_course_info_ok').data('btn_clicked', false).data('exit_modal', false);
+            $('#modal_course_information').modal('show');
+        });
+
+        $(document).on('focusin', function(e) {
+            if ($(e.target).closest(".mce-window").length) {
+                e.stopImmediatePropagation();
+            }
+        });
+
+        $("#course_info_edit").tinymce({
+            language: 'ru',
+            skin: 'bootstrap4',
+            resize: false,
+            content_css: [
+                'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css',
+                '{{ STATIC_URL }}tinymce-style-course.css',
+                '{{ STATIC_URL }}prism.css'
+            ],
+            setup: function(editor) {
+                editor.addButton('preview_text', {
+                    icon: false,
+                    text: 'Preview',
+                    cmd: 'mcePreview'
+                });
+                editor.addMenuItem('codesample', {
+                    icon: 'codesample',
+                    text: 'Insert/Edit code sample',
+                    cmd: 'codesample'
+                });
+                editor.on('change', function(e) {
+                    $("#course_info_edit").data('changed', true);
+                });
+            },
+            plugins: [
+                'autoresize advlist autolink lists link image charmap print preview hr anchor',
+                'searchreplace wordcount visualblocks visualchars code fullscreen',
+                'insertdatetime media nonbreaking table contextmenu directionality',
+                'textcolor colorpicker textpattern imagetools codesample'
+            ],
+            toolbar: 'undo redo | bold italic underline | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | image link hr codesample | preview_text',
+            autoresize_bottom_margin: 10,
+            autoresize_overflow_padding: 10,
+            autoresize_min_height: 300,
+            image_description: false,
+            link_assume_external_targets: true,
+            default_link_target: "_blank",
+            table_default_attributes: {
+                "class": 'table table-bordered table-comment'
+            },
+            textpattern_patterns: [
+                {start: '1. ', cmd: 'InsertOrderedList'}
+            ],
+            contextmenu: "link image codesample",
+            plugin_preview_width: info_width
+        });
+
+        $('#modal_course_information').on('hide.bs.modal', function (e) {
+            var modal_button_ok = $('#modal_course_info_ok');
+            if (!modal_button_ok.data('exit_modal')) {
+                if (!modal_button_ok.data('btn_clicked')) {
+                    if ($("#course_info_edit").data('changed'))
+                        if (confirm('Сохранить изменения?')) {
+                            modal_button_ok.click();
+                            e.preventDefault();
+                        }
+                }
+                else {
+                    e.preventDefault();
+                }
+            }
+        });
+
+        $('#modal_course_info_ok').click(function () {
+            var modal_button_ok = $(this);
+            if (!$("#course_info_edit").data('changed')) {
+                modal_button_ok.data('exit_modal', true);
+                modal_button_ok.closest('.modal').modal('hide');
+                return;
+            }
+
+            var d = 'disabled';
+
+            modal_button_ok.data('resetText', modal_button_ok.html());
+            modal_button_ok.html("<span class='fa fa-circle-o-notch fa-spin fa-fw'></span> Сохранение");
+            modal_button_ok.addClass(d).attr(d, d).prop(d, true);
+            modal_button_ok.data('btn_clicked', true);
+
+            $('#update_course_info_error_text').hide();
+
+            $.post('{% url courses.views.edit_course_information %}',
+                    {
+                        'csrfmiddlewaretoken' : "{{ csrf_token }}",
+                        'course_id' : {{ course.id }},
+                        'course_information' : $('#course_info_edit').val()
+                    })
+                    .always(function () {
+                        modal_button_ok.html(modal_button_ok.data('resetText'));
+                        modal_button_ok.removeClass(d).removeAttr(d).prop(d, false);
+                        modal_button_ok.data('btn_clicked', false);
+                    })
+                    .done(function (data) {
+                        if (data.info)
+                            $('#edit_course_info_btn').text('Редактировать информацию о курсе');
+                        else
+                            $('#edit_course_info_btn').text('Добавить информацию о курсе');
+
+                        $('#course-information').html(data.info).readmore('destroy').readmore('destroy').readmore(readmore_opts);
+                        modal_button_ok.data('exit_modal', true);
+                        modal_button_ok.closest('.modal').modal('hide');
+                    })
+                    .fail(function (data) {
+                        $('#update_course_info_error_text').show();
+                    });
+        });
+
 
         $("#btn_group_edit_course").sticky({
             topSpacing: $('.navbar').outerHeight()
@@ -387,7 +517,7 @@
 
                     var is_disabled = '';
                     if ($(this).data('task_disabled_groups').indexOf(groups[i]) > -1)
-                            is_disabled = 'disabled';
+                        is_disabled = 'disabled';
 
                     group_ul += '<li><label class="checkbox '+ is_disabled + '"><input type="checkbox" name="task_group[]" value="' + groups[i] + '" ' +
                             is_checked + ' ' + is_disabled + '> ' + $('#group_sort_' + groups[i]).find('p.modal-group-name').text() +
@@ -576,6 +706,11 @@
     {
         $('#modal_header_task_descr').html(task_title);
         $('#modal_body_task_descr').html(task_text_to_show);
+
+        var codesample = $('pre[class*="language-"]', '#modal_body_task_descr')[0];
+        if (codesample)
+            Prism.highlightElement(codesample);
+
         if (deadline != ''){
             $('#modal_header_deadline_time').html('<strong>Дата сдачи: ' + deadline + ' MSK UTC+3</strong>');
         }
@@ -589,7 +724,7 @@
 
     function get_edit_course_modal(course_id, course_desc)
     {
-        $('#course_information').val(course_desc);
+        $('#course_info_edit').val(course_desc);
 
         var href_string = "javascript:edit_course_info(" + course_id + ");";
         $('#modal_course_info_ok').attr('href', href_string);
@@ -599,7 +734,7 @@
 
     function edit_course_info(course_id, group_id, parent_id)
     {
-        var course_info = $('#course_information').val();
+        var course_info = $('#course_info_edit').val();
 
         var csrf_token = "{{ csrf_token }}";
 

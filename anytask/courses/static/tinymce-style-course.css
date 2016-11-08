@@ -1,0 +1,26 @@
+.mce-content-body:not([contenteditable='true']) {
+    padding: 1.25rem;
+}
+.mce-content-body p,
+#course-information p{
+    margin-bottom: 0 !important;
+}
+.mce-content-body blockquote,
+#course-information blockquote {
+    margin: 0 0 0 1rem !important;
+    font-style: italic;
+    color: #555;
+}
+.mce-content-body li,
+#course-information li {
+    padding: 0;
+}
+.mce-content-body img,
+#course-information img {
+    max-width: 100%;
+    height: auto;
+}
+.mce-content-body .table-comment td,
+#course-information .table-comment td {
+    border-color: #373a3c
+}

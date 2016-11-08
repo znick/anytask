@@ -275,11 +275,11 @@ class Issue(models.Model):
                             if ext == extension:
                                 sent, message = upload_contest(event, ext, uploaded_file, compiler_id=value['compilers'][file_id])
                                 if sent:
-                                    value['comment'] += u"Отправлено на проверку в Я.Контест"
+                                    value['comment'] += u"<p>Отправлено на проверку в Я.Контест</p>"
                                     if self.status_field.tag != IssueStatus.STATUS_ACCEPTED:
                                         self.set_status_by_tag(IssueStatus.STATUS_AUTO_VERIFICATION)
                                 else:
-                                    value['comment'] += u"Ошибка отправки в Я.Контест ('{0}').".format(message)
+                                    value['comment'] += u"<p>Ошибка отправки в Я.Контест('{0}').</p>".format(message)
                                     self.followers.add(User.objects.get(username='anytask.monitoring'))
                                 break
 
@@ -290,11 +290,10 @@ class Issue(models.Model):
                                 anyrb = AnyRB(event)
                                 review_request_id = anyrb.upload_review()
                                 if review_request_id is not None:
-                                    value['comment'] += '\n' + \
-                                              u'<a href="{1}/r/{0}">Review request {0}</a>'. \
-                                              format(review_request_id,settings.RB_API_URL)
+                                    value['comment'] += u'<p><a href="{1}/r/{0}">Review request {0}</a></p>'. \
+                                        format(review_request_id,settings.RB_API_URL)
                                 else:
-                                    value['comment'] += '\n' + u'Ошибка отправки в Review Board.'
+                                    value['comment'] += u'<p>Ошибка отправки в Review Board.</p>'
                                     self.followers.add(User.objects.get(username='anytask.monitoring'))
                                 break
 
@@ -303,7 +302,7 @@ class Issue(models.Model):
                     return
                 else:
                     self.update_time = datetime.now()
-                    value = value['comment']
+                    value = u'<div class="issue-page-comment not-sanitize">' + value['comment'] + u'</div>'
 
                 if self.status_field.tag != IssueStatus.STATUS_AUTO_VERIFICATION \
                         and self.status_field.tag != IssueStatus.STATUS_ACCEPTED:

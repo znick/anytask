@@ -139,13 +139,6 @@ def profile(request, username=None, year=None):
                 user_profile.avatar.save(filename, image_content)
 
             user_profile.save()
-        elif 'update-info' in request.POST:
-            try:
-                user_info = request.POST['user-info'].strip()
-            except ValueError:  # not int
-                return HttpResponseForbidden()
-            user_profile.info = user_info
-            user_profile.save()
         else:
             invite_form = InviteActivationForm(request.POST)
             if invite_form.is_valid():
@@ -437,4 +430,26 @@ def activate_invite(request):
                             content_type="application/json")
 
     return HttpResponse(json.dumps({"is_error": False}),
+                        content_type="application/json")
+
+
+@login_required
+def ajax_edit_user_info(request):
+    if not request.method == 'POST' and not request.is_ajax():
+        return HttpResponseForbidden()
+
+    user = request.user
+    user_profile = user.get_profile()
+
+    user_info = ''
+    if 'user-info' in request.POST:
+        user_info = request.POST['user-info'].strip()
+
+    if user_info and not user_info.startswith(u'<div class="not-sanitize">'):
+        user_info = u'<div class="not-sanitize">' + user_info + u'</div>'
+
+    user_profile.info = user_info
+    user_profile.save()
+
+    return HttpResponse(json.dumps({'info': user_info}),
                         content_type="application/json")

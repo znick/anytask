@@ -14,6 +14,13 @@
     });
 
 </script>
+
+<style>
+    .mce-tinymce {
+        margin-bottom: 1rem;
+    }
+</style>
+
 <div class="card card-block">
     <ul class="history">
         {% if issue.get_history.count > events_to_show %}
@@ -56,7 +63,7 @@
                             <img class="avatar" src="{% if not event.author.get_profile.avatar %}https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mm&f=y
                         {% else %}{{ event.author.get_profile.avatar.url }}{% endif %}" style="width: 50px; height: 50px;">
                         </a>
-{#                        <i class="fa {% if event.author == user %}fa-empire{% else %}fa-rebel{% endif %} fa-3x" aria-hidden="true"></i>#}
+                        {#                        <i class="fa {% if event.author == user %}fa-empire{% else %}fa-rebel{% endif %} fa-3x" aria-hidden="true"></i>#}
                     </div>
                     <div class="col-xs-11">
                         <div class="{% if event.author == user %}mine{% else %}not_mine{% endif %} history-body

@@ -11,4 +11,5 @@ urlpatterns = patterns('users.views',
     url(r'^(?P<username>.*)/courses', 'user_courses'),
     url(r'^activate_invite$', 'activate_invite'),
     url(r'^settings$', 'profile_settings'),
+    url(r'^ajax_edit_user_info$', 'ajax_edit_user_info'),
 )

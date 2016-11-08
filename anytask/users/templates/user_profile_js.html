@@ -1,0 +1,184 @@
+<script src="{{ STATIC_URL }}jquery.stickytableheaders.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/spark-md5/2.0.2/spark-md5.min.js"></script>
+<script src="{{ STATIC_URL }}tinymce/tinymce.min.js"></script>
+<script src="{{ STATIC_URL }}tinymce/jquery.tinymce.min.js"></script>
+<script src="{{ STATIC_URL }}prism.js"></script>
+
+<link href="{{ STATIC_URL }}prism.css" rel='stylesheet' />
+<link href="{{ STATIC_URL }}tinymce-style-user.css" rel='stylesheet' />
+
+<script type="text/javascript">
+
+    $(document).ready(function() {
+        $('#avatar').click(function () {
+            $('#modal_avatar_view').modal('show');
+        });
+
+        $('.switch-tab').click(function () {
+            $(this).tab('show');
+            $(this).removeClass('active');
+        });
+
+        {% if user == user_to_show %}
+            $('#get-gravatar').click(function () {
+                var gravatar_link = 'https://www.gravatar.com/avatar/' + SparkMD5.hash('{{ user_to_show.email }}') + '?d=identicon';
+                $('#edit-avatar').attr({src: gravatar_link});
+                input_avatar = $('#input-avatar');
+                input_avatar.replaceWith(input_avatar.val('').clone(true));
+                $('#gravatar-link').val(gravatar_link);
+
+            });
+
+            $('#dismiss-avatar').click(function () {
+                var gravatar_link = 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mm&f=y';
+                $('#edit-avatar').attr({src: gravatar_link});
+                input_avatar = $('#input-avatar');
+                input_avatar.replaceWith(input_avatar.val('').clone(true));
+                $('#gravatar-link').val(gravatar_link);
+            });
+
+
+            $('#invites_form_button').click(function () {
+                $('#invites_form_button').hide();
+                $('#invites_form').show();
+            });
+
+
+            $('.edit-icon').click(function () {
+                $('#edit-avatar').attr({src: $('#avatar').attr('src')});
+                $('#modal_avatar_edit').modal('show');
+                input_avatar = $('#input-avatar');
+                input_avatar.replaceWith(input_avatar.val('').clone(true));
+                $('#gravatar-link').val('');
+            });
+
+            $(document).on('focusin', function(e) {
+                if ($(e.target).closest(".mce-window").length) {
+                    e.stopImmediatePropagation();
+                }
+            });
+            var info_width = $('#user_info_body').closest('.card').innerWidth();
+
+            $('#user_info_edit_btn').click(function () {
+                if ($('#user_info_body').html())
+                    tinyMCE.activeEditor.setContent($('#user_info_body').html());
+                $('#update_user_info_error_text').hide();
+                $("#user_info").data('changed', false);
+                $('#modal_user_info_ok').data('btn_clicked', false).data('exit_modal', false);
+                $('#modal_user_info_edit').modal('show');
+            });
+
+
+            $("#user_info").tinymce({
+                language: 'ru',
+                skin: 'bootstrap4',
+                resize: false,
+                content_css: [
+                    'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css',
+                    '{{ STATIC_URL }}tinymce-style-user.css',
+                    '{{ STATIC_URL }}prism.css'
+                ],
+                setup: function(editor) {
+                    editor.addButton('preview_text', {
+                        icon: false,
+                        text: 'Preview',
+                        cmd: 'mcePreview'
+                    });
+                    editor.addMenuItem('codesample', {
+                        icon: 'codesample',
+                        text: 'Insert/Edit code sample',
+                        cmd: 'codesample'
+                    });
+                    editor.on('change', function(e) {
+                        $("#user_info").data('changed', true);
+                    });
+                },
+                plugins: [
+                    'autoresize advlist autolink lists link image charmap preview hr anchor',
+                    'searchreplace wordcount visualblocks visualchars code fullscreen',
+                    'insertdatetime media nonbreaking table contextmenu directionality',
+                    'textcolor colorpicker textpattern imagetools codesample'
+                ],
+                toolbar: 'undo redo | bold italic underline | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | image link hr codesample | preview_text',
+                autoresize_bottom_margin: 10,
+                autoresize_overflow_padding: 10,
+                autoresize_min_height: 300,
+                image_description: false,
+                link_assume_external_targets: true,
+                default_link_target: "_blank",
+                table_default_attributes: {
+                    "class": 'table table-bordered table-comment'
+                },
+                textpattern_patterns: [
+                    {start: '1. ', cmd: 'InsertOrderedList'}
+                ],
+                contextmenu: "link image codesample",
+                plugin_preview_width: info_width
+            });
+
+            $('#modal_user_info_edit').on('hide.bs.modal', function (e) {
+                var modal_button_ok = $('#modal_user_info_ok');
+                if (!modal_button_ok.data('exit_modal')) {
+                    if (!modal_button_ok.data('btn_clicked')) {
+                        if ($("#user_info").data('changed'))
+                            if (confirm('Сохранить изменения?')) {
+                                modal_button_ok.click();
+                                e.preventDefault();
+                            }
+                    }
+                    else {
+                        e.preventDefault();
+                    }
+                }
+            });
+
+            $('#modal_user_info_ok').click(function () {
+                var modal_button_ok = $(this);
+                if (!$("#user_info").data('changed')) {
+                    modal_button_ok.data('exit_modal', true);
+                    modal_button_ok.closest('.modal').modal('hide');
+                    return;
+                }
+
+                var d = 'disabled';
+
+                modal_button_ok.data('resetText', modal_button_ok.html());
+                modal_button_ok.html("<span class='fa fa-circle-o-notch fa-spin fa-fw'></span> Сохранение");
+                modal_button_ok.data('btn_clicked', true);
+                $('.modal-footer', '#modal_user_info_edit').find('button').addClass(d).attr(d, d).prop(d, true);
+
+                $('#update_user_info_error_text').hide();
+
+                $.post('{% url users.views.ajax_edit_user_info %}', $('#user-info-form').serialize())
+                        .always(function () {
+                            modal_button_ok.html(modal_button_ok.data('resetText'));
+                            modal_button_ok.data('btn_clicked', false);
+                            $('.modal-footer', '#modal_user_info_edit').find('button').removeClass(d).removeAttr(d).prop(d, false);
+                        })
+                        .done(function (data) {
+                            $('#user_info_body').html(data.info);
+                            modal_button_ok.data('exit_modal', true);
+                            modal_button_ok.closest('.modal').modal('hide');
+                        })
+                        .fail(function (data) {
+                            $('#update_user_info_error_text').show();
+                        });
+            });
+        {% endif %}
+    });
+
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                $('#edit-avatar')
+                        .attr('src', e.target.result)
+            };
+
+            reader.readAsDataURL(input.files[0]);
+
+            $('#gravatar-link').val('');
+        }
+    }
+</script>
