@@ -70,7 +70,7 @@ class FilenameExtension(models.Model):
 
 
 class MarkField(models.Model):
-    name = models.CharField(max_length=254, db_index=True, null=False, blank=False)
+    name = models.CharField(max_length=191, db_index=True, null=False, blank=False)
     name_int = models.IntegerField(db_index=False, null=False, blank=False, default=0)
 
     def __unicode__(self):
@@ -78,7 +78,7 @@ class MarkField(models.Model):
 
 
 class CourseMarkSystem(models.Model):
-    name = models.CharField(max_length=254, db_index=False, null=False, blank=False)
+    name = models.CharField(max_length=191, db_index=False, null=False, blank=False)
     marks = models.ManyToManyField(MarkField, null=True, blank=True)
 
     def __unicode__(self):
@@ -87,8 +87,8 @@ class CourseMarkSystem(models.Model):
 
 class Course(models.Model):
 
-    name = models.CharField(max_length=254, db_index=True, null=False, blank=False)
-    name_id = models.CharField(max_length=254, db_index=True, null=True, blank=True)
+    name = models.CharField(max_length=191, db_index=True, null=False, blank=False)
+    name_id = models.CharField(max_length=191, db_index=True, null=True, blank=True)
 
     information = models.TextField(db_index=False, null=True, blank=True)
 

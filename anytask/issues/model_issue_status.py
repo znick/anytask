@@ -28,8 +28,8 @@ class IssueStatus(models.Model):
         (STATUS_SEMINAR, _(STATUS_SEMINAR))
     )
 
-    name = models.CharField(max_length=254, db_index=True, null=False, blank=False)
-    tag = models.CharField(max_length=254, db_index=False, null=True, blank=True, choices=ISSUE_STATUSES)
+    name = models.CharField(max_length=191, db_index=True, null=False, blank=False)
+    tag = models.CharField(max_length=191, db_index=False, null=True, blank=True, choices=ISSUE_STATUSES)
     color = ColorField(default=COLOR_DEFAULT)
 
     hidden = models.BooleanField(default=False)
@@ -39,7 +39,7 @@ class IssueStatus(models.Model):
 
 
 class IssueStatusSystem(models.Model):
-    name = models.CharField(max_length=254, db_index=False, null=False, blank=False)
+    name = models.CharField(max_length=191, db_index=False, null=False, blank=False)
     statuses = models.ManyToManyField(IssueStatus, null=True, blank=True)
 
     def __unicode__(self):

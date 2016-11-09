@@ -116,10 +116,10 @@ class FieldReadOnlyPlugin(FieldDefaultPlugin):
 
 
 class IssueField(models.Model):
-    name = models.CharField(max_length=250)
-    title = models.CharField(max_length=250, blank=True)
-    history_message = models.CharField(max_length=250, blank=True)
-    plugin = models.CharField(max_length=250, default='FieldDefaultPlugin')
+    name = models.CharField(max_length=191)
+    title = models.CharField(max_length=191, blank=True)
+    history_message = models.CharField(max_length=191, blank=True)
+    plugin = models.CharField(max_length=191, default='FieldDefaultPlugin')
     plugin_version = models.CharField(max_length=50, default='0.1')
 
     _PLUGIN = dict()

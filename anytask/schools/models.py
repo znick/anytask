@@ -6,8 +6,8 @@ from courses.models import Course
 
 class School(models.Model):
 
-    name = models.CharField(max_length=254, db_index=True, null=False, blank=False)
-    link = models.CharField(max_length=254, db_index=False, null=False, blank=False)
+    name = models.CharField(max_length=191, db_index=True, null=False, blank=False)
+    link = models.CharField(max_length=191, db_index=False, null=False, blank=False)
     courses = models.ManyToManyField(Course, null=True, blank=True)
 
     def get_absolute_url(self):
