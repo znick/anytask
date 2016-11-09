@@ -256,7 +256,7 @@
             },
 
             errorPlacement: function (error, element) {
-                $(element).siblings('small.text-help').empty().append(error);
+                $(element).closest("div.controls").find('small.text-help').empty().append(error);
             }
         });
 
@@ -307,7 +307,7 @@
                             labels.push($(this).attr('label'));
                         }
                         else {
-                            labels.push($(this).html());
+                            labels.push($(this).text());
                         }
                     });
                     return labels.join(', ') + '';
@@ -324,6 +324,9 @@
                 form_validator.element('#task_edit_group');
             },
             onSelectAll: function() {
+                form_validator.element('#task_edit_group');
+            },
+            onDeselectAll: function() {
                 form_validator.element('#task_edit_group');
             }
 

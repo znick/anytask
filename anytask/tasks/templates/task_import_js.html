@@ -98,7 +98,7 @@
                 }
                 else {
                     $('#get_tasks').show();
-                    $('#task_contest_id_error_text').empty().append(data.error);
+                    $('#task_contest_id_error_text').empty().append('<label for="task_contest_id" generated="true" class="error">' + data.error + '</label>');
                     $('#task_contest_id_error_text').closest('.form-group').removeClass('has-success').addClass('has-danger');
                     $('#task_contest_id').removeClass('form-control-success').addClass('form-control-danger');
                 }
@@ -201,7 +201,7 @@
                 if (element.attr('name') == 'contest_problems[]')
                     $('#contest_problems_error_text').empty().append(error);
                 else
-                    $(element).siblings('small.text-help').empty().append(error);
+                    $(element).closest("div.controls").find('small.text-help').empty().append(error);
             }
         });
 
@@ -235,7 +235,7 @@
                         }
                         else {
                             $('#get_tasks').show();
-                            $('#task_contest_id_error_text').empty().append(data.error);
+                            $('#task_contest_id_error_text').empty().append('<label for="task_contest_id" generated="true" class="error">' + data.error + '</label>');
                             $('#task_contest_id_error_text').closest('.form-group').removeClass('has-success').addClass('has-danger');
                             $('#task_contest_id').removeClass('form-control-success').addClass('form-control-danger');
                         }
@@ -254,7 +254,7 @@
                             $('#task_group').removeClass('need-validate');
                             $('#task_contest_id').show();
                             $('#contest_problems').empty();
-                            $('#task_contest_id_error_text').empty().append(data.error);
+                            $('#task_contest_id_error_text').empty().append('<label for="task_contest_id" generated="true" class="error">' + data.error + '</label>');
                             $('#task_contest_id_error_text').closest('.form-group').removeClass('has-success').addClass('has-danger');
                             $('#task_contest_id').removeClass('form-control-success').addClass('form-control-danger');
                             remove_disabled();
@@ -331,6 +331,9 @@
                 form_validator.element('#task_group');
             },
             onSelectAll: function() {
+                form_validator.element('#task_group');
+            },
+            onDeselectAll: function() {
                 form_validator.element('#task_group');
             }
 

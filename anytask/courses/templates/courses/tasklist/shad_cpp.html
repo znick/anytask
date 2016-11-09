@@ -230,10 +230,10 @@
                             <td>&nbsp;</td>
                         {% endfor %}
                         <td align="center" class="sum-score">
-                            {# <span class="label {% if student_summ_score %} {% if student_summ_score == group_x_max_score|key:group %} label-success {% else %} label-info {% endif %} {% else %} label-important {% endif %}"> #}
-                            <span class="label label-inverse">
-                {{ student_summ_score }}
-              </span>
+                            <div>
+                                {# <span class="label {% if student_summ_score %} {% if student_summ_score == group_x_max_score|key:group %} label-success {% else %} label-info {% endif %} {% else %} label-important {% endif %}"> #}
+                                <span class="label label-inverse">{{ student_summ_score }}</span>
+                            </div>
                         </td>
                         {% if course_mark_system_vals %}
                             <td align="center">

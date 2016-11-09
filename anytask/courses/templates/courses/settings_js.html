@@ -117,7 +117,7 @@
                             labels.push($(this).attr('label'));
                         }
                         else {
-                            labels.push($(this).html());
+                            labels.push($(this).text());
                         }
                     });
                     return labels.join(', ') + '';
