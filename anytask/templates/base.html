@@ -576,7 +576,10 @@
 <footer class="footer">
     <div class="container">
         {% block footer %} {% endblock footer %}
-        <small class="text-muted pull-xs-right">Пишите нам на <a href="mailto:anytask@yandex.ru">anytask@yandex.ru</a></small>
+        <div style="display: inline-block; width: 100%">
+            <small class="text-muted" ><a href="{% url blog.views.blog_page %}">Блог</a></small>
+            <small class="text-muted pull-xs-right" >Пишите нам на <a href="mailto:anytask@yandex.ru">anytask@yandex.ru</a></small>
+        </div>
     </div>
 </footer>
 
