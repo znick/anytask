@@ -286,7 +286,7 @@ class Issue(models.Model):
                     if self.task.rb_integrated and (course.send_rb_and_contest_together or not self.task.contest_integrated):
                         for ext in settings.RB_EXTENSIONS + [str(ext.name) for ext in course.filename_extensions.all()]:
                             filename, extension = os.path.splitext(file.name)
-                            if ext == extension:
+                            if ext == extension or ext == '.*':
                                 anyrb = AnyRB(event)
                                 review_request_id = anyrb.upload_review()
                                 if review_request_id is not None:
