@@ -37,8 +37,8 @@ class Command(BaseCommand):
                                 issue.set_status_by_tag(IssueStatus.STATUS_ACCEPTED)
                             if issue.task.course.id in settings.COURSES_WITH_CONTEST_MARKS:
                                 student_profile = issue.student.get_profile()
-                                if student_profile.ya_login:
-                                    mark = get_contest_mark(task.contest_id, task.problem_id, student_profile.ya_login)
+                                if student_profile.ya_contest_login:
+                                    mark = get_contest_mark(task.contest_id, task.problem_id, student_profile.ya_contest_login)
                                     if mark and float(mark) > 0:
                                         issue.set_byname('mark', float(mark))
                             comment_verdict(issue, verdict, comment)

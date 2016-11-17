@@ -92,6 +92,10 @@
                         <br>
                         {% if show_email %}
                             <small class="text-muted">{{ user_to_show.email }}</small>
+                            <div class="social-acc-info">
+                                <small class="text-muted">Яндекс.Почта&nbsp;</small>
+                                <small class="text-muted">{{ user_to_show_profile.ya_passport_email }}</small>
+                            </div>
                         {% endif %}
                     </h5>
                     {% if user == user_to_show and can_generate_invites %}
@@ -102,7 +106,7 @@
 
             {% if request.user == user_to_show %}
                 {% if can_sync_contest %}
-                    {% if not user_profile.ya_contest_oauth %}
+                    {% if not user_to_show_profile.ya_contest_oauth %}
                         <div class="card card-inverse card-warning">
                             <div class="card-block">
                                 <h5 class="card-title">Привязать профиль Яндекс.Контеста</h5>
@@ -119,7 +123,7 @@
                             <div class="card-block">
                                 <h5 class="card-title">Привязать профиль Яндекс.Контеста</h5>
                                 <p class="card-text">
-                                    <strong>Вы привязали профиль {{ user.get_profile.ya_login }}.</strong> Теперь все посылки в соревнования будут отправляться от Вашего имени. Для того, чтобы отвязать свой профиль обратитесь к <a href="mailto:anytask@yandex.ru">администратору</a>.
+                                    <strong>Вы привязали профиль {{ user.get_profile.ya_contest_login }}.</strong> Теперь все посылки в соревнования будут отправляться от Вашего имени. Для того, чтобы отвязать свой профиль обратитесь к <a href="mailto:anytask@yandex.ru">администратору</a>.
                                 </p>
                                 <a href="/user/ya_oauth_request/contest" type="button" class="btn btn-secondary">
                                     Обновить привязку текущего профиля

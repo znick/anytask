@@ -111,11 +111,19 @@
                                             </td>
                                         </tr>
                                         {% if user_is_teacher or user.is_staff %}
-                                            {% if up.ya_login  %}
+                                            {% if up.ya_contest_login  %}
                                                 <tr>
                                                     <td></td>
                                                     <td>
-                                                        {{ up.ya_login }}@ <small class="text-muted">Я.Контест</small>
+                                                        {{ up.ya_contest_login }}@ <small class="text-muted">Я.Контест</small>
+                                                    </td>
+                                                </tr>
+                                            {% endif %}
+                                            {% if up.ya_passport_email  %}
+                                                <tr>
+                                                    <td></td>
+                                                    <td>
+                                                        {{ up.ya_passport_email }} <small class="text-muted">Я.Почта</small>
                                                     </td>
                                                 </tr>
                                             {% endif %}

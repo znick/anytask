@@ -51,10 +51,11 @@
                                 return {
                                     'fullname': user[0],
                                     'username': user[1],
-                                    'ya_login': user[2],
+                                    'ya_contest_login': user[2],
                                     'url': user[3],
                                     'avatar': user[4],
-                                    'email': user[5]
+                                    'email': user[5],
+                                    'ya_passport_email': user[6]
                                 };
                             });
                         }
@@ -101,18 +102,22 @@
                                             '<tr><td></td><td><strong>Логины</strong></td></tr>' +
                                             '<tr><td></td><td>{4}@ <small class="text-muted">Anytask</small></td></tr>' +
                                             '{5}' +
+                                            '{6}' +
                                             '</table></div>';
                                     var email_html = '';
-                                    var ya_login_html = '';
+                                    var ya_contest_login_html = '';
+                                    var ya_passport_email_html = '';
                                     var avatar = data.avatar;
 
                                     if (!avatar)
                                         avatar = 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mm&f=y';
                                     if (data.email)
                                         email_html = '<div class="sgs-email">{0}</div>'.format(data.email);
-                                    if (data.ya_login)
-                                        ya_login_html = '<tr><td></td><td>{0}@ <small class="text-muted">Я.Контест</small></td></tr>'.format(data.ya_login);
-                                    return table_html.format(data.url, avatar, data.fullname, email_html, data.username, ya_login_html)
+                                    if (data.ya_contest_login)
+                                        ya_contest_login_html = '<tr><td></td><td>{0}@ <small class="text-muted">Я.Контест</small></td></tr>'.format(data.ya_contest_login);
+                                    if (data.ya_passport_email)
+                                        ya_passport_email_html = '<tr><td></td><td>{0} <small class="text-muted">Я.Почта</small></td></tr>'.format(data.ya_passport_email);
+                                    return table_html.format(data.url, avatar, data.fullname, email_html, data.username, ya_contest_login_html, ya_passport_email_html)
                                 },
                                 {#                            footer: '<div><a href="#">Все результаты</a></div>'#}
                             }

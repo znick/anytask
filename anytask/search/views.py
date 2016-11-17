@@ -9,6 +9,7 @@ from haystack.query import SearchQuerySet
 
 from users.models import UserProfile
 from courses.models import Course
+from schools.models import School
 import json
 
 
@@ -71,36 +72,54 @@ def search_users(query, user, max_result=None):
         sgs_login = sgs.autocomplete(login_auto=query)
 
         if user_is_staff or user_is_teacher:
-            sgs_ya_login = sgs.autocomplete(ya_login_auto=query)
+            sgs_ya_contest_login = sgs.autocomplete(ya_contest_login_auto=query)
+            sgs_ya_passport_email = sgs.autocomplete(ya_passport_email_auto=query)
         else:
-            sgs_ya_login = sgs.none()
+            sgs_ya_contest_login = sgs.none()
+            sgs_ya_passport_email = sgs.none()
 
-        sgs = sgs_fullname | sgs_ya_login | sgs_login
+        sgs = sgs_fullname | sgs_login | sgs_ya_contest_login | sgs_ya_passport_email
 
         if not user_is_staff:
             groups = user.group_set.all()
             courses = Course.objects.filter(groups__in=groups)
+            schools = School.objects.filter(courses__in=courses)
             courses_teacher = Course.objects.filter(teachers=user)
+            schools_teacher = School.objects.filter(courses__in=courses_teacher)
 
             for sg in sgs:
                 user_to_show = sg.object.user
                 groups_user_to_show = user_to_show.group_set.all()
+                courses_user_to_show = Course.objects.filter(groups__in=groups_user_to_show)
+                schools_user_to_show = School.objects.filter(courses__in=courses_user_to_show)
+                courses_user_to_show_teacher = Course.objects.filter(teachers=user_to_show)
+                schools_user_to_show_teacher = School.objects.filter(courses__in=courses_user_to_show_teacher)
 
-                if not (groups_user_to_show & groups):
-                    courses_user_to_show = Course.objects.filter(groups__in=groups_user_to_show)
-                    if not (courses_user_to_show & courses):
-                        courses_user_to_show_teacher = Course.objects.filter(teachers=user_to_show)
-                        if not (courses_user_to_show_teacher & courses_teacher or
-                                        courses_user_to_show_teacher & courses or
-                                        courses_teacher & courses_user_to_show):
-                            continue
+                user_school_user_to_show = False
+                if (schools_user_to_show | schools_user_to_show_teacher) & (schools | schools_teacher):
+                    user_school_user_to_show = True
+
+                if not user_school_user_to_show:
+                    continue
+                user_to_show_teach_user = False
+                if courses_user_to_show_teacher & courses:
+                    user_to_show_teach_user = True
+
+                user_teach_user_to_show = False
+                if courses_teacher & courses_user_to_show:
+                    user_teach_user_to_show = True
+
+                show_email = user_to_show.get_profile().show_email or \
+                             user_teach_user_to_show or \
+                             user_to_show_teach_user
 
                 result.append([user_to_show.get_full_name(),
                                user_to_show.username,
-                               sg.object.ya_login if user_is_teacher else '',
+                               sg.object.ya_contest_login if user_is_teacher else '',
                                user_to_show.get_absolute_url(),
                                sg.object.avatar.url if sg.object.avatar else '',
-                               user_to_show.email])
+                               user_to_show.email if show_email else '',
+                               user_to_show.ya_passport_email if show_email else ''])
                 result_objs.append(sg.object)
 
                 if len(result) == max_result:
@@ -110,10 +129,11 @@ def search_users(query, user, max_result=None):
             for sg in sgs[:max_result]:
                 result.append([sg.object.user.get_full_name(),
                                sg.object.user.username,
-                               sg.object.ya_login,
+                               sg.object.ya_contest_login,
                                sg.object.user.get_absolute_url(),
                                sg.object.avatar.url if sg.object.avatar else '',
-                               sg.object.user.email])
+                               sg.object.user.email,
+                               sg.object.ya_passport_email])
                 result_objs.append(sg.object)
 
     return result, result_objs

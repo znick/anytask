@@ -108,11 +108,12 @@ def profile(request, username=None, year=None):
 
     can_generate_invites = user_to_show == user and Invite.user_can_generate_invite(user)
 
-    user_profile = user.get_profile()
+
 
     invite_form = InviteActivationForm()
 
     if request.method == 'POST':
+        user_profile = user.get_profile()
         if 'update-avatar' in request.POST:
             filename = 'avatar'
             if 'input-avatar' in request.FILES:
@@ -157,7 +158,7 @@ def profile(request, username=None, year=None):
         'current_year'              : unicode(current_year) if current_year is not None else '',
         'can_generate_invites'      : can_generate_invites,
         'invite_form'               : invite_form,
-        'user_profile'              : user_profile,
+        'user_to_show_profile'              : user_to_show.get_profile(),
         'can_sync_contest'          : can_sync_contest,
         'card_width'                : card_width,
         'show_email'                : show_email,
@@ -199,61 +200,98 @@ def profile_settings(request):
 
 
 def ya_oauth_request(request, type_of_oauth):
-
     if type_of_oauth == 'contest':
         OAUTH = settings.CONTEST_OAUTH_ID
         PASSWORD = settings.CONTEST_OAUTH_PASSWORD
     elif type_of_oauth == 'passport':
         OAUTH = settings.PASSPORT_OAUTH
+        PASSWORD = settings.PASSPORT_OAUTH_PASSWORD
 
     ya_oauth = yandex_oauth.OAuthYandex(OAUTH,PASSWORD)
 
     return redirect(ya_oauth.get_code())
 
 
-def ya_oauth_response(request, type_of_oauth):
-    if request.method == 'GET':
-        user = request.user
-        user_profile = user.get_profile()
+def ya_oauth_contest(user, ya_response, ya_contest_response):
+    user_profile = user.get_profile()
+    if not user_profile.ya_contest_oauth:
+        users_with_ya_contest_oauth = UserProfile.objects.all().filter(~Q(ya_contest_login=''))
 
-        if type_of_oauth == 'contest':
-            OAUTH = settings.CONTEST_OAUTH_ID
-            PASSWORD = settings.CONTEST_OAUTH_PASSWORD
-        elif type_of_oauth == 'passport':
-            OAUTH = settings.PASSPORT_OAUTH
-            PASSWORD = settings.PASSPORT_OAUTH_PASSWORD
+        for user in users_with_ya_contest_oauth:
+            if user.ya_contest_login == ya_contest_response['login'] or user.ya_contest_uid == \
+                    ya_contest_response['id']:
+                return redirect('users.views.ya_oauth_forbidden')
 
-        ya_oauth = yandex_oauth.OAuthYandex(OAUTH, PASSWORD)
-        ya_response = ya_oauth.get_token(int(request.GET['code']))
-        ya_passport_response = requests.get('https://login.yandex.ru/info?json&oauth_token=' + ya_response['access_token'])
-
-        if not user_profile.ya_contest_oauth:
-            users_with_ya_contest_oauth = UserProfile.objects.all().filter(~Q(ya_login=''))
-
-            for user in users_with_ya_contest_oauth:
-                if user.ya_login == ya_passport_response.json()['login'] or user.ya_uid == ya_passport_response.json()['id']:
-                    return redirect('users.views.ya_oauth_forbidden')
-
-        if not user_profile.ya_contest_oauth or user_profile.ya_login == ya_passport_response.json()['login']:
-            user_profile.ya_contest_oauth = ya_response['access_token']
-            user_profile.ya_uid = ya_passport_response.json()['id']
-            user_profile.ya_login = ya_passport_response.json()['login']
-            user_profile.save()
-        else:
-            return redirect('users.views.ya_oauth_changed')
-
-        return redirect('users.views.profile')
+    if not user_profile.ya_contest_oauth or user_profile.ya_contest_login == ya_contest_response['login']:
+        user_profile.ya_contest_oauth = ya_response['access_token']
+        user_profile.ya_contest_uid = ya_contest_response['id']
+        user_profile.ya_contest_login = ya_contest_response['login']
+        user_profile.save()
     else:
-        HttpResponseForbidden()
+        return redirect('users.views.ya_oauth_changed')
+
+    return redirect('users.views.profile')
 
 
-def ya_oauth_disable(request):
+def ya_oauth_passport(user, ya_response, ya_passport_response):
+    user_profile = user.get_profile()
+
+    if not user_profile.ya_passport_oauth:
+        for user_p in UserProfile.objects.exclude(ya_passport_email=''):
+            if user_p.ya_passport_uid == ya_passport_response['id'] or \
+                            user_p.ya_passport_login == ya_passport_response['login'] or \
+                            user_p.ya_passport_email == ya_passport_response['default_email']:
+                return redirect('users.views.ya_oauth_forbidden')
+
+    if not user_profile.ya_passport_oauth or user_profile.ya_passport_uid == ya_passport_response['id']:
+        user_profile.ya_passport_oauth = ya_response['access_token']
+        user_profile.ya_passport_uid = ya_passport_response['id']
+        user_profile.ya_passport_login = ya_passport_response['login']
+        user_profile.ya_passport_email = ya_passport_response['default_email']
+        user_profile.save()
+    else:
+        return redirect('users.views.ya_oauth_changed')
+
+    return redirect('users.views.settings')
+
+
+def ya_oauth_response(request, type_of_oauth):
+    if request.method != 'GET':
+        return HttpResponseForbidden()
+
+    user = request.user
+    OAUTH = ''
+    PASSWORD = ''
+
+    if type_of_oauth == 'contest':
+        OAUTH = settings.CONTEST_OAUTH_ID
+        PASSWORD = settings.CONTEST_OAUTH_PASSWORD
+    elif type_of_oauth == 'passport':
+        OAUTH = settings.PASSPORT_OAUTH
+        PASSWORD = settings.PASSPORT_OAUTH_PASSWORD
+
+    ya_oauth = yandex_oauth.OAuthYandex(OAUTH, PASSWORD)
+    ya_response = ya_oauth.get_token(int(request.GET['code']))
+    ya_passport_response = requests.get('https://login.yandex.ru/info?json&oauth_token=' + ya_response['access_token'])
+
+    if type_of_oauth == 'contest':
+        return ya_oauth_contest(user, ya_response, ya_passport_response.json())
+    elif type_of_oauth == 'passport':
+        return ya_oauth_passport(user, ya_response, ya_passport_response.json())
+
+    return HttpResponseForbidden()
+
+
+def ya_oauth_disable(request, type_of_oauth):
     user = request.user
     user_profile = user.get_profile()
     if type_of_oauth == 'contest':
-        user_profile.ya_contest_oauth = None
+        pass
     elif type_of_oauth == 'passport':
-        user_profile.ya_passport_oauth = None
+        user_profile.ya_passport_oauth = ""
+        user_profile.ya_passport_uid = None
+        user_profile.ya_passport_login = ""
+        user_profile.ya_passport_email = ""
 
     user_profile.save()
 
@@ -269,7 +307,7 @@ def ya_oauth_forbidden(request):
 
 def ya_oauth_changed(request):
     context = {
-        'oauth_error_text'              : "Можно перепривязать только тот профиль Я.Контеста, который был привязан ранее!",
+        'oauth_error_text'              : "Можно перепривязать только тот профиль, который был привязан ранее!",
     }
 
     return render_to_response('oauth_error.html', context, context_instance=RequestContext(request))
