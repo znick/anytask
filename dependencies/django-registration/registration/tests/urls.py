@@ -81,4 +81,5 @@ urlpatterns = patterns('',
                        (r'', include('registration.backends.default.urls')),
                        (r'', include('registration.backends.default_with_names.urls')),
                        (r'', include('search.urls')),
+                       (r'', include('blog.urls')),
                        )
