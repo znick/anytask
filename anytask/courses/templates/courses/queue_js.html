@@ -4,8 +4,58 @@
 {#<link rel="stylesheet" href="{{ STATIC_URL }}bootstrap-select.min.css">#}
 <script type="text/javascript">
 
-  $(document).ready(function() {
-    $(".table_queue").tablesorter();
-    $(".table_queue").stickyTableHeaders({fixedOffset: $('.navbar')});
-  });
+    $(document).ready(function() {
+        $(".table_queue").tablesorter();
+        $(".table_queue").stickyTableHeaders({fixedOffset: $('.navbar')});
+
+        $('#id_followers').multiselect({
+            buttonClass: 'btn btn-secondary btn-block',
+            templates: {
+                ul: '<ul class="multiselect-container dropdown-menu" style="left:inherit;top: inherit;"></ul>',
+                li: '<li><a tabindex="0" class="dropdown-item"><label></label></a></li>'
+            },
+            includeSelectAllOption: true,
+            selectAllText: 'Все наблюдатели',
+            allSelectedText: 'Все наблюдатели',
+            maxHeight: 200,
+            buttonContainer: '<div style="width:100%;" class="multiselect-dropdown"/>',
+            buttonWidth: '100%',
+            buttonTitle: function(options, select) {
+                var labels = [];
+
+                if (options.length === 0) {
+                    return '---';
+                }
+                else if (options.length === $('option', select).length) {
+                    return 'Все наблюдатели';
+                }
+                else {
+                    options.each(function () {
+                        labels.push($(this).text());
+                    });
+                }
+                return labels.join(', ');
+            },
+            buttonText: function(options, select) {
+                if (options.length === 0) {
+                    return '---';
+                }
+                else if (options.length === $('option', select).length) {
+                    return 'Все наблюдатели';
+                }
+                else {
+                    var labels = [];
+                    options.each(function() {
+                        if ($(this).attr('label') !== undefined) {
+                            labels.push($(this).attr('label'));
+                        }
+                        else {
+                            labels.push($(this).text());
+                        }
+                    });
+                    return labels.join(', ') + '';
+                }
+            }
+        });
+    });
 </script>
