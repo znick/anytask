@@ -11,6 +11,10 @@ urlpatterns = patterns('users.views',
     url(r'^(?P<username>.*)/courses', 'user_courses'),
     url(r'^activate_invite$', 'activate_invite'),
     url(r'^settings$', 'profile_settings'),
+<<<<<<< HEAD
     url(r'^(?P<username>.*)/profile_history', 'profile_history'),
     url(r'^(?P<username>.*)/set_user_statuses', 'set_user_statuses'),
+=======
+    url(r'^ajax_edit_user_info$', 'ajax_edit_user_info'),
+>>>>>>> master
 )

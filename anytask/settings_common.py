@@ -149,6 +149,7 @@ INSTALLED_APPS = (
     'colorfield',
     'search',
     'staff',
+    'blog',
 )
 
 AUTH_PROFILE_MODULE = "users.UserProfile"

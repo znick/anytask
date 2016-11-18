@@ -38,4 +38,5 @@ urlpatterns = patterns('',
     url(r'^$', 'index.views.index'),
     url(r'^search/', include('search.urls')),
     url(r'^staff', include('staff.urls')),
+    url(r'^blog/', include('blog.urls')),
 )

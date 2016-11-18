@@ -26,7 +26,7 @@ import requests
 from courses.models import Course, DefaultTeacher, StudentCourseMark, MarkField, FilenameExtension
 from groups.models import Group
 from tasks.models import TaskTaken, Task, TaskGroupRelations
-from tasks.views import update_status_check
+from tasks.views import update_status_check, prettify_contest_task_text
 from years.models import Year
 from years.common import get_current_year
 from course_statistics import CourseStatistics
@@ -343,10 +343,13 @@ def edit_course_information(request):
     if not course.user_can_edit_course(user):
         return HttpResponseForbidden()
 
+    if course_information and not course_information.startswith(u'<div class="not-sanitize">'):
+        course_information = u'<div class="not-sanitize">' + course_information + u'</div>'
     course.information = course_information
     course.save()
 
-    return HttpResponse("OK")
+    return HttpResponse(json.dumps({'info': course_information}),
+                        content_type="application/json")
 
 @login_required
 def set_spectial_course_attend(request):
@@ -638,7 +641,7 @@ def ajax_update_contest_tasks(request):
             for problem in contest_responses[0]['problems']:
                 if problem['alias'] == alias:
                     task.title = problem['problemTitle']
-                    task.task_text = problem['statement']
+                    task.task_text = prettify_contest_task_text(problem['statement'])
                     if 'endTime' in contest_responses[0]:
                         deadline = contest_responses[0]['endTime'].split('+')[0]
                         task.deadline_time = datetime.datetime.strptime(deadline, '%Y-%m-%dT%H:%M:%S.%f')

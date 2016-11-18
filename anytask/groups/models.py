@@ -6,7 +6,7 @@ from years.models import Year
 
 class Group(models.Model):
     year = models.ForeignKey(Year, db_index=True, null=False, blank=True)
-    name = models.CharField(max_length=254, db_index=True, null=False, blank=True)
+    name = models.CharField(max_length=191, db_index=True, null=False, blank=True)
     students = models.ManyToManyField(User, null=True, blank=True)
 
     added_time = models.DateTimeField(auto_now_add=True, default=datetime.now)

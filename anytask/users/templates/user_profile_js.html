@@ -1,6 +1,15 @@
 <script src="{{ STATIC_URL }}jquery.validate.min.js"></script>
 <script src="http://malsup.github.io/jquery.form.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.sticky/1.0.3/jquery.sticky.min.js"></script>
+<script src="{{ STATIC_URL }}jquery.stickytableheaders.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/spark-md5/2.0.2/spark-md5.min.js"></script>
+<script src="{{ STATIC_URL }}tinymce/tinymce.min.js"></script>
+<script src="{{ STATIC_URL }}tinymce/jquery.tinymce.min.js"></script>
+<script src="{{ STATIC_URL }}prism.js"></script>
+
+<link href="{{ STATIC_URL }}prism.css" rel='stylesheet' />
+<link href="{{ STATIC_URL }}tinymce-style-user.css" rel='stylesheet' />
+
 
 <script type="text/javascript">
 
@@ -202,7 +211,6 @@
         });
     });
 
-
     function readURL(input) {
         if (input.files && input.files[0]) {
             var reader = new FileReader();
@@ -216,6 +224,6 @@
 
             $('#gravatar-link').val('');
         }
-    };
+    }
 
 </script>

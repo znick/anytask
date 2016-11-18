@@ -123,6 +123,16 @@ def upload_contest(event, extension, file, compiler_id=None):
     return sent, message
 
 
+def escape(text):
+    symbols = ["&", "'", '"', "<", ">"]
+    symbols_escaped = ["&amp;", "&#39;", "&quot;", "&lt;", "&gt;"]
+
+    for i, j in zip(symbols, symbols_escaped):
+        text = text.replace(i, j)
+
+    return text
+
+
 def check_submission(issue):
     results_req = FakeResponse()
     verdict = False
@@ -143,44 +153,56 @@ def check_submission(issue):
 
         contest_verdict = results_req.json()['result']['submission']['verdict']
         if contest_verdict == 'ok':
-            comment = u'Вердикт Я.Контест: ok'
+            comment = u'<p>Вердикт Я.Контест: ok</p>'
             verdict = True
         elif contest_verdict == 'precompile-check-failed':
             contest_messages = []
             for precompile_check in results_req.json()['result']['precompileChecks']:
                 contest_messages.append(precompile_check['message'])
-            comment = u'Вердикт Я.Контест: precompile-check-failed\n' + u'\n'.join(contest_messages)
+            comment = u'<p>Вердикт Я.Контест: precompile-check-failed</p><pre>' + \
+                      escape(u'\n'.join(contest_messages)) + \
+                      u'</pre>'
         else:
-            comment = u'Вердикт Я.Контест: ' \
-                      + results_req.json()['result']['submission']['verdict'] + '\n' \
-                      + results_req.json()['result']['compileLog'][18:]
+            comment = u'<p>Вердикт Я.Контест: ' \
+                      + results_req.json()['result']['submission']['verdict'] + '</p><pre>' \
+                      + escape(results_req.json()['result']['compileLog'][18:]) + '</pre>'
             if results_req.json()['result']['tests']:
                 test = results_req.json()['result']['tests'][-1]
-                test_resourses = u'\n<u>Ресурсы</u> ' + str(test['usedTime']) \
-                                 + 'ms/' + '%.2f' % (test['usedMemory']/(1024.*1024)) + 'Mb\n'
+                test_resourses = u'<p><u>Ресурсы</u> ' + str(test['usedTime']) \
+                                 + 'ms/' + '%.2f' % (test['usedMemory']/(1024.*1024)) + 'Mb</p>'
                 if 'input' in test:
-                    test_input = u'\n<u>Ввод</u>\n' + test['input'] if test['input'] else ""
+                    test_input = u'<p><u>Ввод</u></p><p>' + \
+                                 escape(test['input']) if test['input'] else ""
+                    test_input += '</p>'
                 else:
                     test_input = ""
                 if 'output' in test:
-                    test_output = u'\n<u>Вывод программы</u>\n' + test['output'] if test['output'] else ""
+                    test_output = u'<p><u>Вывод программы</u></p><p>' + \
+                                  escape(test['output']) if test['output'] else ""
+                    test_output += '</p>'
                 else:
                     test_output = ""
                 if 'answer' in test:
-                    test_answer = u'\n<u>Правильный ответ</u>\n' + test['answer'] if test['answer'] else ""
+                    test_answer = u'<p><u>Правильный ответ</u></p><p>' + \
+                                  escape(test['answer']) if test['answer'] else ""
+                    test_answer += '</p>'
                 else:
                     test_answer = ""
                 if 'error' in test:
-                    test_error = u'\n<u>Stderr</u>\n' + test['error'] if test['error'] else ""
+                    test_error = u'<p><u>Stderr</u></p><p>' + \
+                                 escape(test['error']) if test['error'] else ""
+                    test_error += '</p>'
                 else:
                     test_error = ""
                 if 'message' in test:
-                    test_message = u'\n<u>Сообщение чекера</u>\n' + test['message'] if test['message'] else ""
+                    test_message = u'<p><u>Сообщение чекера</u></p><p>' + \
+                                   escape(test['message']) if test['message'] else ""
+                    test_message += '</p>'
                 else:
                     test_message = ""
-                comment += u'\n<u>Тест ' + str(test['testNumber']) + '</u>' \
+                comment += u'<p><u>Тест ' + str(test['testNumber']) + '</u>' \
                            + test_resourses + test_input + test_output \
-                           + test_answer + test_error + test_message
+                           + test_answer + test_error + test_message + '</p>'
 
         logger.info("Contest submission verdict with run_id '%s' got successfully.", run_id)
         got_verdict = True
@@ -196,7 +218,7 @@ def comment_verdict(issue, verdict, comment):
     author = User.objects.get(username="anytask")
     field, field_get = IssueField.objects.get_or_create(name='comment')
     event = issue.create_event(field, author=author)
-    event.value = comment
+    event.value = u'<div class="contest-response-comment not-sanitize">' + comment + u'</div>'
     event.save()
     if issue.status_field.tag != issue.status_field.STATUS_ACCEPTED:
         if verdict:
@@ -212,7 +234,7 @@ def get_contest_mark(contest_id, problem_id, ya_login):
     user_id = None
     try:
         results_req = requests.get(
-           'https://contest.yandex.ru/action/api/download-log?contestId=' + str(contest_id) + '&snarkKey=spike')
+            'https://contest.yandex.ru/action/api/download-log?contestId=' + str(contest_id) + '&snarkKey=spike')
         try:
             contest_dict = xmltodict.parse(results_req.content)
 
@@ -252,7 +274,7 @@ def get_contest_mark(contest_id, problem_id, ya_login):
 
     except Exception as e:
         logger.exception("Exception while request to Contest: '%s' : '%s', Exception: '%s'",
-                             results_req.url, e)
+                         results_req.url, e)
     return contest_mark
 
 
