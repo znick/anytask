@@ -318,7 +318,7 @@ class ViewsTest(TestCase):
         self.assertFalse(form_id_responsible[1].has_key('selected'))
         self.assertEqual(form_id_responsible[1].string.strip().strip('\n'), u'teacher_name teacher_last_name')
 
-        form_id_followers = form.find('div', {'id': 'div_id_followers'})('input')
+        form_id_followers = form.find('div', {'id': 'div_id_followers'}).find('select')('option')
         self.assertEqual(len(form_id_followers), 1)
         self.assertEqual(form_id_followers[0]['value'], '1')
         self.assertFalse(form_id_responsible[0].has_key('checked'))
