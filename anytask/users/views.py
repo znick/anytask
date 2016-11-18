@@ -2,7 +2,7 @@
 
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template import RequestContext
-from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound
+from django.http import HttpResponse, HttpResponseForbidden
 from django.db.models import Q
 from django.conf import settings
 from django.http import Http404
@@ -206,7 +206,7 @@ def profile_history(request, username=None):
     user = request.user
 
     if not user.is_staff:
-        return HttpResponseForbidden()
+        raise PermissionDenied
 
     user_to_show = user
     if username:
