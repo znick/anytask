@@ -148,6 +148,7 @@ INSTALLED_APPS = (
     'django_filters',
     'colorfield',
     'search',
+    'staff',
 )
 
 AUTH_PROFILE_MODULE = "users.UserProfile"
@@ -186,7 +187,7 @@ CONTEST_EXTENSIONS_COURSE = {
     }
 }
 
-COURSES_WITH_CONTEST_MARKS = [11, 10, 65, 85, 93, 82, 79, 80]
+COURSES_WITH_CONTEST_MARKS = [11, 10, 65, 85, 93, 82, 79, 80, 104]
 
 PASSPORT_OAUTH = 'OAUTH'
 PASSPORT_OAUTH_PASSWORD = 'PASSWORD'

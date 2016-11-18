@@ -325,6 +325,7 @@ def task_save_to_log_post_save(sender, instance, created, **kwargs):
     task_log.__dict__ = task_log_dict
     task_log.sended_notify = False
     task_log.save()
+    task_log.groups.add(*instance.groups.all())
 
 def task_taken_save_to_log_post_save(sender, instance, created, **kwargs):
     task_taken_log = TaskTakenLog()

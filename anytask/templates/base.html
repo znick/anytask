@@ -498,6 +498,7 @@
                                 <a class="dropdown-item" href="{% url users.views.profile %}">Профиль</a>
                                 <a class="dropdown-item" href="{% url users.views.profile_settings %}">Настройки</a>
                                 {% if user.is_staff %}
+                                    <a class="dropdown-item" href="{% url staff.views.staff_page %}">Staff</a>
                                     <a class="dropdown-item" href="{% url admin:index %}">Админка</a>
                                 {% endif %}
                                 <div class="dropdown-divider"></div>

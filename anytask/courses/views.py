@@ -111,6 +111,9 @@ def course_page(request, course_id):
         - tasks_description
     """
 
+    if not request.user.get_profile().is_active() :
+        return HttpResponseForbidden()
+
     course = get_object_or_404(Course, id=course_id)
     schools = course.school_set.all()
 
@@ -137,6 +140,9 @@ def seminar_page(request, course_id, task_id):
         - tasklist
         - tasks_description
     """
+
+    if not request.user.get_profile().is_active() :
+        return HttpResponseForbidden()
 
     course = get_object_or_404(Course, id=course_id)
     task = get_object_or_404(Task, id=task_id)
