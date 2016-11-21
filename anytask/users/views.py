@@ -2,7 +2,7 @@
 
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template import RequestContext
-from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound
+from django.http import HttpResponse, HttpResponseForbidden
 from django.db.models import Q
 from django.conf import settings
 from django.http import Http404
@@ -11,7 +11,7 @@ from django.core.exceptions import PermissionDenied
 from django.core.files.base import ContentFile
 
 
-from users.models import UserProfile, IssueFilterStudent
+from users.models import UserProfile, UserProfileLog, UserStatus, IssueFilterStudent, UserProfileFilter
 from django.contrib.auth.models import User
 from tasks.models import TaskTaken
 from years.models import Year
@@ -196,6 +196,84 @@ def profile_settings(request):
     }
 
     return render_to_response('user_settings.html', context, context_instance=RequestContext(request))
+
+
+@login_required
+def profile_history(request, username=None):
+    if request.method == 'POST':
+        return HttpResponseForbidden()
+
+    user = request.user
+
+    if not user.is_staff:
+        raise PermissionDenied
+
+    user_to_show = user
+    if username:
+        user_to_show = get_object_or_404(User, username=username)
+
+    context = {
+        'user_profile':         user_to_show.get_profile(),
+        'user_profile_history': UserProfileLog.objects.filter(user=user_to_show).order_by('update_time'),
+        'user_to_show':         user_to_show,
+        'status_types':         UserStatus.TYPE_STATUSES,
+        'user_statuses':        UserStatus.objects.all(),
+    }
+
+    return render_to_response('status_history.html', context, context_instance=RequestContext(request))
+
+@login_required
+def set_user_statuses(request, username=None):
+    if request.method == 'GET':
+        return HttpResponseForbidden()
+
+    user = request.user
+
+    if not user.is_staff:
+        return HttpResponseForbidden()
+
+    user_to_show = user
+    if username:
+        user_to_show = get_object_or_404(User, username=username)
+
+    user_profile = user_to_show.get_profile()
+    is_error = False
+    error = ''
+    user_statuses = []
+
+    try:
+        new_user_statuses = dict(request.POST)['status_by_type[]']
+        if not new_user_statuses:
+            new_user_statuses = []
+        old_user_statuses = user_profile.user_status.all()
+
+        for status in old_user_statuses:
+            if str(status.id) not in new_user_statuses:
+                user_profile.user_status.remove(status)
+
+        for status_id in new_user_statuses:
+            if status_id:
+                status = UserStatus.objects.get(id=status_id)
+                if status not in user_profile.user_status.all():
+                    user_profile.user_status.add(status)
+
+        user_profile.updated_by = user
+        user_profile.save()
+
+    except Exception as e:
+        is_error = True
+        error = e
+
+    for status in user_profile.user_status.all():
+        user_statuses.append({'name': status.name, 'color': status.color})
+
+    user_profile_log = {'update_time': user_profile.update_time.strftime("%d-%m-%Y %H:%M"), 'updated_by': user_profile.updated_by.username, 'fullname': user_profile.updated_by.get_full_name(),}
+
+    return HttpResponse(json.dumps({'user_statuses': user_statuses,
+                                    'user_profile_log' : user_profile_log,
+                                    'is_error': is_error,
+                                    'error': error}),
+                        content_type="application/json")
 
 
 def ya_oauth_request(request, type_of_oauth):

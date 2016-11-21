@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %} Staff{% endblock %}
+
+{% block scripts %}
+    <script src="{{ STATIC_URL }}jquery.stickytableheaders.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $(".table_users").stickyTableHeaders({fixedOffset: $('.navbar')});
+        });
+    </script>
+
+{% endblock %}
+
+{% block navbar %}
+    <ul class="nav navbar-nav">
+        <li class="nav-item">
+            <a class="nav-link active" href="staff">Staff</a>
+        </li>
+    </ul>
+{% endblock navbar %}
+
+{% block content %}
+
+    <style>
+        .table_tasks th {
+            white-space: nowrap
+        }
+    </style>
+
+    <div class="row">
+        {% if filter.count or filter.form.data %}
+            <div class="col-md-2 col-xs-12">
+                <div class="card card-block" id="filters" style="min-width:11.5rem;">
+                    <div style="padding: 0px 15px 0px 15px;">
+                        {% crispy filter.form %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-10 col-xs-12">
+                <div class="card">
+                    <div class="card-block">
+                        <h5 class="card-title">Пользователи</h5>
+                        {% if filter.count %}
+                            <table class="table table_users">
+                                <thead>
+                                <tr style="background-color: #ffffff;">
+                                    <th>Имя<i class="fa fa-fw fa-sort"></i></th>
+                                    <th>Почта<i class="fa fa-fw fa-sort"></i></th>
+                                    <th>Статус<i class="fa fa-fw fa-sort"></i></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for user_profile in filter %}
+                                    <tr>
+                                        <td>
+                                            <a href="/users/{{ user_profile.user }}">{{ user_profile.user.get_full_name }}</a>
+                                        </td>
+                                        <td>{{ user_profile.user.email }}</td>
+                                        <td>
+                                            {% for user_status in user_profile.user_status.all %}
+                                                <span class="label" style="font-size: 1rem; background-color: {{ user_status.color }}">{{ user_status.name }}</span>
+                                            {% endfor %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <p class="card-text">Не найдено ни одного пользователя</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="col-xs-12">
+                <div class="card">
+                    <div class="card-block">
+                        <h5 class="card-title">Пользователи</h5>
+                        <p class="card-text">Нет пользователей</p>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

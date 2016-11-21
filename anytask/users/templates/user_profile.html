@@ -33,6 +33,11 @@
                     <a class="nav-link" href="{% url users.views.user_courses username=user_to_show %}">Курсы студента</a>
                 </li>
             {% endif %}
+            {% if user.is_staff %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url users.views.profile_history user_to_show %}">Редактирование статусов</a>
+                </li>
+            {% endif %}
         {% endif %}
     </ul>
 {% endblock navbar %}
@@ -94,8 +99,14 @@
                             <small class="text-muted">{{ user_to_show.email }}</small>
                         {% endif %}
                     </h5>
+                    {% for user_status in user_to_show.get_profile.user_status.all %}
+                        <span class="label"
+                              style="font-size: 1rem; background-color: {{ user_status.color }}">{{ user_status.name }}</span>
+                    {% endfor %}
                     {% if user == user_to_show and can_generate_invites %}
-                        <a class="card-link" href="#" onclick="window.open('{% url invites.views.generate_invites %}','_blank','height=331,width=769,status=yes,toolbar=no,menubar=no,location=no');return false;">Сгенерировать инвайты</a>
+                        <br>
+                        <br>
+                        <a type="button" class="btn btn-secondary" href="#" onclick="window.open('{% url invites.views.generate_invites %}','_blank','height=331,width=769,status=yes,toolbar=no,menubar=no,location=no');return false;">Сгенерировать инвайты</a>
                     {% endif %}
                 </div>
             </div>
