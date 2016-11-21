@@ -1,11 +1,10 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
 
-{% block title %} {{ user_to_show.get_full_name }} {% endblock %}
+{% block title %} Staff{% endblock %}
 
 {% block scripts %}
     <script src="{{ STATIC_URL }}jquery.stickytableheaders.min.js"></script>
-    {% include "staff_js.html" %}
     <script type="text/javascript">
         $(document).ready(function() {
             $(".table_users").stickyTableHeaders({fixedOffset: $('.navbar')});
