@@ -50,7 +50,7 @@ class UserStatus(models.Model):
 
     TYPE_STATUSES = (
         (TYPE_ACTIVITY, u'Статус студента'),
-        (TYPE_EDUCATION_FORM, u'Форма обучения'),
+        # (TYPE_EDUCATION_FORM, u'Форма обучения'),
     )
 
     name = models.CharField(max_length=254, db_index=True, null=False, blank=False)
@@ -140,7 +140,7 @@ class UserProfileLog(models.Model):
 
 
 class UserProfileFilter(django_filters.FilterSet):
-    user_status_education_form = django_filters.ChoiceFilter(label=u'<strong>Форма обучения</strong>', name='user_status')
+    # user_status_education_form = django_filters.ChoiceFilter(label=u'<strong>Форма обучения</strong>', name='user_status')
     user_status = django_filters.ChoiceFilter(label=u'<strong>Статус студента</strong>', name='user_status')
 
     def set(self):
@@ -148,9 +148,9 @@ class UserProfileFilter(django_filters.FilterSet):
         activity_choices.insert(0, (u'', _(u'Любой')))
         self.filters['user_status'].field.choices = tuple(activity_choices)
 
-        education_form_choices = [(status.id, _(status.name)) for status in UserStatus.objects.filter(type='education_form')]
-        education_form_choices.insert(0, (u'', _(u'Любой')))
-        self.filters['user_status_education_form'].field.choices = tuple(education_form_choices)
+        # education_form_choices = [(status.id, _(status.name)) for status in UserStatus.objects.filter(type='education_form')]
+        # education_form_choices.insert(0, (u'', _(u'Любой')))
+        # self.filters['user_status_education_form'].field.choices = tuple(education_form_choices)
 
     class Meta:
         model = UserProfile

@@ -9,8 +9,8 @@
     <script src="{{ STATIC_URL }}jquery.stickytableheaders.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
-            $(".table_courses").tablesorter();
-            $(".table_courses").stickyTableHeaders({fixedOffset: $('.navbar')});
+            $(".table_history").tablesorter();
+            $(".table_history").stickyTableHeaders({fixedOffset: $('.navbar')});
 
             $('.switch-tab').click(function () {
                 $(this).tab('show');
@@ -90,7 +90,7 @@
                 <div class="card-block">
                     <h5 class="card-title">История изменений {{ user_profile.user.get_full_name }}</h5>
 
-                    <table class="table">
+                    <table class="table table_history">
                         <thead>
                         <tr style="background-color: #ffffff;">
                             <th>Когда был изменен<i class="fa fa-fw fa-sort"></i></th>
@@ -101,7 +101,7 @@
                         <tbody id="tbody_history">
                         {% for entry in user_profile_history.all %}
                             <tr>
-                                <td>{{ entry.update_time|date:'d-m-Y H:i' }}</td>
+                                <td>{{ entry.update_time|date:'Y-m-d H:i' }}</td>
                                 <td><a href="/users/{{ entry.updated_by }}">{{ entry.updated_by.get_full_name }}</a>
                                 </td>
                                 <td>
