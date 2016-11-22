@@ -510,7 +510,7 @@
             {% block navbar %} {% endblock navbar %}
             {% block user %}
                 {% if user.is_authenticated %}
-                    <ul class="nav navbar-nav pull-xs-right">
+                    <ul class="nav navbar-nav pull-xs-right col-xs-12 col-md-2 col-lg-2">
                         <li class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                                 <i class="fa fa-user"></i>
@@ -531,7 +531,7 @@
                         </li>
                     </ul>
                     {% block main_search %}
-                        <div class="nav-form-search pull-xs-right col-xs-12 col-md-3 col-lg-4">
+                        <div class="nav-form-search pull-xs-right col-xs-12  col-md-2 col-lg-2">
                             <form class="navbar-form" role="search" method="get" action="{% url search.views.search_page %}">
                                 <div class="input-group">
                                     <div style="width: 100%">
@@ -545,7 +545,7 @@
                         </div>
                     {% endblock %}
                 {% else %}
-                    <ul class="nav navbar-nav pull-xs-right">
+                    <ul class="nav navbar-nav pull-xs-right col-xs-12 col-md-2 col-lg-2">
                         <li class="nav-item">
                             <a class="nav-link" href="{% url django.contrib.auth.views.login %}">Войдите</a>
                         </li>
