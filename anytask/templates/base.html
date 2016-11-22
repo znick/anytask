@@ -507,54 +507,62 @@
             &#9776;
         </button>
         <div class="collapse navbar-toggleable-sm" id="exCollapsingNavbar2">
-            {% block navbar %} {% endblock navbar %}
-            {% block user %}
-                {% if user.is_authenticated %}
-                    <ul class="nav navbar-nav pull-xs-right col-xs-12 col-md-2 col-lg-2">
-                        <li class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                                <i class="fa fa-user"></i>
-                                <span id="navbar_user_name">{% if user.get_full_name %} {{ user.get_full_name }} {% else %} {{ user }} {% endif %}</span>
-                            </a>
-                            <div class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                                <a class="dropdown-item" href="{% url users.views.profile %}">Профиль</a>
-                                <a class="dropdown-item" href="{% url users.views.profile_settings %}">Настройки</a>
-                                {% if user.is_staff %}
-                                    <a class="dropdown-item" href="{% url staff.views.staff_page %}">Staff</a>
-                                    <a class="dropdown-item" href="{% url admin:index %}">Админка</a>
-                                {% endif %}
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="{% url django.contrib.auth.views.password_change %}">Сменить пароль</a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="{% url django.contrib.auth.views.logout %}">Выйти</a>
-                            </div>
-                        </li>
-                    </ul>
-                    {% block main_search %}
-                        <div class="nav-form-search pull-xs-right col-xs-12  col-md-2 col-lg-2">
-                            <form class="navbar-form" role="search" method="get" action="{% url search.views.search_page %}">
-                                <div class="input-group">
-                                    <div style="width: 100%">
-                                        <input class="typeahead form-control" name="q" type="text" placeholder="Найти...">
-                                    </div>
-                                    <div class="input-group-btn">
-                                        <button class="btn" type="submit"><i class="fa fa-search" style="line-height: 1.5"></i></button>
-                                    </div>
+            <div class="row">
+                {% block navbar %} {% endblock navbar %}
+                {% block user %}
+                    {% if user.is_authenticated %}
+                        <ul class="nav navbar-nav pull-xs-right col-xs-12 col-md-2 col-lg-2">
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button"
+                                   aria-haspopup="true" aria-expanded="false">
+                                    <i class="fa fa-user"></i>
+                                    <span id="navbar_user_name">{% if user.get_full_name %}
+                                        {{ user.get_full_name }} {% else %} {{ user }} {% endif %}</span>
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                    <a class="dropdown-item" href="{% url users.views.profile %}">Профиль</a>
+                                    <a class="dropdown-item" href="{% url users.views.profile_settings %}">Настройки</a>
+                                    {% if user.is_staff %}
+                                        <a class="dropdown-item" href="{% url staff.views.staff_page %}">Staff</a>
+                                        <a class="dropdown-item" href="{% url admin:index %}">Админка</a>
+                                    {% endif %}
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="{% url django.contrib.auth.views.password_change %}">Сменить
+                                        пароль</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="{% url django.contrib.auth.views.logout %}">Выйти</a>
                                 </div>
-                            </form>
-                        </div>
-                    {% endblock %}
-                {% else %}
-                    <ul class="nav navbar-nav pull-xs-right col-xs-12 col-md-2 col-lg-2">
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url django.contrib.auth.views.login %}">Войдите</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/accounts/register/">Зарегистрируйтесь</a>
-                        </li>
-                    </ul>
-                {% endif %}
-            {% endblock %}
+                            </li>
+                        </ul>
+                        {% block main_search %}
+                            <div class="nav-form-search pull-xs-right col-xs-12 col-md-2 col-lg-2">
+                                <form class="navbar-form" role="search" method="get"
+                                      action="{% url search.views.search_page %}">
+                                    <div class="input-group">
+                                        <div style="width: 100%">
+                                            <input class="typeahead form-control" name="q" type="text"
+                                                   placeholder="Найти...">
+                                        </div>
+                                        <div class="input-group-btn">
+                                            <button class="btn" type="submit"><i class="fa fa-search"
+                                                                                 style="line-height: 1.5"></i></button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        {% endblock %}
+                    {% else %}
+                        <ul class="nav navbar-nav pull-xs-right col-xs-12 col-md-5 col-lg-4">
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url django.contrib.auth.views.login %}">Войдите</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/accounts/register/">Зарегистрируйтесь</a>
+                            </li>
+                        </ul>
+                    {% endif %}
+                {% endblock %}
+            </div>
         </div>
     </div>
 </nav>
