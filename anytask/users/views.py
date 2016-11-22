@@ -267,7 +267,9 @@ def set_user_statuses(request, username=None):
     for status in user_profile.user_status.all():
         user_statuses.append({'name': status.name, 'color': status.color})
 
-    user_profile_log = {'update_time': user_profile.update_time.strftime("%d-%m-%Y %H:%M"), 'updated_by': user_profile.updated_by.username, 'fullname': user_profile.updated_by.get_full_name(),}
+    user_profile_log = {'update_time': user_profile.update_time.strftime("%d-%m-%Y %H:%M"),
+                        'updated_by': user_profile.updated_by.username,
+                        'fullname': user_profile.updated_by.get_full_name(),}
 
     return HttpResponse(json.dumps({'user_statuses': user_statuses,
                                     'user_profile_log' : user_profile_log,

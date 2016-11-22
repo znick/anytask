@@ -273,7 +273,7 @@ def get_contest_mark(contest_id, problem_id, ya_login):
                 submits = submits.next
 
     except Exception as e:
-        logger.exception("Exception while request to Contest: '%s' : '%s', Exception: '%s'",
+        logger.exception("Exception while request to Contest: '%s', Exception: '%s'",
                          results_req.url, e)
     return contest_mark
 
