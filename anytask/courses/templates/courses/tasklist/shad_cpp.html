@@ -136,14 +136,14 @@
                     <th class="no-font-weight"><b>Студент</b></th>
                     {% for task in group_tasks|key:group %}
                         {% if not task.is_hidden or user_is_teacher %}
-                            <th align="center" class="{% if task.type == task.TYPE_SIMPLE %}dom-live-number{% else %}dom-number{% endif %} word-wrap">
+                            <th align="center" class="{% if task.type == task.TYPE_SIMPLE and user_is_teacher %}dom-live-number{% else %}dom-number{% endif %} word-wrap">
                                 <a {% if task.is_hidden %} style="color:gray" {% endif %} href="javascript:get_task_modal({{task.id}}, '{{task.title|escapejs}}',
                     '{{task.task_text|safe|escapejs}}',
                      {% if task.deadline_time %} '{{task.deadline_time|date:'d-m-Y H:i'}}' {% else %}''{% endif %})">
                                     {{ task.title }}
                                 </a>
                                 {% if task.type != task.TYPE_SEMINAR %}
-                                <span class="label {% if not task.is_hidden %} label-inverse {% else %} label-default {% endif %}">{{ task.score_max }}</span>
+                                    <span class="label {% if not task.is_hidden %} label-inverse {% else %} label-default {% endif %}">{{ task.score_max }}</span>
                                 {% endif %}
                             </th>
                         {% endif %}
@@ -172,62 +172,64 @@
                         {% for task in group_tasks|key:group %}
                             {% if not task.is_hidden or user_is_teacher %}
                                 <td align="center" class="student_{{ student.id }}">
-                                    {% if not task.is_hidden and user_is_teacher or user.username == student.username %}
-                                        {% if task.type == task.TYPE_FULL %}
-                                            <a  href="/issue/get_or_create/{{task.id}}/{{student.id}}">
-                                                {# <span class="label {% if task_x_task_takens|score:task %} {% if task_x_task_takens|score:task == task.score_max %} label-success {% else %} label-info {% endif %} {% endif %}"> #}
-                                                <span class="label
+                                    <div>
+                                        {% if not task.is_hidden and user_is_teacher or user.username == student.username %}
+                                            {% if task.type == task.TYPE_FULL %}
+                                                <a  href="/issue/get_or_create/{{task.id}}/{{student.id}}">
+                                                    {# <span class="label {% if task_x_task_takens|score:task %} {% if task_x_task_takens|score:task == task.score_max %} label-success {% else %} label-info {% endif %} {% endif %}"> #}
+                                                    <span class="label
                                                   {{ task_x_task_takens|have_issue:task }}" style="background-color: {{ task_x_task_takens|label_color:task }};">
                                                   {{ task_x_task_takens|score:task }}
                                                 </span>
-                                            </a>
-                                        {% elif task.type == task.TYPE_SIMPLE  %}
-                                            <div {% if user_is_teacher %}class="task-mark-value"{% endif %}>
+                                                </a>
+                                            {% elif task.type == task.TYPE_SIMPLE  %}
+                                                <div {% if user_is_teacher %}class="task-mark-value"{% endif %}>
                                                 <span class="label {{ task_x_task_takens|have_issue:task }}" style="background-color: {{ task_x_task_takens|label_color:task }};">
                                                   {{ task_x_task_takens|score:task }}
                                                 </span>
-                                            </div>
-                                            {% if user_is_teacher %}
-                                                <form method="post" class="task-mark-form collapse" style="margin:0;">
-                                                    {% csrf_token %}
-                                                    <fieldset class="form-group" style="margin:0;">
-                                                        <input type="hidden" name="task_id" value="{{task.id}}"/>
-                                                        <input type="hidden" name="student_id" value="{{student.id}}"/>
-                                                        <input type="hidden" name="mark_max" class="mark_max" value="{{ task.score_max }}">
-                                                        <input class="form-control" name="mark_value" type="text" maxlength="25" size="5" style="margin:0;width:22px;height:18px;line-height:14px;font-size:12px;padding:0px 2px;" autocomplete="off" value="{{ task_x_task_takens|score:task }}">
-                                                        <span class="text-help" style="display: none;"></span>
-                                                    </fieldset>
-                                                </form>
-                                            {% endif %}
-                                        {% elif task.type == task.TYPE_SEMINAR %}
-                                              {% if task.children.count != 0 %} <a  href="{{ course.id }}/seminar/{{task.id}}"> {% endif %}
-                                                 <span class="label
+                                                </div>
+                                                {% if user_is_teacher %}
+                                                    <form method="post" class="task-mark-form collapse" style="margin:0;">
+                                                        {% csrf_token %}
+                                                        <fieldset class="form-group" style="margin:0;">
+                                                            <input type="hidden" name="task_id" value="{{task.id}}"/>
+                                                            <input type="hidden" name="student_id" value="{{student.id}}"/>
+                                                            <input type="hidden" name="mark_max" class="mark_max" value="{{ task.score_max }}">
+                                                            <input class="form-control" name="mark_value" type="text" maxlength="25" size="5" style="margin:0;width:22px;height:18px;line-height:14px;font-size:12px;padding:0px 2px;" autocomplete="off" value="{{ task_x_task_takens|score:task }}">
+                                                            <span class="text-help" style="display: none;"></span>
+                                                        </fieldset>
+                                                    </form>
+                                                {% endif %}
+                                            {% elif task.type == task.TYPE_SEMINAR %}
+                                                {% if task.children.count != 0 %} <a  href="{{ course.id }}/seminar/{{task.id}}"> {% endif %}
+                                            <span class="label
                                                   {{ task_x_task_takens|have_issue:task }}" style="background-color: {{ task_x_task_takens|label_color:task }};">
                                                   {{ task_x_task_takens|score:task }}
                                                 </span>
-                                            </a>
-                                        {% endif %}
-                                    {% else %}
-                                        {% if task.is_hidden %}
-                                            <span class="label label-default ">{{ task_x_task_takens|score:task }}</span>
+                                            {% if task.children.count != 0 %}</a>{% endif %}
+                                            {% endif %}
                                         {% else %}
-                                            <span class="label
+                                            {% if task.is_hidden %}
+                                                <span class="label label-default ">{{ task_x_task_takens|score:task }}</span>
+                                            {% else %}
+                                                <span class="label
                         {{ task_x_task_takens|have_issue:task }}" style="background-color: {{ task_x_task_takens|label_color:task }};">
                         {{ task_x_task_takens|score:task }}
                       </span>
+                                            {% endif %}
                                         {% endif %}
-                                    {% endif %}
 
-                                    {#                  {% if task_x_task_takens|comment:task %}#}
-                                    {#         А           <a class="icon-comment" href="javascript:get_modal_comment('{{task_x_task_takens|comment:task|safe|sanitize|escapejs }}')"></a>#}
-                                    {#                  {% endif %}#}
+                                        {#                  {% if task_x_task_takens|comment:task %}#}
+                                        {#         А           <a class="icon-comment" href="javascript:get_modal_comment('{{task_x_task_takens|comment:task|safe|sanitize|escapejs }}')"></a>#}
+                                        {#                  {% endif %}#}
 
 
-                                    {% if user.username == student.username %}
-                                        <a class="{{ task_x_task_takens|get_task_taken:task|icon}}"></a>
-                                    {% elif task.can_score %}
-                                        <a class="{{ task_x_task_takens|get_task_taken:task|icon}}"></a>
-                                    {% endif %}
+                                        {% if user.username == student.username %}
+                                            <a class="{{ task_x_task_takens|get_task_taken:task|icon}}"></a>
+                                        {% elif task.can_score %}
+                                            <a class="{{ task_x_task_takens|get_task_taken:task|icon}}"></a>
+                                        {% endif %}
+                                    </div>
                                 </td>
                             {% endif %}
                         {% empty %}
