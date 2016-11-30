@@ -63,7 +63,7 @@ class UserStatus(models.Model):
 
 
 class UserProfile(models.Model):
-    user = models.ForeignKey(User, db_index=True, null=False, blank=False, unique=True, related_name='profiles_by_user')
+    user = models.ForeignKey(User, db_index=True, null=False, blank=False, unique=True, related_name='profile')
     second_name = models.CharField(max_length=128, db_index=True, null=True, blank=True)
     user_status = models.ManyToManyField(UserStatus, db_index=True, null=True, blank=True, related_name='users_by_status')
 
