@@ -1,5 +1,6 @@
 <script src="{{ STATIC_URL }}jquery.validate.min.js"></script>
 <script src="http://malsup.github.io/jquery.form.js"></script>
+<script type="text/javascript" src="https://fastcdn.org/Readmore.js/2.1.0/readmore.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap4.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.2.2/js/dataTables.buttons.min.js"></script>
@@ -170,7 +171,8 @@
                 unread_count = parseInt($("#inbox_count").html(), 10);
 
             msg_opened = true;
-            $(".card-title", "#read").html($("td.title", $row).html());
+
+            $(".card-title", "#read").prop("title", $("td.title", $row).html()).html($("td.title", $row).html());
             $("#loading_info").show();
             $("#read").show().collapse("show");
             $.get('{% url mail.views.ajax_get_message %}', {'msg_id': $row.data("id"), 'unread_count': unread_count})
@@ -180,16 +182,18 @@
                 .done(function (data) {
                     var $recipients_html =
                         $('<div class="muted-info" style="display: inline">' +
-                            '<a class="card-link card-clickable" href="#"></a>' +
+                            '<a href="#"><span class="label"></span></a>' +
                             '</div>');
 
                     $row.removeClass("unread");
                     if (parseInt(data.unread_count, 10) == 0) {
-                        $("#inbox_count").hide();
+                        $("#inbox_count").html("").hide();
+                        $("#top_notify_count").html("").hide();
                         title_inbox = "Входящие"
                     }
                     else {
                         $("#inbox_count").html(data.unread_count).show();
+                        $("#top_notify_count").html(data.unread_count).show();
                         title_inbox = "(" + data.unread_count + ") Входящие"
                     }
                     if ($("#msg_info").data("mailbox") == "inbox") {
@@ -204,15 +208,54 @@
                     $("#sender_id").html(data.sender.fullname);
                     $("#sender_time").html(data.date);
 
-                    $("#recipients_users_info").html("");
-                    for (var i = 0; i < data.recipients.length; ++i) {
-                        $("a", $recipients_html).html(data.recipients[i].fullname);
-                        $("a", $recipients_html).prop("href", data.recipients[i].url);
+                    $("#recipients_users_info").html("")
+                    for (var i = 0; i < data.recipients_course.length; ++i) {
+                        $("span.label", $recipients_html).removeClass("label-info label-success").addClass("label-primary").html(data.recipients_course[i].name);
+                        $("a", $recipients_html).prop("href", data.recipients_course[i].url);
                         $("#recipients_users_info").append($recipients_html[0].outerHTML);
                     }
+                    for (var i = 0; i < data.recipients_group.length; ++i) {
+                        $("span.label", $recipients_html).removeClass("label-primary label-success").addClass("label-info").html(data.recipients_group[i].name);
+                        $("a", $recipients_html).removeAttr("href");
+                        $("#recipients_users_info").append($recipients_html[0].outerHTML);
+                    }
+                    for (var i = 0; i < data.recipients_user.length; ++i) {
+                        $("span.label", $recipients_html).removeClass("label-primary label-info").addClass("label-success").html(data.recipients_user[i].fullname);
+                        $("a", $recipients_html).prop("href", data.recipients_user[i].url);
+                        $("#recipients_users_info").append($recipients_html[0].outerHTML);
+                    }
+
                     $("#text_info").html(data.text);
 
                     $("#msg_info").collapse("show");
+
+                    $("#recipients_info").data("readmore_opened", false);
+
+                    $(document).click(function () {
+                        if ($("#recipients_info").data("readmore_opened")) {
+                            $("#recipients_info_readmore_hide").click(function (e) {
+                                e.stopPropagation();
+                            }).trigger('click');
+                        }
+                    });
+
+
+                    $("#recipients_info").readmore('destroy').readmore({
+                        speed: 200,
+                        collapsedHeight: 45,
+                        moreLink: '<div id="recipients_info_readmore_more"></div>',
+                        lessLink: '<div id="recipients_info_readmore_hide"></div>',
+                        beforeToggle: function (trigger, element, more) {
+                            if (more) {
+                                $("#recipients_info").data("readmore_opened", false);
+                            }
+                            else {
+                                $("#recipients_info").data("readmore_opened", true);
+                            }
+                        }
+                    });
+
+
                 });
         });
 
@@ -253,6 +296,8 @@
                         }
                     },
                     rowCallback: function (row, data) {
+                        $('td.sender', row).prop('title', data["1"]);
+                        $('td.title', row).prop('title', data["2"]);
                         if ($.inArray(data.DT_RowId, selected_rows) !== -1) {
                             $(row).addClass('selected');
                             $("input.mail-checkbox", row).prop("checked", true);
@@ -299,10 +344,12 @@
                     var title_inbox = "Входящие";
 
                     if (parseInt(json.unread_count, 10) == 0) {
-                        $("#inbox_count").hide();
+                        $("#inbox_count").html("").hide();
+                        $("#top_notify_count").html("").hide();
                     }
                     else {
                         $("#inbox_count").html(json.unread_count).show();
+                        $("#top_notify_count").html(json.unread_count).show();
                         title_inbox = "(" + json.unread_count + ") Входящие"
                     }
 
@@ -508,7 +555,7 @@
             },
             plugins: [
                 'autoresize autolink codesample hr image link lists',
-                'table textpattern wordcount contextmenu paste'
+                'table textpattern wordcount contextmenu paste nonbreaking'
             ],
             toolbar: 'undo redo | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | image link hr | blockquote codesample table | preview_text',
             autoresize_bottom_margin: 10,
@@ -530,7 +577,8 @@
             paste_auto_cleanup_on_paste: true,
             paste_remove_styles: true,
             paste_remove_styles_if_webkit: true,
-            paste_strip_class_attributes: true
+            paste_strip_class_attributes: true,
+            nonbreaking_force_tab: true
         });
 
         var new_msg_form_validator = $('#new_msg_form').validate({
@@ -611,6 +659,34 @@
 
         $("#btn_send_cancel").click(function () {
             $('li[href="#inbox"]', '.mailbox_menu ').click();
+        });
+
+        $(".tt-input", ".bootstrap-tagsinput").keydown(function (e) {
+            if (e.which === 9) {
+                e.preventDefault();
+                new_msg_form_validator.element("#new_recipients");
+
+                if (!$(this).closest(".form-group ").hasClass("has-danger"))
+                    $('#new_title').focus();
+            }
+            if (e.which === 13) {
+                new_msg_form_validator.element("#new_recipients");
+            }
+        });
+        $("#new_title").keydown(function (e) {
+            if (e.which === 13 || e.which === 9) {
+                new_msg_form_validator.element("#new_title");
+
+                if (!$(this).closest(".form-group ").hasClass("has-danger"))
+                    tinymce.execCommand('mceFocus', false, 'new_text');
+            }
+            if (e.which === 9) {
+                e.preventDefault();
+            }
+        });
+
+        $("#btn_send_msg").click(function () {
+            $("#new_msg_form").submit();
         });
     });
 

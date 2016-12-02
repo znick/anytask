@@ -44,7 +44,7 @@ def mail_page(request):
         "courses_teacher": courses_teacher
     }
 
-    return render_to_response('mail.html', context, context_instance=RequestContext(request)    )
+    return render_to_response('mail.html', context, context_instance=RequestContext(request))
 
 
 @login_required
@@ -141,7 +141,6 @@ def ajax_get_message(request):
 
     msg_id = int(request.GET["msg_id"])
     message = Message.objects.get(id=msg_id)
-    recipients = message.recipients.all()
 
     if message.sender != user and user not in message.recipients.all():
         return HttpResponseForbidden()
@@ -151,26 +150,40 @@ def ajax_get_message(request):
         user_profile.unread_messages.remove(message)
         unread_count -= 1
 
-    recipients_data = []
-    for recipient in recipients:
-        recipients_data.append(get_user_info(recipient))
+    recipients_user = []
+    for recipient in message.recipients_user.all():
+        recipients_user.append({
+            "fullname": u'%s %s' % (recipient.last_name, recipient.first_name),
+            "url": recipient.get_absolute_url()
+        })
 
-    response['sender'] = get_user_info(message.sender)
-    response['recipients'] = recipients_data
+    recipients_group = []
+    for group in message.recipients_group.all():
+        recipients_group.append({
+            "name": group.name
+        })
+
+    recipients_course = []
+    for course in message.recipients_course.all():
+        recipients_course.append({
+            "name": course.name,
+            "url": course.get_absolute_url(),
+        })
+
+    response['sender'] = {
+        "fullname": u'%s %s' % (message.sender.last_name, message.sender.first_name),
+        "url": message.sender.get_absolute_url(),
+        "avatar": message.sender.get_profile().avatar.url if message.sender.get_profile().avatar else "",
+    }
+    response['recipients_user'] = recipients_user
+    response['recipients_group'] = recipients_group
+    response['recipients_course'] = recipients_course
     response['date'] = message.create_time.strftime("%d.%m.%y %H:%M:%S")
     response['text'] = message.text
     response['unread_count'] = unread_count
 
     return HttpResponse(json.dumps(response),
                         content_type="application/json")
-
-
-def get_user_info(user):
-    return {
-        "fullname": u'%s %s' % (user.last_name, user.first_name),
-        "url": user.get_absolute_url(),
-        "avatar": user.get_profile().avatar.url if user.get_profile().avatar else "",
-    }
 
 
 @login_required
@@ -190,22 +203,28 @@ def ajax_send_message(request):
     message.text = data['new_text'][0]
     message.save()
 
+    recipients_ids = set()
     if "new_recipients_user[]" in data:
-        message.recipients.add(*User.objects.filter(id__in=data["new_recipients_user[]"]))
+        message.recipients_user = data["new_recipients_user[]"]
+        recipients_ids.update(message.recipients_user.values_list('id', flat=True))
 
     group_ids = []
     if "new_recipients_group[]" in data:
+        message.recipients_group = data["new_recipients_group[]"]
+
         for group in Group.objects.filter(id__in=data["new_recipients_group[]"]):
-            message.recipients.add(*group.students.exclude(id=user.id))
+            recipients_ids.update(group.students.exclude(id=user.id).values_list('id', flat=True))
             group_ids.append(group.id)
 
     if "new_recipients_course[]" in data:
-        for course in Course.objects.filter(id__in=data["new_recipients_course[]"]):
-            for group in course.groups.all():
-                if group.id not in group_ids:
-                    message.recipients.add(*group.students.exclude(id=user.id))
-                    group_ids.append(group.id)
+        message.recipients_course = data["new_recipients_course[]"]
 
+        for course in Course.objects.filter(id__in=data["new_recipients_course[]"]):
+            for group in course.groups.exclude(id__in=group_ids).distinct():
+                recipients_ids.update(group.students.exclude(id=user.id).values_list('id', flat=True))
+
+    message.recipients = list(recipients_ids)
+    message.save()
 
     return HttpResponse(json.dumps(response),
                         content_type="application/json")

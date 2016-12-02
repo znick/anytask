@@ -6,20 +6,16 @@ from django.db.models.signals import m2m_changed
 from datetime import datetime
 
 from django.contrib.auth.models import User
+from courses.models import Course
+from groups.models import Group
 
-#
-# class Dialog(models.Model):
-#     author = models.ForeignKey(User, db_index=True, null=False, blank=False, related_name='author')
-#     recipients = models.ManyToManyField(User, db_index=False, null=False, blank=False, related_name='recipients')
-#
-#     deleted = models.BooleanField(db_index=False, null=False, blank=False, default=False)
-#     create_time = models.DateTimeField(auto_now_add=True, default=datetime.now)
-#
 
 class Message(models.Model):
-    # dialog = models.ForeignKey(Dialog, db_index=True, null=False, blank=False)
-    sender = models.ForeignKey(User, db_index=False, null=False, blank=False)
-    recipients = models.ManyToManyField(User, db_index=False, null=False, blank=False, related_name='recipients')
+    sender = models.ForeignKey(User, db_index=False, null=False, blank=False, related_name='sender+')
+    recipients = models.ManyToManyField(User, db_index=False, null=False, blank=False, related_name='recipients+')
+    recipients_user = models.ManyToManyField(User, db_index=False, null=True, blank=True, related_name='recipients_user+')
+    recipients_group = models.ManyToManyField(Group, db_index=False, null=True, blank=True)
+    recipients_course = models.ManyToManyField(Course, db_index=False, null=True, blank=True)
 
     title = models.CharField(max_length=191, db_index=False, null=True, blank=True)
     text = models.TextField(db_index=False, null=True, blank=True)

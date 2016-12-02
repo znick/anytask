@@ -147,14 +147,27 @@ tr.selected:hover {
     background-color: rgba(2, 133, 255, 0.29) !important;
 }
 
+#msg_info {
+    overflow: hidden;
+    word-wrap: break-word;
+}
+
 img.avatar-sm {
     width: 30px;
     height: 30px;
 }
 
 .muted-info {
-    opacity: 0.5;
+    opacity: 0.3;
+}
+
+.muted-info span.label {
     margin-right: 5px;
+    margin-bottom: 5px;
+}
+
+.muted-info span.label-info {
+    cursor: default;
 }
 
 .muted-info:hover,
@@ -163,19 +176,39 @@ img.avatar-sm {
     opacity: 1;
 }
 
-.muted-info:after {
-    content: ", ";
+#recipients_info {
+    position: relative;
 }
 
-.muted-info:last-child:after {
-    content: normal;
+#recipients_info_readmore_more {
+    position: relative;
+    height: 30px;
+    width: 100%;
+    z-index: 100;
+    margin-top: -20px;
+    background: -moz-linear-gradient(bottom, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, .2) 100%);
+    background: -webkit-linear-gradient(bottom, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, .2) 100%);
+    background: linear-gradient(to top, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, .2) 100%);
 }
 
-.muted-info:hover:after,
-.muted-info:active:after,
-.muted-info:focus:after {
-    opacity: 0;
+#recipients_info_readmore_hide {
+    position: relative;
+    height: 30px;
 }
+
+/*.muted-info:after {*/
+/*content: ", ";*/
+/*}*/
+
+/*.muted-info:last-child:after {*/
+/*content: normal;*/
+/*}*/
+
+/*.muted-info:hover:after,*/
+/*.muted-info:active:after,*/
+/*.muted-info:focus:after {*/
+/*opacity: 0;*/
+/*}*/
 
 .bootstrap-tagsinput {
     display: block;
@@ -211,6 +244,10 @@ img.avatar-sm {
 
 .bootstrap-tagsinput input {
     padding: 0;
+}
+
+.bootstrap-tagsinput .tag {
+    white-space: normal;
 }
 
 .btn-add {
@@ -265,7 +302,7 @@ small.text-help .error {
     margin: 0 15px;
 }
 
-.build-in li label{
+.build-in li label {
     text-overflow: ellipsis;
     overflow: hidden;
 }

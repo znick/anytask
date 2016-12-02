@@ -8,8 +8,6 @@
     <link href="{{ STATIC_URL }}mail.css" rel='stylesheet'/>
 {% endblock scripts %}
 
-{% block navbar_mail %}{% endblock %}
-
 {% block content %}
     <div class="row">
         <div class="mailbox_menu col-xs-12 col-sm-12 col-md-12 col-lg-3 col-xl-3">
@@ -111,7 +109,7 @@
                                     <div class="form-group row">
                                         <label class="form-control-label col-xs-12 col-md-1" for="new_title">Тема</label>
                                         <div class="controls col-xs-12 col-md-11">
-                                            <input type="text" class="form-control" name="new_title" id="new_title" autocomplete="off">
+                                            <input type="text" class="form-control" name="new_title" id="new_title" autocomplete="off" tabindex="2">
                                             <small class="text-help" ></small>
                                         </div>
                                     </div>
@@ -121,7 +119,7 @@
                                             <textarea class="form-control" name="new_text" id="new_text"></textarea>
                                         </div>
                                     </div>
-                                    <button type="submit" class="btn btn-primary" id="btn_send_msg">Отправить</button>
+                                    <button type="button" class="btn btn-primary" id="btn_send_msg">Отправить</button>
                                     <button type="reset" class="btn btn-secondary" id="btn_send_cancel">Отмена</button>
                                 </form>
                             </div>
@@ -154,7 +152,7 @@
                         {% endif %}
 
                         <div class="collapse" id="read" role="tabpanel">
-                            <h5 class="card-title">Title</h5>
+                            <h5 class="card-title" style="overflow: hidden;text-overflow: ellipsis;">Title</h5>
                             <div class="loading" id="loading_info">
                                 <span class='fa fa-circle-o-notch fa-spin'></span>&nbsp;Загрузка...
                             </div>
@@ -164,7 +162,7 @@
                                         <i class="fa fa-level-up fa-rotate-270" aria-hidden="true"></i>
                                     </button>
                                 </div>
-                                <div id="sender_info" style="margin-bottom: 0.5rem">
+                                <div id="sender_info" style="margin-bottom: 0.5rem;margin-top: 6px;">
                                     <a class="card-link card-clickable" href="#" id="sender_url">
                                         <span>
                                             <img class="avatar" src="" data-default="https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mm&f=y" >
@@ -173,11 +171,15 @@
                                     </a>
                                     <div id="sender_time" class="pull-xs-right" style="margin-top: 10px"></div>
                                 </div>
-                                <div id="recipients_info">
-                                    <div style="display: inline-block;width: 50px;margin-right: .5rem;">
-                                        <span class="text-muted">Кому:</span>
+                                <div style="position: relative">
+                                    <div id="recipients_info">
+                                        <div style="display: inline-block;width: 50px;margin-right: .5rem;">
+                                            <span class="text-muted">Кому:</span>
+                                        </div>
+                                        <div id="recipients_users_info" style="display: inline">
+
+                                        </div>
                                     </div>
-                                    <div id="recipients_users_info" style="display: inline"></div>
                                 </div>
                                 <div id="text_info" style="margin-top: 2rem"></div>
                             </div>
