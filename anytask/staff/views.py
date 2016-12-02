@@ -98,8 +98,8 @@ def gradebook_page(request, statuses=None):
             if marks.filter(student=student, course=course):
                 mark = marks.get(student=student, course=course).mark
             else:
-                mark = '--'
-            marks_for_student.append(mark if mark else '')
+                mark = None
+            marks_for_student.append(mark if mark else '--')
         entry['marks'] = marks_for_student
         students_with_marks.append(entry)
 

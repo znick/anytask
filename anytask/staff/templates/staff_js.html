@@ -91,6 +91,7 @@
             for (var i = 0; i < selected.length; i++) {
                 url += selected[i][0] + '_';
             }
+            url = url.substring(0, url.length - 1);
             window.location.href = "gradebook/" + url;
         });
 
