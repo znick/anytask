@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %} Staff{% endblock %}
+
+{% block scripts %}
+    {% include "staff_js.html" %}
+
+{% endblock %}
+
+{% block navbar %}
+    <ul class="nav navbar-nav">
+        <li class="nav-item">
+            <a class="nav-link active" href="#">Staff</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{% url staff.views.staff_page %}">Фильтры по статусам</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link active" href="#">Общая ведомость</a>
+        </li>
+    </ul>
+{% endblock navbar %}
+
+{% block content %}
+
+    <style>
+        .table_tasks th {
+            white-space: nowrap
+        }
+    </style>
+
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="card">
+                <div class="card-block">
+                    <h5 class="card-title">Общая ведомость</h5>
+                    {% if students %}
+                        <table class="table table_users table-striped table-bordered">
+                            <thead>
+                            <tr style="background-color: #ffffff;">
+                                <th>Студент</th>
+                                {% for course in courses %}
+                                    <th>{{ course.name }}</th>
+                                {% endfor %}
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for student in students %}
+                                <tr>
+                                    <td><a href="{{ student.url }}">{{ student.name }}</a></td>
+                                    {% for mark in student.marks %}
+                                        <td><h5><label class="label label-success">{{ mark }}</label></h5></td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <p class="card-text">Не найдено ни одного пользователя</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

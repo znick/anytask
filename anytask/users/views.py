@@ -222,6 +222,7 @@ def profile_history(request, username=None):
 
     return render_to_response('status_history.html', context, context_instance=RequestContext(request))
 
+
 @login_required
 def set_user_statuses(request, username=None):
     if request.method == 'GET':

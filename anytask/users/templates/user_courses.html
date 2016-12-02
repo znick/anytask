@@ -115,7 +115,7 @@
                                                     </thead>
                                                     <tbody>
                                                     {% for course in course_statistics %}
-                                                        <tr onclick="location.href='{% if issue.task.has_issue_access %}{{ issue.get_absolute_url }}{% else %}#{% endif %}'">
+                                                        <tr>
                                                             <td>
                                                                 <a href="{{ course.url }}">{{ course.name }}</a>
                                                             </td>
