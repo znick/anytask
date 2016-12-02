@@ -12,7 +12,7 @@ from crispy_forms.layout import HTML
 
 from courses.models import StudentCourseMark
 from courses.models import Course
-from users.models import UserProfile, IssueFilterStudent, UserProfileFilter
+from users.models import UserProfile, IssueFilterStudent, UserProfileFilter, UserStatus
 
 
 @require_http_methods(['GET'])
@@ -56,10 +56,10 @@ def get_gradebook(request):
     if not user.is_staff:
         raise PermissionDenied
 
-    courses = Course.objects.filter(is_active=True)
+    statuses = UserStatus.objects.filter(type='activity')
 
     context = {
-        'courses': courses,
+        'statuses': statuses,
     }
 
     return render_to_response('get_gradebook.html', context, context_instance=RequestContext(request))
@@ -67,17 +67,20 @@ def get_gradebook(request):
 
 @require_http_methods(['GET'])
 @login_required
-def gradebook_page(request, course_id=None):
+def gradebook_page(request, statuses=None):
     user = request.user
 
     if not user.is_staff:
         raise PermissionDenied
 
-    course = get_object_or_404(Course, id=course_id)
+    user_statuses = []
+    for status_id in statuses.split('_'):
+        if status_id:
+            user_statuses.append(get_object_or_404(UserStatus, id=int(status_id)))
     students = set()
-    for group in course.groups.all():
-        for student in group.students.all():
-            students.add(student)
+    profiles = UserProfile.objects.filter(user_status__in=user_statuses).all()
+    for profile in profiles:
+        students.add(profile.user)
 
     marks = StudentCourseMark.objects.filter(student__in=students).order_by('course')
 
@@ -95,8 +98,8 @@ def gradebook_page(request, course_id=None):
             if marks.filter(student=student, course=course):
                 mark = marks.get(student=student, course=course).mark
             else:
-                mark = None
-            marks_for_student.append(mark if mark else '--')
+                mark = '--'
+            marks_for_student.append(mark if mark else '')
         entry['marks'] = marks_for_student
         students_with_marks.append(entry)
 

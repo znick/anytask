@@ -17,7 +17,7 @@
             <a class="nav-link" href="{% url staff.views.staff_page %}">Фильтры по статусам</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link active" href="#">Общая ведомость</a>
+            <a class="nav-link active" href="{% url staff.views.get_gradebook %}">Общая ведомость</a>
         </li>
     </ul>
 {% endblock navbar %}
@@ -50,7 +50,7 @@
                                 <tr>
                                     <td><a href="{{ student.url }}">{{ student.name }}</a></td>
                                     {% for mark in student.marks %}
-                                        <td><h5><label class="label label-success">{{ mark }}</label></h5></td>
+                                        <td>{% if mark %}<h5><label class="label label-success">{{ mark }}</label></h5>{% endif %}</td>
                                     {% endfor %}
                                 </tr>
                             {% endfor %}

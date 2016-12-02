@@ -37,14 +37,13 @@
             <div class="card">
                 <div class="card-block">
                     <h5 class="card-title">Сгенерировать общую ведомость для студентов курса</h5>
-                    {% if courses %}
-                        <select class="form-control" id="edit_course">
-                            {% for course in courses %}
-                                <option value="{{ course.id }}">{{ course.name }}</option>
+                    {% if statuses %}
+                        <select class="form-control" id="edit_statuses" multiple>
+                            {% for status in statuses %}
+                                <option value="{{ status.id }}">{{ status.name }}</option>
                             {% endfor %}
                         </select>
-                        <a href="" id="btn-generate" class="btn btn-secondary"
-                           type="button">Сгенерировать</a>
+                        <button id="btn-generate" class="btn btn-secondary">Сгенерировать</button>
                     {% else %}
                         <p class="card-text">Не найдено ни одного курса</p>
                     {% endif %}

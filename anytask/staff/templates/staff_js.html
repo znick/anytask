@@ -23,7 +23,9 @@
 
 
     $(document).ready(function () {
-        $("#edit_course").multiselect({
+        var orderCount = 0;
+
+        $("#edit_statuses").multiselect({
             buttonClass: 'btn btn-secondary btn-block',
             templates: {
                 ul: '<ul class="multiselect-container dropdown-menu"></ul>',
@@ -33,8 +35,8 @@
             },
             selectAllJustVisible: false,
             enableCaseInsensitiveFiltering: true,
-            selectAllText: 'Все курсы',
-            allSelectedText: 'Все курсы',
+            selectAllText: 'Все статусы',
+            allSelectedText: 'Все статусы',
             maxHeight: 200,
             buttonContainer: '<div style="width:100%;" class="multiselect-dropdown"/>',
             buttonWidth: '100%',
@@ -43,13 +45,13 @@
             },
             buttonText: function (options, select) {
                 if (options.length === 0) {
-                    return 'Не выбрано ни одного курса';
+                    return 'Не выбрано ни одного статуса';
                 }
                 else if (options.length === $('option', select).length) {
-                    return 'Все курсы';
+                    return 'Все статусы';
                 }
                 else if (options.length > 1) {
-                    return 'Выбрано несколько курсов - ' + options.length;
+                    return 'Выбрано несколько статусов - ' + options.length;
                 }
                 else {
                     var labels = [];
@@ -63,11 +65,33 @@
                     });
                     return labels.join(', ') + '';
                 }
+            },
+            onChange: function(option, checked) {
+                if (checked) {
+                    orderCount++;
+                    $(option).data('order', orderCount);
+                }
+                else {
+                    $(option).data('order', '');
+                }
             }
         });
 
-        $("#edit_course").on('change', function() {
-            $("#btn-generate").attr("href", "gradebook/" + this.value);
+        $("#btn-generate").click(function() {
+            var selected = [];
+            $("#edit_statuses option:selected").each(function(){
+                selected.push([$(this).val(), $(this).data('order')]);
+            });
+
+            selected.sort(function(a, b) {
+                return a[1] - b[1];
+            });
+
+            var url = '';
+            for (var i = 0; i < selected.length; i++) {
+                url += selected[i][0] + '_';
+            }
+            window.location.href = "gradebook/" + url;
         });
 
         var table_min_height = '50vh';
