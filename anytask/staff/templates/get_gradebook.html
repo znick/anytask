@@ -29,6 +29,8 @@
         }
         .multiselect-native-select {
             display: inline-block;
+            width: 20rem;
+            vertical-align: middle;
         }
     </style>
 
@@ -36,7 +38,7 @@
         <div class="col-xs-12">
             <div class="card">
                 <div class="card-block">
-                    <h5 class="card-title">Сгенерировать общую ведомость для студентов курса</h5>
+                    <h5 class="card-title">Сгенерировать общую ведомость</h5>
                     {% if statuses %}
                         <select class="form-control" id="edit_statuses" multiple>
                             {% for status in statuses %}

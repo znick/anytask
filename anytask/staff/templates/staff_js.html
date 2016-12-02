@@ -50,9 +50,6 @@
                 else if (options.length === $('option', select).length) {
                     return 'Все статусы';
                 }
-                else if (options.length > 1) {
-                    return 'Выбрано несколько статусов - ' + options.length;
-                }
                 else {
                     var labels = [];
                     options.each(function () {
