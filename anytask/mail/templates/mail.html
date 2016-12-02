@@ -1,0 +1,221 @@
+{% extends 'base.html' %}
+{% load queryset_func %}
+
+{% block title %}Загрузка...{% endblock %}
+
+{% block scripts %}
+    {% include "mail_js.html" %}
+    <link href="{{ STATIC_URL }}mail.css" rel='stylesheet'/>
+{% endblock scripts %}
+
+{% block navbar_mail %}{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="mailbox_menu col-xs-12 col-sm-12 col-md-12 col-lg-3 col-xl-3">
+            {% if courses_teacher or user.is_staff %}
+                <button type="button" class="btn btn-secondary" id="btn_new_msg" data-toggle="pill" href="#new" style="margin-bottom: .75rem">
+                    <span class="fa fa-edit"></span>&nbsp;Написать
+                </button>
+            {% endif %}
+            <div class="card" >
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item active" data-toggle="pill" href="#inbox" data-type="inbox">
+                        <span class="fa fa-inbox fa-fw"></span>&nbsp;Входящие
+                        <span id="inbox_count" class="label label-danger pull-xs-right"></span>
+                    </li>
+                    <li class="list-group-item" data-toggle="pill" href="#sent" data-type="sent">
+                        <span class="fa fa-paper-plane-o fa-fw"></span>&nbsp;Отправленные
+                        <span id="sent_count" data-toggle="pill" class="label label-danger pull-xs-right"></span>
+                    </li>
+                    <li class="list-group-item" data-toggle="pill" href="#trash" data-type="trash">
+                        <span class=" fa fa-trash-o fa-fw"></span>&nbsp;Удаленные
+                        <span id="deleted_count" class="label label-danger pull-xs-right"></span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-9 col-xl-9">
+            <div class="card">
+                <div class="card-block">
+                    <div class="tab-content">
+                        <div class="tab-pane fade in active" id="inbox" role="tabpanel">
+                            <h5 class="card-title">Входящие</h5>
+                            <div class="loading">
+                                <span class='fa fa-circle-o-notch fa-spin'></span>&nbsp;Загрузка...
+                            </div>
+                            <div class="main-table collapse" >
+                                <table class="table table-mailbox table-hover" id="table_inbox" data-init="false">
+                                    <thead>
+                                    <tr>
+                                        <th>Select</th>
+                                        <th>Sender</th>
+                                        <th>Title</th>
+                                        <th>Date</th>
+                                    </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="sent" role="tabpanel">
+                            <h5 class="card-title">Отправленные</h5>
+                            <div class="loading">
+                                <span class='fa fa-circle-o-notch fa-spin'></span>&nbsp;Загрузка...
+                            </div>
+                            <div class="main-table collapse" >
+                                <table class="table table-mailbox table-hover" id="table_sent" data-init="false">
+                                    <thead>
+                                    <tr>
+                                        <th>Select</th>
+                                        <th>Sender</th>
+                                        <th>Title</th>
+                                        <th>Date</th>
+                                    </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="trash" role="tabpanel">
+                            <h5 class="card-title">Удаленные</h5>
+                            <div class="loading">
+                                <span class='fa fa-circle-o-notch fa-spin'></span>&nbsp;Загрузка...
+                            </div>
+                            <div class="main-table collapse" >
+                                <table class="table table-mailbox table-hover" id="table_trash" data-init="false">
+                                    <thead>
+                                    <tr>
+                                        <th>Select</th>
+                                        <th>Sender</th>
+                                        <th>Title</th>
+                                        <th>Date</th>
+                                    </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                        {% if courses_teacher or user.is_staff %}
+                            <div class="tab-pane fade" id="new" role="tabpanel">
+                                <h5 class="card-title">Новое сообщение</h5>
+                                <form method="post" id="new_msg_form">
+                                    {% csrf_token %}
+                                    <div class="form-group form-search row form-recipients">
+                                        <label class="col-xs-12 col-md-1 form-control-label " for="new_recipients">Кому</label>
+                                        <div class="controls col-xs-12 col-md-11" >
+                                            <input type="text" class="form-control typeahead" name="new_recipients" id="new_recipients" placeholder="Начните вводить имя" maxlength='25' >
+                                            <button type="button" class="btn-add" data-toggle="modal" data-target="#modal_add_group" id="add_group" title="Добавить курс или группу" style="position: absolute; top: 0; right: .9375rem;">
+                                                <span style="font-weight: bold">+</span><span class="fa fa-users" aria-hidden="true"></span>
+                                            </button>
+                                            <small class="text-help" ></small>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="form-control-label col-xs-12 col-md-1" for="new_title">Тема</label>
+                                        <div class="controls col-xs-12 col-md-11">
+                                            <input type="text" class="form-control" name="new_title" id="new_title" autocomplete="off">
+                                            <small class="text-help" ></small>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="sr-only" for="new_text">Текст</label>
+                                        <div class="controls col-xs-12 col-md-12">
+                                            <textarea class="form-control" name="new_text" id="new_text"></textarea>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary" id="btn_send_msg">Отправить</button>
+                                    <button type="reset" class="btn btn-secondary" id="btn_send_cancel">Отмена</button>
+                                </form>
+                            </div>
+
+                            <div class="modal fade" id="modal_add_group" tabindex="-1" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                            <h4 class="modal-title">Добавить группу пользователей</h4>
+                                        </div>
+                                        <div class="modal-body" style="max-height: none;">
+                                            <select id="modal_add_group_select" multiple>
+                                                {% for course in courses_teacher|order_by:"name" %}
+                                                    <optgroup label="{{ course.name }}" data-id="{{ course.id  }}" data-count="{{ course.groups.count }}">
+                                                        {% for group in course.groups.all|order_by:"name" %}
+                                                            <option value="{{ course.id }}_{{ group.id }}" data-id="{{ group.id }}">{{ group.name }}</option>
+                                                        {% endfor %}
+                                                    </optgroup>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                                            <button class="btn btn-primary" id="modal_add_group_ok" data-dismiss="modal">Добавить</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <div class="collapse" id="read" role="tabpanel">
+                            <h5 class="card-title">Title</h5>
+                            <div class="loading" id="loading_info">
+                                <span class='fa fa-circle-o-notch fa-spin'></span>&nbsp;Загрузка...
+                            </div>
+                            <div id="msg_info" class="collapse">
+                                <div class="mail-option" >
+                                    <button type="button" class="btn btn-sm btn-secondary mail-close">
+                                        <i class="fa fa-level-up fa-rotate-270" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                                <div id="sender_info" style="margin-bottom: 0.5rem">
+                                    <a class="card-link card-clickable" href="#" id="sender_url">
+                                        <span>
+                                            <img class="avatar" src="" data-default="https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mm&f=y" >
+                                        </span>
+                                        <span  style="margin-left: .5rem;font-weight: bold" id="sender_id"></span>
+                                    </a>
+                                    <div id="sender_time" class="pull-xs-right" style="margin-top: 10px"></div>
+                                </div>
+                                <div id="recipients_info">
+                                    <div style="display: inline-block;width: 50px;margin-right: .5rem;">
+                                        <span class="text-muted">Кому:</span>
+                                    </div>
+                                    <div id="recipients_users_info" style="display: inline"></div>
+                                </div>
+                                <div id="text_info" style="margin-top: 2rem"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="inbox-body remove-after-init" style="display: none; position: absolute;">
+        <div class="mail-option" >
+            {#            <div class="btn-group">#}
+            {#                <button type="button" class="btn btn-sm btn-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">#}
+            {#                    <input type="checkbox" class="mail-checkbox mail-group-checkbox">#}
+            {#                </button>#}
+            {#                <div class="dropdown-menu">#}
+            {#                    <a class="dropdown-item mail-group-all">Все</a>#}
+            {#                    <a class="dropdown-item mail-group-read">Прочитанные</a>#}
+            {#                    <a class="dropdown-item mail-group-unread">Непрочитанные</a>#}
+            {#                </div>#}
+            {#            </div>#}
+
+            <button type="button" class="btn btn-sm btn-secondary mail-refresh" >
+                <span class="fa fa-refresh"></span>
+            </button>
+
+            <button type="button" class="btn btn-sm btn-secondary mail-change-state" >
+                Отметить все как прочитанное
+            </button>
+
+            <button type="button" class="btn btn-sm btn-secondary mail-delete" style="display: none;">
+                <span class="fa fa-trash-o"></span>
+            </button>
+
+            <button type="button" class="btn btn-sm btn-secondary mail-undelete" style="display: none;">
+                Восстановить
+            </button>
+        </div>
+    </div>
+{% endblock %}

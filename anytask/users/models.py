@@ -13,8 +13,9 @@ from groups.models import Group
 from courses.models import Course
 from issues.models import Issue
 from issues.model_issue_status import IssueStatus
-from colorfield.fields import ColorField
+from mail.models import Message
 
+from colorfield.fields import ColorField
 
 from anytask.storage import OverwriteStorage
 
@@ -80,6 +81,9 @@ class UserProfile(models.Model):
     show_email = models.BooleanField(db_index=False, null=False, blank=False, default=True)
     send_my_own_events = models.BooleanField(db_index=False, null=False, blank=False, default=False)
 
+    unread_messages = models.ManyToManyField(Message, null=True, blank=True, related_name='unread_messages')
+    deleted_messages = models.ManyToManyField(Message, null=True, blank=True, related_name='deleted_messages')
+
     added_time = models.DateTimeField(auto_now_add=True, default=datetime.now)
     update_time = models.DateTimeField(auto_now=True, default=datetime.now)
 
@@ -101,6 +105,9 @@ class UserProfile(models.Model):
             if status.tag == 'not_active' or status.tag == 'academic':
                 return False
         return True
+
+    def get_unread_count(self):
+        return self.unread_messages.exclude(id__in=self.deleted_messages.all()).count()
 
 
 class UserProfileLog(models.Model):

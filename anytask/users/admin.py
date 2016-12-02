@@ -36,6 +36,7 @@ class UserProfileLogAdmin(admin.ModelAdmin):
 
 class UserProfileAdmin(admin.ModelAdmin):
     list_display = ('user', 'updated_by', 'update_time')
+    filter_horizontal = ('unread_messages', 'deleted_messages')
     search_fields = ('user__username', 'user_status')
 
 
