@@ -38,7 +38,7 @@
                 <div class="card-block">
                     <h5 class="card-title">Сгенерировать общую ведомость для студентов курса</h5>
                     {% if courses %}
-                        <select class="form-control" id="edit_course" multiple>
+                        <select class="form-control" id="edit_course">
                             {% for course in courses %}
                                 <option value="{{ course.id }}">{{ course.name }}</option>
                             {% endfor %}
