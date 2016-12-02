@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %} Staff{% endblock %}
+
+{% block scripts %}
+    {% include "staff_js.html" %}
+{% endblock %}
+
+{% block navbar %}
+    <ul class="nav navbar-nav">
+        <li class="nav-item">
+            <a class="nav-link active" href="#">Staff</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{% url staff.views.staff_page %}">Фильтры по статусам</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link active" href="#">Общая ведомость</a>
+        </li>
+    </ul>
+{% endblock navbar %}
+
+{% block content %}
+
+    <style>
+        .table_tasks th {
+            white-space: nowrap
+        }
+        .multiselect-native-select {
+            display: inline-block;
+            width: 20rem;
+            vertical-align: middle;
+        }
+    </style>
+
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="card">
+                <div class="card-block">
+                    <h5 class="card-title">Сгенерировать общую ведомость</h5>
+                    {% if statuses %}
+                        <select class="form-control" id="edit_statuses" multiple>
+                            {% for status in statuses %}
+                                <option value="{{ status.id }}">{{ status.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <button id="btn-generate" class="btn btn-secondary">Сгенерировать</button>
+                    {% else %}
+                        <p class="card-text">Не найдено ни одного курса</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
