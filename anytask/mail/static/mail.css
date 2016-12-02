@@ -265,6 +265,11 @@ small.text-help .error {
     margin: 0 15px;
 }
 
+.build-in li label{
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
 #blockDiv {
     position: absolute;
     top: 0;

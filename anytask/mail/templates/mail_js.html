@@ -383,6 +383,7 @@
         });
 
         $('#new_recipients').tagsinput({
+            maxTags: 25,
             itemValue: 'id',
             itemText: 'fullname',
             focusClass: 'focus',
@@ -478,6 +479,9 @@
                 $(".multiselect-clear-filter", dropdown).click(function () {
                     $(this).blur();
                 });
+                $("li:not(.filter)", dropdown).each(function () {
+                    $(this).prop("title", $.trim($("label", this).text()));
+                });
             }
         });
 
@@ -551,7 +555,8 @@
             onfocusout: false,
             rules: {
                 new_recipients: {
-                    required: true
+                    required: true,
+                    maxlength: false
                 },
                 new_title: {
                     required: true
