@@ -11,11 +11,9 @@
 {% block content %}
     <div class="row">
         <div class="mailbox_menu col-xs-12 col-sm-12 col-md-12 col-lg-3 col-xl-3">
-            {% if courses_teacher or user.is_staff %}
-                <button type="button" class="btn btn-secondary" id="btn_new_msg" data-toggle="pill" href="#new" style="margin-bottom: .75rem">
-                    <span class="fa fa-edit"></span>&nbsp;Написать
-                </button>
-            {% endif %}
+            <button type="button" class="btn btn-secondary" id="btn_new_msg" data-toggle="pill" href="#new" style="margin-bottom: .75rem">
+                <span class="fa fa-edit"></span>&nbsp;Написать
+            </button>
             <div class="card" >
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item active" data-toggle="pill" href="#inbox" data-type="inbox">
@@ -91,65 +89,66 @@
                                 </table>
                             </div>
                         </div>
-                        {% if courses_teacher or user.is_staff %}
-                            <div class="tab-pane fade" id="new" role="tabpanel">
-                                <h5 class="card-title">Новое сообщение</h5>
-                                <form method="post" id="new_msg_form">
-                                    {% csrf_token %}
-                                    <div class="form-group form-search row form-recipients">
-                                        <label class="col-xs-12 col-md-1 form-control-label " for="new_recipients">Кому</label>
-                                        <div class="controls col-xs-12 col-md-11" >
-                                            <input type="text" class="form-control typeahead" name="new_recipients" id="new_recipients" placeholder="Начните вводить имя" maxlength='25' >
+
+                        <div class="tab-pane fade" id="new" role="tabpanel">
+                            <h5 class="card-title">Новое сообщение</h5>
+                            <form method="post" id="new_msg_form">
+                                {% csrf_token %}
+                                <div class="form-group form-search row form-recipients">
+                                    <label class="col-xs-12 col-md-1 form-control-label " for="new_recipients">Кому</label>
+                                    <div class="controls col-xs-12 col-md-11" >
+                                        <input type="text" class="form-control typeahead" name="new_recipients" id="new_recipients" placeholder="Начните вводить имя" maxlength='25' >
+                                        {% if courses_teacher %}
                                             <button type="button" class="btn-add" data-toggle="modal" data-target="#modal_add_group" id="add_group" title="Добавить курс или группу" style="position: absolute; top: 0; right: .9375rem;">
                                                 <span style="font-weight: bold">+</span><span class="fa fa-users" aria-hidden="true"></span>
                                             </button>
-                                            <small class="text-help" ></small>
-                                        </div>
+                                        {% endif %}
+                                        <small class="text-help" ></small>
                                     </div>
-                                    <div class="form-group row">
-                                        <label class="form-control-label col-xs-12 col-md-1" for="new_title">Тема</label>
-                                        <div class="controls col-xs-12 col-md-11">
-                                            <input type="text" class="form-control" name="new_title" id="new_title" autocomplete="off" tabindex="2">
-                                            <small class="text-help" ></small>
-                                        </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="form-control-label col-xs-12 col-md-1" for="new_title">Тема</label>
+                                    <div class="controls col-xs-12 col-md-11">
+                                        <input type="text" class="form-control" name="new_title" id="new_title" autocomplete="off" tabindex="2">
+                                        <small class="text-help" ></small>
                                     </div>
-                                    <div class="form-group row">
-                                        <label class="sr-only" for="new_text">Текст</label>
-                                        <div class="controls col-xs-12 col-md-12">
-                                            <textarea class="form-control" name="new_text" id="new_text"></textarea>
-                                        </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="sr-only" for="new_text">Текст</label>
+                                    <div class="controls col-xs-12 col-md-12">
+                                        <textarea class="form-control" name="new_text" id="new_text"></textarea>
                                     </div>
-                                    <button type="button" class="btn btn-primary" id="btn_send_msg">Отправить</button>
-                                    <button type="reset" class="btn btn-secondary" id="btn_send_cancel">Отмена</button>
-                                </form>
-                            </div>
+                                </div>
+                                <button type="button" class="btn btn-primary" id="btn_send_msg">Отправить</button>
+                                <button type="reset" class="btn btn-secondary" id="btn_send_cancel">Отмена</button>
+                            </form>
+                        </div>
 
-                            <div class="modal fade" id="modal_add_group" tabindex="-1" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
-                                <div class="modal-dialog modal-lg" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                            <h4 class="modal-title">Добавить группу пользователей</h4>
-                                        </div>
-                                        <div class="modal-body" style="max-height: none;">
-                                            <select id="modal_add_group_select" multiple>
-                                                {% for course in courses_teacher|order_by:"name" %}
-                                                    <optgroup label="{{ course.name }}" data-id="{{ course.id  }}" data-count="{{ course.groups.count }}">
-                                                        {% for group in course.groups.all|order_by:"name" %}
-                                                            <option value="{{ course.id }}_{{ group.id }}" data-id="{{ group.id }}">{{ group.name }}</option>
-                                                        {% endfor %}
-                                                    </optgroup>
-                                                {% endfor %}
-                                            </select>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
-                                            <button class="btn btn-primary" id="modal_add_group_ok" data-dismiss="modal">Добавить</button>
-                                        </div>
+                        <div class="modal fade" id="modal_add_group" tabindex="-1" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
+                            <div class="modal-dialog modal-lg" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                        <h4 class="modal-title">Добавить группу пользователей</h4>
+                                    </div>
+                                    <div class="modal-body" style="max-height: none;">
+                                        <select id="modal_add_group_select" multiple>
+                                            {% for course in courses_teacher|order_by:"name" %}
+                                                <optgroup label="{{ course.name }}" data-id="{{ course.id  }}" data-count="{{ course.groups.count }}">
+                                                    {% for group in course.groups.all|order_by:"name" %}
+                                                        <option value="{{ course.id }}_{{ group.id }}" data-id="{{ group.id }}">{{ group.name }}</option>
+                                                    {% endfor %}
+                                                </optgroup>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                                        <button class="btn btn-primary" id="modal_add_group_ok" data-dismiss="modal">Добавить</button>
                                     </div>
                                 </div>
                             </div>
-                        {% endif %}
+                        </div>
 
                         <div class="collapse" id="read" role="tabpanel">
                             <h5 class="card-title" style="overflow: hidden;text-overflow: ellipsis;">Title</h5>
@@ -160,6 +159,22 @@
                                 <div class="mail-option" >
                                     <button type="button" class="btn btn-sm btn-secondary mail-close">
                                         <i class="fa fa-level-up fa-rotate-270" aria-hidden="true"></i>
+                                    </button>
+
+                                    <button class="btn btn-secondary btn-sm  mail-replay" type="button">
+                                        Ответить
+                                    </button>
+
+                                    <button class="btn btn-secondary btn-sm  mail-replay-all" type="button">
+                                        Ответить всем
+                                    </button>
+
+                                    <button type="button" class="btn btn-sm btn-secondary mail-delete">
+                                        <span class="fa fa-trash-o"></span>
+                                    </button>
+
+                                    <button type="button" class="btn btn-sm btn-secondary mail-undelete">
+                                        Восстановить
                                     </button>
                                 </div>
                                 <div id="sender_info" style="margin-bottom: 0.5rem;margin-top: 6px;">

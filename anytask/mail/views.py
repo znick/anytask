@@ -153,6 +153,7 @@ def ajax_get_message(request):
     recipients_user = []
     for recipient in message.recipients_user.all():
         recipients_user.append({
+            "id": recipient.id,
             "fullname": u'%s %s' % (recipient.last_name, recipient.first_name),
             "url": recipient.get_absolute_url()
         })
@@ -160,17 +161,20 @@ def ajax_get_message(request):
     recipients_group = []
     for group in message.recipients_group.all():
         recipients_group.append({
+            "id": group.id,
             "name": group.name
         })
 
     recipients_course = []
     for course in message.recipients_course.all():
         recipients_course.append({
+            "id": course.id,
             "name": course.name,
             "url": course.get_absolute_url(),
         })
 
     response['sender'] = {
+        "id": message.sender.id,
         "fullname": u'%s %s' % (message.sender.last_name, message.sender.first_name),
         "url": message.sender.get_absolute_url(),
         "avatar": message.sender.get_profile().avatar.url if message.sender.get_profile().avatar else "",

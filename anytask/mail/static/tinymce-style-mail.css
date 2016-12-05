@@ -1,30 +1,46 @@
 .mce-content-body:not([contenteditable='true']) {
     padding: 10px 15px;
 }
+
 .mce-content-body p,
-#text_info p{
+#text_info p {
     margin-bottom: 0 !important;
 }
+
 .mce-content-body blockquote,
-#text_info blockquote {
+#text_info blockquote:not(.replay-quote) {
     margin: 0 0 0 1rem !important;
     font-style: italic;
     color: #555;
 }
+
 .mce-content-body li,
 #text_info li {
     padding: 0;
 }
+
 .mce-content-body ul li,
 #text_info ul li {
     list-style-type: disc;
 }
+
 .mce-content-body img,
 #text_info img {
     max-width: 100%;
     height: auto;
 }
+
 .mce-content-body .table-comment td,
 #text_info .table-comment td {
     border-color: #373a3c
+}
+
+.mce-content-body .pre-replay-quote {
+    font-style: normal;
+}
+
+.mce-content-body blockquote.replay-quote {
+    border-left: 1px solid #ccc;
+    margin: 0 0 0 1em;
+    padding-left: 1em;
 }

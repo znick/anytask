@@ -100,7 +100,7 @@
         $('body').on("click", 'button.mail-refresh', function (e) {
             current_table.ajax.reload();
             $(this).blur()
-        }).on("click", 'button.mail-change-state', function (e) {
+        }).on("click", '.main-table button.mail-change-state', function (e) {
             if (selected_rows.length == 0) {
                 make_read = ["all"];
             }
@@ -113,13 +113,13 @@
 
             current_table.ajax.reload();
             $(this).blur()
-        }).on("click", 'button.mail-delete', function (e) {
+        }).on("click", '.main-table button.mail-delete', function (e) {
             if (selected_rows.length != 0) {
                 make_delete = prepair_array(selected_rows);
                 current_table.ajax.reload();
             }
             $(this).blur()
-        }).on("click", 'button.mail-undelete', function (e) {
+        }).on("click", '.main-table button.mail-undelete', function (e) {
             if (selected_rows.length != 0) {
                 make_undelete = prepair_array(selected_rows);
                 current_table.ajax.reload();
@@ -165,6 +165,7 @@
             var $row = $(this);
             $row.closest(".tab-pane").removeClass("in active");
             $("#msg_info").data("mailbox", $row.closest(".tab-pane").prop("id"));
+            $("#msg_info").data("row_id", $row.prop("id"));
 
             var unread_count = 0;
             if ($("#inbox_count").html())
@@ -174,104 +175,154 @@
 
             $(".card-title", "#read").prop("title", $("td.title", $row).html()).html($("td.title", $row).html());
             $("#loading_info").show();
-            $("#read").show().collapse("show");
+
+            open_check_fast($("#read"));
+
             $.get('{% url mail.views.ajax_get_message %}', {'msg_id': $row.data("id"), 'unread_count': unread_count})
                 .always(function () {
                     $("#loading_info").hide();
                 })
                 .done(function (data) {
-                    var $recipients_html =
-                        $('<div class="muted-info" style="display: inline">' +
-                            '<a href="#"><span class="label"></span></a>' +
-                            '</div>');
+                        var $recipients_html =
+                            $('<div class="muted-info" style="display: inline">' +
+                                '<a href="#"><span class="label"></span></a>' +
+                                '</div>');
 
-                    $row.removeClass("unread");
-                    if (parseInt(data.unread_count, 10) == 0) {
-                        $("#inbox_count").html("").hide();
-                        $("#top_notify_count").html("").hide();
-                        title_inbox = "Входящие"
-                    }
-                    else {
-                        $("#inbox_count").html(data.unread_count).show();
-                        $("#top_notify_count").html(data.unread_count).show();
-                        title_inbox = "(" + data.unread_count + ") Входящие"
-                    }
-                    if ($("#msg_info").data("mailbox") == "inbox") {
-                        $(document).prop('title', title_inbox)
-                    }
-
-                    $("#sender_url").prop("href", data.sender.url);
-                    if (data.sender.avatar)
-                        $("img", "#sender_info").prop("src", data.sender.avatar);
-                    else
-                        $("img", "#sender_info").prop("src", $("img", "#sender_info").data("default"));
-                    $("#sender_id").html(data.sender.fullname);
-                    $("#sender_time").html(data.date);
-
-                    $("#recipients_users_info").html("")
-                    for (var i = 0; i < data.recipients_course.length; ++i) {
-                        $("span.label", $recipients_html).removeClass("label-info label-success").addClass("label-primary").html(data.recipients_course[i].name);
-                        $("a", $recipients_html).prop("href", data.recipients_course[i].url);
-                        $("#recipients_users_info").append($recipients_html[0].outerHTML);
-                    }
-                    for (var i = 0; i < data.recipients_group.length; ++i) {
-                        $("span.label", $recipients_html).removeClass("label-primary label-success").addClass("label-info").html(data.recipients_group[i].name);
-                        $("a", $recipients_html).removeAttr("href");
-                        $("#recipients_users_info").append($recipients_html[0].outerHTML);
-                    }
-                    for (var i = 0; i < data.recipients_user.length; ++i) {
-                        $("span.label", $recipients_html).removeClass("label-primary label-info").addClass("label-success").html(data.recipients_user[i].fullname);
-                        $("a", $recipients_html).prop("href", data.recipients_user[i].url);
-                        $("#recipients_users_info").append($recipients_html[0].outerHTML);
-                    }
-
-                    $("#text_info").html(data.text);
-
-                    $("#msg_info").collapse("show");
-
-                    $("#recipients_info").data("readmore_opened", false);
-
-                    $(document).click(function () {
-                        if ($("#recipients_info").data("readmore_opened")) {
-                            $("#recipients_info_readmore_hide").click(function (e) {
-                                e.stopPropagation();
-                            }).trigger('click');
+                        $row.removeClass("unread");
+                        if (parseInt(data.unread_count, 10) == 0) {
+                            $("#inbox_count").html("").hide();
+                            $("#top_notify_count").html("").hide();
+                            title_inbox = "Входящие"
                         }
-                    });
-
-
-                    $("#recipients_info").readmore('destroy').readmore({
-                        speed: 200,
-                        collapsedHeight: 45,
-                        moreLink: '<div id="recipients_info_readmore_more"></div>',
-                        lessLink: '<div id="recipients_info_readmore_hide"></div>',
-                        beforeToggle: function (trigger, element, more) {
-                            if (more) {
-                                $("#recipients_info").data("readmore_opened", false);
-                            }
-                            else {
-                                $("#recipients_info").data("readmore_opened", true);
-                            }
+                        else {
+                            $("#inbox_count").html(data.unread_count).show();
+                            $("#top_notify_count").html(data.unread_count).show();
+                            title_inbox = "(" + data.unread_count + ") Входящие"
                         }
-                    });
+                        if ($("#msg_info").data("mailbox") == "inbox") {
+                            $(document).prop('title', title_inbox)
+                        }
+
+                        $("#sender_url").prop("href", data.sender.url);
+                        if (data.sender.avatar)
+                            $("img", "#sender_info").prop("src", data.sender.avatar);
+                        else
+                            $("img", "#sender_info").prop("src", $("img", "#sender_info").data("default"));
+                        $("#sender_id").html(data.sender.fullname).data("fullname", data.sender.fullname).data("id", data.sender.id).data("type", "user");
+                        $("#sender_time").html(data.date);
+
+                        $("#recipients_users_info").html("");
+                        for (var i = 0; i < data.recipients_course.length; ++i) {
+                            $("span.label", $recipients_html).removeClass("label-info label-success").addClass("label-primary").html(data.recipients_course[i].name);
+                            $("a", $recipients_html)
+                                .prop("href", data.recipients_course[i].url)
+                                .attr("data-id", data.recipients_course[i].id)
+                                .attr("data-type", "course");
+                            $("#recipients_users_info").append($recipients_html[0].outerHTML);
+                        }
+                        for (var i = 0; i < data.recipients_group.length; ++i) {
+                            $("span.label", $recipients_html).removeClass("label-primary label-success").addClass("label-info").html(data.recipients_group[i].name);
+                            $("a", $recipients_html)
+                                .removeAttr("href")
+                                .attr("data-id", data.recipients_group[i].id)
+                                .attr("data-type", "group");
+                            $("#recipients_users_info").append($recipients_html[0].outerHTML);
+                        }
+                        for (var i = 0; i < data.recipients_user.length; ++i) {
+                            $("span.label", $recipients_html).removeClass("label-primary label-info").addClass("label-success").html(data.recipients_user[i].fullname);
+                            $("a", $recipients_html)
+                                .prop("href", data.recipients_user[i].url)
+                                .attr("data-id", data.recipients_user[i].id)
+                                .attr("data-type", "user");
+                            $("#recipients_users_info").append($recipients_html[0].outerHTML);
+                        }
+
+                        if ($("#msg_info").data("mailbox") == "trash") {
+                            $("button.mail-replay, button.mail-replay-all, button.mail-delete", "#msg_info").hide();
+                            $("button.mail-undelete", "#msg_info").show();
+                        }
+                        else {
+                            $("button.mail-replay, button.mail-delete", "#msg_info").show();
+                            $("button.mail-undelete", "#msg_info").hide();
+                            if ($("span.label", "#recipients_users_info").length > 1)
+                                $("button.mail-replay-all", "#msg_info").show();
+                            else
+                                $("button.mail-replay-all", "#msg_info").hide();
+                        }
 
 
-                });
+                        var $text = $("<div>" + data.text + "</div>");
+
+                        if ($("blockquote.replay-quote", $text).length) {
+                            var $first_blockquote = $($("blockquote.replay-quote", $text)[0]);
+
+                            $first_blockquote
+                                .css("margin-right", "0")
+                                .addClass("collapse")
+                                .before('<div class="replay-show"><span class="fa fa-quote-left" aria-hidden="true"></span>&nbsp;Показать цитирование</div>');
+                            $("blockquote.replay-quote", $text).each(function () {
+                                var $pre_replay_quote = $(this).siblings('.pre-replay-quote');
+                                $(this).prepend('<div style="margin-bottom: 0.5rem;margin-top: 6px;">' +
+                                    '<span style="font-weight: bold">' + $("span.replay-sender", $pre_replay_quote).text() + '</span>' +
+                                    '<div class="pull-xs-right">' + $("span.replay-time", $pre_replay_quote).text() + '</div>' +
+                                    '</div>');
+                                $pre_replay_quote.remove();
+                            });
+
+                            $("body").on("click", 'div.replay-show', function (e) {
+                                if ($(this).data("opened")) {
+                                    $(this).data("opened", false);
+                                    $(this).html('<span class="fa fa-quote-left" aria-hidden="true"></span>&nbsp;Показать цитирование');
+                                }
+                                else {
+                                    $(this).data("opened", true);
+                                    $(this).html('<span class="fa fa-quote-right" aria-hidden="true"></span>&nbsp;Скрыть цитирование');
+                                }
+                                $("blockquote.replay-quote.collapse").collapse("toggle");
+                            });
+                        }
+
+                        $("#text_info").data("text", data.text).html($text.html());
+
+                        open_check_fast($("#msg_info"));
+
+                        $("#recipients_info").data("readmore_opened", false);
+
+                        $(document).click(function () {
+                            if ($("#recipients_info").data("readmore_opened")) {
+                                $("#recipients_info_readmore_hide").click(function (e) {
+                                    e.stopPropagation();
+                                }).trigger('click');
+                            }
+                        });
+
+
+                        $("#recipients_info").readmore('destroy').readmore({
+                            speed: 200,
+                            collapsedHeight: 45,
+                            moreLink: '<div id="recipients_info_readmore_more"></div>',
+                            lessLink: '<div id="recipients_info_readmore_hide"></div>',
+                            beforeToggle: function (trigger, element, more) {
+                                if (more) {
+                                    $("#recipients_info").data("readmore_opened", false);
+                                }
+                                else {
+                                    $("#recipients_info").data("readmore_opened", true);
+                                }
+                            }
+                        });
+
+
+                    }
+                );
         });
-
-        $("#msg_info").on("click", 'button.mail-close', function (e) {
-            close_msg();
-            $("#" + $("#msg_info").data("mailbox")).addClass("in active");
-            msg_opened = false;
-        });
-
 
         $('li', '.mailbox_menu').click(function (e) {
             window.location.hash = $(this).attr("href");
             selected_rows = [];
             selected_unread = [];
             $("button.mail-change-state").html("Отметить все как прочитанное");
-            $("button.mail-delete, button.mail-undelete").hide();
+            $("button.mail-delete, button.mail-undelete", ".main-table").hide();
 
             if (msg_opened) {
                 close_msg();
@@ -639,7 +690,7 @@
                 if ($(this).data("count") == $("option:selected", this).length) {
                     $('#new_recipients').tagsinput('add', {
                         type: "course",
-                        id: "c" + $(this).data("id"),
+                        id: "c_" + $(this).data("id"),
                         id_post: $(this).data("id"),
                         fullname: $(this).attr("label")
                     });
@@ -648,7 +699,7 @@
                     $("option:selected", this).each(function () {
                         $('#new_recipients').tagsinput('add', {
                             type: "group",
-                            id: "g" + $(this).data("id"),
+                            id: "g_" + $(this).data("id"),
                             id_post: $(this).data("id"),
                             fullname: $(this).text()
                         });
@@ -688,6 +739,38 @@
         $("#btn_send_msg").click(function () {
             $("#new_msg_form").submit();
         });
+
+        $("#msg_info").on("click", 'button.mail-close', function (e) {
+            close_msg();
+            $("#" + $("#msg_info").data("mailbox")).addClass("in active");
+            msg_opened = false;
+        }).on("click", 'button.mail-replay', function (e) {
+            replay();
+        }).on("click", 'button.mail-replay-all', function (e) {
+            replay(true);
+        }).on("click", 'button.mail-delete', function (e) {
+            close_msg();
+            $("#" + $("#msg_info").data("mailbox")).addClass("in active");
+            msg_opened = false;
+            make_delete = prepair_array([$("#msg_info").data("row_id")]);
+            current_table.ajax.reload();
+        }).on("click", 'button.mail-undelete', function (e) {
+            close_msg();
+            $("#" + $("#msg_info").data("mailbox")).addClass("in active");
+            msg_opened = false;
+            make_undelete = prepair_array([$("#msg_info").data("row_id")]);
+            current_table.ajax.reload();
+        });
+
+        $('#read, #msg_info').on('show.bs.collapse', function () {
+            $(this).data("fast_click", true);
+        }).on('shown.bs.collapse', function () {
+            $(this).data("fast_click", false);
+        }).on('hide.bs.collapse', function () {
+            $(this).data("fast_click", true);
+        }).on('hidden.bs.collapse', function () {
+            $(this).data("fast_click", false);
+        });
     });
 
     function prepair_array(arr) {
@@ -696,13 +779,85 @@
         });
     }
 
+    function open_check_fast(obj) {
+        if ($(obj).data("fast_click"))
+            $(obj).show().collapse("show").css("height", "inherit").addClass("in");
+        else
+            $(obj).show().collapse("show");
+    }
+
     function close_msg() {
-        $("#sender_url").prop("href", "#");
-        $("img", "#sender_info").prop("src", "");
-        $("#sender_id").html("");
-        $("#text_info").html("");
-        $("#sender_time").html("");
+        {#        $("#sender_url").prop("href", "#");#}
+        {#        $("img", "#sender_info").prop("src", "");#}
+        {#        $("#sender_id").html("");#}
+        {#        $("#text_info").html("");#}
+        {#        $("#sender_time").html("");#}
         $("#read").hide().collapse("hide");
         $("#msg_info").collapse("hide");
+    }
+
+    function replay(all) {
+        var $sender = $("#sender_id");
+        var current_user_id = "u_" + {{ user.id }};
+
+        $("#btn_new_msg").click();
+
+        var recipient_id = $sender.data("type")[0] + "_" + $sender.data("id");
+        if (current_user_id != recipient_id)
+            $('#new_recipients').tagsinput('add', {
+                type: $sender.data("type"),
+                id: recipient_id,
+                id_post: $sender.data("id"),
+                fullname: $sender.data("fullname")
+            });
+
+        if (all) {
+            $("a", "#recipients_users_info").each(function () {
+                recipient_id = $(this).data("type")[0] + "_" + $(this).data("id");
+                if (current_user_id != recipient_id)
+                    $('#new_recipients').tagsinput('add', {
+                        type: $(this).data("type"),
+                        id: recipient_id,
+                        id_post: $(this).data("id"),
+                        fullname: $(this).text()
+                    });
+            });
+        }
+
+        if ($('#new_recipients').val().length == 0)
+            $('#new_recipients').tagsinput('add', {
+                type: $sender.data("type"),
+                id: recipient_id,
+                id_post: $sender.data("id"),
+                fullname: $sender.data("fullname")
+            });
+
+        var title = $(".card-title", "#read").html();
+        if (/^\[RE] /.test(title)) {
+            title = "[RE 2] " + title.substr(/^(\[RE] )|(\[RE \d+] )/.exec(title)[0].length, title.length)
+        }
+        else if (/^\[RE \d+]/.test(title)) {
+            var parent_title = title.substr(/^(\[RE \d+] )/.exec(title)[0].length, title.length);
+            var replay_count = parseInt(/\d+/.exec(title)[0], 10) + 1;
+            title = "[RE " + replay_count + "] " + parent_title
+        }
+        else {
+            title = "[RE] " + title
+        }
+        $("#new_title").val(title);
+
+
+        tinyMCE.activeEditor.setContent(
+            "<p></p><div><br></div>" +
+            "<div class='pre-replay-quote'><span class='replay-time'>" +
+            $('#sender_time').html() +
+            '</span>' +
+            ",&nbsp;<span class='replay-sender'>" + $sender.data("fullname") +
+            "</span></div>" +
+            "<blockquote class='replay-quote'>" +
+            $('#text_info').data('text') +
+            "</blockquote>");
+
+        tinymce.execCommand('mceFocus', false, 'new_text');
     }
 </script>
