@@ -257,8 +257,7 @@
                             var $first_blockquote = $($("blockquote.replay-quote", $text)[0]);
 
                             $first_blockquote
-                                .css("margin-right", "0")
-                                .addClass("collapse")
+                                .addClass("first-quote collapse")
                                 .before('<div class="replay-show"><span class="fa fa-quote-left" aria-hidden="true"></span>&nbsp;Показать цитирование</div>');
                             $("blockquote.replay-quote", $text).each(function () {
                                 var $pre_replay_quote = $(this).siblings('.pre-replay-quote');
@@ -849,7 +848,7 @@
 
         tinyMCE.activeEditor.setContent(
             "<p></p><div><br></div>" +
-            "<div class='pre-replay-quote'><span class='replay-time'>" +
+            "<div class='pre-replay-quote' data-id='" + $sender.data("id") + "'><span class='replay-time'>" +
             $('#sender_time').html() +
             '</span>' +
             ",&nbsp;<span class='replay-sender'>" + $sender.data("fullname") +

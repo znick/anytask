@@ -20,8 +20,6 @@ class Message(models.Model):
     title = models.CharField(max_length=191, db_index=False, null=True, blank=True)
     text = models.TextField(db_index=False, null=True, blank=True)
 
-    is_important = models.BooleanField(db_index=False, null=False, blank=False, default=False)
-
     create_time = models.DateTimeField(auto_now_add=True, default=datetime.now)
 
     def __unicode__(self):

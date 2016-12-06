@@ -326,7 +326,6 @@ small.text-help .error {
 
 blockquote.replay-quote {
     font-style: normal;
-    border-right: 1px solid;
     border-top: 1px solid;
     border-color: #f3f3f3 !important;
     color: #5c5c5c;
@@ -335,6 +334,10 @@ blockquote.replay-quote {
     position: relative;
     margin-right: -10px;
 
+}
+blockquote.replay-quote.first-quote {
+    margin-right: 0;
+    border-right: 1px solid;
 }
 
 blockquote.replay-quote:after {

@@ -230,5 +230,4 @@ def ajax_send_message(request):
     message.recipients = list(recipients_ids)
     message.save()
 
-    return HttpResponse(json.dumps(response),
-                        content_type="application/json")
+    return HttpResponse("OK")
