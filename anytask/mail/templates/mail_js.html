@@ -809,6 +809,8 @@
                 id_post: $sender.data("id"),
                 fullname: $sender.data("fullname")
             });
+        else
+            all = true;
 
         if (all) {
             $("a", "#recipients_users_info").each(function () {
