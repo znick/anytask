@@ -20,22 +20,12 @@ class Message(models.Model):
     title = models.CharField(max_length=191, db_index=False, null=True, blank=True)
     text = models.TextField(db_index=False, null=True, blank=True)
 
+    sent_notify = models.BooleanField(db_index=True, null=False, blank=False, default=False)
+
     create_time = models.DateTimeField(auto_now_add=True, default=datetime.now)
 
     def __unicode__(self):
         return u'%s %s' % (self.sender.username, self.title)
-
-    def make_unread(self, users=None):
-        if users is None:
-            users = self.recipients.all()
-        elif not hasattr(users, '__iter__'):
-            users = [users]
-
-        for user in users:
-            user.get_profile().unread_messages.add(self)
-
-    def make_read(self, user):
-        user.get_profile().unread_messages.remove(self)
 
     class Meta:
         ordering = ["-create_time"]
@@ -43,6 +33,8 @@ class Message(models.Model):
 
 def make_unread_msg(sender, instance, action, **kwargs):
     if action in ["post_add", "post_remove"]:
-        instance.make_unread()
+        for user in instance.recipients.all():
+            user_profile = user.get_profile()
+            user_profile.unread_messages.add(instance)
 
 m2m_changed.connect(make_unread_msg, sender=Message.recipients.through)

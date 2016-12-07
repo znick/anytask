@@ -228,6 +228,5 @@ def ajax_send_message(request):
                 recipients_ids.update(group.students.exclude(id=user.id).values_list('id', flat=True))
 
     message.recipients = list(recipients_ids)
-    message.save()
 
     return HttpResponse("OK")
