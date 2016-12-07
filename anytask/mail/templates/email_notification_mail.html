@@ -1,68 +1,59 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Anytask</title>
-</head>
-
-<body style="font-family:Helvetica Neue,Helvetica,Arial,sans-serif;font-size: 1rem;line-height: 1.5;color: #373a3c;background-color: #f5f8fa;margin: 0;">
-<table cellspacing="0" cellpadding="0" width="100%" style="border-collapse:collapse">
-    <tbody>
-    <tr>
-        <td style="background-color: #3097d1;padding: .5rem 1rem;">
-            <div style=" padding-right: .9375rem;padding-left: .9375rem;margin-right: auto;margin-left: auto;">
-                <a
-                        href="{% url index.views.index %}"
-                        style="color:#fff;text-decoration:none;float: left;padding-top: .25rem;padding-bottom: .25rem;margin-right: 1rem;font-size: 1.25rem;"
-                        target="_blank">Anytask</a>
-                </a>
-            </div>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <div style="padding: 1.25rem; position: relative;display: block;background-color: #fff;border-radius: .25rem;border: 1px solid rgba(0,0,0,.125);margin: 1rem 2rem;">
-                <table cellspacing="0" cellpadding="0" style="border-collapse:collapse">
-                    <tbody>
-                    <tr>
-                        <td>
-                            <a href="{% url users.views.profile %}"
-                               style="text-decoration:none" target="_blank"
-                            >
-                                <img src="{% if not user.get_profile.avatar %}https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mm&f=y{% else %}{{ user.get_profile.avatar.url }}{% endif %}"
-                                     style="width: 50px; height: 50px;object-fit: cover;border-radius: 50%;border: 1px solid #c3c3c3;vertical-align: middle;"
-                                     width="50" height="50">
-                            </a>
-                        </td>
-                        <td width="10" style="display:block;width:10px">&nbsp;&nbsp;&nbsp;</td>
-                        <td width="100%">
-                            <a href="{% url users.views.profile %}"
-                               style="text-decoration:none;font-weight:bold;color: inherit"
-                               target="_blank"
-                            >{{ user.get_full_name }}</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td height="10" style="line-height:10px">&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <td colspan="3" width="100%">
-                            <p style=" margin-top: 0;margin-bottom: 1rem;">У вас {{ unread_count }} {{ unread_count_string }}</p>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="3" width="100%">
-                            <a href="{% url mail.views.mail_page %}"
-                               style="display: inline-block;font-weight: 400;line-height: 1.25;text-align: center;white-space: nowrap;vertical-align: middle;cursor: pointer;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;border: 1px solid #0275d8;padding: .5rem 1rem;font-size: 1rem;border-radius: .25rem;touch-action: manipulation;text-decoration: none; color: #fff;background-color: #0275d8;"
-                            >Перейти к сообщениям</a>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-        </td>
-    </tr>
-    </tbody>
-</table>
-</body>
-</html>
+<div style="font-family:Helvetica Neue,Helvetica,Arial,sans-serif;color: #373a3c;margin: 0;padding:40px 10px;width:100%;background-color: #f5f8fa;">
+    <table cellpadding="0" cellspacing="0"
+           style="border-collapse:collapse;color:#373a3c;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;font-size:16px;margin:0 auto;padding:0;table-layout:fixed;width:475px;">
+        <tbody>
+        <tr>
+            <td style="border-collapse:collapse;">
+                <div style="background-color: #3097d1;width:100%;">
+                    <div style="padding:12px 30px 12px 30px;">
+                        <a href="{{ domain }}{% url index.views.index %}"
+                           style="color:#fff;text-decoration:none;font-size: 20px;line-height: 30px;"
+                           target="_blank">Anytask</a>
+                    </div>
+                </div>
+                <div style="background:#fff;padding:20px 30px 20px 30px;border: 1px solid rgba(0,0,0,.125); border-top-color: #3097d1">
+                    <table cellpadding="0" cellspacing="0"
+                           style="border-collapse:collapse;margin-bottom:20px;width:100%;">
+                        <tbody>
+                        <tr>
+                            <td style="border-collapse:collapse;padding-right:15px;padding-top:3px;vertical-align:top;width:50px;">
+                                <a href="{{ domain }}{% url users.views.profile %}"
+                                   style="text-decoration:none;font-weight:bold;color: #373a3c"
+                                   target="_blank"
+                                >
+                                    <img src="{% if not user.get_profile.avatar %}https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mm&f=y{% else %}{{ domain }}{{ user_profile.avatar.url }}{% endif %}"
+                                         style="width: 50px; height: 50px;object-fit: cover;border-radius: 50%;border: 1px solid #c3c3c3;vertical-align: middle;"
+                                         width="50" height="50" alt="">
+                                </a>
+                            </td>
+                            <td style="border-collapse:collapse;vertical-align:middle;">
+                                </a>
+                                <a href="{{ domain }}{% url users.views.profile %}"
+                                   style="text-decoration:none;font-weight:bold;color: #373a3c"
+                                   target="_blank"
+                                >{{ user.get_full_name }}</a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <p style="color:#373a3c;line-height:20px;margin:0 0 20px">У
+                        вас {{ unread_count }} {{ unread_count_string }}.</p>
+                    <table cellpadding="0" cellspacing="0" style="border-collapse: separate;">
+                        <tbody>
+                        <tr>
+                            <td bgcolor="#0275d8"
+                                style="border: 1px solid #0275d8;background-color: #0275d8;border-radius: 4px">
+                                <a href="{{ domain }}{% url mail.views.mail_page %}"
+                                   target="_blank"
+                                   style="color:#fff;padding: 8px 16px;font-size:17px;line-height:20px;font-weight:normal;text-decoration:none;display:block;height:20px;"
+                                >Перейти к сообщениям</a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>

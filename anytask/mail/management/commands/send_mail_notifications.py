@@ -7,7 +7,7 @@ from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
 
-from mail.models import Message
+from users.models import UserProfile
 import time
 
 
@@ -17,22 +17,13 @@ class Command(BaseCommand):
     option_list = BaseCommand.option_list
 
     def handle(self, **options):
-        recipients = {}
-        for message in Message.objects.filter(sent_notify=False):
-            message.sent_notify = True
-            message.save()
-
-            for user in message.recipients.all():
-                if user.id not in recipients:
-                    recipients[user.id] = [
-                        user,
-                        1
-                    ]
-                else:
-                    recipients[user.id][1] += 1
-
         notify_messages = []
-        for user, unread_count in recipients.values():
+        for user_profile in UserProfile.objects.exclude(send_notify_messages__isnull=True):
+            user = user_profile.user
+            unread_count = user_profile.send_notify_messages.count()
+
+            user_profile.send_notify_messages.clear()
+
             subject = u'{0}, у вас есть новые сообщения'.format(user.first_name)
 
             domain = Site.objects.get_current().domain
@@ -50,6 +41,8 @@ class Command(BaseCommand):
 
             context = {
                 "user": user,
+                "user_profile": user_profile,
+                "domain": 'http://' + domain,
                 "unread_count": unread_count,
                 "unread_count_string": unread_count_string
             }

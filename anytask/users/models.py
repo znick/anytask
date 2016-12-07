@@ -83,6 +83,7 @@ class UserProfile(models.Model):
 
     unread_messages = models.ManyToManyField(Message, null=True, blank=True, related_name='unread_messages')
     deleted_messages = models.ManyToManyField(Message, null=True, blank=True, related_name='deleted_messages')
+    send_notify_messages = models.ManyToManyField(Message, null=True, blank=True, related_name='send_notify_messages')
 
     added_time = models.DateTimeField(auto_now_add=True, default=datetime.now)
     update_time = models.DateTimeField(auto_now=True, default=datetime.now)
