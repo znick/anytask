@@ -30,4 +30,3 @@ numpy
 scipy
 matplotlib
 sklearn
-timeit
