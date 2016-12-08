@@ -21,7 +21,8 @@
 }
 
 .mailbox_menu li {
-    color: #0275d8;
+    width: 100%;
+    color: #555;
     cursor: pointer;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
@@ -32,7 +33,9 @@
 
 .mailbox_menu li:focus,
 .mailbox_menu li:hover {
-    color: #014c8c;
+    color: #555;
+    text-decoration: none;
+    background-color: #f5f5f5;
 }
 
 .mailbox_menu li.active {
