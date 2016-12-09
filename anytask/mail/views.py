@@ -66,15 +66,16 @@ def ajax_get_mailbox(request):
             user_profile.unread_messages.clear()
             user_profile.send_notify_messages.clear()
         else:
-            for msg in Message.objects.filter(id__in=datatable_data["make_read[]"]):
-                user_profile.unread_messages.remove(msg)
-                user_profile.send_notify_messages.remove(msg)
+            user_profile.unread_messages = user_profile.unread_messages\
+                .exclude(id__in=datatable_data["make_read[]"])
+            user_profile.send_notify_messages = user_profile.send_notify_messages \
+                .exclude(id__in=datatable_data["make_read[]"])
     if "make_unread[]" in datatable_data:
         user_profile.unread_messages.add(*Message.objects.filter(id__in=datatable_data["make_unread[]"]))
     if "make_delete[]" in datatable_data:
         user_profile.deleted_messages.add(*Message.objects.filter(id__in=datatable_data["make_delete[]"]))
     if "make_undelete[]" in datatable_data:
-        user_profile.deleted_messages.remove(*Message.objects.filter(id__in=datatable_data["make_undelete[]"]))
+        user_profile.deleted_messages = user_profile.deleted_messages.exclude(id__in=datatable_data["make_undelete[]"])
 
     messages = Message.objects.none()
     messages_deleted = user_profile.deleted_messages.all()
