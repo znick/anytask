@@ -26,7 +26,3 @@ django-htmlmin
 django-colorfield
 django-haystack==2.4.1
 Whoosh
-numpy
-scipy
-matplotlib
-sklearn
