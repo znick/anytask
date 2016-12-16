@@ -46,7 +46,7 @@
                         wildcard: '%QUERY',
                         url: '{% url search.views.ajax_search_users %}?q=%QUERY',
                         transform: function(response) {
-                            $('.typeahead').data('up_limited', response.is_limited);
+                            $('#navbar_search').data('up_limited', response.is_limited);
                             return $.map(response.result, function(user) {
                                 return {
                                     'fullname': user[0],
@@ -69,7 +69,7 @@
                         wildcard: '%QUERY',
                         url: '{% url search.views.ajax_search_courses %}?q=%QUERY',
                         transform: function(response) {
-                            $('.typeahead').data('course_limited', response.is_limited);
+                            $('#navbar_search').data('course_limited', response.is_limited);
                             return $.map(response.result, function(user) {
                                 return {
                                     'name': user[0],
@@ -83,70 +83,70 @@
                     }
                 });
 
-                $('.typeahead').typeahead({
-                            highlight: true,
-                            hint: false,
-                            minLength: 3
-                        },
-                        {
-                            name: 'user_profiles',
-                            displayKey: 'fullname',
-                            source: user_profiles_bloodhound.ttAdapter(),
-                            templates: {
-                                header: '<h6 class="search-model-name">Пользователи</h6>',
-                                suggestion: function(data) {
-                                    var table_html = '<div class="sgs-result-up" data-url="{0}"><table>' +
-                                            '<tr><td style="padding-right: 10px;"><img class="avatar" src="{1}" style="width: 30px; height: 30px;"></td>' +
-                                            '<td><div><strong>{2}</strong></div>{3}</td></tr>' +
-                                            '<tr><td></td><td><strong>Логины</strong></td></tr>' +
-                                            '<tr><td></td><td>{4}@ <small class="text-muted">Anytask</small></td></tr>' +
-                                            '{5}' +
-                                            '</table></div>';
-                                    var email_html = '';
-                                    var ya_login_html = '';
-                                    var avatar = data.avatar;
+                $('#navbar_search').typeahead({
+                        highlight: true,
+                        hint: false,
+                        minLength: 3
+                    },
+                    {
+                        name: 'user_profiles',
+                        displayKey: 'fullname',
+                        source: user_profiles_bloodhound.ttAdapter(),
+                        templates: {
+                            header: '<h6 class="search-model-name">Пользователи</h6>',
+                            suggestion: function(data) {
+                                var table_html = '<div class="sgs-result-up" data-url="{0}"><table>' +
+                                    '<tr><td style="padding-right: 10px;"><img class="avatar" src="{1}" style="width: 30px; height: 30px;"></td>' +
+                                    '<td><div><strong>{2}</strong></div>{3}</td></tr>' +
+                                    '<tr><td></td><td><strong>Логины</strong></td></tr>' +
+                                    '<tr><td></td><td>{4}@ <small class="text-muted">Anytask</small></td></tr>' +
+                                    '{5}' +
+                                    '</table></div>';
+                                var email_html = '';
+                                var ya_login_html = '';
+                                var avatar = data.avatar;
 
-                                    if (!avatar)
-                                        avatar = 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mm&f=y';
-                                    if (data.email)
-                                        email_html = '<div class="sgs-email">{0}</div>'.format(data.email);
-                                    if (data.ya_login)
-                                        ya_login_html = '<tr><td></td><td>{0}@ <small class="text-muted">Я.Контест</small></td></tr>'.format(data.ya_login);
-                                    return table_html.format(data.url, avatar, data.fullname, email_html, data.username, ya_login_html)
-                                },
-                                {#                            footer: '<div><a href="#">Все результаты</a></div>'#}
-                            }
-                        },
-                        {
-                            name: 'courses',
-                            displayKey: 'name',
-                            source: courses_bloodhound.ttAdapter(),
-                            templates: {
-                                header: '<h6 class="search-model-name">Курсы</h6>',
-                                suggestion: function(data) {
-                                    var schools_html = '';
-                                    var archive_html = '';
-
-                                    if (!data.is_active)
-                                        archive_html = '<small class="text-muted">Архив</small>';
-
-                                    for (var i = 0; i < data.schools.length; ++i)
-                                        schools_html += '<div>{0}</div>'.format(data.schools[i]);
-                                    var course_html = '<div data-url="{0}"><div class="sgs-result-course"><strong>{1} {2}</strong>{3}</div>' +
-                                            '<div class="sgs-result-course">{4}</div></div>';
-
-                                    return course_html.format(data.url, data.name, data.year, archive_html, schools_html);
-                                },
-                                {#                                                                                            footer: '<div><a href="#">Все результаты</a></div>'#}
-                            }
+                                if (!avatar)
+                                    avatar = 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mm&f=y';
+                                if (data.email)
+                                    email_html = '<div class="sgs-email">{0}</div>'.format(data.email);
+                                if (data.ya_login)
+                                    ya_login_html = '<tr><td></td><td>{0}@ <small class="text-muted">Я.Контест</small></td></tr>'.format(data.ya_login);
+                                return table_html.format(data.url, avatar, data.fullname, email_html, data.username, ya_login_html)
+                            },
+                            {#                            footer: '<div><a href="#">Все результаты</a></div>'#}
                         }
+                    },
+                    {
+                        name: 'courses',
+                        displayKey: 'name',
+                        source: courses_bloodhound.ttAdapter(),
+                        templates: {
+                            header: '<h6 class="search-model-name">Курсы</h6>',
+                            suggestion: function(data) {
+                                var schools_html = '';
+                                var archive_html = '';
+
+                                if (!data.is_active)
+                                    archive_html = '<small class="text-muted">Архив</small>';
+
+                                for (var i = 0; i < data.schools.length; ++i)
+                                    schools_html += '<div>{0}</div>'.format(data.schools[i]);
+                                var course_html = '<div data-url="{0}"><div class="sgs-result-course"><strong>{1} {2}</strong>{3}</div>' +
+                                    '<div class="sgs-result-course">{4}</div></div>';
+
+                                return course_html.format(data.url, data.name, data.year, archive_html, schools_html);
+                            },
+                            {#                                                                                            footer: '<div><a href="#">Все результаты</a></div>'#}
+                        }
+                    }
                 ).on('typeahead:select', function(ev, suggestion) {
                     window.location = suggestion.url;
                 }).on('typeahead:render', function (event, items, isAsync, datasetName) {
                     if (items) {
                         var menu = $(this).siblings('.tt-menu');
 
-                        if ($('.typeahead').data('course_limited') || $('.typeahead').data('up_limited')) {
+                        if ($('#navbar_search').data('course_limited') || $('#navbar_search').data('up_limited')) {
                             if (!$('.search-show-more', menu).length)
                                 $(menu).append("<div class='search-show-more'><button type='submit'>Все результаты</button></div>");
                         }
@@ -156,11 +156,11 @@
                 });
 
                 $('.tt-menu').on("mouseleave", function() {
-                            $(this).find('.tt-cursor').removeClass('tt-cursor');
-                        }
+                        $(this).find('.tt-cursor').removeClass('tt-cursor');
+                    }
                 ).on("mouseenter", 'div.search-show-more', function() {
-                            $(this).closest('.tt-menu').find('.tt-cursor').removeClass('tt-cursor');
-                        }
+                        $(this).closest('.tt-menu').find('.tt-cursor').removeClass('tt-cursor');
+                    }
                 );
 
 
@@ -324,6 +324,45 @@
                 }
             }
 
+            .nav-right {
+                float: right;
+            }
+
+            #navbar_user_name {
+                display: none;
+            }
+
+            @media (max-width: 991px) {
+                .navbar-brand {
+                    float: none;
+                    margin-right: 0;
+                    line-height: 1.9;
+                }
+                .navbar-toggleable-md .navbar-nav .nav-item {
+                    float: none !important;
+                    margin-left: 0;
+                }
+                .navbar-toggleable-md .navbar-nav .dropdown-menu {
+                    position: static;
+                    float: none;
+                }
+                .nav-right {
+                    float: none;
+                }
+
+                #navbar_user_name {
+                    display: inline;
+                }
+                .dropdown-username .dropdown-header {
+                    display: none;
+                }
+
+                .fa {
+                    width: 1.3em;
+                    text-align: center;
+                }
+            }
+
             .nav-form-search .tt-dropdown-menu, .tt-menu,
             .form-search .tt-dropdown-menu, .tt-menu {
                 padding: 0;
@@ -350,11 +389,20 @@
                 position: relative;
             }
 
+            .nav-form-search .input-group {
+                width: 100%;
+            }
+
+            .nav-form-search .input-group-btn {
+                width: inherit;
+                display: none;
+            }
+
             .nav-form-search input {
                 color: rgba(255,255,255,.75);
                 background-color: #3386bf;
                 border-color: #3386bf;
-                padding: 8px 12px;
+                padding: .425rem;
                 border-radius: 0;
                 border-width: 0;
                 box-shadow: none;
@@ -365,7 +413,8 @@
                 color: rgba(255,255,255,.5);
                 background-color: #3097d1;
                 border-color: #3097d1;
-                padding: 8px 12px;
+                padding: .425rem;
+                padding-right: 0;
                 border-radius: 0;
                 border-width: 0;
                 box-shadow: none;
@@ -378,10 +427,6 @@
                 color: rgba(255,255,255,.75);
                 background-color: #3097d1;
                 border-color: #3097d1;
-                padding: 8px 12px;
-                border-radius: 0;
-                border-width: 0;
-                box-shadow: none;
                 outline: none;
             }
 
@@ -401,19 +446,29 @@
                 color: rgba(255,255,255,.5);
             ;}
 
-            @media (min-width: 768px) {
-                .nav-form-search  form[role="search"] input {
-                    display: none;
+            @media (min-width: 991px) {
+                .nav-form-search  form[role="search"] .input-group-input {
+                    position: absolute;
+                    width: 0;
+                    left: 0;
+                    -webkit-transition: width 0.3s ease-out, left 0.3s ease-out;
+                    -moz-transition: width 0.3s ease-out, left 0.3s ease-out;
+                    -o-transition: width 0.3s ease-out, left 0.3s ease-out;
+                    transition: width 0.3s ease-out, left 0.3s ease-out;
                 }
-                .nav-form-search  form[role="search"].active {
-                    width: 100%;
+                .nav-form-search .input-group-btn {
+                    display: table-cell;
+                }
+                .nav-form-search .input-group {
+                    width: inherit;
                 }
                 .nav-form-search  form[role="search"].active button,
                 .nav-form-search  form[role="search"].active input {
                     display: inline;
                 }
-                .nav-form-search  form[role="search"].active input {
-                    width: 100%;
+                .nav-form-search  form[role="search"].active .input-group-input {
+                    width: 15rem;
+                    left: -15rem;
                 }
             }
 
@@ -465,6 +520,23 @@
 
             }
 
+            .top_notify_count {
+                padding: 3px 4px;
+                font-size: 9px;
+                height: 16px;
+                top: 6px;
+                left: 8px;
+                text-align: center;
+                position: absolute;
+                border: 1px solid #3097d1;
+            }
+
+            @media (min-width: 991px) {
+                #top_notify_count_string {
+                    display: none;
+                }
+            }
+
             .mce-menubar .mce-menubtn:hover,
             .mce-menubar .mce-menubtn.mce-active,
             .mce-menubar .mce-menubtn:focus{
@@ -507,23 +579,52 @@
             <li><a href="/about">About</a></li>
         </ul>
         -->
-        <button class="navbar-toggler hidden-md-up pull-xs-right" type="button" data-toggle="collapse" data-target="#exCollapsingNavbar2">
+        <button class="navbar-toggler hidden-lg-up pull-xs-right" type="button" data-toggle="collapse" data-target="#exCollapsingNavbar2">
             &#9776;
         </button>
-        <div class="collapse navbar-toggleable-sm" id="exCollapsingNavbar2">
-            <div class="row">
-                {% block navbar %} {% endblock navbar %}
-                {% block user %}
+        <div class="collapse navbar-toggleable-md" id="exCollapsingNavbar2">
+            {% block navbar %} {% endblock navbar %}
+            {% block user %}
+                <div class="nav-right">
                     {% if user.is_authenticated %}
-                        <ul class="nav navbar-nav pull-xs-right col-xs-12 col-md-2 col-lg-2">
-                            <li class="nav-item dropdown">
-                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button"
-                                   aria-haspopup="true" aria-expanded="false">
-                                    <i class="fa fa-user"></i>
-                                    <span id="navbar_user_name">{% if user.get_full_name %}
-                                        {{ user.get_full_name }} {% else %} {{ user }} {% endif %}</span>
+                        <ul class="nav navbar-nav">
+                            {% block main_search %}
+                                <li class="nav-item">
+                                    <div class="nav-form-search">
+                                        <form class="navbar-form" role="search" method="get"
+                                              action="{% url search.views.search_page %}">
+                                            <div class="input-group">
+                                                <div class="input-group-input">
+                                                    <input class="typeahead form-control" id="navbar_search" name="q" type="text" placeholder="Найти...">
+                                                </div>
+                                                <div class="input-group-btn">
+                                                    <button class="btn" type="submit"><span class="fa fa-search" style="line-height: 1.5"></span></button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </li>
+                            {% endblock %}
+                {% block navbar_mail %}
+                            <li class="nav-item">
+                                <a href="{% url mail.views.mail_page %}" class="nav-link" role="button" style="position: relative;"><span class="fa fa-envelope" aria-hidden="true" style="line-height: inherit;"></span>
+                                    {% if user.get_profile.get_unread_count %}
+                                        <span id="top_notify_count" class="label label-pill label-danger top_notify_count">{{ user.get_profile.get_unread_count }}</span>
+                                        <span id="top_notify_count_string">Есть новые сообщения</span>
+                                    {% else %}
+                                        <span id="top_notify_count" class="label label-pill label-danger top_notify_count"></span>
+                                        <span id="top_notify_count_string">Нет новых сообщений</span>
+                                    {% endif %}
                                 </a>
-                                <div class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                            </li>
+                        {% endblock %}
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                    <span class="fa fa-user"></span>
+                                    <span id="navbar_user_name">{% if user.get_full_name %}{{ user.get_full_name }} {% else %} {{ user }} {% endif %}</span>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-right dropdown-username" aria-labelledby="dropdownMenu1">
+                                    <h6 class="dropdown-header">{% if user.get_full_name %}{{ user.get_full_name }}{% else %}{{ user }}{% endif %}</h6>
                                     <a class="dropdown-item" href="{% url users.views.profile %}">Профиль</a>
                                     <a class="dropdown-item" href="{% url users.views.profile_settings %}">Настройки</a>
                                     {% if user.is_staff %}
@@ -538,25 +639,8 @@
                                 </div>
                             </li>
                         </ul>
-                        {% block main_search %}
-                            <div class="nav-form-search pull-xs-right col-xs-12 col-md-2 col-lg-2">
-                                <form class="navbar-form" role="search" method="get"
-                                      action="{% url search.views.search_page %}">
-                                    <div class="input-group">
-                                        <div style="width: 100%">
-                                            <input class="typeahead form-control" name="q" type="text"
-                                                   placeholder="Найти...">
-                                        </div>
-                                        <div class="input-group-btn">
-                                            <button class="btn" type="submit"><i class="fa fa-search"
-                                                                                 style="line-height: 1.5"></i></button>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                        {% endblock %}
                     {% else %}
-                        <ul class="nav navbar-nav pull-xs-right col-xs-12 col-md-5 col-lg-4">
+                        <ul class="nav navbar-nav">
                             <li class="nav-item">
                                 <a class="nav-link" href="{% url django.contrib.auth.views.login %}">Войдите</a>
                             </li>
@@ -565,8 +649,8 @@
                             </li>
                         </ul>
                     {% endif %}
-                {% endblock %}
-            </div>
+                </div>
+            {% endblock %}
         </div>
     </div>
 </nav>
@@ -612,8 +696,8 @@
         });
 
         var n = d.getElementsByTagName("script")[0],
-                s = d.createElement("script"),
-                f = function () { n.parentNode.insertBefore(s, n); };
+            s = d.createElement("script"),
+            f = function () { n.parentNode.insertBefore(s, n); };
         s.type = "text/javascript";
         s.async = true;
         s.src = (d.location.protocol == "https:" ? "https:" : "http:") + "//mc.yandex.ru/metrika/watch.js";

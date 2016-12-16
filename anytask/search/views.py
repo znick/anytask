@@ -32,7 +32,11 @@ def ajax_search_users(request):
     if 'q' not in request.GET:
         return HttpResponseForbidden()
 
-    max_result = 3
+    if 'max' in request.GET:
+        max_result = int(request.GET["max"])
+    else:
+        max_result = 3
+
     result, _ = search_users(request.GET.get('q', ''), request.user, max_result + 1)
 
     return HttpResponse(json.dumps({'result': result[:max_result],
@@ -45,7 +49,10 @@ def ajax_search_courses(request):
     if 'q' not in request.GET:
         return HttpResponseForbidden()
 
-    max_result = 3
+    if 'max' in request.GET:
+        max_result = int(request.GET["max"])
+    else:
+        max_result = 3
 
     result, _ = search_courses(request.GET.get('q', ''), request.user, max_result + 1)
 
@@ -100,7 +107,8 @@ def search_users(query, user, max_result=None):
                                sg.object.ya_login if user_is_teacher else '',
                                user_to_show.get_absolute_url(),
                                sg.object.avatar.url if sg.object.avatar else '',
-                               user_to_show.email])
+                               user_to_show.email,
+                               user_to_show.id])
                 result_objs.append(sg.object)
 
                 if len(result) == max_result:
@@ -113,7 +121,8 @@ def search_users(query, user, max_result=None):
                                sg.object.ya_login,
                                sg.object.user.get_absolute_url(),
                                sg.object.avatar.url if sg.object.avatar else '',
-                               sg.object.user.email])
+                               sg.object.user.email,
+                               sg.object.user.id])
                 result_objs.append(sg.object)
 
     return result, result_objs
