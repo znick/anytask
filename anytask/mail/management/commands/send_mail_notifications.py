@@ -17,6 +17,8 @@ class Command(BaseCommand):
     option_list = BaseCommand.option_list
 
     def handle(self, **options):
+        domain = Site.objects.get_current().domain
+        from_email = settings.DEFAULT_FROM_EMAIL
         notify_messages = []
         for user_profile in UserProfile.objects.exclude(send_notify_messages__isnull=True):
             user = user_profile.user
@@ -26,7 +28,6 @@ class Command(BaseCommand):
 
             subject = u'{0}, у вас есть новые сообщения'.format(user.first_name)
 
-            domain = Site.objects.get_current().domain
             mail_url = 'http://' + domain + reverse('mail.views.mail_page')
             unread_count_string = get_string(unread_count)
 
@@ -47,8 +48,6 @@ class Command(BaseCommand):
                 "unread_count_string": unread_count_string
             }
             html = render_to_string('email_notification_mail.html', context)
-
-            from_email = settings.DEFAULT_FROM_EMAIL
             notify_messages.append((subject, plain_text, html, from_email, [user.email]))
 
         if notify_messages:

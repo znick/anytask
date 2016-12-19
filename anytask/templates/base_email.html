@@ -1,0 +1,48 @@
+<div style="font-family:Helvetica Neue,Helvetica,Arial,sans-serif;color: #373a3c;margin: 0;padding:40px 10px;width:100%;background-color: #f5f8fa;">
+    <table cellpadding="0" cellspacing="0"
+           style="border-collapse:collapse;color:#373a3c;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;font-size:16px;margin:0 auto;padding:0;table-layout:fixed;
+                   width:{% block main_width %}475px{% endblock %};">
+        <tbody>
+        <tr>
+            <td style="border-collapse:collapse;">
+                <div style="background-color: #3097d1;width:100%;">
+                    <div style="padding:12px 30px 12px 30px;">
+                        <a href="{{ domain }}{% url index.views.index %}"
+                           style="color:#fff;text-decoration:none;font-size: 20px;line-height: 30px;"
+                           target="_blank">Anytask</a>
+                    </div>
+                </div>
+                <div style="background:#fff;padding:20px 30px 20px 30px;border: 1px solid rgba(0,0,0,.125); border-top-color: #3097d1">
+                {% block user %}
+                    <table cellpadding="0" cellspacing="0"
+                           style="border-collapse:collapse;margin-bottom:20px;width:100%;">
+                        <tbody>
+                        <tr>
+                            <td style="border-collapse:collapse;padding-right:15px;padding-top:3px;vertical-align:top;width:50px;">
+                                <a href="{{ domain }}{% url users.views.profile %}"
+                                   style="text-decoration:none;font-weight:bold;color: #373a3c"
+                                   target="_blank"
+                                >
+                                    <img src="{% if not user.get_profile.avatar %}https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mm&f=y{% else %}{{ domain }}{{ user_profile.avatar.url }}{% endif %}"
+                                         style="width: 50px; height: 50px;object-fit: cover;border-radius: 50%;border: 1px solid #c3c3c3;vertical-align: middle;"
+                                         width="50" height="50" alt="">
+                                </a>
+                            </td>
+                            <td style="border-collapse:collapse;vertical-align:middle;">
+                                </a>
+                                <a href="{{ domain }}{% url users.views.profile %}"
+                                   style="text-decoration:none;font-weight:bold;color: #373a3c"
+                                   target="_blank"
+                                >{{ user.get_full_name }}</a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                {% endblock %}
+                {% block content %}{% endblock %}
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>

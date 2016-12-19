@@ -25,3 +25,4 @@ mock
 django-colorfield
 django-haystack==2.4.1
 Whoosh
+django-reversion==1.6.3

@@ -118,16 +118,9 @@
                                style="font-weight: normal;white-space: nowrap;padding: 0px 3px 0px 0px;">
                             <input checked type="checkbox" name="get_deadline_from_contest"
                                    id="task_edit_get_deadline_from_contest"
-                                   style="margin-left: 3px;margin-bottom: 1.5rem;">
+                                   style="margin-left: 3px;">
                             <small class="text-muted">Брать из Я.Контеста</small>
                         </label>
-                        <br/>
-                        <div id="task_edit_label_for_changed_task" class="collapse" style="margin: -1.7rem 0 0 0;">
-                            <label class="form-control-label" for="task_edit_changed_task" style="font-weight: normal;white-space: nowrap;padding: 0px 3px 0px 0px;">
-                                <input type="checkbox" name="changed_task" id="task_edit_changed_task" style="margin-left: 3px;">
-                                <small class="text-muted">Уведомить студентов об изменении срока сдачи</small>
-                            </label>
-                        </div>
                     </div>
                 </div>
                 <div class="form-group row">
@@ -154,17 +147,25 @@
                         </div>
                     </div>
                 {% endif %}
+                <div class="form-group row" id="task_edit_label_for_changed_task">
+                    <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_changed_task">Уведомить студентов о создании задач</label>
+                    <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7" style="padding-top: 5px;">
+                        <input type="checkbox" name="changed_task" id="task_edit_changed_task">
+                    </div>
+                </div>
                 <div class="form-group row">
                     <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_hidden_task">Скрыть задачи</label>
                     <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7" style="padding-top: 5px">
                         <input type="checkbox" name="hidden_task" id="task_edit_hidden_task">
                     </div>
                 </div>
-                <div class="form-group row" style="margin:0;">
-                    <div id="task_submit_error_text"></div>
-                    <div class="btn-group pull-xs-right" role="group">
-                        <button type="button" id="button_cancel_quit" class="btn btn-secondary">Отменить и выйти</button>
-                        <button type="submit" id="button_save_quit" class="btn btn-primary">Сохранить и выйти</button>
+                <div class="form-group row footer-buttons" style="margin-bottom:0">
+                    <div id="task_submit_error_text" class="col-xs-12"></div>
+                    <div class="col-lg-offset-2 col-sm-12 col-lg-10" style="padding: .375rem .75rem;">
+                        <div class="btn-group pull-xs-right" role="group">
+                            <button type="button" id="button_cancel_quit" class="btn btn-secondary">Отменить и выйти</button>
+                            <button type="submit" id="button_save_quit" class="btn btn-primary">Сохранить и выйти</button>
+                        </div>
                     </div>
                 </div>
             </div>

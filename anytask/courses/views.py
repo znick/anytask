@@ -23,6 +23,7 @@ import urllib, urllib2
 import httplib
 import logging
 import requests
+import reversion
 
 from courses.models import Course, DefaultTeacher, StudentCourseMark, MarkField, FilenameExtension
 from groups.models import Group
@@ -662,6 +663,10 @@ def ajax_update_contest_tasks(request):
                         task.score_max = problem['score']
 
             task.save()
+
+            reversion.set_user(request.user)
+            reversion.set_comment("Update from contest")
+
             response['tasks_title'][task.id] = task.title
 
     return HttpResponse(json.dumps(response),

@@ -53,6 +53,7 @@ class Task(models.Model):
     contest_id = models.IntegerField(db_index=True, null=False, blank=False, default=0)
     problem_id = models.CharField(max_length=128, db_index=True, null=True, blank=True)
 
+    send_to_users = models.BooleanField(db_index=False, null=False, blank=False, default=False)
     sended_notify = models.BooleanField(db_index=True, null=False, blank=False, default=True)
 
     one_file_upload = models.BooleanField(db_index=False, null=False, blank=False, default=False)
@@ -344,7 +345,6 @@ def task_taken_save_to_log_pre_delete(sender, instance, **kwargs):
     task_taken_log.save()
 
 
-post_save.connect(task_save_to_log_post_save, sender=Task)
+# post_save.connect(task_save_to_log_post_save, sender=Task)
 post_save.connect(task_taken_save_to_log_post_save, sender=TaskTaken)
 pre_delete.connect(task_taken_save_to_log_pre_delete, sender=TaskTaken)
-

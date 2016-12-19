@@ -129,7 +129,7 @@
                     <div class="form-group row">
                         <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_header">Название</label>
                         <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
-                            <input class="form-control" id='task_edit_header' name='task_title' type='text' size='20' value="{{task.title}}" />
+                            <input class="form-control" id='task_edit_header' name='task_title' type='text' size='20' data-value="{{task.title}}" value="{{task.title}}" />
                             <small class="text-help" id="task_edit_header_error_text"></small>
                         </div>
                     </div>
@@ -137,7 +137,7 @@
                         <div class="form-group row">
                             <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_max_score">Максимальный балл</label>
                             <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
-                                <input class="form-control" id='task_edit_max_score' name='max_score' type='text' maxlength='25' size='20' value="{{ task.score_max }}">
+                                <input class="form-control" id='task_edit_max_score' name='max_score' type='text' maxlength='25' size='20' data-value="{{ task.score_max }}" value="{{ task.score_max }}">
                                 <small class="text-help" id="task_edit_max_score_error_text"></small>
                             </div>
                         </div>
@@ -162,17 +162,11 @@
                             <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_datepicker">Дата сдачи</label>
                             <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
                                 <div class="input-group date task_datetime">
-                                    <input class="form-control" id='task_edit_datepicker' name='deadline' type='text'  readonly value="{{task.deadline_time|date:'d-m-Y H:i'}}" style="background-color: white; cursor: pointer">
+                                    <input class="form-control" id='task_edit_datepicker' name='deadline' type='text'  readonly data-value="{{task.deadline_time|date:'d-m-Y H:i'}}" value="{{task.deadline_time|date:'d-m-Y H:i'}}" style="background-color: white; cursor: pointer">
                                     <span class="input-group-addon" style="cursor: pointer;"><i class="fa fa-times fa-lg"></i></span>
                                     <span class="input-group-addon" style="cursor: pointer;"><i class="fa fa-calendar fa-lg"></i></span>
                                 </div>
                                 <small class="text-help" id="task_edit_datepicker_error_text"></small>
-                                <div id="task_edit_label_for_changed_task" class="collapse">
-                                    <label class="form-control-label" for="task_edit_changed_task" style="font-weight: normal;white-space: nowrap;padding: 0px 3px 0px 0px;">
-                                        <input type="checkbox" name="changed_task" id="task_edit_changed_task" style="margin-left: 3px;">
-                                        <small class="text-muted">Уведомить студентов об изменении срока сдачи</small>
-                                    </label>
-                                </div>
                             </div>
                         </div>
                     {% endif %}
@@ -275,6 +269,12 @@
                             </div>
                         </div>
                     </div>
+                    <div class="form-group row" id="task_edit_label_for_changed_task" style="display: none;">
+                        <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_changed_task">Уведомить студентов об изменении в задаче</label>
+                        <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7" style="padding-top: 5px;">
+                            <input type="checkbox" name="changed_task" id="task_edit_changed_task">
+                        </div>
+                    </div>
                     <div class="form-group row">
                         <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_hidden_task">Скрыть задачу</label>
                         <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7" style="padding-top: 5px">
@@ -288,13 +288,17 @@
                             <textarea class='input-xlarge form-control' style="max-width:100%;width:100%;height:200px;" id='task_edit_body' name='task_text'>{{ task.task_text }}</textarea>
                         </div>
                     </div>
-                    <div class="form-group row" style="margin:0px;">
-                        <div id="task_submit_error_text"></div>
-                        <button type="button" id="button_preview" class="btn btn-secondary pull-xs-left">Предпросмотр</button>
-                        <div class="btn-group pull-xs-right" role="group">
-                            <button type="button" id="button_cancel_quit" class="btn btn-secondary">Отменить и выйти</button>
-                            <button type="button" id="button_save" class="btn btn-secondary">Сохранить и продолжить редактирование</button>
-                            <button type="button" id="button_save_quit" class="btn btn-primary">Сохранить и выйти</button>
+                    <div class="form-group row footer-buttons" style="margin-bottom:0">
+                        <div id="task_submit_error_text" class="col-xs-12"></div>
+                        <div class="col-sm-12 col-lg-2" style="padding: .375rem .75rem;">
+                            <button type="button" id="button_preview" class="btn btn-secondary pull-xs-left">Предпросмотр</button>
+                        </div>
+                        <div class="col-sm-12 col-lg-10" style="padding: .375rem .75rem;">
+                            <div class="btn-group pull-xs-right" role="group">
+                                <button type="button" id="button_cancel_quit" class="btn btn-secondary">Отменить и выйти</button>
+                                <button type="button" id="button_save" class="btn btn-secondary">Сохранить и продолжить редактирование</button>
+                                <button type="button" id="button_save_quit" class="btn btn-primary">Сохранить и выйти</button>
+                            </div>
                         </div>
                     </div>
                 </form>
