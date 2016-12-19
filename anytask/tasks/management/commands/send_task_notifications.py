@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
+import tasks.admin
+
 from django.core.management.base import BaseCommand
-from django.core.mail import get_connection, EmailMultiAlternatives
 from django.contrib.sites.models import Site
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -20,8 +21,8 @@ class Command(BaseCommand):
     option_list = BaseCommand.option_list
 
     def handle(self, **options):
-        DIFF_FIELDS = ['title', 'task_text', 'score_max', 'deadline_time']
-        DIFF_FIELDS_STR = ['название', 'формулировка', 'максимальный балл', 'дата сдачи']
+        DIFF_FIELDS = [u'title', u'task_text', u'score_max', u'deadline_time']
+        DIFF_FIELDS_STR = [u'название', u'формулировка', u'максимальный балл', u'дата сдачи']
         students_tasks_info = {}
         for task in Task.objects.filter(sended_notify=False):
             course = task.course
@@ -29,7 +30,7 @@ class Command(BaseCommand):
                 continue
 
             task_created = False
-            task_chenged = False
+            task_changed = False
 
             version_list = reversion.get_unique_for_object(task)
 
@@ -46,13 +47,12 @@ class Command(BaseCommand):
                 for i_field, field in enumerate(DIFF_FIELDS):
                     if version.field_dict[field] != version_list[i + 1].field_dict[field]:
                         task_info[i_field] = DIFF_FIELDS_STR[i_field]
-                        task_chenged = True
-                if version.field_dict['is_hidden'] and version.field_dict['is_hidden'] != \
-                        version_list[i + 1].field_dict['is_hidden']:
+                        task_changed = True
+                if not version.field_dict['is_hidden'] and version_list[i + 1].field_dict['is_hidden']:
                     task_created = True
 
-            if task_created or task_chenged:
-                task_info = (task, task_created) + tuple((lambda a: a != '', task_info))
+            if task_created or task_changed:
+                task_info = (task, task_created) + tuple(filter(lambda a: a != '', task_info))
 
                 for group in task.groups.all():
                     for student in group.students.all():
@@ -73,9 +73,10 @@ class Command(BaseCommand):
                                 }
                             }
 
-            task.sended_notify = True
-            task.save()
-            reversion.set_comment("Send notification")
+            with reversion.create_revision():
+                task.sended_notify = True
+                task.save()
+                reversion.set_comment("Send notification")
 
         domain = Site.objects.get_current().domain
         from_email = settings.DEFAULT_FROM_EMAIL
@@ -96,12 +97,12 @@ class Command(BaseCommand):
             user = courses_info['user']
             subject = u'{0}, произошли изменения в Ваших курсах'.format(user.first_name)
 
-            plain_body = ''
+            plain_body = u''
             for key_course, tasks_info in courses_info.iteritems():
                 if key_course == 'user':
                     continue
 
-                task_text = ''
+                task_text = u''
                 for key_task, task_info in tasks_info.iteritems():
                     if key_task == 'course':
                         continue

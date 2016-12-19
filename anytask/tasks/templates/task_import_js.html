@@ -21,10 +21,12 @@
                 pickerPosition: "bottom-left",
                 startDate: null,
                 minuteStep: 30
-            }).on("input change", function (e) {
-                $('#task_edit_label_for_changed_task').show()
             });
         {% endif %}
+
+        $("#task_edit_hidden_task").change(function () {
+            $('#task_edit_label_for_changed_task').toggle();
+        });
 
         $('#task_edit_rb_integrated').change(function() {
             if ($(this).is(':checked')) {

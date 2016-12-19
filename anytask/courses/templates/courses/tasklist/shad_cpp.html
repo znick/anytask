@@ -272,35 +272,37 @@
     </div>
 {% endfor %}
 
-<div class="modal fade" id="modal_table_edit" tabindex="-1" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
-    <div class="modal-dialog modal-sm" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="modal_table_edit_header">Итоговая таблица</h4>
-            </div>
-            <div class="modal-body" style="max-height: none;">
-                <p>Изменение порядка столбцов в итоговой таблице курса, а также их удаление(удалять можно только те задачи, в которых не было комментариев).</p>
-                {% for group, tasks in group_tasks.iteritems %}
-                    <div id="group_sort_{{ group.id }}" data-group="{{ group.id }}" data-table="#table_results_{{ group.id }}" data-marksystem="{% if course_mark_system_vals %}true{% endif %}" class="collapse">
-                        <p  class="modal-group-name" style="font-weight: bold">{{ group.name }}</p>
-                        <ul class="group-sortable" name="group_sort_{{ group.id }}">
-                            {% for task in tasks %}
-                                <li class="ui-state-default" name="task_sort_{{ task.id }}" value="{{ task.id }}" style="padding-right: 20px;position: relative;cursor: -webkit-grab;">
-                                    <span>{{ task.title }}</span>
-                                    <a class="task-delete pull-xs-right" data-name="task_delete_{{ task.id }}" {% autoescape off %}{{ task|group_info }}{% endautoescape %} style="cursor: pointer" tabindex="0" data-toggle="popover" type="button">
-                                        <i class="fa fa-trash-o" aria-hidden="true"></i>
-                                    </a>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                {% endfor %}
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
-                <button class="btn btn-primary" id="modal_table_edit_ok" data-dismiss="modal" data-loading-text="<span class='fa fa-circle-o-notch fa-spin'></span> Сохранение">Сохранить</button>
+{% if user_is_teacher %}
+    <div class="modal fade" id="modal_table_edit" tabindex="-1" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="modal_table_edit_header">Итоговая таблица</h4>
+                </div>
+                <div class="modal-body" style="max-height: none;">
+                    <p>Изменение порядка столбцов в итоговой таблице курса, а также их удаление(удалять можно только те задачи, в которых не было комментариев).</p>
+                    {% for group, tasks in group_tasks.iteritems %}
+                        <div id="group_sort_{{ group.id }}" data-group="{{ group.id }}" data-table="#table_results_{{ group.id }}" data-marksystem="{% if course_mark_system_vals %}true{% endif %}" class="collapse">
+                            <p  class="modal-group-name" style="font-weight: bold">{{ group.name }}</p>
+                            <ul class="group-sortable" name="group_sort_{{ group.id }}">
+                                {% for task in tasks %}
+                                    <li class="ui-state-default" name="task_sort_{{ task.id }}" value="{{ task.id }}" style="padding-right: 20px;position: relative;cursor: -webkit-grab;">
+                                        <span>{{ task.title }}</span>
+                                        <a class="task-delete pull-xs-right" data-name="task_delete_{{ task.id }}" {% autoescape off %}{{ task|group_info }}{% endautoescape %} style="cursor: pointer" tabindex="0" data-toggle="popover" type="button">
+                                            <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                        </a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                    <button class="btn btn-primary" id="modal_table_edit_ok" data-dismiss="modal" data-loading-text="<span class='fa fa-circle-o-notch fa-spin'></span> Сохранение">Сохранить</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
+{% endif %}

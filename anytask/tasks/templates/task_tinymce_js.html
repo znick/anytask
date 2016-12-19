@@ -60,6 +60,10 @@
                 check_changed($(this));
             });
             $("#task_edit_hidden_task").change(function () {
+                if ($(this).data("value") && !$(this).is(':checked'))
+                    $(this).data("changed", true);
+                else
+                    $(this).data("changed", false);
                 show_notify();
             });
         {% endif %}
@@ -78,7 +82,8 @@
             if (($("#task_edit_header").data("changed") ||
                 $("#task_edit_max_score").data("changed") ||
                 $("#task_edit_datepicker").data("changed") ||
-                $("#task_edit_body").data("changed")) && !$("#task_edit_hidden_task").is(':checked'))
+                $("#task_edit_body").data("changed") ||
+                $("#task_edit_hidden_task").data("changed")) && !$("#task_edit_hidden_task").is(':checked'))
 
                 $ ("#task_edit_label_for_changed_task").show();
             else

@@ -7,10 +7,10 @@
             {% with course=tasks_info|key:"course" %}
                 <div style="color:#373a3c;line-height:20px;margin:0 0 20px">
                     В курсе
-                    <a href="{{ domain }}{{ course.get_absolute_url }} %}"
+                    <a href="{{ domain }}{{ course.get_absolute_url }}"
                        style="text-decoration:none;font-weight:bold;color: #0275d8;"
                        target="_blank"
-                    >"{{ course.title }}"</a>
+                    >"{{ course.name }}"</a>
                     произошли изменения:
                     <ul>
                         {% for key_task, task_info in tasks_info.iteritems %}

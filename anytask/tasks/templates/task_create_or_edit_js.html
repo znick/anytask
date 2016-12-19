@@ -77,6 +77,12 @@
             minuteStep: 30
         });
 
+        {% if is_create %}
+            $("#task_edit_hidden_task").change(function () {
+                $('#task_edit_label_for_changed_task').toggle();
+            });
+        {% endif %}
+
         $('#task_edit_type').change(function () {
             if ($('#task_edit_type').val() === 'All') {
                 $('#contest_rb_body').collapse('show');
