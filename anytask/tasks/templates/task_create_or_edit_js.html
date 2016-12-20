@@ -175,6 +175,9 @@
                                 redirect();
                             else if (data.redirect_page)
                                 window.location.replace(data.redirect_page);
+                            else
+                                $("#task_edit_changed_task").prop('checked', !!$("#task_edit_changed_task").data("default"));
+
                             $(document).prop('title', data.page_title);
                             if ($('#task_edit_contest_integrated').is(':checked'))
                                 $('#update_contest_block').show();
@@ -199,6 +202,8 @@
                             '                          </div>');
                     if ($('#task_edit_form').data('quit'))
                         redirect();
+                    else
+                        $("#task_edit_changed_task").prop('checked', !!$("#task_edit_changed_task").data("default"));
                 }
             },
             ignore: ':hidden:not("#task_edit_group")',

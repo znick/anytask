@@ -128,6 +128,8 @@ class Course(models.Model):
     show_task_one_file_upload = models.BooleanField(db_index=False, null=False, blank=False, default=False)
     default_task_one_file_upload = models.BooleanField(db_index=False, null=False, blank=False, default=False)
 
+    default_task_send_to_users = models.BooleanField(db_index=False, null=False, blank=False, default=False)
+
     issue_status_system = models.ForeignKey(IssueStatusSystem, db_index=False, null=False, blank=False, default=1)
 
     def __unicode__(self):

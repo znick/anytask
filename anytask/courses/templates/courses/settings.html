@@ -141,6 +141,15 @@
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item">
                             <div class="row">
+                                <p class="card-text">Уведомить студентов о создании/изменении в задаче</p>
+                                <div class="col-md-12">
+                                    <input type="checkbox" name="default_task_send_to_users" id="default_task_send_to_users" {% if course.default_task_send_to_users %}checked{% endif %}>
+                                    <label class="checkbox-block" for="default_task_send_to_users">Значение по умолчанию</label>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="row">
                                 <p class="card-text">Отправлять один файл</p>
                                 <div class="col-md-12">
                                     <input type="checkbox" name="show_task_one_file_upload" id="show_task_one_file_upload" {% if course.show_task_one_file_upload %}checked{% endif %}>

@@ -26,4 +26,4 @@ django-htmlmin
 django-colorfield
 django-haystack==2.4.1
 Whoosh
-django-reversion==1.6.3
+django-reversion==1.6.6

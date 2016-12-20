@@ -456,6 +456,11 @@ def course_settings(request, course_id):
     else:
         course.show_task_one_file_upload = False
 
+    if 'default_task_send_to_users' in request.POST:
+        course.default_task_send_to_users = True
+    else:
+        course.default_task_send_to_users = False
+
     if 'default_task_one_file_upload' in request.POST:
         course.default_task_one_file_upload = True
     else:
