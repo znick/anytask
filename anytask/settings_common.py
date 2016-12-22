@@ -148,7 +148,9 @@ INSTALLED_APPS = (
     'django_filters',
     'colorfield',
     'search',
+    'staff',
     'blog',
+    'mail',
 )
 
 AUTH_PROFILE_MODULE = "users.UserProfile"

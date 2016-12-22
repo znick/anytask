@@ -37,5 +37,7 @@ urlpatterns = patterns('',
     url(r'^about$', direct_to_template, {'template' : 'about.html'}),
     url(r'^$', 'index.views.index'),
     url(r'^search/', include('search.urls')),
+    url(r'^staff', include('staff.urls')),
     url(r'^blog/', include('blog.urls')),
+    url(r'^mail/', include('mail.urls')),
 )

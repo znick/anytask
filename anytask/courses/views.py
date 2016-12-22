@@ -4,6 +4,7 @@ import pprint
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.http import Http404, HttpResponseRedirect
 from django.template import RequestContext
+from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
@@ -37,6 +38,7 @@ from anycontest.common import get_contest_info, FakeResponse
 from issues.models import Issue, Event, IssueFilter
 from issues.model_issue_status import IssueStatus
 from users.forms import InviteActivationForm
+from users.models import UserProfile
 
 from common.ordered_dict import OrderedDict
 
@@ -75,7 +77,12 @@ def queue_page(request, course_id):
     if not course.user_can_see_queue(request.user):
         return HttpResponseForbidden()
 
-    issues = Issue.objects.filter(task__course=course).order_by('update_time')
+    active_profiles = UserProfile.objects.filter(Q(user_status__tag='active')|Q(user_status__tag=None))
+    active_students = []
+    for profile in active_profiles:
+        active_students.append(profile.user)
+
+    issues = Issue.objects.filter(task__course=course, student__in=active_students).order_by('update_time')
 
     f = IssueFilter(request.GET, issues)
     f.set_course(course)
@@ -111,6 +118,9 @@ def course_page(request, course_id):
         - tasks_description
     """
 
+    if not request.user.get_profile().is_active() :
+        raise PermissionDenied
+
     course = get_object_or_404(Course, id=course_id)
     schools = course.school_set.all()
 
@@ -137,6 +147,9 @@ def seminar_page(request, course_id, task_id):
         - tasklist
         - tasks_description
     """
+
+    if not request.user.get_profile().is_active() :
+        raise PermissionDenied
 
     course = get_object_or_404(Course, id=course_id)
     task = get_object_or_404(Task, id=task_id)

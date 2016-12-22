@@ -42,6 +42,11 @@
             <li class="nav-item">
                 <a class="nav-link active" href="">Курсы студента</a>
             </li>
+            {% if user.is_staff %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url users.views.profile_history user_to_show %}">Редактирование статусов</a>
+                </li>
+            {% endif %}
         {% endif %}
     </ul>
 {% endblock navbar %}
@@ -110,7 +115,7 @@
                                                     </thead>
                                                     <tbody>
                                                     {% for course in course_statistics %}
-                                                        <tr onclick="location.href='{% if issue.task.has_issue_access %}{{ issue.get_absolute_url }}{% else %}#{% endif %}'">
+                                                        <tr>
                                                             <td>
                                                                 <a href="{{ course.url }}">{{ course.name }}</a>
                                                             </td>
