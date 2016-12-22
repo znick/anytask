@@ -167,9 +167,9 @@ class UserProfileFilter(django_filters.FilterSet):
 class IssueFilterStudent(django_filters.FilterSet):
     is_active = django_filters.ChoiceFilter(label=u'<strong>Тип курса</strong>', name='task__course__is_active')
     years = django_filters.MultipleChoiceFilter(label=u'<strong>Год курса</strong>', name='task__course__year', widget=forms.CheckboxSelectMultiple)
-    courses = django_filters.MultipleChoiceFilter(label=u'<strong>Курс</strong>', name='task__course', widget=forms.CheckboxSelectMultiple)
-    responsible = django_filters.MultipleChoiceFilter(label=u'<strong>Преподаватели</strong>', widget=forms.CheckboxSelectMultiple)
-    status_field = django_filters.MultipleChoiceFilter(label=u'<strong>Статус</strong>', widget=forms.CheckboxSelectMultiple)
+    courses = django_filters.MultipleChoiceFilter(label=u'<strong>Курс</strong>', name='task__course', widget=forms.SelectMultiple)
+    responsible = django_filters.MultipleChoiceFilter(label=u'<strong>Преподаватели</strong>', widget=forms.SelectMultiple)
+    status_field = django_filters.MultipleChoiceFilter(label=u'<strong>Статус</strong>', widget=forms.SelectMultiple)
     update_time = django_filters.DateRangeFilter(label=u'<strong>Дата последнего изменения</strong>')
 
     def set_user(self, user):
