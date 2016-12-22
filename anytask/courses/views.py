@@ -141,6 +141,8 @@ def course_page(request, course_id):
 
     return render_to_response('courses/course.html', context, context_instance=RequestContext(request))
 
+
+@login_required
 def seminar_page(request, course_id, task_id):
     """Page with course related information
     contexts:
