@@ -338,6 +338,7 @@ blockquote.replay-quote {
     margin-right: -10px;
 
 }
+
 blockquote.replay-quote.first-quote {
     margin-right: 0;
     border-right: 1px solid;
@@ -362,7 +363,7 @@ div.replay-show {
     cursor: pointer;
     margin-top: .5rem;
     margin-bottom: .5rem;
-        -webkit-touch-callout: none;
+    -webkit-touch-callout: none;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
