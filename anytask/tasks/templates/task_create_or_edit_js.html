@@ -81,6 +81,7 @@
         {% if is_create %}
             $("#task_edit_hidden_task").change(function () {
                 $('#task_edit_label_for_changed_task').toggle();
+                toggle_inputs($('#task_edit_label_for_changed_task'));
             });
         {% endif %}
 
@@ -364,6 +365,15 @@
             remove_disabled();
         });
     });
+
+    function toggle_inputs($div) {
+        $("input, select, textarea", $div).each(function () {
+            if ($(this).is(':disabled'))
+                $(this).prop('disabled', false);
+            else
+                $(this).prop('disabled', true);
+        });
+    }
 
     function description_preview() {
         var description_html = $('#task_edit_body').val();
