@@ -150,6 +150,7 @@ INSTALLED_APPS = (
     'search',
     'staff',
     'blog',
+    'mail',
 )
 
 AUTH_PROFILE_MODULE = "users.UserProfile"
