@@ -175,7 +175,7 @@
                                     <div>
                                         {% if not task.is_hidden and user_is_teacher or user.username == student.username %}
                                             {% if task.type == task.TYPE_FULL %}
-                                                <a  href="/issue/get_or_create/{{task.id}}/{{student.id}}">
+                                                <a class="anchor-issue" href="/issue/get_or_create/{{task.id}}/{{student.id}}">
                                                     {# <span class="label {% if task_x_task_takens|score:task %} {% if task_x_task_takens|score:task == task.score_max %} label-success {% else %} label-info {% endif %} {% endif %}"> #}
                                                     <span class="label
                                                   {{ task_x_task_takens|have_issue:task }}" style="background-color: {{ task_x_task_takens|label_color:task }};">
