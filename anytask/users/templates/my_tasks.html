@@ -31,9 +31,14 @@
                 buttonClass: 'btn btn-secondary btn-block',
                 templates: {
                     ul: '<ul class="multiselect-container dropdown-menu" style="left:inherit;top: inherit;"></ul>',
-                    li: '<li><a tabindex="0" class="dropdown-item"><label></label></a></li>'
+                    li: '<li><a tabindex="0" class="dropdown-item"><label></label></a></li>',
+                    filter: '<li class="multiselect-item filter"><div class="input-group"><input class="form-control multiselect-search" type="text"></div></li>',
+                    filterClearBtn: '<span class="input-group-btn"><button class="btn btn-secondary btn-block multiselect-clear-filter" type="button"><i class="fa fa-times"></i></button></span>'
+
                 },
                 includeSelectAllOption: true,
+                enableCaseInsensitiveFiltering: true,
+                filterPlaceholder: "Найти...",
                 selectAllText: 'Выбрать все',
                 allSelectedText: 'Все выбрано',
                 maxHeight: 200,
