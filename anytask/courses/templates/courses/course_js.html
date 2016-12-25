@@ -55,15 +55,6 @@
 
     $(document).ready(function() {
         var info_width = $('#course-information').closest('.card').innerWidth();
-        var issue_clicked = false;
-
-        $('.anchor-issue', '.table_results').click(function (e) {
-            if (issue_clicked)
-                e.preventDefault();
-            else
-                issue_clicked = true;
-
-        });
 
         $('#course-information').readmore(readmore_opts).show();
 
