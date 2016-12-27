@@ -89,7 +89,7 @@
             </div>
         </div>
     </div>
-    {% if teacher_or_staff and issue.task.contest_integrated and has_contest_submission %}
+    {% if teacher_or_staff and issue.task.contest_integrated and show_contest_rejudge %}
         <div>
             <form method="post">
                 {% csrf_token %}

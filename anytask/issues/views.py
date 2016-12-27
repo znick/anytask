@@ -168,6 +168,11 @@ def issue_page(request, issue_id):
 
     schools = issue.task.course.school_set.all()
 
+    show_contest_rejudge = False
+    if issue.contestsubmission_set.count():
+        if issue.contestsubmission_set.count() == issue.contestsubmission_set.filter(got_verdict=True).count():
+            show_contest_rejudge = True
+
     context = {
         'issue': issue,
         'issue_fields': issue_fields,
@@ -179,7 +184,7 @@ def issue_page(request, issue_id):
         'school': schools[0] if schools else '',
         'visible_queue': issue.task.course.user_can_see_queue(request.user),
         'statuses_accepted': statuses_accepted,
-        'has_contest_submission': issue.contestsubmission_set.filter(got_verdict=True).count() != 0,
+        'show_contest_rejudge': show_contest_rejudge,
     }
 
     return render_to_response('issues/issue.html', context, context_instance=RequestContext(request))
