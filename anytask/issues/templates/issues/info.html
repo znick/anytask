@@ -89,6 +89,15 @@
             </div>
         </div>
     </div>
+    {% if teacher_or_staff and issue.task.contest_integrated and has_contest_submission %}
+        <div>
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="contest_rejudge" value="on">
+                <button type="submit" class="btn btn-warning">Пересудить</button>
+            </form>
+        </div>
+    {% endif %}
 </div>
 
 

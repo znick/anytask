@@ -13,11 +13,14 @@ from issues.forms import FileForm
 from issues.models import Issue, Event, File
 from issues.model_issue_field import IssueField
 from issues.model_issue_status import IssueStatus
+from anyrb.common import AnyRB
+
 
 from django.core.urlresolvers import reverse
 from django.views import generic
 from django.views.decorators.http import require_POST
 from jfu.http import upload_receive, UploadResponse, JFUResponse
+from copy import deepcopy
 
 from anycontest.common import get_problem_compilers
 
@@ -56,6 +59,47 @@ def prepare_info_fields(info_fields, request, issue):
         data = { field.name : field.value }
         field.form = field.get_form(request, issue, data)
 
+
+def contest_rejudge(issue):
+    old_contest_submission = issue.contestsubmission_set.filter(got_verdict=True).order_by("-create_time")[0]
+    author = old_contest_submission.author
+    field, field_get = IssueField.objects.get_or_create(name='comment')
+    event = issue.create_event(field, author=author)
+
+    file_copy = deepcopy(old_contest_submission.file)
+    file_copy.pk = None
+    file_copy.event = event
+    file_copy.save()
+    contest_submission = issue.contestsubmission_set.create(issue=issue,
+                                                            author=author,
+                                                            file=file_copy)
+    sent = contest_submission.upload_contest(compiler_id=old_contest_submission.compiler_id)
+    if sent:
+        event.value = u"<p>Отправлено на проверку в Я.Контест</p>"
+        if issue.status_field.tag != IssueStatus.STATUS_ACCEPTED:
+            issue.set_status_by_tag(IssueStatus.STATUS_AUTO_VERIFICATION)
+    else:
+        event.value = u"<p>Ошибка отправки в Я.Контест('{0}').</p>".format(
+            contest_submission.send_error)
+        issue.followers.add(User.objects.get(username='anytask.monitoring'))
+
+    if issue.task.rb_integrated and issue.task.course.send_rb_and_contest_together:
+        for ext in settings.RB_EXTENSIONS + [str(ext.name) for ext in issue.task.course.filename_extensions.all()]:
+            filename, extension = os.path.splitext(file.name)
+            if ext == extension or ext == '.*':
+                anyrb = AnyRB(event)
+                review_request_id = anyrb.upload_review()
+                if review_request_id is not None:
+                    event.value += u'<p><a href="{1}/r/{0}">Review request {0}</a></p>'. \
+                        format(review_request_id, settings.RB_API_URL)
+                else:
+                    event.value += u'<p>Ошибка отправки в Review Board.</p>'
+                    issue.followers.add(User.objects.get(username='anytask.monitoring'))
+                break
+
+    event.save()
+
+
 @login_required
 def issue_page(request, issue_id):
     issue = get_object_or_404(Issue, id=issue_id)
@@ -65,6 +109,10 @@ def issue_page(request, issue_id):
     issue_fields = issue.task.course.issue_fields.all()
 
     if request.method == 'POST':
+        if 'contest_rejudge' in request.POST:
+            contest_rejudge(issue)
+            return HttpResponseRedirect('')
+
         form_name = request.POST['form_name']
 
         for field in issue_fields:
@@ -131,6 +179,7 @@ def issue_page(request, issue_id):
         'school': schools[0] if schools else '',
         'visible_queue': issue.task.course.user_can_see_queue(request.user),
         'statuses_accepted': statuses_accepted,
+        'has_contest_submission': issue.contestsubmission_set.filter(got_verdict=True).count() != 0,
     }
 
     return render_to_response('issues/issue.html', context, context_instance=RequestContext(request))
