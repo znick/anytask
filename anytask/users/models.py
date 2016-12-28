@@ -13,8 +13,9 @@ from groups.models import Group
 from courses.models import Course
 from issues.models import Issue
 from issues.model_issue_status import IssueStatus
-from colorfield.fields import ColorField
+from mail.models import Message
 
+from colorfield.fields import ColorField
 
 from anytask.storage import OverwriteStorage
 
@@ -80,6 +81,10 @@ class UserProfile(models.Model):
     show_email = models.BooleanField(db_index=False, null=False, blank=False, default=True)
     send_my_own_events = models.BooleanField(db_index=False, null=False, blank=False, default=False)
 
+    unread_messages = models.ManyToManyField(Message, null=True, blank=True, related_name='unread_messages')
+    deleted_messages = models.ManyToManyField(Message, null=True, blank=True, related_name='deleted_messages')
+    send_notify_messages = models.ManyToManyField(Message, null=True, blank=True, related_name='send_notify_messages')
+
     added_time = models.DateTimeField(auto_now_add=True, default=datetime.now)
     update_time = models.DateTimeField(auto_now=True, default=datetime.now)
 
@@ -101,6 +106,9 @@ class UserProfile(models.Model):
             if status.tag == 'not_active' or status.tag == 'academic':
                 return False
         return True
+
+    def get_unread_count(self):
+        return self.unread_messages.exclude(id__in=self.deleted_messages.all()).count()
 
 
 class UserProfileLog(models.Model):
@@ -159,9 +167,9 @@ class UserProfileFilter(django_filters.FilterSet):
 class IssueFilterStudent(django_filters.FilterSet):
     is_active = django_filters.ChoiceFilter(label=u'<strong>Тип курса</strong>', name='task__course__is_active')
     years = django_filters.MultipleChoiceFilter(label=u'<strong>Год курса</strong>', name='task__course__year', widget=forms.CheckboxSelectMultiple)
-    courses = django_filters.MultipleChoiceFilter(label=u'<strong>Курс</strong>', name='task__course', widget=forms.CheckboxSelectMultiple)
-    responsible = django_filters.MultipleChoiceFilter(label=u'<strong>Преподаватели</strong>', widget=forms.CheckboxSelectMultiple)
-    status_field = django_filters.MultipleChoiceFilter(label=u'<strong>Статус</strong>', widget=forms.CheckboxSelectMultiple)
+    courses = django_filters.MultipleChoiceFilter(label=u'<strong>Курс</strong>', name='task__course', widget=forms.SelectMultiple)
+    responsible = django_filters.MultipleChoiceFilter(label=u'<strong>Преподаватели</strong>', widget=forms.SelectMultiple)
+    status_field = django_filters.MultipleChoiceFilter(label=u'<strong>Статус</strong>', widget=forms.SelectMultiple)
     update_time = django_filters.DateRangeFilter(label=u'<strong>Дата последнего изменения</strong>')
 
     def set_user(self, user):

@@ -224,7 +224,7 @@ class ViewsTest(TestCase):
         self.assertEqual(navbar_links[2].a['href'], u'/course/1/settings')
 
         navbar_dropdown = navbar.find('li', 'dropdown')
-        self.assertEqual(navbar_dropdown.a.span.string.strip().strip('\n'), u'teacher_name teacher_last_name')
+        self.assertEqual(navbar_dropdown.find('div', 'dropdown-menu').h6.string.strip().strip('\n'), u'teacher_name teacher_last_name')
         navbar_dropdown_inside = navbar_dropdown.find('div', 'dropdown-menu')('a')
         self.assertEqual(len(navbar_dropdown_inside), 4)
         self.assertEqual(navbar_dropdown_inside[0]['href'], u'/accounts/profile')
@@ -318,7 +318,7 @@ class ViewsTest(TestCase):
         self.assertFalse(form_id_responsible[1].has_key('selected'))
         self.assertEqual(form_id_responsible[1].string.strip().strip('\n'), u'teacher_name teacher_last_name')
 
-        form_id_followers = form.find('div', {'id': 'div_id_followers'})('input')
+        form_id_followers = form.find('div', {'id': 'div_id_followers'}).find('select')('option')
         self.assertEqual(len(form_id_followers), 1)
         self.assertEqual(form_id_followers[0]['value'], '1')
         self.assertFalse(form_id_responsible[0].has_key('checked'))
@@ -703,7 +703,7 @@ class ViewsTest(TestCase):
         self.assertEqual(navbar_links[0].a['href'], '')
 
         navbar_dropdown = navbar.find('li', 'dropdown')
-        self.assertEqual(navbar_dropdown.a.span.string.strip().strip('\n'), u'student_name student_last_name')
+        self.assertEqual(navbar_dropdown.find('div', 'dropdown-menu').h6.string.strip().strip('\n'), u'student_name student_last_name')
         navbar_dropdown_inside = navbar_dropdown.find('div', 'dropdown-menu')('a')
         self.assertEqual(len(navbar_dropdown_inside), 4)
         self.assertEqual(navbar_dropdown_inside[0]['href'], u'/accounts/profile')

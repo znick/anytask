@@ -457,10 +457,10 @@ class Event(models.Model):
 
 
 class IssueFilter(django_filters.FilterSet):
-    status_field = django_filters.MultipleChoiceFilter(label=u'<strong>Статус</strong>', widget=forms.CheckboxSelectMultiple)
+    status_field = django_filters.MultipleChoiceFilter(label=u'<strong>Статус</strong>', widget=forms.SelectMultiple)
     update_time = django_filters.DateRangeFilter(label=u'<strong>Дата последнего изменения</strong>')
     responsible = django_filters.ChoiceFilter(label=u'<strong>Ответственный</strong>')
-    followers = django_filters.MultipleChoiceFilter(label=u'<strong>Наблюдатели</strong>', widget=forms.CheckboxSelectMultiple)
+    followers = django_filters.MultipleChoiceFilter(label=u'<strong>Наблюдатели</strong>', widget=forms.SelectMultiple)
     task = django_filters.ChoiceFilter(label=u'<strong>Задача</strong>')
 
     def set_course(self, course):

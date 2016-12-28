@@ -81,7 +81,9 @@ def profile(request, username=None, year=None):
             user_school_teach_user_to_show = True
 
         if not (user.is_staff or user_school_user_to_show):
-            raise PermissionDenied
+            if not ((courses_user_to_show | courses_user_to_show_teacher) & (courses | courses_teacher)):
+                if not (groups_user_to_show & groups):
+                    raise PermissionDenied
 
         show_email = user.is_staff or \
                      user_to_show.get_profile().show_email or \
