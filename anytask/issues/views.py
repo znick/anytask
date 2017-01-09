@@ -61,7 +61,14 @@ def prepare_info_fields(info_fields, request, issue):
 
 
 def contest_rejudge(issue):
-    old_contest_submission = issue.contestsubmission_set.filter(got_verdict=True).order_by("-create_time")[0]
+    got_verdict_submissions = issue.contestsubmission_set.filter(got_verdict=True)
+
+    if not (got_verdict_submissions.count() and
+       issue.contestsubmission_set.count() == (got_verdict_submissions.count() +
+                                               issue.contestsubmission_set.exclude(send_error__isnull=True).count())):
+        return
+
+    old_contest_submission = got_verdict_submissions.order_by("-create_time")[0]
     author = old_contest_submission.author
     field, field_get = IssueField.objects.get_or_create(name='comment')
     event = issue.create_event(field, author=author)
@@ -169,9 +176,11 @@ def issue_page(request, issue_id):
     schools = issue.task.course.school_set.all()
 
     show_contest_rejudge = False
-    if issue.contestsubmission_set.count():
-        if issue.contestsubmission_set.count() == issue.contestsubmission_set.filter(got_verdict=True).count():
-            show_contest_rejudge = True
+    got_verdict_submissions = issue.contestsubmission_set.filter(got_verdict=True)
+    if got_verdict_submissions.count() and \
+       issue.contestsubmission_set.count() == (got_verdict_submissions.count() +
+                                               issue.contestsubmission_set.exclude(send_error__isnull=True).count()):
+        show_contest_rejudge = True
 
     context = {
         'issue': issue,

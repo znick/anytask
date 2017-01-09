@@ -47,6 +47,14 @@
             display: none;
         }
 
+        .card .card-block-part {
+            margin-bottom: 1.5rem;
+        }
+
+        .card .card-block-part:last-child {
+            margin-bottom: 0;
+        }
+
         .ms-container {
             width: 100%;
         }
@@ -175,28 +183,51 @@
                     <div class="col-lg-6 col-md-5 col-sm-12">
                         <div class="card card-block" id="card_contest">
                             <h5 class="card-title">Яндекс.Контест</h5>
-                            <p class="card-text">Обновить название, максимальный балл, дату сдачи и формулировку для задач</p>
-                            <div class="form-group row" style="display: none;" >
-                                <div class="controls col-lg-8 col-md-12">
-                                    <select name="tasks_with_contest[]" id="tasks_with_contest_select" class="form-control" multiple="multiple">
-                                        {% for contest_id, tasks in tasks_with_contest.iteritems %}
-                                            <optgroup label="{{ contest_id }}">
-                                                {% for task in tasks %}
-                                                    <option value="{{ task.id }}" selected>{{ task.title }}</option>
-                                                {% endfor %}
-                                            </optgroup>
-                                        {% endfor %}
-                                    </select>
+                            <div class="card-block-part">
+                                <p class="card-text">Пересудить решения студентов</p>
+                                <div class="form-group row" style="display: none;" >
+                                    <div class="controls col-lg-8 col-md-12">
+                                        <select name="tasks_with_contest_rejudge[]" id="tasks_with_contest_rejudge_select" class="form-control" multiple="multiple">
+                                            {% for contest_id, tasks in tasks_with_contest.iteritems %}
+                                                <optgroup label="{{ contest_id }}">
+                                                    {% for task in tasks %}
+                                                        <option value="{{ task.id }}" selected>{{ task.title }}</option>
+                                                    {% endfor %}
+                                                </optgroup>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="btn-div col-lg-4 col-md-12">
+                                        <button type="button" id="rejudge_tasks_btn" class="btn btn-secondary btn-block" style="display: inline">Пересудить</button>
+                                    </div>
                                 </div>
-                                <div class="btn-div col-lg-4 col-md-12">
-                                    <button type="button" id="update_tasks_btn" class="btn btn-secondary btn-block" style="display: inline">Обновить</button>
+                                <div id="rejudge_tasks_error">
                                 </div>
                             </div>
-                            <div class="text-xs-center" id="progress_contest_update_caption"></div>
-                            <progress class="progress progress-info" id="progress_contest_update" value="0" max="0" style="display: none"></progress>
-                            <div class="output-block">
-                                <div id="update_submit_success_text" class="output-success" ></div>
-                                <div id="update_submit_error_text" class="output-danger"></div>
+                            <div class="card-block-part">
+                                <p class="card-text">Обновить название, максимальный балл, дату сдачи и формулировку для задач</p>
+                                <div class="form-group row" style="display: none;" >
+                                    <div class="controls col-lg-8 col-md-12">
+                                        <select name="tasks_with_contest[]" id="tasks_with_contest_select" class="form-control" multiple="multiple">
+                                            {% for contest_id, tasks in tasks_with_contest.iteritems %}
+                                                <optgroup label="{{ contest_id }}">
+                                                    {% for task in tasks %}
+                                                        <option value="{{ task.id }}" selected>{{ task.title }}</option>
+                                                    {% endfor %}
+                                                </optgroup>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="btn-div col-lg-4 col-md-12">
+                                        <button type="button" id="update_tasks_btn" class="btn btn-secondary btn-block" style="display: inline">Обновить</button>
+                                    </div>
+                                </div>
+                                <div class="text-xs-center" id="progress_contest_update_caption"></div>
+                                <progress class="progress progress-info" id="progress_contest_update" value="0" max="0" style="display: none"></progress>
+                                <div class="output-block">
+                                    <div id="update_submit_success_text" class="output-success" ></div>
+                                    <div id="update_submit_error_text" class="output-danger"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
