@@ -447,6 +447,9 @@ def course_settings(request, course_id):
             default_teacher.teacher = teacher
             default_teacher.save()
 
+            for issue in Issue.objects.filter(task__course=course, task__groups=group):
+                issue.set_teacher(default=True, groups=[group])
+
     if 'rb_extensions[]' in request.POST:
         course.filename_extensions = request.POST.getlist('rb_extensions[]')
     else:
