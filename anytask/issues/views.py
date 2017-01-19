@@ -101,6 +101,12 @@ def issue_page(request, issue_id):
                             issue.set_status_by_tag(IssueStatus.STATUS_NEED_INFO)
 
                     issue.set_field(field, value, request.user)
+
+                    if 'comment_verdict' in request.POST:
+                        issue.set_byname('comment',
+                                         {'files': [], 'comment': request.POST['comment_verdict']},
+                                         request.user)
+
                     return HttpResponseRedirect('')
 
     prepare_info_fields(issue_fields, request, issue)
