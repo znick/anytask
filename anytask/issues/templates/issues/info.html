@@ -4,6 +4,35 @@
     .card-header {
         background-color: #FFFFFF;
     }
+    #accordion2 div.form-group {
+        margin-bottom: 1.2rem;
+    }
+    #accordion2 div.form-group.btn-group-submit {
+        margin-bottom: 0;
+    }
+    #accordion2 small.text-help .error{
+        margin: -1.2rem 0 0 0;
+    }
+    #accordion2 .mce-container.mce-panel {
+        padding: 0 !important;
+        font-size: 1rem;
+        line-height: 1.5;
+        color: #55595c;
+        background-color: #fff;
+        background-image: none;
+        border: 1px solid #ccc;
+        border-radius: .25rem;
+    }
+    #accordion2 .mce-container.mce-panel iframe {
+        border-radius: .25rem;
+    }
+    #accordion2 .mce-tinymce .mce-edit-area{
+        border: none;
+    }
+    .mce-tinymce .mce-edit-area label {
+        padding: .375rem .75rem !important;
+        font-size: 1rem !important;
+    }
 </style>
 
 
@@ -40,17 +69,22 @@
                         <div class="card-block">
                             <form method="post" id="{{ field.name }}_form" enctype="multipart/form-data">
                                 {% csrf_token %}
-                                <div class="form-group col-md-12" id="{{ field.name }}_fieldset_id">
+                                <div id="{{ field.name }}_fieldset_id" style="padding-right: .9375rem; padding-left: .9375rem;">
                                     <input type="hidden" name="form_name" value="{{ field.name }}_form">
                                     {% if field.name == 'mark' %}
                                         <input type="hidden" id="max_mark" value="{{ issue.task.score_max }}">
                                     {% endif %}
                                     {{ field.form|crispy }}
                                     {% if field.name == 'mark' %}
-                                        <small class="text-help" style="margin-top: 0px;" id="mark_edit_error_text"></small>
+                                        <small class="text-help" id="mark_edit_error_text"></small>
                                     {% endif %}
                                 </div>
-                                <div class="form-group">
+                                {% if field.name == 'mark' or field.name == 'status' %}
+                                    <div class="form-group">
+                                        <textarea class='form-control comment-verdict' placeholder="Комментарий" style="width: 100%;height: 70px; resize: none;" rows='13' name='comment_verdict'></textarea>
+                                    </div>
+                                {% endif %}
+                                <div class="form-group btn-group-submit">
                                     <button type="submit" class="btn btn-secondary">Отправить</button>
                                     {% if field.name == 'responsible_name' or field.name == 'followers_names' %}
                                         <button type="submit" class="btn btn-secondary" name="Me">Я</button>

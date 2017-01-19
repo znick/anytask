@@ -5,6 +5,7 @@ import os
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.db import models
+from django.dispatch import receiver
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext as _
@@ -371,11 +372,6 @@ class Issue(models.Model):
         if not value:
             value = ''
 
-        for group in self.task.groups.filter(students=self.student):
-                default_teacher = course.get_default_teacher(group)
-                if default_teacher and (not self.get_byname('responsible_name')):
-                    self.set_byname('responsible_name', default_teacher)
-
         if not delete_event:
             event.value = value
             event.save()
@@ -384,6 +380,16 @@ class Issue(models.Model):
             event.delete()
 
         return
+
+    def set_teacher(self, groups=None, teacher=None, default=False, author=None):
+        if default:
+            for group in groups if groups else self.task.groups.filter(students=self.student):
+                default_teacher = self.task.course.get_default_teacher(group)
+                if default_teacher and (not self.get_byname('responsible_name')):
+                    self.set_byname('responsible_name', default_teacher, author)
+        else:
+            self.set_byname('responsible_name', teacher, author)
+
 
     def get_history(self):
         """
@@ -484,3 +490,9 @@ class IssueFilter(django_filters.FilterSet):
     class Meta:
         model = Issue
         fields = ['status_field', 'responsible', 'followers', 'update_time']
+
+
+@receiver(models.signals.post_save, sender=Issue)
+def post_create_set_default_teacher(sender, instance, created, *args, **kwargs):
+    if created:
+        instance.set_teacher(default=True)
