@@ -111,14 +111,50 @@ def queue_page(request, course_id):
     return render_to_response('courses/queue.html', context, context_instance=RequestContext(request))
 
 @login_required
+def gradebook(request, course_id, task_id=None):
+    """Page with course related information
+    contexts:
+        - tasklist
+        - tasks_description
+    """
+    user = request.user
+    if not user.get_profile().is_active():
+        raise PermissionDenied
+
+    course = get_object_or_404(Course, id=course_id)
+    if task_id != '0':
+        task = get_object_or_404(Task, id=task_id)
+    else:
+        task=None
+    schools = course.school_set.all()
+
+    if course.private and not course.user_is_attended(request.user):
+        return render_to_response('courses/course_forbidden.html',
+                                  {"course": course,
+                                   'school': schools[0] if schools else '',
+                                   'invite_form': InviteActivationForm()},
+                                  context_instance=RequestContext(request))
+
+    tasklist_context = tasklist_shad_cpp(request, course, task)
+
+    context = tasklist_context
+    context['tasklist_template'] = 'courses/tasklist/shad_cpp.html'
+    context['task_types'] = dict(Task().TASK_TYPE_CHOICES).items()
+    context['show_hidden_tasks'] = request.session.get(str(request.user.id) + '_' + str(course.id) + '_show_hidden_tasks', False)
+    context['school'] = schools[0] if schools else ''
+
+    return render_to_response('courses/gradebook.html', context, context_instance=RequestContext(request))
+
+
+@login_required
 def course_page(request, course_id):
     """Page with course related information
     contexts:
         - tasklist
         - tasks_description
     """
-
-    if not request.user.get_profile().is_active() :
+    user = request.user
+    if not user.get_profile().is_active():
         raise PermissionDenied
 
     course = get_object_or_404(Course, id=course_id)
@@ -130,11 +166,25 @@ def course_page(request, course_id):
                                    'school': schools[0] if schools else '',
                                    'invite_form': InviteActivationForm()},
                                   context_instance=RequestContext(request))
+    course.can_edit = course.user_can_edit_course(user)
+    if course.can_edit:
+        groups = course.groups.all().order_by('name')
+    else:
+        groups = Group.objects.filter(students=user, course__in=[course])
+    tasks = set([tgr.task for tgr in TaskGroupRelations.objects.filter(task__course=course, group__in=groups, deleted=False).order_by('position').select_related('task')])
 
-    tasklist_context = tasklist_shad_cpp(request, course)
+    if StudentCourseMark.objects.filter(student=user, course=course):
+        mark = StudentCourseMark.objects.get(student=user, course=course).mark
+    else:
+        mark = None
 
-    context = tasklist_context
-    context['tasklist_template'] = 'courses/tasklist/shad_cpp.html'
+    context = {}
+
+    context['course'] = course
+    context['tasks'] = tasks
+    context['mark'] = mark if mark else '--'
+    context['visible_queue'] = course.user_can_see_queue(user),
+    context['user_is_teacher'] = course.user_is_teacher(user)
     context['task_types'] = dict(Task().TASK_TYPE_CHOICES).items()
     context['show_hidden_tasks'] = request.session.get(str(request.user.id) + '_' + str(course.id) + '_show_hidden_tasks', False)
     context['school'] = schools[0] if schools else ''
@@ -150,7 +200,8 @@ def seminar_page(request, course_id, task_id):
         - tasks_description
     """
 
-    if not request.user.get_profile().is_active() :
+    user = request.user
+    if not user.get_profile().is_active():
         raise PermissionDenied
 
     course = get_object_or_404(Course, id=course_id)
@@ -163,12 +214,21 @@ def seminar_page(request, course_id, task_id):
                                    'school': schools[0] if schools else '',
                                    'invite_form': InviteActivationForm()},
                                   context_instance=RequestContext(request))
+    course.can_edit = course.user_can_edit_course(user)
 
-    tasklist_context = tasklist_shad_cpp(request, course, task)
+    if Issue.objects.filter(task=task, student=user):
+        mark = Issue.objects.get(task=task, student=user).mark
+    else:
+        mark = None
 
-    context = tasklist_context
-    context['tasklist_template'] = 'courses/tasklist/shad_cpp.html'
+    context = {}
+    context['course'] = course
+    context['mark'] = mark if mark else '--'
+    context['visible_queue'] = course.user_can_see_queue(user),
+    context['user_is_teacher'] = course.user_is_teacher(user)
+    context['seminar'] = task
     context['task_types'] = dict(Task().TASK_TYPE_CHOICES).items()
+    context['show_hidden_tasks'] = request.session.get(str(request.user.id) + '_' + str(course.id) + '_show_hidden_tasks', False)
     context['school'] = schools[0] if schools else ''
 
     return render_to_response('courses/course.html', context, context_instance=RequestContext(request))

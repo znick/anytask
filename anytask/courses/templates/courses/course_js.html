@@ -47,8 +47,8 @@
     };
 
     var readmore_opts = {
-        speed: 200,
-        collapsedHeight: 100,
+        speed: 700,
+        collapsedHeight: 700,
         moreLink: '<small><a href="#">Развернуть <i class="fa fa-chevron-down"></a></small>',
         lessLink: '<small><a href="#">Свернуть <i class="fa fa-chevron-up"></a></small>'
     };
@@ -179,10 +179,19 @@
                     });
         });
 
-
-        $("#btn_group_edit_course").sticky({
-            topSpacing: $('.navbar').outerHeight()
+        $(".scrollto").click(function () {
+            var scrollTo = $('' + $(this).attr("href"));
+            $("#info-link").removeClass("active");
+            $("#tasks-link").removeClass("active");
+            $(this).tab("show");
         });
+
+        if(window.innerWidth >= 992) {
+            $("#right-side").sticky({
+                topSpacing: 70
+            });
+        }
+
         $("#btn_group_edit_course").on('sticky-start', function() {
             $("#btn_group_edit_course").css('background-color', '#fff');
         });
