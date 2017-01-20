@@ -22,7 +22,9 @@
 {% block navbar %}
     <ul class="nav navbar-nav">
         <li class="nav-item">
-            <a class="nav-link" href="{{ course.get_absolute_url }}{% if seminar %}/seminar/{{ seminar.id }}{% endif %}">Страница {% if not seminar %}курса{% else %}семинара{% endif %}</a>
+            <a class="nav-link"
+               href="{{ course.get_absolute_url }}{% if seminar %}/seminar/{{ seminar.id }}{% endif %}">Страница
+                {% if not seminar %}курса{% else %}семинара{% endif %}</a>
         </li>
         <li class="nav-item">
             <a class="nav-link active"
@@ -30,16 +32,16 @@
                 групп</a>
         </li>
         {% if not seminar %}
-        {% if visible_queue %}
-            <li class="nav-item">
-                <a class="nav-link" href="{{ course.get_absolute_url }}/queue">Очередь на проверку</a>
-            </li>
-        {% endif %}
-        {% if user_is_teacher %}
-            <li class="nav-item">
-                <a class="nav-link" href="{% url courses.views.course_settings course.id %}">Настройки</a>
-            </li>
-        {% endif %}
+            {% if visible_queue %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ course.get_absolute_url }}/queue">Очередь на проверку</a>
+                </li>
+            {% endif %}
+            {% if user_is_teacher %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url courses.views.course_settings course.id %}">Настройки</a>
+                </li>
+            {% endif %}
         {% endif %}
     </ul>
 {% endblock navbar %}
@@ -75,61 +77,38 @@
                 {% if course.can_edit %}
                     <div id="btn_group_edit_course"
                          style="z-index: 1; padding: 6px;border:1px solid #e5e5e5;background-color: #e5e5e5">
-                        {% if seminar %}
-                            <a class="btn btn-secondary btn-sm" href="{% url tasks.views.task_edit_page seminar.id %}">
-                                Редактировать семинар
-                            </a>
-                        {% else %}
-                            <a class="btn btn-secondary btn-sm" id="edit_course_info_btn">
-                                {% if course.information %}
-                                    Редактировать информацию о курсе
-                                {% else %}
-                                    Добавить информацию о курсе
-                                {% endif %}
-                            </a>
-                            <div class="btn-group">
-                                <a type="button" class="btn btn-secondary btn-sm" href="/task/create/{{ course.id }}">Добавить
-                                    задачу</a>
-                                {% if course.contest_integrated %}
-                                    <button type="button"
-                                            style="height: 1.95rem;"
-                                            class="btn btn-secondary dropdown-toggle dropdown-toggle-split"
-                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <span class="sr-only">Toggle Dropdown</span>
-                                    </button>
-                                    <div style="font-size: .875rem;" class="dropdown-menu"
-                                         aria-labelledby="dropdownMenuButton">
-                                        <a class="dropdown-item" href="/task/import/{{ course.id }}" role="button">
-                                            Импорт задачи из Я.Контеста
-                                        </a>
-                                        <a class="dropdown-item" href="/task/contest_import/{{ course.id }}">Импорт
-                                            соревнования из Я.Контеста</a>
-                                    </div>
-                                {% endif %}
-                            </div>
-                            {% if visible_hide_button %}
-                                <a class="btn btn-secondary btn-sm"
-                                   href="javascript:change_visibility_hidden_tasks({{ course.id }});" role="button">
-                                    {% if show_hidden_tasks %}
-                                        Не показывать скрытые задачи
-                                    {% else %}
-                                        Показать скрытые задачи
-                                    {% endif %}
-                                </a>
+                        <div class="btn-group">
+                            <a type="button" class="btn btn-secondary btn-sm" href="/task/create/{{ course.id }}">Добавить
+                                задачу</a>
+                            {% if course.contest_integrated %}
+                                <button type="button"
+                                        style="height: 1.95rem;"
+                                        class="btn btn-secondary dropdown-toggle dropdown-toggle-split"
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <span class="sr-only">Toggle Dropdown</span>
+                                </button>
+                                <div style="font-size: .875rem;" class="dropdown-menu"
+                                     aria-labelledby="dropdownMenuButton">
+                                    <a class="dropdown-item" href="/task/import/{{ course.id }}" role="button">
+                                        Импорт задачи из Я.Контеста
+                                    </a>
+                                    <a class="dropdown-item" href="/task/contest_import/{{ course.id }}">Импорт
+                                        соревнования из Я.Контеста</a>
+                                </div>
                             {% endif %}
+                        </div>
+                        {% if visible_hide_button %}
+                            <a class="btn btn-secondary btn-sm"
+                               href="javascript:change_visibility_hidden_tasks({{ course.id }});" role="button">
+                                {% if show_hidden_tasks %}
+                                    Не показывать скрытые задачи
+                                {% else %}
+                                    Показать скрытые задачи
+                                {% endif %}
+                            </a>
                         {% endif %}
                     </div>
                 {% endif %}
-
-                <div id="course-information" class="card-text"
-                     style="margin-top: 1rem; margin-bottom: 0; display: none;">
-                    {% if seminar %}
-                        {{ seminar.task_text|sanitize|safe }}
-                    {% elif course.information %}
-                        {{ course.information|sanitize|safe }}
-                    {% endif %}
-                </div>
-
 
                 {#    <div class = "breadcrumb_button">#}
                 {#        {% if not user_is_teacher and course.can_be_chosen_by_extern%}#}

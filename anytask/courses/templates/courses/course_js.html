@@ -56,7 +56,7 @@
     $(document).ready(function() {
         var info_width = $('#course-information').closest('.card').innerWidth();
 
-        $('#course-information').readmore(readmore_opts).show();
+        $('#course-information').show();
 
         $('#edit_course_info_btn').click(function () {
             if ($('#course-information').html())
@@ -165,12 +165,7 @@
                         modal_button_ok.data('btn_clicked', false);
                     })
                     .done(function (data) {
-                        if (data.info)
-                            $('#edit_course_info_btn').text('Редактировать информацию о курсе');
-                        else
-                            $('#edit_course_info_btn').text('Добавить информацию о курсе');
-
-                        $('#course-information').html(data.info).readmore('destroy').readmore('destroy').readmore(readmore_opts);
+                        $('#course-information').html(data.info);
                         modal_button_ok.data('exit_modal', true);
                         modal_button_ok.closest('.modal').modal('hide');
                     })
