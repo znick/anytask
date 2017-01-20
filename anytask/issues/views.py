@@ -189,7 +189,7 @@ def issue_page(request, issue_id):
         show_contest_rejudge = True
 
     show_contest_rejudge_loading = False
-    if issue.contestsubmission_set.exclude(run_id__isnull=True).filter(got_verdict=False).count():
+    if issue.contestsubmission_set.exclude(run_id__isnull=True).filter(send_error__isnull=True, got_verdict=False).count():
         show_contest_rejudge_loading = True
 
     context = {
