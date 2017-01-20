@@ -16,7 +16,6 @@ from issues.model_issue_status import IssueStatus
 from decimal import Decimal
 from anyrb.common import AnyRB
 from anyrb.common import update_status_review_request
-from anycontest.common import upload_contest
 from tasks.models import Task
 
 from unidecode import unidecode
@@ -274,13 +273,14 @@ class Issue(models.Model):
                         for ext in settings.CONTEST_EXTENSIONS:
                             filename, extension = os.path.splitext(file.name)
                             if ext == extension:
-                                sent, message = upload_contest(event, ext, uploaded_file, compiler_id=value['compilers'][file_id])
+                                contest_submission = self.contestsubmission_set.create(issue=self, author=author, file=uploaded_file)
+                                sent = contest_submission.upload_contest(ext, compiler_id=value['compilers'][file_id])
                                 if sent:
                                     value['comment'] += u"<p>Отправлено на проверку в Я.Контест</p>"
                                     if self.status_field.tag != IssueStatus.STATUS_ACCEPTED:
                                         self.set_status_by_tag(IssueStatus.STATUS_AUTO_VERIFICATION)
                                 else:
-                                    value['comment'] += u"<p>Ошибка отправки в Я.Контест('{0}').</p>".format(message)
+                                    value['comment'] += u"<p>Ошибка отправки в Я.Контест('{0}').</p>".format(contest_submission.send_error)
                                     self.followers.add(User.objects.get(username='anytask.monitoring'))
                                 break
 

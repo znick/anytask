@@ -37,6 +37,7 @@ from anyrb.common import AnyRB
 from anycontest.common import get_contest_info, FakeResponse
 from issues.models import Issue, Event, IssueFilter
 from issues.model_issue_status import IssueStatus
+from issues.views import contest_rejudge
 from users.forms import InviteActivationForm
 from users.models import UserProfile
 
@@ -671,3 +672,17 @@ def ajax_update_contest_tasks(request):
 
     return HttpResponse(json.dumps(response),
                         content_type="application/json")
+
+
+@login_required
+def ajax_rejudge_contest_tasks(request):
+    if not request.is_ajax():
+        return HttpResponseForbidden()
+
+    if 'tasks_with_contest[]' not in request.POST:
+        return HttpResponseForbidden()
+
+    for issue in Issue.objects.filter(task_id__in=dict(request.POST)['tasks_with_contest[]']):
+        contest_rejudge(issue)
+
+    return HttpResponse("OK")
