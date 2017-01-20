@@ -27,17 +27,14 @@ class Command(BaseCommand):
                     if contest_submission.verdict == 'ok' and \
                             not task.course.send_rb_and_contest_together and \
                             task.rb_integrated:
-                        events = issue.event_set.all().reverse()
-                        for i, event in enumerate(events):
-                            if event.value == run_id:
-                                anyrb = AnyRB(events[i - 1])
-                                review_request_id = anyrb.upload_review()
-                                if review_request_id is not None:
-                                    comment += '\n' + \
-                                               u'<a href="{1}/r/{0}">Review request {0}</a>'. \
-                                                   format(review_request_id, settings.RB_API_URL)
-                                else:
-                                    comment += '\n' + u'Ошибка отправки в Review Board.'
+                        anyrb = AnyRB(contest_submission.file.event)
+                        review_request_id = anyrb.upload_review()
+                        if review_request_id is not None:
+                            comment += '\n' + \
+                                       u'<a href="{1}/r/{0}">Review request {0}</a>'. \
+                                           format(review_request_id, settings.RB_API_URL)
+                        else:
+                            comment += '\n' + u'Ошибка отправки в Review Board.'
                     if contest_submission.verdict == 'ok' and task.accepted_after_contest_ok:
                         issue.set_status_by_tag(IssueStatus.STATUS_ACCEPTED)
                     if issue.task.course.id in settings.COURSES_WITH_CONTEST_MARKS:
