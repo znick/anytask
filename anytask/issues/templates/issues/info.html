@@ -54,6 +54,17 @@
                                 {% if field.repr  or field.repr == 0 %}
                                     {% if field.name == 'task_name' %}
                                         <a href="#" id="modal_task_description_btn">{{ field.repr }}</a>
+                                    {% elif field.name == 'run_id' and teacher_or_staff and issue.task.contest_integrated %}
+                                        <div style="display:inline;margin-right: 5px;">{{ field.repr }}</div>
+                                        {% if show_contest_rejudge %}
+                                            <form method="post" style="display: inline;">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="contest_rejudge" value="on">
+                                                <button type="submit" class="btn btn-secondary">Пересудить</button>
+                                            </form>
+                                        {% elif show_contest_rejudge_loading %}
+                                            <button type="submit" class="btn btn-secondary" style="cursor: default" disabled="disabled"><span class='fa fa-circle-o-notch fa-spin fa-fw'></span></button>
+                                        {% endif %}
                                     {% else %}
                                         {{ field.repr }}
                                     {% endif %}
@@ -123,15 +134,6 @@
             </div>
         </div>
     </div>
-    {% if teacher_or_staff and issue.task.contest_integrated and show_contest_rejudge %}
-        <div>
-            <form method="post">
-                {% csrf_token %}
-                <input type="hidden" name="contest_rejudge" value="on">
-                <button type="submit" class="btn btn-warning">Пересудить</button>
-            </form>
-        </div>
-    {% endif %}
 </div>
 
 

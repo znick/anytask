@@ -188,6 +188,10 @@ def issue_page(request, issue_id):
                                                issue.contestsubmission_set.exclude(send_error__isnull=True).count()):
         show_contest_rejudge = True
 
+    show_contest_rejudge_loading = False
+    if issue.contestsubmission_set.exclude(run_id__isnull=True).filter(got_verdict=False).count():
+        show_contest_rejudge_loading = True
+
     context = {
         'issue': issue,
         'issue_fields': issue_fields,
@@ -200,6 +204,7 @@ def issue_page(request, issue_id):
         'visible_queue': issue.task.course.user_can_see_queue(request.user),
         'statuses_accepted': statuses_accepted,
         'show_contest_rejudge': show_contest_rejudge,
+        'show_contest_rejudge_loading': show_contest_rejudge_loading,
     }
 
     return render_to_response('issues/issue.html', context, context_instance=RequestContext(request))
