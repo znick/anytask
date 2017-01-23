@@ -27,4 +27,4 @@ def get_status_name(task, user):
     try:
         return Issue.objects.get(task=task, student=user).status_field.name
     except Exception as e:
-        return u"Новая"
+        return u"Новый"
