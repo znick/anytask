@@ -3,8 +3,10 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.sticky/1.0.3/jquery.sticky.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap4.min.js"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/colreorder/1.3.2/js/dataTables.colReorder.min.js"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/fixedcolumns/3.2.2/js/dataTables.fixedColumns.min.js"></script>
+<script type="text/javascript"
+        src="https://cdn.datatables.net/colreorder/1.3.2/js/dataTables.colReorder.min.js"></script>
+<script type="text/javascript"
+        src="https://cdn.datatables.net/fixedcolumns/3.2.2/js/dataTables.fixedColumns.min.js"></script>
 <script type="text/javascript" src="https://fastcdn.org/Readmore.js/2.1.0/readmore.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.2.2/js/dataTables.buttons.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.html5.min.js"></script>
@@ -16,33 +18,33 @@
 <script src="{{ STATIC_URL }}prism.js"></script>
 
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap4.min.css"/>
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/colreorder/1.3.2/css/colReorder.bootstrap4.min.css"/>
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedcolumns/3.2.2/css/fixedColumns.bootstrap4.min.css"/>
+<link rel="stylesheet" type="text/css"
+      href="https://cdn.datatables.net/colreorder/1.3.2/css/colReorder.bootstrap4.min.css"/>
+<link rel="stylesheet" type="text/css"
+      href="https://cdn.datatables.net/fixedcolumns/3.2.2/css/fixedColumns.bootstrap4.min.css"/>
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.2.2/css/buttons.bootstrap4.min.css"/>
-<link href="{{ STATIC_URL }}prism.css" rel='stylesheet' />
-<link href="{{ STATIC_URL }}tinymce-style-course.css" rel='stylesheet' />
-<link href="{{ STATIC_URL }}tinymce-style-task.css" rel='stylesheet' />
+<link href="{{ STATIC_URL }}prism.css" rel='stylesheet'/>
+<link href="{{ STATIC_URL }}tinymce-style-course.css" rel='stylesheet'/>
+<link href="{{ STATIC_URL }}tinymce-style-task.css" rel='stylesheet'/>
 
 <script type="text/javascript">
-    $.fn.dataTable.ext.order['dom-text-numeric'] = function  ( settings, col )
-    {
-        return this.api().column( col, {order:'index'} ).nodes().map( function ( td, i ) {
+    $.fn.dataTable.ext.order['dom-text-numeric'] = function (settings, col) {
+        return this.api().column(col, {order: 'index'}).nodes().map(function (td, i) {
             return $('span', td).hasClass('no-issue') ? -1.0 : parseFloat($('span', td).text());
-        } );
+        });
     };
 
-    $.fn.dataTable.ext.type.order['dom-number-pre'] = function ( td ) {
+    $.fn.dataTable.ext.type.order['dom-number-pre'] = function (td) {
         return $('span', td).hasClass('no-issue') ? -1.0 : parseFloat($('span', td).text());
     };
 
-    $.fn.dataTable.ext.order['dom-select'] = function  ( settings, col )
-    {
-        return this.api().column( col, {order:'index'} ).nodes().map( function ( td, i ) {
+    $.fn.dataTable.ext.order['dom-select'] = function (settings, col) {
+        return this.api().column(col, {order: 'index'}).nodes().map(function (td, i) {
             return $('select option:selected', td).text();
-        } );
+        });
     };
 
-    $.fn.dataTable.ext.type.search.selectText = function ( data ) {
+    $.fn.dataTable.ext.type.search.selectText = function (data) {
         return !data ? '' : $('select option:selected', $(data)).text()
     };
 
@@ -53,7 +55,7 @@
         lessLink: '<small><a href="#">Свернуть <i class="fa fa-chevron-up"></a></small>'
     };
 
-    $(document).ready(function() {
+    $(document).ready(function () {
         var info_width = $('#course-information').closest('.card').innerWidth();
 
         $('#course-information').show();
@@ -67,7 +69,7 @@
             $('#modal_course_information').modal('show');
         });
 
-        $(document).on('focusin', function(e) {
+        $(document).on('focusin', function (e) {
             if ($(e.target).closest(".mce-window").length) {
                 e.stopImmediatePropagation();
             }
@@ -82,7 +84,7 @@
                 '{{ STATIC_URL }}tinymce-style-course.css',
                 '{{ STATIC_URL }}prism.css'
             ],
-            setup: function(editor) {
+            setup: function (editor) {
                 editor.addButton('preview_text', {
                     icon: false,
                     text: 'Preview',
@@ -93,7 +95,7 @@
                     text: 'Insert/Edit code sample',
                     cmd: 'codesample'
                 });
-                editor.on('change', function(e) {
+                editor.on('change', function (e) {
                     $("#course_info_edit").data('changed', true);
                 });
             },
@@ -155,9 +157,9 @@
 
             $.post('{% url courses.views.edit_course_information %}',
                     {
-                        'csrfmiddlewaretoken' : "{{ csrf_token }}",
-                        'course_id' : {{ course.id }},
-                        'course_information' : $('#course_info_edit').val()
+                        'csrfmiddlewaretoken': "{{ csrf_token }}",
+                        'course_id': {{ course.id }},
+                        'course_information': $('#course_info_edit').val()
                     })
                     .always(function () {
                         modal_button_ok.html(modal_button_ok.data('resetText'));
@@ -181,22 +183,24 @@
             $(this).tab("show");
         });
 
-        if(window.innerWidth >= 992) {
+        if (window.innerWidth >= 992) {
             $("#right-side").sticky({
                 topSpacing: 70
             });
         }
 
-        $("#btn_group_edit_course").on('sticky-start', function() {
+        $("#btn_group_edit_course").on('sticky-start', function () {
             $("#btn_group_edit_course").css('background-color', '#fff');
         });
-        $("#btn_group_edit_course").on('sticky-end', function() {
+        $("#btn_group_edit_course").on('sticky-end', function () {
             $("#btn_group_edit_course").css('background-color', '#e5e5e5');
         });
 
+{#        $("#tasks-table").DataTable();#}
+
         var table_min_height = '30vh';
         $(".table_results").each(function (i) {
-            var t = $(this).DataTable( {
+            var t = $(this).DataTable({
                 scrollY: table_min_height,
                 scrollX: true,
                 scrollCollapse: true,
@@ -220,26 +224,26 @@
                         }
                     }],
                 language: {
-                    "decimal":        "",
-                    "emptyTable":     "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Пустая таблица",
-                    "info":           "_TOTAL_ студента(ов)",
-                    "infoEmpty":      "0 студентов",
-                    "infoFiltered":   "(из _MAX_)",
-                    "infoPostFix":    "",
-                    "thousands":      ",",
-                    "lengthMenu":     "Показать _MENU_ студентов",
+                    "decimal": "",
+                    "emptyTable": "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Пустая таблица",
+                    "info": "_TOTAL_ студента(ов)",
+                    "infoEmpty": "0 студентов",
+                    "infoFiltered": "(из _MAX_)",
+                    "infoPostFix": "",
+                    "thousands": ",",
+                    "lengthMenu": "Показать _MENU_ студентов",
                     "loadingRecords": "Загрузка...",
-                    "processing":     "Вычисление...",
-                    "search":         "Поиск:",
-                    "zeroRecords":    "Ничего не найдено",
+                    "processing": "Вычисление...",
+                    "search": "Поиск:",
+                    "zeroRecords": "Ничего не найдено",
                     "paginate": {
-                        "first":      "Первая",
-                        "last":       "Последняя",
-                        "next":       "Вперед",
-                        "previous":   "Назад"
+                        "first": "Первая",
+                        "last": "Последняя",
+                        "next": "Вперед",
+                        "previous": "Назад"
                     },
                     "aria": {
-                        "sortAscending":  ": activate to sort column ascending",
+                        "sortAscending": ": activate to sort column ascending",
                         "sortDescending": ": activate to sort column descending"
                     },
                     buttons: {
@@ -271,11 +275,11 @@
                         "type": "selectText",
                     },
                 ],
-                order: [[ 1, 'asc' ]],
-                fixedColumns:   {
+                order: [[1, 'asc']],
+                fixedColumns: {
                     leftColumns: 2
                 },
-                initComplete: function( settings, json ) {
+                initComplete: function (settings, json) {
                     $(".zui-wrapper").show();
                     $(".btn-table-fullscreen").css('display', 'table-cell');
                     $(".btn-table-edit").css('display', 'table-cell');
@@ -286,11 +290,11 @@
                     fixedColumnsLeft: 999999,
                 },
             });
-            t.on( 'order.dt search.dt', function () {
-                t.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
-                    cell.innerHTML = i+1;
-                } );
-            } ).draw();
+            t.on('order.dt search.dt', function () {
+                t.column(0, {search: 'applied', order: 'applied'}).nodes().each(function (cell, i) {
+                    cell.innerHTML = i + 1;
+                });
+            }).draw();
 
             $('.word-wrap').each(function (index) {
                 var title_text = $.trim($('a', this).text());
@@ -321,7 +325,7 @@
                     }
                     last_line = last_line + max_score - 1;
                     $(this).css({
-                        'min-width': Math.max(true_width, last_line)  + 'ch',
+                        'min-width': Math.max(true_width, last_line) + 'ch',
                         'word-wrap': 'break-word',
                         'white-space': 'normal'
                     });
@@ -332,7 +336,7 @@
 
         });
 
-        $('.btn-table-fullscreen').click(function() {
+        $('.btn-table-fullscreen').click(function () {
             $(this).blur();
             var card = $(this).closest('.card.card-block');
             if ($('i', this).hasClass('fa-expand')) {
@@ -344,7 +348,7 @@
                     'overflow': 'hidden',
                     'height': '100%'
                 });
-                $('.dataTables_scrollBody',  card).css('max-height',
+                $('.dataTables_scrollBody', card).css('max-height',
                         card.height() - $('.table_results thead', card).height() - 90 + 'px');
                 $($(this).attr('for')).DataTable().draw();
             }
@@ -356,7 +360,7 @@
                     'height': 'auto'
                 });
                 $(window).scrollTop($(this).data('scroll_pos'));
-                $('.dataTables_scrollBody',  card).css('max-height', table_min_height);
+                $('.dataTables_scrollBody', card).css('max-height', table_min_height);
                 $($(this).attr('for')).DataTable().draw();
             }
         });
@@ -365,7 +369,7 @@
             e.stopPropagation();
         });
 
-        $('.task-mark-value').click(function() {
+        $('.task-mark-value').click(function () {
             if (!$('.task-mark-form').data('is_error')) {
                 $(this).hide();
 
@@ -377,7 +381,7 @@
             }
         });
 
-        jQuery.validator.addMethod("valid_num", function(value, element) {
+        jQuery.validator.addMethod("valid_num", function (value, element) {
             if (value == '-')
                 return true;
             if (!$.isNumeric(value))
@@ -389,16 +393,16 @@
             return value >= 0 && value <= max;
         });
 
-        $('.task-mark-form').each( function(){
+        $('.task-mark-form').each(function () {
             var form = $(this);
-            form.find('[name="mark_value"]').blur(function() {
+            form.find('[name="mark_value"]').blur(function () {
                 if (!$(form).data('blur'))
                     form.submit();
             });
             form.validate({
-                submitHandler: function(form) {
+                submitHandler: function (form) {
                     var mark_value = $(form).closest('td').find('.task-mark-value');
-                    $.post('{% url courses.views.set_task_mark %}', $(form).serialize(), function(data){
+                    $.post('{% url courses.views.set_task_mark %}', $(form).serialize(), function (data) {
                         var mark_diff = parseFloat(data.mark) - parseFloat(mark_value.find('span').text());
                         var sum_mark_span = $(form).closest('td').siblings('.sum-score').find('span');
                         var sum_mark = parseFloat(sum_mark_span.text()) + mark_diff;
@@ -412,29 +416,29 @@
                 },
                 rules: {
                     mark_value: {
-                        required : true,
+                        required: true,
                         valid_num: true
                     }
                 },
 
-                highlight: function(input) {
+                highlight: function (input) {
                     $('.task-mark-form').data('is_error', true);
                     $(input).closest('.form-group').removeClass('has-success').addClass('has-danger');
                 },
 
-                success: function(label) {
+                success: function (label) {
                     $('.task-mark-form').data('is_error', false);
                     label.addClass('valid');
                     label.closest('.form-group').removeClass('has-danger').addClass('has-success');
                 },
 
-                errorPlacement: function(error, element) {
+                errorPlacement: function (error, element) {
                     $(element).siblings('span.text-help').empty().append(error);
                 }
             });
         });
 
-        $('.mark-value').click(function() {
+        $('.mark-value').click(function () {
             $(this).collapse('hide');
             var mark_form = $($(this).closest('td')).find('.mark-form');
             $(mark_form).collapse('show');
@@ -444,13 +448,13 @@
             $(this).data('need_hide', false);
         });
 
-        $('.mark-form').dblclick(function() {
+        $('.mark-form').dblclick(function () {
             $(this).collapse('hide');
             var mark_value = $($(this).closest('td')).find('.mark-value');
             $(mark_value).collapse('show');
         });
 
-        $('.mark-form').click(function() {
+        $('.mark-form').click(function () {
             if ($(this).data('need_hide')) {
                 $(this).collapse('hide');
                 var mark_value = $($(this).closest('td')).find('.mark-value');
@@ -461,11 +465,11 @@
             }
         });
 
-        $('.mark-form').change(function() {
+        $('.mark-form').change(function () {
             $(this).collapse('hide');
             var mark_value = $($(this).closest('td')).find('.mark-value');
             $(mark_value).collapse('show');
-            $.post('{% url courses.views.set_course_mark %}', $(this).serialize(), function(data){
+            $.post('{% url courses.views.set_course_mark %}', $(this).serialize(), function (data) {
                 $($(mark_value).find('span')).text(data.mark);
             });
         });
@@ -504,10 +508,10 @@
             cursor: '-webkit-grabbing',
             axis: "y",
             delay: 150,
-            activate: function( event, ui ) {
+            activate: function (event, ui) {
                 $('.ui-state-highlight').css('height', $(ui.helper).height());
             },
-            change: function( event, ui ) {
+            change: function (event, ui) {
                 $('.group-sortable').data('changed', true);
             }
         }).disableSelection();
@@ -531,7 +535,7 @@
                     if ($(this).data('task_disabled_groups').indexOf(groups[i]) > -1)
                         is_disabled = 'disabled';
 
-                    group_ul += '<li><label class="checkbox '+ is_disabled + '"><input type="checkbox" name="task_group[]" value="' + groups[i] + '" ' +
+                    group_ul += '<li><label class="checkbox ' + is_disabled + '"><input type="checkbox" name="task_group[]" value="' + groups[i] + '" ' +
                             is_checked + ' ' + is_disabled + '> ' + $('#group_sort_' + groups[i]).find('p.modal-group-name').text() +
                             '</label></li>';
                 }
@@ -553,11 +557,11 @@
             $('[data-toggle="popover"]:not([aria-describedby=' + $(this).attr('aria-describedby') + '])').popover('hide');
         });
 
-        $(document).click(function() {
+        $(document).click(function () {
             $('[data-toggle="popover"]').popover('hide');
         });
 
-        $('body').on("click", '.task-delete', function(e) {
+        $('body').on("click", '.task-delete', function (e) {
             e.stopPropagation();
             $(this).popover(popover_opts).popover('show');
         }).on('click', 'button[data-dismiss="popover"]', function () {
@@ -565,11 +569,11 @@
         }).on('click', 'div.popover', function (e) {
             e.stopPropagation();
 
-        }).on("click", '.task-delete-groups', function() {
+        }).on("click", '.task-delete-groups', function () {
             var task_delete_btn = $('[aria-describedby=' + $(this).closest('.popover').prop('id') + ']');
             var deleted_groups_ids = [];
             var remaining_groups_ids = [];
-            $(this).closest('.popover').find('input').each(function(x) {
+            $(this).closest('.popover').find('input').each(function (x) {
                 if ($(this).is(':checked') && $(this).is(':not(:disabled)'))
                     deleted_groups_ids = deleted_groups_ids.concat(parseInt($(this).val(), 10));
                 else
@@ -584,7 +588,7 @@
                 var group = $('.group-sortable');
                 var li = task_delete_btn.closest('li');
                 var current_group_id = task_delete_btn.closest('div').prop('id').split('_');
-                current_group_id = parseInt(current_group_id[current_group_id.length-1], 10);
+                current_group_id = parseInt(current_group_id[current_group_id.length - 1], 10);
 
                 remaining_groups[task_delete_btn.data('name')] = remaining_groups_ids.slice();
 
@@ -698,24 +702,20 @@
         });
     });
 
-    function isInt(x)
-    {
+    function isInt(x) {
         var y = parseInt(x);
-        if (isNaN(y))
-        {
+        if (isNaN(y)) {
             return false;
         }
-        return x==y && x.toString()==y.toString();
+        return x == y && x.toString() == y.toString();
     }
 
-    function get_modal_comment(comments)
-    {
+    function get_modal_comment(comments) {
         $('#modal_comment_body').html(comments);
         $('#modal_comment').modal('show');
     }
 
-    function get_task_modal(task_id, task_title, task_text_to_show, deadline)
-    {
+    function get_task_modal(task_id, task_title, task_text_to_show, deadline) {
         $('#modal_header_task_descr').html(task_title);
         $('#modal_body_task_descr').html(task_text_to_show);
 
@@ -723,7 +723,7 @@
         if (codesample)
             Prism.highlightElement(codesample);
 
-        if (deadline != ''){
+        if (deadline != '') {
             $('#modal_header_deadline_time').html('<strong>Дата сдачи: ' + deadline + ' MSK UTC+3</strong>');
         }
         else {
@@ -734,8 +734,7 @@
         $('#modal_task_description').modal('show');
     }
 
-    function get_edit_course_modal(course_id, course_desc)
-    {
+    function get_edit_course_modal(course_id, course_desc) {
         $('#course_info_edit').val(course_desc);
 
         var href_string = "javascript:edit_course_info(" + course_id + ");";
@@ -744,35 +743,32 @@
         $('#modal_course_information').modal('show');
     }
 
-    function edit_course_info(course_id, group_id, parent_id)
-    {
+    function edit_course_info(course_id, group_id, parent_id) {
         var course_info = $('#course_info_edit').val();
 
         var csrf_token = "{{ csrf_token }}";
 
         $("#modal_course_info_ok").button('loading');
         $.post('{% url courses.views.edit_course_information %}',
-                { 'course_id' : course_id, 'course_information' : course_info, 'csrfmiddlewaretoken' : csrf_token, },
+                {'course_id': course_id, 'course_information': course_info, 'csrfmiddlewaretoken': csrf_token,},
                 function (data) {
                     window.location.reload();
                 });
     }
 
-    function set_spectial_course_attend(course_id, action)
-    {
+    function set_spectial_course_attend(course_id, action) {
 
         $.post('{% url courses.views.set_spectial_course_attend %}',
-                { 'course_id' : course_id, 'action' : action, 'csrfmiddlewaretoken' : csrf_token, },
+                {'course_id': course_id, 'action': action, 'csrfmiddlewaretoken': csrf_token,},
                 function (data) {
                     window.location.reload();
                 });
 
     }
 
-    function change_visibility_hidden_tasks(course_id)
-    {
+    function change_visibility_hidden_tasks(course_id) {
         $.post('{% url courses.views.change_visibility_hidden_tasks %}',
-                { 'course_id' : course_id, 'csrfmiddlewaretoken' : "{{ csrf_token }}" },
+                {'course_id': course_id, 'csrfmiddlewaretoken': "{{ csrf_token }}"},
                 function (data) {
                     window.location.reload();
                 });
