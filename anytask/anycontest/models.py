@@ -2,6 +2,7 @@
 
 from django.db import models
 from django.conf import settings
+from django.utils.translation import ugettext as _
 
 from django.contrib.auth.models import User
 from anycontest.common import FakeResponse, escape
@@ -167,40 +168,40 @@ class ContestSubmission(models.Model):
             contest_verdict = results_req_json['result']['submission']['verdict']
             self.verdict = contest_verdict
             if contest_verdict == 'ok':
-                comment = u'<p>Вердикт Я.Контест: ok</p>'
+                comment = _(u'<p>Вердикт Я.Контест: ok</p>')
             elif contest_verdict == 'precompile-check-failed':
                 contest_messages = []
                 for precompile_check in results_req_json['result']['precompileChecks']:
                     contest_messages.append(precompile_check['message'])
                 self.precompile_checks = u'\n'.join(contest_messages)
-                comment = u'<p>Вердикт Я.Контест: precompile-check-failed</p><pre>' + \
+                comment = _(u'<p>Вердикт Я.Контест: precompile-check-failed</p><pre>') + \
                           escape(u'\n'.join(contest_messages)) + \
                           u'</pre>'
             else:
                 self.compile_log = results_req_json['result']['compileLog'][18:]
-                comment = u'<p>Вердикт Я.Контест: ' \
+                comment = _(u'<p>Вердикт Я.Контест: ') \
                           + results_req_json['result']['submission']['verdict'] + '</p><pre>' \
                           + escape(results_req_json['result']['compileLog'][18:]) + '</pre>'
                 if results_req_json['result']['tests']:
                     test = results_req_json['result']['tests'][-1]
                     self.used_time = test['usedTime']
                     self.used_memory = test['usedMemory']
-                    test_resourses = u'<p><u>Ресурсы</u> ' + str(test['usedTime']) \
+                    test_resourses = _(u'<p><u>Ресурсы</u> ') + str(test['usedTime']) \
                                      + 'ms/' + '%.2f' % (test['usedMemory']/(1024.*1024)) + 'Mb</p>'
                     if 'input' in test:
-                        test_input = u'<p><u>Ввод</u></p><p>' + \
+                        test_input = _(u'<p><u>Ввод</u></p><p>') + \
                                      escape(test['input']) if test['input'] else ""
                         test_input += '</p>'
                     else:
                         test_input = ""
                     if 'output' in test:
-                        test_output = u'<p><u>Вывод программы</u></p><p>' + \
+                        test_output = _(u'<p><u>Вывод программы</u></p><p>') + \
                                       escape(test['output']) if test['output'] else ""
                         test_output += '</p>'
                     else:
                         test_output = ""
                     if 'answer' in test:
-                        test_answer = u'<p><u>Правильный ответ</u></p><p>' + \
+                        test_answer = _(u'<p><u>Правильный ответ</u></p><p>') + \
                                       escape(test['answer']) if test['answer'] else ""
                         test_answer += '</p>'
                     else:
@@ -214,13 +215,13 @@ class ContestSubmission(models.Model):
                         test_error = ""
                     if 'message' in test:
                         self.message = test['message']
-                        test_message = u'<p><u>Сообщение чекера</u></p><p>' + \
+                        test_message = _(u'<p><u>Сообщение чекера</u></p><p>') + \
                                        escape(test['message']) if test['message'] else ""
                         test_message += '</p>'
                     else:
                         test_message = ""
                     self.test_number = test['testNumber']
-                    comment += u'<p><u>Тест ' + str(test['testNumber']) + '</u>' \
+                    comment += _(u'<p><u>Тест ') + str(test['testNumber']) + '</u>' \
                                + test_resourses + test_input + test_output \
                                + test_answer + test_error + test_message + '</p>'
 
