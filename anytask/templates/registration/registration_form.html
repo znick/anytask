@@ -1,7 +1,8 @@
 {% extends "base.html" %}
+{% load i18n %}
 {% load crispy_forms_tags %}
 
-{% block title %}Регистрация{% endblock %}
+{% block title %}{% trans "Регистрация" %}{% endblock %}
 
 {% block scripts %}
     <script src="{{ STATIC_URL }}jquery.validate.min.js"></script>
@@ -66,29 +67,29 @@
 
                 messages: {
                     username: {
-                        required : "Обязательное поле",
-                        remote : "Пользователь с таким именем уже существует",
-                        username_characters : "Только латинские буквы, цифры и '.-+_'"
+                        required : "{% trans 'Обязательное поле' %}",
+                        remote : "{% trans 'Пользователь с таким именем уже существует' %}",
+                        username_characters : "{% trans 'Только латинские буквы, цифры и ' %}'.-+_'"
                     },
                     first_name: {
-                        required : "Обязательное поле",
-                        name_characters : "Только буквы"
+                        required : "{% trans 'Обязательное поле' %}",
+                        name_characters : "{% trans 'Только буквы' %}"
                     },
                     last_name: {
-                        required : "Обязательное поле",
-                        name_characters : "Только буквы"
+                        required : "{% trans 'Обязательное поле' %}",
+                        name_characters : "{% trans 'Только буквы' %}"
                     },
                     email: {
-                        required : "Обязательное поле",
-                        email : "Введите корректный адрес",
-                        remote : "Пользователь с таким адресом уже существует. <a class='text-muted' href='{% url django.contrib.auth.views.login %}'>Войдите</a>"
+                        required : "{% trans 'Обязательное поле' %}",
+                        email : "{% trans 'Введите корректный адрес' %}",
+                        remote : "{% trans 'Пользователь с таким адресом уже существует. ' %}<a class='text-muted' href='{% url django.contrib.auth.views.login %}'>{% trans 'Войдите' %}</a>"
                     },
                     password1: {
-                        required : "Обязательное поле"
+                        required : "{% trans 'Обязательное поле' %}"
                     },
                     password2: {
-                        required : "Обязательное поле",
-                        equalTo : "Пароли не совпадают"
+                        required : "{% trans 'Обязательное поле' %}",
+                        equalTo : "{% trans 'Пароли не совпадают' %}"
                     }
                 },
 
@@ -115,7 +116,7 @@
         <div class="col-md-7 col-sm-10 col-xs-12">
             <div class="card">
                 <div class="card-block">
-                    <h5 class="card-title">Регистрация</h5>
+                    <h5 class="card-title">{% trans "Регистрация" %}</h5>
                     {% if form.non_field_errors %}
                         <div class="alert alert-danger alert-dismissible fade in" id="reg_form_alert">
                             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -161,7 +162,7 @@
                         {% endfor %}
                         <div class="form-group row">
                             <div class="col-md-offset-4 col-md-8">
-                                <button type="submit" class="btn btn-secondary">Зарегистрироваться</button>
+                                <button type="submit" class="btn btn-secondary">{% trans "Зарегистрироваться" %}</button>
                             </div>
                         </div>
                     </form>

@@ -6,6 +6,7 @@ from django.core.mail import get_connection, EmailMultiAlternatives
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
+from django.utils.translation import ugettext as _
 
 from users.models import UserProfile
 import time
@@ -24,19 +25,19 @@ class Command(BaseCommand):
 
             user_profile.send_notify_messages.clear()
 
-            subject = u'{0}, у вас есть новые сообщения'.format(user.first_name)
+            subject = _(u'{0}, у вас есть новые сообщения').format(user.first_name)
 
             domain = Site.objects.get_current().domain
             mail_url = 'http://' + domain + reverse('mail.views.mail_page')
             unread_count_string = get_string(unread_count)
 
-            plain_text = u'Здравствуйте, {0}.\n\n' + \
-                         u'У вас {1} {2}.\n' + \
-                         u'Посмотреть сообщения:\n' + \
-                         u'{3}\n\n' + \
-                         u'-- \n' + \
-                         u'С уважением,\n' + \
-                         u'команда Anytask.'
+            plain_text = _(u'Здравствуйте, {0}.\n\n') + \
+                         _(u'У вас {1} {2}.\n') + \
+                         _(u'Посмотреть сообщения:\n') + \
+                         _(u'{3}\n\n') + \
+                         _(u'-- \n') + \
+                         _(u'С уважением,\n') + \
+                         _(u'команда Anytask.')
             plain_text = plain_text.format(user.first_name, unread_count, unread_count_string, mail_url)
 
             context = {
@@ -58,13 +59,13 @@ class Command(BaseCommand):
 
 def get_string(num):
     if 11 <= num <= 14:
-        return u"новых сообщений"
+        return _(u"новых сообщений")
     elif str(num)[-1] == "1":
-        return u"новое сообщение"
+        return _(u"новое сообщение")
     elif str(num)[-1] in ["2", "3", "4"]:
-        return u"новых сообщения"
+        return _(u"новых сообщения")
     else:
-        return u"новых сообщений"
+        return _(u"новых сообщений")
 
 
 def send_mass_mail_html(datatuple, fail_silently=False, user=None, password=None, connection=None):

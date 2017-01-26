@@ -1,3 +1,4 @@
+{% load i18n %}
 <div style="font-family:Helvetica Neue,Helvetica,Arial,sans-serif;color: #373a3c;margin: 0;padding:40px 10px;width:100%;background-color: #f5f8fa;">
     <table cellpadding="0" cellspacing="0"
            style="border-collapse:collapse;color:#373a3c;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;font-size:16px;margin:0 auto;padding:0;table-layout:fixed;width:475px;">
@@ -36,8 +37,7 @@
                         </tr>
                         </tbody>
                     </table>
-                    <p style="color:#373a3c;line-height:20px;margin:0 0 20px">У
-                        вас {{ unread_count }} {{ unread_count_string }}.</p>
+                    <p style="color:#373a3c;line-height:20px;margin:0 0 20px">{% trans "У вас " %}{{ unread_count }} {{ unread_count_string }}.</p>
                     <table cellpadding="0" cellspacing="0" style="border-collapse: separate;">
                         <tbody>
                         <tr>
@@ -46,7 +46,7 @@
                                 <a href="{{ domain }}{% url mail.views.mail_page %}"
                                    target="_blank"
                                    style="color:#fff;padding: 8px 16px;font-size:17px;line-height:20px;font-weight:normal;text-decoration:none;display:block;height:20px;"
-                                >Перейти к сообщениям</a>
+                                >{% trans "Перейти к сообщениям" %}</a>
                             </td>
                         </tr>
                         </tbody>

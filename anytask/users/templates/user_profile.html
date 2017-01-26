@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load i18n %}
 {% load crispy_forms_tags %}
 {% load sanitize_html %}
 {% load table_func %}
@@ -13,29 +14,29 @@
     <ul class="nav navbar-nav">
         {% if request.user == user_to_show %}
             <li class="nav-item active">
-                <a class="nav-link" href="">Профиль</a>
+                <a class="nav-link" href="">{% trans "Профиль" %}</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{% url users.views.my_tasks %}">Мои задачи</a>
+                <a class="nav-link" href="{% url users.views.my_tasks %}">{% trans "Мои задачи" %}</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{% url users.views.user_courses username=user_to_show %}">Мои курсы</a>
+                <a class="nav-link" href="{% url users.views.user_courses username=user_to_show %}">{% trans "Мои курсы" %}</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{% url users.views.profile_settings %}">Настройки</a>
+                <a class="nav-link" href="{% url users.views.profile_settings %}">{% trans "Настройки" %}</a>
             </li>
         {% else %}
             <li class="nav-item active">
-                <a class="nav-link" href="{% url users.views.profile user_to_show %}">Профиль студента</a>
+                <a class="nav-link" href="{% url users.views.profile user_to_show %}">{% trans "Профиль студента" %}</a>
             </li>
             {% if user_above_user_to_show %}
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url users.views.user_courses username=user_to_show %}">Курсы студента</a>
+                    <a class="nav-link" href="{% url users.views.user_courses username=user_to_show %}">{% trans "Курсы студента" %}</a>
                 </li>
             {% endif %}
             {% if user.is_staff %}
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url users.views.profile_history user_to_show %}">Редактирование статусов</a>
+                    <a class="nav-link" href="{% url users.views.profile_history user_to_show %}">{% trans "Редактирование статусов" %}</a>
                 </li>
             {% endif %}
         {% endif %}
@@ -106,7 +107,7 @@
                     {% if user == user_to_show and can_generate_invites %}
                         <br>
                         <br>
-                        <a type="button" class="btn btn-secondary" href="#" onclick="window.open('{% url invites.views.generate_invites %}','_blank','height=331,width=769,status=yes,toolbar=no,menubar=no,location=no');return false;">Сгенерировать инвайты</a>
+                        <a type="button" class="btn btn-secondary" href="#" onclick="window.open('{% url invites.views.generate_invites %}','_blank','height=331,width=769,status=yes,toolbar=no,menubar=no,location=no');return false;">{% trans "Сгенерировать инвайты" %}</a>
                     {% endif %}
                 </div>
             </div>
@@ -116,9 +117,11 @@
                     {% if not user_profile.ya_contest_oauth %}
                         <div class="card card-inverse card-warning">
                             <div class="card-block">
-                                <h5 class="card-title">Привязать профиль Яндекс.Контеста</h5>
+                                <h5 class="card-title">{% trans "Привязать профиль Яндекс.Контеста" %}</h5>
                                 <p class="card-text">
+                                    {% blocktrans %}
                                     <strong>Привязать можно только один профиль!</strong> Для того, чтобы отвязать свой профиль обратитесь к <a href="mailto:anytask@yandex.ru">администратору</a>
+                                    {% endblocktrans %}
                                 </p>
                                 <a href="/user/ya_oauth_request/contest" type="button" class="btn btn-secondary">
                                     Привязать
@@ -128,25 +131,27 @@
                     {% else %}
                         <div class="card card-inverse card-success">
                             <div class="card-block">
-                                <h5 class="card-title">Привязать профиль Яндекс.Контеста</h5>
+                                <h5 class="card-title">{% trans "Привязать профиль Яндекс.Контеста" %}</h5>
                                 <p class="card-text">
+                                    {% blocktrans %}
                                     <strong>Вы привязали профиль {{ user.get_profile.ya_login }}.</strong> Теперь все посылки в соревнования будут отправляться от Вашего имени. Для того, чтобы отвязать свой профиль обратитесь к <a href="mailto:anytask@yandex.ru">администратору</a>.
+                                    {% endblocktrans %}
                                 </p>
                                 <a href="/user/ya_oauth_request/contest" type="button" class="btn btn-secondary">
-                                    Обновить привязку текущего профиля
+                                    {% trans "Обновить привязку текущего профиля" %}
                                 </a>
                             </div>
                         </div>
                     {% endif %}
                     {#        <a href="/user/ya_oauth_request/passport" type="button" class="btn btn-secondary">#}
-                    {#          Войти через Яндекс#}
+                    {#          {% trans "Войти через Яндекс" %}#}
                     {#        </a>#}
                 {% endif %}
 
                 <div class="card">
                     <div class="card-block">
-                        <h5 class="card-title">Активация инвайтов в курсы</h5>
-                        <button id="invites_form_button" type="button" class="btn btn-secondary {% if invite_form.errors %}collapse{% else %}in collapse{% endif %}"  style="margin-bottom: 1rem;">Ввести инвайт</button>
+                        <h5 class="card-title">{% trans "Активация инвайтов в курсы" %}</h5>
+                        <button id="invites_form_button" type="button" class="btn btn-secondary {% if invite_form.errors %}collapse{% else %}in collapse{% endif %}"  style="margin-bottom: 1rem;">{% trans "Ввести инвайт" %}</button>
                         <div class="row">
                             <div class="col-md-12">
                                 <form action="{% url users.views.profile %}" method="post" id="invites_form" class="{% if invite_form.errors %}in collapse{% else %}collapse{% endif %}">
@@ -159,7 +164,7 @@
                                         {#                                {% endif %}#}
                                     </div>
                                     <div class="col-md-3">
-                                        <button type="submit" class="btn btn-primary">Ок</button>
+                                        <button type="submit" class="btn btn-primary">Ok</button>
                                     </div>
                                 </form>
                             </div>
@@ -175,7 +180,7 @@
             <div class="card">
                 <div class="card-block">
                     <h5 class="card-title">
-                        О себе
+                        {% trans "О себе" %}
                         {% if user == user_to_show %}
                             <a type="button" class="btn btn-secondary btn-sm" id="user_info_edit_btn" style="padding: 6px 8px;" >
                                 <i class="fa fa-pencil"></i>
@@ -184,7 +189,7 @@
                     </h5>
                     <div class="card-text" id="user_info_body">
                         {% if user_to_show.get_profile.info %}{{ user_to_show.get_profile.info|sanitize|safe }}
-                        {% else %}Пока здесь ничего нет :( {% endif %}
+                        {% else %}{% trans "Пока здесь ничего нет :(" %} {% endif %}
                     </div>
                 </div>
             </div>
@@ -200,9 +205,9 @@
                             <div class="card">
                                 <div class="card-header" >
                                     {% if teacher_in_courses_archive %}
-                                        <a class="close switch-tab" href="#teacher_course_archive" role="tab" title='Архив' ><i class="fa fa-file-archive-o" aria-hidden="true"></i></a>
+                                        <a class="close switch-tab" href="#teacher_course_archive" role="tab" title='{% trans "Архив" %}' ><i class="fa fa-file-archive-o" aria-hidden="true"></i></a>
                                     {% endif %}
-                                    <h5 class="card-title">Преподаватель в курсах</h5>
+                                    <h5 class="card-title">{% trans "Преподаватель в курсах" %}</h5>
                                     <ul class="nav nav-pills" role="tablist">
                                         {% for year, _ in teacher_in_courses %}
                                             <li class="nav-item">
@@ -234,9 +239,9 @@
                             <div class="card">
                                 <div class="card-header" >
                                     {% if teacher_in_courses %}
-                                        <a class="close switch-tab" href="#teacher_course" role="tab" title='Активные'><i class="fa fa-file-text-o" aria-hidden="true"></i></a>
+                                        <a class="close switch-tab" href="#teacher_course" role="tab" title='{% trans "Активные" %}'><i class="fa fa-file-text-o" aria-hidden="true"></i></a>
                                     {% endif %}
-                                    <h5 class="card-title">Преподаватель в курсах (Архив)</h5>
+                                    <h5 class="card-title">{% trans "Преподаватель в курсах (Архив)" %}</h5>
                                     <ul class="nav nav-pills" role="tablist">
                                         {% for year, _ in teacher_in_courses_archive %}
                                             <li class="nav-item">
@@ -273,9 +278,9 @@
                             <div class="card">
                                 <div class="card-header" >
                                     {% if courses_archive %}
-                                        <a class="close switch-tab" href="#course_list_archive" role="tab" title='Архив'><i class="fa fa-file-archive-o" aria-hidden="true"></i></a>
+                                        <a class="close switch-tab" href="#course_list_archive" role="tab" title='{%  trans  "Архив" %}'><i class="fa fa-file-archive-o" aria-hidden="true"></i></a>
                                     {% endif %}
-                                    <h5 class="card-title">Состоит в курсах</h5>
+                                    <h5 class="card-title">{% trans "Состоит в курсах" %}</h5>
                                     <ul class="nav nav-pills" role="tablist">
                                         {% for year, _ in courses %}
                                             <li class="nav-item">
@@ -307,9 +312,9 @@
                             <div class="card">
                                 <div class="card-header" >
                                     {% if courses %}
-                                        <a class="close switch-tab" href="#course_list" role="tab" title='Архив'><i class="fa fa-file-text-o" aria-hidden="true"></i></a>
+                                        <a class="close switch-tab" href="#course_list" role="tab" title='{% trans "Архив" %}'><i class="fa fa-file-text-o" aria-hidden="true"></i></a>
                                     {% endif %}
-                                    <h5 class="card-title">Состоит в курсах (Архив)</h5>
+                                    <h5 class="card-title">{% trans "Состоит в курсах (Архив)" %}</h5>
                                     <ul class="nav nav-pills" role="tablist">
                                         {% for year, _ in courses_archive %}
                                             <li class="nav-item">
@@ -342,7 +347,7 @@
             <div class="{{ card_width }} col-xs-12 ">
                 <div class="card">
                     <div class="card-header" >
-                        <h5 class="card-title">Состоит в группах</h5>
+                        <h5 class="card-title">{% trans "Состоит в группах" %}</h5>
                         <ul class="nav nav-pills" role="tablist">
                             {% for year, _ in groups %}
                                 <li class="nav-item">
@@ -375,7 +380,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h5 class="modal-title" id="modal_avatar_edit_header">Выбор аватара</h5>
+                        <h5 class="modal-title" id="modal_avatar_edit_header">{% trans "Выбор аватара" %}</h5>
                     </div>
                     <div class="modal-body" style="max-height: none;">
                         <div class="row" style="text-align: center;">
@@ -408,8 +413,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <a href="#" class="btn btn-secondary btn-sm" data-dismiss="modal">Закрыть</a>
-                        <button type="submit" name="update-avatar" form="avatar-form" class="btn btn-primary btn-sm" id="modal_course_info_ok" data-loading-text="Сохранение...">Сохранить</button>
+                        <a href="#" class="btn btn-secondary btn-sm" data-dismiss="modal">{% trans "Закрыть" %}</a>
+                        <button type="submit" name="update-avatar" form="avatar-form" class="btn btn-primary btn-sm" id="modal_course_info_ok" data-loading-text="{% trans "Сохранение..." %}">{% trans "Сохранить" %}</button>
                     </div>
                 </div>
             </div>
@@ -420,7 +425,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h5 class="modal-title" id="modal_user_info_header">О себе</h5>
+                        <h5 class="modal-title" id="modal_user_info_header">{% trans "О себе" %}</h5>
                     </div>
                     <div class="modal-body" style="max-height: none;">
                         <form method="post" id="user-info-form" enctype="multipart/form-data">
@@ -428,12 +433,12 @@
                             <textarea class='input-xlarge form-control' style="width: 100%;resize: none;" id='user_info' rows='13' name='user-info'></textarea>
                         </form>
                         <div class="alert alert-danger" role ="alert" id="update_user_info_error_text" style="margin: 1rem 0 0 0;">
-                            <span>Произошла ошибка. Попробуйте еще раз.</span>
+                            <span>{% trans "Произошла ошибка. Попробуйте еще раз." %}</span>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
-                        <button type="button" form="user-info-form" class="btn btn-primary" id="modal_user_info_ok" data-loading-text="Сохранение...">Сохранить</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">{% trans "Закрыть" %}</button>
+                        <button type="button" form="user-info-form" class="btn btn-primary" id="modal_user_info_ok" data-loading-text='{% trans "Сохранение..." %}'>{% trans "Сохранить" %}</button>
                     </div>
                 </div>
             </div>
@@ -444,7 +449,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h5 class="modal-title" id="modal_avatar_edit_header">Просмотр аватара</h5>
+                    <h5 class="modal-title" id="modal_avatar_edit_header">{% trans "Просмотр аватара" %}</h5>
                 </div>
                 <div class="modal-body" style="max-height: none;">
                     <div class="row" style="text-align: center;">
@@ -457,7 +462,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <a href="#" class="btn btn-secondary btn-sm" data-dismiss="modal">Закрыть</a>
+                    <a href="#" class="btn btn-secondary btn-sm" data-dismiss="modal">{% trans "Закрыть" %}</a>
                 </div>
             </div>
         </div>
@@ -466,7 +471,9 @@
 
     <footer>
         <small class="text-muted pull-xs-right">
+            {%  blocktrans %}
             Если какие-либо данные неверны, обратитесь к <a href="mailto:anytask@yandex.ru">администратору</a>.
+            {%  endblocktrans %}
         </small>
     </footer>
 

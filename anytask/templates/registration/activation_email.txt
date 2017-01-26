@@ -1,3 +1,5 @@
+{% load i18n %}
+{% blocktrans %}
 Для активации аккаунта на AnyTask перейдите по ссылке
 
 http://{{ site }}/accounts/activate/{{ activation_key }}
@@ -6,3 +8,4 @@ http://{{ site }}/accounts/activate/{{ activation_key }}
 
 -- 
 Команда AnyTask
+{% endblocktrans %}

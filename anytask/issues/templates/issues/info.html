@@ -1,37 +1,9 @@
 {% load crispy_forms_tags %}
+{% load i18n %}
 
 <style>
     .card-header {
         background-color: #FFFFFF;
-    }
-    #accordion2 div.form-group {
-        margin-bottom: 1.2rem;
-    }
-    #accordion2 div.form-group.btn-group-submit {
-        margin-bottom: 0;
-    }
-    #accordion2 small.text-help .error{
-        margin: -1.2rem 0 0 0;
-    }
-    #accordion2 .mce-container.mce-panel {
-        padding: 0 !important;
-        font-size: 1rem;
-        line-height: 1.5;
-        color: #55595c;
-        background-color: #fff;
-        background-image: none;
-        border: 1px solid #ccc;
-        border-radius: .25rem;
-    }
-    #accordion2 .mce-container.mce-panel iframe {
-        border-radius: .25rem;
-    }
-    #accordion2 .mce-tinymce .mce-edit-area{
-        border: none;
-    }
-    .mce-tinymce .mce-edit-area label {
-        padding: .375rem .75rem !important;
-        font-size: 1rem !important;
     }
 </style>
 
@@ -54,17 +26,6 @@
                                 {% if field.repr  or field.repr == 0 %}
                                     {% if field.name == 'task_name' %}
                                         <a href="#" id="modal_task_description_btn">{{ field.repr }}</a>
-                                    {% elif field.name == 'run_id' and teacher_or_staff and issue.task.contest_integrated %}
-                                        <div style="display:inline;margin-right: 5px;">{{ field.repr }}</div>
-                                        {% if show_contest_rejudge %}
-                                            <form method="post" style="display: inline;">
-                                                {% csrf_token %}
-                                                <input type="hidden" name="contest_rejudge" value="on">
-                                                <button type="submit" class="btn btn-secondary">Пересудить</button>
-                                            </form>
-                                        {% elif show_contest_rejudge_loading %}
-                                            <button type="submit" class="btn btn-secondary" style="cursor: default" disabled="disabled"><span class='fa fa-circle-o-notch fa-spin fa-fw'></span></button>
-                                        {% endif %}
                                     {% else %}
                                         {{ field.repr }}
                                     {% endif %}
@@ -80,31 +41,26 @@
                         <div class="card-block">
                             <form method="post" id="{{ field.name }}_form" enctype="multipart/form-data">
                                 {% csrf_token %}
-                                <div id="{{ field.name }}_fieldset_id" style="padding-right: .9375rem; padding-left: .9375rem;">
+                                <div class="form-group col-md-12" id="{{ field.name }}_fieldset_id">
                                     <input type="hidden" name="form_name" value="{{ field.name }}_form">
                                     {% if field.name == 'mark' %}
                                         <input type="hidden" id="max_mark" value="{{ issue.task.score_max }}">
                                     {% endif %}
                                     {{ field.form|crispy }}
                                     {% if field.name == 'mark' %}
-                                        <small class="text-help" id="mark_edit_error_text"></small>
+                                        <small class="text-help" style="margin-top: 0px;" id="mark_edit_error_text"></small>
                                     {% endif %}
                                 </div>
-                                {% if field.name == 'mark' or field.name == 'status' %}
-                                    <div class="form-group">
-                                        <textarea class='form-control comment-verdict' placeholder="Комментарий" style="width: 100%;height: 70px; resize: none;" rows='13' name='comment_verdict'></textarea>
-                                    </div>
-                                {% endif %}
-                                <div class="form-group btn-group-submit">
-                                    <button type="submit" class="btn btn-secondary">Отправить</button>
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-secondary">{%  trans "Отправить" %}</button>
                                     {% if field.name == 'responsible_name' or field.name == 'followers_names' %}
-                                        <button type="submit" class="btn btn-secondary" name="Me">Я</button>
+                                        <button type="submit" class="btn btn-secondary" name="Me">{%  trans "Я" %}</button>
                                     {% endif %}
                                     {% if field.name == 'mark' %}
                                         {% if statuses_accepted.count > 1 %}
                                             <div class="dropdown dropdown-submit" style="display: inline-block;">
                                                 <button class="btn btn-secondary dropdown-toggle" type="button" id="accepted_btn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                    Статус
+                                                    {%  trans "Статус" %}
                                                 </button>
                                                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                                     {% for status in statuses_accepted %}
@@ -127,7 +83,7 @@
     <div class="card">
         <div class="card-header">
             <div class="row col-wrap">
-                <div class="col-md-5 accordion2-label">Дата сдачи:</div>
+                <div class="col-md-5 accordion2-label">{%  trans "Дата сдачи:" %}</div>
                 <div class="col-md-7 accordion2-result">
                     {{ issue.task.deadline_time|date:'d-m-Y H:i' }} {% if issue.task.deadline_time %} MSK UTC+3 {% endif %}
                 </div>
@@ -147,7 +103,7 @@
                 {% if teacher_or_staff %}
                     <a id="modal_task_descr_edit_button" href="{% url tasks.views.task_edit_page task_id=issue.task.id %}" type="button" style="opacity:0.2;filter: alpha(opacity=20);color:#000000;display: inline-block;vertical-align: super;margin-left: 5px;"><i class="fa fa-edit fa-lg"></i></a>
                 {% endif %}
-                <div id="modal_header_deadline_time">{% if issue.task.deadline_time %}<strong>Дата сдачи: {{ issue.task.deadline_time|date:'d-m-Y H:i' }} MSK UTC+3 {% endif %}</strong></div>
+                <div id="modal_header_deadline_time">{% if issue.task.deadline_time %}<strong>{%  trans "Дата сдачи:" %} {{ issue.task.deadline_time|date:'d-m-Y H:i' }} MSK UTC+3 {% endif %}</strong></div>
             </div>
             <div class="modal-body">
                 <div id="modal_body_task_descr">{{ issue.task.task_text|safe }}</div>

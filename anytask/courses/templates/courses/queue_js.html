@@ -1,3 +1,4 @@
+{% load i18n %}
 <script src="{{ STATIC_URL }}jquery.stickytableheaders.min.js"></script>
 {#<script src="{{ STATIC_URL }}bootstrap-select.min.js"></script>#}
 {#<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.11.0/js/i18n/defaults-ru_RU.js"></script>#}
@@ -18,9 +19,9 @@
             },
             includeSelectAllOption: true,
             enableCaseInsensitiveFiltering: true,
-            filterPlaceholder: "Найти...",
-            selectAllText: 'Все',
-            allSelectedText: 'Все',
+            filterPlaceholder: '{% trans "Найти..." %}',
+            selectAllText: '{% trans "Все" %}',
+            allSelectedText: '{% trans "Все" %}',
             maxHeight: 200,
             buttonContainer: '<div style="width:100%;" class="multiselect-dropdown"/>',
             buttonWidth: '100%',
@@ -31,7 +32,7 @@
                     return '---';
                 }
                 else if (options.length === $('option', select).length) {
-                    return 'Все';
+                    return '{% trans "Все" %}';
                 }
                 else {
                     options.each(function () {
@@ -45,7 +46,7 @@
                     return '---';
                 }
                 else if (options.length === $('option', select).length) {
-                    return 'Все';
+                    return '{% trans "Все" %}';
                 }
                 else {
                     var labels = [];

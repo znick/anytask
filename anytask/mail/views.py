@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpResponse
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template.context import RequestContext
+from django.utils.translation import ugettext as _
 
 from django.contrib.auth.models import User
 from mail.models import Message
@@ -14,18 +15,18 @@ import json
 import datetime
 
 MONTH = {
-    1: u"янв.",
-    2: u"февр.",
-    3: u"мар.",
-    4: u"апр.",
-    5: u"мая",
-    6: u"июн.",
-    7: u"июл.",
-    8: u"авг.",
-    9: u"сент.",
-    10: u"окт.",
-    11: u"нояб.",
-    12: u"дек."
+    1: _(u"янв."),
+    2: _(u"февр."),
+    3: _(u"мар."),
+    4: _(u"апр."),
+    5: _(u"мая"),
+    6: _(u"июн."),
+    7: _(u"июл."),
+    8: _(u"авг."),
+    9: _(u"сент."),
+    10: _(u"окт."),
+    11: _(u"нояб."),
+    12: _(u"дек.")
 }
 
 

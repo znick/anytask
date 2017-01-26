@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load i18n %}
 {% load crispy_forms_tags %}
 
 {% block title %} Staff{% endblock %}
@@ -14,10 +15,10 @@
             <a class="nav-link active" href="#">Staff</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="{% url staff.views.staff_page %}">Фильтры по статусам</a>
+            <a class="nav-link" href="{% url staff.views.staff_page %}">{% trans "Фильтры по статусам" %}</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link active" href="{% url staff.views.get_gradebook %}">Общая ведомость</a>
+            <a class="nav-link active" href="{% url staff.views.get_gradebook %}">{% trans "{% trans "Общая ведомость" %}" %}</a>
         </li>
     </ul>
 {% endblock navbar %}
@@ -39,7 +40,7 @@
                         <table class="table table_users table-striped table-bordered">
                             <thead>
                             <tr style="background-color: #ffffff;">
-                                <th>Студент</th>
+                                <th>{% trans "Студент" %}</th>
                                 {% for course in courses %}
                                     <th>{{ course.name }}</th>
                                 {% endfor %}
@@ -57,7 +58,7 @@
                             </tbody>
                         </table>
                     {% else %}
-                        <p class="card-text">Не найдено ни одного пользователя</p>
+                        <p class="card-text">{% trans "Не найдено ни одного пользователя" %}</p>
                     {% endif %}
                 </div>
             </div>

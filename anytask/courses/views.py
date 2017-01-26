@@ -97,9 +97,9 @@ def queue_page(request, course_id):
     f.form.helper.form_method = 'get'
     # f.form.helper.label_class = 'col-md-4'
     # f.form.helper.field_class = 'selectpicker'
-    f.form.helper.layout.append(HTML(u"""<div class="form-group row">
+    f.form.helper.layout.append(HTML(_(u"""<div class="form-group row">
                                            <button id="button_filter" class="btn btn-secondary pull-xs-right" type="submit">Применить</button>
-                                         </div>"""))
+                                         </div>""")))
 
     schools = course.school_set.all()
 
@@ -629,9 +629,9 @@ def ajax_update_contest_tasks(request):
         if 'error' in problem_req:
             response['is_error'] = True
             if 'IndexOutOfBoundsException' in problem_req['error']['name']:
-                response['error'] = u'Такого контеста не существует'
+                response['error'] = _(u'Такого контеста не существует')
             else:
-                response['error'] = u'Ошибка Я.Контеста: ' + problem_req['error']['message']
+                response['error'] = _(u'Ошибка Я.Контеста: ') + problem_req['error']['message']
         if 'result' in problem_req.json():
             problems = problem_req.json()['result']['problems']
 
@@ -639,11 +639,11 @@ def ajax_update_contest_tasks(request):
     else:
         response['is_error'] = True
         if "You're not allowed to view this contest." in contest_info:
-            response['error'] = u"У anytask нет прав на данный контест"
+            response['error'] = _(u"У anytask нет прав на данный контест")
         elif "Contest with specified id does not exist." in contest_info:
-            response['error'] = u'Такого контеста не существует'
+            response['error'] = _(u'Такого контеста не существует')
         else:
-            response['error'] = u'Ошибка Я.Контеста: ' + contest_info
+            response['error'] = _(u'Ошибка Я.Контеста: ') + contest_info
 
     if not response['is_error']:
         for task in Task.objects.filter(id__in=dict(request.POST)['tasks_with_contest[]']):

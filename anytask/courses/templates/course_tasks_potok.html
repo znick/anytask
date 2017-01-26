@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load i18n %}
 {% load sanitize_html %}
 
 {% block title %}{{ course.name }} | {{ course.year }}{% endblock %}
@@ -13,8 +14,8 @@
 
 <div class="subnav">
     <ul class="nav nav-pills">
-      <li class="active"><a href="{% url courses.views.tasks_list course.id %}">Задачи</a></li>
-      <li><a href="{% url courses.views.course_statistics course_id=course.id %}">Статистика</a></li>
+      <li class="active"><a href="{% url courses.views.tasks_list course.id %}">{% trans "Задачи" %}</a></li>
+      <li><a href="{% url courses.views.course_statistics course_id=course.id %}">{% trans "Статистика" %}</a></li>
     </ul>
 </div>
 
@@ -23,16 +24,16 @@
 		{% if course.can_edit %}
 			<dd>
 				<a class="btn-small" href="javascript:get_edit_course_modal({{ course.id }}, {% if course.information %} '{{course.information|escapejs}}' {% else %} '' {% endif %});">
-					{% if course.information %}Редактировать информацию о курсе{% else %}Добавить информацию о курсе{% endif %}
+					{% if course.information %}{% trans "Редактировать информацию о курсе" %}{% else %}{% trans "Добавить информацию о курсе" %}{% endif %}
 				</a>
 				|
 				<a class="btn-small" href="javascript:get_add_task_modal({{ course.id }}, null, null, '{{course.can_edit}}');">
-					Добавить задачу
+					{% trans "Добавить задачу" %}
 				</a>
 			</dd>
 			<br>
 		{% endif%}
-	<dd>Преподаватели:
+	<dd>{% trans "Преподаватели" %}:
 		{% for teacher in course.teachers.all %}
 			<a href="{% url users.views.profile teacher.username %}">{{ teacher.last_name }} {{ teacher.first_name }}</a>{% if not forloop.last %},{% endif %}
 		{% endfor %}
@@ -40,24 +41,24 @@
     {% if course.is_special_course %}
         <!--
         <dd>
-            {{ course.name }} &#151; спец-курс. Вы можете сами решать ходить на него или нет.
+            {% trans "{{ course.name }} &#151; спец-курс. Вы можете сами решать ходить на него или нет." %}
         </dd>
     -->
     {% endif %}
 
-	<dd>{% if course.take_policy == 0 %} Студент берет задачу самостоятельно. {% endif %}</dd>
-	{% if course.max_users_per_task %} <dd>Максимальное число студентов на задачу: {{ course.max_users_per_task }}</dd> {% endif %}
+	<dd>{% if course.take_policy == 0 %} {% trans "Студент берет задачу самостоятельно." %} {% endif %}</dd>
+	{% if course.max_users_per_task %} <dd>{% trans "Максимальное число студентов на задачу" %}: {{ course.max_users_per_task }}</dd> {% endif %}
 
 	{% if course.max_days_without_score %}
-		<dd>Если задача не будет оценена в течении {{ course.max_days_without_score }} дней, то заявка отменяется автоматически.</dd>
+		<dd>{% trans "Если задача не будет оценена в течении {{ course.max_days_without_score }} дней, то заявка отменяется автоматически." %}</dd>
 	{% endif %}
 
 	{% if course.days_drop_from_blacklist %}
-		<dd>После автоматической отмены заявки задачу можно будет взять через {{ course.days_drop_from_blacklist }} дней.</dd>
+		<dd>{% trans "После автоматической отмены заявки задачу можно будет взять через {{ course.days_drop_from_blacklist }} дней." %}</dd>
 	{% endif %}
 
 	{% if course.max_tasks_without_score_per_student %}
-		<dd>У каждого студента может быть не более {{ course.max_tasks_without_score_per_student }} неоцененных задач.</dd>
+		<dd>{% trans "У каждого студента может быть не более {{ course.max_tasks_without_score_per_student }} неоцененных задач." %}</dd>
 	{% endif %}
 	<dd>
 		{% if course.information %}<br>{% endif %}
@@ -80,22 +81,22 @@
 							{% endif %}
 							{% if task.can_score %}
 								<a class="btn-small" href="javascript:get_task_modal({{task.id}}, '{{task.title|escapejs}}', '{{task.is_hidden}}', '{{task.task_text|sanitize|escapejs}}', '{{task.task_text|escapejs}}', {{task.score_max}}, '{{task.can_score}}', 'edit')">
-									Редактировать задачу
+									{% trans "Редактировать задачу" %}
 								</a>
 								<a class="btn-small" href="javascript:get_add_task_modal({{ course.id }}, null, {{ task.id }}, '{{course.can_edit}}');">
-									Добавить подзадачу
+									{% trans "Добавить подзадачу" %}
 								</a>
 							{% endif %}
 							{% if task.can_take.0  %}
-								<a href="{% url courses.views.get_task course_id=course.id task_id=task.id %}">Записаться на задачу</a>
+								<a href="{% url courses.views.get_task course_id=course.id task_id=task.id %}">{% trans "Записаться на задачу" %}</a>
 							{% else %}
 								{{ task.can_take.1 }}
 							{% endif %}
 							{% if task.can_cancel  %}
-								<a href="{% url courses.views.cancel_task course_id=course.id task_id=task.id %}">Отказаться от задачи</a>
+								<a href="{% url courses.views.cancel_task course_id=course.id task_id=task.id %}">{% trans "Отказаться от задачи" %}</a>
 							{% endif %}
 							{% if task.can_pass  %}
-								<a href="{% url submit_review task.id %}">Сдать задачу</a>
+								<a href="{% url submit_review task.id %}">{% trans "Сдать задачу" %}</a>
 							{% endif %}
 							<br>
 							{% if task.task_text %}
@@ -109,19 +110,19 @@
 									<span class="label label-success">{{ subtask.score_max }}</span>
 									{% if subtask.can_score %}
 										<a class="btn-small" href="javascript:get_task_modal({{subtask.id}}, '{{subtask.title|escapejs}}', '{{subtask.is_hidden}}', '{{subtask.task_text|sanitize|escapejs}}', '{{subtask.task_text|escapejs}}', {{subtask.score_max}}, '{{subtask.can_score}}', 'edit')">
-											Редактировать подзадачу
+											{% trans "Редактировать подзадачу" %}
 										</a>
 									{% endif %}
 									{% if subtask.can_take.0  %}
-										<a href="{% url courses.views.get_task course_id=course.id task_id=subtask.id %}">Записаться на задачу</a>
+										<a href="{% url courses.views.get_task course_id=course.id task_id=subtask.id %}">{% trans "Записаться на задачу" %}</a>
 									{% else %}
 										{{ subtask.can_take.1 }}
 									{% endif %}
 									{% if subtask.can_cancel  %}
-										<a href="{% url courses.views.cancel_task course_id=course.id task_id=subtask.id %}">Отказаться от задачи</a>
+										<a href="{% url courses.views.cancel_task course_id=course.id task_id=subtask.id %}">{% trans "Отказаться от задачи" %}</a>
 									{% endif %}
 									{% if subtask.can_pass  %}
-										<a href="{% url submit_review subtask.id %}">Сдать задачу</a>
+										<a href="{% url submit_review subtask.id %}">{% trans "Сдать задачу" %}</a>
 									{% endif %}
 
 									<br>
@@ -146,7 +147,7 @@
 														<td style="width:20%;"></td>
 														<td style="width:20%;">
 															{% if subtask.can_score %}
-																<a class="btn-small" href="javascript:get_modal({{ subtask.id }}, '{{ subtask.title|escapejs }}', '{{ task_taken.user.get_full_name|escapejs }}', {{ task_taken.user.id }}, 0, {{ subtask.score_max }}, '{{ task_taken.teacher_comments|sanitize|escapejs }}')">Оценить</a>
+																<a class="btn-small" href="javascript:get_modal({{ subtask.id }}, '{{ subtask.title|escapejs }}', '{{ task_taken.user.get_full_name|escapejs }}', {{ task_taken.user.id }}, 0, {{ subtask.score_max }}, '{{ task_taken.teacher_comments|sanitize|escapejs }}')">{% trans "Оценить" %}</a>
 															{% endif %}
 														</td>
 													{% endif %}
@@ -162,7 +163,7 @@
 														</td>
 														<td style="width:20%;">
 															{% if subtask.can_score %}
-																<a class="btn-small" href="javascript:get_modal({{ subtask.id }}, '{{ subtask.title|escapejs }}', '{{ task_taken.user.get_full_name|escapejs }}', {{ task_taken.user.id }}, '{{ task_taken.score }}', {{ subtask.score_max }}, '{{ task_taken.teacher_comments|sanitize|escapejs }}')">Оценить</a>
+																<a class="btn-small" href="javascript:get_modal({{ subtask.id }}, '{{ subtask.title|escapejs }}', '{{ task_taken.user.get_full_name|escapejs }}', {{ task_taken.user.id }}, '{{ task_taken.score }}', {{ subtask.score_max }}, '{{ task_taken.teacher_comments|sanitize|escapejs }}')">{% trans "Оценить" %}</a>
 															{% endif %}
 														</td>
 													{% endif %}
@@ -193,7 +194,7 @@
 												<td style="width:20%;"></td>
 												<td style="width:20%;">
 													{% if task.can_score %}
-														<a class="btn-small" href="javascript:get_modal({{ task.id }}, '{{ task.title|escapejs }}', '{{ task_taken.user.get_full_name|escapejs }}', {{ task_taken.user.id }}, 0, {{ task.score_max }}, '{{ task_taken.teacher_comments|sanitize|escapejs }}')">Оценить</a>
+														<a class="btn-small" href="javascript:get_modal({{ task.id }}, '{{ task.title|escapejs }}', '{{ task_taken.user.get_full_name|escapejs }}', {{ task_taken.user.id }}, 0, {{ task.score_max }}, '{{ task_taken.teacher_comments|sanitize|escapejs }}')">{% trans "Оценить" %}</a>
 													{% endif %}
 												</td>
 											{% endif %}
@@ -210,7 +211,7 @@
 												</td>
 												<td style="width:20%;">
 													{% if task.can_score %}
-														<a class="btn-small" href="javascript:get_modal({{ task.id }}, '{{ task.title|escapejs }}', '{{ task_taken.user.get_full_name|escapejs }}', {{ task_taken.user.id }}, '{{ task_taken.score }}', {{ task.score_max }}, '{{ task_taken.teacher_comments|sanitize|escapejs }}')">Оценить</a>
+														<a class="btn-small" href="javascript:get_modal({{ task.id }}, '{{ task.title|escapejs }}', '{{ task_taken.user.get_full_name|escapejs }}', {{ task_taken.user.id }}, '{{ task_taken.score }}', {{ task.score_max }}, '{{ task_taken.teacher_comments|sanitize|escapejs }}')">{% trans "Оценить" %}</a>
 													{% endif %}
 												</td>
 											{% endif %}

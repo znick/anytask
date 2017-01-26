@@ -6,6 +6,7 @@ from django.core.exceptions import PermissionDenied
 
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
+from django.utils.translation import ugettext as _
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML
@@ -13,6 +14,7 @@ from crispy_forms.layout import HTML
 from courses.models import StudentCourseMark
 from courses.models import Course
 from users.models import UserProfile, IssueFilterStudent, UserProfileFilter, UserStatus
+
 
 
 @require_http_methods(['GET'])
@@ -37,9 +39,9 @@ def staff_page(request):
 
     f.form.helper = FormHelper(f.form)
     f.form.helper.form_method = 'get'
-    f.form.helper.layout.append(HTML(u"""<div class="form-group row">
+    f.form.helper.layout.append(HTML(_(u"""<div class="form-group row">
         <button id="button_filter" class="btn btn-secondary pull-xs-right" type="submit">Применить</button>
-</div>"""))
+</div>""")))
 
     context = {
         'filter': f,

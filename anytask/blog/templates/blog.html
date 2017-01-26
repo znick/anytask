@@ -1,11 +1,12 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
-{% block title %}Блог Anytask{% endblock %}
+{% block title %}{% trans "Блог Anytask" %}{% endblock %}
 
 {% block content %}
     <div class="card">
         <div class="card-block">
-            <h5 class="card-title">Блог Anytask</h5>
+            <h5 class="card-title">{% trans "Блог Anytask" %}</h5>
                 <iframe id="forum_embed"
                         src="javascript:void(0)"
                         scrolling="no"

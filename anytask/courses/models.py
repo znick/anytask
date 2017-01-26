@@ -10,7 +10,7 @@ from django.db.models.signals import m2m_changed
 from django.conf import settings
 from django.db.models.signals import post_save
 from django.db.models import Q
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 
 from groups.models import Group
 from issues.model_issue_status import IssueStatusSystem

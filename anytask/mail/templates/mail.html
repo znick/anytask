@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
+{% load i18n %}
 {% load queryset_func %}
 
-{% block title %}Загрузка...{% endblock %}
+{% block title %}{% trans "Загрузка..." %}{% endblock %}
 
 {% block scripts %}
     {% include "mail_js.html" %}
@@ -12,20 +13,20 @@
     <div class="row">
         <div class="mailbox_menu col-xs-12 col-sm-12 col-md-12 col-lg-3 col-xl-3">
             <button type="button" class="btn btn-secondary" id="btn_new_msg" data-toggle="pill" href="#new" style="margin-bottom: .75rem">
-                <span class="fa fa-edit"></span>&nbsp;Написать
+                <span class="fa fa-edit"></span>&nbsp;{% trans "Написать" %}
             </button>
             <div class="card" >
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item active" data-toggle="pill" href="#inbox" data-type="inbox">
-                        <span class="fa fa-inbox fa-fw"></span>&nbsp;Входящие
+                        <span class="fa fa-inbox fa-fw"></span>&nbsp;{% trans "Входящие" %}
                         <span id="inbox_count" class="label label-danger pull-xs-right"></span>
                     </li>
                     <li class="list-group-item" data-toggle="pill" href="#sent" data-type="sent">
-                        <span class="fa fa-paper-plane-o fa-fw"></span>&nbsp;Отправленные
+                        <span class="fa fa-paper-plane-o fa-fw"></span>&nbsp;{% trans "Отправленные" %}
                         <span id="sent_count" data-toggle="pill" class="label label-danger pull-xs-right"></span>
                     </li>
                     <li class="list-group-item" data-toggle="pill" href="#trash" data-type="trash">
-                        <span class=" fa fa-trash-o fa-fw"></span>&nbsp;Удаленные
+                        <span class=" fa fa-trash-o fa-fw"></span>&nbsp;{% trans "Удаленные" %}
                         <span id="deleted_count" class="label label-danger pull-xs-right"></span>
                     </li>
                 </ul>
@@ -36,9 +37,9 @@
                 <div class="card-block">
                     <div class="tab-content">
                         <div class="tab-pane fade in active" id="inbox" role="tabpanel">
-                            <h5 class="card-title">Входящие</h5>
+                            <h5 class="card-title">{% trans "Входящие" %}</h5>
                             <div class="loading">
-                                <span class='fa fa-circle-o-notch fa-spin'></span>&nbsp;Загрузка...
+                                <span class='fa fa-circle-o-notch fa-spin'></span>&nbsp;{% trans "Загрузка..." %}
                             </div>
                             <div class="main-table collapse" >
                                 <table class="table table-mailbox table-hover" id="table_inbox" data-init="false">
@@ -54,9 +55,9 @@
                             </div>
                         </div>
                         <div class="tab-pane fade" id="sent" role="tabpanel">
-                            <h5 class="card-title">Отправленные</h5>
+                            <h5 class="card-title">{% trans "Отправленные" %}</h5>
                             <div class="loading">
-                                <span class='fa fa-circle-o-notch fa-spin'></span>&nbsp;Загрузка...
+                                <span class='fa fa-circle-o-notch fa-spin'></span>&nbsp;{% trans "Загрузка..." %}
                             </div>
                             <div class="main-table collapse" >
                                 <table class="table table-mailbox table-hover" id="table_sent" data-init="false">
@@ -72,9 +73,9 @@
                             </div>
                         </div>
                         <div class="tab-pane fade" id="trash" role="tabpanel">
-                            <h5 class="card-title">Удаленные</h5>
+                            <h5 class="card-title">{% trans "Удаленные" %}</h5>
                             <div class="loading">
-                                <span class='fa fa-circle-o-notch fa-spin'></span>&nbsp;Загрузка...
+                                <span class='fa fa-circle-o-notch fa-spin'></span>&nbsp;{% trans "Загрузка..." %}
                             </div>
                             <div class="main-table collapse" >
                                 <table class="table table-mailbox table-hover" id="table_trash" data-init="false">
@@ -91,15 +92,15 @@
                         </div>
 
                         <div class="tab-pane fade" id="new" role="tabpanel">
-                            <h5 class="card-title">Новое сообщение</h5>
+                            <h5 class="card-title">{% trans "Новое сообщение" %}</h5>
                             <form method="post" id="new_msg_form">
                                 {% csrf_token %}
                                 <div class="form-group form-search row form-recipients">
-                                    <label class="col-xs-12 col-md-1 form-control-label " for="new_recipients">Кому</label>
+                                    <label class="col-xs-12 col-md-1 form-control-label " for="new_recipients">{% trans "Кому" %}</label>
                                     <div class="controls col-xs-12 col-md-11" >
-                                        <input type="text" class="form-control typeahead" name="new_recipients" id="new_recipients" placeholder="Начните вводить имя" maxlength='25' >
+                                        <input type="text" class="form-control typeahead" name="new_recipients" id="new_recipients" placeholder="{% trans "Начните вводить имя" %}" maxlength='25' >
                                         {% if courses_teacher %}
-                                            <button type="button" class="btn-add" data-toggle="modal" data-target="#modal_add_group" id="add_group" title="Добавить курс или группу" style="position: absolute; top: 0; right: .9375rem;">
+                                            <button type="button" class="btn-add" data-toggle="modal" data-target="#modal_add_group" id="add_group" title="{% trans "Добавить курс или группу" %}" style="position: absolute; top: 0; right: .9375rem;">
                                                 <span style="font-weight: bold">+</span><span class="fa fa-users" aria-hidden="true"></span>
                                             </button>
                                         {% endif %}
@@ -107,20 +108,20 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label class="form-control-label col-xs-12 col-md-1" for="new_title">Тема</label>
+                                    <label class="form-control-label col-xs-12 col-md-1" for="new_title">{% trans "Тема" %}</label>
                                     <div class="controls col-xs-12 col-md-11">
                                         <input type="text" class="form-control" name="new_title" id="new_title" autocomplete="off" tabindex="2">
                                         <small class="text-help" ></small>
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label class="sr-only" for="new_text">Текст</label>
+                                    <label class="sr-only" for="new_text">{% trans "Текст" %}</label>
                                     <div class="controls col-xs-12 col-md-12">
                                         <textarea class="form-control" name="new_text" id="new_text"></textarea>
                                     </div>
                                 </div>
-                                <button type="button" class="btn btn-primary" id="btn_send_msg">Отправить</button>
-                                <button type="reset" class="btn btn-secondary" id="btn_send_cancel">Отмена</button>
+                                <button type="button" class="btn btn-primary" id="btn_send_msg">{% trans "Отправить" %}</button>
+                                <button type="reset" class="btn btn-secondary" id="btn_send_cancel">{% trans "Отмена" %}</button>
                             </form>
                         </div>
 
@@ -129,7 +130,7 @@
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                        <h4 class="modal-title">Добавить группу пользователей</h4>
+                                        <h4 class="modal-title">{% trans "Добавить группу пользователей" %}</h4>
                                     </div>
                                     <div class="modal-body" style="max-height: none;">
                                         <select id="modal_add_group_select" multiple>
@@ -143,8 +144,8 @@
                                         </select>
                                     </div>
                                     <div class="modal-footer">
-                                        <button class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
-                                        <button class="btn btn-primary" id="modal_add_group_ok" data-dismiss="modal">Добавить</button>
+                                        <button class="btn btn-secondary" data-dismiss="modal">{% trans "Закрыть" %}</button>
+                                        <button class="btn btn-primary" id="modal_add_group_ok" data-dismiss="modal">{% trans "Добавить" %}</button>
                                     </div>
                                 </div>
                             </div>
@@ -153,7 +154,7 @@
                         <div class="collapse" id="read" role="tabpanel">
                             <h5 class="card-title" style="overflow: hidden;text-overflow: ellipsis;">Title</h5>
                             <div class="loading" id="loading_info">
-                                <span class='fa fa-circle-o-notch fa-spin'></span>&nbsp;Загрузка...
+                                <span class='fa fa-circle-o-notch fa-spin'></span>&nbsp;{% trans "Загрузка..." %}
                             </div>
                             <div id="msg_info" class="collapse">
                                 <div class="mail-option" >
@@ -162,11 +163,11 @@
                                     </button>
 
                                     <button class="btn btn-secondary btn-sm  mail-replay" type="button">
-                                        Ответить
+                                        {% trans "Ответить" %}
                                     </button>
 
                                     <button class="btn btn-secondary btn-sm  mail-replay-all" type="button">
-                                        Ответить всем
+                                        {% trans "Ответить всем" %}
                                     </button>
 
                                     <button type="button" class="btn btn-sm btn-secondary mail-delete">
@@ -174,7 +175,7 @@
                                     </button>
 
                                     <button type="button" class="btn btn-sm btn-secondary mail-undelete">
-                                        Восстановить
+                                        {% trans "Восстановить" %}
                                     </button>
                                 </div>
                                 <div id="sender_info" style="margin-bottom: 0.5rem;margin-top: 6px;">
@@ -189,7 +190,7 @@
                                 <div style="position: relative">
                                     <div id="recipients_info">
                                         <div style="display: inline-block;width: 50px;margin-right: .5rem;">
-                                            <span class="text-muted">Кому:</span>
+                                            <span class="text-muted">{% trans "Кому:" %}</span>
                                         </div>
                                         <div id="recipients_users_info" style="display: inline">
 
@@ -212,9 +213,9 @@
             {#                    <input type="checkbox" class="mail-checkbox mail-group-checkbox">#}
             {#                </button>#}
             {#                <div class="dropdown-menu">#}
-            {#                    <a class="dropdown-item mail-group-all">Все</a>#}
-            {#                    <a class="dropdown-item mail-group-read">Прочитанные</a>#}
-            {#                    <a class="dropdown-item mail-group-unread">Непрочитанные</a>#}
+            {#                    <a class="dropdown-item mail-group-all">{% trans "Все" %}</a>#}
+            {#                    <a class="dropdown-item mail-group-read">{% trans "Прочитанные" %}</a>#}
+            {#                    <a class="dropdown-item mail-group-unread">{% trans "Непрочитанные" %}</a>#}
             {#                </div>#}
             {#            </div>#}
 
@@ -223,7 +224,7 @@
             </button>
 
             <button type="button" class="btn btn-sm btn-secondary mail-change-state" >
-                Отметить все как прочитанное
+                {% trans "Отметить все как прочитанное" %}
             </button>
 
             <button type="button" class="btn btn-sm btn-secondary mail-delete" style="display: none;">
@@ -231,7 +232,7 @@
             </button>
 
             <button type="button" class="btn btn-sm btn-secondary mail-undelete" style="display: none;">
-                Восстановить
+                {% trans "Восстановить" %}
             </button>
         </div>
     </div>

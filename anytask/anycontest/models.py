@@ -2,7 +2,7 @@
 
 from django.db import models
 from django.conf import settings
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 
 from django.contrib.auth.models import User
 from anycontest.common import FakeResponse, escape

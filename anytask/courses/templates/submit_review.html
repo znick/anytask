@@ -1,6 +1,7 @@
 {% extends "base.html" %}
+{% load i18n %}
 
-{% block title %}AnyTask. Отправка на проверку:  {{ task.course.year }} / {{ task.course.name }} / {{ task.title }}{% endblock %}
+{% block title %}{% trans "AnyTask. Отправка на проверку:" %}  {{ task.course.year }} / {{ task.course.name }} / {{ task.title }}{% endblock %}
 
 
 {% block content %}
@@ -13,13 +14,13 @@
         <div>
             <h3> Svn review </h3>
             <form class="navbar-form pull-left" id="svn_path_form">
-                Путь до задачи в svn-репозитарии:
+                {% trans "Путь до задачи в svn-репозитарии:" %}
                 <input type="text" id="svn_path" class="span5">
-                <button type="submit" id="submit_btn" class="btn" data-loading-text="Loading ...">Выбрать</button>
+                <button type="submit" id="submit_btn" class="btn" data-loading-text="Loading ...">{% trans "Выбрать" %}</button>
             </form>
             <br/><br/>
             <p>
-                Инструкция <a href="{{ STATIC_URL }}/HowtoPassTask.pdf">как сдавать задачи</a>.
+                {% trans "Инструкция " %}<a href="{{ STATIC_URL }}/HowtoPassTask.pdf">{% trans "как сдавать задачи" %}</a>.
             </p>
             <br/>
             <div id="review_submit_form">
@@ -35,7 +36,7 @@
                 <h3> Google review </h3>
                 <font color="red"> {{gr_error}} </font>
                 <div>
-                    Id issue на сайте https://codereview.appspot.com:
+                    {% trans "Id issue на сайте https://codereview.appspot.com:" %}
                     <input type="text" id="id_issue" name="id_issue" class="span5" value="{{id_issue_gr_review}}">
                 </div>
                 <br />
@@ -50,9 +51,9 @@
                 <font color="red"> {{pdf_error}} </font>
                 <div>
                     {% if pdf_info %}
-                        Вы загрузили файл <a href="{{pdf_info.url}}"> {{pdf_info.name}} </a> <br />
+                        {% trans "Вы загрузили файл " %}<a href="{{pdf_info.url}}"> {{pdf_info.name}} </a> <br />
                     {% endif %}
-                    Загрузите решение задачи:
+                    {% trans "Загрузите решение задачи:" %}
                     <div>
                       {{pdf_form}}
                     </div>
@@ -64,7 +65,7 @@
             {% endif %}
 
             <div class="span12" style="text-align: center;">
-                <button type="submit" id="submit_btn" class="btn btn-info" data-loading-text="Loading ...">Отправить на проверку</button>
+                <button type="submit" id="submit_btn" class="btn btn-info" data-loading-text="Loading ...">{% trans "Отправить на проверку" %}</button>
             </div>
         </form>
     </div>
@@ -91,7 +92,7 @@ $("#gr_review_form").submit(function() {
     var id_issue = $("#id_issue").val();
     if (isNaN(parseInt(id_issue)) || !$.isNumeric(id_issue))
     {
-        alert("Введите в поле google review число.");
+        alert("{% trans 'Введите в поле google review число.' %}");
         return false;    
     }
     else

@@ -1,3 +1,4 @@
+{% load i18n %}
 <script src="{{ STATIC_URL }}jquery.validate.min.js"></script>
 <script src="http://malsup.github.io/jquery.form.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.sticky/1.0.3/jquery.sticky.min.js"></script>
@@ -49,8 +50,8 @@
     var readmore_opts = {
         speed: 200,
         collapsedHeight: 100,
-        moreLink: '<small><a href="#">Развернуть <i class="fa fa-chevron-down"></a></small>',
-        lessLink: '<small><a href="#">Свернуть <i class="fa fa-chevron-up"></a></small>'
+        moreLink: '<small><a href="#">{% trans "Развернуть " %}<i class="fa fa-chevron-down"></a></small>',
+        lessLink: '<small><a href="#">{% trans "Свернуть " %}<i class="fa fa-chevron-up"></a></small>'
     };
 
     $(document).ready(function() {
@@ -125,7 +126,7 @@
             if (!modal_button_ok.data('exit_modal')) {
                 if (!modal_button_ok.data('btn_clicked')) {
                     if ($("#course_info_edit").data('changed'))
-                        if (confirm('Сохранить изменения?')) {
+                        if (confirm('{% trans "Сохранить изменения?" %}')) {
                             modal_button_ok.click();
                             e.preventDefault();
                         }
@@ -147,7 +148,7 @@
             var d = 'disabled';
 
             modal_button_ok.data('resetText', modal_button_ok.html());
-            modal_button_ok.html("<span class='fa fa-circle-o-notch fa-spin fa-fw'></span> Сохранение");
+            modal_button_ok.html("<span class='fa fa-circle-o-notch fa-spin fa-fw'></span> {% trans 'Сохранение' %}");
             modal_button_ok.addClass(d).attr(d, d).prop(d, true);
             modal_button_ok.data('btn_clicked', true);
 
@@ -166,9 +167,9 @@
                     })
                     .done(function (data) {
                         if (data.info)
-                            $('#edit_course_info_btn').text('Редактировать информацию о курсе');
+                            $('#edit_course_info_btn').text('{% trans "Редактировать информацию о курсе" %}');
                         else
-                            $('#edit_course_info_btn').text('Добавить информацию о курсе');
+                            $('#edit_course_info_btn').text('{% trans "Добавить информацию о курсе" %}');
 
                         $('#course-information').html(data.info).readmore('destroy').readmore('destroy').readmore(readmore_opts);
                         modal_button_ok.data('exit_modal', true);
@@ -200,7 +201,7 @@
                 buttons: [
                     {
                         extend: 'copy',
-                        text: 'Скопировать',
+                        text: '{% trans "Скопировать" %}',
                         exportOptions: {
                             columns: function (idx, data, node) {
                                 return $.inArray('', data) === -1;
@@ -217,32 +218,32 @@
                     }],
                 language: {
                     "decimal":        "",
-                    "emptyTable":     "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Пустая таблица",
-                    "info":           "_TOTAL_ студента(ов)",
-                    "infoEmpty":      "0 студентов",
-                    "infoFiltered":   "(из _MAX_)",
+                    "emptyTable":     "{% trans '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Пустая таблица' %}",
+                    "info":           "{% trans '_TOTAL_ студента(ов)' %}",
+                    "infoEmpty":      "{% trans '0 студентов' %}",
+                    "infoFiltered":   "{% trans '(из _MAX_)' %}",
                     "infoPostFix":    "",
                     "thousands":      ",",
-                    "lengthMenu":     "Показать _MENU_ студентов",
-                    "loadingRecords": "Загрузка...",
-                    "processing":     "Вычисление...",
-                    "search":         "Поиск:",
-                    "zeroRecords":    "Ничего не найдено",
+                    "lengthMenu":     "{% trans 'Показать _MENU_ студентов' %}",
+                    "loadingRecords": "{% trans 'Загрузка...' %}",
+                    "processing":     "{% trans 'Вычисление...' %}",
+                    "search":         "{% trans 'Поиск:' %}",
+                    "zeroRecords":    "{% trans 'Ничего не найдено' %}",
                     "paginate": {
-                        "first":      "Первая",
-                        "last":       "Последняя",
-                        "next":       "Вперед",
-                        "previous":   "Назад"
+                        "first":      "{% trans 'Первая' %}",
+                        "last":       "{% trans 'Последняя' %}",
+                        "next":       "{% trans 'Вперед' %}",
+                        "previous":   "{% trans 'Назад' %}"
                     },
                     "aria": {
                         "sortAscending":  ": activate to sort column ascending",
                         "sortDescending": ": activate to sort column descending"
                     },
                     buttons: {
-                        copyTitle: 'Данные скопированы в буфер обмена',
+                        copyTitle: '{% trans "Данные скопированы в буфер обмена" %}',
                         copySuccess: {
-                            _: '%d записей из таблицы',
-                            1: '1 запись из таблицы'
+                            _: '%d {% trans "записей из таблицы" %}',
+                            1: '{% trans "1 запись из таблицы" %}'
                         }
                     }
                 },
@@ -533,7 +534,7 @@
                 }
                 return '<form action""><ul>' + group_ul + '</ul></form>';
             },
-            title: "Удалить задачу из следующих групп?",
+            title: "{% trans 'Удалить задачу из следующих групп?' %}",
             template: '<div class="popover" role="tooltip">' +
             '<div class="popover-arrow"></div>' +
             '<h3 class="popover-title"></h3>' +
@@ -574,7 +575,7 @@
 
             var confirmed_delete = true;
             if (remaining_groups_ids.length == 0)
-                if (!confirm('Удаленную задачу невозможно восстановить. Вы уверены, что хотить удалить?'))
+                if (!confirm('{% trans "Удаленную задачу невозможно восстановить. Вы уверены, что хотить удалить?" %}'))
                     confirmed_delete = false;
             if (confirmed_delete) {
                 var group = $('.group-sortable');
@@ -623,7 +624,7 @@
             var modal_button_ok = $('#modal_table_edit_ok');
             var div_group_id = $(modal_button_ok.data('div_group_id'));
             if ((group.data('changed') || !$.isEmptyObject(group.data('deleting_id_in_other_groups'))) && !modal_button_ok.data('btn_clicked'))
-                if (confirm('Сохранить изменения?')) {
+                if (confirm('{% trans "Сохранить изменения" %}?')) {
                     modal_button_ok.click();
                 }
                 else {
@@ -720,7 +721,7 @@
             Prism.highlightElement(codesample);
 
         if (deadline != ''){
-            $('#modal_header_deadline_time').html('<strong>Дата сдачи: ' + deadline + ' MSK UTC+3</strong>');
+            $('#modal_header_deadline_time').html('<strong>{% trans "Дата сдачи:" %} ' + deadline + ' MSK UTC+3</strong>');
         }
         else {
             $('#modal_header_deadline_time').empty();

@@ -8,7 +8,7 @@ from django.db import models
 from django.dispatch import receiver
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 from django import forms
 from issues.model_issue_field import IssueField

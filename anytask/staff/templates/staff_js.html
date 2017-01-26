@@ -1,3 +1,4 @@
+{% load i18n %}
 <script type="text/javascript" src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap4.min.js"></script>
 <script type="text/javascript"
@@ -35,8 +36,8 @@
             },
             selectAllJustVisible: false,
             enableCaseInsensitiveFiltering: true,
-            selectAllText: 'Все статусы',
-            allSelectedText: 'Все статусы',
+            selectAllText: '{% trans "Все статусы" %}',
+            allSelectedText: '{% trans "Все статусы" %}',
             maxHeight: 200,
             buttonContainer: '<div style="width:100%;" class="multiselect-dropdown"/>',
             buttonWidth: '100%',
@@ -45,10 +46,10 @@
             },
             buttonText: function (options, select) {
                 if (options.length === 0) {
-                    return 'Не выбрано ни одного статуса';
+                    return '{% trans "Не выбрано ни одного статуса" %}';
                 }
                 else if (options.length === $('option', select).length) {
-                    return 'Все статусы';
+                    return '{% trans "Все статусы" %}';
                 }
                 else {
                     var labels = [];
@@ -103,7 +104,7 @@
                 buttons: [
                     {
                         extend: 'copy',
-                        text: 'Скопировать',
+                        text: '{% trans "Скопировать" %}',
                         exportOptions: {
                             columns: function (idx, data, node) {
                                 return $.inArray('', data) === -1;
@@ -120,32 +121,32 @@
                     }],
                 language: {
                     "decimal": "",
-                    "emptyTable": "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Пустая таблица",
-                    "info": "_TOTAL_ студента(ов)",
-                    "infoEmpty": "0 студентов",
-                    "infoFiltered": "(из _MAX_)",
+                    "emptyTable": "{% trans '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Пустая таблица' %}",
+                    "info": "{% trans '_TOTAL_ студента(ов)' %}",
+                    "infoEmpty": "{% trans '0 студентов' %}",
+                    "infoFiltered": "{% trans '(из _MAX_)' %}",
                     "infoPostFix": "",
                     "thousands": ",",
-                    "lengthMenu": "Показать _MENU_ студентов",
-                    "loadingRecords": "Загрузка...",
-                    "processing": "Вычисление...",
-                    "search": "Поиск:",
-                    "zeroRecords": "Ничего не найдено",
+                    "lengthMenu": "{% trans 'Показать _MENU_ студентов' %}",
+                    "loadingRecords": "{% trans 'Загрузка...' %}",
+                    "processing": "{% trans 'Вычисление...' %}",
+                    "search": "{% trans 'Поиск:' %}",
+                    "zeroRecords": "{% trans 'Ничего не найдено' %}",
                     "paginate": {
-                        "first": "Первая",
-                        "last": "Последняя",
-                        "next": "Вперед",
-                        "previous": "Назад"
+                        "first": "{% trans 'Первая' %}",
+                        "last": "{% trans 'Последняя' %}",
+                        "next": "{% trans 'Вперед' %}",
+                        "previous": "{% trans 'Назад' %}"
                     },
                     "aria": {
                         "sortAscending": ": activate to sort column ascending",
                         "sortDescending": ": activate to sort column descending"
                     },
                     buttons: {
-                        copyTitle: 'Данные скопированы в буфер обмена',
+                        copyTitle: '{% trans "Данные скопированы в буфер обмена" %}',
                         copySuccess: {
-                            _: '%d записей из таблицы',
-                            1: '1 запись из таблицы'
+                            _: '%d {% trans "записей из таблицы" %}',
+                            1: '{% trans "1 запись из таблицы" %}'
                         }
                     }
                 }

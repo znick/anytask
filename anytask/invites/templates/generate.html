@@ -1,6 +1,7 @@
 {% extends "base.html" %}
+{% load i18n %}
 
-{% block title %}Создание инвайтов{% endblock %}
+{% block title %}{% trans "Создание инвайтов" %}{% endblock %}
 
 {% block scripts %}
     <script src="{{ STATIC_URL }}jquery.validate.min.js"></script>
@@ -37,12 +38,12 @@
 
                         messages: {
                             number_of_invites: {
-                                required: "Необходимо указать, какое число инвайтов вы хотите сгенерировать",
-                                range : "Число инвайтов должно быть больше 0 и меньше 50",
-                                digits : "Количество инвайтов должно быть целым числом"
+                                required: "{% trans "Необходимо указать, какое число инвайтов вы хотите сгенерировать" %}",
+                                range : "{% trans "Число инвайтов должно быть больше 0 и меньше 50" %}",
+                                digits : "{% trans "Количество инвайтов должно быть целым числом" %}"
                             },
                             group_id: {
-                                required: "Необходимо указать группу",
+                                required: "{% trans "Необходимо указать группу" %}",
                             },
                         },
 
@@ -58,18 +59,18 @@
 {% block content %}
 
     <div class="card card-block" >
-        <h5 class="card-title">Создание инвайтов</h5>
+        <h5 class="card-title">{% trans "Создание инвайтов" %}</h5>
         <form action="{% url invites.views.generate_invites %}" method="post" id="invites-form">
             {% csrf_token %}
             <div class="form-group row" style="display: none;"i>
-                <label class="form-control-label col-sm-3" for="number_of_invites">Количество инвайтов</label>
+                <label class="form-control-label col-sm-3" for="number_of_invites">{% trans "Количество инвайтов" %}</label>
                 <div class="controls col-sm-3">
                     <input class="form-control" type="text" value="1" name="number_of_invites" class="input-sm" id="number_of_invites">
                     <small class="text-help" id="error_text"></small>
                 </div>
             </div>
             <div class="form-group row" id="group_options">
-                <label for="groups" class="col-sm-3">Группа, для которой создаем инвайт</label>
+                <label for="groups" class="col-sm-3">{% trans "Группа, для которой создаем инвайт" %}</label>
                 <div class="controls col-sm-3">
                     <select id="groups" name="group_id" class="form-control">
                         {% for group in groups %}
@@ -81,11 +82,13 @@
             </div>
             <div class="form-group row">
                 <div class="col-sm-offset-3 col-sm-3">
-                    <button type="submit" class="btn btn-secondary">Создать</button>
+                    <button type="submit" class="btn btn-secondary">{% trans "Создать" %}</button>
                 </div>
             </div>
         </form>
+        {%  blocktrans %}
         <p class="help-block">Если необходимой группы нет в списке, обратитесь к <a href="mailto:anytask@yandex.ru">администратору</a>.</p>
+        {%  endblocktrans %}
     </div>
 
 {% endblock %}

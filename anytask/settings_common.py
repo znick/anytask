@@ -28,6 +28,9 @@ TIME_ZONE = 'Europe/Moscow'
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = 'ru-RU'
+LANGUAGES = (('ru', u'Русский'),
+             ('en', 'English'))
+LOCALE_PATHS = (os.path.join(PROJECT_PATH, 'locale'))
 
 SITE_ID = 1
 
@@ -98,6 +101,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.locale.LocaleMiddleware'
 )
 
 ROOT_URLCONF = 'anytask.urls'

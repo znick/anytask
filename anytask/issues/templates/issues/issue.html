@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load i18n %}
 {% load django_bootstrap_breadcrumbs %}
 
 {% block scripts %}
@@ -22,11 +23,11 @@
 {% block navbar %}
     <ul class="nav navbar-nav">
         <li class="nav-item">
-            <a class="nav-link" href="{{ course.get_absolute_url }}">Список задач</a>
+            <a class="nav-link" href="{{ course.get_absolute_url }}">{% trans "Список задач" %}</a>
         </li>
         {% if visible_queue %}
             <li class="nav-item">
-                <a class="nav-link" href="{{ course.get_absolute_url }}/queue">Очередь на проверку</a>
+                <a class="nav-link" href="{{ course.get_absolute_url }}/queue">{% trans "Очередь на проверку" %}</a>
             </li>
         {% endif %}
     </ul>
@@ -36,8 +37,9 @@
     {{ block.super }}
     {% if issue.task.contest_integrated and issue.task.course.send_to_contest_from_users and not issue.student.get_profile.ya_contest_oauth and user.id == issue.student.id %}
         <div class="alert alert-info">
-            <strong>Отправляйте в Я.Контест от своего Яндекс аккаунта! </strong>Чтобы сдавать данную задачу вам нужно привязать к своему <a
-                href="{% url users.views.profile %}">профилю </a> Я.Контест.
+            <strong>{%  trans 'Отправляйте в Я.Контест от своего Яндекс аккаунта!' %}</strong>
+            {%  trans 'Чтобы сдавать данную задачу вам нужно привязать к своему' %}
+                <a href="{% url users.views.profile %}">{%  trans 'профилю' %} </a> {%  trans 'Я.Контест.' %}
         </div>
     {% else %}
         <div class="row">
