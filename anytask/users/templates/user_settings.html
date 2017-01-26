@@ -49,7 +49,7 @@
             <a class="nav-link" href="{% url users.views.user_courses username=user %}">{% trans "Мои курсы" %}</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link active" href="">{% trans "{% trans "Настройки" %}" %}</a>
+            <a class="nav-link active" href="">{% trans "Настройки" %}</a>
         </li>
     </ul>
 {% endblock navbar %}
@@ -59,7 +59,7 @@
         <div class="col-md-5 col-xs-12">
             <div class="card">
                 <div class="card-block">
-                    <h5 class="card-title">Настройки</h5>
+                    <h5 class="card-title">{% trans "Настройки" %}</h5>
                     <form method="post" id="user_settings">
                         {% csrf_token %}
                         <div class="form-check">

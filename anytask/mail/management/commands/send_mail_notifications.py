@@ -34,8 +34,8 @@ class Command(BaseCommand):
             plain_text = _(u'Здравствуйте, {0}.\n\n') + \
                          _(u'У вас {1} {2}.\n') + \
                          _(u'Посмотреть сообщения:\n') + \
-                         _(u'{3}\n\n') + \
-                         _(u'-- \n') + \
+                         u'{3}\n\n' + \
+                         u'-- \n' + \
                          _(u'С уважением,\n') + \
                          _(u'команда Anytask.')
             plain_text = plain_text.format(user.first_name, unread_count, unread_count_string, mail_url)

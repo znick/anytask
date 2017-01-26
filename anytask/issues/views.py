@@ -87,7 +87,8 @@ def contest_rejudge(issue):
         if issue.status_field.tag != IssueStatus.STATUS_ACCEPTED:
             issue.set_status_by_tag(IssueStatus.STATUS_AUTO_VERIFICATION)
     else:
-        event.value = _(u"<p>Ошибка отправки в Я.Контест ('%s').</p>") % str(contest_submission.send_error)
+        event.value = _(u"<p>Ошибка отправки в Я.Контест('{0}').</p>").format(
+            contest_submission.send_error)
         issue.followers.add(User.objects.get(username='anytask.monitoring'))
 
     if issue.task.rb_integrated and issue.task.course.send_rb_and_contest_together:

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-26 13:57+0500\n"
+"POT-Creation-Date: 2017-01-26 14:39+0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -598,6 +598,7 @@ msgstr ""
 #: courses/templates/courses/settings.html:8
 #: courses/templates/courses/settings.html:38 users/templates/my_tasks.html:102
 #: users/templates/status_history.html:38 users/templates/user_profile.html:26
+#: users/templates/user_settings.html:52 users/templates/user_settings.html:62
 msgid "Настройки"
 msgstr ""
 
@@ -1050,7 +1051,7 @@ msgstr ""
 msgid "<p>Ошибка отправки в Я.Контест('%s').</p>"
 msgstr ""
 
-#: issues/models.py:297 issues/views.py:103
+#: issues/models.py:297 issues/views.py:104
 msgid "<p>Ошибка отправки в Review Board.</p>"
 msgstr ""
 
@@ -1083,8 +1084,8 @@ msgid "Любая"
 msgstr ""
 
 #: issues/views.py:90
-#, python-format
-msgid "<p>Ошибка отправки в Я.Контест ('%s').</p>"
+#, python-brace-format
+msgid "<p>Ошибка отправки в Я.Контест('{0}').</p>"
 msgstr ""
 
 #: issues/management/commands/send_notifications.py:29
@@ -1262,17 +1263,6 @@ msgstr ""
 msgid "Посмотреть сообщения:\n"
 msgstr ""
 
-#: mail/management/commands/send_mail_notifications.py:37
-#, python-brace-format
-msgid ""
-"{3}\n"
-"\n"
-msgstr ""
-
-#: mail/management/commands/send_mail_notifications.py:38
-msgid "-- \n"
-msgstr ""
-
 #: mail/management/commands/send_mail_notifications.py:39
 msgid "С уважением,\n"
 msgstr ""
@@ -1295,7 +1285,7 @@ msgid "новых сообщения"
 msgstr ""
 
 #: mail/templates/email_notification_mail.html:40
-msgid "У вас "
+msgid "У вас {{ unread_count }} {{ unread_count_string }}."
 msgstr ""
 
 #: mail/templates/email_notification_mail.html:49
@@ -1307,7 +1297,8 @@ msgid "Написать"
 msgstr ""
 
 #: mail/templates/mail.html:21 mail/templates/mail.html.py:40
-#: mail/templates/mail_js.html:395
+#: mail/templates/mail_js.html:196 mail/templates/mail_js.html.py:201
+#: mail/templates/mail_js.html:395 mail/templates/mail_js.html.py:404
 msgid "Входящие"
 msgstr ""
 
@@ -1398,14 +1389,6 @@ msgstr ""
 #: mail/templates/mail_js.html:159 mail/templates/mail_js.html.py:365
 #: mail/templates/mail_js.html:384
 msgid "Отметить как прочитанное"
-msgstr ""
-
-#: mail/templates/mail_js.html:196 staff/templates/gradebook.html:21
-#: tasks/templates/task_import_js.html:190
-#: templates/registration/password_reset_done.html:4
-#: users/templates/user_settings.html:52
-#, python-format
-msgid "{%% trans "
 msgstr ""
 
 #: mail/templates/mail_js.html:262
@@ -1499,7 +1482,8 @@ msgstr ""
 msgid "Фильтры по статусам"
 msgstr ""
 
-#: staff/templates/get_gradebook.html:20 staff/templates/staff.html:26
+#: staff/templates/get_gradebook.html:20 staff/templates/gradebook.html:21
+#: staff/templates/gradebook.html.py:38 staff/templates/staff.html:26
 msgid "Общая ведомость"
 msgstr ""
 
@@ -1730,6 +1714,8 @@ msgid "Необходимо указать номер контеста"
 msgstr ""
 
 #: tasks/templates/task_create_or_edit_js.html:250
+#: tasks/templates/task_import_js.html:190
+#: tasks/templates/task_import_js.html:191
 msgid "Номер контеста должен натуральным числом"
 msgstr ""
 
@@ -1988,6 +1974,8 @@ msgid ""
 msgstr ""
 
 #: templates/registration/password_reset_complete.html:4
+#: templates/registration/password_reset_done.html:4
+#: templates/registration/password_reset_done.html:6
 msgid "Пароль успешно восстановлен"
 msgstr ""
 

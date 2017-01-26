@@ -193,12 +193,12 @@
                         if (parseInt(data.unread_count, 10) == 0) {
                             $("#inbox_count").html("").hide();
                             $("#top_notify_count").html("").hide();
-                            title_inbox = "{% trans "{% trans "Входящие" %}" %}"
+                            title_inbox = "{% trans "Входящие" %}"
                         }
                         else {
                             $("#inbox_count").html(data.unread_count).show();
                             $("#top_notify_count").html(data.unread_count).show();
-                            title_inbox = "(" + data.unread_count + ") Входящие"
+                            title_inbox = "(" + data.unread_count + ") {% trans "Входящие" %}"
                         }
                         if ($("#msg_info").data("mailbox") == "inbox") {
                             $(document).prop('title', title_inbox)
@@ -401,7 +401,7 @@
                     else {
                         $("#inbox_count").html(json.unread_count).show();
                         $("#top_notify_count").html(json.unread_count).show();
-                        title_inbox = "(" + json.unread_count + ") Входящие"
+                        title_inbox = "(" + json.unread_count + ") {% trans "Входящие" %}"
                     }
 
                     if (json.type == "inbox") {
