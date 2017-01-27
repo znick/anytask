@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-27 12:30+0500\n"
+"POT-Creation-Date: 2017-01-27 16:47+0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,71 +17,60 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: anycontest/models.py:171
-msgid "<p>Вердикт Я.Контест: ok</p>"
-msgstr ""
-
-#: anycontest/models.py:177
-msgid "<p>Вердикт Я.Контест: precompile-check-failed</p><pre>"
-msgstr ""
-
-#: anycontest/models.py:182
-msgid "<p>Вердикт Я.Контест: "
+#: anycontest/models.py:171 anycontest/models.py:177 anycontest/models.py:182
+msgid "Вердикт Я.Контест"
 msgstr ""
 
 #: anycontest/models.py:189
-msgid "<p><u>Ресурсы</u> "
+msgid "Ресурсы"
 msgstr ""
 
 #: anycontest/models.py:192
-msgid "<p><u>Ввод</u></p><p>"
+msgid "Ввод"
 msgstr ""
 
 #: anycontest/models.py:198
-msgid "<p><u>Вывод программы</u></p><p>"
+msgid "Вывод программы"
 msgstr ""
 
 #: anycontest/models.py:204
-msgid "<p><u>Правильный ответ</u></p><p>"
+msgid "Правильный ответ"
 msgstr ""
 
 #: anycontest/models.py:218
-msgid "<p><u>Сообщение чекера</u></p><p>"
+msgid "Сообщение чекера"
 msgstr ""
 
 #: anycontest/models.py:224
-msgid "<p><u>Тест "
+msgid "Тест"
 msgstr ""
 
-#: anycontest/management/commands/check_contest.py:38
+#: anycontest/management/commands/check_contest.py:38 issues/models.py:298
 msgid "Ошибка отправки в Review Board."
 msgstr ""
 
-#: anyrb/common.py:82
-#, python-brace-format
-msgid "Задача: \"{0}\", "
+#: anyrb/common.py:82 courses/templates/courses/queue.html:69
+#: issues/models.py:471 users/templates/my_tasks.html:136
+msgid "Задача"
 msgstr ""
 
 #: anyrb/common.py:83
-#, python-brace-format
-msgid "курс: [{1}](http://{2}{3})\n"
+msgid "курс"
 msgstr ""
 
-#: anyrb/common.py:84
-#, python-brace-format
-msgid "Студент: [{4}](http://{2}{5})\n"
+#: anyrb/common.py:84 courses/templates/courses/queue.html:68
+#: courses/templates/courses/tasklist/many_tasksets_many_groups.html:35
+#: courses/templates/courses/tasklist/shad_cpp.html:137
+#: staff/templates/gradebook.html:43
+msgid "Студент"
 msgstr ""
 
 #: anyrb/common.py:85
-#, python-brace-format
-msgid "[Обсуждение задачи](http://{2}{6})"
+msgid "Обсуждение задачи"
 msgstr ""
 
-#: anyrb/views.py:27
-#, python-brace-format
-msgid ""
-"<p><strong>Добавлен новый комментарий в <a href=\"{1}/r/{0}\">Review request "
-"{0}</a></strong>.</p>"
+#: anyrb/views.py:28
+msgid "Добавлен новый комментарий в"
 msgstr ""
 
 #: blog/templates/blog.html:4 blog/templates/blog.html.py:9
@@ -134,13 +123,8 @@ msgstr ""
 msgid "%s - слушатели"
 msgstr ""
 
-#: courses/views.py:100 users/views.py:400
-msgid ""
-"<div class=\"form-group row\">\n"
-"                                           <button id=\"button_filter\" "
-"class=\"btn btn-secondary pull-xs-right\" type=\"submit\">Применить</"
-"button>\n"
-"                                         </div>"
+#: courses/views.py:102 staff/views.py:44 users/views.py:402
+msgid "Применить"
 msgstr ""
 
 #: courses/views.py:632 courses/views.py:644 tasks/views.py:314
@@ -440,7 +424,7 @@ msgstr ""
 
 #: courses/templates/course_tasks_potok.html:36
 #: courses/templates/courses/course.html:60
-#: courses/templates/courses/settings.html:119
+#: courses/templates/courses/settings.html:119 users/models.py:171
 msgid "Преподаватели"
 msgstr ""
 
@@ -653,7 +637,8 @@ msgid "Скопировать"
 msgstr ""
 
 #: courses/templates/courses/course_js.html:221
-msgid "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Пустая таблица"
+#: staff/templates/staff_js.html:124
+msgid "Пустая таблица"
 msgstr ""
 
 #: courses/templates/courses/course_js.html:222
@@ -754,17 +739,6 @@ msgstr ""
 msgid "Дата сдачи:"
 msgstr ""
 
-#: courses/templates/courses/queue.html:68
-#: courses/templates/courses/tasklist/many_tasksets_many_groups.html:35
-#: courses/templates/courses/tasklist/shad_cpp.html:137
-#: staff/templates/gradebook.html:43
-msgid "Студент"
-msgstr ""
-
-#: courses/templates/courses/queue.html:69 users/templates/my_tasks.html:136
-msgid "Задача"
-msgstr ""
-
 #: courses/templates/courses/queue.html:70 users/templates/my_tasks.html:139
 msgid "Обновлена"
 msgstr ""
@@ -773,7 +747,7 @@ msgstr ""
 msgid "Оценка"
 msgstr ""
 
-#: courses/templates/courses/queue.html:72
+#: courses/templates/courses/queue.html:72 issues/models.py:469
 msgid "Ответственный"
 msgstr ""
 
@@ -891,7 +865,7 @@ msgstr ""
 msgid "Произошла ошибка при получении данных."
 msgstr ""
 
-#: courses/templates/courses/task.html:30 users/templates/user_profile.html:436
+#: courses/templates/courses/task.html:30 users/templates/user_profile.html:432
 msgid "Произошла ошибка. Попробуйте еще раз."
 msgstr ""
 
@@ -902,21 +876,21 @@ msgstr ""
 #: tasks/templates/task_create_or_edit_js.html:193
 #: tasks/templates/task_edit.html:74 tasks/templates/task_edit.html.py:83
 #: users/templates/status_history.html:158
-#: users/templates/user_profile.html:416 users/templates/user_profile.html:440
-#: users/templates/user_profile.html:465 users/templates/user_settings.html:13
+#: users/templates/user_profile.html:412 users/templates/user_profile.html:436
+#: users/templates/user_profile.html:461 users/templates/user_settings.html:13
 #: users/templates/user_settings.html:21
 msgid "Закрыть"
 msgstr ""
 
-#: courses/templates/courses/task.html:35 users/templates/user_profile.html:417
-#: users/templates/user_profile.html:441
+#: courses/templates/courses/task.html:35 users/templates/user_profile.html:413
+#: users/templates/user_profile.html:437
 msgid "Сохранение..."
 msgstr ""
 
 #: courses/templates/courses/task.html:35
 #: courses/templates/courses/tasklist/shad_cpp.html:303
 #: users/templates/status_history.html:160
-#: users/templates/user_profile.html:417 users/templates/user_profile.html:441
+#: users/templates/user_profile.html:413 users/templates/user_profile.html:437
 #: users/templates/user_settings.html:78
 msgid "Сохранить"
 msgstr ""
@@ -967,12 +941,10 @@ msgstr ""
 msgid "Создать"
 msgstr ""
 
-#: invites/templates/generate.html:89
+#: invites/templates/generate.html:91
 msgid ""
-"\n"
-"        <p class=\"help-block\">Если необходимой группы нет в списке, "
-"обратитесь к <a href=\"mailto:anytask@yandex.ru\">администратору</a>.</p>\n"
-"        "
+"Если необходимой группы нет в списке, обратитесь к <a href=\"mailto:"
+"anytask@yandex.ru\">администратору</a>."
 msgstr ""
 
 #: invites/templates/generate_forbidden.html:4
@@ -999,8 +971,8 @@ msgstr ""
 msgid "Действителен до "
 msgstr ""
 
-#: issues/admin.py:23 issues/templates/issues/info.html:63
-#: staff/templates/staff.html:59 users/admin.py:20
+#: issues/admin.py:23 issues/models.py:467 issues/templates/issues/info.html:63
+#: staff/templates/staff.html:59 users/admin.py:20 users/models.py:172
 #: users/templates/my_tasks.html:140
 msgid "Статус"
 msgstr ""
@@ -1022,74 +994,63 @@ msgid "На автоматической проверке"
 msgstr ""
 
 #: issues/models.py:279 issues/views.py:86
-msgid "<p>Отправлено на проверку в Я.Контест</p>"
+msgid "Отправлено на проверку в Я.Контест"
 msgstr ""
 
 #: issues/models.py:283
-#, python-format
-msgid "<p>Ошибка отправки в Я.Контест('%s').</p>"
+msgid "Ошибка отправки в Я.Контест."
 msgstr ""
 
-#: issues/models.py:297 issues/views.py:104
-msgid "<p>Ошибка отправки в Review Board.</p>"
-msgstr ""
-
-#: issues/models.py:466 users/models.py:172
-msgid "<strong>Статус</strong>"
-msgstr ""
-
-#: issues/models.py:467 users/models.py:173
-msgid "<strong>Дата последнего изменения</strong>"
-msgstr ""
-
-#: issues/models.py:468
-msgid "<strong>Ответственный</strong>"
-msgstr ""
-
-#: issues/models.py:469
-msgid "<strong>Наблюдатели</strong>"
+#: issues/models.py:468 users/models.py:173
+msgid "Дата последнего изменения"
 msgstr ""
 
 #: issues/models.py:470
-msgid "<strong>Задача</strong>"
+msgid "Наблюдатели"
 msgstr ""
 
-#: issues/models.py:474 users/models.py:156 users/models.py:193
+#: issues/models.py:475 users/models.py:156 users/models.py:193
 msgid "Любой"
 msgstr ""
 
-#: issues/models.py:481
+#: issues/models.py:482
 msgid "Любая"
 msgstr ""
 
-#: issues/views.py:90
-#, python-brace-format
-msgid "<p>Ошибка отправки в Я.Контест('{0}').</p>"
+#: issues/views.py:91
+msgid "Ошибка отправки в Я.Контест"
+msgstr ""
+
+#: issues/views.py:104
+msgid "Ошибка отправки в Review Board"
 msgstr ""
 
 #: issues/management/commands/send_notifications.py:29
+#: mail/management/commands/send_mail_notifications.py:34
 #: tasks/management/commands/send_deadline_notifications.py:28
 #, python-brace-format
-msgid "<p>Здравствуйте, {0}.<br></p>"
+msgid "Здравствуйте, {0}."
 msgstr ""
 
 #: issues/management/commands/send_notifications.py:30
 #, python-brace-format
-msgid "<p>В задаче {1}, в который вы являетесь <strong>{2}</strong>, "
+msgid "В задаче {1}, в который вы являетесь "
 msgstr ""
 
 #: issues/management/commands/send_notifications.py:31
-msgid "появились новые комментарии: <br></p>"
+msgid "появились новые комментарии: "
 msgstr ""
 
 #: issues/management/commands/send_notifications.py:53
+#: mail/management/commands/send_mail_notifications.py:39
 #: tasks/management/commands/send_deadline_notifications.py:50
-msgid "С уважением,<br>"
+msgid "С уважением,"
 msgstr ""
 
 #: issues/management/commands/send_notifications.py:54
+#: mail/management/commands/send_mail_notifications.py:40
 #: tasks/management/commands/send_deadline_notifications.py:51
-msgid "команда Anytask.<br>"
+msgid "команда Anytask."
 msgstr ""
 
 #: issues/management/commands/send_notifications.py:57
@@ -1118,22 +1079,22 @@ msgstr ""
 msgid "Выберите файл"
 msgstr ""
 
-#: issues/templates/issues/history.html:140
+#: issues/templates/issues/history.html:31
 msgid "Предыдущие сообщения"
 msgstr ""
 
-#: issues/templates/issues/history.html:146
-#: issues/templates/issues/history.html:157
+#: issues/templates/issues/history.html:37
+#: issues/templates/issues/history.html:48
 msgid "Срок сдачи задания истек!"
 msgstr ""
 
-#: issues/templates/issues/history.html:146
-#: issues/templates/issues/history.html:157
+#: issues/templates/issues/history.html:37
+#: issues/templates/issues/history.html:48
 msgid "Все сообщения, отправленные студентом позже срока сдачи, будут"
 msgstr ""
 
-#: issues/templates/issues/history.html:147
-#: issues/templates/issues/history.html:158
+#: issues/templates/issues/history.html:38
+#: issues/templates/issues/history.html:49
 msgid "выделяться красным цветом."
 msgstr ""
 
@@ -1230,28 +1191,13 @@ msgstr ""
 msgid "{0}, у вас есть новые сообщения"
 msgstr ""
 
-#: mail/management/commands/send_mail_notifications.py:34
-#, python-brace-format
-msgid ""
-"Здравствуйте, {0}.\n"
-"\n"
-msgstr ""
-
 #: mail/management/commands/send_mail_notifications.py:35
 #, python-brace-format
-msgid "У вас {1} {2}.\n"
+msgid "У вас {1} {2}."
 msgstr ""
 
 #: mail/management/commands/send_mail_notifications.py:36
-msgid "Посмотреть сообщения:\n"
-msgstr ""
-
-#: mail/management/commands/send_mail_notifications.py:39
-msgid "С уважением,\n"
-msgstr ""
-
-#: mail/management/commands/send_mail_notifications.py:40
-msgid "команда Anytask."
+msgid "Посмотреть сообщения:"
 msgstr ""
 
 #: mail/management/commands/send_mail_notifications.py:62
@@ -1382,7 +1328,7 @@ msgstr ""
 msgid "Скрыть цитирование"
 msgstr ""
 
-#: mail/templates/mail_js.html:513 search/templates/search.html:109
+#: mail/templates/mail_js.html:513 search/templates/search.html:105
 #: templates/base.html:102
 msgid "Логины"
 msgstr ""
@@ -1404,9 +1350,9 @@ msgid "Необходимо указать тему"
 msgstr ""
 
 #: schools/templates/archive_page.html:4 schools/templates/school_page.html:22
-#: search/templates/search.html:147 users/models.py:195
-#: users/templates/user_profile.html:208 users/templates/user_profile.html:281
-#: users/templates/user_profile.html:315
+#: search/templates/search.html:143 users/models.py:195
+#: users/templates/user_profile.html:204 users/templates/user_profile.html:277
+#: users/templates/user_profile.html:311
 msgid "Архив"
 msgstr ""
 
@@ -1414,7 +1360,7 @@ msgstr ""
 msgid "Активные курсы"
 msgstr ""
 
-#: search/templates/search.html:4
+#: search/templates/search.html:4 search/templates/search.html.py:48
 msgid "Результаты поиска"
 msgstr ""
 
@@ -1425,39 +1371,26 @@ msgstr ""
 #: search/templates/search.html:64
 #, python-format
 msgid ""
-"\n"
-"                        По запросу %(query)s найдено "
-"%(user_profiles|length)s пользов(ей) и %(courses|length)s курса(ов).\n"
-"                        "
+"По запросу %(query)s найдено %(user_profiles|length)s пользов(ей) и "
+"%(courses|length)s курса(ов)."
 msgstr ""
 
-#: search/templates/search.html:68
+#: search/templates/search.html:66
 #, python-format
-msgid ""
-"\n"
-"                        По запросу %(query)s ничего не найдено.\n"
-"                        "
+msgid "По запросу %(query)s ничего не найдено."
 msgstr ""
 
-#: search/templates/search.html:82 staff/templates/staff.html:52
+#: search/templates/search.html:78 staff/templates/staff.html:52
 #: staff/templates/staff.html.py:88 templates/base.html:97
 msgid "Пользователи"
 msgstr ""
 
-#: search/templates/search.html:123
+#: search/templates/search.html:119
 msgid "Я.Контест"
 msgstr ""
 
-#: search/templates/search.html:139
+#: search/templates/search.html:135
 msgid "Курсы"
-msgstr ""
-
-#: staff/views.py:42
-msgid ""
-"<div class=\"form-group row\">\n"
-"        <button id=\"button_filter\" class=\"btn btn-secondary pull-xs-right"
-"\" type=\"submit\">Применить</button>\n"
-"</div>"
 msgstr ""
 
 #: staff/templates/get_gradebook.html:17 staff/templates/gradebook.html:18
@@ -1505,10 +1438,6 @@ msgstr ""
 
 #: staff/templates/staff_js.html:49
 msgid "Не выбрано ни одного статуса"
-msgstr ""
-
-#: staff/templates/staff_js.html:124
-msgid "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Пустая таблица"
 msgstr ""
 
 #: tasks/models.py:41 tasks/models.py:199
@@ -1567,11 +1496,11 @@ msgstr ""
 
 #: tasks/management/commands/send_deadline_notifications.py:29
 #, python-brace-format
-msgid "<p>В задаче {1}, курса {2}, "
+msgid "В задаче {1}, курса {2}, "
 msgstr ""
 
 #: tasks/management/commands/send_deadline_notifications.py:30
-msgid "новая дата сдачи: <br></p>"
+msgid "новая дата сдачи: "
 msgstr ""
 
 #: tasks/templates/contest_import.html:8 tasks/templates/task_import.html:9
@@ -1819,10 +1748,9 @@ msgstr ""
 msgid "Войти"
 msgstr ""
 
-#: templates/registration/activation_email.txt:2
+#: templates/registration/activation_email.txt:3
 #, python-format
 msgid ""
-"\n"
 "Для активации аккаунта на AnyTask перейдите по ссылке\n"
 "\n"
 "http://%(site)s/accounts/activate/%(activation_key)s\n"
@@ -1830,7 +1758,7 @@ msgid ""
 "Ссылка действительна в течение %(expiration_days)s дней.\n"
 "\n"
 "-- \n"
-"Команда AnyTask\n"
+"Команда AnyTask"
 msgstr ""
 
 #: templates/registration/login.html:5 templates/registration/login.html:18
@@ -1961,28 +1889,20 @@ msgstr ""
 msgid "Срок действия инвайта истек."
 msgstr ""
 
-#: users/models.py:53
+#: users/models.py:53 users/models.py:152
 msgid "Статус студента"
 msgstr ""
 
-#: users/models.py:152
-msgid "<strong>Статус студента</strong>"
-msgstr ""
-
 #: users/models.py:168
-msgid "<strong>Тип курса</strong>"
+msgid "Тип курса"
 msgstr ""
 
 #: users/models.py:169
-msgid "<strong>Год курса</strong>"
+msgid "Год курса"
 msgstr ""
 
-#: users/models.py:170
-msgid "<strong>Курс</strong>"
-msgstr ""
-
-#: users/models.py:171
-msgid "<strong>Преподаватели</strong>"
+#: users/models.py:170 users/templates/my_tasks.html:137
+msgid "Курс"
 msgstr ""
 
 #: users/models.py:194
@@ -2022,10 +1942,6 @@ msgstr ""
 msgid "Мои курсы"
 msgstr ""
 
-#: users/templates/my_tasks.html:137
-msgid "Курс"
-msgstr ""
-
 #: users/templates/my_tasks.html:138
 msgid "Преподаватель"
 msgstr ""
@@ -2039,21 +1955,17 @@ msgid "Вы не сдавали ни одной задачи"
 msgstr ""
 
 #: users/templates/oauth_error.html:34 users/templates/user_profile.html:120
-#: users/templates/user_profile.html:134
+#: users/templates/user_profile.html:132
 msgid "Привязать профиль Яндекс.Контеста"
 msgstr ""
 
 #: users/templates/oauth_error.html:37
 msgid ""
-"\n"
-"                        Для того, чтобы отвязать свой профиль от другого "
-"обратитесь к\n"
-"                        <a href=\"mailto:anytask@yandex.ru\">администратору</"
-"a>\n"
-"                        "
+" Для того, чтобы отвязать свой профиль от другого обратитесь к <a href="
+"\"mailto:anytask@yandex.ru\">администратору</a> "
 msgstr ""
 
-#: users/templates/oauth_error.html:43
+#: users/templates/oauth_error.html:40
 msgid "Привязать"
 msgstr ""
 
@@ -2104,83 +2016,83 @@ msgid "Сгенерировать инвайты"
 msgstr ""
 
 #: users/templates/user_profile.html:122
-msgid ""
-"\n"
-"                                    <strong>Привязать можно только один "
-"профиль!</strong> Для того, чтобы отвязать свой профиль обратитесь к <a href="
-"\"mailto:anytask@yandex.ru\">администратору</a>\n"
-"                                    "
+msgid "Привязать можно только один профиль!"
 msgstr ""
 
-#: users/templates/user_profile.html:136
+#: users/templates/user_profile.html:122
+msgid ""
+"Для того, чтобы отвязать свой профиль обратитесь к <a href=\"mailto:"
+"anytask@yandex.ru\">администратору</a>."
+msgstr ""
+
+#: users/templates/user_profile.html:134
 #, python-format
-msgid ""
-"\n"
-"                                    <strong>Вы привязали профиль "
-"%(user.get_profile.ya_login)s.</strong> Теперь все посылки в соревнования "
-"будут отправляться от Вашего имени. Для того, чтобы отвязать свой профиль "
-"обратитесь к <a href=\"mailto:anytask@yandex.ru\">администратору</a>.\n"
-"                                    "
+msgid "Вы привязали профиль %(user.get_profile.ya_login)s."
 msgstr ""
 
-#: users/templates/user_profile.html:141
+#: users/templates/user_profile.html:134
+msgid ""
+"Теперь все посылки в соревнования будут отправляться от Вашего имени. Для "
+"того, чтобы отвязать свой профиль обратитесь к <a href=\"mailto:"
+"anytask@yandex.ru\">администратору</a>."
+msgstr ""
+
+#: users/templates/user_profile.html:137
 msgid "Обновить привязку текущего профиля"
 msgstr ""
 
-#: users/templates/user_profile.html:153
+#: users/templates/user_profile.html:149
 msgid "Активация инвайтов в курсы"
 msgstr ""
 
-#: users/templates/user_profile.html:154
+#: users/templates/user_profile.html:150
 msgid "Ввести инвайт"
 msgstr ""
 
-#: users/templates/user_profile.html:183 users/templates/user_profile.html:428
+#: users/templates/user_profile.html:179 users/templates/user_profile.html:424
 msgid "О себе"
 msgstr ""
 
-#: users/templates/user_profile.html:192
+#: users/templates/user_profile.html:188
 msgid "Пока здесь ничего нет :("
 msgstr ""
 
-#: users/templates/user_profile.html:210
+#: users/templates/user_profile.html:206
 msgid "Преподаватель в курсах"
 msgstr ""
 
-#: users/templates/user_profile.html:242
+#: users/templates/user_profile.html:238
 msgid "Активные"
 msgstr ""
 
-#: users/templates/user_profile.html:244
+#: users/templates/user_profile.html:240
 msgid "Преподаватель в курсах (Архив)"
 msgstr ""
 
-#: users/templates/user_profile.html:283
+#: users/templates/user_profile.html:279
 msgid "Состоит в курсах"
 msgstr ""
 
-#: users/templates/user_profile.html:317
+#: users/templates/user_profile.html:313
 msgid "Состоит в курсах (Архив)"
 msgstr ""
 
-#: users/templates/user_profile.html:350
+#: users/templates/user_profile.html:346
 msgid "Состоит в группах"
 msgstr ""
 
-#: users/templates/user_profile.html:383
+#: users/templates/user_profile.html:379
 msgid "Выбор аватара"
 msgstr ""
 
-#: users/templates/user_profile.html:452
+#: users/templates/user_profile.html:448
 msgid "Просмотр аватара"
 msgstr ""
 
-#: users/templates/user_profile.html:474
+#: users/templates/user_profile.html:470
 msgid ""
-"\n"
-"            Если какие-либо данные неверны, обратитесь к <a href=\"mailto:"
-"anytask@yandex.ru\">администратору</a>.\n"
-"            "
+"Если какие-либо данные неверны, обратитесь к <a href=\"mailto:anytask@yandex."
+"ru\">администратору</a>."
 msgstr ""
 
 #: users/templates/user_settings.html:4

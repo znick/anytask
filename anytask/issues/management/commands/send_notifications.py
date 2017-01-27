@@ -26,9 +26,9 @@ class Command(BaseCommand):
             events = all_events.filter(issue=issue).all()
             issue_url = 'http://' + domain + issue.get_absolute_url()
             message_header = '<div>' + \
-                             _(u'<p>Здравствуйте, {0}.<br></p>') + \
-                             _(u'<p>В задаче {1}, в который вы являетесь <strong>{2}</strong>, ') + \
-                             _(u'появились новые комментарии: <br></p>') + \
+                             '<p>' + _(u'Здравствуйте, {0}.') + '<br></p>' + \
+                             '<p>' + _(u'В задаче {1}, в который вы являетесь ') + '<strong>{2}</strong>, ' + \
+                             _(u'появились новые комментарии: ') + '<br></p>' + \
                              '</div>'
 
             messages_author = []
@@ -50,8 +50,8 @@ class Command(BaseCommand):
 
             message_footer = '<div>' + \
                              u'-- <br>' + \
-                             _(u'С уважением,<br>') + \
-                             _(u'команда Anytask.<br>') + \
+                             u'{0}<br>'.format(_(u'С уважением,')) + \
+                             u'{0}<br>'.format(_(u'команда Anytask.')) + \
                              '</div>'
 
             subject = _(u'Курс: {0} | Задача: {1} | Студент: {2} {3}').\

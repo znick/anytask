@@ -25,9 +25,9 @@ class Command(BaseCommand):
             for group in task.groups.all():
 
                 message_header = '<div>' + \
-                                 _(u'<p>Здравствуйте, {0}.<br></p>') + \
-                                 _(u'<p>В задаче {1}, курса {2}, ') + \
-                                 _(u'новая дата сдачи: <br></p>') + \
+                                 '<p>' + _(u'Здравствуйте, {0}.') + '<br></p>' + \
+                                 '<p>' + _(u'В задаче {1}, курса {2}, ') + \
+                                 _(u'новая дата сдачи: ') + '<br></p>' + \
                                  '</div>'
 
                 message_body = []
@@ -47,8 +47,8 @@ class Command(BaseCommand):
 
                 message_body.append('<div>')
                 message_body.append(u'-- <br>')
-                message_body.append(_(u'С уважением,<br>'))
-                message_body.append(_(u'команда Anytask.<br>'))
+                message_body.append(_(u'С уважением,') + '<br>')
+                message_body.append(_(u'команда Anytask.') + '<br>')
                 message_body.append('</div>')
                 message = message_header + '\n'.join(message_body)
 

@@ -34,10 +34,7 @@
                     <h5 class="card-title">{% trans "Привязать профиль Яндекс.Контеста" %}</h5>
                     <p class="card-text">
                         <strong>{{ oauth_error_text }}</strong>
-                        {% blocktrans %}
-                        Для того, чтобы отвязать свой профиль от другого обратитесь к
-                        <a href="mailto:anytask@yandex.ru">администратору</a>
-                        {% endblocktrans %}
+                        {% blocktrans %} Для того, чтобы отвязать свой профиль от другого обратитесь к <a href="mailto:anytask@yandex.ru">администратору</a> {% endblocktrans %}
                     </p>
                     <a href="/user/ya_oauth_request/contest" type="button" class="btn btn-secondary">
                         {% trans "Привязать" %}

@@ -45,7 +45,7 @@
 
     <div class="card">
         <div class="card-block">
-            <h5 class="card-title">Результаты поиска</h5>
+            <h5 class="card-title">{% trans "Результаты поиска" %}</h5>
             <div class="form-search">
                 <form class="navbar-form" role="search" method="get" action="{% url search.views.search_page %}">
                     <div class="input-group">
@@ -61,13 +61,9 @@
                     {% trans "Минимальная длина запроса должна быть больше 3 символов." %}
                 {% else %}
                     {% if user_profiles or courses %}
-                        {% blocktrans %}
-                        По запросу {{ query }} найдено {{ user_profiles|length }} пользов(ей) и {{ courses|length }} курса(ов).
-                        {% endblocktrans %}
+                        {% blocktrans %}По запросу {{ query }} найдено {{ user_profiles|length }} пользов(ей) и {{ courses|length }} курса(ов).{% endblocktrans %}
                     {% else %}
-                        {% blocktrans %}
-                        По запросу {{ query }} ничего не найдено.
-                        {% endblocktrans %}
+                        {% blocktrans %}По запросу {{ query }} ничего не найдено.{% endblocktrans %}
                     {% endif %}
                 {% endif %}
             </small>

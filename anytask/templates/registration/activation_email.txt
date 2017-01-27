@@ -1,11 +1,10 @@
 {% load i18n %}
-{% blocktrans %}
-Для активации аккаунта на AnyTask перейдите по ссылке
+
+{% blocktrans %}Для активации аккаунта на AnyTask перейдите по ссылке
 
 http://{{ site }}/accounts/activate/{{ activation_key }}
 
 Ссылка действительна в течение {{ expiration_days }} дней.
 
 -- 
-Команда AnyTask
-{% endblocktrans %}
+Команда AnyTask{% endblocktrans %}
