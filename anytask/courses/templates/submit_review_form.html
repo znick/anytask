@@ -20,7 +20,7 @@
 <div class="row">
     <div class="span9">
         <p>
-            {% trans "Выберете ревизии, которые вы хотите показать преподавателю. Минимальная ревизия &#151; та, которую вы показывали прошлый раз, а максимальная, которую хотите показаться сейчас. Если сдаете задачу первый раз, то минимальная ревизия &#151; 1." %}
+            Выберете ревизии, которые вы хотите показать преподавателю. Минимальная ревизия &#151; та, которую вы показывали прошлый раз, а максимальная, которую хотите показаться сейчас. Если сдаете задачу первый раз, то минимальная ревизия &#151; 1.
         </p>
         <form id="submit_review_form" action="{{ request.get_full_path }}" method="POST">
             {% csrf_token %}
@@ -36,7 +36,7 @@
                     </tr>
                 {% endfor %}
             </table>
-            <button type="submit" id="submit" class="btn btn-primary disabled">{% trans "Отправить" %}</button>
+            <button type="submit" id="submit" class="btn btn-primary disabled">Отправить</button>
         </form>
 
     </div>
@@ -49,12 +49,12 @@ $("#submit_review_form").submit(function() {
     var rev_b = $('input[name=rev_b]:checked', '#submit_review_form').val();
 
     if (!rev_a || !rev_b) {
-        alert("{% trans "Нужно выбрать 2 ревизии" %}");
+        alert("Нужно выбрать 2 ревизии");
         return false;
     }
 
     if (rev_a == rev_b) {
-        alert("{% trans "Ревизии должны различаться" %}");
+        alert("Ревизии должны различаться");
         return false;
     }
     return true;
