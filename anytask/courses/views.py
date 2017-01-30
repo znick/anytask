@@ -111,7 +111,7 @@ def queue_page(request, course_id):
     return render_to_response('courses/queue.html', context, context_instance=RequestContext(request))
 
 @login_required
-def gradebook(request, course_id, task_id=None):
+def gradebook(request, course_id, task_id=None, group_id=None):
     """Page with course related information
     contexts:
         - tasklist
@@ -122,10 +122,16 @@ def gradebook(request, course_id, task_id=None):
         raise PermissionDenied
 
     course = get_object_or_404(Course, id=course_id)
-    if task_id != '0':
+    if task_id:
         task = get_object_or_404(Task, id=task_id)
     else:
-        task=None
+        task = None
+
+    if group_id:
+        group = get_object_or_404(Group, id=group_id)
+    else:
+        group = None
+
     schools = course.school_set.all()
 
     if course.private and not course.user_is_attended(request.user):
@@ -135,7 +141,7 @@ def gradebook(request, course_id, task_id=None):
                                    'invite_form': InviteActivationForm()},
                                   context_instance=RequestContext(request))
 
-    tasklist_context = tasklist_shad_cpp(request, course, task)
+    tasklist_context = tasklist_shad_cpp(request, course, task, group)
 
     context = tasklist_context
     context['tasklist_template'] = 'courses/tasklist/shad_cpp.html'
@@ -169,12 +175,13 @@ def course_page(request, course_id):
     course.can_edit = course.user_can_edit_course(user)
     if course.can_edit:
         groups = course.groups.all().order_by('name')
+        tasks = [{'group':tgr.group, 'task': tgr.task} for tgr in TaskGroupRelations.objects.filter(task__course=course, group__in=groups, deleted=False).order_by('group','position')]
     else:
         groups = Group.objects.filter(students=user, course__in=[course])
-    tasks = set([tgr.task for tgr in TaskGroupRelations.objects.filter(task__course=course, group__in=groups, deleted=False).order_by('position').select_related('task')])
+        tasks = set([tgr.task for tgr in TaskGroupRelations.objects.filter(task__course=course, group__in=groups, deleted=False).order_by('group', 'position')])
 
     if StudentCourseMark.objects.filter(student=user, course=course):
-        mark = StudentCourseMark.objects.get(student=user, course=course).mark
+          mark = StudentCourseMark.objects.get(student=user, course=course).mark
     else:
         mark = None
 
@@ -216,6 +223,16 @@ def seminar_page(request, course_id, task_id):
                                   context_instance=RequestContext(request))
     course.can_edit = course.user_can_edit_course(user)
 
+    if course.can_edit:
+        groups = task.groups.all().order_by('name')
+        tasks = [{'group': tgr.group, 'task': tgr.task} for tgr in
+                 TaskGroupRelations.objects.filter(task__parent_task=task, group__in=groups, deleted=False).order_by('group',
+                                                                                                                  'position')]
+    else:
+        groups = Group.objects.filter(students=user, course__in=[course])
+        tasks = set([tgr.task for tgr in
+                     TaskGroupRelations.objects.filter(task__parent_task=task, group__in=groups, deleted=False).order_by(
+                         'group', 'position')])
     if Issue.objects.filter(task=task, student=user):
         mark = Issue.objects.get(task=task, student=user).mark
     else:
@@ -223,6 +240,7 @@ def seminar_page(request, course_id, task_id):
 
     context = {}
     context['course'] = course
+    context['tasks'] = tasks
     context['mark'] = mark if mark else '--'
     context['visible_queue'] = course.user_can_see_queue(user),
     context['user_is_teacher'] = course.user_is_teacher(user)
@@ -234,7 +252,7 @@ def seminar_page(request, course_id, task_id):
     return render_to_response('courses/course.html', context, context_instance=RequestContext(request))
 
 
-def tasklist_shad_cpp(request, course, seminar=None):
+def tasklist_shad_cpp(request, course, seminar=None, group=None):
 
     user = request.user
     user_is_attended = False
@@ -250,6 +268,9 @@ def tasklist_shad_cpp(request, course, seminar=None):
     course.can_edit = course.user_can_edit_course(user)
     if course.can_be_chosen_by_extern:
         course.groups.add(course.group_with_extern)
+
+    if group:
+        groups = [group]
 
     group_x_student_x_task_takens = OrderedDict()
     group_x_task_list = {}

@@ -2,6 +2,8 @@
 from django import template
 from issues.models import Issue
 from issues.model_issue_status import IssueStatus
+from groups.models import Group
+from courses.models import Course, DefaultTeacher
 
 register = template.Library()
 
@@ -28,3 +30,11 @@ def get_status_name(task, user):
         return Issue.objects.get(task=task, student=user).status_field.name
     except Exception as e:
         return u"Новый"
+
+
+@register.filter(name='get_default_teacher')
+def get_default_teacher(group, course):
+    try:
+        return DefaultTeacher.objects.get(group=group, course=course).teacher.get_full_name()
+    except Exception as e:
+        return ""

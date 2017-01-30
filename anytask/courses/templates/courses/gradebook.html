@@ -28,8 +28,7 @@
         </li>
         <li class="nav-item">
             <a class="nav-link active"
-               href="{{ course.get_absolute_url }}/gradebook/{% if seminar %}{{ seminar.id }}{% else %}0{% endif %}">Список
-                групп</a>
+               href="{{ course.get_absolute_url }}/gradebook/{% if seminar %}seminar/{{ seminar.id }}{% endif %}">Общая ведомость</a>
         </li>
         {% if not seminar %}
             {% if visible_queue %}
