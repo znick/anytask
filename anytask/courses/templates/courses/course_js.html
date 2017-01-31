@@ -48,6 +48,8 @@
         return !data ? '' : $('select option:selected', $(data)).text()
     };
 
+    var course_tab = window.location.hash.substr(1);
+
     var readmore_opts = {
         speed: 700,
         collapsedHeight: 700,
@@ -56,8 +58,10 @@
     };
 
     $(document).ready(function () {
+
         var info_width = $('#course-information').closest('.card').innerWidth();
 
+        $('#courseTab a[href="#'+course_tab+'"]').tab('show');
         $('#course-information').show();
 
         $('#edit_course_info_btn').click(function () {

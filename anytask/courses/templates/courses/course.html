@@ -90,9 +90,9 @@
                         </a>
                     {% endif %}
                 </div>
-                <div class="list-group">
+                <div class="list-group" id="courseTab">
                     <a id="info-link" href="#course-information-tab"
-                       class="list-group-item active scrollto"><span
+                       class="list-group-item scrollto"><span
                             class="fa fa-file-text-o"></span> {% if not seminar %}Описание курса{% else %}
                         Описание занятия{% endif %}</a>
                     <a id="tasks-link" href="#tasks-tab"
@@ -104,7 +104,7 @@
         <div id="left-side" class="col-lg-9 col-md-12">
             <div class="card card-block">
                 <div class="tab-content">
-                    <div class="tab-pane fade in active" id="course-information-tab" role="tabpanel">
+                    <div class="tab-pane fade in" id="course-information-tab" role="tabpanel">
                         <h5 class="card-title">{% if not seminar %}Описание курса{% else %}Описание занятия{% endif %}
                             {% if course.can_edit %}
 
