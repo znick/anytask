@@ -37,12 +37,10 @@
                href="{{ course.get_absolute_url }}/gradebook/{% if seminar %}seminar/{{ seminar.id }}{% endif %}">Общая ведомость</a>
         </li>
         {% if not seminar %}
-            {% if visible_queue %}
+            {% if user_is_teacher %}
                 <li class="nav-item">
                     <a class="nav-link" href="{{ course.get_absolute_url }}/queue">Очередь на проверку</a>
                 </li>
-            {% endif %}
-            {% if user_is_teacher %}
                 <li class="nav-item">
                     <a class="nav-link" href="{% url courses.views.course_settings course.id %}">Настройки</a>
                 </li>
@@ -73,8 +71,7 @@
                     <p class="card-text course_teachers">
                         Преподаватели:
                         {% for teacher in course.get_teachers %}
-                            <a href="{% url users.views.profile teacher.username %}">{{ teacher.last_name }} {{ teacher.first_name }}</a>
-                            {% if not forloop.last %},{% endif %}
+                            <a href="{% url users.views.profile teacher.username %}">{{ teacher.last_name }} {{ teacher.first_name }}</a>{% if not forloop.last %},{% endif %}
                         {% endfor %}
                     </p>
                     {% if seminar %}

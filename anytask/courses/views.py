@@ -146,6 +146,7 @@ def gradebook(request, course_id, task_id=None, group_id=None):
     context = tasklist_context
     context['tasklist_template'] = 'courses/tasklist/shad_cpp.html'
     context['task_types'] = dict(Task().TASK_TYPE_CHOICES).items()
+    context['group_gradebook'] = True if group else False
     context['show_hidden_tasks'] = request.session.get(str(request.user.id) + '_' + str(course.id) + '_show_hidden_tasks', False)
     context['school'] = schools[0] if schools else ''
 

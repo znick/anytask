@@ -27,7 +27,7 @@
                 {% if not seminar %}курса{% else %}семинара{% endif %}</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link active"
+            <a class="nav-link {% if not group_gradebook %}active{% endif %}"
                href="{{ course.get_absolute_url }}/gradebook/{% if seminar %}seminar/{{ seminar.id }}{% endif %}">Общая ведомость</a>
         </li>
         {% if not seminar %}
