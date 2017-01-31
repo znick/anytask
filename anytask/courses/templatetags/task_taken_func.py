@@ -56,14 +56,25 @@ def task_can_be_deleted(task):
 @register.filter(name='group_info')
 def task_group_info(task):
     if isinstance(task, Task):
-        data_task_groups = []
-        data_task_disabled_groups = []
-        for group in task.groups.all():
-            data_task_groups.append(str(group.id))
-            if Issue.objects.filter(task=task, student__in=group.students.all()).count():
-                data_task_disabled_groups.append(str(group.id))
+        data_task_groups = set()
+        data_task_disabled_groups = set()
+        data_task_empty_children_groups = set()
 
-        return " data-task_groups = '[{0}]' data-task_disabled_groups = '[{1}]' " \
+        for group in task.groups.all():
+            data_task_groups.add(str(group.id))
+            if task.type == 'Seminar':
+                if task.children.count():
+                    for child in task.children.all():
+                        if Issue.objects.filter(task=child, student__in=group.students.all()).count():
+                            data_task_disabled_groups.add(str(group.id))
+                        elif group in child.groups.all():
+                            data_task_empty_children_groups.add(str(group.id))
+
+            elif Issue.objects.filter(task=task, student__in=group.students.all()).count():
+                data_task_disabled_groups.add(str(group.id))
+
+        return " data-task_groups = '[{0}]' data-task_disabled_groups = '[{1}]'  data-task_empty_children_groups = '[{2}]'" \
             .format(', '.join(data_task_groups),
-                    ', '.join(data_task_disabled_groups))
+                    ', '.join(data_task_disabled_groups),
+                    ', '.join(data_task_empty_children_groups))
     return ''

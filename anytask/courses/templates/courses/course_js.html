@@ -481,11 +481,20 @@
             });
 
             $("a.task-delete", div_group_id).each(function () {
-                if ($(this).data('task_groups').length === $(this).data('task_disabled_groups').length)
+                if (($(this).data('task_groups').length === $(this).data('task_disabled_groups').length) ||
+                        ($(this).data('task_groups').length === $(this).data('task_empty_children_groups').length))
                     $(this).hide();
                 else
                     $(this).show();
             });
+
+            $("a.task-seminar-notempty", div_group_id).each(function () {
+                if ($(this).data('task_groups').length === $(this).data('task_empty_children_groups').length)
+                    $(this).show();
+                else
+                    $(this).hide();
+            });
+
             remaining_groups = {};
             group.data('deleting_ids', []);
             group.data('deleting_ids_from_groups', {});
@@ -507,6 +516,14 @@
                 $('.group-sortable').data('changed', true);
             }
         }).disableSelection();
+
+        $('[data-toggle="popover-help"]').popover({
+            trigger: 'hover',
+            template: '<div class="popover" role="tooltip">' +
+            '<div class="popover-arrow"></div>' +
+            '<div class="popover-content"></div>' +
+            '</div>'
+        });
 
         var popover_opts = {
             trigger: 'manual',
