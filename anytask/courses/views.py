@@ -182,7 +182,7 @@ def course_page(request, course_id):
         tasks = set([tgr.task for tgr in TaskGroupRelations.objects.filter(task__course=course, group__in=groups, deleted=False).order_by('group', 'position')])
 
     if StudentCourseMark.objects.filter(student=user, course=course):
-          mark = StudentCourseMark.objects.get(student=user, course=course).mark
+        mark = StudentCourseMark.objects.get(student=user, course=course).mark
     else:
         mark = None
 

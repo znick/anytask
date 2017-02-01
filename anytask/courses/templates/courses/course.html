@@ -216,7 +216,7 @@
                                                        href="#collapse_group_{{ task_item.grouper.id }}">
                                                        <i class="fa fa-bars" aria-hidden="true"></i>
                                                     </a>
-                                                    {{ task_item.grouper.name }} ({{ task_item.grouper|get_default_teacher:course }})
+                                                    {{ task_item.grouper.name }} {% if task_item.grouper|get_default_teacher:course %}({{ task_item.grouper|get_default_teacher:course }}) {% endif %}
                                                 </h6>
                                             </div>
                                             <div style="width: 40%"></div>
@@ -302,7 +302,7 @@
                                                        href="#collapse_group_{{ task_item.grouper.id }}">
                                                        <i class="fa fa-bars" aria-hidden="true"></i>
                                                     </a>
-                                                    {{ task_item.grouper.name }} ({{ task_item.grouper|get_default_teacher:course }})
+                                                    {{ task_item.grouper.name }} {% if task_item.grouper|get_default_teacher:course %}({{ task_item.grouper|get_default_teacher:course }}) {% endif %}
                                                 </h6>
                                             </div>
                                             <div style="width: 40%"></div>

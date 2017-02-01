@@ -61,7 +61,13 @@
 
         var info_width = $('#course-information').closest('.card').innerWidth();
 
-        $('#courseTab a[href="#'+course_tab+'"]').tab('show');
+        if (course_tab) {
+            $('#courseTab a[href="#' + course_tab + '"]').tab('show');
+        }
+        else {
+            $('#courseTab a[href="#course-information-tab"]').tab('show');
+        }
+
         $('#course-information').show();
 
         $('#edit_course_info_btn').click(function () {
