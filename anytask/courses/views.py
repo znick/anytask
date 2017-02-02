@@ -1,4 +1,4 @@
-#coding: utf-8
+# coding: utf-8
 import pprint
 
 from django.shortcuts import render_to_response, get_object_or_404, redirect
@@ -55,6 +55,7 @@ import json
 
 logger = logging.getLogger('django.request')
 
+
 @login_required
 def filemanager(request, path, course_id):
     course = get_object_or_404(Course, id=course_id)
@@ -65,9 +66,10 @@ def filemanager(request, path, course_id):
         else:
             os.mkdir(course_folder)
             fm = FileManager(course_folder)
-        return fm.render(request,path)
+        return fm.render(request, path)
     else:
         return HttpResponseForbidden()
+
 
 @login_required
 def queue_page(request, course_id):
@@ -77,7 +79,7 @@ def queue_page(request, course_id):
     if not course.user_can_see_queue(request.user):
         return HttpResponseForbidden()
 
-    active_profiles = UserProfile.objects.filter(Q(user_status__tag='active')|Q(user_status__tag=None))
+    active_profiles = UserProfile.objects.filter(Q(user_status__tag='active') | Q(user_status__tag=None))
     active_students = []
     for profile in active_profiles:
         active_students.append(profile.user)
@@ -109,6 +111,7 @@ def queue_page(request, course_id):
         'school': schools[0] if schools else '',
     }
     return render_to_response('courses/queue.html', context, context_instance=RequestContext(request))
+
 
 @login_required
 def gradebook(request, course_id, task_id=None, group_id=None):
@@ -147,7 +150,8 @@ def gradebook(request, course_id, task_id=None, group_id=None):
     context['tasklist_template'] = 'courses/tasklist/shad_cpp.html'
     context['task_types'] = dict(Task().TASK_TYPE_CHOICES).items()
     context['group_gradebook'] = True if group else False
-    context['show_hidden_tasks'] = request.session.get(str(request.user.id) + '_' + str(course.id) + '_show_hidden_tasks', False)
+    context['show_hidden_tasks'] = request.session.get(
+        str(request.user.id) + '_' + str(course.id) + '_show_hidden_tasks', False)
     context['school'] = schools[0] if schools else ''
 
     return render_to_response('courses/gradebook.html', context, context_instance=RequestContext(request))
@@ -176,10 +180,14 @@ def course_page(request, course_id):
     course.can_edit = course.user_can_edit_course(user)
     if course.can_edit:
         groups = course.groups.all().order_by('name')
-        tasks = [{'group':tgr.group, 'task': tgr.task} for tgr in TaskGroupRelations.objects.filter(task__course=course, group__in=groups, deleted=False).order_by('group','position')]
+        tasks = [{'group': tgr.group, 'task': tgr.task} for tgr in
+                 TaskGroupRelations.objects.filter(task__course=course, group__in=groups, deleted=False).order_by(
+                     'group', 'position')]
     else:
         groups = Group.objects.filter(students=user, course__in=[course])
-        tasks = set([tgr.task for tgr in TaskGroupRelations.objects.filter(task__course=course, group__in=groups, deleted=False).order_by('group', 'position')])
+        tasks = set([tgr.task for tgr in
+                     TaskGroupRelations.objects.filter(task__course=course, group__in=groups, deleted=False).order_by(
+                         'group', 'position')])
 
     if StudentCourseMark.objects.filter(student=user, course=course):
         mark = StudentCourseMark.objects.get(student=user, course=course).mark
@@ -194,7 +202,8 @@ def course_page(request, course_id):
     context['visible_queue'] = course.user_can_see_queue(user),
     context['user_is_teacher'] = course.user_is_teacher(user)
     context['task_types'] = dict(Task().TASK_TYPE_CHOICES).items()
-    context['show_hidden_tasks'] = request.session.get(str(request.user.id) + '_' + str(course.id) + '_show_hidden_tasks', False)
+    context['show_hidden_tasks'] = request.session.get(
+        str(request.user.id) + '_' + str(course.id) + '_show_hidden_tasks', False)
     context['school'] = schools[0] if schools else ''
 
     return render_to_response('courses/course.html', context, context_instance=RequestContext(request))
@@ -227,13 +236,14 @@ def seminar_page(request, course_id, task_id):
     if course.can_edit:
         groups = task.groups.all().order_by('name')
         tasks = [{'group': tgr.group, 'task': tgr.task} for tgr in
-                 TaskGroupRelations.objects.filter(task__parent_task=task, group__in=groups, deleted=False).order_by('group',
-                                                                                                                  'position')]
+                 TaskGroupRelations.objects.filter(task__parent_task=task, group__in=groups, deleted=False).order_by(
+                     'group',
+                     'position')]
     else:
         groups = Group.objects.filter(students=user, course__in=[course])
         tasks = set([tgr.task for tgr in
-                     TaskGroupRelations.objects.filter(task__parent_task=task, group__in=groups, deleted=False).order_by(
-                         'group', 'position')])
+                     TaskGroupRelations.objects.filter(task__parent_task=task, group__in=groups,
+                                                       deleted=False).order_by('group', 'position')])
     if Issue.objects.filter(task=task, student=user):
         mark = Issue.objects.get(task=task, student=user).mark
     else:
@@ -247,14 +257,14 @@ def seminar_page(request, course_id, task_id):
     context['user_is_teacher'] = course.user_is_teacher(user)
     context['seminar'] = task
     context['task_types'] = dict(Task().TASK_TYPE_CHOICES).items()
-    context['show_hidden_tasks'] = request.session.get(str(request.user.id) + '_' + str(course.id) + '_show_hidden_tasks', False)
+    context['show_hidden_tasks'] = request.session.get(
+        str(request.user.id) + '_' + str(course.id) + '_show_hidden_tasks', False)
     context['school'] = schools[0] if schools else ''
 
     return render_to_response('courses/course.html', context, context_instance=RequestContext(request))
 
 
 def tasklist_shad_cpp(request, course, seminar=None, group=None):
-
     user = request.user
     user_is_attended = False
     user_is_attended_special_course = False
@@ -283,9 +293,13 @@ def tasklist_shad_cpp(request, course, seminar=None, group=None):
         student_x_task_x_task_takens = {}
 
         if is_seminar:
-            tasks_for_groups = TaskGroupRelations.objects.filter(task__course=course, group=group, deleted=False, task__parent_task=seminar).order_by('position').select_related('task')
+            tasks_for_groups = TaskGroupRelations.objects.filter(task__course=course, group=group, deleted=False,
+                                                                 task__parent_task=seminar).order_by(
+                'position').select_related('task')
         else:
-            tasks_for_groups = TaskGroupRelations.objects.filter(task__course=course, group=group, deleted=False, task__parent_task=None).order_by('position').select_related('task')
+            tasks_for_groups = TaskGroupRelations.objects.filter(task__course=course, group=group, deleted=False,
+                                                                 task__parent_task=None).order_by(
+                'position').select_related('task')
 
         if show_hidden_tasks:
             group_x_task_list[group] = [x.task for x in tasks_for_groups]
@@ -304,7 +318,8 @@ def tasklist_shad_cpp(request, course, seminar=None, group=None):
             if task.task_text is None:
                 task.task_text = ''
 
-        issues_students_in_group = Issue.objects.filter(task__in=group_x_task_list[group]).filter(student__group__in=[group]).order_by('student').select_related()
+        issues_students_in_group = Issue.objects.filter(task__in=group_x_task_list[group]).filter(
+            student__group__in=[group]).order_by('student').select_related()
 
         from collections import defaultdict
         issues_x_student = defaultdict(list)
@@ -335,12 +350,12 @@ def tasklist_shad_cpp(request, course, seminar=None, group=None):
         except DefaultTeacher.DoesNotExist:
             default_teacher[group] = None
 
-
     group_x_student_information = OrderedDict()
-    for group,student_x_task_x_task_takens in group_x_student_x_task_takens.iteritems():
+    for group, student_x_task_x_task_takens in group_x_student_x_task_takens.iteritems():
         group_x_student_information.setdefault(group, [])
 
-        for student in sorted(student_x_task_x_task_takens.keys(), key=lambda x: u"{0} {1}".format(x.last_name, x.first_name)):
+        for student in sorted(student_x_task_x_task_takens.keys(),
+                              key=lambda x: u"{0} {1}".format(x.last_name, x.first_name)):
             if user == student:
                 user_is_attended = True
             elif not course.user_can_see_transcript(user, student):
@@ -370,7 +385,7 @@ def tasklist_shad_cpp(request, course, seminar=None, group=None):
         'seminar': seminar,
         'visible_queue': course.user_can_see_queue(user),
         'visible_hide_button': Task.objects.filter(Q(course=course) & Q(is_hidden=True)).count(),
-        'show_hidden_tasks' : show_hidden_tasks
+        'show_hidden_tasks': show_hidden_tasks
     }
 
     return context
@@ -407,11 +422,12 @@ def courses_list(request, year=None):
     courses_list = Course.objects.filter(year=year_object).order_by('name')
 
     context = {
-        'courses_list'  : courses_list,
-        'year'  : year_object,
+        'courses_list': courses_list,
+        'year': year_object,
     }
 
     return render_to_response('course_list.html', context, context_instance=RequestContext(request))
+
 
 def edit_course_information(request):
     user = request.user
@@ -426,10 +442,10 @@ def edit_course_information(request):
     try:
         course_id = int(request.POST['course_id'])
         course_information = request.POST['course_information'].strip()
-    except ValueError: #not int
+    except ValueError:  # not int
         return HttpResponseForbidden()
 
-    course = get_object_or_404(Course, id = course_id)
+    course = get_object_or_404(Course, id=course_id)
 
     if not course.user_can_edit_course(user):
         return HttpResponseForbidden()
@@ -442,6 +458,7 @@ def edit_course_information(request):
     return HttpResponse(json.dumps({'info': course_information}),
                         content_type="application/json")
 
+
 @login_required
 def set_spectial_course_attend(request):
     user = request.user
@@ -451,7 +468,7 @@ def set_spectial_course_attend(request):
     try:
         course_id = int(request.POST['course_id'])
         action = request.POST['action']
-    except ValueError: #not int
+    except ValueError:  # not int
         return HttpResponseForbidden()
 
     course = get_object_or_404(Course, id=course_id)
@@ -547,7 +564,7 @@ def course_settings(request, course_id):
     if 'show_accepted_after_contest_ok' in request.POST:
         course.show_accepted_after_contest_ok = True
     else:
-        course.show_accepted_after_contest_ok= False
+        course.show_accepted_after_contest_ok = False
 
     if 'default_task_one_file_upload' in request.POST:
         course.default_accepted_after_contest_ok = True
@@ -658,7 +675,6 @@ def change_table_tasks_pos(request):
             for task_relations in TaskGroupRelations.objects.filter(task=task, group__id__in=group_ids):
                 task_relations.deleted = True
                 task_relations.save()
-
 
     if 'task_deleted[]' in request.POST:
         task_deleted = map(lambda x: int(x), dict(request.POST)['task_deleted[]'])
