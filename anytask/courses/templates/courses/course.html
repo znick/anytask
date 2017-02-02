@@ -34,7 +34,8 @@
         </li>
         <li class="nav-item">
             <a class="nav-link"
-               href="{{ course.get_absolute_url }}/gradebook/{% if seminar %}seminar/{{ seminar.id }}{% endif %}">Общая ведомость</a>
+               href="{{ course.get_absolute_url }}/gradebook/{% if seminar %}seminar/{{ seminar.id }}{% endif %}">Общая
+                ведомость</a>
         </li>
         {% if not seminar %}
             {% if user_is_teacher %}
@@ -53,10 +54,19 @@
     {{ block.super }}
 
     <style>
-
-
         #btn_group_edit_course .btn {
             margin: 2px auto;
+        }
+
+        .tasks-list {
+            display: flex;
+            padding: .75rem 0 .75rem 0;
+            line-height: 1.5;
+            border-top: 1px solid #eceeef;
+        }
+
+        .btn-square {
+            padding: .375rem .5rem;
         }
     </style>
 
@@ -96,7 +106,8 @@
                             class="fa fa-file-text-o"></span> {% if not seminar %}Описание курса{% else %}
                         Описание занятия{% endif %}</a>
                     <a id="tasks-link" href="#tasks-tab"
-                       class="list-group-item scrollto"><span class="fa fa-tasks"></span> {% if not user_is_teacher %}Задачи{% else %}Список групп и задач{% endif %}</a>
+                       class="list-group-item scrollto"><span class="fa fa-tasks"></span> {% if not user_is_teacher %}
+                        Задачи{% else %}Список групп и задач{% endif %}</a>
                 </div>
                 <br>
             </div>
@@ -109,12 +120,12 @@
                             {% if course.can_edit %}
 
                                 {% if seminar %}
-                                    <a style="padding: 6px 8px;" class="btn btn-secondary btn-sm"
+                                    <a class="btn btn-secondary btn-sm btn-square"
                                        href="{% url tasks.views.task_edit_page seminar.id %}">
                                         <span class="fa fa-pencil"></span>
                                     </a>
                                 {% else %}
-                                    <a style="padding: 6px 8px;" class="btn btn-secondary btn-sm"
+                                    <a class="btn btn-secondary btn-sm btn-square"
                                        id="edit_course_info_btn">
                                         <span class="fa fa-pencil"></span>
                                     </a>
@@ -168,7 +179,7 @@
                                     {% for task in tasks %}
                                         {% if not task.parent_task %}
                                             {% if not task.is_hidden %}
-                                                <div style="display: flex; padding: .75rem 0 .75rem 0; line-height: 1.5; border-top: 1px solid #eceeef;">
+                                                <div class="tasks-list">
                                                     <div style="width: 40%;">
                                                         <a data-toggle="collapse" aria-expanded="false"
                                                            aria-controls="collapse_{{ task.id }}"
@@ -176,12 +187,16 @@
                                                             {{ task.title }}</a>
                                                     </div>
                                                     <div style="width: 10%">{{ task|get_score:user }}</div>
-                                                    <div style="width: 15%"><span class="label"
-                                                                                  style="width: 80%; background-color:
-                                                                                          {{ task|get_status_color:user }}"> {{ task|get_status_name:user }}</span>
+                                                    <div style="width: 15%">
+                                                        <span class="label" style="width: 80%;
+                                                                                   background-color:{{ task|get_status_color:user }}"> {{ task|get_status_name:user }}
+                                                        </span>
                                                     </div>
-                                                    <div style="width: 20%">{% if task.deadline_time %}сдать до
-                                                        {{ task.deadline_time|date:"H:i d-m-Y" }}{% endif %}</div>
+                                                    <div style="width: 20%">
+                                                        {% if task.deadline_time %}сдать до
+                                                            {{ task.deadline_time|date:"H:i d-m-Y" }}
+                                                        {% endif %}
+                                                    </div>
                                                     <div style="width: 15%">
                                                         {% if task.type == task.TYPE_FULL and not user_is_teacher %}
                                                             <a style="width: 100%"
@@ -211,47 +226,59 @@
                                         <div style="display: flex;">
                                             <div style="width: 40%">
                                                 <h6>
-                                                    <a style="padding: 6px 8px;" class="btn btn-secondary btn-sm" data-toggle="collapse" aria-expanded="false"
+                                                    <a class="btn btn-secondary btn-sm btn-square"
+                                                       data-toggle="collapse" aria-expanded="false"
                                                        aria-controls="collapse_group_{{ task_item.grouper.id }}"
                                                        href="#collapse_group_{{ task_item.grouper.id }}">
-                                                       <i class="fa fa-bars" aria-hidden="true"></i>
+                                                        <i class="fa fa-bars" aria-hidden="true"></i>
                                                     </a>
-                                                    {{ task_item.grouper.name }} {% if task_item.grouper|get_default_teacher:course %}({{ task_item.grouper|get_default_teacher:course }}) {% endif %}
+                                                    {{ task_item.grouper.name }}
+                                                    {% if task_item.grouper|get_default_teacher:course %}
+                                                        ({{ task_item.grouper|get_default_teacher:course }})
+                                                    {% endif %}
                                                 </h6>
                                             </div>
                                             <div style="width: 40%"></div>
-                                            <div style="width: 20%"><a style="width: 100%" class="btn btn-secondary btn-sm" href="{{ course.get_absolute_url }}/gradebook/group/{{ task_item.grouper.id }}">Ведомость</a></div>
+                                            <div style="width: 20%"><a style="width: 100%"
+                                                                       class="btn btn-secondary btn-sm"
+                                                                       href="{{ course.get_absolute_url }}/gradebook/group/{{ task_item.grouper.id }}">Ведомость</a>
+                                            </div>
                                         </div>
                                         <div id="collapse_group_{{ task_item.grouper.id }}" class="collapse">
-                                        {% for task in task_item.list %}
-                                            {% if not task.task.parent_task %}
-                                                {% if not task.task.is_hidden %}
-                                                    <div style="display: flex; padding: .75rem 0 .75rem 0; line-height: 1.5; border-top: 1px solid #eceeef;">
-                                                        <div style="width: 35%;">
-                                                            {{ task.task.title }}
-                                                        </div>
-                                                        <div style="width: 10%;">
-                                                            <a style="padding: 6px 8px;" class="btn btn-secondary btn-sm"
+                                            {% for task in task_item.list %}
+                                                {% if not task.task.parent_task %}
+                                                    {% if not task.task.is_hidden %}
+                                                        <div class="tasks-list">
+                                                            <div style="width: 35%;">
+                                                                {{ task.task.title }}
+                                                            </div>
+                                                            <div style="width: 10%;">
+                                                                <a class="btn btn-secondary btn-sm btn-square"
                                                                    href="{% url tasks.views.task_edit_page task.task.id %}">
                                                                     <span class="fa fa-pencil"></span>
-                                                            </a>
-                                                        </div>
-                                                        <div style="width: 10%"><span class="label label-inverse">{{ task.task.score_max }}</span></div>
-                                                        <div style="width: 25%">{% if task.task.deadline_time %}сдать до
-                                                            {{ task.task.deadline_time|date:"H:i d-m-Y" }}{% endif %}</div>
-                                                        <div style="width: 20%">
-                                                            {%if task.task.type == task.task.TYPE_SEMINAR %}
-                                                                <a style="width: 100%"
-                                                                   class="btn btn-sm btn-primary pull-xs-right"
-                                                                   href="{% if task.task.children.count != 0 %}
+                                                                </a>
+                                                            </div>
+                                                            <div style="width: 10%"><span
+                                                                    class="label label-inverse">{{ task.task.score_max }}</span>
+                                                            </div>
+                                                            <div style="width: 25%">
+                                                                {% if task.task.deadline_time %}сдать до
+                                                                    {{ task.task.deadline_time|date:"H:i d-m-Y"}}
+                                                                {% endif %}
+                                                            </div>
+                                                            <div style="width: 20%">
+                                                                {% if task.task.type == task.task.TYPE_SEMINAR %}
+                                                                    <a style="width: 100%"
+                                                                       class="btn btn-sm btn-primary pull-xs-right"
+                                                                       href="{% if task.task.children.count != 0 %}
                                                             {{ course.id }}/seminar/{{ task.task.id }}{% endif %}">
-                                                                    Перейти</a>
-                                                            {% endif %}
+                                                                        Перейти</a>
+                                                                {% endif %}
+                                                            </div>
                                                         </div>
-                                                    </div>
+                                                    {% endif %}
                                                 {% endif %}
-                                            {% endif %}
-                                        {% endfor %}
+                                            {% endfor %}
                                         </div>
                                     {% endfor %}
                                 {% endif %}
@@ -261,7 +288,7 @@
                                 {% if not user_is_teacher %}
                                     {% for task in seminar.children.all %}
                                         {% if not task.is_hidden or user_is_teacher %}
-                                            <div style="display: flex; padding: .75rem 0 .75rem 0; line-height: 1.5; border-top: 1px solid #eceeef;">
+                                            <div class="tasks-list">
                                                 <div style="width: 40%;">
                                                     <a data-toggle="collapse" aria-expanded="false"
                                                        aria-controls="collapse_{{ task.id }}"
@@ -269,16 +296,20 @@
                                                         {{ task.title }}</a>
                                                 </div>
                                                 <div style="width: 10%">{{ task|get_score:user }}</div>
-                                                <div style="width: 15%"><span class="label"
-                                                                              style="width: 80%; background-color:
-
-                                                                                      {{ task|get_status_color:user }}"> {{ task|get_status_name:user }}</span>
+                                                <div style="width: 15%">
+                                                    <span class="label" style="width: 80%;
+                                                                               background-color:{{ task|get_status_color:user }}"> {{ task|get_status_name:user }}
+                                                    </span>
                                                 </div>
-                                                <div style="width: 20%">{% if task.deadline_time %}сдать до
-                                                    {{ task.deadline_time|date:"H:i d-m-Y" }}{% endif %}</div>
+                                                <div style="width: 20%">
+                                                    {% if task.deadline_time %}сдать до
+                                                        {{ task.deadline_time|date:"H:i d-m-Y" }}
+                                                    {% endif %}
+                                                </div>
                                                 <div style="width: 15%">
                                                     {% if task.type == task.TYPE_FULL and not user_is_teacher %}
-                                                        <a style="width: 100%" class="btn btn-sm btn-primary pull-xs-right"
+                                                        <a style="width: 100%"
+                                                           class="btn btn-sm btn-primary pull-xs-right"
                                                            href="/issue/get_or_create/{{ task.id }}/{{ user.id }}">Cдать</a>
                                                     {% endif %}
                                                 </div>
@@ -297,35 +328,46 @@
                                         <div style="display: flex;">
                                             <div style="width: 40%">
                                                 <h6>
-                                                    <a style="padding: 6px 8px;" class="btn btn-secondary btn-sm" data-toggle="collapse" aria-expanded="false"
+                                                    <a class="btn btn-secondary btn-sm btn-square"
+                                                       data-toggle="collapse" aria-expanded="false"
                                                        aria-controls="collapse_group_{{ task_item.grouper.id }}"
                                                        href="#collapse_group_{{ task_item.grouper.id }}">
-                                                       <i class="fa fa-bars" aria-hidden="true"></i>
+                                                        <i class="fa fa-bars" aria-hidden="true"></i>
                                                     </a>
-                                                    {{ task_item.grouper.name }} {% if task_item.grouper|get_default_teacher:course %}({{ task_item.grouper|get_default_teacher:course }}) {% endif %}
+                                                    {{ task_item.grouper.name }}
+                                                    {% if task_item.grouper|get_default_teacher:course %}(
+                                                        {{ task_item.grouper|get_default_teacher:course }}) {% endif %}
                                                 </h6>
                                             </div>
                                             <div style="width: 40%"></div>
-                                            <div style="width: 20%"><a style="width: 100%" class="btn btn-secondary btn-sm" href="{{ course.get_absolute_url }}/gradebook/{{ seminar.id }}/{{ task_item.grouper.id }}">Ведомость</a></div>
+                                            <div style="width: 20%"><a style="width: 100%"
+                                                                       class="btn btn-secondary btn-sm"
+                                                                       href="{{ course.get_absolute_url }}/gradebook/{{ seminar.id }}/{{ task_item.grouper.id }}">Ведомость</a>
+                                            </div>
                                         </div>
                                         <div id="collapse_group_{{ task_item.grouper.id }}" class="collapse">
-                                        {% for task in task_item.list %}
+                                            {% for task in task_item.list %}
                                                 {% if not task.task.is_hidden %}
-                                                    <div style="display: flex; padding: .75rem 0 .75rem 0; line-height: 1.5; border-top: 1px solid #eceeef;">
+                                                    <div class="tasks-list">
                                                         <div style="width: 35%;">
                                                             {{ task.task.title }}
                                                         </div>
                                                         <div style="width: 10%;">
-                                                            <a style="padding: 6px 8px;" class="btn btn-secondary btn-sm"
-                                                                   href="{% url tasks.views.task_edit_page task.task.id %}">
-                                                                    <span class="fa fa-pencil"></span>
+                                                            <a class="btn btn-secondary btn-sm btn-square"
+                                                               href="{% url tasks.views.task_edit_page task.task.id %}">
+                                                                <span class="fa fa-pencil"></span>
                                                             </a>
                                                         </div>
-                                                        <div style="width: 10%"><span class="label label-inverse">{{ task.task.score_max }}</span></div>
-                                                        <div style="width: 25%">{% if task.task.deadline_time %}сдать до
-                                                            {{ task.task.deadline_time|date:"H:i d-m-Y" }}{% endif %}</div>
+                                                        <div style="width: 10%"><span
+                                                                class="label label-inverse">{{ task.task.score_max }}</span>
+                                                        </div>
+                                                        <div style="width: 25%">
+                                                            {% if task.task.deadline_time %}сдать до
+                                                                {{ task.task.deadline_time|date:"H:i d-m-Y"}}
+                                                            {% endif %}
+                                                        </div>
                                                         <div style="width: 20%">
-                                                            {%if task.task.type == task.task.TYPE_SEMINAR %}
+                                                            {% if task.task.type == task.task.TYPE_SEMINAR %}
                                                                 <a style="width: 100%"
                                                                    class="btn btn-sm btn-primary pull-xs-right"
                                                                    href="{% if task.task.children.count != 0 %}
@@ -335,14 +377,12 @@
                                                         </div>
                                                     </div>
                                                 {% endif %}
-                                        {% endfor %}
+                                            {% endfor %}
                                         </div>
                                     {% endfor %}
                                 {% endif %}
                             </div>
                         {% endif %}
-
-
                     </div>
                 </div>
             </div>
