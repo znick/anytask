@@ -112,7 +112,7 @@
                                 if (data.email)
                                     email_html = '<div class="sgs-email">{0}</div>'.format(data.email);
                                 if (data.ya_login)
-                                    ya_login_html = '<tr><td></td><td>{0}@ <small class="text-muted">Я.Контест</small></td></tr>'.format(data.ya_login);
+                                    ya_login_html = '<tr><td></td><td>{0}@ <small class="text-muted">{% trans "Я.Контест" %}</small></td></tr>'.format(data.ya_login);
                                 return table_html.format(data.url, avatar, data.fullname, email_html, data.username, ya_login_html)
                             },
                             {#                            footer: '<div><a href="#">Все результаты</a></div>'#}
@@ -123,13 +123,13 @@
                         displayKey: 'name',
                         source: courses_bloodhound.ttAdapter(),
                         templates: {
-                            header: '<h6 class="search-model-name">Курсы</h6>',
+                            header: '<h6 class="search-model-name">{% trans "Курсы" %}</h6>',
                             suggestion: function(data) {
                                 var schools_html = '';
                                 var archive_html = '';
 
                                 if (!data.is_active)
-                                    archive_html = '<small class="text-muted">Архив</small>';
+                                    archive_html = '<small class="text-muted">{% trans "Архив" %}</small>';
 
                                 for (var i = 0; i < data.schools.length; ++i)
                                     schools_html += '<div>{0}</div>'.format(data.schools[i]);
@@ -596,7 +596,7 @@
                                               action="{% url search.views.search_page %}">
                                             <div class="input-group">
                                                 <div class="input-group-input">
-                                                    <input class="typeahead form-control" id="navbar_search" name="q" type="text" placeholder="Найти...">
+                                                    <input class="typeahead form-control" id="navbar_search" name="q" type="text" placeholder="{% trans 'Найти...' %}">
                                                 </div>
                                                 <div class="input-group-btn">
                                                     <button class="btn" type="submit"><span class="fa fa-search" style="line-height: 1.5"></span></button>
@@ -611,10 +611,10 @@
                                 <a href="{% url mail.views.mail_page %}" class="nav-link" role="button" style="position: relative;"><span class="fa fa-envelope" aria-hidden="true" style="line-height: inherit;"></span>
                                     {% if user.get_profile.get_unread_count %}
                                         <span id="top_notify_count" class="label label-pill label-danger top_notify_count">{{ user.get_profile.get_unread_count }}</span>
-                                        <span id="top_notify_count_string">Есть новые сообщения</span>
+                                        <span id="top_notify_count_string">{% trans "Есть новые сообщения" %}</span>
                                     {% else %}
                                         <span id="top_notify_count" class="label label-pill label-danger top_notify_count"></span>
-                                        <span id="top_notify_count_string">Нет новых сообщений</span>
+                                        <span id="top_notify_count_string">{% trans "Нет новых сообщений" %}</span>
                                     {% endif %}
                                 </a>
                             </li>
@@ -626,27 +626,26 @@
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-right dropdown-username" aria-labelledby="dropdownMenu1">
                                     <h6 class="dropdown-header">{% if user.get_full_name %}{{ user.get_full_name }}{% else %}{{ user }}{% endif %}</h6>
-                                    <a class="dropdown-item" href="{% url users.views.profile %}">Профиль</a>
-                                    <a class="dropdown-item" href="{% url users.views.profile_settings %}">Настройки</a>
+                                    <a class="dropdown-item" href="{% url users.views.profile %}">{% trans "Профиль" %}</a>
+                                    <a class="dropdown-item" href="{% url users.views.profile_settings %}">{% trans "Настройки" %}</a>
                                     {% if user.is_staff %}
                                         <a class="dropdown-item" href="{% url staff.views.staff_page %}">Staff</a>
-                                        <a class="dropdown-item" href="{% url admin:index %}">Админка</a>
+                                        <a class="dropdown-item" href="{% url admin:index %}">{% trans "Админка" %}</a>
                                     {% endif %}
                                     <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="{% url django.contrib.auth.views.password_change %}">Сменить
-                                        пароль</a>
+                                    <a class="dropdown-item" href="{% url django.contrib.auth.views.password_change %}">{% trans "Сменить пароль" %}</a>
                                     <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="{% url django.contrib.auth.views.logout %}">Выйти</a>
+                                    <a class="dropdown-item" href="{% url django.contrib.auth.views.logout %}">{% trans "Выйти" %}</a>
                                 </div>
                             </li>
                         </ul>
                     {% else %}
                         <ul class="nav navbar-nav">
                             <li class="nav-item">
-                                <a class="nav-link" href="{% url django.contrib.auth.views.login %}">Войдите</a>
+                                <a class="nav-link" href="{% url django.contrib.auth.views.login %}">{% trans "Войдите" %}</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="/accounts/register/">Зарегистрируйтесь</a>
+                                <a class="nav-link" href="/accounts/register/">{% trans "Зарегистрируйтесь" %}</a>
                             </li>
                         </ul>
                     {% endif %}
@@ -675,8 +674,8 @@
     <div class="container">
         {% block footer %} {% endblock footer %}
         <div style="display: inline-block; width: 100%">
-            <small class="text-muted" ><a href="{% url blog.views.blog_page %}">Блог</a></small>
-            <small class="text-muted pull-xs-right" >Пишите нам на <a href="mailto:anytask@yandex.ru">anytask@yandex.ru</a></small>
+            <small class="text-muted" ><a href="{% url blog.views.blog_page %}">{% trans "Блог" %}</a></small>
+            <small class="text-muted pull-xs-right" >{% trans "Пишите нам на" %} <a href="mailto:anytask@yandex.ru">anytask@yandex.ru</a></small>
         </div>
     </div>
 </footer>
