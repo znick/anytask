@@ -675,6 +675,20 @@
         {% block footer %} {% endblock footer %}
         <div style="display: inline-block; width: 100%">
             <small class="text-muted" ><a href="{% url blog.views.blog_page %}">{% trans "Блог" %}</a></small>
+            <small style="margin-left: 1.5rem" class="text-muted">
+                <form style="display: inline;" name="setLangRU" action="/i18n/setlang/" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="language" value="ru">
+                    <a href="#" onclick="document.setLangRU.submit();
+                            return false;">RU</a>
+                </form>/
+                <form style="display: inline;" name="setLangEN" action="/i18n/setlang/" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="language" value="en">
+                    <a href="#" onclick="document.setLangEN.submit();
+                            return false;">EN</a>
+                </form>
+            </small>
             <small class="text-muted pull-xs-right" >{% trans "Пишите нам на" %} <a href="mailto:anytask@yandex.ru">anytask@yandex.ru</a></small>
         </div>
     </div>
