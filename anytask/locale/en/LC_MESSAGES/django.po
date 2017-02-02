@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-27 16:47+0500\n"
+"POT-Creation-Date: 2017-02-02 16:16+0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -543,6 +543,28 @@ msgid ""
 "Publish."
 msgstr ""
 
+#: courses/templates/submit_review_form.html:23
+msgid ""
+"Выберете ревизии, которые вы хотите показать преподавателю. Минимальная "
+"ревизия &#151; та, которую вы показывали прошлый раз, а максимальная, "
+"которую хотите показаться сейчас. Если сдаете задачу первый раз, то "
+"минимальная ревизия &#151; 1."
+msgstr ""
+
+#: courses/templates/submit_review_form.html:39
+#: issues/templates/file_uploader.html:145 issues/templates/issues/info.html:55
+#: mail/templates/mail.html:123
+msgid "Отправить"
+msgstr ""
+
+#: courses/templates/submit_review_form.html:52
+msgid "Нужно выбрать 2 ревизии"
+msgstr ""
+
+#: courses/templates/submit_review_form.html:57
+msgid "Ревизии должны различаться"
+msgstr ""
+
 #: courses/templates/submit_review_no_such_path.html:3
 msgid "Нет такого пути :("
 msgstr ""
@@ -559,9 +581,10 @@ msgstr ""
 #: courses/templates/courses/course.html:35
 #: courses/templates/courses/queue.html:31
 #: courses/templates/courses/settings.html:8
-#: courses/templates/courses/settings.html:38 users/templates/my_tasks.html:102
-#: users/templates/status_history.html:38 users/templates/user_profile.html:26
-#: users/templates/user_settings.html:52 users/templates/user_settings.html:62
+#: courses/templates/courses/settings.html:38 templates/base.html:630
+#: users/templates/my_tasks.html:102 users/templates/status_history.html:38
+#: users/templates/user_profile.html:26 users/templates/user_settings.html:52
+#: users/templates/user_settings.html:62
 msgid "Настройки"
 msgstr ""
 
@@ -754,7 +777,7 @@ msgstr ""
 #: courses/templates/courses/queue_js.html:22
 #: issues/templates/issues/issue_js.html:31 mail/templates/mail_js.html:76
 #: search/templates/search.html:52
-#: tasks/templates/task_create_or_edit_js.html:34
+#: tasks/templates/task_create_or_edit_js.html:34 templates/base.html:599
 #: users/templates/my_tasks.html:42
 msgid "Найти..."
 msgstr ""
@@ -1079,6 +1102,22 @@ msgstr ""
 msgid "Выберите файл"
 msgstr ""
 
+#: issues/templates/file_uploader.html:113
+msgid "Выберите файлы"
+msgstr ""
+
+#: issues/templates/file_uploader.html:133
+msgid "или перетащите сюда"
+msgstr ""
+
+#: issues/templates/file_uploader.html:141
+msgid "Задать вопрос"
+msgstr ""
+
+#: issues/templates/file_uploader.html:234
+msgid "Выберите компилятор для отправки в контест"
+msgstr ""
+
 #: issues/templates/issues/history.html:31
 msgid "Предыдущие сообщения"
 msgstr ""
@@ -1096,10 +1135,6 @@ msgstr ""
 #: issues/templates/issues/history.html:38
 #: issues/templates/issues/history.html:49
 msgid "выделяться красным цветом."
-msgstr ""
-
-#: issues/templates/issues/info.html:55 mail/templates/mail.html:123
-msgid "Отправить"
 msgstr ""
 
 #: issues/templates/issues/info.html:57
@@ -1333,12 +1368,21 @@ msgstr ""
 msgid "Логины"
 msgstr ""
 
+#: mail/templates/mail_js.html:526 search/templates/search.html:119
+#: templates/base.html:115
+msgid "Я.Контест"
+msgstr ""
+
 #: mail/templates/mail_js.html:567
 msgid "Найти"
 msgstr ""
 
 #: mail/templates/mail_js.html:568
 msgid "Выделить все"
+msgstr ""
+
+#: mail/templates/mail_js.html:637
+msgid "Отправка..."
 msgstr ""
 
 #: mail/templates/mail_js.html:676
@@ -1350,7 +1394,7 @@ msgid "Необходимо указать тему"
 msgstr ""
 
 #: schools/templates/archive_page.html:4 schools/templates/school_page.html:22
-#: search/templates/search.html:143 users/models.py:195
+#: search/templates/search.html:143 templates/base.html:132 users/models.py:195
 #: users/templates/user_profile.html:204 users/templates/user_profile.html:277
 #: users/templates/user_profile.html:311
 msgid "Архив"
@@ -1385,11 +1429,7 @@ msgstr ""
 msgid "Пользователи"
 msgstr ""
 
-#: search/templates/search.html:119
-msgid "Я.Контест"
-msgstr ""
-
-#: search/templates/search.html:135
+#: search/templates/search.html:135 templates/base.html:126
 msgid "Курсы"
 msgstr ""
 
@@ -1715,6 +1755,48 @@ msgstr ""
 msgid "нам"
 msgstr ""
 
+#: templates/base.html:614
+msgid "Есть новые сообщения"
+msgstr ""
+
+#: templates/base.html:617
+msgid "Нет новых сообщений"
+msgstr ""
+
+#: templates/base.html:629 users/templates/my_tasks.html:93
+#: users/templates/status_history.html:29 users/templates/user_profile.html:17
+#: users/templates/user_settings.html:43
+msgid "Профиль"
+msgstr ""
+
+#: templates/base.html:633
+msgid "Админка"
+msgstr ""
+
+#: templates/base.html:636
+msgid "Сменить пароль"
+msgstr ""
+
+#: templates/base.html:638
+msgid "Выйти"
+msgstr ""
+
+#: templates/base.html:645 templates/registration/registration_form.html:85
+msgid "Войдите"
+msgstr ""
+
+#: templates/base.html:648
+msgid "Зарегистрируйтесь"
+msgstr ""
+
+#: templates/base.html:677
+msgid "Блог"
+msgstr ""
+
+#: templates/base.html:678
+msgid "Пишите нам на"
+msgstr ""
+
 #: templates/admin/base.html:28
 msgid "Main"
 msgstr ""
@@ -1869,10 +1951,6 @@ msgstr ""
 msgid "Пользователь с таким адресом уже существует. "
 msgstr ""
 
-#: templates/registration/registration_form.html:85
-msgid "Войдите"
-msgstr ""
-
 #: templates/registration/registration_form.html:92
 msgid "Пароли не совпадают"
 msgstr ""
@@ -1930,11 +2008,6 @@ msgstr ""
 #: users/templates/my_tasks.html:44 users/templates/my_tasks.html.py:55
 #: users/templates/my_tasks.html:69
 msgid "Все выбрано"
-msgstr ""
-
-#: users/templates/my_tasks.html:93 users/templates/status_history.html:29
-#: users/templates/user_profile.html:17 users/templates/user_settings.html:43
-msgid "Профиль"
 msgstr ""
 
 #: users/templates/my_tasks.html:99 users/templates/status_history.html:35

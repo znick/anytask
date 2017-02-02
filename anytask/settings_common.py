@@ -1,4 +1,5 @@
 # Django settings for anytask project.
+# coding: utf-8
 
 from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
 
@@ -154,7 +155,7 @@ INSTALLED_APPS = (
     'search',
     'staff',
     'blog',
-    'mail',
+    'mail'
 )
 
 AUTH_PROFILE_MODULE = "users.UserProfile"

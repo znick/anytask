@@ -523,7 +523,7 @@
                             if (data.email)
                                 email_html = '<div class="sgs-email">{0}</div>'.format(data.email);
                             if (data.ya_login)
-                                ya_login_html = '<tr><td></td><td>{0}@ <small class="text-muted">Я.Контест</small></td></tr>'.format(data.ya_login);
+                                ya_login_html = '<tr><td></td><td>{0}@ <small class="text-muted">{% trans "Я.Контест" %}</small></td></tr>'.format(data.ya_login);
                             return table_html.format(data.url, avatar, data.fullname, email_html, data.username, ya_login_html)
                         }
                     }
@@ -634,7 +634,7 @@
 
         var new_msg_form_validator = $('#new_msg_form').validate({
             submitHandler: function (form) {
-                $("body").prepend('<div id="blockDiv"><div><span class="fa fa-circle-o-notch fa-spin"></span>&nbsp;Отправка...</div></div>');
+                $("body").prepend('<div id="blockDiv"><div><span class="fa fa-circle-o-notch fa-spin"></span>&nbsp;{% trans "Отправка..." %}</div></div>');
                 var $new_recipients = $('#new_recipients');
 
                 $.post('{% url mail.views.ajax_send_message %}', {
