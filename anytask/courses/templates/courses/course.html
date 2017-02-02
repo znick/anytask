@@ -31,7 +31,7 @@
     <ul class="nav navbar-nav">
         <li class="nav-item active">
             <a class="nav-link" href="{{ course.get_absolute_url }}"> {% if not seminar %}{% trans "Страница курса" %}{% else %}
-                Страница семинара{% endif %}</a>
+                {% trans "Страница семинара" %}{% endif %}</a>
         </li>
         <li class="nav-item">
             <a class="nav-link"
