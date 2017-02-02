@@ -26,3 +26,4 @@ django-htmlmin
 django-colorfield
 django-haystack==2.4.1
 Whoosh
+sqlparse==0.1.19

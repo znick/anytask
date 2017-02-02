@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-02 16:16+0500\n"
+"POT-Creation-Date: 2017-02-02 17:55+0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -49,7 +49,7 @@ msgstr ""
 msgid "Ошибка отправки в Review Board."
 msgstr ""
 
-#: anyrb/common.py:82 courses/templates/courses/queue.html:69
+#: anyrb/common.py:82 courses/templates/courses/queue.html:73
 #: issues/models.py:471 users/templates/my_tasks.html:136
 msgid "Задача"
 msgstr ""
@@ -58,7 +58,7 @@ msgstr ""
 msgid "курс"
 msgstr ""
 
-#: anyrb/common.py:84 courses/templates/courses/queue.html:68
+#: anyrb/common.py:84 courses/templates/courses/queue.html:72
 #: courses/templates/courses/tasklist/many_tasksets_many_groups.html:35
 #: courses/templates/courses/tasklist/shad_cpp.html:137
 #: staff/templates/gradebook.html:43
@@ -89,7 +89,7 @@ msgstr ""
 msgid "На проверке"
 msgstr ""
 
-#: courses/forms.py:24 courses/templates/courses/course.html:140
+#: courses/forms.py:24 courses/templates/courses/gradebook.html:130
 #: issues/models.py:81
 msgid "Требуется информация"
 msgstr ""
@@ -123,19 +123,19 @@ msgstr ""
 msgid "%s - слушатели"
 msgstr ""
 
-#: courses/views.py:102 staff/views.py:44 users/views.py:402
+#: courses/views.py:104 staff/views.py:44 users/views.py:402
 msgid "Применить"
 msgstr ""
 
-#: courses/views.py:632 courses/views.py:644 tasks/views.py:314
+#: courses/views.py:730 courses/views.py:742 tasks/views.py:314
 msgid "Такого контеста не существует"
 msgstr ""
 
-#: courses/views.py:634 courses/views.py:646 tasks/views.py:316
+#: courses/views.py:732 courses/views.py:744 tasks/views.py:316
 msgid "Ошибка Я.Контеста: "
 msgstr ""
 
-#: courses/views.py:642 tasks/views.py:304 tasks/views.py:428
+#: courses/views.py:740 tasks/views.py:304 tasks/views.py:428
 msgid "У anytask нет прав на данный контест"
 msgstr ""
 
@@ -164,10 +164,10 @@ msgid "Описание задач"
 msgstr ""
 
 #: courses/templates/course_queue_many_task_many_group.html:80
-#: courses/templates/courses/course.html:30
+#: courses/templates/courses/course.html:43
+#: courses/templates/courses/gradebook.html:36
 #: courses/templates/courses/queue.html:8
-#: courses/templates/courses/queue.html:27
-#: courses/templates/courses/settings.html:33
+#: courses/templates/courses/settings.html:37
 #: issues/templates/issues/issue.html:30
 msgid "Очередь на проверку"
 msgstr ""
@@ -177,8 +177,6 @@ msgstr ""
 #: courses/templates/course_tasks_many_task_many_group.html:38
 #: courses/templates/course_tasks_one_tasks_many_group.html:35
 #: courses/templates/course_tasks_potok.html:27
-#: courses/templates/courses/course.html:75
-#: courses/templates/courses/course_js.html:170
 msgid "Редактировать информацию о курсе"
 msgstr ""
 
@@ -187,8 +185,6 @@ msgstr ""
 #: courses/templates/course_tasks_many_task_many_group.html:38
 #: courses/templates/course_tasks_one_tasks_many_group.html:35
 #: courses/templates/course_tasks_potok.html:27
-#: courses/templates/courses/course.html:77
-#: courses/templates/courses/course_js.html:172
 msgid "Добавить информацию о курсе"
 msgstr ""
 
@@ -202,7 +198,8 @@ msgstr ""
 #: courses/templates/course_tasks_potok.html:31
 #: courses/templates/course_transcript_many_task_many_group.html:21
 #: courses/templates/course_transcript_many_task_many_group.html:86
-#: courses/templates/courses/course.html:81
+#: courses/templates/courses/course.html:151
+#: courses/templates/courses/gradebook.html:80
 #: courses/templates/courses/tasklist/many_tasksets_many_groups.html:27
 #: courses/templates/courses/tasklist/many_tasksets_many_groups.html:119
 msgid "Добавить задачу"
@@ -226,6 +223,8 @@ msgstr ""
 #: courses/templates/course_queue_tasks_to_check.html:73
 #: courses/templates/course_tasks_many_task_many_group.html:67
 #: courses/templates/course_tasks_one_tasks_many_group.html:64
+#: courses/templates/courses/course.html:82
+#: courses/templates/courses/gradebook.html:69
 msgid "Преподаватели:"
 msgstr ""
 
@@ -304,6 +303,8 @@ msgid "Формулировка:"
 msgstr ""
 
 #: courses/templates/course_tasks_base.html:166
+#: courses/templates/courses/course.html:106
+#: courses/templates/courses/course.html:119
 #: courses/templates/courses/task.html:25
 msgid "Описание курса"
 msgstr ""
@@ -387,7 +388,7 @@ msgstr ""
 
 #: courses/templates/course_tasks_many_task_many_group.html:105
 #: courses/templates/course_tasks_many_task_many_group.html:188
-#: courses/templates/courses/course.html:144
+#: courses/templates/courses/gradebook.html:134
 msgid "Суммарный балл"
 msgstr ""
 
@@ -414,6 +415,7 @@ msgstr ""
 
 #: courses/templates/course_tasks_potok.html:17
 #: courses/templates/statistics.html:10
+#: courses/templates/courses/course.html:110
 msgid "Задачи"
 msgstr ""
 
@@ -423,8 +425,7 @@ msgid "Статистика"
 msgstr ""
 
 #: courses/templates/course_tasks_potok.html:36
-#: courses/templates/courses/course.html:60
-#: courses/templates/courses/settings.html:119 users/models.py:171
+#: courses/templates/courses/settings.html:131 users/models.py:171
 msgid "Преподаватели"
 msgstr ""
 
@@ -569,47 +570,77 @@ msgstr ""
 msgid "Нет такого пути :("
 msgstr ""
 
-#: courses/templates/courses/course.html:26
+#: courses/templates/courses/course.html:33
+#: courses/templates/courses/gradebook.html:27
 #: courses/templates/courses/queue.html:24
 #: courses/templates/courses/settings.html:29
-#: issues/templates/issues/issue.html:26 tasks/templates/contest_import.html:26
-#: tasks/templates/task_create.html:33 tasks/templates/task_edit.html:115
-#: tasks/templates/task_import.html:28
-msgid "Список задач"
+msgid "Страница курса"
 msgstr ""
 
-#: courses/templates/courses/course.html:35
-#: courses/templates/courses/queue.html:31
-#: courses/templates/courses/settings.html:8
-#: courses/templates/courses/settings.html:38 templates/base.html:630
+#: courses/templates/courses/course.html:38
+#: courses/templates/courses/gradebook.html:31
+#: courses/templates/courses/queue.html:28
+#: courses/templates/courses/settings.html:33
+#: staff/templates/get_gradebook.html:20 staff/templates/gradebook.html:21
+#: staff/templates/gradebook.html.py:38 staff/templates/staff.html:26
+msgid "Общая ведомость"
+msgstr ""
+
+#: courses/templates/courses/course.html:46
+#: courses/templates/courses/gradebook.html:41
+#: courses/templates/courses/queue.html:35
+#: courses/templates/courses/settings.html:8 templates/base.html:659
 #: users/templates/my_tasks.html:102 users/templates/status_history.html:38
 #: users/templates/user_profile.html:26 users/templates/user_settings.html:52
 #: users/templates/user_settings.html:62
 msgid "Настройки"
 msgstr ""
 
-#: courses/templates/courses/course.html:70
+#: courses/templates/courses/course.html:89
 msgid "Редактировать семинар"
 msgstr ""
 
-#: courses/templates/courses/course.html:91
-msgid "Импорт задачи из Я.Контеста"
-msgstr ""
-
-#: courses/templates/courses/course.html:94
-msgid "Импорт соревнования из Я.Контеста"
-msgstr ""
-
-#: courses/templates/courses/course.html:101
+#: courses/templates/courses/course.html:96
+#: courses/templates/courses/gradebook.html:101
 msgid "Не показывать скрытые задачи"
 msgstr ""
 
-#: courses/templates/courses/course.html:103
+#: courses/templates/courses/course.html:98
+#: courses/templates/courses/gradebook.html:103
 msgid "Показать скрытые задачи"
 msgstr ""
 
-#: courses/templates/courses/course.html:139 issues/models.py:76
-msgid "Новый"
+#: courses/templates/courses/course.html:107
+#: courses/templates/courses/course.html:119
+msgid "Описание занятия"
+msgstr ""
+
+#: courses/templates/courses/course.html:110
+#: courses/templates/courses/course.html:147
+msgid "Список групп и задач"
+msgstr ""
+
+#: courses/templates/courses/course.html:162
+msgid "Импорт задачи из Я.Контеста"
+msgstr ""
+
+#: courses/templates/courses/course.html:164
+#: courses/templates/courses/gradebook.html:93
+msgid "Импорт соревнования из Я.Контеста"
+msgstr ""
+
+#: courses/templates/courses/course.html:202
+#: courses/templates/courses/course.html:311
+msgid "Cдать"
+msgstr ""
+
+#: courses/templates/courses/course.html:242
+#: courses/templates/courses/course.html:343
+msgid "Ведомость"
+msgstr ""
+
+#: courses/templates/courses/course.html:273
+msgid "Перейти"
 msgstr ""
 
 #: courses/templates/courses/course_forbidden.html:30
@@ -634,19 +665,19 @@ msgstr ""
 msgid "Введите инвайт..."
 msgstr ""
 
-#: courses/templates/courses/course_js.html:53
-msgid "Развернуть "
+#: courses/templates/courses/course_js.html:57
+msgid "Развернуть"
 msgstr ""
 
-#: courses/templates/courses/course_js.html:54
-msgid "Свернуть "
+#: courses/templates/courses/course_js.html:58
+msgid "Свернуть"
 msgstr ""
 
-#: courses/templates/courses/course_js.html:129
+#: courses/templates/courses/course_js.html:141
 msgid "Сохранить изменения?"
 msgstr ""
 
-#: courses/templates/courses/course_js.html:151
+#: courses/templates/courses/course_js.html:163
 #: courses/templates/courses/tasklist/shad_cpp.html:303
 #: issues/templates/issues/issue_js.html:125
 #: users/templates/status_history.html:160
@@ -654,130 +685,138 @@ msgstr ""
 msgid "Сохранение"
 msgstr ""
 
-#: courses/templates/courses/course_js.html:204
+#: courses/templates/courses/course_js.html:222
 #: staff/templates/staff_js.html:107
 msgid "Скопировать"
 msgstr ""
 
-#: courses/templates/courses/course_js.html:221
+#: courses/templates/courses/course_js.html:239
 #: staff/templates/staff_js.html:124
 msgid "Пустая таблица"
 msgstr ""
 
-#: courses/templates/courses/course_js.html:222
+#: courses/templates/courses/course_js.html:240
 #: staff/templates/staff_js.html:125
 msgid "_TOTAL_ студента(ов)"
 msgstr ""
 
-#: courses/templates/courses/course_js.html:223
+#: courses/templates/courses/course_js.html:241
 #: staff/templates/staff_js.html:126
 msgid "0 студентов"
 msgstr ""
 
-#: courses/templates/courses/course_js.html:224
+#: courses/templates/courses/course_js.html:242
 #: staff/templates/staff_js.html:127
 msgid "(из _MAX_)"
 msgstr ""
 
-#: courses/templates/courses/course_js.html:227
+#: courses/templates/courses/course_js.html:245
 #: staff/templates/staff_js.html:130
 msgid "Показать _MENU_ студентов"
 msgstr ""
 
-#: courses/templates/courses/course_js.html:228 mail/templates/mail.html:5
+#: courses/templates/courses/course_js.html:246 mail/templates/mail.html:5
 #: mail/templates/mail.html.py:42 mail/templates/mail.html:60
 #: mail/templates/mail.html.py:78 mail/templates/mail.html:157
 #: mail/templates/mail_js.html:73 staff/templates/staff_js.html:131
 msgid "Загрузка..."
 msgstr ""
 
-#: courses/templates/courses/course_js.html:229
+#: courses/templates/courses/course_js.html:247
 #: staff/templates/staff_js.html:132
 msgid "Вычисление..."
 msgstr ""
 
-#: courses/templates/courses/course_js.html:230
+#: courses/templates/courses/course_js.html:248
 #: staff/templates/staff_js.html:133
 msgid "Поиск:"
 msgstr ""
 
-#: courses/templates/courses/course_js.html:231 mail/templates/mail_js.html:77
+#: courses/templates/courses/course_js.html:249 mail/templates/mail_js.html:77
 #: staff/templates/staff_js.html:134
 msgid "Ничего не найдено"
 msgstr ""
 
-#: courses/templates/courses/course_js.html:233
+#: courses/templates/courses/course_js.html:251
 #: staff/templates/staff_js.html:136
 msgid "Первая"
 msgstr ""
 
-#: courses/templates/courses/course_js.html:234
+#: courses/templates/courses/course_js.html:252
 #: staff/templates/staff_js.html:137
 msgid "Последняя"
 msgstr ""
 
-#: courses/templates/courses/course_js.html:235
+#: courses/templates/courses/course_js.html:253
 #: staff/templates/staff_js.html:138
 msgid "Вперед"
 msgstr ""
 
-#: courses/templates/courses/course_js.html:236
+#: courses/templates/courses/course_js.html:254
 #: staff/templates/staff_js.html:139
 msgid "Назад"
 msgstr ""
 
-#: courses/templates/courses/course_js.html:243
+#: courses/templates/courses/course_js.html:261
 #: staff/templates/staff_js.html:146
 msgid "Данные скопированы в буфер обмена"
 msgstr ""
 
-#: courses/templates/courses/course_js.html:245
+#: courses/templates/courses/course_js.html:263
 #: staff/templates/staff_js.html:148
 msgid "записей из таблицы"
 msgstr ""
 
-#: courses/templates/courses/course_js.html:246
+#: courses/templates/courses/course_js.html:264
 #: staff/templates/staff_js.html:149
 msgid "1 запись из таблицы"
 msgstr ""
 
-#: courses/templates/courses/course_js.html:537
+#: courses/templates/courses/course_js.html:555
 msgid "Удалить задачу из следующих групп?"
 msgstr ""
 
-#: courses/templates/courses/course_js.html:578
+#: courses/templates/courses/course_js.html:596
 msgid ""
 "Удаленную задачу невозможно восстановить. Вы уверены, что хотить удалить?"
 msgstr ""
 
-#: courses/templates/courses/course_js.html:627
+#: courses/templates/courses/course_js.html:645
 #: users/templates/user_profile_js.html:129
 msgid "Сохранить изменения"
 msgstr ""
 
-#: courses/templates/courses/course_js.html:724
+#: courses/templates/courses/course_js.html:738
 #: issues/templates/issues/info.html:86 issues/templates/issues/info.html:106
 #: tasks/templates/task_create_or_edit_js.html:366
 #: tasks/templates/task_import_js.html:358
 msgid "Дата сдачи:"
 msgstr ""
 
-#: courses/templates/courses/queue.html:70 users/templates/my_tasks.html:139
+#: courses/templates/courses/gradebook.html:27
+msgid "Страница семинара"
+msgstr ""
+
+#: courses/templates/courses/gradebook.html:129 issues/models.py:76
+msgid "Новый"
+msgstr ""
+
+#: courses/templates/courses/queue.html:74 users/templates/my_tasks.html:139
 msgid "Обновлена"
 msgstr ""
 
-#: courses/templates/courses/queue.html:71 users/templates/my_tasks.html:141
+#: courses/templates/courses/queue.html:75 users/templates/my_tasks.html:141
 msgid "Оценка"
 msgstr ""
 
-#: courses/templates/courses/queue.html:72 issues/models.py:469
+#: courses/templates/courses/queue.html:76 issues/models.py:469
 msgid "Ответственный"
 msgstr ""
 
 #: courses/templates/courses/queue_js.html:22
 #: issues/templates/issues/issue_js.html:31 mail/templates/mail_js.html:76
 #: search/templates/search.html:52
-#: tasks/templates/task_create_or_edit_js.html:34 templates/base.html:599
+#: tasks/templates/task_create_or_edit_js.html:34 templates/base.html:628
 #: users/templates/my_tasks.html:42
 msgid "Найти..."
 msgstr ""
@@ -789,68 +828,76 @@ msgstr ""
 msgid "Все"
 msgstr ""
 
-#: courses/templates/courses/settings.html:120
+#: courses/templates/courses/settings.html:132
 msgid ""
 "Эти преподаватели будут назначаться проверяющими во время перехода задачи в "
 "статус 'на проверке' если другой преподаватель не был назначен ранее"
 msgstr ""
 
-#: courses/templates/courses/settings.html:141
+#: courses/templates/courses/settings.html:153
 msgid "Настройка задач"
 msgstr ""
 
-#: courses/templates/courses/settings.html:142
+#: courses/templates/courses/settings.html:154
 msgid "Скрытие полей и установка значений по умолчанию"
 msgstr ""
 
-#: courses/templates/courses/settings.html:146
+#: courses/templates/courses/settings.html:158
 msgid "Отправлять один файл"
 msgstr ""
 
-#: courses/templates/courses/settings.html:149
-#: courses/templates/courses/settings.html:162
+#: courses/templates/courses/settings.html:161
+#: courses/templates/courses/settings.html:174
 msgid "Отображать настройку"
 msgstr ""
 
-#: courses/templates/courses/settings.html:153
-#: courses/templates/courses/settings.html:166
+#: courses/templates/courses/settings.html:165
+#: courses/templates/courses/settings.html:178
 msgid "Значение по умолчанию"
 msgstr ""
 
-#: courses/templates/courses/settings.html:159
+#: courses/templates/courses/settings.html:171
 msgid "Переводить в Зачтено после положительного вердикта Я.Контеста"
 msgstr ""
 
-#: courses/templates/courses/settings.html:179
+#: courses/templates/courses/settings.html:191
 msgid "Яндекс.Контест"
 msgstr ""
 
-#: courses/templates/courses/settings.html:180
+#: courses/templates/courses/settings.html:193
+msgid "Пересудить решения студентов"
+msgstr ""
+
+#: courses/templates/courses/settings.html:207
+msgid "Пересудить"
+msgstr ""
+
+#: courses/templates/courses/settings.html:214
 msgid ""
 "Обновить название, максимальный балл, дату сдачи и формулировку для задач"
 msgstr ""
 
-#: courses/templates/courses/settings.html:194
+#: courses/templates/courses/settings.html:228
 #: tasks/templates/task_edit.html:367
 msgid "Обновить"
 msgstr ""
 
-#: courses/templates/courses/settings.html:210
+#: courses/templates/courses/settings.html:245
 msgid "Расширения файлов"
 msgstr ""
 
-#: courses/templates/courses/settings.html:224
+#: courses/templates/courses/settings.html:259
 #: tasks/templates/contest_import.html:167 tasks/templates/task_create.html:163
 #: tasks/templates/task_edit.html:297 tasks/templates/task_import.html:167
 msgid "Отменить и выйти"
 msgstr ""
 
-#: courses/templates/courses/settings.html:225
+#: courses/templates/courses/settings.html:260
 #: tasks/templates/task_create.html:164 tasks/templates/task_edit.html:298
 msgid "Сохранить и продолжить редактирование"
 msgstr ""
 
-#: courses/templates/courses/settings.html:226
+#: courses/templates/courses/settings.html:261
 #: tasks/templates/contest_import.html:168 tasks/templates/task_create.html:165
 #: tasks/templates/task_edit.html:299 tasks/templates/task_import.html:168
 msgid "Сохранить и выйти"
@@ -968,14 +1015,6 @@ msgstr ""
 msgid ""
 "Если необходимой группы нет в списке, обратитесь к <a href=\"mailto:"
 "anytask@yandex.ru\">администратору</a>."
-msgstr ""
-
-#: invites/templates/generate_forbidden.html:4
-msgid "Милые котики"
-msgstr ""
-
-#: invites/templates/generate_forbidden.html:8
-msgid "Чуть позже на этой странице появятся милые котики."
 msgstr ""
 
 #: invites/templates/invites_list.html:5
@@ -1139,6 +1178,12 @@ msgstr ""
 
 #: issues/templates/issues/info.html:57
 msgid "Я"
+msgstr ""
+
+#: issues/templates/issues/issue.html:26 tasks/templates/contest_import.html:26
+#: tasks/templates/task_create.html:33 tasks/templates/task_edit.html:115
+#: tasks/templates/task_import.html:28
+msgid "Список задач"
 msgstr ""
 
 #: issues/templates/issues/issue.html:40
@@ -1436,11 +1481,6 @@ msgstr ""
 #: staff/templates/get_gradebook.html:17 staff/templates/gradebook.html:18
 #: staff/templates/staff.html:23
 msgid "Фильтры по статусам"
-msgstr ""
-
-#: staff/templates/get_gradebook.html:20 staff/templates/gradebook.html:21
-#: staff/templates/gradebook.html.py:38 staff/templates/staff.html:26
-msgid "Общая ведомость"
 msgstr ""
 
 #: staff/templates/get_gradebook.html:42
@@ -1755,45 +1795,45 @@ msgstr ""
 msgid "нам"
 msgstr ""
 
-#: templates/base.html:614
+#: templates/base.html:643
 msgid "Есть новые сообщения"
 msgstr ""
 
-#: templates/base.html:617
+#: templates/base.html:646
 msgid "Нет новых сообщений"
 msgstr ""
 
-#: templates/base.html:629 users/templates/my_tasks.html:93
+#: templates/base.html:658 users/templates/my_tasks.html:93
 #: users/templates/status_history.html:29 users/templates/user_profile.html:17
 #: users/templates/user_settings.html:43
 msgid "Профиль"
 msgstr ""
 
-#: templates/base.html:633
+#: templates/base.html:662
 msgid "Админка"
 msgstr ""
 
-#: templates/base.html:636
+#: templates/base.html:665
 msgid "Сменить пароль"
 msgstr ""
 
-#: templates/base.html:638
+#: templates/base.html:667
 msgid "Выйти"
 msgstr ""
 
-#: templates/base.html:645 templates/registration/registration_form.html:85
+#: templates/base.html:674 templates/registration/registration_form.html:85
 msgid "Войдите"
 msgstr ""
 
-#: templates/base.html:648
+#: templates/base.html:677
 msgid "Зарегистрируйтесь"
 msgstr ""
 
-#: templates/base.html:677
+#: templates/base.html:706
 msgid "Блог"
 msgstr ""
 
-#: templates/base.html:678
+#: templates/base.html:721
 msgid "Пишите нам на"
 msgstr ""
 

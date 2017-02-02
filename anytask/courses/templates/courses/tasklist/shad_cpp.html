@@ -202,7 +202,7 @@
                                                     </form>
                                                 {% endif %}
                                             {% elif task.type == task.TYPE_SEMINAR %}
-                                                {% if task.children.count != 0 %} <a  href="{{ course.id }}/seminar/{{task.id}}"> {% endif %}
+                                                {% if task.children.count != 0 %} <a  href="seminar/{{task.id}}"> {% endif %}
                                             <span class="label
                                                   {{ task_x_task_takens|have_issue:task }}" style="background-color: {{ task_x_task_takens|label_color:task }};">
                                                   {{ task_x_task_takens|score:task }}
