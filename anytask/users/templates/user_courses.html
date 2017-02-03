@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% load table_func %}
+
+{% block title %} {{ user_to_show.get_full_name }} {% endblock %}
+
+{% block scripts %}
+    <script src="{{ STATIC_URL }}jquery.stickytableheaders.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $(".table_courses").tablesorter();
+            $(".table_courses").stickyTableHeaders({fixedOffset: $('.navbar')});
+            $('.switch-tab').click(function () {
+                $(this).tab('show');
+                $(this).removeClass('active');
+            });
+        });
+    </script>
+
+{% endblock %}
+
+{% block navbar %}
+    <ul class="nav navbar-nav">
+        {%  if user_to_show == user %}
+            <li class="nav-item">
+                <a class="nav-link" href="{% url users.views.profile %}">{%  trans "Профиль" %}</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url users.views.my_tasks %}">{%  trans "Мои задачи" %}</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" href="">{%  trans "Мои курсы" %}</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url users.views.profile_settings %}">{%  trans "Настройки" %}</a>
+            </li>
+        {% else %}
+            <li class="nav-item">
+                <a class="nav-link" href="{% url users.views.profile user_to_show %}">{%  trans "Профиль студента" %}</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" href="">{%  trans "Курсы студента" %}</a>
+            </li>
+            {% if user.is_staff %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url users.views.profile_history user_to_show %}">{%  trans "Редактирование статусов" %}</a>
+                </li>
+            {% endif %}
+        {% endif %}
+    </ul>
+{% endblock navbar %}
+
+{% block content %}
+
+    <style>
+        .table_courses th {
+            white-space: nowrap
+        }
+        .card .nav-pills{
+            font-size: 0.8em;
+        }
+        .switch-tab i{
+            font-size: 1.5rem
+        }
+        .card-header {
+            background-color: inherit;
+            border-bottom: none;
+        }
+    </style>
+
+    {% if tables.0 or tables.1 %}
+        <div class="tab-content">
+            {% for table in tables %}
+                {% if table %}
+                    <div class="tab-pane fade {% if forloop.first or not tables|exist:forloop.counter0 %}in active{% endif %}" id="{% if forloop.first %}course_list{% else %}course_list_archive{% endif %}" role="tabpanel">
+                        <div class="card">
+                            <div class="card-header" >
+                                {% if tables|exist:forloop.counter0 %}
+                                    <a class="close switch-tab" href="#{% if forloop.first %}course_list_archive{% else %}course_list{% endif %}" role="tab" title='{% if forloop.first %}{%  trans "Активные" %}{% else %}{%  trans "Архив" %}{% endif %}'>
+                                        <i class="fa {% if forloop.first %}fa-file-archive-o{% else %}fa-file-text-o{% endif %}" aria-hidden="true"></i>
+                                    </a>
+                                {% endif %}
+                                <h5 class="card-title">
+                                    {%  if user_to_show != user %}{%  trans "Текущая успеваемость" %} {{ user_to_show.get_full_name }}
+                                    {% else %}{%  trans "Мои курсы" %}{% endif %}
+                                    {% if not forloop.first %}({%  trans "Архив" %}){% endif %}
+                                </h5>
+                                <ul class="nav nav-pills" role="tablist">
+                                    {% for year, _ in table %}
+                                        <li class="nav-item">
+                                            <a class="nav-link {% if year == current_year or forloop.last and not table|has_item:current_year %}active{% endif %}" data-toggle="pill" href="#{% if forloop.parentloop.first %}courses_{% else %}courses_archive_{% endif %}{{ forloop.counter }}" role="tab">{{ year }}</a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            <div class="tab-content">
+                                {% for year, courses_in_year in table %}
+                                    <div class="tab-pane fade {% if year == current_year or forloop.last and not table|has_item:current_year  %}in active{% endif %}" id="{% if forloop.parentloop.first %}courses_{% else %}courses_archive_{% endif %}{{ forloop.counter }}" role="tabpanel">
+                                        <div class="card-block">
+                                            {% for table_id, course_statistics in courses_in_year.iteritems %}
+                                                <table class="table table_courses">
+                                                    <thead>
+                                                    <tr style="background-color: #ffffff;">
+                                                        <th>{%  trans "Курс" %}<i class="fa fa-fw fa-sort"></i></th>
+                                                        {% for status, sum in course_statistics.0.issues_count %}
+                                                            <th>{{ status.name }}<i class="fa fa-fw fa-sort"></i></th>
+                                                        {% endfor %}
+                                                        <th>{%  trans "Всего задач" %}<i class="fa fa-fw fa-sort"></i></th>
+                                                        <th>{%  trans "Итоговая оценка" %}<i class="fa fa-fw fa-sort"></i></th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    {% for course in course_statistics %}
+                                                        <tr>
+                                                            <td>
+                                                                <a href="{{ course.url }}">{{ course.name }}</a>
+                                                            </td>
+                                                            {% for status, sum in course.issues_count %}
+                                                                <td><h5><label class="label" style="background-color: {{ status.color }};">{{ sum }}</label></h5></td>
+                                                            {% endfor %}
+                                                            <td><h5><label class="label label-inverse">{{ course.tasks }}</label></h5></td>
+                                                            <td><h5><label class="label label-success">{{ course.mark }}</label></h5></td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="card">
+            <div class="card-block">
+                <h5 class="card-title"> {%  if user_to_show != user %} {%  trans "Текущая успеваемость" %} {{ user_to_show.get_full_name }}
+                {% else %}{%  trans "Мои курсы" %}{% endif %}</h5>
+                <p class="card-text">{%  trans "Нет ни одного курса" %}</p>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}
