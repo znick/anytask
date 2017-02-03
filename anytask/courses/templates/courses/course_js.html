@@ -541,7 +541,8 @@
                     }
 
                     var is_disabled = '';
-                    if ($(this).data('task_disabled_groups').indexOf(groups[i]) > -1)
+                    if ($(this).data('task_disabled_groups').indexOf(groups[i]) > -1 ||
+                        $(this).data('task_empty_children_groups').indexOf(groups[i]) > -1)
                         is_disabled = 'disabled';
 
                     group_ul += '<li><label class="checkbox '+ is_disabled + '"><input type="checkbox" name="task_group[]" value="' + groups[i] + '" ' +
