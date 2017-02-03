@@ -5,7 +5,6 @@
 {% load sanitize_html icon %}
 {% load dict_func %}
 {% load task_taken_func %}
-{% trans "Очередь на проверку" as task_queue %}
 
 {% block title %}{{ course.name }} | {{ course.year }}{% endblock %}
 
@@ -15,7 +14,9 @@
         {% breadcrumb school.name school.get_absolute_url %}
     {% endif %}
     {% breadcrumb course.name course.get_absolute_url %}
-    {% breadcrumb task_queue "" %}
+    {% breadcrumb_for "" %}
+        {%  trans "Очередь на проверку" %}
+    {% endbreadcrumb_for %}
 {% endblock breadcrumbs %}
 
 {% block navbar %}
@@ -28,7 +29,7 @@
                href="{{ course.get_absolute_url }}/gradebook">{% trans "Общая ведомость" %}</a>
         </li>
         <li class="nav-item active">
-            <a class="nav-link" href="">task_queue</a>
+            <a class="nav-link" href="">{% trans "Очередь на проверку" %}</a>
         </li>
         {% if user_is_teacher %}
             <li class="nav-item">

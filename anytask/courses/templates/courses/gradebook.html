@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load i18n %}
 {% load django_bootstrap_breadcrumbs %}
 {% load sanitize_html icon %}
 {% load dict_func %}
@@ -24,7 +25,7 @@
         <li class="nav-item">
             <a class="nav-link"
                href="{{ course.get_absolute_url }}{% if seminar %}/seminar/{{ seminar.id }}{% endif %}">
-                {% if not seminar %}{% trans "Страница курса" %}{% else %}{% trans "Страница семинара" %}{% endif %}</a>
+                {% if not seminar %}{% else %}{% trans "Страница семинара" %}{% endif %}</a>
         </li>
         <li class="nav-item">
             <a class="nav-link {% if not group_gradebook %}active{% endif %}"
@@ -88,7 +89,7 @@
                                 <div style="font-size: .875rem;" class="dropdown-menu"
                                      aria-labelledby="dropdownMenuButton">
                                     <a class="dropdown-item" href="/task/import/{{ course.id }}" role="button">
-                                        {% trans "Импорт задачи из Я.Контеста" %]
+                                        {% trans "Импорт задачи из Я.Контеста" %}
                                     </a>
                                     <a class="dropdown-item" href="/task/contest_import/{{ course.id }}">{% trans "Импорт соревнования из Я.Контеста" %}</a>
                                 </div>

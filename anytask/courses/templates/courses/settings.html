@@ -5,7 +5,7 @@
 {% load sanitize_html icon %}
 {% load dict_func %}
 {% load task_taken_func %}
-{% trans "Настройки" as settings %}
+
 
 {% block title %}{{ course.name }} | {{ course.year }}{% endblock %}
 
@@ -15,7 +15,9 @@
         {% breadcrumb school.name school.get_absolute_url %}
     {% endif %}
     {% breadcrumb course.name course.get_absolute_url %}
-    {% breadcrumb settings "" %}
+    {% breadcrumb_for "" %}
+        {%  trans "Настройки" %}
+    {% endbreadcrumb_for %}
 {% endblock breadcrumbs %}
 
 
@@ -39,7 +41,7 @@
         {% endif %}
         {% if user_is_teacher %}
             <li class="nav-item active">
-                <a class="nav-link" href="">settings</a>
+                <a class="nav-link" href="">{% trans "Настройки" %}</a>
             </li>
         {% endif %}
     </ul>

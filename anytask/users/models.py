@@ -152,7 +152,7 @@ class UserProfileFilter(django_filters.FilterSet):
     user_status = django_filters.ChoiceFilter(label=u'<strong>{0}</strong>'.format(_(u'Статус студента')), name='user_status')
 
     def set(self):
-        activity_choices = [(status.id, _(status.name)) for status in UserStatus.objects.filter(type='activity')]
+        activity_choices = [(status.id, status.name) for status in UserStatus.objects.filter(type='activity')]
         activity_choices.insert(0, (u'', _(u'Любой')))
         self.filters['user_status'].field.choices = tuple(activity_choices)
 
@@ -181,8 +181,8 @@ class IssueFilterStudent(django_filters.FilterSet):
         teacher_set = set()
         status_set = set()
         for course in courses:
-            course_choices.add((course.id, _(course.name)))
-            year_choices.add((course.year.id, _(unicode(course.year))))
+            course_choices.add((course.id, course.name))
+            year_choices.add((course.year.id, unicode(course.year)))
 
             for teacher in course.get_teachers():
                 teacher_set.add(teacher)
@@ -196,13 +196,13 @@ class IssueFilterStudent(django_filters.FilterSet):
         self.filters['years'].field.choices = tuple(year_choices)
         self.filters['courses'].field.choices = tuple(course_choices)
 
-        teacher_choices = [(teacher.id, _(teacher.get_full_name())) for teacher in teacher_set]
+        teacher_choices = [(teacher.id, teacher.get_full_name()) for teacher in teacher_set]
         self.filters['responsible'].field.choices = tuple(teacher_choices)
 
-        status_choices = [(status.id, _(status.name)) for status in status_set]
+        status_choices = [(status.id, status.name) for status in status_set]
         for status_id in sorted(IssueStatus.HIDDEN_STATUSES.values(), reverse=True):
             status_field = IssueStatus.objects.get(pk=status_id)
-            status_choices.insert(0, (status_field.id, _(status_field.name)))
+            status_choices.insert(0, (status_field.id, status_field.name))
         self.filters['status_field'].field.choices = tuple(status_choices)
 
     class Meta:

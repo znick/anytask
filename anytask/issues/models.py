@@ -471,21 +471,21 @@ class IssueFilter(django_filters.FilterSet):
     task = django_filters.ChoiceFilter(label=u'<strong>{0}</strong>'.format(_(u'Задача')))
 
     def set_course(self, course):
-        teacher_choices = [(teacher.id, _(teacher.get_full_name())) for teacher in course.get_teachers()]
+        teacher_choices = [(teacher.id, teacher.get_full_name()) for teacher in course.get_teachers()]
         teacher_choices.insert(0, (u'', _(u'Любой')))
         self.filters['responsible'].field.choices = tuple(teacher_choices)
 
         teacher_choices.pop(0)
         self.filters['followers'].field.choices = tuple(teacher_choices)
 
-        task_choices = [(task.id, _(task.title)) for task in Task.objects.all().filter(course=course)]
+        task_choices = [(task.id, task.title) for task in Task.objects.all().filter(course=course)]
         task_choices.insert(0, (u'', _(u'Любая')))
         self.filters['task'].field.choices = tuple(task_choices)
 
-        status_choices = [(status.id, _(status.name)) for status in course.issue_status_system.statuses.all()]
+        status_choices = [(status.id, status.name) for status in course.issue_status_system.statuses.all()]
         for status_id in sorted(IssueStatus.HIDDEN_STATUSES.values(), reverse=True):
             status_field = IssueStatus.objects.get(pk=status_id)
-            status_choices.insert(0, (status_field.id, _(status_field.name)))
+            status_choices.insert(0, (status_field.id, status_field.name))
         self.filters['status_field'].field.choices = tuple(status_choices)
 
     class Meta:
