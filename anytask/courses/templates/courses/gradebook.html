@@ -25,7 +25,7 @@
         <li class="nav-item">
             <a class="nav-link"
                href="{{ course.get_absolute_url }}{% if seminar %}/seminar/{{ seminar.id }}{% endif %}">
-                {% if not seminar %}{% else %}{% trans "Страница семинара" %}{% endif %}</a>
+                {% if not seminar %}{% trans "Страница курса" %}{% else %}{% trans "Страница семинара" %}{% endif %}</a>
         </li>
         <li class="nav-item">
             <a class="nav-link {% if not group_gradebook %}active{% endif %}"
