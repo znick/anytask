@@ -61,7 +61,10 @@ def task_group_info(task):
         data_task_empty_children_groups = set()
 
         for group in task.groups.all():
-            data_task_groups.add(str(group.id))
+            if not task.parent_task or (task.parent_task and group in task.parent_task.groups.all()):
+                data_task_groups.add(str(group.id))
+            else:
+                continue
             if task.type == 'Seminar':
                 if task.children.count():
                     for child in task.children.all():
