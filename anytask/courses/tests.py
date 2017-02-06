@@ -123,11 +123,11 @@ class ViewsTest(TestCase):
         self.school.courses = [self.course]
         self.school.save()
 
-    def test_course_page_anonymously(self):
+    def test_gradebook_anonymously(self):
         client = self.client
 
         # get page
-        response = client.get(reverse('courses.views.course_page', kwargs={'course_id': self.course.id}))
+        response = client.get(reverse('courses.views.gradebook', kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 302)
 
     def test_queue_page_anonymously(self):
@@ -199,14 +199,14 @@ class ViewsTest(TestCase):
                                 'mark_value': '3'})
         self.assertEqual(response.status_code, 302)
 
-    def test_course_page_with_teacher(self):
+    def test_gradebook_with_teacher(self):
         client = self.client
 
         # login
         self.assertTrue(client.login(username=self.teacher.username, password=self.teacher_password))
 
         # get page
-        response = client.get(reverse('courses.views.course_page', kwargs={'course_id': self.course.id}))
+        response = client.get(reverse('courses.views.gradebook', kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 200)
 
         html = BeautifulSoup(response.content)
@@ -218,10 +218,11 @@ class ViewsTest(TestCase):
         # navbar
         navbar = html.nav
         navbar_links = navbar.ul('li')
-        self.assertEqual(len(navbar_links), 3)
-        self.assertEqual(navbar_links[0].a['href'], '')
-        self.assertEqual(navbar_links[1].a['href'], u'/course/1/queue')
-        self.assertEqual(navbar_links[2].a['href'], u'/course/1/settings')
+        self.assertEqual(len(navbar_links), 4)
+        self.assertEqual(navbar_links[0].a['href'], u'/course/1')
+        self.assertEqual(navbar_links[1].a['href'], u'/course/1/gradebook/')
+        self.assertEqual(navbar_links[2].a['href'], u'/course/1/queue')
+        self.assertEqual(navbar_links[3].a['href'], u'/course/1/settings')
 
         navbar_dropdown = navbar.find('li', 'dropdown')
         self.assertEqual(navbar_dropdown.find('div', 'dropdown-menu').h6.string.strip().strip('\n'), u'teacher_name teacher_last_name')
@@ -253,9 +254,8 @@ class ViewsTest(TestCase):
         btn_group = container.find('div', {'id': 'btn_group_edit_course'})
         self.assertIsNotNone(btn_group)
         btn_group = btn_group('a')
-        self.assertEqual(len(btn_group), 2)
-        self.assertEqual(btn_group[0].string.strip().strip('\n'), u'Добавить информацию о курсе')
-        self.assertEqual(btn_group[1]['href'], u'/task/create/1')
+        self.assertEqual(len(btn_group), 1)
+        self.assertEqual(btn_group[0]['href'], u'/task/create/1')
 
         # table results
         table = container('table', 'table_results')
@@ -290,10 +290,11 @@ class ViewsTest(TestCase):
         # navbar
         navbar = html.nav
         navbar_links = navbar.ul('li')
-        self.assertEqual(len(navbar_links), 3)
+        self.assertEqual(len(navbar_links), 4)
         self.assertEqual(navbar_links[0].a['href'], u'/course/1')
-        self.assertEqual(navbar_links[1].a['href'], '')
-        self.assertEqual(navbar_links[2].a['href'], u'/course/1/settings')
+        self.assertEqual(navbar_links[1].a['href'], u'/course/1/gradebook')
+        self.assertEqual(navbar_links[2].a['href'], '')
+        self.assertEqual(navbar_links[3].a['href'], u'/course/1/settings')
 
         # breadcrumbs
         breadcrumbs = container.find('ul', 'breadcrumb')('li')
@@ -348,14 +349,14 @@ class ViewsTest(TestCase):
         self.assertEqual(response.content, '{"info": "<div class=\\"not-sanitize\\">course_information</div>"}')
 
         # get course page
-        response = client.get(reverse('courses.views.course_page', kwargs={'course_id': self.course.id}))
+        response = client.get(reverse('courses.views.gradebook', kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 200)
 
-        # course information
-        html = BeautifulSoup(response.content)
-        container = html.body.find('div', 'container', recursive=False)
-        self.assertEqual(container.find('div', {'id': 'course-information'}).find('div', 'not-sanitize')
-                         .string.strip().strip('\n'), 'course_information')
+        # # course information
+        # html = BeautifulSoup(response.content)
+        # container = html.body.find('div', 'container', recursive=False)
+        # self.assertEqual(container.find('div', {'id': 'course-information'}).find('div', 'not-sanitize')
+        #                  .string.strip().strip('\n'), 'course_information')
 
     def test_course_settings_with_teacher(self):
         client = self.client
@@ -376,10 +377,11 @@ class ViewsTest(TestCase):
         # navbar
         navbar = html.nav
         navbar_links = navbar.ul('li')
-        self.assertEqual(len(navbar_links), 3)
+        self.assertEqual(len(navbar_links), 4)
         self.assertEqual(navbar_links[0].a['href'], u'/course/1')
-        self.assertEqual(navbar_links[1].a['href'], u'/course/1/queue')
-        self.assertEqual(navbar_links[2].a['href'], '')
+        self.assertEqual(navbar_links[1].a['href'], u'/course/1/gradebook')
+        self.assertEqual(navbar_links[2].a['href'], u'/course/1/queue')
+        self.assertEqual(navbar_links[3].a['href'], '')
 
         # breadcrumbs
         breadcrumbs = container.find('ul', 'breadcrumb')('li')
@@ -438,7 +440,7 @@ class ViewsTest(TestCase):
                             is_hidden=True).set_position_in_new_group()
 
         # get course page
-        response = client.get(reverse('courses.views.course_page', kwargs={'course_id': self.course.id}))
+        response = client.get(reverse('courses.views.gradebook', kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 200)
 
         html = BeautifulSoup(response.content)
@@ -448,11 +450,10 @@ class ViewsTest(TestCase):
         btn_group = container.find('div', {'id': 'btn_group_edit_course'})
         self.assertIsNotNone(btn_group)
         btn_group = btn_group('a')
-        self.assertEqual(len(btn_group), 3)
-        self.assertEqual(btn_group[0].string.strip().strip('\n'), u'Добавить информацию о курсе')
-        self.assertEqual(btn_group[1]['href'], u'/task/create/1')
-        self.assertEqual(btn_group[2]['href'], u'javascript:change_visibility_hidden_tasks(1);')
-        self.assertEqual(btn_group[2].string.strip().strip('\n'), u'Показать скрытые задачи')
+        self.assertEqual(len(btn_group), 2)
+        self.assertEqual(btn_group[0]['href'], u'/task/create/1')
+        self.assertEqual(btn_group[1]['href'], u'javascript:change_visibility_hidden_tasks(1);')
+        self.assertEqual(btn_group[1].string.strip().strip('\n'), u'Показать скрытые задачи')
 
         # table results
         table = container.find('table', 'table_results')
@@ -470,7 +471,7 @@ class ViewsTest(TestCase):
         self.assertEqual(response.content, 'OK')
 
         # get course page
-        response = client.get(reverse('courses.views.course_page', kwargs={'course_id': self.course.id}))
+        response = client.get(reverse('courses.views.gradebook', kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 200)
 
         html = BeautifulSoup(response.content)
@@ -480,11 +481,10 @@ class ViewsTest(TestCase):
         btn_group = container.find('div', {'id': 'btn_group_edit_course'})
         self.assertIsNotNone(btn_group)
         btn_group = btn_group('a')
-        self.assertEqual(len(btn_group), 3)
-        self.assertEqual(btn_group[0].string.strip().strip('\n'), u'Добавить информацию о курсе')
-        self.assertEqual(btn_group[1]['href'], u'/task/create/1')
-        self.assertEqual(btn_group[2]['href'], u'javascript:change_visibility_hidden_tasks(1);')
-        self.assertEqual(btn_group[2].string.strip().strip('\n'), u'Не показывать скрытые задачи')
+        self.assertEqual(len(btn_group), 2)
+        self.assertEqual(btn_group[0]['href'], u'/task/create/1')
+        self.assertEqual(btn_group[1]['href'], u'javascript:change_visibility_hidden_tasks(1);')
+        self.assertEqual(btn_group[1].string.strip().strip('\n'), u'Не показывать скрытые задачи')
 
         # table results
         table = container.find('table', 'table_results')
@@ -514,7 +514,7 @@ class ViewsTest(TestCase):
         self.course.save()
 
         # get course page
-        response = client.get(reverse('courses.views.course_page', kwargs={'course_id': self.course.id}))
+        response = client.get(reverse('courses.views.gradebook', kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 200)
 
         html = BeautifulSoup(response.content)
@@ -556,7 +556,7 @@ class ViewsTest(TestCase):
         self.assertEqual(response.content, '{"student_course_mark_id": 1, "mark": "mark1"}')
 
         # get course page
-        response = client.get(reverse('courses.views.course_page', kwargs={'course_id': self.course.id}))
+        response = client.get(reverse('courses.views.gradebook', kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 200)
 
         html = BeautifulSoup(response.content)
@@ -606,7 +606,7 @@ class ViewsTest(TestCase):
         task.set_position_in_new_group()
 
         # get course page
-        response = client.get(reverse('courses.views.course_page', kwargs={'course_id': self.course.id}))
+        response = client.get(reverse('courses.views.gradebook', kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 200)
 
         html = BeautifulSoup(response.content)
@@ -648,7 +648,7 @@ class ViewsTest(TestCase):
         self.assertEqual(response.content, '{"color": "' + IssueStatus.objects.get(pk=5).color + '", "mark": 3.0}')
 
         # get course page
-        response = client.get(reverse('courses.views.course_page', kwargs={'course_id': self.course.id}))
+        response = client.get(reverse('courses.views.gradebook', kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 200)
 
         html = BeautifulSoup(response.content)
@@ -680,14 +680,14 @@ class ViewsTest(TestCase):
         self.assertEqual(table_body_inputs[3]['name'], 'mark_value')
         self.assertEqual(table_body_inputs[3]['value'], '3')
 
-    def test_course_page_with_student(self):
+    def test_gradebook_with_student(self):
         client = self.client
 
         # login
         self.assertTrue(client.login(username=self.student.username, password=self.student_password))
 
         # get page
-        response = client.get(reverse('courses.views.course_page', kwargs={'course_id': self.course.id}))
+        response = client.get(reverse('courses.views.gradebook', kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 200)
 
         html = BeautifulSoup(response.content)
@@ -699,8 +699,9 @@ class ViewsTest(TestCase):
         # navbar
         navbar = html.nav
         navbar_links = navbar.ul('li')
-        self.assertEqual(len(navbar_links), 1)
-        self.assertEqual(navbar_links[0].a['href'], '')
+        self.assertEqual(len(navbar_links), 2)
+        self.assertEqual(navbar_links[0].a['href'], u'/course/1')
+        self.assertEqual(navbar_links[1].a['href'], u'/course/1/gradebook/')
 
         navbar_dropdown = navbar.find('li', 'dropdown')
         self.assertEqual(navbar_dropdown.find('div', 'dropdown-menu').h6.string.strip().strip('\n'), u'student_name student_last_name')
@@ -820,7 +821,7 @@ class ViewsTest(TestCase):
         self.course.save()
 
         # get course page
-        response = client.get(reverse('courses.views.course_page', kwargs={'course_id': self.course.id}))
+        response = client.get(reverse('courses.views.gradebook', kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 200)
 
         html = BeautifulSoup(response.content)
@@ -857,7 +858,7 @@ class ViewsTest(TestCase):
 
         # get course page
         self.assertTrue(client.login(username=self.student.username, password=self.student_password))
-        response = client.get(reverse('courses.views.course_page', kwargs={'course_id': self.course.id}))
+        response = client.get(reverse('courses.views.gradebook', kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 200)
 
         html = BeautifulSoup(response.content)
@@ -889,7 +890,7 @@ class ViewsTest(TestCase):
         task.set_position_in_new_group()
 
         # get course page
-        response = client.get(reverse('courses.views.course_page', kwargs={'course_id': self.course.id}))
+        response = client.get(reverse('courses.views.gradebook', kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 200)
 
         html = BeautifulSoup(response.content)
@@ -933,7 +934,7 @@ class ViewsTest(TestCase):
 
         # get course page
         self.assertTrue(client.login(username=self.student.username, password=self.student_password))
-        response = client.get(reverse('courses.views.course_page', kwargs={'course_id': self.course.id}))
+        response = client.get(reverse('courses.views.gradebook', kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 200)
 
         html = BeautifulSoup(response.content)
