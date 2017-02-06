@@ -26,7 +26,7 @@ class QueueForm(forms.Form):
     following = forms.BooleanField(initial=True, label=_(u'Наблюдаемые мной'), required=False)
     not_mine = forms.BooleanField(initial=True, label=_(u'Не мои'), required=False)
     not_owned = forms.BooleanField(initial=True, label=_(u'Ничьи'), required=False)
-    overdue = forms.IntegerField(initial=0, label=_(u'Ждут проверки несколько дней'))
+    overdue = forms.IntegerField(initial=0, label=u'Ждут проверки несколько дней')
 
 def get_teacher_choises(course):
     teachers = [(0, "---")]

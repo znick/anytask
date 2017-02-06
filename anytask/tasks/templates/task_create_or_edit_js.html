@@ -363,7 +363,7 @@
         var task_name = $('#task_edit_header').val();
         $('#modal_task_header').show().text(task_name);
         if (deadline) {
-            $('#modal_task_deadline').html('<strong>{% trans "Дата сдачи:" %} ' + deadline + ' MSK UTC+3</strong>');
+            $('#modal_task_deadline').html('<strong>{% trans "Дата сдачи" %}: ' + deadline + ' MSK UTC+3</strong>');
         }
         else {
             $('#modal_task_deadline').empty();

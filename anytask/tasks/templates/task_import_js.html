@@ -355,7 +355,7 @@
         var deadline = $('#task_edit_datepicker').val();
         $('#modal_task_header').show();
         if (deadline) {
-            $('#modal_task_deadline').html('<strong>{% trans "Дата сдачи:" %} ' + deadline + ' MSK UTC+3</strong>');
+            $('#modal_task_deadline').html('<strong>{% trans "Дата сдачи" %}: ' + deadline + ' MSK UTC+3</strong>');
         }
         else {
             $('#modal_task_deadline').empty();

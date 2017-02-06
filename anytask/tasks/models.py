@@ -75,7 +75,7 @@ class Task(models.Model):
 
         if course.max_users_per_task:
             if TaskTaken.objects.filter(task=self).filter(Q( Q(status=TaskTaken.STATUS_TAKEN) | Q(status=TaskTaken.STATUS_SCORED))).count() >= course.max_users_per_task:
-                return (False, _(u'Задача не может быть взята более чем %d студентами') % course.max_users_per_task)
+                return (False, u'Задача не может быть взята более чем %d студентами' % course.max_users_per_task)
 
         if course.max_tasks_without_score_per_student:
             if TaskTaken.objects.filter(user=user).filter(status=TaskTaken.STATUS_TAKEN).count() >= course.max_tasks_without_score_per_student:
@@ -225,11 +225,11 @@ class TaskTaken(models.Model):
     task = models.ForeignKey(Task, db_index=True, null=False, blank=False)
 
     TASK_TAKEN_STATUSES = (
-        (STATUS_TAKEN,          _(u'Task taken')),
-        (STATUS_CANCELLED,      _(u'Task cancelled')),
-        (STATUS_BLACKLISTED,    _(u'Task blacklisted')),
-        (STATUS_SCORED,         _(u'Task scored')),
-        (STATUS_DELETED,        _(u'TaskTaken deleted'))
+        (STATUS_TAKEN,          u'Task taken'),
+        (STATUS_CANCELLED,      u'Task cancelled'),
+        (STATUS_BLACKLISTED,    u'Task blacklisted'),
+        (STATUS_SCORED,         u'Task scored'),
+        (STATUS_DELETED,        u'TaskTaken deleted')
     )
     status = models.IntegerField(max_length=1, choices=TASK_TAKEN_STATUSES, db_index=True, null=False, blank=False, default=0)
 
@@ -239,7 +239,7 @@ class TaskTaken(models.Model):
     STATUS_CHECK_CHOICES = (
         (EDIT, _(u'Дорешивание')),
         (QUEUE, _(u'Ожидает проверки')),
-        (OK, _(u'Задача зачтена и/или больше не принимается')),
+        (OK, u'Задача зачтена и/или больше не принимается'),
     )
     status_check = models.CharField(db_index=True, max_length=5, choices=STATUS_CHECK_CHOICES, default=EDIT)
 

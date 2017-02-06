@@ -20,7 +20,7 @@
             </form>
             <br/><br/>
             <p>
-                {% trans "Инструкция " %}<a href="{{ STATIC_URL }}/HowtoPassTask.pdf">{% trans "как сдавать задачи" %}</a>.
+                {% trans 'Инструкция <a href="{{ STATIC_URL }}/HowtoPassTask.pdf">как сдавать задачи</a>.' %}
             </p>
             <br/>
             <div id="review_submit_form">
@@ -36,7 +36,7 @@
                 <h3> Google review </h3>
                 <font color="red"> {{gr_error}} </font>
                 <div>
-                    {% trans "Id issue на сайте https://codereview.appspot.com:" %}
+                    Id issue на сайте https://codereview.appspot.com:
                     <input type="text" id="id_issue" name="id_issue" class="span5" value="{{id_issue_gr_review}}">
                 </div>
                 <br />
@@ -92,7 +92,7 @@ $("#gr_review_form").submit(function() {
     var id_issue = $("#id_issue").val();
     if (isNaN(parseInt(id_issue)) || !$.isNumeric(id_issue))
     {
-        alert("{% trans 'Введите в поле google review число.' %}");
+        alert("Введите в поле google review число.");
         return false;    
     }
     else

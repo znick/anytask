@@ -98,11 +98,11 @@
 {% if user.is_active and course.is_special_course %}
     {% if user_is_attended_special_course %}
         <a class="btn-small" href="javascript:set_spectial_course_attend({{ course.id }}, 'remove');">
-            {% trans "Больше не буду ходить на этот спец-курс" %}
+            Больше не буду ходить на этот спец-курс
         </a>
     {% else %}
         <a class="btn-small" href="javascript:set_spectial_course_attend({{ course.id }}, 'add');">
-            {% trans "Буду ходить на этот спец-курс" %}
+            Буду ходить на этот спец-курс
         </a>
     {% endif %}
     <br>

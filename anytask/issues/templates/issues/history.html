@@ -34,8 +34,7 @@
             {% if issue.update_time > issue.task.deadline_time and show_top_alert %}
                 <li>
                     <div id="top_alert" class="alert alert-danger">
-                        <strong>{% trans "Срок сдачи задания истек!" %}</strong> {% trans "Все сообщения, отправленные студентом позже срока сдачи, будут" %}
-                        {% trans "выделяться красным цветом." %}
+                        <strong>{% trans "Срок сдачи задания истек!" %}</strong> {% trans "Все сообщения, отправленные студентом позже срока сдачи, будут выделяться красным цветом." %}
                     </div>
                 </li>
             {% endif %}
@@ -45,8 +44,7 @@
             {% if event.id == first_event_after_deadline.id %}
                 <li>
                     <div id="event_alert" class="alert alert-danger">
-                        <strong>{% trans "Срок сдачи задания истек!" %}</strong> {% trans "Все сообщения, отправленные студентом позже срока сдачи, будут" %}
-                        {% trans "выделяться красным цветом." %}
+                        <strong>{% trans "Срок сдачи задания истек!" %}</strong> {% trans "Все сообщения, отправленные студентом позже срока сдачи, будут выделяться красным цветом." %}
                     </div>
                 </li>
             {% endif %}

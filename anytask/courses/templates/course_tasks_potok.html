@@ -41,7 +41,7 @@
     {% if course.is_special_course %}
         <!--
         <dd>
-            {% trans "{{ course.name }} &#151; спец-курс. Вы можете сами решать ходить на него или нет." %}
+            {{ course.name }} &#151; спец-курс. Вы можете сами решать ходить на него или нет.
         </dd>
     -->
     {% endif %}
@@ -50,7 +50,7 @@
 	{% if course.max_users_per_task %} <dd>{% trans "Максимальное число студентов на задачу" %}: {{ course.max_users_per_task }}</dd> {% endif %}
 
 	{% if course.max_days_without_score %}
-		<dd>{% trans "Если задача не будет оценена в течении {{ course.max_days_without_score }} дней, то заявка отменяется автоматически." %}</dd>
+		<dd>Если задача не будет оценена в течении {{ course.max_days_without_score }} дней, то заявка отменяется автоматически.</dd>
 	{% endif %}
 
 	{% if course.days_drop_from_blacklist %}
@@ -58,7 +58,7 @@
 	{% endif %}
 
 	{% if course.max_tasks_without_score_per_student %}
-		<dd>{% trans "У каждого студента может быть не более {{ course.max_tasks_without_score_per_student }} неоцененных задач." %}</dd>
+		<dd>У каждого студента может быть не более {{ course.max_tasks_without_score_per_student }} неоцененных задач.</dd>
 	{% endif %}
 	<dd>
 		{% if course.information %}<br>{% endif %}
