@@ -1,6 +1,7 @@
 {% extends "base.html" %}
+{% load i18n %}
 
-{% block title %}Настройки профиля{% endblock %}
+{% block title %}{% trans "Настройки профиля" %}{% endblock %}
 
 {% block scripts %}
     <script src="{{ STATIC_URL }}jquery.validate.min.js"></script>
@@ -9,18 +10,18 @@
             $('#submit_btn').click(function () {
                 $.post('{% url users.views.profile_settings %}', $('#user_settings').serialize(), function(data){
                     $('#submit_error_text').html('<div class="alert alert-success alert-dismissible fade in" role ="alert" id="user_settings_err">' +
-                            '                           <button type="button" class="close" data-dismiss="alert" aria-label="Закрыть">' +
+                            '                           <button type="button" class="close" data-dismiss="alert" aria-label="{% trans 'Закрыть' %}">' +
                             '                             <span aria-hidden="true">&times;</span>' +
                             '                           </button>' +
-                            '                           <span>Cохранено успешно.</span>' +
+                            '                           <span>{% trans "Сохранено успешно." %}</span>' +
                             '                         </div>');
                 })
                         .fail(function () {
                             $('#submit_error_text').html('<div class="alert alert-danger alert-dismissible fade in" role ="alert" id="user_settings_err">' +
-                                    '                           <button type="button" class="close" data-dismiss="alert" aria-label="Закрыть">' +
+                                    '                           <button type="button" class="close" data-dismiss="alert" aria-label="{% trans 'Закрыть' %}">' +
                                     '                             <span aria-hidden="true">&times;</span>' +
                                     '                           </button>' +
-                                    '                           <span>Произошла ошибка при сохранении. Попробуйте снова.</span>' +
+                                    '                           <span>{% trans "Произошла ошибка при сохранении. Попробуйте снова." %}</span>' +
                                     '                         </div>');
                         })
                         .always(function () {
@@ -39,16 +40,16 @@
 {% block navbar %}
     <ul class="nav navbar-nav">
         <li class="nav-item">
-            <a class="nav-link" href="{% url users.views.profile %}">Профиль</a>
+            <a class="nav-link" href="{% url users.views.profile %}">{% trans "Профиль" %}</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="{% url users.views.my_tasks %}">Мои задачи</a>
+            <a class="nav-link" href="{% url users.views.my_tasks %}">{% trans "Мои задачи" %}</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="{% url users.views.user_courses username=user %}">Мои курсы</a>
+            <a class="nav-link" href="{% url users.views.user_courses username=user %}">{% trans "Мои курсы" %}</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link active" href="">Настройки</a>
+            <a class="nav-link active" href="">{% trans "Настройки" %}</a>
         </li>
     </ul>
 {% endblock navbar %}
@@ -58,23 +59,23 @@
         <div class="col-md-5 col-xs-12">
             <div class="card">
                 <div class="card-block">
-                    <h5 class="card-title">Настройки</h5>
+                    <h5 class="card-title">{% trans "Настройки" %}</h5>
                     <form method="post" id="user_settings">
                         {% csrf_token %}
                         <div class="form-check">
                             <label class="form-check-label">
                                 <input type="checkbox" class="form-check-input" id="show_email" name="show_email" {% if user_profile.show_email %}checked{% endif %}>
-                                Показывать мой e-mail всем пользователям
+                                {% trans "Показывать мой e-mail всем пользователям" %}
                             </label>
                         </div>
                         <div class="form-check">
                             <label class="form-check-label">
                                 <input type="checkbox" class="form-check-input" id="send_my_own_events" name="send_my_own_events" {% if user_profile.send_my_own_events %}checked{% endif %}>
-                                Отправлять мне на e-mail мои комментарии
+                                {% trans "Отправлять мне на e-mail мои комментарии" %}
                             </label>
                         </div>
                         <div id="submit_error_text"></div>
-                        <button type="button" class="btn btn-primary" id="submit_btn" style="margin-top: 0.5rem">Сохранить</button>
+                        <button type="button" class="btn btn-primary" id="submit_btn" style="margin-top: 0.5rem">{% trans "Сохранить" %}</button>
                     </form>
                 </div>
             </div>

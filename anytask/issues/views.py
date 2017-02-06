@@ -9,6 +9,7 @@ from django.conf import settings
 from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpResponse
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template.context import RequestContext
+from django.utils.translation import ugettext as _
 from issues.forms import FileForm
 from issues.models import Issue, Event, File
 from issues.model_issue_field import IssueField
@@ -82,12 +83,12 @@ def contest_rejudge(issue):
                                                             file=file_copy)
     sent = contest_submission.upload_contest(compiler_id=old_contest_submission.compiler_id)
     if sent:
-        event.value = u"<p>Отправлено на проверку в Я.Контест</p>"
+        event.value = u"<p>{0}</p>".format(_(u'Отправлено на проверку в Я.Контест'))
         if issue.status_field.tag != IssueStatus.STATUS_ACCEPTED:
             issue.set_status_by_tag(IssueStatus.STATUS_AUTO_VERIFICATION)
     else:
-        event.value = u"<p>Ошибка отправки в Я.Контест('{0}').</p>".format(
-            contest_submission.send_error)
+        event.value = u"<p>{1}('{0}').</p>".format(
+            contest_submission.send_error, _(u'Ошибка отправки в Я.Контест'))
         issue.followers.add(User.objects.get(username='anytask.monitoring'))
 
     if issue.task.rb_integrated and issue.task.course.send_rb_and_contest_together:
@@ -100,7 +101,7 @@ def contest_rejudge(issue):
                     event.value += u'<p><a href="{1}/r/{0}">Review request {0}</a></p>'. \
                         format(review_request_id, settings.RB_API_URL)
                 else:
-                    event.value += u'<p>Ошибка отправки в Review Board.</p>'
+                    event.value += u'<p>{0}.</p>'.format(_(u'Ошибка отправки в Review Board'))
                     issue.followers.add(User.objects.get(username='anytask.monitoring'))
                 break
 

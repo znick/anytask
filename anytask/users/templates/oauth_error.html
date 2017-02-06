@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load i18n %}
 {% load crispy_forms_tags %}
 {% load sanitize_html %}
 {% load table_func %}
@@ -30,13 +31,13 @@
         <div class="card-deck">
             <div class="card card-inverse card-warning">
                 <div class="card-block">
-                    <h5 class="card-title">Привязать профиль Яндекс.Контеста</h5>
+                    <h5 class="card-title">{% trans "Привязать профиль Яндекс.Контеста" %}</h5>
                     <p class="card-text">
-                        <strong>{{ oauth_error_text }}</strong> Для того, чтобы отвязать свой профиль от другого
-                        обратитесь к <a href="mailto:anytask@yandex.ru">администратору</a>
+                        <strong>{{ oauth_error_text }}</strong>
+                        {% blocktrans %} Для того, чтобы отвязать свой профиль от другого обратитесь к <a href="mailto:anytask@yandex.ru">администратору</a> {% endblocktrans %}
                     </p>
                     <a href="/user/ya_oauth_request/contest" type="button" class="btn btn-secondary">
-                        Привязать
+                        {% trans "Привязать" %}
                     </a>
                 </div>
             </div>

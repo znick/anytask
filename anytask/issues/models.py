@@ -8,7 +8,7 @@ from django.db import models
 from django.dispatch import receiver
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 from django import forms
 from issues.model_issue_field import IssueField
@@ -276,11 +276,12 @@ class Issue(models.Model):
                                 contest_submission = self.contestsubmission_set.create(issue=self, author=author, file=uploaded_file)
                                 sent = contest_submission.upload_contest(ext, compiler_id=value['compilers'][file_id])
                                 if sent:
-                                    value['comment'] += u"<p>Отправлено на проверку в Я.Контест</p>"
+                                    value['comment'] += u"<p>{0}</p>".format(_(u'Отправлено на проверку в Я.Контест'))
                                     if self.status_field.tag != IssueStatus.STATUS_ACCEPTED:
                                         self.set_status_by_tag(IssueStatus.STATUS_AUTO_VERIFICATION)
                                 else:
-                                    value['comment'] += u"<p>Ошибка отправки в Я.Контест('{0}').</p>".format(contest_submission.send_error)
+                                    value['comment'] += u"<p>{0}('{1}')</p>".format(_(u'Ошибка отправки в Я.Контест.'),
+                                                                                     contest_submission.send_error)
                                     self.followers.add(User.objects.get(username='anytask.monitoring'))
                                 break
 
@@ -294,7 +295,7 @@ class Issue(models.Model):
                                     value['comment'] += u'<p><a href="{1}/r/{0}">Review request {0}</a></p>'. \
                                         format(review_request_id,settings.RB_API_URL)
                                 else:
-                                    value['comment'] += u'<p>Ошибка отправки в Review Board.</p>'
+                                    value['comment'] += u'<p>{0}</p>'.format(_(u'Ошибка отправки в Review Board.'))
                                     self.followers.add(User.objects.get(username='anytask.monitoring'))
                                 break
 
@@ -463,28 +464,28 @@ class Event(models.Model):
 
 
 class IssueFilter(django_filters.FilterSet):
-    status_field = django_filters.MultipleChoiceFilter(label=u'<strong>Статус</strong>', widget=forms.SelectMultiple)
-    update_time = django_filters.DateRangeFilter(label=u'<strong>Дата последнего изменения</strong>')
-    responsible = django_filters.ChoiceFilter(label=u'<strong>Ответственный</strong>')
-    followers = django_filters.MultipleChoiceFilter(label=u'<strong>Наблюдатели</strong>', widget=forms.SelectMultiple)
-    task = django_filters.ChoiceFilter(label=u'<strong>Задача</strong>')
+    status_field = django_filters.MultipleChoiceFilter(label=u'<strong>{0}</strong>'.format(_(u'Статус')), widget=forms.SelectMultiple)
+    update_time = django_filters.DateRangeFilter(label=u'<strong>{0}</strong>'.format(_(u'Дата последнего изменения')))
+    responsible = django_filters.ChoiceFilter(label=u'<strong>{0}</strong>'.format(_(u'Ответственный')))
+    followers = django_filters.MultipleChoiceFilter(label=u'<strong>{0}</strong>'.format(_(u'Наблюдатели')), widget=forms.SelectMultiple)
+    task = django_filters.ChoiceFilter(label=u'<strong>{0}</strong>'.format(_(u'Задача')))
 
     def set_course(self, course):
-        teacher_choices = [(teacher.id, _(teacher.get_full_name())) for teacher in course.get_teachers()]
+        teacher_choices = [(teacher.id, teacher.get_full_name()) for teacher in course.get_teachers()]
         teacher_choices.insert(0, (u'', _(u'Любой')))
         self.filters['responsible'].field.choices = tuple(teacher_choices)
 
         teacher_choices.pop(0)
         self.filters['followers'].field.choices = tuple(teacher_choices)
 
-        task_choices = [(task.id, _(task.title)) for task in Task.objects.all().filter(course=course)]
+        task_choices = [(task.id, task.title) for task in Task.objects.all().filter(course=course)]
         task_choices.insert(0, (u'', _(u'Любая')))
         self.filters['task'].field.choices = tuple(task_choices)
 
-        status_choices = [(status.id, _(status.name)) for status in course.issue_status_system.statuses.all()]
+        status_choices = [(status.id, status.name) for status in course.issue_status_system.statuses.all()]
         for status_id in sorted(IssueStatus.HIDDEN_STATUSES.values(), reverse=True):
             status_field = IssueStatus.objects.get(pk=status_id)
-            status_choices.insert(0, (status_field.id, _(status_field.name)))
+            status_choices.insert(0, (status_field.id, status_field.name))
         self.filters['status_field'].field.choices = tuple(status_choices)
 
     class Meta:

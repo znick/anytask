@@ -123,7 +123,7 @@ class MultiFileField(forms.FileField):
 
 class CommentForm(DefaultForm):
     textarea_attrs = {
-        'placeholder': _('Comment...'),
+        'placeholder': 'Comment...',
         'class': 'span12',
         'rows': '4',
     }

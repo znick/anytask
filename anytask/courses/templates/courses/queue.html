@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load i18n %}
 {% load django_bootstrap_breadcrumbs %}
 {% load crispy_forms_tags %}
 {% load sanitize_html icon %}
@@ -13,24 +14,26 @@
         {% breadcrumb school.name school.get_absolute_url %}
     {% endif %}
     {% breadcrumb course.name course.get_absolute_url %}
-    {% breadcrumb "Очередь на проверку" "" %}
+    {% breadcrumb_for "" %}
+        {%  trans "Очередь на проверку" %}
+    {% endbreadcrumb_for %}
 {% endblock breadcrumbs %}
 
 {% block navbar %}
     <ul class="nav navbar-nav">
         <li class="nav-item">
-            <a class="nav-link" href="{{ course.get_absolute_url }}">Страница курса</a>
+            <a class="nav-link" href="{{ course.get_absolute_url }}">{% trans "Страница курса" %}</a>
         </li>
         <li class="nav-item">
             <a class="nav-link"
-               href="{{ course.get_absolute_url }}/gradebook">Общая ведомость</a>
+               href="{{ course.get_absolute_url }}/gradebook">{% trans "Общая ведомость" %}</a>
         </li>
         <li class="nav-item active">
-            <a class="nav-link" href="">Очередь на проверку</a>
+            <a class="nav-link" href="">{% trans "Очередь на проверку" %}</a>
         </li>
         {% if user_is_teacher %}
             <li class="nav-item">
-                <a class="nav-link" href="{% url courses.views.course_settings course.id %}">Настройки</a>
+                <a class="nav-link" href="{% url courses.views.course_settings course.id %}">{% trans "Настройки" %}</a>
             </li>
         {% endif %}
     </ul>
@@ -67,11 +70,11 @@
                     <tr style="background-color: #ffffff;">
                         <th>#</th>
                         <th>id<i class="fa fa-fw fa-sort"></i></th>
-                        <th>Студент<i class="fa fa-fw fa-sort"></i></th>
-                        <th>Задача<i class="fa fa-fw fa-sort"></i></th>
-                        <th>Обновлена<i class="fa fa-fw fa-sort"></i></th>
-                        <th>Оценка<i class="fa fa-fw fa-sort"></i></th>
-                        <th>Ответственный<i class="fa fa-fw fa-sort"></i></th>
+                        <th>{% trans "Студент" %}<i class="fa fa-fw fa-sort"></i></th>
+                        <th>{% trans "Задача" %}<i class="fa fa-fw fa-sort"></i></th>
+                        <th>{% trans "Обновлена" %}<i class="fa fa-fw fa-sort"></i></th>
+                        <th>{% trans "Оценка" %}<i class="fa fa-fw fa-sort"></i></th>
+                        <th>{% trans "Ответственный" %}<i class="fa fa-fw fa-sort"></i></th>
                     </tr>
                     </thead>
                     <tbody>

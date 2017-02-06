@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load i18n %}
 {% load crispy_forms_tags %}
 
 {% block title %} Staff{% endblock %}
@@ -13,10 +14,10 @@
             <a class="nav-link active" href="#">Staff</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="{% url staff.views.staff_page %}">Фильтры по статусам</a>
+            <a class="nav-link" href="{% url staff.views.staff_page %}">{% trans "Фильтры по статусам" %}</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link active" href="#">Общая ведомость</a>
+            <a class="nav-link active" href="#">{% trans "Общая ведомость" %}</a>
         </li>
     </ul>
 {% endblock navbar %}
@@ -38,16 +39,16 @@
         <div class="col-xs-12">
             <div class="card">
                 <div class="card-block">
-                    <h5 class="card-title">Сгенерировать общую ведомость</h5>
+                    <h5 class="card-title">{% trans "Сгенерировать общую ведомость" %}</h5>
                     {% if statuses %}
                         <select class="form-control" id="edit_statuses" multiple>
                             {% for status in statuses %}
                                 <option value="{{ status.id }}">{{ status.name }}</option>
                             {% endfor %}
                         </select>
-                        <button id="btn-generate" class="btn btn-secondary">Сгенерировать</button>
+                        <button id="btn-generate" class="btn btn-secondary">{% trans "Сгенерировать" %}</button>
                     {% else %}
-                        <p class="card-text">Не найдено ни одного курса</p>
+                        <p class="card-text">{% trans "Не найдено ни одного курса" %}</p>
                     {% endif %}
                 </div>
             </div>

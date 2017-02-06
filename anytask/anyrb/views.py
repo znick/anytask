@@ -6,6 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpResponse
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template.context import RequestContext
+from django.utils.translation import ugettext as _
 from issues.models import Issue
 from issues.model_issue_field import IssueField
 
@@ -23,8 +24,8 @@ def message_from_rb(request, review_id):
 
     if request.method == 'POST':
         value = {'files':[], 'comment':''}
-        value['comment'] = u'<p><strong>Добавлен новый комментарий в <a href="{1}/r/{0}">Review request {0}</a></strong>.</p>'\
-                           .format(review_id, settings.RB_API_URL)
+        value['comment'] = u'<p><strong>{2} <a href="{1}/r/{0}">Review request {0}</a></strong>.</p>'\
+                           .format(review_id, settings.RB_API_URL, _(u'Добавлен новый комментарий в'))
         #if request.POST.get('diff-url',0):
         #    value += u'<a href="{0}">Комментарий к коду</a> '.format(settings.RB_API_URL+request.POST.get('diff-url',''))
         #value += request.POST.get('diff','')

@@ -2,6 +2,7 @@
 
 from django.db import models
 from django.conf import settings
+from django.utils.translation import ugettext_lazy as _
 
 from django.contrib.auth.models import User
 from anycontest.common import FakeResponse, escape
@@ -167,40 +168,40 @@ class ContestSubmission(models.Model):
             contest_verdict = results_req_json['result']['submission']['verdict']
             self.verdict = contest_verdict
             if contest_verdict == 'ok':
-                comment = u'<p>Вердикт Я.Контест: ok</p>'
+                comment = u'<p>{0}: ok</p>'.format(_(u'Вердикт Я.Контест'))
             elif contest_verdict == 'precompile-check-failed':
                 contest_messages = []
                 for precompile_check in results_req_json['result']['precompileChecks']:
                     contest_messages.append(precompile_check['message'])
                 self.precompile_checks = u'\n'.join(contest_messages)
-                comment = u'<p>Вердикт Я.Контест: precompile-check-failed</p><pre>' + \
+                comment = u'<p>{0}: precompile-check-failed</p><pre>'.format(_(u'Вердикт Я.Контест')) + \
                           escape(u'\n'.join(contest_messages)) + \
                           u'</pre>'
             else:
                 self.compile_log = results_req_json['result']['compileLog'][18:]
-                comment = u'<p>Вердикт Я.Контест: ' \
+                comment = u'<p>{0}: '.format(_(u'Вердикт Я.Контест')) \
                           + results_req_json['result']['submission']['verdict'] + '</p><pre>' \
                           + escape(results_req_json['result']['compileLog'][18:]) + '</pre>'
                 if results_req_json['result']['tests']:
                     test = results_req_json['result']['tests'][-1]
                     self.used_time = test['usedTime']
                     self.used_memory = test['usedMemory']
-                    test_resourses = u'<p><u>Ресурсы</u> ' + str(test['usedTime']) \
+                    test_resourses = u'<p><u>{0}</u> '.format(_(u'Ресурсы')) + str(test['usedTime']) \
                                      + 'ms/' + '%.2f' % (test['usedMemory']/(1024.*1024)) + 'Mb</p>'
                     if 'input' in test:
-                        test_input = u'<p><u>Ввод</u></p><p>' + \
+                        test_input = u'<p><u>{0}</u></p><p>'.format(_(u'Ввод')) + \
                                      escape(test['input']) if test['input'] else ""
                         test_input += '</p>'
                     else:
                         test_input = ""
                     if 'output' in test:
-                        test_output = u'<p><u>Вывод программы</u></p><p>' + \
+                        test_output = u'<p><u>{0}</u></p><p>'.format(_(u'Вывод программы')) + \
                                       escape(test['output']) if test['output'] else ""
                         test_output += '</p>'
                     else:
                         test_output = ""
                     if 'answer' in test:
-                        test_answer = u'<p><u>Правильный ответ</u></p><p>' + \
+                        test_answer = u'<p><u>{0}</u></p><p>'.format(_(u'Правильный ответ')) + \
                                       escape(test['answer']) if test['answer'] else ""
                         test_answer += '</p>'
                     else:
@@ -214,13 +215,13 @@ class ContestSubmission(models.Model):
                         test_error = ""
                     if 'message' in test:
                         self.message = test['message']
-                        test_message = u'<p><u>Сообщение чекера</u></p><p>' + \
+                        test_message = u'<p><u>{0}</u></p><p>'.format(_(u'Сообщение чекера')) + \
                                        escape(test['message']) if test['message'] else ""
                         test_message += '</p>'
                     else:
                         test_message = ""
                     self.test_number = test['testNumber']
-                    comment += u'<p><u>Тест ' + str(test['testNumber']) + '</u>' \
+                    comment += u'<p><u>{0} '.format(_(u'Тест')) + str(test['testNumber']) + '</u>' \
                                + test_resourses + test_input + test_output \
                                + test_answer + test_error + test_message + '</p>'
 

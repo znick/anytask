@@ -1,6 +1,7 @@
 # coding: utf-8
 from django import forms
 from django.conf import settings
+from django.utils.translation import ugettext as _
 from invites.models import Invite
 
 import datetime
@@ -19,9 +20,9 @@ class InviteActivationForm(forms.Form):
         try:
             invite = Invite.objects.get(key=self.cleaned_data['invite'])
         except:
-            raise forms.ValidationError("Такого инвайта не существует.")
+            raise forms.ValidationError(_(u"Такого инвайта не существует."))
 
         if invite.added_time + datetime.timedelta(days=settings.INVITE_EXPIRED_DAYS) < datetime.datetime.now():
-            raise forms.ValidationError("Срок действия инвайта истек.")
+            raise forms.ValidationError(_(u"Срок действия инвайта истек."))
         else:
             return self.cleaned_data['invite']

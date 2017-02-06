@@ -1,4 +1,5 @@
 {% extends 'jfu/upload_form.html' %}
+{% load i18n %}
 
 {% block JS_INIT %}
     $('#fileupload').fileupload({
@@ -97,7 +98,7 @@
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
-                Имя файла было изменено. Можно отправлять только один файл.
+                {% trans "Имя файла было изменено. Можно отправлять только один файл." %}
             </div>
             <table style="margin-bottom: 0px;" role="presentation" class="table table-striped">
                <tbody class="files" data-toggle="modal-gallery" data-target="#modal-gallery"></tbody>
@@ -106,7 +107,7 @@
                 <div class="drop-zone" id="drop-zone" ondragenter="this.style.background='#E0E0E0';" ondragleave="this.style.background='';" ondrop="this.style.background='';">
 
                 <span class="btn btn-secondary drop-btn fileinput-button" id="drop-btn">
-                    <span>{% if issue.task.one_file_upload %}Выберите файл{% else %}Выберите файлы{% endif %}</span>
+                    <span>{% if issue.task.one_file_upload %}{% trans "Выберите файл" %}{% else %}{% trans "Выберите файлы" %}{% endif %}</span>
 
                     {% block FILE_INPUT %}
                     {% comment %}
@@ -125,7 +126,7 @@
                     >
                     {% endblock %}
                 </span>
-                или перетащите сюда
+                {% trans "или перетащите сюда" %}
                 </div>
             {% endif %}
             {% endblock %}
@@ -133,11 +134,11 @@
             {% block UPLOAD_FORM_BUTTON_BAR_CONTROL %}
             {% if issue.status_field.tag == issue.status_field.STATUS_ACCEPTED and not teacher_or_staff or issue.status_field.tag == issue.status_field.STATUS_NEED_INFO and not teacher_or_staff %}
                 <input type="hidden" name="need_info" value="" />
-                <button class="btn btn-info pull-xs-right" formaction="#" style="margin-top: 10px; margin-left: 10px;" type="submit">Задать вопрос</button>
+                <button class="btn btn-info pull-xs-right" formaction="#" style="margin-top: 10px; margin-left: 10px;" type="submit">{% trans "Задать вопрос" %}</button>
             {% else %}
                 <input type="hidden" name="update_issue" value="" />
                 <button style="margin-top: 10px;" type="submit" class="btn btn-primary pull-xs-right">
-                    <span>Отправить</span>
+                    <span>{% trans "Отправить" %}</span>
                 </button>
             {% endif %}
             {% endblock %}
@@ -223,7 +224,7 @@
         </td>
         <td>
         {{ JQ_OPEN }} if (file.send_to_contest) { {{ JQ_CLOSE }}
-            <div class="alert alert-success" role="alert">Выберите компилятор для отправки в контест</div>
+            <div class="alert alert-success" role="alert">{% trans "Выберите компилятор для отправки в контест" %}</div>
             <select id='compiler' name="compiler_for_{{ JQ_OPEN }}=file.pk{{ JQ_CLOSE }}" class="form-control">
                 {{ JQ_OPEN }} if (file.chosen_compiler) { {{ JQ_CLOSE }}
                     <option value="{{ JQ_OPEN }}=file.chosen_compiler{{ JQ_CLOSE }}"> {{ JQ_OPEN }}=file.chosen_compiler{{ JQ_CLOSE }} </option>

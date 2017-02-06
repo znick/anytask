@@ -9,6 +9,7 @@ from django.http import Http404
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.core.files.base import ContentFile
+from django.utils.translation import ugettext as _
 
 
 from users.models import UserProfile, UserProfileLog, UserStatus, IssueFilterStudent, UserProfileFilter
@@ -344,7 +345,7 @@ def ya_oauth_disable(request):
 
 def ya_oauth_forbidden(request):
     context = {
-        'oauth_error_text'              : "Данный профиль уже привязан к аккаунту другого пользователя на Anytask!",
+        'oauth_error_text'              : _(u"Данный профиль уже привязан к аккаунту другого пользователя на Anytask!"),
     }
 
     return render_to_response('oauth_error.html', context, context_instance=RequestContext(request))
@@ -352,7 +353,7 @@ def ya_oauth_forbidden(request):
 
 def ya_oauth_changed(request):
     context = {
-        'oauth_error_text'              : "Можно перепривязать только тот профиль Я.Контеста, который был привязан ранее!",
+        'oauth_error_text'              : _(u"Можно перепривязать только тот профиль Я.Контеста, который был привязан ранее!"),
     }
 
     return render_to_response('oauth_error.html', context, context_instance=RequestContext(request))
@@ -397,8 +398,8 @@ def my_tasks(request):
     f.form.helper = FormHelper(f.form)
     f.form.helper.form_method = 'get'
     f.form.helper.layout.append(HTML(u"""<div class="form-group row">
-                                           <button id="button_filter" class="btn btn-secondary pull-xs-right" type="submit">Применить</button>
-                                         </div>"""))
+                                           <button id="button_filter" class="btn btn-secondary pull-xs-right" type="submit">{0}</button>
+                                         </div>""".format(_(u'Применить'))))
 
     context = {
         'filter': f,
@@ -502,7 +503,7 @@ def activate_invite(request):
                 invite.invited_users.add(user)
             else:
                 return HttpResponse(json.dumps({'is_error': True,
-                                                'invite': u'Инвайт относится к другому курсу.'}),
+                                                'invite': _(u'Инвайт относится к другому курсу.')}),
                                     content_type="application/json")
 
         elif invite.group:

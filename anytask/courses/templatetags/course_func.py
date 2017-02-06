@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django import template
+from django.utils.translation import ugettext as _
 from issues.models import Issue
 from issues.model_issue_status import IssueStatus
 from groups.models import Group
@@ -29,7 +30,7 @@ def get_status_name(task, user):
     try:
         return Issue.objects.get(task=task, student=user).status_field.name
     except Exception as e:
-        return u"Новый"
+        return _(u"Новый")
 
 
 @register.filter(name='get_default_teacher')

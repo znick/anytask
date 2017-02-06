@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load i18n %}
 {% load crispy_forms_tags %}
 {% load table_func %}
 
@@ -25,26 +26,26 @@
     <ul class="nav navbar-nav">
         {% if user_to_show == user %}
             <li class="nav-item">
-                <a class="nav-link" href="{% url users.views.profile %}">Профиль</a>
+                <a class="nav-link" href="{% url users.views.profile %}">{% trans "Профиль" %}</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{% url users.views.my_tasks %}">Мои задачи</a>
+                <a class="nav-link" href="{% url users.views.my_tasks %}">{% trans "Мои задачи" %}</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{% url users.views.user_courses %}">Мои курсы</a>
+                <a class="nav-link" href="{% url users.views.user_courses %}">{% trans "Мои курсы" %}</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{% url users.views.profile_settings %}">Настройки</a>
+                <a class="nav-link" href="{% url users.views.profile_settings %}">{% trans "Настройки" %}</a>
             </li>
         {% else %}
             <li class="nav-item">
-                <a class="nav-link" href="{% url users.views.profile user_to_show %}">Профиль студента</a>
+                <a class="nav-link" href="{% url users.views.profile user_to_show %}">{% trans "Профиль студента" %}</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{% url users.views.user_courses user_to_show %}">Курсы студента</a>
+                <a class="nav-link" href="{% url users.views.user_courses user_to_show %}">{% trans "Курсы студента" %}</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link active" href="">Редактирование статусов</a>
+                <a class="nav-link active" href="">{% trans "Редактирование статусов" %}</a>
             </li>
         {% endif %}
     </ul>
@@ -66,7 +67,7 @@
         <div class="col-md-3 col-xs-12">
             <div class="card">
                 <div class="card-header">
-                    <h5 class="card-title">Статусы {{ user_profile.user.get_full_name }}</h5>
+                    <h5 class="card-title">{% trans "Статусы" %} {{ user_profile.user.get_full_name }}</h5>
                 </div>
                 <div class="card-block" id="user_statuses">
                     {% if user_profile.user_status.all %}
@@ -75,12 +76,12 @@
                                   style="font-size: 1rem; background-color: {{ user_status.color }}">{{ user_status.name }}</span>
                         {% endfor %}
                     {% else %}
-                        <p class="card-text">Нет статусов</p>
+                        <p class="card-text">{% trans "Нет статусов" %}</p>
                     {% endif %}
                 </div>
                 <div class="card-block">
                     <button class="btn btn-secondary" type="button" data-toggle="modal"
-                            data-target="#modal_status_edit">Редактировать
+                            data-target="#modal_status_edit">{% trans "Редактировать" %}
                     </button>
                 </div>
             </div>
@@ -88,14 +89,14 @@
         <div class="col-md-9 col-xs-12">
             <div class="card">
                 <div class="card-block">
-                    <h5 class="card-title">История изменений {{ user_profile.user.get_full_name }}</h5>
+                    <h5 class="card-title">{% trans "История изменений" %} {{ user_profile.user.get_full_name }}</h5>
 
                     <table class="table table_history">
                         <thead>
                         <tr style="background-color: #ffffff;">
-                            <th>Когда был изменен<i class="fa fa-fw fa-sort"></i></th>
-                            <th>Кем<i class="fa fa-fw fa-sort"></i></th>
-                            <th>Статусы пользователя<i class="fa fa-fw fa-sort"></i></th>
+                            <th>{% trans "Когда был изменен" %}<i class="fa fa-fw fa-sort"></i></th>
+                            <th>{% trans "Кем" %}<i class="fa fa-fw fa-sort"></i></th>
+                            <th>{% trans "Статусы пользователя" %}<i class="fa fa-fw fa-sort"></i></th>
                         </tr>
                         </thead>
                         <tbody id="tbody_history">
@@ -126,10 +127,10 @@
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                             aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="modal_status_edit_header">Статусы пользователя</h4>
+                    <h4 class="modal-title" id="modal_status_edit_header">{% trans "Статусы пользователя" %}</h4>
                 </div>
                 <div class="modal-body" style="max-height: none;">
-                    <p>Добавление и удаление статусов пользователя.</p>
+                    <p>{% trans "Добавление и удаление статусов пользователя." %}</p>
                     <form method="post" id="status_edit_form">
                         {% csrf_token %}
                         {% for type, name in status_types %}
@@ -154,9 +155,9 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                    <button class="btn btn-secondary" data-dismiss="modal">{% trans "Закрыть" %}</button>
                     <button class="btn btn-primary" id="modal_status_edit_ok" data-dismiss="modal"
-                            data-loading-text="<span class='fa fa-circle-o-notch fa-spin'></span> Сохранение">Сохранить
+                            data-loading-text="<span class='fa fa-circle-o-notch fa-spin'></span> {% trans "Сохранение" %}">{% trans "Сохранить" %}
                     </button>
                 </div>
             </div>

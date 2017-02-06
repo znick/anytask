@@ -1,3 +1,4 @@
+{% load i18n %}
 <script src="{{ STATIC_URL }}jquery.validate.min.js"></script>
 <script src="http://malsup.github.io/jquery.form.js"></script>
 <script type="text/javascript">
@@ -30,11 +31,11 @@
                 filterClearBtn: '<span class="input-group-btn"><button class="btn btn-secondary btn-block multiselect-clear-filter" type="button"><i class="fa fa-times"></i></button></span>'
             },
             includeSelectAllOption: true,
-            filterPlaceholder: "Найти...",
+            filterPlaceholder: "{% trans "Найти..." %}",
             selectAllJustVisible: false,
             enableCaseInsensitiveFiltering: true,
-            selectAllText: 'Все задачи',
-            allSelectedText: 'Все задачи',
+            selectAllText: '{% trans "Все задачи" %}',
+            allSelectedText: '{% trans "Все задачи" %}',
             maxHeight: 200,
             buttonContainer: '<div style="width:100%;" class="multiselect-dropdown"/>',
             buttonWidth: '100%',
@@ -43,13 +44,13 @@
             },
             buttonText: function (options, select) {
                 if (options.length === 0) {
-                    return 'Не выбрано ни одной задачи';
+                    return '{% trans "Не выбрано ни одной задачи" %}';
                 }
                 else if (options.length === $('option', select).length) {
-                    return 'Все задачи';
+                    return '{% trans "Все задачи" %}';
                 }
                 else if (options.length > 1) {
-                    return 'Выбрано несколько задач - ' + options.length;
+                    return '{% trans "Выбрано несколько задач - " %}' + options.length;
                 }
                 else {
                     var labels = [];
@@ -163,10 +164,10 @@
                         success: function (data) {
                             $('#task_edit_form').data('changed', false);
                             $('#task_submit_error_text').html('<div class="alert alert-success alert-dismissible" role ="alert" id="edit_task_err">' +
-                                    '                            <button type="button" class="close" data-dismiss="alert" aria-label="Закрыть">' +
+                                    '                            <button type="button" class="close" data-dismiss="alert" aria-label="{% trans "Закрыть" %}">' +
                                     '                               <span aria-hidden="true">&times;</span>' +
                                     '                            </button>' +
-                                    '                            <span>Задача сохранена успешно.</span>' +
+                                    '                            <span>{% trans "Задача сохранена успешно." %}</span>' +
                                     '                          </div>');
                             if ($('#task_edit_form').data('quit'))
                                 redirect();
@@ -178,10 +179,10 @@
                         },
                         error: function (data) {
                             $('#task_submit_error_text').html('<div  class="alert alert-danger alert-dismissible" role ="alert" id="edit_task_err">' +
-                                    '                            <button type="button" class="close" data-dismiss="alert" aria-label="Закрыть">' +
+                                    '                            <button type="button" class="close" data-dismiss="alert" aria-label="{% trans "Закрыть" %}">' +
                                     '                               <span aria-hidden="true">&times;</span>' +
                                     '                            </button>' +
-                                    '                            <span>Произошла ошибка при сохранении задачи. Попробуйте снова.</span>' +
+                                    '                            <span>{% trans "Произошла ошибка при сохранении задачи. Попробуйте снова." %}</span>' +
                                     '                          </div>');
                             remove_disabled();
                         }
@@ -189,10 +190,10 @@
                 }
                 else {
                     $('#task_submit_error_text').html('<div class="alert alert-success alert-dismissible" role ="alert" id="edit_task_err">' +
-                            '                            <button type="button" class="close" data-dismiss="alert" aria-label="Закрыть">' +
+                            '                            <button type="button" class="close" data-dismiss="alert" aria-label="{% trans "Закрыть" %}">' +
                             '                               <span aria-hidden="true">&times;</span>' +
                             '                            </button>' +
-                            '                            <span>Задача сохранена успешно.</span>' +
+                            '                            <span>{% trans "Задача сохранена успешно." %}</span>' +
                             '                          </div>');
                     if ($('#task_edit_form').data('quit'))
                         redirect();
@@ -235,24 +236,24 @@
 
             messages: {
                 max_score: {
-                    required: "Необходимо указать максимальный балл",
-                    number: "Максимальный балл должен быть натуральным числом",
-                    min: "Максимальный балл должен быть больше или равен 0",
-                    digits: "Максимальный балл должен быть натуральным числом"
+                    required: "{% trans 'Необходимо указать максимальный балл' %}",
+                    number: "{% trans 'Максимальный балл должен быть натуральным числом' %}",
+                    min: "{% trans 'Максимальный балл должен быть больше или равен 0' %}",
+                    digits: "{% trans 'Максимальный балл должен быть натуральным числом' %}"
                 },
                 task_title: {
-                    required: "Название у задачи необходимо",
-                    maxlength: "Не так много"
+                    required: "{% trans 'Название у задачи необходимо' %}",
+                    maxlength: "{% trans 'Не так много' %}"
                 },
                 contest_id: {
-                    required: "Необходимо указать номер контеста",
-                    number: "Номер контеста должен натуральным числом"
+                    required: "{% trans 'Необходимо указать номер контеста' %}",
+                    number: "{% trans 'Номер контеста должен натуральным числом' %}"
                 },
                 problem_id: {
-                    required: "Необходимо указать литеру задачи контеста"
+                    required: "{% trans 'Необходимо указать литеру задачи контеста' %}"
                 },
                 'task_group_id[]': {
-                    required_with_disabled: "Необходимо выбрать группу"
+                    required_with_disabled: "{% trans 'Необходимо выбрать группу' %}"
                 }
             },
 
@@ -268,8 +269,8 @@
                 li: '<li><a tabindex="0" class="dropdown-item"><label></label></a></li>'
             },
             includeSelectAllOption: true,
-            selectAllText: 'Для всех групп',
-            allSelectedText: 'Для всех групп',
+            selectAllText: '{% trans "Для всех групп" %}',
+            allSelectedText: '{% trans "Для всех групп" %}',
             selectAllName: 'task_group_id_all',
             selectAllValue: 'on',
             maxHeight: 200,
@@ -279,10 +280,10 @@
                 var labels = [];
 
                 if (options.length === 0) {
-                    return 'Не выбрано ни одной группы';
+                    return '{% trans "Не выбрано ни одной группы" %}';
                 }
                 else if (options.length === $('option', select).length) {
-                    return 'Для всех групп';
+                    return '{% trans "Для всех групп" %}';
                 }
                 else {
                     options.each(function () {
@@ -293,13 +294,13 @@
             },
             buttonText: function(options, select) {
                 if (options.length === 0) {
-                    return 'Не выбрано ни одной группы';
+                    return '{% trans "Не выбрано ни одной группы" %}';
                 }
                 else if (options.length === $('option', select).length) {
-                    return 'Для всех групп';
+                    return '{% trans "Для всех групп" %}';
                 }
                 else if (options.length > 1) {
-                    return 'Выбрано несколько групп - ' + options.length;
+                    return '{% trans "Выбрано несколько групп - " %}' + options.length;
                 }
                 else {
                     var labels = [];
@@ -362,7 +363,7 @@
         var task_name = $('#task_edit_header').val();
         $('#modal_task_header').show().text(task_name);
         if (deadline) {
-            $('#modal_task_deadline').html('<strong>Дата сдачи: ' + deadline + ' MSK UTC+3</strong>');
+            $('#modal_task_deadline').html('<strong>{% trans "Дата сдачи" %}: ' + deadline + ' MSK UTC+3</strong>');
         }
         else {
             $('#modal_task_deadline').empty();
