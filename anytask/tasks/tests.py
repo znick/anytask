@@ -335,7 +335,7 @@ class ViewsTest(TestCase):
                                {'course_id': self.course.id})
         self.assertEqual(response.status_code, 200, "Can't get change_visibility_hidden_tasks via teacher")
         self.assertEqual(response.content, 'OK')
-        response = client.get(reverse('courses.views.course_page', kwargs={'course_id': self.course.id}))
+        response = client.get(reverse('courses.views.gradebook', kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 200, "Can't get course_page via teacher")
 
         html = BeautifulSoup(response.content)
