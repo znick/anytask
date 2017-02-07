@@ -454,6 +454,11 @@ def user_courses(request, username=None, year=None):
         else:
             mark = None
 
+        student_summ_score = 0
+        for task_taken in issues:
+            if not task_taken.task.is_hidden:
+                student_summ_score += task_taken.mark
+
         new_course_statistics = dict()
         new_course_statistics['name'] = course.name
         new_course_statistics['url'] = course.get_absolute_url()
@@ -464,6 +469,7 @@ def user_courses(request, username=None, year=None):
 
         new_course_statistics['tasks'] = tasks.count
         new_course_statistics['mark'] = mark if mark else '--'
+        new_course_statistics['summ_score'] = student_summ_score
 
         is_archive = int(not course.is_active)
         table_year = unicode(course.year)
