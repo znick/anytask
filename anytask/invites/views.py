@@ -29,7 +29,7 @@ def generate_invites(request):
         if user in course.teachers.all():
             true_courses.append(course)
 
-    groups = sorted(set(groups.filter(course__in=true_courses)), key=lambda x: x.name)
+    groups = groups.filter(course__in=true_courses).distinct().order_by('name')
 
     context = {
         'groups'    : groups,
