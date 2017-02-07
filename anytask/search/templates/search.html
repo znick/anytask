@@ -10,12 +10,12 @@
         $(document).ready(function() {
             $('.typeahead').typeahead('val','{{ query }}');
             $('img.avatar').hover(
-                    function() {
-                        $(this).closest('tr').find('.fullname').addClass('hover');
-                    },
-                    function() {
-                        $(this).closest('tr').find('.fullname').removeClass('hover');
-                    }
+                function() {
+                    $(this).closest('tr').find('.fullname').addClass('hover');
+                },
+                function() {
+                    $(this).closest('tr').find('.fullname').removeClass('hover');
+                }
             );
         });
     </script>
@@ -37,6 +37,16 @@
         }
         table.user_profiles tr .search-up-email .card-link{
             margin-left: 0;
+        }
+
+        table.user_profiles .label-statuses {
+            margin: -5px 2px 5px 0;
+        }
+
+        @media (max-width: 768px) {
+            table.user_profiles .label-statuses {
+                margin: 0 2px 5px 0;
+            }
         }
         a.fullname.hover {
             color: #014c8c;
@@ -72,7 +82,7 @@
     {% if user_profiles or courses %}
         <div class="row">
             {% if user_profiles %}
-                <div class="col-md-4 col-xs-12">
+                <div class="col-xs-12 col-lg-6">
                     <div class="card">
                         <div class="card-block" style="padding-bottom: 0">
                             <h5 class="card-title">{% trans "Пользователи" %}</h5>
@@ -97,6 +107,15 @@
                                                         </div>
                                                     {% endif %}
                                                 </a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td>
+                                                {% for user_status in up.user_status.all %}
+                                                    <span class="label label-statuses"
+                                                          style="background-color: {{ user_status.color }}">{{ user_status.name }}</span>
+                                                {% endfor %}
                                             </td>
                                         </tr>
                                         <tr>

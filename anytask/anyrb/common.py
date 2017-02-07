@@ -6,6 +6,7 @@ import requests
 
 from django.conf import settings
 from django.contrib.sites.models import Site
+from django.utils.translation import ugettext as _
 
 from rbtools.api.client import RBClient
 

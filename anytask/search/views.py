@@ -111,7 +111,7 @@ def search_users(query, user, max_result=None):
                                sg.object.avatar.url if sg.object.avatar else '',
                                user_to_show.email,
                                user_to_show.id,
-                               list(user_to_show.user_status.values_list('name', 'color'))
+                               list(sg.object.user_status.values_list('name', 'color'))
                                ])
                 result_objs.append(sg.object)
 

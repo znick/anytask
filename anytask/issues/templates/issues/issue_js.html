@@ -12,6 +12,16 @@
 <link href="{{ STATIC_URL }}tinymce-style-task.css" rel='stylesheet' />
 
 <script type="text/javascript">
+    var tinymce_default = {
+        language: 'ru',
+        skin: 'bootstrap4',
+        content_css: [
+            'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css',
+            '{{ STATIC_URL }}tinymce-style-issue-comment.css',
+            '{{ STATIC_URL }}prism.css'
+        ]
+    };
+
     $(document).ready(function () {
         $(document).on('focusin', function(e) {
             if ($(e.target).closest(".mce-window").length) {
@@ -66,15 +76,7 @@
 
         var info_width = $('ul.history').closest('.card').innerWidth();
 
-        $("#id_comment").tinymce({
-            language: 'ru',
-            skin: 'bootstrap4',
-            menubar: false,
-            content_css: [
-                'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css',
-                '{{ STATIC_URL }}tinymce-style-issue-comment.css',
-                '{{ STATIC_URL }}prism.css'
-            ],
+        $("#id_comment").tinymce($.extend({}, tinymce_default, {
             setup: function(editor) {
                 editor.addButton('preview_text', {
                     icon: false,
@@ -91,6 +93,7 @@
                 'autoresize autosave autolink codesample hr image link lists',
                 'table textpattern wordcount contextmenu preview paste'
             ],
+            menubar: false,
             toolbar: 'undo redo | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | image link hr | blockquote codesample table | preview_text',
             autoresize_bottom_margin: 10,
             autoresize_overflow_padding: 10,
@@ -110,8 +113,22 @@
             paste_remove_styles: true,
             paste_remove_styles_if_webkit: true,
             paste_strip_class_attributes: true,
-            plugin_preview_width: info_width
-        });
+            plugin_preview_width: info_width,
+            autosave_ask_before_unload: false
+        }));
+
+        $("textarea.comment-verdict").tinymce($.extend({}, tinymce_default, {
+            plugins: [
+                'autolink lists paste placeholder'
+            ],
+            content_style: "body {padding: .375rem .75rem;}",
+            height: 40,
+            menubar: false,
+            toolbar: false,
+            statusbar: false,
+            default_link_target: "_blank",
+            autosave_ask_before_unload: false
+        }));
 
         $("#id_comment").keydown(function (e) {
             if (e.ctrlKey && e.keyCode == 13) {

@@ -71,7 +71,7 @@
             $.fn.matchHeight._update();
         });
 
-        $('#tasks_with_contest_select').multiselect({
+        $('#tasks_with_contest_select, #tasks_with_contest_rejudge_select').multiselect({
             buttonClass: 'btn btn-secondary btn-block',
             templates: {
                 ul: '<ul class="multiselect-container dropdown-menu" style="left:inherit;top: inherit;"></ul>',
@@ -126,7 +126,7 @@
             },
             onInitialized: function(option, dropdown, select) {
                 $('.multiselect-group a', dropdown).prop('tabindex', '0').addClass('dropdown-item').find('label').addClass('checkbox');
-                $('#tasks_with_contest_select').closest('.form-group').show();
+                $('#tasks_with_contest_select, #tasks_with_contest_rejudge_select').closest('.form-group').show();
             },
         });
 
@@ -206,6 +206,44 @@
             });
         });
 
+
+        $('#rejudge_tasks_btn').click(function () {
+            if (!$('#tasks_with_contest_rejudge_select').serialize())
+                return;
+
+            var $btn_update = $(this);
+
+            set_disabled();
+            $btn_update.data('reset_text', $btn_update.html());
+            $btn_update.html("&nbsp;<i class='fa fa-circle-o-notch fa-spin fa-fw'></i>&nbsp;");
+            $('#rejudge_tasks_error').html('');
+
+            $.post('{% url courses.views.ajax_rejudge_contest_tasks %}',
+                {   'csrfmiddlewaretoken': '{{ csrf_token }}',
+                    'tasks_with_contest[]': $('#tasks_with_contest_rejudge_select').val()})
+                .done(function (data) {
+                    $('#rejudge_tasks_error').html('<div class="alert alert-success alert-dismissible" role ="alert">' +
+                            '                            <button type="button" class="close" data-dismiss="alert" aria-label="{% trans "Закрыть" %}">' +
+                            '                               <span aria-hidden="true">&times;</span>' +
+                            '                            </button>' +
+                            '                            <span>{% trans "Отправлено на проверку успешно." %}</span>' +
+                            '                          </div>');
+                })
+                .fail(function () {
+                    $('#rejudge_tasks_error').html('<div class="alert alert-danger alert-dismissible" role ="alert">' +
+                            '                            <button type="button" class="close" data-dismiss="alert" aria-label="{% trans "Закрыть" %}">' +
+                            '                               <span aria-hidden="true">&times;</span>' +
+                            '                            </button>' +
+                            '                            <span>{% trans "Ошибка отправки." %}</span>' +
+                            '                          </div>');
+                })
+                .always(function () {
+                    remove_disabled();
+                    $btn_update.html($btn_update.data('reset_text'));
+                });
+
+        });
+
         $(window).bind('beforeunload', function() {
             if (form_submitting)
                 return 'show';
@@ -221,7 +259,7 @@
                     success: function (data) {
                         $('#course_settings_form_error_text').html('<div class="alert alert-success" role ="alert" id="edit_task_err">' +
                                 '                                     <a class="close" data-dismiss="alert">&times;</a>' +
-                                '                                     <span>Сохранено успешно.</span>' +
+                                '                                     <span>{% trans "Сохранено успешно." %}</span>' +
                                 '                                   </div>');
                         if ($('#course_settings_form').data('quit'))
                             redirect();
@@ -231,7 +269,7 @@
                     error: function (data) {
                         $('#course_settings_form_error_text').html('<div  class="alert alert-danger" role ="alert" id="edit_task_err">' +
                                 '                                     <a class="close" data-dismiss="alert">&times;</a>' +
-                                '                                     <span>Произошла ошибка при сохранении. Попробуйте снова.</span>' +
+                                '                                     <span>{% trans "Произошла ошибка при сохранении. Попробуйте снова." %}</span>' +
                                 '                                   </div>');
                         remove_disabled();
                     }
@@ -282,8 +320,10 @@
     function set_disabled() {
         var d = 'disabled';
 
+        $('#rejudge_tasks_btn').addClass(d).attr(d, d).prop(d, true)
+            .closest('.form-group').find('.multiselect').addClass(d).attr(d, d).prop(d, true);
         $('#update_tasks_btn').addClass(d).attr(d, d).prop(d, true)
-                .closest('.form-group').find('.multiselect').addClass(d).attr(d, d).prop(d, true);
+            .closest('.form-group').find('.multiselect').addClass(d).attr(d, d).prop(d, true);
         $('#button_cancel_quit').addClass(d).attr(d, d).prop(d, true);
         $('#button_save').addClass(d).attr(d, d).prop(d, true);
         $('#button_save_quit').addClass(d).attr(d, d).prop(d, true);
@@ -292,8 +332,10 @@
     function remove_disabled() {
         var d = 'disabled';
 
+        $('#rejudge_tasks_btn').removeClass(d).removeAttr(d).prop(d, false)
+            .closest('.form-group').find('.multiselect').removeClass(d).removeAttr(d).prop(d, false);
         $('#update_tasks_btn').removeClass(d).removeAttr(d).prop(d, false)
-                .closest('.form-group').find('.multiselect').removeClass(d).removeAttr(d).prop(d, false);
+            .closest('.form-group').find('.multiselect').removeClass(d).removeAttr(d).prop(d, false);
         $('#button_cancel_quit').removeClass(d).removeAttr(d).prop(d, false);
         $('#button_save').removeClass(d).removeAttr(d).prop(d, false);
         $('#button_save_quit').removeClass(d).removeAttr(d).prop(d, false);

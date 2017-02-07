@@ -182,16 +182,20 @@ def issue_page(request, issue_id):
 
     schools = issue.task.course.school_set.all()
 
+    show_contest_rejudge_loading = False
+    if issue.contestsubmission_set \
+            .exclude(run_id__exact="") \
+            .exclude(run_id__isnull=True)\
+            .filter(send_error__isnull=True, got_verdict=False)\
+            .count():
+        show_contest_rejudge_loading = True
+
     show_contest_rejudge = False
     got_verdict_submissions = issue.contestsubmission_set.filter(got_verdict=True)
-    if got_verdict_submissions.count() and \
-       issue.contestsubmission_set.count() == (got_verdict_submissions.count() +
-                                               issue.contestsubmission_set.exclude(send_error__isnull=True).count()):
+    if got_verdict_submissions.count() and not show_contest_rejudge_loading:
         show_contest_rejudge = True
 
-    show_contest_rejudge_loading = False
-    if issue.contestsubmission_set.exclude(run_id__isnull=True).filter(send_error__isnull=True, got_verdict=False).count():
-        show_contest_rejudge_loading = True
+
 
     context = {
         'issue': issue,
