@@ -45,6 +45,11 @@
         });
     };
 
+     $.fn.dataTable.ext.type.order['dom-html-text-pre'] = function (td) {
+         return $.trim($(td).text());
+    };
+
+
     $.fn.dataTable.ext.type.search.selectText = function (data) {
         return !data ? '' : $('select option:selected', $(data)).text()
     };
@@ -271,6 +276,10 @@
                         "targets": 0,
                         "searchable": false,
                         "orderable": false
+                    },
+                    {
+                        "targets": 1,
+                        "type": "dom-html-text",
                     },
                     {
                         "targets": "dom-number",
