@@ -7,6 +7,7 @@ from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm, Set
 from django.contrib.auth.models import User
 from django.contrib.sites.models import RequestSite
 from django.contrib.sites.models import Site
+from django.utils.translation import ugettext as _
 from django import forms
 from django.shortcuts import get_object_or_404
 from users.models import UserProfile
@@ -24,7 +25,7 @@ attrs_dict = { 'class': 'required' }
 class AnytaskLoginForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):
         AuthenticationForm.__init__(self, *args, **kwargs)
-        self.fields['username'].label = u"Логин / E-mail"
+        self.fields['username'].label = _(u"Логин / E-mail")
 
         self.helper = FormHelper(self)
         self.helper.form_action = '/accounts/login/'
@@ -32,12 +33,12 @@ class AnytaskLoginForm(AuthenticationForm):
         self.helper.field_class = 'col-md-8'
         self.helper.layout.append(HTML(u"""<div class="form-group row" style="margin-bottom: 16px;margin-top: -16px;">
                                              <div class="col-md-offset-4 col-md-8">
-                                               <a href="{% url django.contrib.auth.views.password_reset %}"><small class="text-muted">Забыли пароль?</small></a>
+                                               <a href="{% url django.contrib.auth.views.password_reset %}"><small class="text-muted">""" + _(u'Забыли пароль?') + """</small></a>
                                              </div>
                                            </div>
                                            <div class="form-group row">
                                              <div class="col-md-offset-4 col-md-8">
-                                               <button type="submit" class="btn btn-secondary">Войти</button>
+                                               <button type="submit" class="btn btn-secondary">""" + _(u'Войти') + """</button>
                                                <input type="hidden" name="next" value="{{ next }}" />
                                              </div>
                                            </div>"""))
@@ -66,7 +67,7 @@ class AnytaskPasswordResetForm(PasswordResetForm):
         self.helper.field_class = 'col-md-7'
         self.helper.layout.append(HTML(u"""<div class="form-group row">
                                              <div class="col-md-offset-5 col-md-7">
-                                               <button type="submit" class="btn btn-secondary">Сбросить</button>
+                                               <button type="submit" class="btn btn-secondary">""" + _(u'Сбросить') + """</button>
                                              </div>
                                            </div>"""))
 
@@ -79,7 +80,7 @@ class AnytaskSetPasswordForm(SetPasswordForm):
         self.helper.field_class = 'col-md-8'
         self.helper.layout.append(HTML(u"""<div class="form-group row">
                                              <div class="col-md-offset-4 col-md-8">
-                                               <button type="submit" class="btn btn-secondary">Применить</button>
+                                               <button type="submit" class="btn btn-secondary">""" + _(u'Применить') + """</button>
                                              </div>
                                            </div>"""))
 
@@ -92,15 +93,15 @@ class AnytaskPasswordChangeForm(PasswordChangeForm):
         self.helper.field_class = 'col-md-7'
         self.helper.layout.append(HTML(u"""<div class="form-group row">
                                              <div class="col-md-offset-5 col-md-7">
-                                               <button type="submit" class="btn btn-secondary">Изменить</button>
+                                               <button type="submit" class="btn btn-secondary">""" + _(u'Изменить') + """</button>
                                              </div>
                                            </div>"""))
 
 
 class RegistrationFormWithNames(RegistrationForm):
-    first_name = forms.CharField(widget=forms.TextInput(attrs=attrs_dict), label="Имя")
-    last_name = forms.CharField(widget=forms.TextInput(attrs=attrs_dict), label="Фамилия")
-    show_email = forms.BooleanField(required=False, initial=True, label="Показывать мой e-mail всем пользователям")
+    first_name = forms.CharField(widget=forms.TextInput(attrs=attrs_dict), label=_(u"Имя"))
+    last_name = forms.CharField(widget=forms.TextInput(attrs=attrs_dict), label=_(u"Фамилия"))
+    show_email = forms.BooleanField(required=False, initial=True, label=_(u"Показывать мой e-mail всем пользователям"))
     #invite = forms.CharField(widget=forms.TextInput(attrs=attrs_dict), label="Инвайт")
 
     def __init__(self, *args, **kwargs):
@@ -131,7 +132,7 @@ class BootStrapRegistrationFormWithNames(RegistrationFormWithNamesUniqEmail):
         self.helper.field_class = 'col-md-8'
         self.helper.layout.append(HTML(u"""<div class="form-group row">
                                              <div class="col-md-offset-4 col-md-8">
-                                               <button type="submit" class="btn btn-secondary">Зарегистрироваться</button>
+                                               <button type="submit" class="btn btn-secondary">""" + _(u'Зарегистрироваться') + """</button>
                                              </div>
                                            </div>"""))
 
