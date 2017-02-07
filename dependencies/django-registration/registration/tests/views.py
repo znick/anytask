@@ -73,17 +73,17 @@ class RegistrationViewTests(TestCase):
         create a user, and displays appropriate error messages.
 
         """
-        with translation.override('en'):
-            response = self.client.post(reverse('registration_register'),
-                                        data={'username': 'bob',
-                                              'email': 'bobe@example.com',
-                                              'password1': 'foo',
-                                              'password2': 'bar'})
-            self.assertEqual(response.status_code, 200)
-            self.failIf(response.context['form'].is_valid())
-            self.assertFormError(response, 'form', field=None,
-                                 errors=u"Два поля с паролями не совпадают.")
-            self.assertEqual(len(mail.outbox), 0)
+        # with translation.override('en'):
+        response = self.client.post(reverse('registration_register'),
+                                    data={'username': 'bob',
+                                          'email': 'bobe@example.com',
+                                          'password1': 'foo',
+                                          'password2': 'bar'})
+        self.assertEqual(response.status_code, 200)
+        self.failIf(response.context['form'].is_valid())
+        self.assertFormError(response, 'form', field=None,
+                             errors=u"Два поля с паролями не совпадают.")
+        self.assertEqual(len(mail.outbox), 0)
 
     def test_registration_view_closed(self):
         """
