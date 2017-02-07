@@ -473,7 +473,8 @@
                             'email': user[5],
                             'id': "u_" + user[6],
                             'id_post': user[6],
-                            'type': "user"
+                            'type': "user",
+                            'statuses': user[7]
                         };
                     });
                 }
@@ -510,13 +511,28 @@
                             var table_html = '<div class="sgs-result-up" data-url="{0}"><table>' +
                                 '<tr><td style="padding-right: 10px;"><img class="avatar" src="{1}" style="width: 30px; height: 30px;"></td>' +
                                 '<td><div><strong>{2}</strong></div>{3}</td></tr>' +
+                                '<tr><td></td><td>{4}</td></tr>' +
                                 '<tr><td></td><td><strong>{% trans "Логины" %}</strong></td></tr>' +
-                                '<tr><td></td><td>{4}@ <small class="text-muted">Anytask</small></td></tr>' +
-                                '{5}' +
+                                '<tr><td></td><td>{5}@ <small class="text-muted">Anytask</small></td></tr>' +
+                                '{6}' +
                                 '</table></div>';
                             var email_html = '';
                             var ya_login_html = '';
                             var avatar = data.avatar;
+                            var status_html = '';
+                            var status_template = '<span class="label label-status-sgs" style="background-color: {0}">{1}</span>';
+                            var MAX_STATUSES = 2;
+                            var status_counter = 0;
+
+                            while (status_counter < data.statuses.length) {
+                                if (status_counter == MAX_STATUSES) {
+                                    status_html += '<span class="label label-status-sgs label-default ">еще ' + '1' + '</span>';
+                                    break;
+                                }
+
+                                status_html += status_template.format(data.statuses[status_counter][1], data.statuses[status_counter][0]);
+                                ++status_counter;
+                            }
 
                             if (!avatar)
                                 avatar = 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mm&f=y';
@@ -524,7 +540,7 @@
                                 email_html = '<div class="sgs-email">{0}</div>'.format(data.email);
                             if (data.ya_login)
                                 ya_login_html = '<tr><td></td><td>{0}@ <small class="text-muted">{% trans "Я.Контест" %}</small></td></tr>'.format(data.ya_login);
-                            return table_html.format(data.url, avatar, data.fullname, email_html, data.username, ya_login_html)
+                            return table_html.format(data.url, avatar, data.fullname, email_html, status_html, data.username, ya_login_html)
                         }
                     }
                 }

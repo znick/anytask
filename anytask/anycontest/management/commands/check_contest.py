@@ -17,7 +17,10 @@ class Command(BaseCommand):
     help = "Check contest submissions and comment verdict"
 
     def handle(self, **options):
-        for contest_submission in ContestSubmission.objects.filter(got_verdict=False).exclude(run_id__isnull=True):
+        for contest_submission in ContestSubmission.objects \
+                .filter(got_verdict=False, send_error__isnull=True) \
+                .exclude(run_id__exact="") \
+                .exclude(run_id__isnull=True):
             try:
                 issue = contest_submission.issue
                 run_id = contest_submission.run_id
