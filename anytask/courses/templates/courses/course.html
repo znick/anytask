@@ -222,7 +222,7 @@
                                 {% else %}
                                     {% for task_item in tasks_list %}
                                         <div style="display: flex;">
-                                            <div style="width: 40%">
+                                            <div style="width: 80%">
                                                 <h6>
                                                     <a class="btn btn-secondary btn-sm btn-square"
                                                        data-toggle="collapse" aria-expanded="false"
@@ -236,7 +236,6 @@
                                                     {% endif %}
                                                 </h6>
                                             </div>
-                                            <div style="width: 40%"></div>
                                             <div style="width: 20%"><a style="width: 100%"
                                                                        class="btn btn-secondary btn-sm"
                                                                        href="{{ course.get_absolute_url }}/gradebook/group/{{ task_item.grouper.id }}">{% trans "Ведомость" %}</a>
@@ -324,7 +323,7 @@
                                 {% else %}
                                     {% for task_item in tasks_list %}
                                         <div style="display: flex;">
-                                            <div style="width: 40%">
+                                            <div style="width: 80%">
                                                 <h6>
                                                     <a class="btn btn-secondary btn-sm btn-square"
                                                        data-toggle="collapse" aria-expanded="false"
@@ -337,7 +336,6 @@
                                                         {{ task_item.grouper|get_default_teacher:course }}) {% endif %}
                                                 </h6>
                                             </div>
-                                            <div style="width: 40%"></div>
                                             <div style="width: 20%"><a style="width: 100%"
                                                                        class="btn btn-secondary btn-sm"
                                                                        href="{{ course.get_absolute_url }}/gradebook/{{ seminar.id }}/{{ task_item.grouper.id }}">{% trans "Ведомость" %}</a>
