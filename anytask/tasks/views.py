@@ -112,10 +112,14 @@ def task_edit_page(request, task_id):
         return task_create_ot_edit(request, task.course, task_id)
 
     groups_required = []
-    groups = task.course.groups.all()
-    for group in groups:
-        if Issue.objects.filter(task=task, student__in=group.students.all()).count():
-            groups_required.append(group)
+    groups = task.groups.all()
+    if task.type == task.TYPE_SEMINAR:
+        children_groups = reduce(lambda x, y: x+y, [list(child.groups.all()) for child in task.children.all()], [])
+        groups_required = set(children_groups).intersection(groups)
+    else:
+        for group in groups:
+            if Issue.objects.filter(task=task, student__in=group.students.all()).count():
+                groups_required.append(group)
 
     schools = task.course.school_set.all()
 

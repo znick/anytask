@@ -65,13 +65,12 @@ def task_group_info(task):
                 data_task_groups.add(str(group.id))
             else:
                 continue
-            if task.type == 'Seminar':
-                if task.children.count():
-                    for child in task.children.all():
-                        if Issue.objects.filter(task=child, student__in=group.students.all()).count():
-                            data_task_disabled_groups.add(str(group.id))
-                        elif group in child.groups.all():
-                            data_task_empty_children_groups.add(str(group.id))
+            if task.type == task.TYPE_SEMINAR:
+                for child in task.children.all():
+                    if Issue.objects.filter(task=child, student__in=group.students.all()).count():
+                        data_task_disabled_groups.add(str(group.id))
+                    elif group in child.groups.all():
+                        data_task_empty_children_groups.add(str(group.id))
 
             elif Issue.objects.filter(task=task, student__in=group.students.all()).count():
                 data_task_disabled_groups.add(str(group.id))
