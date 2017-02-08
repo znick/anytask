@@ -161,7 +161,7 @@ def profile(request, username=None, year=None):
         'current_year'              : unicode(current_year) if current_year is not None else '',
         'can_generate_invites'      : can_generate_invites,
         'invite_form'               : invite_form,
-        'user_to_show_profile'              : user_to_show.get_profile(),
+        'user_to_show_profile'      : user_to_show.get_profile(),
         'can_sync_contest'          : can_sync_contest,
         'card_width'                : card_width,
         'show_email'                : show_email,

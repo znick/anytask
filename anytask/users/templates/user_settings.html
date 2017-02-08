@@ -150,12 +150,12 @@
         <div class="col-lg-6 col-md-7 col-xs-12">
             <div class="card">
                 <div class="card-block">
-                    <h5 class="card-title">Привязка аккаунтов</h5>
+                    <h5 class="card-title">{% trans "Привязка аккаунтов" %}</h5>
                     <ul class="social-acc-panel">
                         <li>
                             <div class="social-acc-panel-item">
                                 <div class="social-acc-type social-acc social-acc-ya">
-                                    <span class="social-icons social-acc-ya-item">Яндекс</span>
+                                    <span class="social-icons social-acc-ya-item">{% trans "Яндекс" %}</span>
                                 </div>
                                 <div class="social-acc-login">
                                     {% if user_profile.ya_passport_oauth %}
@@ -177,7 +177,7 @@
                         <li>
                             <div class="social-acc-panel-item">
                                 <div class="social-acc-type social-acc social-acc-contest">
-                                    <span class="social-icons social-acc-contest-item">Я.Контест</span>
+                                    <span class="social-icons social-acc-contest-item">{% trans "Я.Контест" %}</span>
                                 </div>
                                 <div class="social-acc-login">
                                     {% if user_profile.ya_contest_oauth %}
@@ -189,7 +189,7 @@
                                 <div class="social-acc-action">
                                     {% if user_profile.ya_contest_oauth %}
                                         <button class="btn btn-secondary btn-icon" type="button" onclick="location.href='{% url users.views.ya_oauth_request type_of_oauth='contest'%}'"><i class="fa fa-fw fa-refresh"></i></button>
-                                        <button class="btn btn-secondary btn-icon" type="button" disabled="disabled" title="Для того, чтобы отвязать свой профиль обратитесь к администратору."><i class="fa fa-fw fa-trash-o"></i></button>
+                                        <button class="btn btn-secondary btn-icon" type="button" disabled="disabled" title="{% trans "Для того, чтобы отвязать свой профиль обратитесь к администратору." %}"><i class="fa fa-fw fa-trash-o"></i></button>
                                     {% else %}
                                         <button class="btn btn-secondary btn-icon" type="button" onclick="location.href='{% url users.views.ya_oauth_request type_of_oauth='contest'%}'"><i class="fa fa-fw fa-plus"></i></button>
                                     {% endif %}
