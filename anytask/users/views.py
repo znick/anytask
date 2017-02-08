@@ -162,7 +162,7 @@ def profile(request, username=None, year=None):
         'can_generate_invites'      : can_generate_invites,
         'invite_form'               : invite_form,
         'user_to_show_profile'      : user_to_show.get_profile(),
-        'can_sync_contest'          : can_sync_contest,
+        'can_sync_contest'          : user.get_profile().can_sync_contest(),
         'card_width'                : card_width,
         'show_email'                : show_email,
         'user_above_user_to_show'   : user_above_user_to_show,
@@ -314,7 +314,7 @@ def ya_oauth_contest(user, ya_response, ya_contest_response):
     else:
         return redirect('users.views.ya_oauth_changed')
 
-    return redirect('users.views.profile')
+    return redirect('users.views.profile_settings')
 
 
 def ya_oauth_passport(user, ya_response, ya_passport_response):
@@ -336,7 +336,7 @@ def ya_oauth_passport(user, ya_response, ya_passport_response):
     else:
         return redirect('users.views.ya_oauth_changed')
 
-    return redirect('users.views.settings')
+    return redirect('users.views.profile_settings')
 
 
 def ya_oauth_response(request, type_of_oauth):

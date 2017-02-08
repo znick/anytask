@@ -117,6 +117,12 @@ class UserProfile(models.Model):
     def get_unread_count(self):
         return self.unread_messages.exclude(id__in=self.deleted_messages.all()).count()
 
+    def can_sync_contest(self):
+        for course in Course.objects.filter(is_active=True):
+            if course.get_user_group(self.user) and course.send_to_contest_from_users:
+                return True
+        return False
+
 
 class UserProfileLog(models.Model):
     user = models.ForeignKey(User, db_index=True, null=False, blank=False, related_name='profiles_logs_by_user')
