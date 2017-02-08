@@ -1,4 +1,5 @@
 <script src="{{ STATIC_URL }}jquery.validate.min.js"></script>
+{% load i18n %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.quicksearch/2.3.0/jquery.quicksearch.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/multi-select/0.9.12/js/jquery.multi-select.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.matchHeight/0.7.0/jquery.matchHeight-min.js" type="text/javascript"></script>
@@ -12,12 +13,12 @@
         $('.card').matchHeight();
 
         $('#rb_ext_select').multiSelect({
-            selectableHeader: '<input type="text" class="form-control form-control-sm" style="margin-bottom: 5px;" autocomplete="off" placeholder="Поиск...">',
+            selectableHeader: '<input type="text" class="form-control form-control-sm" style="margin-bottom: 5px;" autocomplete="off" placeholder="{% trans "Поиск..." %}">',
             selectionHeader: '<input type="text" class="form-control form-control-sm" style="margin-bottom: 5px;" autocomplete="off" placeholder="Поиск...">',
             selectableFooter: '<button type="button" id="rb_ext_select_rightAll" class="btn btn-secondary btn-block" style="margin-top: 5px;"><i class="fa fa-forward fa"></i></button>',
             selectionFooter: '<button type="button" id="rb_ext_select_leftAll" class="btn btn-secondary btn-block" style="margin-top: 5px;"><i class="fa fa-backward fa"></i></button>',
             afterInit: function(ms){
-                $('rb_ext_select').show();
+                $('#rb_ext_select').show();
                 var that = this,
                         $selectableSearch = that.$selectableUl.prev(),
                         $selectionSearch = that.$selectionUl.prev(),
@@ -70,7 +71,7 @@
             $.fn.matchHeight._update();
         });
 
-        $('#tasks_with_contest_select').multiselect({
+        $('#tasks_with_contest_select, #tasks_with_contest_rejudge_select').multiselect({
             buttonClass: 'btn btn-secondary btn-block',
             templates: {
                 ul: '<ul class="multiselect-container dropdown-menu" style="left:inherit;top: inherit;"></ul>',
@@ -78,8 +79,8 @@
             },
             enableClickableOptGroups: true,
             includeSelectAllOption: true,
-            selectAllText: 'Все задачи',
-            allSelectedText: 'Все задачи',
+            selectAllText: '{% trans "Все задачи" %}',
+            allSelectedText: '{% trans "Все задачи" %}',
             selectAllName: 'task_group_id_all',
             selectAllValue: 'on',
             maxHeight: 200,
@@ -88,10 +89,10 @@
             buttonTitle: function(options, select) {
                 var labels = [];
                 if (options.length === 0) {
-                    return 'Не выбрано ни одной задачи';
+                    return '{% trans "Не выбрано ни одной задачи" %}';
                 }
                 else if (options.length === $('option', select).length) {
-                    return 'Все задачи';
+                    return '{% trans "Все задачи" %}';
                 }
                 else {
                     options.each(function () {
@@ -102,13 +103,13 @@
             },
             buttonText: function(options, select) {
                 if (options.length === 0) {
-                    return 'Не выбрано ни одной задачи';
+                    return '{% trans "Не выбрано ни одной задачи" %}';
                 }
                 else if (options.length === $('option', select).length) {
-                    return 'Все задачи';
+                    return '{% trans "Все задачи" %}';
                 }
                 else if (options.length > 1) {
-                    return 'Выбрано несколько задач - ' + options.length;
+                    return '{% trans "Выбрано несколько задач - " %}' + options.length;
                 }
                 else {
                     var labels = [];
@@ -125,7 +126,7 @@
             },
             onInitialized: function(option, dropdown, select) {
                 $('.multiselect-group a', dropdown).prop('tabindex', '0').addClass('dropdown-item').find('label').addClass('checkbox');
-                $('#tasks_with_contest_select').closest('.form-group').show();
+                $('#tasks_with_contest_select, #tasks_with_contest_rejudge_select').closest('.form-group').show();
             },
         });
 
@@ -160,7 +161,7 @@
             var $progress = $('#progress_contest_update');
             var $progress_caption = $("#progress_contest_update_caption");
 
-            $progress_caption.html('Обновление задач... <span>0</span>%');
+            $progress_caption.html('{% trans "Обновление задач... " %}<span>0</span>%');
             $progress.prop('max', tasks_keys.length);
             $progress.val(0);
             $progress.show();
@@ -171,9 +172,9 @@
                             'contest_id': tasks_keys[i],
                             'tasks_with_contest[]': tasks[tasks_keys[i]]})
                         .done(function (data) {
-                            var alert_text = '<div><strong>Контест ' + data.contest_id + '. </strong>';
+                            var alert_text = '<div><strong>{% trans "Контест " %}' + data.contest_id + '. </strong>';
                             if (data.is_error == false) {
-                                alert_text += 'Задачи обновлены';
+                                alert_text += '{% trans "Задачи обновлены" %}';
                                 $('#update_submit_success_text').show().append(alert_text + '</div>');
                                 for (var key in data.tasks_title) {
                                     if (data.tasks_title.hasOwnProperty(key)) {
@@ -182,7 +183,7 @@
                                 }
                             }
                             else {
-                                var err_text = data.error ? data.error: 'Произошла ошибка при получении данных.';
+                                var err_text = data.error ? data.error: '{% trans "Произошла ошибка при получении данных." %}';
                                 $('#update_submit_error_text').show().append(alert_text +  err_text + '</div>');
                             }
                         })
@@ -205,6 +206,44 @@
             });
         });
 
+
+        $('#rejudge_tasks_btn').click(function () {
+            if (!$('#tasks_with_contest_rejudge_select').serialize())
+                return;
+
+            var $btn_update = $(this);
+
+            set_disabled();
+            $btn_update.data('reset_text', $btn_update.html());
+            $btn_update.html("&nbsp;<i class='fa fa-circle-o-notch fa-spin fa-fw'></i>&nbsp;");
+            $('#rejudge_tasks_error').html('');
+
+            $.post('{% url courses.views.ajax_rejudge_contest_tasks %}',
+                {   'csrfmiddlewaretoken': '{{ csrf_token }}',
+                    'tasks_with_contest[]': $('#tasks_with_contest_rejudge_select').val()})
+                .done(function (data) {
+                    $('#rejudge_tasks_error').html('<div class="alert alert-success alert-dismissible" role ="alert">' +
+                            '                            <button type="button" class="close" data-dismiss="alert" aria-label="{% trans "Закрыть" %}">' +
+                            '                               <span aria-hidden="true">&times;</span>' +
+                            '                            </button>' +
+                            '                            <span>{% trans "Отправлено на проверку успешно." %}</span>' +
+                            '                          </div>');
+                })
+                .fail(function () {
+                    $('#rejudge_tasks_error').html('<div class="alert alert-danger alert-dismissible" role ="alert">' +
+                            '                            <button type="button" class="close" data-dismiss="alert" aria-label="{% trans "Закрыть" %}">' +
+                            '                               <span aria-hidden="true">&times;</span>' +
+                            '                            </button>' +
+                            '                            <span>{% trans "Ошибка отправки." %}</span>' +
+                            '                          </div>');
+                })
+                .always(function () {
+                    remove_disabled();
+                    $btn_update.html($btn_update.data('reset_text'));
+                });
+
+        });
+
         $(window).bind('beforeunload', function() {
             if (form_submitting)
                 return 'show';
@@ -220,7 +259,7 @@
                     success: function (data) {
                         $('#course_settings_form_error_text').html('<div class="alert alert-success" role ="alert" id="edit_task_err">' +
                                 '                                     <a class="close" data-dismiss="alert">&times;</a>' +
-                                '                                     <span>Сохранено успешно.</span>' +
+                                '                                     <span>{% trans "Сохранено успешно." %}</span>' +
                                 '                                   </div>');
                         if ($('#course_settings_form').data('quit'))
                             redirect();
@@ -230,7 +269,7 @@
                     error: function (data) {
                         $('#course_settings_form_error_text').html('<div  class="alert alert-danger" role ="alert" id="edit_task_err">' +
                                 '                                     <a class="close" data-dismiss="alert">&times;</a>' +
-                                '                                     <span>Произошла ошибка при сохранении. Попробуйте снова.</span>' +
+                                '                                     <span>{% trans "Произошла ошибка при сохранении. Попробуйте снова." %}</span>' +
                                 '                                   </div>');
                         remove_disabled();
                     }
@@ -281,8 +320,10 @@
     function set_disabled() {
         var d = 'disabled';
 
+        $('#rejudge_tasks_btn').addClass(d).attr(d, d).prop(d, true)
+            .closest('.form-group').find('.multiselect').addClass(d).attr(d, d).prop(d, true);
         $('#update_tasks_btn').addClass(d).attr(d, d).prop(d, true)
-                .closest('.form-group').find('.multiselect').addClass(d).attr(d, d).prop(d, true);
+            .closest('.form-group').find('.multiselect').addClass(d).attr(d, d).prop(d, true);
         $('#button_cancel_quit').addClass(d).attr(d, d).prop(d, true);
         $('#button_save').addClass(d).attr(d, d).prop(d, true);
         $('#button_save_quit').addClass(d).attr(d, d).prop(d, true);
@@ -291,14 +332,16 @@
     function remove_disabled() {
         var d = 'disabled';
 
+        $('#rejudge_tasks_btn').removeClass(d).removeAttr(d).prop(d, false)
+            .closest('.form-group').find('.multiselect').removeClass(d).removeAttr(d).prop(d, false);
         $('#update_tasks_btn').removeClass(d).removeAttr(d).prop(d, false)
-                .closest('.form-group').find('.multiselect').removeClass(d).removeAttr(d).prop(d, false);
+            .closest('.form-group').find('.multiselect').removeClass(d).removeAttr(d).prop(d, false);
         $('#button_cancel_quit').removeClass(d).removeAttr(d).prop(d, false);
         $('#button_save').removeClass(d).removeAttr(d).prop(d, false);
         $('#button_save_quit').removeClass(d).removeAttr(d).prop(d, false);
     }
 
     function redirect() {
-        window.location.href = $('#course_url').attr('href');
+        window.location.href = document.referrer;
     }
 </script>

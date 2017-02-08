@@ -1,4 +1,3 @@
-import datetime
 from haystack import indexes
 
 from users.models import UserProfile
@@ -12,6 +11,7 @@ class UserProfileIndex(indexes.SearchIndex, indexes.Indexable):
     login_auto = indexes.NgramField(model_attr='user__username')
     ya_contest_login_auto = indexes.NgramField(model_attr='ya_contest_login')
     ya_passport_email_auto = indexes.NgramField(model_attr='ya_passport_email')
+    email_auto = indexes.NgramField(model_attr='user__email')
 
     def get_model(self):
         return UserProfile

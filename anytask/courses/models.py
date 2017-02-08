@@ -10,6 +10,7 @@ from django.db.models.signals import m2m_changed
 from django.conf import settings
 from django.db.models.signals import post_save
 from django.db.models import Q
+from django.utils.translation import ugettext_lazy as _
 
 from groups.models import Group
 from issues.model_issue_status import IssueStatusSystem
@@ -70,7 +71,7 @@ class FilenameExtension(models.Model):
 
 
 class MarkField(models.Model):
-    name = models.CharField(max_length=254, db_index=True, null=False, blank=False)
+    name = models.CharField(max_length=191, db_index=True, null=False, blank=False)
     name_int = models.IntegerField(db_index=False, null=False, blank=False, default=0)
 
     def __unicode__(self):
@@ -78,7 +79,7 @@ class MarkField(models.Model):
 
 
 class CourseMarkSystem(models.Model):
-    name = models.CharField(max_length=254, db_index=False, null=False, blank=False)
+    name = models.CharField(max_length=191, db_index=False, null=False, blank=False)
     marks = models.ManyToManyField(MarkField, null=True, blank=True)
 
     def __unicode__(self):
@@ -87,8 +88,8 @@ class CourseMarkSystem(models.Model):
 
 class Course(models.Model):
 
-    name = models.CharField(max_length=254, db_index=True, null=False, blank=False)
-    name_id = models.CharField(max_length=254, db_index=True, null=True, blank=True)
+    name = models.CharField(max_length=191, db_index=True, null=False, blank=False)
+    name_id = models.CharField(max_length=191, db_index=True, null=True, blank=True)
 
     information = models.TextField(db_index=False, null=True, blank=True)
 
@@ -189,7 +190,7 @@ class Course(models.Model):
 
     def add_group_with_extern(self):
         if self.group_with_extern is None and self.can_be_chosen_by_extern:
-            group, ok = Group.objects.get_or_create(year=self.year,name=u'%s - слушатели' % self.name)
+            group, ok = Group.objects.get_or_create(year=self.year,name=_(u'%s - слушатели') % self.name)
             group.save()
             self.group_with_extern = group
             self.groups.add(group)

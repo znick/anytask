@@ -9,15 +9,19 @@ from django.conf import settings
 from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpResponse
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template.context import RequestContext
+from django.utils.translation import ugettext as _
 from issues.forms import FileForm
 from issues.models import Issue, Event, File
 from issues.model_issue_field import IssueField
 from issues.model_issue_status import IssueStatus
+from anyrb.common import AnyRB
+
 
 from django.core.urlresolvers import reverse
 from django.views import generic
 from django.views.decorators.http import require_POST
 from jfu.http import upload_receive, UploadResponse, JFUResponse
+from copy import deepcopy
 
 from anycontest.common import get_problem_compilers
 
@@ -56,6 +60,54 @@ def prepare_info_fields(info_fields, request, issue):
         data = { field.name : field.value }
         field.form = field.get_form(request, issue, data)
 
+
+def contest_rejudge(issue):
+    got_verdict_submissions = issue.contestsubmission_set.filter(got_verdict=True)
+
+    if not (got_verdict_submissions.count() and
+       issue.contestsubmission_set.count() == (got_verdict_submissions.count() +
+                                               issue.contestsubmission_set.exclude(send_error__isnull=True).count())):
+        return
+
+    old_contest_submission = got_verdict_submissions.order_by("-create_time")[0]
+    author = old_contest_submission.author
+    field, field_get = IssueField.objects.get_or_create(name='comment')
+    event = issue.create_event(field, author=author)
+
+    file_copy = deepcopy(old_contest_submission.file)
+    file_copy.pk = None
+    file_copy.event = event
+    file_copy.save()
+    contest_submission = issue.contestsubmission_set.create(issue=issue,
+                                                            author=author,
+                                                            file=file_copy)
+    sent = contest_submission.upload_contest(compiler_id=old_contest_submission.compiler_id)
+    if sent:
+        event.value = u"<p>{0}</p>".format(_(u'Отправлено на проверку в Я.Контест'))
+        if issue.status_field.tag != IssueStatus.STATUS_ACCEPTED:
+            issue.set_status_by_tag(IssueStatus.STATUS_AUTO_VERIFICATION)
+    else:
+        event.value = u"<p>{1}('{0}').</p>".format(
+            contest_submission.send_error, _(u'Ошибка отправки в Я.Контест'))
+        issue.followers.add(User.objects.get(username='anytask.monitoring'))
+
+    if issue.task.rb_integrated and issue.task.course.send_rb_and_contest_together:
+        for ext in settings.RB_EXTENSIONS + [str(ext.name) for ext in issue.task.course.filename_extensions.all()]:
+            filename, extension = os.path.splitext(file.name)
+            if ext == extension or ext == '.*':
+                anyrb = AnyRB(event)
+                review_request_id = anyrb.upload_review()
+                if review_request_id is not None:
+                    event.value += u'<p><a href="{1}/r/{0}">Review request {0}</a></p>'. \
+                        format(review_request_id, settings.RB_API_URL)
+                else:
+                    event.value += u'<p>{0}.</p>'.format(_(u'Ошибка отправки в Review Board'))
+                    issue.followers.add(User.objects.get(username='anytask.monitoring'))
+                break
+
+    event.save()
+
+
 @login_required
 def issue_page(request, issue_id):
     issue = get_object_or_404(Issue, id=issue_id)
@@ -65,6 +117,10 @@ def issue_page(request, issue_id):
     issue_fields = issue.task.course.issue_fields.all()
 
     if request.method == 'POST':
+        if 'contest_rejudge' in request.POST:
+            contest_rejudge(issue)
+            return HttpResponseRedirect('')
+
         form_name = request.POST['form_name']
 
         for field in issue_fields:
@@ -101,6 +157,12 @@ def issue_page(request, issue_id):
                             issue.set_status_by_tag(IssueStatus.STATUS_NEED_INFO)
 
                     issue.set_field(field, value, request.user)
+
+                    if 'comment_verdict' in request.POST:
+                        issue.set_byname('comment',
+                                         {'files': [], 'comment': request.POST['comment_verdict']},
+                                         request.user)
+
                     return HttpResponseRedirect('')
 
     prepare_info_fields(issue_fields, request, issue)
@@ -120,6 +182,21 @@ def issue_page(request, issue_id):
 
     schools = issue.task.course.school_set.all()
 
+    show_contest_rejudge_loading = False
+    if issue.contestsubmission_set \
+            .exclude(run_id__exact="") \
+            .exclude(run_id__isnull=True)\
+            .filter(send_error__isnull=True, got_verdict=False)\
+            .count():
+        show_contest_rejudge_loading = True
+
+    show_contest_rejudge = False
+    got_verdict_submissions = issue.contestsubmission_set.filter(got_verdict=True)
+    if got_verdict_submissions.count() and not show_contest_rejudge_loading:
+        show_contest_rejudge = True
+
+
+
     context = {
         'issue': issue,
         'issue_fields': issue_fields,
@@ -131,6 +208,8 @@ def issue_page(request, issue_id):
         'school': schools[0] if schools else '',
         'visible_queue': issue.task.course.user_can_see_queue(request.user),
         'statuses_accepted': statuses_accepted,
+        'show_contest_rejudge': show_contest_rejudge,
+        'show_contest_rejudge_loading': show_contest_rejudge_loading,
     }
 
     return render_to_response('issues/issue.html', context, context_instance=RequestContext(request))

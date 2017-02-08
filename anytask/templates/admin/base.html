@@ -25,20 +25,20 @@
         </div>
 
         <h1>
-          <a href="/">{% trans 'Main' %}</a>
+          <a href="/">Main</a>
         </h1>
 
         {% if user.is_active and user.is_staff %}
         <div id="user-tools">
-            {% trans 'Welcome,' %}
+            Welcome,
             <strong>{% filter force_escape %}{% firstof user.first_name user.username %}{% endfilter %}</strong>.
             {% block userlinks %}
                 {% url 'django-admindocs-docroot' as docsroot %}
                 {% if docsroot %}
-                    <a href="{{ docsroot }}">{% trans 'Documentation' %}</a> /
+                    <a href="{{ docsroot }}">Documentation</a> /
                 {% endif %}
-                <a href="{% url 'admin:password_change' %}">{% trans 'Change password' %}</a> /
-                <a href="{% url 'admin:logout' %}">{% trans 'Log out' %}</a>
+                <a href="{% url 'admin:password_change' %}">Change password</a> /
+                <a href="{% url 'admin:logout' %}">Log out</a>
             {% endblock %}
         </div>
         {% endif %}
@@ -47,7 +47,7 @@
     <!-- END Header -->
     {% block breadcrumbs %}
     <div class="breadcrumbs">
-    <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+    <a href="{% url 'admin:index' %}">Home</a>
     {% if title %} &rsaquo; {{ title }}{% endif %}
     </div>
     {% endblock %}

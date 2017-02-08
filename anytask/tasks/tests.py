@@ -198,7 +198,6 @@ class ViewsTest(TestCase):
                          'form select group 2nd option text wrong')
 
         form_select_type = div_task_id.form.find('select', {'id': 'task_edit_type'})('option')
-        print form_select_type
         self.assertEqual(len(form_select_type), 2, "form select type len not 2")
         self.assertEqual(form_select_type[0]['value'], 'All', 'form select type 1st option value wrong')
         self.assertEqual(form_select_type[0].string.strip().strip('\n'),
@@ -336,7 +335,7 @@ class ViewsTest(TestCase):
                                {'course_id': self.course.id})
         self.assertEqual(response.status_code, 200, "Can't get change_visibility_hidden_tasks via teacher")
         self.assertEqual(response.content, 'OK')
-        response = client.get(reverse('courses.views.course_page', kwargs={'course_id': self.course.id}))
+        response = client.get(reverse('courses.views.gradebook', kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 200, "Can't get course_page via teacher")
 
         html = BeautifulSoup(response.content)

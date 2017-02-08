@@ -18,6 +18,7 @@ urlpatterns = patterns('',
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
     # Uncomment the next line to enable the admin:
+    url(r'^i18n/', include('django.conf.urls.i18n')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^course/', include('courses.urls')),
     url(r'^issue/', include('issues.urls')),
@@ -37,4 +38,7 @@ urlpatterns = patterns('',
     url(r'^about$', direct_to_template, {'template' : 'about.html'}),
     url(r'^$', 'index.views.index'),
     url(r'^search/', include('search.urls')),
+    url(r'^staff', include('staff.urls')),
+    url(r'^blog/', include('blog.urls')),
+    url(r'^mail/', include('mail.urls')),
 )

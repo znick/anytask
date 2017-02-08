@@ -33,7 +33,11 @@ def ajax_search_users(request):
     if 'q' not in request.GET:
         return HttpResponseForbidden()
 
-    max_result = 3
+    if 'max' in request.GET:
+        max_result = int(request.GET["max"])
+    else:
+        max_result = 3
+
     result, _ = search_users(request.GET.get('q', ''), request.user, max_result + 1)
 
     return HttpResponse(json.dumps({'result': result[:max_result],
@@ -46,7 +50,10 @@ def ajax_search_courses(request):
     if 'q' not in request.GET:
         return HttpResponseForbidden()
 
-    max_result = 3
+    if 'max' in request.GET:
+        max_result = int(request.GET["max"])
+    else:
+        max_result = 3
 
     result, _ = search_courses(request.GET.get('q', ''), request.user, max_result + 1)
 
@@ -74,11 +81,13 @@ def search_users(query, user, max_result=None):
         if user_is_staff or user_is_teacher:
             sgs_ya_contest_login = sgs.autocomplete(ya_contest_login_auto=query)
             sgs_ya_passport_email = sgs.autocomplete(ya_passport_email_auto=query)
+            sgs_email = sgs.autocomplete(email_auto=query)
         else:
             sgs_ya_contest_login = sgs.none()
             sgs_ya_passport_email = sgs.none()
+            sgs_email = sgs.none()
 
-        sgs = sgs_fullname | sgs_login | sgs_ya_contest_login | sgs_ya_passport_email
+        sgs = sgs_fullname | sgs_login | sgs_ya_contest_login | sgs_ya_passport_email | sgs_email
 
         if not user_is_staff:
             groups = user.group_set.all()
@@ -119,7 +128,10 @@ def search_users(query, user, max_result=None):
                                user_to_show.get_absolute_url(),
                                sg.object.avatar.url if sg.object.avatar else '',
                                user_to_show.email if show_email else '',
-                               user_to_show.ya_passport_email if show_email else ''])
+                               user_to_show.ya_passport_email if show_email else '',
+                               user_to_show.id,
+                               list(sg.object.user_status.values_list('name', 'color'))
+                               ])
                 result_objs.append(sg.object)
 
                 if len(result) == max_result:
@@ -133,7 +145,10 @@ def search_users(query, user, max_result=None):
                                sg.object.user.get_absolute_url(),
                                sg.object.avatar.url if sg.object.avatar else '',
                                sg.object.user.email,
-                               sg.object.ya_passport_email])
+                               sg.object.ya_passport_email,
+                               sg.object.user.id,
+                               list(sg.object.user_status.values_list('name', 'color'))
+                               ])
                 result_objs.append(sg.object)
 
     return result, result_objs

@@ -1,9 +1,11 @@
 {% extends "base.html" %}
+{% load i18n %}
 {% load django_bootstrap_breadcrumbs %}
 {% load crispy_forms_tags %}
 {% load sanitize_html icon %}
 {% load dict_func %}
 {% load task_taken_func %}
+
 
 {% block title %}{{ course.name }} | {{ course.year }}{% endblock %}
 
@@ -13,7 +15,9 @@
         {% breadcrumb school.name school.get_absolute_url %}
     {% endif %}
     {% breadcrumb course.name course.get_absolute_url %}
-    {% breadcrumb "Настройки" "" %}
+    {% breadcrumb_for "" %}
+        {%  trans "Настройки" %}
+    {% endbreadcrumb_for %}
 {% endblock breadcrumbs %}
 
 
@@ -24,16 +28,20 @@
 {% block navbar %}
     <ul class="nav navbar-nav">
         <li class="nav-item">
-            <a class="nav-link" id="course_url" href="{{ course.get_absolute_url }}">Список задач</a>
+            <a class="nav-link" href="{{ course.get_absolute_url }}">{% trans "Страница курса" %}</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link"
+               href="{{ course.get_absolute_url }}/gradebook">{% trans "Общая ведомость" %}</a>
         </li>
         {% if visible_queue %}
             <li class="nav-item">
-                <a class="nav-link" href="{{ course.get_absolute_url }}/queue">Очередь на проверку</a>
+                <a class="nav-link" href="{{ course.get_absolute_url }}/queue">{% trans "Очередь на проверку" %}</a>
             </li>
         {% endif %}
         {% if user_is_teacher %}
             <li class="nav-item active">
-                <a class="nav-link" href="">Настройки</a>
+                <a class="nav-link" href="">{% trans "Настройки" %}</a>
             </li>
         {% endif %}
     </ul>
@@ -45,6 +53,14 @@
     <style>
         .asteriskField {
             display: none;
+        }
+
+        .card .card-block-part {
+            margin-bottom: 1.5rem;
+        }
+
+        .card .card-block-part:last-child {
+            margin-bottom: 0;
         }
 
         .ms-container {
@@ -114,8 +130,8 @@
         <div class="row" >
             <div class="col-md-6 col-sm-12">
                 <div class="card card-block" >
-                    <h5 class="card-title">Преподаватели</h5>
-                    <p class="card-text">Эти преподаватели будут назначаться проверяющими во время перехода задачи в статус "на проверке", если другой преподаватель не был назначен ранее</p>
+                    <h5 class="card-title">{% trans "Преподаватели" %}</h5>
+                    <p class="card-text">{% trans "Эти преподаватели будут назначаться проверяющими во время перехода задачи в статус 'на проверке' если другой преподаватель не был назначен ранее" %}</p>
                     {% for field in form %}
                         {% if field.is_hidden %}
                             {{ field }}
@@ -136,32 +152,32 @@
             </div>
             <div class="col-md-6 col-sm-12">
                 <div class="card card-block">
-                    <h5 class="card-title">Настройка задач</h5>
-                    <p class="card-text">Скрытие полей и установка значений по умолчанию</p>
+                    <h5 class="card-title">{% trans "Настройка задач" %}</h5>
+                    <p class="card-text">{% trans "Скрытие полей и установка значений по умолчанию" %}</p>
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item">
                             <div class="row">
-                                <p class="card-text">Отправлять один файл</p>
+                                <p class="card-text">{% trans "Отправлять один файл" %}</p>
                                 <div class="col-md-12">
                                     <input type="checkbox" name="show_task_one_file_upload" id="show_task_one_file_upload" {% if course.show_task_one_file_upload %}checked{% endif %}>
-                                    <label class="checkbox-block" for="show_task_one_file_upload">Отображать настройку</label>
+                                    <label class="checkbox-block" for="show_task_one_file_upload">{% trans "Отображать настройку" %}</label>
                                 </div>
                                 <div class="col-md-12 collapse {% if course.show_task_one_file_upload %}in{% endif %}">
                                     <input type="checkbox" name="default_task_one_file_upload" id="default_task_one_file_upload" {% if course.default_task_one_file_upload %}checked{% endif %}>
-                                    <label class="checkbox-block" for="default_task_one_file_upload">Значение по умолчанию</label>
+                                    <label class="checkbox-block" for="default_task_one_file_upload">{% trans "Значение по умолчанию" %}</label>
                                 </div>
                             </div>
                         </li>
                         <li class="list-group-item">
                             <div class="row">
-                                <p class="card-text">Переводить в Зачтено после положительного вердикта Я.Контеста</p>
+                                <p class="card-text">{% trans "Переводить в Зачтено после положительного вердикта Я.Контеста" %}</p>
                                 <div class="col-md-12">
                                     <input type="checkbox" name="show_accepted_after_contest_ok" id="show_accepted_after_contest_ok" {% if course.show_accepted_after_contest_ok %}checked{% endif %}>
-                                    <label class="checkbox-block" for="show_accepted_after_contest_ok">Отображать настройку</label>
+                                    <label class="checkbox-block" for="show_accepted_after_contest_ok">{% trans "Отображать настройку" %}</label>
                                 </div>
                                 <div class="col-md-12 collapse {% if course.show_accepted_after_contest_ok %}in{% endif %}">
                                     <input type="checkbox" name="default_accepted_after_contest_ok" id="default_accepted_after_contest_ok" {% if course.default_accepted_after_contest_ok %}checked{% endif %}>
-                                    <label class="checkbox-block" for="default_accepted_after_contest_ok">Значение по умолчанию</label>
+                                    <label class="checkbox-block" for="default_accepted_after_contest_ok">{% trans "Значение по умолчанию" %}</label>
                                 </div>
                             </div>
                         </li>
@@ -174,29 +190,52 @@
                 {% if tasks_with_contest %}
                     <div class="col-lg-6 col-md-5 col-sm-12">
                         <div class="card card-block" id="card_contest">
-                            <h5 class="card-title">Яндекс.Контест</h5>
-                            <p class="card-text">Обновить название, максимальный балл, дату сдачи и формулировку для задач</p>
-                            <div class="form-group row" style="display: none;" >
-                                <div class="controls col-lg-8 col-md-12">
-                                    <select name="tasks_with_contest[]" id="tasks_with_contest_select" class="form-control" multiple="multiple">
-                                        {% for contest_id, tasks in tasks_with_contest.iteritems %}
-                                            <optgroup label="{{ contest_id }}">
-                                                {% for task in tasks %}
-                                                    <option value="{{ task.id }}" selected>{{ task.title }}</option>
-                                                {% endfor %}
-                                            </optgroup>
-                                        {% endfor %}
-                                    </select>
+                            <h5 class="card-title">{% trans "Яндекс.Контест" %}</h5>
+                            <div class="card-block-part">
+                                <p class="card-text">{% trans "Пересудить решения студентов" %}</p>
+                                <div class="form-group row" style="display: none;" >
+                                    <div class="controls col-lg-8 col-md-12">
+                                        <select name="tasks_with_contest_rejudge[]" id="tasks_with_contest_rejudge_select" class="form-control" multiple="multiple">
+                                            {% for contest_id, tasks in tasks_with_contest.iteritems %}
+                                                <optgroup label="{{ contest_id }}">
+                                                    {% for task in tasks %}
+                                                        <option value="{{ task.id }}" selected>{{ task.title }}</option>
+                                                    {% endfor %}
+                                                </optgroup>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="btn-div col-lg-4 col-md-12">
+                                        <button type="button" id="rejudge_tasks_btn" class="btn btn-secondary btn-block" style="display: inline">{% trans "Пересудить" %}</button>
+                                    </div>
                                 </div>
-                                <div class="btn-div col-lg-4 col-md-12">
-                                    <button type="button" id="update_tasks_btn" class="btn btn-secondary btn-block" style="display: inline">Обновить</button>
+                                <div id="rejudge_tasks_error">
                                 </div>
                             </div>
-                            <div class="text-xs-center" id="progress_contest_update_caption"></div>
-                            <progress class="progress progress-info" id="progress_contest_update" value="0" max="0" style="display: none"></progress>
-                            <div class="output-block">
-                                <div id="update_submit_success_text" class="output-success" ></div>
-                                <div id="update_submit_error_text" class="output-danger"></div>
+                            <div class="card-block-part">
+                                <p class="card-text">{% trans "Обновить название, максимальный балл, дату сдачи и формулировку для задач" %}</p>
+                                <div class="form-group row" style="display: none;" >
+                                    <div class="controls col-lg-8 col-md-12">
+                                        <select name="tasks_with_contest[]" id="tasks_with_contest_select" class="form-control" multiple="multiple">
+                                            {% for contest_id, tasks in tasks_with_contest.iteritems %}
+                                                <optgroup label="{{ contest_id }}">
+                                                    {% for task in tasks %}
+                                                        <option value="{{ task.id }}" selected>{{ task.title }}</option>
+                                                    {% endfor %}
+                                                </optgroup>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="btn-div col-lg-4 col-md-12">
+                                        <button type="button" id="update_tasks_btn" class="btn btn-secondary btn-block" style="display: inline">{% trans "Обновить" %}</button>
+                                    </div>
+                                </div>
+                                <div class="text-xs-center" id="progress_contest_update_caption"></div>
+                                <progress class="progress progress-info" id="progress_contest_update" value="0" max="0" style="display: none"></progress>
+                                <div class="output-block">
+                                    <div id="update_submit_success_text" class="output-success" ></div>
+                                    <div id="update_submit_error_text" class="output-danger"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -205,7 +244,7 @@
                     <div class="col-lg-6 col-md-7 col-sm-12">
                         <div class="card card-block">
                             <h5 class="card-title">Review Board</h5>
-                            <p class="card-text">Расширения файлов</p>
+                            <p class="card-text">{% trans "Расширения файлов" %}</p>
                             <select name="rb_extensions[]" id="rb_ext_select" class="form-control" size="7" multiple="multiple" style="display: none;">
                                 {% for file_ext, selected in file_extensions %}
                                     <option value="{{ file_ext.id }}" {% if selected %}selected{% endif %}>{{ file_ext.name }}</option>
@@ -219,9 +258,9 @@
         <div style="margin-top: 1rem;">
             <div id="course_settings_form_error_text"></div>
             <div class="btn-group pull-xs-right" role="group">
-                <button type="button" id="button_cancel_quit" class="btn btn-secondary">Отменить и выйти</button>
-                <button type="button" id="button_save" class="btn btn-secondary">Сохранить и продолжить редактирование</button>
-                <button type="button" id="button_save_quit" class="btn btn-primary">Сохранить и выйти</button>
+                <button type="button" id="button_cancel_quit" class="btn btn-secondary">{% trans "Отменить и выйти" %}</button>
+                <button type="button" id="button_save" class="btn btn-secondary">{% trans "Сохранить и продолжить редактирование" %}</button>
+                <button type="button" id="button_save_quit" class="btn btn-primary">{% trans "Сохранить и выйти" %}</button>
             </div>
         </div>
     </form>

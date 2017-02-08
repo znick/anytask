@@ -2,16 +2,17 @@
 
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template import RequestContext
-from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound
+from django.http import HttpResponse, HttpResponseForbidden
 from django.db.models import Q
 from django.conf import settings
 from django.http import Http404
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.core.files.base import ContentFile
+from django.utils.translation import ugettext as _
 
 
-from users.models import UserProfile, IssueFilterStudent
+from users.models import UserProfile, UserProfileLog, UserStatus, IssueFilterStudent, UserProfileFilter
 from django.contrib.auth.models import User
 from tasks.models import TaskTaken
 from years.models import Year
@@ -81,7 +82,9 @@ def profile(request, username=None, year=None):
             user_school_teach_user_to_show = True
 
         if not (user.is_staff or user_school_user_to_show):
-            raise PermissionDenied
+            if not ((courses_user_to_show | courses_user_to_show_teacher) & (courses | courses_teacher)):
+                if not (groups_user_to_show & groups):
+                    raise PermissionDenied
 
         show_email = user.is_staff or \
                      user_to_show.get_profile().show_email or \
@@ -199,6 +202,87 @@ def profile_settings(request):
     return render_to_response('user_settings.html', context, context_instance=RequestContext(request))
 
 
+@login_required
+def profile_history(request, username=None):
+    if request.method == 'POST':
+        return HttpResponseForbidden()
+
+    user = request.user
+
+    if not user.is_staff:
+        raise PermissionDenied
+
+    user_to_show = user
+    if username:
+        user_to_show = get_object_or_404(User, username=username)
+
+    context = {
+        'user_profile':         user_to_show.get_profile(),
+        'user_profile_history': UserProfileLog.objects.filter(user=user_to_show).order_by('update_time'),
+        'user_to_show':         user_to_show,
+        'status_types':         UserStatus.TYPE_STATUSES,
+        'user_statuses':        UserStatus.objects.all(),
+    }
+
+    return render_to_response('status_history.html', context, context_instance=RequestContext(request))
+
+
+@login_required
+def set_user_statuses(request, username=None):
+    if request.method == 'GET':
+        return HttpResponseForbidden()
+
+    user = request.user
+
+    if not user.is_staff:
+        return HttpResponseForbidden()
+
+    user_to_show = user
+    if username:
+        user_to_show = get_object_or_404(User, username=username)
+
+    user_profile = user_to_show.get_profile()
+    is_error = False
+    error = ''
+    user_statuses = []
+
+    try:
+        new_user_statuses = dict(request.POST)['status_by_type[]']
+        if not new_user_statuses:
+            new_user_statuses = []
+        old_user_statuses = user_profile.user_status.all()
+
+        for status in old_user_statuses:
+            if str(status.id) not in new_user_statuses:
+                user_profile.user_status.remove(status)
+
+        for status_id in new_user_statuses:
+            if status_id:
+                status = UserStatus.objects.get(id=status_id)
+                if status not in user_profile.user_status.all():
+                    user_profile.user_status.add(status)
+
+        user_profile.updated_by = user
+        user_profile.save()
+
+    except Exception as e:
+        is_error = True
+        error = e
+
+    for status in user_profile.user_status.all():
+        user_statuses.append({'name': status.name, 'color': status.color})
+
+    user_profile_log = {'update_time': user_profile.update_time.strftime("%d-%m-%Y %H:%M"),
+                        'updated_by': user_profile.updated_by.username,
+                        'fullname': user_profile.updated_by.get_full_name(),}
+
+    return HttpResponse(json.dumps({'user_statuses': user_statuses,
+                                    'user_profile_log' : user_profile_log,
+                                    'is_error': is_error,
+                                    'error': error}),
+                        content_type="application/json")
+
+
 def ya_oauth_request(request, type_of_oauth):
     if type_of_oauth == 'contest':
         OAUTH = settings.CONTEST_OAUTH_ID
@@ -299,7 +383,7 @@ def ya_oauth_disable(request, type_of_oauth):
 
 def ya_oauth_forbidden(request):
     context = {
-        'oauth_error_text'              : "Данный профиль уже привязан к аккаунту другого пользователя на Anytask!",
+        'oauth_error_text'              : _(u"Данный профиль уже привязан к аккаунту другого пользователя на Anytask!"),
     }
 
     return render_to_response('oauth_error.html', context, context_instance=RequestContext(request))
@@ -307,7 +391,7 @@ def ya_oauth_forbidden(request):
 
 def ya_oauth_changed(request):
     context = {
-        'oauth_error_text'              : "Можно перепривязать только тот профиль, который был привязан ранее!",
+        'oauth_error_text'              : _(u"Можно перепривязать только тот профиль, который был привязан ранее!"),
     }
 
     return render_to_response('oauth_error.html', context, context_instance=RequestContext(request))
@@ -352,8 +436,8 @@ def my_tasks(request):
     f.form.helper = FormHelper(f.form)
     f.form.helper.form_method = 'get'
     f.form.helper.layout.append(HTML(u"""<div class="form-group row">
-                                           <button id="button_filter" class="btn btn-secondary pull-xs-right" type="submit">Применить</button>
-                                         </div>"""))
+                                           <button id="button_filter" class="btn btn-secondary pull-xs-right" type="submit">{0}</button>
+                                         </div>""".format(_(u'Применить'))))
 
     context = {
         'filter': f,
@@ -457,7 +541,7 @@ def activate_invite(request):
                 invite.invited_users.add(user)
             else:
                 return HttpResponse(json.dumps({'is_error': True,
-                                                'invite': u'Инвайт относится к другому курсу.'}),
+                                                'invite': _(u'Инвайт относится к другому курсу.')}),
                                     content_type="application/json")
 
         elif invite.group:

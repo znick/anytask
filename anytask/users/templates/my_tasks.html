@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load i18n %}
 {% load crispy_forms_tags %}
 
 {% block title %} {{ user_to_show.get_full_name }} {% endblock %}
@@ -26,6 +27,61 @@
                 }
             });
             $(".table_tasks").stickyTableHeaders({fixedOffset: $('.navbar')});
+
+            $('select[multiple]').multiselect({
+                buttonClass: 'btn btn-secondary btn-block',
+                templates: {
+                    ul: '<ul class="multiselect-container dropdown-menu" style="left:inherit;top: inherit;"></ul>',
+                    li: '<li><a tabindex="0" class="dropdown-item"><label></label></a></li>',
+                    filter: '<li class="multiselect-item filter"><div class="input-group"><input class="form-control multiselect-search" type="text"></div></li>',
+                    filterClearBtn: '<span class="input-group-btn"><button class="btn btn-secondary btn-block multiselect-clear-filter" type="button"><i class="fa fa-times"></i></button></span>'
+
+                },
+                includeSelectAllOption: true,
+                enableCaseInsensitiveFiltering: true,
+                filterPlaceholder: "{% trans "Найти..." %}",
+                selectAllText: '{% trans "Выбрать все" %}',
+                allSelectedText: '{% trans "Все выбрано" %}',
+                maxHeight: 200,
+                buttonContainer: '<div style="width:100%;" class="multiselect-dropdown"/>',
+                buttonWidth: '100%',
+                buttonTitle: function(options, select) {
+                    var labels = [];
+
+                    if (options.length === 0) {
+                        return '---';
+                    }
+                    else if (options.length === $('option', select).length) {
+                        return '{% trans "Все выбрано" %}';
+                    }
+                    else {
+                        options.each(function () {
+                            labels.push($(this).text());
+                        });
+                    }
+                    return labels.join(', ');
+                },
+                buttonText: function(options, select) {
+                    if (options.length === 0) {
+                        return '---';
+                    }
+                    else if (options.length === $('option', select).length) {
+                        return '{% trans "Все выбрано" %}';
+                    }
+                    else {
+                        var labels = [];
+                        options.each(function() {
+                            if ($(this).attr('label') !== undefined) {
+                                labels.push($(this).attr('label'));
+                            }
+                            else {
+                                labels.push($(this).text());
+                            }
+                        });
+                        return labels.join(', ') + '';
+                    }
+                }
+            });
         });
     </script>
 
@@ -34,16 +90,16 @@
 {% block navbar %}
     <ul class="nav navbar-nav">
         <li class="nav-item">
-            <a class="nav-link" href="{% url users.views.profile %}">Профиль</a>
+            <a class="nav-link" href="{% url users.views.profile %}">{% trans "Профиль" %}</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link active" href="">Мои задачи</a>
+            <a class="nav-link active" href="">{% trans "Мои задачи" %}</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="{% url users.views.user_courses username=user %}">Мои курсы</a>
+            <a class="nav-link" href="{% url users.views.user_courses username=user %}">{% trans "Мои курсы" %}</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="{% url users.views.profile_settings %}">Настройки</a>
+            <a class="nav-link" href="{% url users.views.profile_settings %}">{% trans "Настройки" %}</a>
         </li>
     </ul>
 {% endblock navbar %}
@@ -54,11 +110,14 @@
         .table_tasks th {
             white-space: nowrap
         }
+        #div_id_years {
+            margin-bottom: 0;
+        }
     </style>
 
     <div class="row">
         {% if filter.count or filter.form.data %}
-            <div class="col-md-2 col-xs-12">
+            <div class="col-lg-2 col-md-12">
                 <div class="card card-block" id="filters" style="min-width:11.5rem;">
                     <div style="padding: 0px 15px 0px 15px;">
                         {% crispy filter.form %}
@@ -66,20 +125,20 @@
                 </div>
             </div>
 
-            <div class="col-md-10 col-xs-12">
+            <div class="col-lg-10 col-md-12">
                 <div class="card">
                     <div class="card-block">
-                        <h5 class="card-title">Мои задачи</h5>
+                        <h5 class="card-title">{% trans "Мои задачи" %}</h5>
                         {% if filter.count %}
                             <table class="table table_tasks">
                                 <thead>
                                 <tr style="background-color: #ffffff;">
-                                    <th>Задача<i class="fa fa-fw fa-sort"></i></th>
-                                    <th>Курс<i class="fa fa-fw fa-sort"></i></th>
-                                    <th>Преподаватель<i class="fa fa-fw fa-sort"></i></th>
-                                    <th>Обновлена<i class="fa fa-fw fa-sort"></i></th>
-                                    <th>Статус<i class="fa fa-fw fa-sort"></i></th>
-                                    <th>Оценка<i class="fa fa-fw fa-sort"></i></th>
+                                    <th>{% trans "Задача" %}<i class="fa fa-fw fa-sort"></i></th>
+                                    <th>{% trans "Курс" %}<i class="fa fa-fw fa-sort"></i></th>
+                                    <th>{% trans "Преподаватель" %}<i class="fa fa-fw fa-sort"></i></th>
+                                    <th>{% trans "Обновлена" %}<i class="fa fa-fw fa-sort"></i></th>
+                                    <th>{% trans "Статус" %}<i class="fa fa-fw fa-sort"></i></th>
+                                    <th>{% trans "Оценка" %}<i class="fa fa-fw fa-sort"></i></th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -102,7 +161,7 @@
                                 </tbody>
                             </table>
                         {% else %}
-                            <p class="card-text">Не найдено ни одной задачи</p>
+                            <p class="card-text">{% trans "Не найдено ни одной задачи" %}</p>
                         {% endif %}
                     </div>
                 </div>
@@ -111,8 +170,8 @@
             <div class="col-xs-12">
                 <div class="card">
                     <div class="card-block">
-                        <h5 class="card-title">Мои задачи</h5>
-                        <p class="card-text">Вы не сдавали ни одной задачи</p>
+                        <h5 class="card-title">{% trans "Мои задачи" %}</h5>
+                        <p class="card-text">{% trans "Вы не сдавали ни одной задачи" %}</p>
                     </div>
                 </div>
             </div>

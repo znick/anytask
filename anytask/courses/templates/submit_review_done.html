@@ -1,6 +1,7 @@
 {% extends "base.html" %}
+{% load i18n %}
 
-{% block title %}AnyTask. Review request обновлен{% endblock %}
+{% block title %}{% trans "AnyTask. Review request обновлен" %}{% endblock %}
 
 
 {% block content %}
@@ -13,7 +14,7 @@
             Review request: <a href="{{ review_url }}">{{ review_url }}</a>
         </p>
         <p>
-            Перейдите по ссылке, допишите необходимые комментарии и обязательно нажмите Publish.
+            {% trans "Перейдите по ссылке, допишите необходимые комментарии и обязательно нажмите Publish." %}
         </p>
     </div>
 </div>

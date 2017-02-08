@@ -1,3 +1,4 @@
+{% load i18n %}
 <script src="{{ STATIC_URL }}jquery.validate.min.js"></script>
 <script src="http://malsup.github.io/jquery.form.js"></script>
 
@@ -179,21 +180,21 @@
 
             messages: {
                 max_score: {
-                    required : "Необходимо указать максимальный балл",
-                    number : "Максимальный балл должен быть натуральным числом",
-                    min : "Максимальный балл должен быть больше или равен 0",
-                    digits : "Максимальный балл должен быть натуральным числом"
+                    required : "{% trans "Необходимо указать максимальный балл" %}",
+                    number : "{% trans "Максимальный балл должен быть натуральным числом" %}",
+                    min : "{% trans "Максимальный балл должен быть больше или равен 0" %}",
+                    digits : "{% trans "Максимальный балл должен быть натуральным числом" %}"
                 },
                 contest_id: {
-                    required : "Необходимо указать номер контеста",
-                    number : "Номер контеста должен натуральным числом",
-                    digits : "Номер контеста должен натуральным числом"
+                    required : "{% trans "Необходимо указать номер контеста" %}",
+                    number : "{% trans "Номер контеста должен натуральным числом" %}",
+                    digits : "{% trans "Номер контеста должен натуральным числом" %}"
                 },
                 'contest_problems[]': {
-                    required : "Необходимо выбрать хотя бы одну задачу"
+                    required : "{% trans "Необходимо выбрать хотя бы одну задачу" %}"
                 },
                 'task_group_id[]': {
-                    required : "Необходимо выбрать группу"
+                    required : "{% trans "Необходимо выбрать группу" %}"
                 }
             },
 
@@ -275,8 +276,8 @@
                 li: '<li><a tabindex="0" class="dropdown-item"><label></label></a></li>'
             },
             includeSelectAllOption: true,
-            selectAllText: 'Для всех групп',
-            allSelectedText: 'Для всех групп',
+            selectAllText: '{% trans "Для всех групп" %}',
+            allSelectedText: '{% trans "Для всех групп" %}',
             selectAllName: 'task_group_id_all',
             selectAllValue: 'on',
             maxHeight: 200,
@@ -286,10 +287,10 @@
                 var labels = [];
 
                 if (options.length === 0) {
-                    return 'Не выбрано ни одной группы';
+                    return '{% trans "Не выбрано ни одной группы" %}';
                 }
                 else if (options.length === $('option', select).length) {
-                    return 'Для всех групп';
+                    return '{% trans "Для всех групп" %}';
                 }
                 else {
                     options.each(function () {
@@ -300,13 +301,13 @@
             },
             buttonText: function(options, select) {
                 if (options.length === 0) {
-                    return 'Не выбрано ни одной группы';
+                    return '{% trans "Не выбрано ни одной группы" %}';
                 }
                 else if (options.length === $('option', select).length) {
-                    return 'Для всех групп';
+                    return '{% trans "Для всех групп" %}';
                 }
                 else if (options.length > 1) {
-                    return 'Выбрано несколько групп - ' + options.length;
+                    return '{% trans "Выбрано несколько групп - " %}' + options.length;
                 }
                 else {
                     var labels = [];
@@ -354,7 +355,7 @@
         var deadline = $('#task_edit_datepicker').val();
         $('#modal_task_header').show();
         if (deadline) {
-            $('#modal_task_deadline').html('<strong>Дата сдачи: ' + deadline + ' MSK UTC+3</strong>');
+            $('#modal_task_deadline').html('<strong>{% trans "Дата сдачи" %}: ' + deadline + ' MSK UTC+3</strong>');
         }
         else {
             $('#modal_task_deadline').empty();

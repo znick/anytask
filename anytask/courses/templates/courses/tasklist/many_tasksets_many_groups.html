@@ -1,4 +1,5 @@
 {% load sanitize_html icon %}
+{% load i18n %}
 {% load dict_func %}
 {% load task_taken_func %}
 
@@ -23,7 +24,7 @@
       <b>{{ group.name }}</b>
       {% if course.can_edit %}
         <a class="btn-small" href="javascript:get_add_task_modal({{ course.id }}, {{ group.id }},  null, '{{course.can_edit}}');">
-          Добавить задачу
+          {% trans "Добавить задачу" %}
         </a>
       {% endif %}
       <table class="table table-striped table-bordered table-condensed table_results" id="table_results">
@@ -31,7 +32,7 @@
         <tr>
           {% for task in group_tasks|key:group %}
             {% if forloop.counter0|divisibleby:"6" %}
-              <th>Студент</th>
+              <th>{% trans "Студент" %}</th>
             {% endif %}
             {% if task.is_shown %}
               <th align="center" class="{sorter: false} no-font-weight">
@@ -49,7 +50,7 @@
             <th></th>
           {% endfor %}
           <th class="no-font-weight">
-            Суммарный балл <span class="label label-success">{{ group_x_max_score|key:group }}</span>
+            {% trans "Суммарный балл " %}<span class="label label-success">{{ group_x_max_score|key:group }}</span>
           </th>
         </tr>
         </thead>
@@ -112,10 +113,10 @@
     {% endfor %}
 
     {% if course.can_edit or extern_tasks %}
-      <b>Слушатели курса</b>
+      <b>{% trans "Слушатели курса" %}</b>
       {% if course.can_edit and not course.is_special_course %}
         <a class="btn-small" href="javascript:get_add_task_modal({{ course.id }}, null,  null, '{{course.can_edit}}');">
-          Добавить задачу
+          {% trans "Добавить задачу" %}
         </a>
       {% endif %}
 
@@ -142,7 +143,7 @@
             <th></th>
           {% endfor %}
           <th>
-            Суммарный балл <span class="label label-success">{{ extern_max_score }}</span>
+            {% trans "Суммарный балл " %}<span class="label label-success">{{ extern_max_score }}</span>
           </th>
         </tr>
         </thead>

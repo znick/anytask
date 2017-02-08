@@ -1,0 +1,876 @@
+{% load i18n %}
+<script src="{{ STATIC_URL }}jquery.validate.min.js"></script>
+<script src="http://malsup.github.io/jquery.form.js"></script>
+<script type="text/javascript" src="https://fastcdn.org/Readmore.js/2.1.0/readmore.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap4.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.2.2/js/dataTables.buttons.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.html5.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.bootstrap4.min.js"></script>
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.min.js"></script>
+<script src="{{ STATIC_URL }}tinymce/tinymce.min.js"></script>
+<script src="{{ STATIC_URL }}tinymce/jquery.tinymce.min.js"></script>
+<script src="{{ STATIC_URL }}prism.js"></script>
+
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap4.min.css"/>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.2.2/css/buttons.bootstrap4.min.css"/>
+<link rel="stylesheet" type="text/css"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.css"/>
+<link href="{{ STATIC_URL }}prism.css" rel='stylesheet'/>
+<link href="{{ STATIC_URL }}tinymce-style-mail.css" rel='stylesheet'/>
+
+<script type="text/javascript">
+    $.extend($.fn.dataTable.defaults, {
+        searching: false,
+        ordering: false,
+        paging: true,
+        processing: true,
+        serverSide: true,
+        autoWidth: false,
+        dom: "<'row'<'mail-option-group col-xs-12 col-sm-12 col-md-8 col-lg-8'><'col-xs-12 col-sm-12 col-md-4 col-lg-4'f>>" +
+        "<'row'<'col-xs-12'tr>>" +
+        "<'row'<'col-xs-12 col-sm-12 col-md-4 col-lg-4'i><'col-xs-12 col-sm-12 col-md-8 col-lg-8'p>>",
+        columns: [
+            {
+                className: "inbox-small-cells select-cell",
+                data: null,
+                defaultContent: "<input type='checkbox' class='mail-checkbox'>"
+            },
+            {className: "sender"},
+            {className: "title"},
+            {className: "date text-right"}
+        ],
+        initComplete: function (settings, json) {
+            var $table = $(settings.nTable);
+            var $mail_option = $(".mail-option-group", $table.closest(".main-table"));
+
+            $("ul", ".dataTables_paginate").addClass("pagination-sm");
+
+            $mail_option.html($(".inbox-body").html());
+            if ($table.prop("id") == "table_inbox") {
+                $('.mail-undelete', $mail_option).remove();
+            } else if ($table.prop("id") == "table_sent") {
+                $('.mail-change-state', $mail_option).remove();
+                $('.mail-undelete', $mail_option).remove();
+            }
+            else if (($table.prop("id") == "table_trash")) {
+                $('.mail-change-state', $mail_option).remove();
+                $('.mail-delete', $mail_option).remove();
+            }
+
+            $table.closest(".main-table").collapse("show").siblings(".loading").hide();
+        },
+        language: {
+            "decimal": "",
+            "emptyTable": "{% trans 'Сообщений нет' %}",
+            "info": "{% trans "_START_-_END_ из _TOTAL_" %}",
+            "infoEmpty": "0",
+            "infoFiltered": "(из _MAX_)",
+            "infoPostFix": "",
+            "thousands": ",",
+            "lengthMenu": "{% trans "Показать _MENU_" %}",
+            "loadingRecords": "{% trans "Загрузка..." %}",
+            "processing": "<span class='fa fa-circle-o-notch fa-spin'></span>&nbsp;Загрузка...",
+            "search": "",
+            "searchPlaceholder": "{% trans "Найти..." %}",
+            "zeroRecords": "{% trans "Ничего не найдено" %}",
+            "paginate": {
+                "next": '<i class="fa fa-angle-right" aria-hidden="true"></i>',
+                "previous": '<i class="fa fa-angle-left" aria-hidden="true"></i>'
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        $(document).on('focusin', function (e) {
+            if ($(e.target).closest(".mce-window").length) {
+                e.stopImmediatePropagation();
+            }
+        });
+
+        var current_table;
+        var selected_rows = [];
+        var selected_unread = [];
+        var make_read = [];
+        var make_unread = [];
+        var make_delete = [];
+        var make_undelete = [];
+        var msg_opened = false;
+
+        $('body').on("click", 'button.mail-refresh', function (e) {
+            current_table.ajax.reload();
+            $(this).blur()
+        }).on("click", '.main-table button.mail-change-state', function (e) {
+            if (selected_rows.length == 0) {
+                make_read = ["all"];
+            }
+            else {
+                if (selected_unread.length == 0)
+                    make_unread = prepair_array(selected_rows);
+                else
+                    make_read = prepair_array(selected_rows);
+            }
+
+            current_table.ajax.reload();
+            $(this).blur()
+        }).on("click", '.main-table button.mail-delete', function (e) {
+            if (selected_rows.length != 0) {
+                make_delete = prepair_array(selected_rows);
+                current_table.ajax.reload();
+            }
+            $(this).blur()
+        }).on("click", '.main-table button.mail-undelete', function (e) {
+            if (selected_rows.length != 0) {
+                make_undelete = prepair_array(selected_rows);
+                current_table.ajax.reload();
+            }
+            $(this).blur()
+        }).on('click', 'td.select-cell', function (e) {
+            e.stopPropagation();
+
+            $('input', this).trigger("click");
+        }).on('click', 'input.mail-checkbox', function (e) {
+            e.stopPropagation();
+
+            var $row = $(this).closest('tr');
+            var id = $row.prop("id");
+            var index = $.inArray(id, selected_rows);
+
+            if (index == -1) {
+                selected_rows.push(id);
+                if ($row.hasClass("unread"))
+                    selected_unread.push(id);
+            }
+            else {
+                selected_rows.splice(index, 1);
+                if ($row.hasClass("unread"))
+                    selected_unread.splice(index, 1);
+            }
+
+            if (selected_rows.length == 0) {
+                $("button.mail-change-state").html("{% trans "Отметить все как прочитанное" %}");
+                $(".mail-delete, .mail-undelete", $row.closest(".card")).hide();
+            }
+            else {
+                if (selected_unread == 0)
+                    $("button.mail-change-state").html("{% trans "Отметить как непрочитанное" %}");
+                else
+                    $("button.mail-change-state").html("{% trans "Отметить как прочитанное" %}");
+
+                $(".mail-delete, .mail-undelete", $row.closest(".card")).show();
+            }
+
+            $row.toggleClass('selected');
+        }).on("click", 'tr[role="row"]', function (e) {
+            var $row = $(this);
+            $row.closest(".tab-pane").removeClass("in active");
+            $("#msg_info").data("mailbox", $row.closest(".tab-pane").prop("id"));
+            $("#msg_info").data("row_id", $row.prop("id"));
+
+            var unread_count = 0;
+            if ($("#inbox_count").html())
+                unread_count = parseInt($("#inbox_count").html(), 10);
+
+            msg_opened = true;
+
+            $(".card-title", "#read").prop("title", $("td.title", $row).html()).html($("td.title", $row).html());
+            $("#loading_info").show();
+
+            open_check_fast($("#read"));
+
+            $.get('{% url mail.views.ajax_get_message %}', {'msg_id': $row.data("id"), 'unread_count': unread_count})
+                .always(function () {
+                    $("#loading_info").hide();
+                })
+                .done(function (data) {
+                        var $recipients_html =
+                            $('<div class="muted-info" style="display: inline">' +
+                                '<a href="#"><span class="label"></span></a>' +
+                                '</div>');
+
+                        $row.removeClass("unread");
+                        if (parseInt(data.unread_count, 10) == 0) {
+                            $("#inbox_count").html("").hide();
+                            $("#top_notify_count").html("").hide();
+                            title_inbox = "{% trans "Входящие" %}"
+                        }
+                        else {
+                            $("#inbox_count").html(data.unread_count).show();
+                            $("#top_notify_count").html(data.unread_count).show();
+                            title_inbox = "(" + data.unread_count + ") {% trans "Входящие" %}"
+                        }
+                        if ($("#msg_info").data("mailbox") == "inbox") {
+                            $(document).prop('title', title_inbox)
+                        }
+
+                        $("#sender_url").prop("href", data.sender.url);
+                        if (data.sender.avatar)
+                            $("img", "#sender_info").prop("src", data.sender.avatar);
+                        else
+                            $("img", "#sender_info").prop("src", $("img", "#sender_info").data("default"));
+                        $("#sender_id").html(data.sender.fullname).data("fullname", data.sender.fullname).data("id", data.sender.id).data("type", "user");
+                        $("#sender_time").html(data.date);
+
+                        $("#recipients_users_info").html("");
+                        for (var i = 0; i < data.recipients_course.length; ++i) {
+                            $("span.label", $recipients_html).removeClass("label-info label-success").addClass("label-primary").html(data.recipients_course[i].name);
+                            $("a", $recipients_html)
+                                .prop("href", data.recipients_course[i].url)
+                                .attr("data-id", data.recipients_course[i].id)
+                                .attr("data-type", "course");
+                            $("#recipients_users_info").append($recipients_html[0].outerHTML);
+                        }
+                        for (var i = 0; i < data.recipients_group.length; ++i) {
+                            $("span.label", $recipients_html).removeClass("label-primary label-success").addClass("label-info").html(data.recipients_group[i].name);
+                            $("a", $recipients_html)
+                                .removeAttr("href")
+                                .attr("data-id", data.recipients_group[i].id)
+                                .attr("data-type", "group");
+                            $("#recipients_users_info").append($recipients_html[0].outerHTML);
+                        }
+                        for (var i = 0; i < data.recipients_user.length; ++i) {
+                            $("span.label", $recipients_html).removeClass("label-primary label-info").addClass("label-success").html(data.recipients_user[i].fullname);
+                            $("a", $recipients_html)
+                                .prop("href", data.recipients_user[i].url)
+                                .attr("data-id", data.recipients_user[i].id)
+                                .attr("data-type", "user");
+                            $("#recipients_users_info").append($recipients_html[0].outerHTML);
+                        }
+
+                        if ($("#msg_info").data("mailbox") == "trash") {
+                            $("button.mail-replay, button.mail-replay-all, button.mail-delete", "#msg_info").hide();
+                            $("button.mail-undelete", "#msg_info").show();
+                        }
+                        else {
+                            $("button.mail-replay, button.mail-delete", "#msg_info").show();
+                            $("button.mail-undelete", "#msg_info").hide();
+                            if ($("span.label", "#recipients_users_info").length > 1)
+                                $("button.mail-replay-all", "#msg_info").show();
+                            else
+                                $("button.mail-replay-all", "#msg_info").hide();
+                        }
+
+
+                        var $text = $("<div>" + data.text + "</div>");
+
+                        if ($("blockquote.replay-quote", $text).length) {
+                            var $first_blockquote = $($("blockquote.replay-quote", $text)[0]);
+
+                            $first_blockquote
+                                .addClass("first-quote collapse")
+                                .before('<div class="replay-show"><span class="fa fa-quote-left" aria-hidden="true"></span>&nbsp;"{% trans "Показать цитирование" %}</div>');
+                            $("blockquote.replay-quote", $text).each(function () {
+                                var $pre_replay_quote = $(this).siblings('.pre-replay-quote');
+                                $(this).prepend('<div style="margin-bottom: 0.5rem;margin-top: 6px;">' +
+                                    '<span style="font-weight: bold">' + $("span.replay-sender", $pre_replay_quote).text() + '</span>' +
+                                    '<div class="pull-xs-right">' + $("span.replay-time", $pre_replay_quote).text() + '</div>' +
+                                    '</div>');
+                                $pre_replay_quote.remove();
+                            });
+
+                            $("body").on("click", 'div.replay-show', function (e) {
+                                if ($(this).data("opened")) {
+                                    $(this).data("opened", false);
+                                    $(this).html('<span class="fa fa-quote-left" aria-hidden="true"></span>&nbsp;Показать цитирование');
+                                }
+                                else {
+                                    $(this).data("opened", true);
+                                    $(this).html('<span class="fa fa-quote-right" aria-hidden="true"></span>&nbsp;{% trans "Скрыть цитирование" %}');
+                                }
+                                $("blockquote.replay-quote.collapse").collapse("toggle");
+                            });
+                        }
+
+                        $("#text_info").data("text", data.text).html($text.html());
+
+                        open_check_fast($("#msg_info"));
+
+                        $("#recipients_info").data("readmore_opened", false);
+
+                        $(document).click(function () {
+                            if ($("#recipients_info").data("readmore_opened")) {
+                                $("#recipients_info_readmore_hide").click(function (e) {
+                                    e.stopPropagation();
+                                }).trigger('click');
+                            }
+                        });
+
+
+                        $("#recipients_info").readmore('destroy').readmore({
+                            speed: 200,
+                            collapsedHeight: 45,
+                            moreLink: '<div id="recipients_info_readmore_more"></div>',
+                            lessLink: '<div id="recipients_info_readmore_hide"></div>',
+                            beforeToggle: function (trigger, element, more) {
+                                if (more) {
+                                    $("#recipients_info").data("readmore_opened", false);
+                                }
+                                else {
+                                    $("#recipients_info").data("readmore_opened", true);
+                                }
+                            }
+                        });
+
+
+                    }
+                );
+        });
+
+        $('li', '.mailbox_menu').click(function (e) {
+            window.location.hash = $(this).attr("href");
+            selected_rows = [];
+            selected_unread = [];
+            $("button.mail-change-state").html("{% trans "Отметить все как прочитанное" %}");
+            $("button.mail-delete, button.mail-undelete", ".main-table").hide();
+
+            if (msg_opened) {
+                close_msg();
+                if ($(this).attr("href") == "#" + $("#msg_info").data("mailbox"))
+                    $($(this).attr("href")).addClass("in active");
+                msg_opened = false;
+            }
+
+            var table_type = $(this).data("type");
+            var $table = $("#table_" + table_type);
+
+            if (!$table.data("init")) {
+                current_table = $table.DataTable({
+                    ajax: {
+                        "url": "{% url mail.views.ajax_get_mailbox %}",
+                        "data": function (d) {
+                            d["type"] = table_type;
+                            d["make_read"] = make_read;
+                            d["make_unread"] = make_unread;
+                            d["make_delete"] = make_delete;
+                            d["make_undelete"] = make_undelete;
+                        }
+                    },
+                    rowCallback: function (row, data) {
+                        $('td.sender', row).prop('title', data["1"]);
+                        $('td.title', row).prop('title', data["2"]);
+                        if ($.inArray(data.DT_RowId, selected_rows) !== -1) {
+                            $(row).addClass('selected');
+                            $("input.mail-checkbox", row).prop("checked", true);
+                        }
+                    },
+                    drawCallback: function (settings) {
+                        var $table = $(settings.nTable);
+
+                        if ($("tr.selected", $table).length == 0) {
+                            $("button.mail-change-state").html("{% trans "Отметить все как прочитанное" %}");
+                            $(".mail-delete, .mail-undelete", $table.closest(".card")).hide();
+                        }
+                        else {
+                            $("button.mail-change-state").html("{% trans "Отметить как прочитанное" %}");
+                            $(".mail-delete, .mail-undelete", $table.closest(".card")).show();
+                        }
+
+                        selected_unread = [];
+                        selected_rows = $.map($("tr.selected", $table), function (row) {
+                            if ($(row).hasClass("unread"))
+                                selected_unread.push($(row).prop("id"));
+                            return $(row).prop("id");
+                        });
+
+                        if (selected_rows.length == 0) {
+                            $("button.mail-change-state").html("{% trans "Отметить все как прочитанное" %}");
+                            $(".mail-delete, .mail-undelete", $table.closest(".card")).hide();
+                        }
+                        else {
+                            if (selected_unread == 0)
+                                $("button.mail-change-state").html("{% trans "Отметить как непрочитанное" %}");
+                            else
+                                $("button.mail-change-state").html("{% trans "Отметить как прочитанное" %}");
+                        }
+
+                        $("ul", ".dataTables_paginate").addClass("pagination-sm");
+                    },
+                }).on('xhr.dt', function (e, settings, json, xhr) {
+                    make_read = [];
+                    make_unread = [];
+                    make_delete = [];
+                    make_undelete = [];
+
+                    var title_inbox = "{% trans  "Входящие" %}";
+
+                    if (parseInt(json.unread_count, 10) == 0) {
+                        $("#inbox_count").html("").hide();
+                        $("#top_notify_count").html("").hide();
+                    }
+                    else {
+                        $("#inbox_count").html(json.unread_count).show();
+                        $("#top_notify_count").html(json.unread_count).show();
+                        title_inbox = "(" + json.unread_count + ") {% trans "Входящие" %}"
+                    }
+
+                    if (json.type == "inbox") {
+                        $(document).prop('title', title_inbox)
+                    }
+                    else if (json.type == "sent") {
+                        $(document).prop('title', "{% trans "Отправленные" %}");
+                    }
+                    else if (json.type == "trash") {
+                        $(document).prop('title', "{% trans "Удаленные" %}");
+                    }
+                });
+                $table.data("init", true);
+            }
+            else {
+                current_table = $table.DataTable();
+                current_table.ajax.reload();
+            }
+        });
+
+        var url_hash = window.location.hash ? window.location.hash : "#inbox";
+        $('li[href="' + url_hash + '"]', '.mailbox_menu ').click();
+
+        $("#btn_new_msg").click(function () {
+            if (msg_opened) {
+                close_msg();
+                msg_opened = false;
+            }
+
+            var $new_recipients = $('#new_recipients');
+
+            $("input, textarea", "#new").removeClass('valid').val("");
+            $new_recipients.tagsinput('removeAll');
+            $new_recipients.data('user', []);
+            $new_recipients.data('group', []);
+            $new_recipients.data('course', []);
+            $("#btn_new_msg").data("prev_mailbox", $('li.active', '.mailbox_menu').attr("href"));
+            $('li', '.mailbox_menu').removeClass("active");
+
+            $(".form-group", "#new").removeClass('has-success has-danger');
+            new_msg_form_validator.resetForm();
+            $(".text-help", "#new .controls").empty();
+            $(".text-help", "#new .controls").empty();
+
+            $(this).blur();
+        }).on('shown.bs.tab', function (e) {
+            $(this).removeClass("active");
+            $("#new_recipients").tagsinput('focus');
+        });
+
+        var MAX_SEARCH_SGS = 6;
+        var users_bloodhound = new Bloodhound({
+            datumTokenizer: function (datum) {
+                return Bloodhound.tokenizers.whitespace(datum.fullname);
+            },
+            queryTokenizer: Bloodhound.tokenizers.whitespace,
+            remote: {
+                wildcard: '%QUERY',
+                url: '{% url search.views.ajax_search_users %}?q=%QUERY&max=' + MAX_SEARCH_SGS,
+                transform: function (response) {
+                    $('#navbar_search').data('up_limited', response.is_limited);
+                    return $.map(response.result, function (user) {
+                        return {
+                            'fullname': user[0],
+                            'username': user[1],
+                            'ya_login': user[2],
+                            'url': user[3],
+                            'avatar': user[4],
+                            'email': user[5],
+                            'id': "u_" + user[6],
+                            'id_post': user[6],
+                            'type': "user",
+                            'statuses': user[7]
+                        };
+                    });
+                }
+            }
+        });
+
+        $('#new_recipients').tagsinput({
+            maxTags: 25,
+            itemValue: 'id',
+            itemText: 'fullname',
+            focusClass: 'focus',
+            tagClass: function (item) {
+                switch (item.type) {
+                    case 'user'   :
+                        return 'label label-success';
+                    case 'group'  :
+                        return 'label label-info';
+                    case 'course':
+                        return 'label label-primary';
+                }
+            },
+            typeaheadjs: [
+                {
+                    highlight: true,
+                    hint: false,
+                    minLength: 3
+                },
+                {
+                    name: 'users',
+                    displayKey: 'fullname',
+                    source: users_bloodhound.ttAdapter(),
+                    templates: {
+                        suggestion: function (data) {
+                            var table_html = '<div class="sgs-result-up" data-url="{0}"><table>' +
+                                '<tr><td style="padding-right: 10px;"><img class="avatar" src="{1}" style="width: 30px; height: 30px;"></td>' +
+                                '<td><div><strong>{2}</strong></div>{3}</td></tr>' +
+                                '<tr><td></td><td>{4}</td></tr>' +
+                                '<tr><td></td><td><strong>{% trans "Логины" %}</strong></td></tr>' +
+                                '<tr><td></td><td>{5}@ <small class="text-muted">Anytask</small></td></tr>' +
+                                '{6}' +
+                                '</table></div>';
+                            var email_html = '';
+                            var ya_login_html = '';
+                            var avatar = data.avatar;
+                            var status_html = '';
+                            var status_template = '<span class="label label-status-sgs" style="background-color: {0}">{1}</span>';
+                            var MAX_STATUSES = 2;
+                            var status_counter = 0;
+
+                            while (status_counter < data.statuses.length) {
+                                if (status_counter == MAX_STATUSES) {
+                                    status_html += '<span class="label label-status-sgs label-default ">еще ' + '1' + '</span>';
+                                    break;
+                                }
+
+                                status_html += status_template.format(data.statuses[status_counter][1], data.statuses[status_counter][0]);
+                                ++status_counter;
+                            }
+
+                            if (!avatar)
+                                avatar = 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mm&f=y';
+                            if (data.email)
+                                email_html = '<div class="sgs-email">{0}</div>'.format(data.email);
+                            if (data.ya_login)
+                                ya_login_html = '<tr><td></td><td>{0}@ <small class="text-muted">{% trans "Я.Контест" %}</small></td></tr>'.format(data.ya_login);
+                            return table_html.format(data.url, avatar, data.fullname, email_html, status_html, data.username, ya_login_html)
+                        }
+                    }
+                }
+            ]
+        });
+
+        $('.tt-menu').on("mouseleave", function () {
+                $(this).find('.tt-cursor').removeClass('tt-cursor');
+            }
+        ).on("mouseenter", 'div.search-show-more', function () {
+                $(this).closest('.tt-menu').find('.tt-cursor').removeClass('tt-cursor');
+            }
+        );
+
+        $('#new_recipients').on('itemAdded', function (e) {
+            $('#new_recipients').data(e.item.type).push(e.item.id_post);
+            new_msg_form_validator.element("#new_recipients");
+        }).on('itemRemoved', function (e) {
+            var $new_recipients = $('#new_recipients');
+            var index = $.inArray(e.item.id_post, $new_recipients.data(e.item.type));
+
+            if (index != -1) {
+                $new_recipients.data(e.item.type).splice(index, 1)
+            }
+
+            new_msg_form_validator.element("#new_recipients");
+        });
+
+        $('#modal_add_group_select').multiselect({
+            templates: {
+                ul: '<ul class="multiselect-container dropdown-menu" style="left:inherit;top: inherit;"></ul>',
+                li: '<li><a tabindex="0" class="dropdown-item"><label></label></a></li>',
+                filter: '<li class="multiselect-item filter"><div class="input-group"><input class="form-control multiselect-search" type="text"></div></li>',
+                filterClearBtn: '<span class="input-group-btn"><button class="btn btn-secondary btn-block multiselect-clear-filter" type="button"><i class="fa fa-times"></i></button></span>'
+
+            },
+            enableClickableOptGroups: true,
+            includeSelectAllOption: true,
+            enableCaseInsensitiveFiltering: true,
+            filterPlaceholder: "{%  trans 'Найти' %}",
+            selectAllText: '{%  trans "Выделить все" %}',
+            selectAllName: 'task_group_id_all',
+            selectAllValue: 'on',
+            buttonContainer: '<div style="width:100%;" class="multiselect-dropdown"/>',
+            onInitialized: function (option, dropdown, select) {
+                $('.multiselect-group a', dropdown).prop('tabindex', '0').addClass('dropdown-item').find('label').addClass('checkbox');
+                $(dropdown).addClass("open");
+                $(".dropdown-toggle", dropdown).remove();
+                $(".multiselect-container", dropdown).removeClass("dropdown-menu").addClass("build-in");
+                $(".multiselect-clear-filter", dropdown).click(function () {
+                    $(this).blur();
+                });
+                $("li:not(.filter)", dropdown).each(function () {
+                    $(this).prop("title", $.trim($("label", this).text()));
+                });
+            }
+        });
+
+        $('#modal_add_group').on('hidden.bs.modal', function (e) {
+            $("input.multiselect-search", this).val("");
+            $('#modal_add_group_select').multiselect('deselectAll', false);
+        });
+
+        $("#new_text").tinymce({
+            language: 'ru',
+            skin: 'bootstrap4',
+            menubar: false,
+            content_css: [
+                'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css',
+                '{{ STATIC_URL }}tinymce-style-mail.css',
+                '{{ STATIC_URL }}prism.css'
+            ],
+            setup: function (editor) {
+                editor.addMenuItem('codesample', {
+                    icon: 'codesample',
+                    text: 'Insert/Edit code sample',
+                    cmd: 'codesample'
+                });
+            },
+            plugins: [
+                'autoresize autolink codesample hr image link lists',
+                'table textpattern wordcount contextmenu paste nonbreaking'
+            ],
+            toolbar: 'undo redo | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | image link hr | blockquote codesample table | preview_text',
+            autoresize_bottom_margin: 10,
+            autoresize_overflow_padding: 10,
+            autoresize_min_height: 300,
+            autosave_ask_before_unload: false,
+            image_description: false,
+            link_assume_external_targets: true,
+            default_link_target: "_blank",
+            target_list: false,
+            link_title: false,
+            table_default_attributes: {
+                "class": 'table table-bordered table-comment'
+            },
+            textpattern_patterns: [
+                {start: '1. ', cmd: 'InsertOrderedList'}
+            ],
+            contextmenu: "link image codesample",
+            paste_auto_cleanup_on_paste: true,
+            paste_remove_styles: true,
+            paste_remove_styles_if_webkit: true,
+            paste_strip_class_attributes: true,
+            nonbreaking_force_tab: true
+        });
+
+        var new_msg_form_validator = $('#new_msg_form').validate({
+            submitHandler: function (form) {
+                $("body").prepend('<div id="blockDiv"><div><span class="fa fa-circle-o-notch fa-spin"></span>&nbsp;{% trans "Отправка..." %}</div></div>');
+                var $new_recipients = $('#new_recipients');
+
+                $.post('{% url mail.views.ajax_send_message %}', {
+                    'csrfmiddlewaretoken': "{{ csrf_token }}",
+                    'new_recipients_user[]': $new_recipients.data('user'),
+                    'new_recipients_group[]': $new_recipients.data('group'),
+                    'new_recipients_course[]': $new_recipients.data('course'),
+                    'new_title': $("#new_title").val(),
+                    'new_text': $("#new_text").val()
+                })
+                    .always(function () {
+                        $("#blockDiv", "body").remove();
+                        $('li[href="#inbox"]', '.mailbox_menu ').click();
+                    });
+            },
+            ignore: ':hidden:not("#new_recipients")',
+            onfocusout: false,
+            rules: {
+                new_recipients: {
+                    required: true,
+                    maxlength: false
+                },
+                new_title: {
+                    required: true
+                },
+            },
+
+            highlight: function (input) {
+                $(input).closest('.form-group').removeClass('has-success').addClass('has-danger');
+            },
+
+            success: function (label) {
+                label.addClass('valid');
+                label.closest('.form-group').removeClass('has-danger');
+            },
+
+            messages: {
+                new_recipients: {
+                    required: "{%  trans "Необходимо указать получателя" %}"
+                },
+                new_title: {
+                    required: "{%  trans "Необходимо указать тему" %}"
+                },
+            },
+
+            errorPlacement: function (error, element) {
+                $(element).closest("div.controls").find('small.text-help').empty().append(error);
+            }
+        });
+
+        $("#modal_add_group_ok").click(function () {
+            $('optgroup', "#modal_add_group_select").each(function () {
+                if ($(this).data("count") == $("option:selected", this).length) {
+                    $('#new_recipients').tagsinput('add', {
+                        type: "course",
+                        id: "c_" + $(this).data("id"),
+                        id_post: $(this).data("id"),
+                        fullname: $(this).attr("label")
+                    });
+                }
+                else {
+                    $("option:selected", this).each(function () {
+                        $('#new_recipients').tagsinput('add', {
+                            type: "group",
+                            id: "g_" + $(this).data("id"),
+                            id_post: $(this).data("id"),
+                            fullname: $(this).text()
+                        });
+                    });
+                }
+            });
+        });
+
+        $("#btn_send_cancel").click(function () {
+            $('li[href="#inbox"]', '.mailbox_menu ').click();
+        });
+
+        $(".tt-input", ".bootstrap-tagsinput").keydown(function (e) {
+            if (e.which === 9) {
+                e.preventDefault();
+                new_msg_form_validator.element("#new_recipients");
+
+                if (!$(this).closest(".form-group ").hasClass("has-danger"))
+                    $('#new_title').focus();
+            }
+            if (e.which === 13) {
+                new_msg_form_validator.element("#new_recipients");
+            }
+        });
+        $("#new_title").keydown(function (e) {
+            if (e.which === 13 || e.which === 9) {
+                new_msg_form_validator.element("#new_title");
+
+                if (!$(this).closest(".form-group ").hasClass("has-danger"))
+                    tinymce.execCommand('mceFocus', false, 'new_text');
+            }
+            if (e.which === 9) {
+                e.preventDefault();
+            }
+        });
+
+        $("#btn_send_msg").click(function () {
+            $("#new_msg_form").submit();
+        });
+
+        $("#msg_info").on("click", 'button.mail-close', function (e) {
+            close_msg();
+            $("#" + $("#msg_info").data("mailbox")).addClass("in active");
+            msg_opened = false;
+        }).on("click", 'button.mail-replay', function (e) {
+            replay();
+        }).on("click", 'button.mail-replay-all', function (e) {
+            replay(true);
+        }).on("click", 'button.mail-delete', function (e) {
+            close_msg();
+            $("#" + $("#msg_info").data("mailbox")).addClass("in active");
+            msg_opened = false;
+            make_delete = prepair_array([$("#msg_info").data("row_id")]);
+            current_table.ajax.reload();
+        }).on("click", 'button.mail-undelete', function (e) {
+            close_msg();
+            $("#" + $("#msg_info").data("mailbox")).addClass("in active");
+            msg_opened = false;
+            make_undelete = prepair_array([$("#msg_info").data("row_id")]);
+            current_table.ajax.reload();
+        });
+
+        $('#read, #msg_info').on('show.bs.collapse', function () {
+            $(this).data("fast_click", true);
+        }).on('shown.bs.collapse', function () {
+            $(this).data("fast_click", false);
+        }).on('hide.bs.collapse', function () {
+            $(this).data("fast_click", true);
+        }).on('hidden.bs.collapse', function () {
+            $(this).data("fast_click", false);
+        });
+    });
+
+    function prepair_array(arr) {
+        return $.map(arr, function (elem) {
+            return $("#" + elem).data("id");
+        });
+    }
+
+    function open_check_fast(obj) {
+        if ($(obj).data("fast_click"))
+            $(obj).show().collapse("show").css("height", "inherit").addClass("in");
+        else
+            $(obj).show().collapse("show");
+    }
+
+    function close_msg() {
+        $("#read").hide().collapse("hide");
+        $("#msg_info").collapse("hide");
+    }
+
+    function replay(all) {
+        var $sender = $("#sender_id");
+        var current_user_id = "u_" + {{ user.id }};
+
+        $("#btn_new_msg").click();
+
+        var recipient_id = $sender.data("type")[0] + "_" + $sender.data("id");
+        if (current_user_id != recipient_id)
+            $('#new_recipients').tagsinput('add', {
+                type: $sender.data("type"),
+                id: recipient_id,
+                id_post: $sender.data("id"),
+                fullname: $sender.data("fullname")
+            });
+        else
+            all = true;
+
+        if (all) {
+            $("a", "#recipients_users_info").each(function () {
+                recipient_id = $(this).data("type")[0] + "_" + $(this).data("id");
+                if (current_user_id != recipient_id)
+                    $('#new_recipients').tagsinput('add', {
+                        type: $(this).data("type"),
+                        id: recipient_id,
+                        id_post: $(this).data("id"),
+                        fullname: $(this).text()
+                    });
+            });
+        }
+
+        if ($('#new_recipients').val().length == 0)
+            $('#new_recipients').tagsinput('add', {
+                type: $sender.data("type"),
+                id: recipient_id,
+                id_post: $sender.data("id"),
+                fullname: $sender.data("fullname")
+            });
+
+        var title = $(".card-title", "#read").html();
+        if (/^\[RE] /.test(title)) {
+            title = "[RE 2] " + title.substr(/^(\[RE] )|(\[RE \d+] )/.exec(title)[0].length, title.length)
+        }
+        else if (/^\[RE \d+]/.test(title)) {
+            var parent_title = title.substr(/^(\[RE \d+] )/.exec(title)[0].length, title.length);
+            var replay_count = parseInt(/\d+/.exec(title)[0], 10) + 1;
+            title = "[RE " + replay_count + "] " + parent_title
+        }
+        else {
+            title = "[RE] " + title
+        }
+        $("#new_title").val(title);
+
+
+        tinyMCE.activeEditor.setContent(
+            "<p></p><div><br></div>" +
+            "<div class='pre-replay-quote' data-id='" + $sender.data("id") + "'><span class='replay-time'>" +
+            $('#sender_time').html() +
+            '</span>' +
+            ",&nbsp;<span class='replay-sender'>" + $sender.data("fullname") +
+            "</span></div>" +
+            "<blockquote class='replay-quote'>" +
+            $('#text_info').data('text') +
+            "</blockquote>");
+
+        tinymce.execCommand('mceFocus', false, 'new_text');
+    }
+</script>

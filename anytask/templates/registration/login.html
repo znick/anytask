@@ -1,7 +1,8 @@
 {% extends "base.html" %}
+{% load i18n %}
 {% load crispy_forms_tags %}
 
-{% block title %}Вход{% endblock %}
+{% block title %}{% trans "Вход" %}{% endblock %}
 
 {% block content %}
     <style>
@@ -14,7 +15,7 @@
         <div class="col-lg-6 col-md-8 col-sm-10 col-xs-12">
             <div class="card">
                 <div class="card-block">
-                    <h5 class="card-title">Вход</h5>
+                    <h5 class="card-title">{% trans "Вход" %}</h5>
                     {% crispy form %}
                 </div>
             </div>

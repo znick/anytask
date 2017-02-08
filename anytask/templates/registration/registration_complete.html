@@ -1,9 +1,10 @@
 {% extends "base.html" %}
+{% load i18n %}
 
-{% block title %}Регистрация{% endblock %}
+{% block title %}{% trans "Регистрация" %}{% endblock %}
 
 {% block content %}
 
-На ваш e-mail выслано письмо с дальнейшими инструкциями
+{% trans "На ваш e-mail выслано письмо с дальнейшими инструкциями" %}
 
 {% endblock %}

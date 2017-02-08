@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load i18n %}
 {% load django_bootstrap_breadcrumbs %}
 {% load crispy_forms_tags %}
 
@@ -26,7 +27,7 @@
                         error: function (data) {
                             $('#id_invite').removeClass('form-control-success').addClass('form-control-danger')
                                     .closest('.form-group').removeClass('has-success').addClass('has-danger');
-                            $('#id_invite').siblings('small.text-help').empty().append('Ошибка: '+ data.status);
+                            $('#id_invite').siblings('small.text-help').empty().append('{% trans "Ошибка:" %} '+ data.status);
                         }
                     });
                 },
@@ -49,7 +50,7 @@
 
                 messages: {
                     invite: {
-                        required : "Необходимо указать инвайт"
+                        required : "{% trans "Необходимо указать инвайт" %}"
                     }
                 },
 
@@ -75,8 +76,8 @@
     <div class="row">
         <div class="col-md-6 col-sm-12">
             <div class="card card-block">
-                <h5 class="card-title">Доступ к этому курсу ограничен</h5>
-                <p class="card-text">У Вас нет доступа к этому курсу. Если у Вас есть инвайт, то введите его в поле ниже.</p>
+                <h5 class="card-title">{% trans "Доступ к этому курсу ограничен" %}</h5>
+                <p class="card-text">{% trans "У Вас нет доступа к этому курсу. Если у Вас есть инвайт, то введите его в поле ниже." %}</p>
                 <form id="invites_form" action="{% url users.views.activate_invite %}" method="post">
                     <div class="row">
                         {% csrf_token %}
@@ -84,13 +85,13 @@
                         {% for field in invite_form %}
                             <div class="form-group col-md-9" style="height: 3rem">
                                 <div class="controls">
-                                    <input class="form-control" id='{{ field.id_for_label }}' name='{{ field.html_name }}' type='text' placeholder="Введите инвайт...">
+                                    <input class="form-control" id='{{ field.id_for_label }}' name='{{ field.html_name }}' type='text' placeholder="{% trans "Введите инвайт..." %}">
                                     <small class="text-help" id="{{ field.id_for_label }}_error_text">&nbsp;</small>
                                 </div>
                             </div>
                         {% endfor %}
                         <div class="col-md-3">
-                            <button type="submit" class="btn btn-secondary">Ок</button>
+                            <button type="submit" class="btn btn-secondary">OK</button>
                         </div>
                     </div>
                 </form>
