@@ -67,6 +67,18 @@
         .card-block {
             overflow: auto;
             width: 100%;
+            border: 0rem solid #e5e5e5;
+            padding: 0rem;
+        }
+        .text-arrow:after {
+            content: "\f0dc";
+            display: inline-block;
+            font-family: FontAwesome;
+            font-style: normal;
+            font-weight: normal;
+            position: absolute;
+            padding-left: .3rem;
+            /* vertical-align: -webkit-baseline-middle; */
         }
     </style>
 
@@ -98,19 +110,20 @@
                             <div class="tab-content">
                                 {% for year, courses_in_year in table %}
                                     <div class="tab-pane fade {% if year == current_year or forloop.last and not table|has_item:current_year  %}in active{% endif %}" id="{% if forloop.parentloop.first %}courses_{% else %}courses_archive_{% endif %}{{ forloop.counter }}" role="tabpanel">
-
+                                        </div></div>
+                                    <div class="row" style="padding-right: 2.25rem; padding-left: 2.25rem; padding-top: 1.25rem;">
                                             {% for table_id, course_statistics in courses_in_year.iteritems %}
-                                                <div class="card-block">
+                                                <div class="card card-block">
                                                 <table class="table table_courses">
                                                     <thead>
                                                     <tr style="background-color: #ffffff;">
-                                                        <th>{%  trans "Курс" %}<i class="fa fa-fw fa-sort"></i></th>
-                                                        <th>{%  trans "Суммарный балл" %}<i class="fa fa-fw fa-sort"></i></th>
-                                                        <th>{%  trans "Итоговая оценка" %}<i class="fa fa-fw fa-sort"></i></th>
+                                                        <th><div class="text-arrow">{%  trans "Курс" %}</div></th>
+                                                        <th><div class="text-arrow">{%  trans "Суммарный балл" %}</div></th>
+                                                        <th><div class="text-arrow">{%  trans "Итоговая оценка" %}</div></th>
                                                         {% for status, sum in course_statistics.0.issues_count %}
-                                                            <th>{{ status.name }}<i class="fa fa-fw fa-sort"></i></th>
+                                                            <th><div class="text-arrow">{{ status.name }}</div></th>
                                                         {% endfor %}
-                                                        <th>{%  trans "Всего задач" %}<i class="fa fa-fw fa-sort"></i></th>
+                                                        <th><div class="text-arrow">{%  trans "Всего задач" %}</div></th>
                                                     </tr>
                                                     </thead>
                                                     <tbody>
