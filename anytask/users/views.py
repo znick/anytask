@@ -304,7 +304,7 @@ def ya_oauth_contest(user, ya_response, ya_contest_response):
         for user in users_with_ya_contest_oauth:
             if user.ya_contest_login == ya_contest_response['login'] or user.ya_contest_uid == \
                     ya_contest_response['id']:
-                return redirect('users.views.ya_oauth_forbidden')
+                return redirect('users.views.ya_oauth_forbidden', type_of_oauth='contest')
 
     if not user_profile.ya_contest_oauth or user_profile.ya_contest_login == ya_contest_response['login']:
         user_profile.ya_contest_oauth = ya_response['access_token']
@@ -325,7 +325,7 @@ def ya_oauth_passport(user, ya_response, ya_passport_response):
             if user_p.ya_passport_uid == ya_passport_response['id'] or \
                             user_p.ya_passport_login == ya_passport_response['login'] or \
                             user_p.ya_passport_email == ya_passport_response['default_email']:
-                return redirect('users.views.ya_oauth_forbidden')
+                return redirect('users.views.ya_oauth_forbidden', type_of_oauth='passport')
 
     user_profile.ya_passport_oauth = ya_response['access_token']
     user_profile.ya_passport_uid = ya_passport_response['id']
@@ -376,7 +376,7 @@ def ya_oauth_disable(request, type_of_oauth):
 
     user_profile.save()
 
-    return redirect('users.views.profile')
+    return redirect('users.views.profile_settings')
 
 def ya_oauth_forbidden(request, type_of_oauth):
     oauth_error_text_header = ''
@@ -397,7 +397,8 @@ def ya_oauth_forbidden(request, type_of_oauth):
 
 def ya_oauth_changed(request):
     context = {
-        'oauth_error_text'              : _(u"Можно перепривязать только тот профиль, который был привязан ранее!"),
+        'oauth_error_text_header':  _(u"Привязать профиль Яндекс.Контеста"),
+        'oauth_error_text'       : _(u"Можно перепривязать только тот профиль, который был привязан ранее!"),
     }
 
     return render_to_response('oauth_error.html', context, context_instance=RequestContext(request))

@@ -167,7 +167,7 @@
                                 <div class="social-acc-action">
                                     {% if user_profile.ya_passport_oauth %}
                                         <button class="btn btn-secondary btn-icon" type="button" onclick="location.href='{% url users.views.ya_oauth_request type_of_oauth='passport'%}'"><i class="fa fa-fw fa-refresh"></i></button>
-                                        <button class="btn btn-secondary btn-icon" type="button"><i class="fa fa-fw fa-trash-o"></i></button>
+                                        <button class="btn btn-secondary btn-icon" type="button" onclick="location.href='{% url users.views.ya_oauth_disable type_of_oauth='passport'%}'"><i class="fa fa-fw fa-trash-o"></i></button>
                                     {% else %}
                                         <button class="btn btn-secondary btn-icon" type="button" onclick="location.href='{% url users.views.ya_oauth_request type_of_oauth='passport'%}'"><i class="fa fa-fw fa-plus"></i></button>
                                     {% endif %}
