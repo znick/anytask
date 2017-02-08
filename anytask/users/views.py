@@ -288,7 +288,7 @@ def ya_oauth_request(request, type_of_oauth):
         OAUTH = settings.CONTEST_OAUTH_ID
         PASSWORD = settings.CONTEST_OAUTH_PASSWORD
     elif type_of_oauth == 'passport':
-        OAUTH = settings.PASSPORT_OAUTH
+        OAUTH = settings.PASSPORT_OAUTH_ID
         PASSWORD = settings.PASSPORT_OAUTH_PASSWORD
 
     ya_oauth = yandex_oauth.OAuthYandex(OAUTH,PASSWORD)
@@ -351,7 +351,7 @@ def ya_oauth_response(request, type_of_oauth):
         OAUTH = settings.CONTEST_OAUTH_ID
         PASSWORD = settings.CONTEST_OAUTH_PASSWORD
     elif type_of_oauth == 'passport':
-        OAUTH = settings.PASSPORT_OAUTH
+        OAUTH = settings.PASSPORT_OAUTH_ID
         PASSWORD = settings.PASSPORT_OAUTH_PASSWORD
 
     ya_oauth = yandex_oauth.OAuthYandex(OAUTH, PASSWORD)
