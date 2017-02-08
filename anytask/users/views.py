@@ -327,14 +327,11 @@ def ya_oauth_passport(user, ya_response, ya_passport_response):
                             user_p.ya_passport_email == ya_passport_response['default_email']:
                 return redirect('users.views.ya_oauth_forbidden')
 
-    if not user_profile.ya_passport_oauth or user_profile.ya_passport_uid == ya_passport_response['id']:
-        user_profile.ya_passport_oauth = ya_response['access_token']
-        user_profile.ya_passport_uid = ya_passport_response['id']
-        user_profile.ya_passport_login = ya_passport_response['login']
-        user_profile.ya_passport_email = ya_passport_response['default_email']
-        user_profile.save()
-    else:
-        return redirect('users.views.ya_oauth_changed')
+    user_profile.ya_passport_oauth = ya_response['access_token']
+    user_profile.ya_passport_uid = ya_passport_response['id']
+    user_profile.ya_passport_login = ya_passport_response['login']
+    user_profile.ya_passport_email = ya_passport_response['default_email']
+    user_profile.save()
 
     return redirect('users.views.profile_settings')
 
@@ -381,9 +378,18 @@ def ya_oauth_disable(request, type_of_oauth):
 
     return redirect('users.views.profile')
 
-def ya_oauth_forbidden(request):
+def ya_oauth_forbidden(request, type_of_oauth):
+    oauth_error_text_header = ''
+    oauth_error_text = ''
+    if type_of_oauth == 'contest':
+        oauth_error_text_header = _(u"Привязать профиль Яндекс.Контеста")
+        oauth_error_text = _(u"Данный профиль уже привязан к аккаунту другого пользователя на Anytask!")
+    elif type_of_oauth == 'passport':
+        oauth_error_text_header = _(u"Привязать профиль Яндекса")
+        oauth_error_text = _(u"Данный профиль уже привязан к аккаунту другого пользователя на Anytask!")
     context = {
-        'oauth_error_text'              : _(u"Данный профиль уже привязан к аккаунту другого пользователя на Anytask!"),
+        'oauth_error_text_header' : oauth_error_text_header,
+        'oauth_error_text'        : oauth_error_text,
     }
 
     return render_to_response('oauth_error.html', context, context_instance=RequestContext(request))

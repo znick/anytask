@@ -31,7 +31,7 @@
         <div class="card-deck">
             <div class="card card-inverse card-warning">
                 <div class="card-block">
-                    <h5 class="card-title">{% trans "Привязать профиль Яндекс.Контеста" %}</h5>
+                    <h5 class="card-title">{{ oauth_error_text_header }}</h5>
                     <p class="card-text">
                         <strong>{{ oauth_error_text }}</strong>
                         {% blocktrans %} Для того, чтобы отвязать свой профиль от другого обратитесь к <a href="mailto:anytask@yandex.ru">администратору</a> {% endblocktrans %}
