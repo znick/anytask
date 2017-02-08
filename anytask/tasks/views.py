@@ -16,6 +16,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from anycontest.common import get_contest_info, FakeResponse
 from django.conf import settings
+from django.utils.translation import ugettext as _
 
 import datetime
 import requests
@@ -311,7 +312,7 @@ def get_contest_problems(request):
     if "You're not allowed to view this contest." in contest_info:
         return HttpResponse(json.dumps({'problems': problems,
                                         'is_error': True,
-                                        'error': u"У anytask нет прав на данный контест"}),
+                                        'error': _(u"У anytask нет прав на данный контест")}),
                             content_type="application/json")
 
     problem_req = requests.get(settings.CONTEST_API_URL + 'problems?contestId=' + str(contest_id),
@@ -321,9 +322,9 @@ def get_contest_problems(request):
     if 'error' in problem_req:
         is_error = True
         if 'IndexOutOfBoundsException' in problem_req['error']['name']:
-            error = u'Такого контеста не существует'
+            error = _(u'Такого контеста не существует')
         else:
-            error = u'Ошибка Я.Контеста: ' + problem_req['error']['message']
+            error = _(u'Ошибка Я.Контеста: ') + problem_req['error']['message']
     else:
         problems = problem_req['result']['problems']
 
@@ -435,7 +436,7 @@ def contest_task_import(request):
 
     elif "You're not allowed to view this contest." in contest_info:
         return HttpResponse(json.dumps({'is_error': True,
-                                        'error': u"У anytask нет прав на данный контест"}),
+                                        'error': _(u"У anytask нет прав на данный контест")}),
                             content_type="application/json")
     else:
         return HttpResponseForbidden()

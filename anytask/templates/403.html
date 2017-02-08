@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 {% block title %}AnyTask 403{% endblock %}
 
@@ -7,7 +8,7 @@
     <div class="row">
         <div class="col-md-12">
             <h1>403</h1>
-            <p>Простите, но вам сюда нельзя.</p>
+            <p>{% trans "Простите, но вам сюда нельзя." %}</p>
         </div>
 
     </div>

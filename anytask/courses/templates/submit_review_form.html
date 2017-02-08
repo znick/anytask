@@ -1,4 +1,5 @@
 <script>
+{% load i18n %}
 
     $(document).ready(function() {
         var prev_revision = {{ prev_revision }};
@@ -35,7 +36,7 @@
                     </tr>
                 {% endfor %}
             </table>
-            <button type="submit" id="submit" class="btn btn-primary disabled">Отправить</button>
+            <button type="submit" id="submit" class="btn btn-primary disabled">{% trans "Отправить" %}</button>
         </form>
 
     </div>

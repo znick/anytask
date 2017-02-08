@@ -2,6 +2,7 @@
 
 from users.models import UserProfile, UserStatus, UserProfileLog
 from django.contrib import admin
+from django.utils.translation import ugettext as _
 
 def display_color(obj):
     return u'<span style="' \
@@ -16,7 +17,7 @@ def display_color(obj):
            u'border-radius: .25rem;' \
            u'background-color:{0}' \
            u'">{1}</span>'.format(obj.color, obj.name)
-display_color.short_description = u'Статус'
+display_color.short_description = _(u'Статус')
 display_color.allow_tags = True
 
 class UserStatusAdmin(admin.ModelAdmin):

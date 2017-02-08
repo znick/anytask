@@ -1,7 +1,4 @@
-from BeautifulSoup import BeautifulSoup, Comment
 from django import template
-from django.utils.translation import ugettext as _
-
 
 register = template.Library()
 

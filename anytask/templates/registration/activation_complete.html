@@ -1,9 +1,10 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 {% block content %}
 
-Ваш аккаунт активирован.
+{% trans "Ваш аккаунт активирован." %}
 
-<a href="{% url django.contrib.auth.views.login %}">Войти</a>
+<a href="{% url django.contrib.auth.views.login %}">{% trans "Войти" %}</a>
 
 {% endblock %}

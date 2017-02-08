@@ -6,7 +6,7 @@ from django.utils.translation import ugettext as _
 register = template.Library()
 
 ALLOWED_TAGS = 'p i strong b u a h1 h2 h3 pre br img blockquote'
-ALLOWED_TAGS_STRING = _("Allowed tags: ") + ALLOWED_TAGS
+ALLOWED_TAGS_STRING = "Allowed tags: " + ALLOWED_TAGS
 
 def sanitize_html(value):
     valid_tags = ALLOWED_TAGS.split()

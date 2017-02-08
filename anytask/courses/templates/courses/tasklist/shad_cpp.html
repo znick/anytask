@@ -1,4 +1,5 @@
 {% load sanitize_html icon %}
+{% load i18n %}
 {% load dict_func %}
 {% load task_taken_func %}
 
@@ -133,7 +134,7 @@
                 <thead>
                 <tr>
                     <th class="no-font-weight" style="text-align: center;">#</th>
-                    <th class="no-font-weight"><b>Студент</b></th>
+                    <th class="no-font-weight"><b>{% trans "Студент" %}</b></th>
                     {% for task in group_tasks|key:group %}
                         {% if not task.is_hidden or user_is_teacher %}
                             <th align="center" class="{% if task.type == task.TYPE_SIMPLE and user_is_teacher %}dom-live-number{% else %}dom-number{% endif %} word-wrap">
@@ -151,11 +152,11 @@
                         <th></th>
                     {% endfor %}
                     <th align="center" class="no-font-weight dom-number">
-                        Суммарный балл <span class="label label-inverse">{{ group_x_max_score|key:group }}</span>
+                        {% trans "Суммарный балл " %}<span class="label label-inverse">{{ group_x_max_score|key:group }}</span>
                     </th>
                     {% if course.mark_system %}
                         <th align="center" class="no-font-weight dom-select-text">
-                            Итоговая оценка
+                            {% trans "Итоговая оценка" %}
                         </th>
                     {% endif %}
                 </tr>
@@ -175,7 +176,7 @@
                                     <div>
                                         {% if not task.is_hidden and user_is_teacher or user.username == student.username %}
                                             {% if task.type == task.TYPE_FULL %}
-                                                <a class="anchor-issue" href="/issue/get_or_create/{{task.id}}/{{student.id}}">
+                                                <a  href="/issue/get_or_create/{{task.id}}/{{student.id}}">
                                                     {# <span class="label {% if task_x_task_takens|score:task %} {% if task_x_task_takens|score:task == task.score_max %} label-success {% else %} label-info {% endif %} {% endif %}"> #}
                                                     <span class="label
                                                   {{ task_x_task_takens|have_issue:task }}" style="background-color: {{ task_x_task_takens|label_color:task }};">
@@ -201,7 +202,7 @@
                                                     </form>
                                                 {% endif %}
                                             {% elif task.type == task.TYPE_SEMINAR %}
-                                                {% if task.children.count != 0 %} <a  href="{{ course.id }}/seminar/{{task.id}}"> {% endif %}
+                                                {% if task.children.count != 0 %} <a  href="{{ course.get_absolute_url }}/gradebook/seminar/{{task.id}}"> {% endif %}
                                             <span class="label
                                                   {{ task_x_task_takens|have_issue:task }}" style="background-color: {{ task_x_task_takens|label_color:task }};">
                                                   {{ task_x_task_takens|score:task }}
@@ -278,10 +279,10 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="modal_table_edit_header">Итоговая таблица</h4>
+                    <h4 class="modal-title" id="modal_table_edit_header">{% trans "Итоговая таблица" %}</h4>
                 </div>
                 <div class="modal-body" style="max-height: none;">
-                    <p>Изменение порядка столбцов в итоговой таблице курса, а также их удаление(удалять можно только те задачи, в которых не было комментариев).</p>
+                    <p>{% trans "Изменение порядка столбцов в итоговой таблице курса, а также их удаление(удалять можно только те задачи, в которых не было комментариев)." %}</p>
                     {% for group, tasks in group_tasks.iteritems %}
                         <div id="group_sort_{{ group.id }}" data-group="{{ group.id }}" data-table="#table_results_{{ group.id }}" data-marksystem="{% if course_mark_system_vals %}true{% endif %}" class="collapse">
                             <p  class="modal-group-name" style="font-weight: bold">{{ group.name }}</p>
@@ -299,8 +300,8 @@
                     {% endfor %}
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
-                    <button class="btn btn-primary" id="modal_table_edit_ok" data-dismiss="modal" data-loading-text="<span class='fa fa-circle-o-notch fa-spin'></span> Сохранение">Сохранить</button>
+                    <button class="btn btn-secondary" data-dismiss="modal">{% trans "Закрыть" %}</button>
+                    <button class="btn btn-primary" id="modal_table_edit_ok" data-dismiss="modal" data-loading-text="<span class='fa fa-circle-o-notch fa-spin'></span> {% trans "Сохранение" %}">{% trans "Сохранить" %}</button>
                 </div>
             </div>
         </div>

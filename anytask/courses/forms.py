@@ -1,6 +1,7 @@
 #coding: utf-8
 
 from django import forms
+from django.utils.translation import ugettext as _
 from courses.models import DefaultTeacher
 import os
 
@@ -14,18 +15,18 @@ class PdfForm(forms.Form):
         if file:
             name, extension = os.path.splitext(file.name)
             if extension not in self.extensions:
-                raise forms.ValidationError(u'Файл должен иметь одно из расширений: ' + ",".join(self.extensions))
+                raise forms.ValidationError(_(u'Файл должен иметь одно из расширений: ') + ",".join(self.extensions))
 
 
 class QueueForm(forms.Form):
-    rework = forms.BooleanField(initial=False, label='На доработке', required=False)
-    verefication = forms.BooleanField(initial=True, label='На проверке', required=False)
-    need_info = forms.BooleanField(initial=False, label='Требуется информация', required=False)
-    mine = forms.BooleanField(initial=True, label='Мои задачи', required=False)
-    following = forms.BooleanField(initial=True, label='Наблюдаемые мной', required=False)
-    not_mine = forms.BooleanField(initial=True, label='Не мои', required=False)
-    not_owned = forms.BooleanField(initial=True, label='Ничьи', required=False)
-    overdue = forms.IntegerField(initial=0, label='Ждут проверки несколько дней')
+    rework = forms.BooleanField(initial=False, label=_(u'На доработке'), required=False)
+    verefication = forms.BooleanField(initial=True, label=_(u'На проверке'), required=False)
+    need_info = forms.BooleanField(initial=False, label=_(u'Требуется информация'), required=False)
+    mine = forms.BooleanField(initial=True, label=_(u'Мои задачи'), required=False)
+    following = forms.BooleanField(initial=True, label=_(u'Наблюдаемые мной'), required=False)
+    not_mine = forms.BooleanField(initial=True, label=_(u'Не мои'), required=False)
+    not_owned = forms.BooleanField(initial=True, label=_(u'Ничьи'), required=False)
+    overdue = forms.IntegerField(initial=0, label=u'Ждут проверки несколько дней')
 
 def get_teacher_choises(course):
     teachers = [(0, "---")]

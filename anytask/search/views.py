@@ -79,10 +79,12 @@ def search_users(query, user, max_result=None):
 
         if user_is_staff or user_is_teacher:
             sgs_ya_login = sgs.autocomplete(ya_login_auto=query)
+            sgs_email = sgs.autocomplete(email_auto=query)
         else:
             sgs_ya_login = sgs.none()
+            sgs_email = sgs.none()
 
-        sgs = sgs_fullname | sgs_ya_login | sgs_login
+        sgs = sgs_fullname | sgs_ya_login | sgs_login | sgs_email
 
         if not user_is_staff:
             groups = user.group_set.all()
@@ -108,7 +110,9 @@ def search_users(query, user, max_result=None):
                                user_to_show.get_absolute_url(),
                                sg.object.avatar.url if sg.object.avatar else '',
                                user_to_show.email,
-                               user_to_show.id])
+                               user_to_show.id,
+                               list(sg.object.user_status.values_list('name', 'color'))
+                               ])
                 result_objs.append(sg.object)
 
                 if len(result) == max_result:
@@ -122,7 +126,9 @@ def search_users(query, user, max_result=None):
                                sg.object.user.get_absolute_url(),
                                sg.object.avatar.url if sg.object.avatar else '',
                                sg.object.user.email,
-                               sg.object.user.id])
+                               sg.object.user.id,
+                               list(sg.object.user_status.values_list('name', 'color'))
+                               ])
                 result_objs.append(sg.object)
 
     return result, result_objs

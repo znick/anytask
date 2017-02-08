@@ -38,9 +38,9 @@ class Task(models.Model):
     TYPE_SIMPLE = 'Only mark'
     TYPE_SEMINAR = 'Seminar'
     TASK_TYPE_CHOICES = (
-        (TYPE_FULL, u'с обсуждением'),
-        (TYPE_SIMPLE, u'только оценка'),
-        (TYPE_SEMINAR, u'семинар'),
+        (TYPE_FULL, _(u'с обсуждением')),
+        (TYPE_SIMPLE, _(u'только оценка')),
+        (TYPE_SEMINAR, _(u'семинар')),
     )
     type = models.CharField(db_index=False, max_length=128, choices=TASK_TYPE_CHOICES, default=TYPE_FULL)
 
@@ -76,7 +76,7 @@ class Task(models.Model):
 
         if course.max_users_per_task:
             if TaskTaken.objects.filter(task=self).filter(Q( Q(status=TaskTaken.STATUS_TAKEN) | Q(status=TaskTaken.STATUS_SCORED))).count() >= course.max_users_per_task:
-                return (False, u'Задача не может быть взята более чем {0} студентами'.format(course.max_users_per_task))
+                return (False, u'Задача не может быть взята более чем %d студентами' % course.max_users_per_task)
 
         if course.max_tasks_without_score_per_student:
             if TaskTaken.objects.filter(user=user).filter(status=TaskTaken.STATUS_TAKEN).count() >= course.max_tasks_without_score_per_student:
@@ -96,7 +96,7 @@ class Task(models.Model):
         try:
             task_taken = TaskTaken.objects.filter(task=self).filter(user=user).get(status=TaskTaken.STATUS_BLACKLISTED)
             black_list_expired_date = task_taken.update_time + timedelta(days=course.days_drop_from_blacklist)
-            return (False, u'Вы сможете взять эту задачу с {0}'.format(black_list_expired_date.strftime("%d.%m.%Y")))
+            return (False, _(u'Вы сможете взять эту задачу с %s') % black_list_expired_date.strftime("%d.%m.%Y"))
         except TaskTaken.DoesNotExist:
             pass
 
@@ -197,8 +197,8 @@ class TaskLog(models.Model):
     TYPE_FULL = 'All'
     TYPE_SIMPLE = 'Only mark'
     TASK_TYPE_CHOICES = (
-        (TYPE_FULL, u'с обсуждением'),
-        (TYPE_SIMPLE, u'только оценка'),
+        (TYPE_FULL, _(u'с обсуждением')),
+        (TYPE_SIMPLE, _(u'только оценка')),
     )
     type = models.CharField(db_index=False, max_length=128, choices=TASK_TYPE_CHOICES, default=TYPE_FULL)
 
@@ -226,11 +226,11 @@ class TaskTaken(models.Model):
     task = models.ForeignKey(Task, db_index=True, null=False, blank=False)
 
     TASK_TAKEN_STATUSES = (
-        (STATUS_TAKEN,          _(u'Task taken')),
-        (STATUS_CANCELLED,      _(u'Task cancelled')),
-        (STATUS_BLACKLISTED,    _(u'Task blacklisted')),
-        (STATUS_SCORED,         _(u'Task scored')),
-        (STATUS_DELETED,        _(u'TaskTaken deleted'))
+        (STATUS_TAKEN,          u'Task taken'),
+        (STATUS_CANCELLED,      u'Task cancelled'),
+        (STATUS_BLACKLISTED,    u'Task blacklisted'),
+        (STATUS_SCORED,         u'Task scored'),
+        (STATUS_DELETED,        u'TaskTaken deleted')
     )
     status = models.IntegerField(max_length=1, choices=TASK_TAKEN_STATUSES, db_index=True, null=False, blank=False, default=0)
 
@@ -238,8 +238,8 @@ class TaskTaken(models.Model):
     QUEUE = 'QUEUE'
     OK = 'OK'
     STATUS_CHECK_CHOICES = (
-        (EDIT, u'Дорешивание'),
-        (QUEUE, u'Ожидает проверки'),
+        (EDIT, _(u'Дорешивание')),
+        (QUEUE, _(u'Ожидает проверки')),
         (OK, u'Задача зачтена и/или больше не принимается'),
     )
     status_check = models.CharField(db_index=True, max_length=5, choices=STATUS_CHECK_CHOICES, default=EDIT)

@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load i18n %}
 {% load index_messages %}
 
 {% block title %}Anytask{% endblock %}
@@ -18,12 +19,11 @@
 
     {#    <div class="jumbotron">#}
     {#        <h1 class="display-3">Anytask</h1>#}
-    {#        <p class="lead">&beta;-версия</p>#}
+    {#        <p class="lead">&beta;-{% trans "версия" %}</p>#}
     {#        <p>#}
-    {#            Платформа для взаимодействия преподавателей и студентов в процессе обучения.#}
+    {#            {% trans "Платформа для взаимодействия преподавателей и студентов в процессе обучения." %}#}
     {##}
-    {# AnyTask &#151; сервис для учета выполнения студентами программы по #}
-    {# учебным курсам.  #}
+    {#  {% trans "AnyTask &#151; сервис для учета выполнения студентами программы по учебным курсам." %}#}
     {# <a href="/about">>></a> #}
     {#        </p>#}
     {#        <!-- <p><a class="btn btn-primary btn-large">Learn more &raquo;</a></p> -->#}
