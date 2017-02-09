@@ -410,15 +410,15 @@ class ViewsTest(TestCase):
                      'hidden_task': 'on',
                      'parent_id': ""}
 
-        problems = [{'problemId': '1055/2013_02_24/rqW5cRAAgR',
+        problems = [{'problemId': '1055/2013_02_24/NuAYb8aSXw',
                      'problemTitle': 'Task1',
                      'statement': 'text1',
                      'alias': 'A'},
-                    {'problemId': '1055/2013_02_24/9GxnHhigh2',
+                    {'problemId': '1055/2013_02_24/dY74Gd2fyz',
                      'problemTitle': 'Task2',
                      'statement': 'text2',
                      'alias': 'B'},
-                    {'problemId': '1055/2013_02_24/NuAYb8aSXw',
+                    {'problemId': '1055/2013_02_24/rqW5cRAAgR',
                      'problemTitle': 'Task3',
                      'statement': 'text3',
                      'alias': 'C'}]
