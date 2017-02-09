@@ -17,7 +17,7 @@
         {% breadcrumb school.name school.get_absolute_url %}
     {% endif %}
     {% breadcrumb course.name course.get_absolute_url %}
-    {% breadcrumb "{% trans "Импорт соревнования из Яндекс.Контеста" %}" "" %}
+    {% breadcrumb_for "" %}{% trans "Импорт соревнования из Яндекс.Контеста" %}{% endbreadcrumb_for %}
 {% endblock breadcrumbs %}
 
 {% block navbar %}
