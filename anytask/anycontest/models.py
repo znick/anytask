@@ -73,7 +73,7 @@ class ContestSubmission(models.Model):
 
                 if not reg_req.json()['result']['isRegistered']:
                     reg_req = requests.get(
-                        settings.CONTEST_API_URL + 'register-user?uidToRegister=' + str(student_profile.ya_uid) +
+                        settings.CONTEST_API_URL + 'register-user?uidToRegister=' + str(student_profile.ya_contest_uid) +
                         '&contestId=' + str(contest_id),
                         headers={'Authorization': 'OAuth ' + settings.CONTEST_OAUTH})
                 if 'error' in reg_req.json():

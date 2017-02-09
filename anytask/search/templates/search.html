@@ -71,7 +71,7 @@
                     {% trans "Минимальная длина запроса должна быть больше 3 символов." %}
                 {% else %}
                     {% if user_profiles or courses %}
-                        {% blocktrans %}По запросу {{ query }} найдено {{ user_profiles|length }} пользов(ей) и {{ courses|length }} курса(ов).{% endblocktrans %}
+                        {% blocktrans with user_length=user_profiles|length course_length=courses|length %}По запросу {{ query }} найдено {{ user_length }} пользов(ей) и {{ course_length }} курса(ов).{% endblocktrans %}
                     {% else %}
                         {% blocktrans %}По запросу {{ query }} ничего не найдено.{% endblocktrans %}
                     {% endif %}
@@ -131,11 +131,19 @@
                                             </td>
                                         </tr>
                                         {% if user_is_teacher or user.is_staff %}
-                                            {% if up.ya_login  %}
+                                            {% if up.ya_contest_login  %}
                                                 <tr>
                                                     <td></td>
                                                     <td>
-                                                        {{ up.ya_login }}@ <small class="text-muted">{% trans "Я.Контест" %}</small>
+                                                        {{ up.ya_contest_login }}@ <small class="text-muted">{% trans "Я.Контест" %}</small>
+                                                    </td>
+                                                </tr>
+                                            {% endif %}
+                                            {% if up.ya_passport_email  %}
+                                                <tr>
+                                                    <td></td>
+                                                    <td>
+                                                        {{ up.ya_passport_email }} <small class="text-muted">{% trans "Я.Почта" %}</small>
                                                     </td>
                                                 </tr>
                                             {% endif %}
@@ -148,7 +156,7 @@
                 </div>
             {% endif %}
             {% if courses %}
-                <div class="col-md-4 col-xs-12">
+                <div class="col-xs-12 col-lg-6">
                     <div class="card">
                         <div class="card-block" style="padding-bottom: 0">
                             <h5 class="card-title">{% trans "Курсы" %}</h5>

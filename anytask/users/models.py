@@ -92,8 +92,15 @@ class UserProfile(models.Model):
 
     ya_uid = models.IntegerField(null=True, blank=True)
     ya_login = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
+
+    ya_contest_uid = models.IntegerField(null=True, blank=True)
     ya_contest_oauth = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
+    ya_contest_login = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
+
+    ya_passport_uid = models.IntegerField(null=True, blank=True)
     ya_passport_oauth = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
+    ya_passport_login = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
+    ya_passport_email = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
 
     def is_current_year_student(self):
         return Group.objects.filter(year=get_current_year()).filter(students=self.user).count() > 0
@@ -109,6 +116,12 @@ class UserProfile(models.Model):
 
     def get_unread_count(self):
         return self.unread_messages.exclude(id__in=self.deleted_messages.all()).count()
+
+    def can_sync_contest(self):
+        for course in Course.objects.filter(is_active=True):
+            if course.get_user_group(self.user) and course.send_to_contest_from_users:
+                return True
+        return False
 
 
 class UserProfileLog(models.Model):

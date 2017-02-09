@@ -10,23 +10,23 @@
             $('#submit_btn').click(function () {
                 $.post('{% url users.views.profile_settings %}', $('#user_settings').serialize(), function(data){
                     $('#submit_error_text').html('<div class="alert alert-success alert-dismissible fade in" role ="alert" id="user_settings_err">' +
+                        '                           <button type="button" class="close" data-dismiss="alert" aria-label="{% trans 'Закрыть' %}">' +
+                        '                             <span aria-hidden="true">&times;</span>' +
+                        '                           </button>' +
+                        '                           <span>{% trans "Сохранено успешно." %}</span>' +
+                        '                         </div>');
+                })
+                    .fail(function () {
+                        $('#submit_error_text').html('<div class="alert alert-danger alert-dismissible fade in" role ="alert" id="user_settings_err">' +
                             '                           <button type="button" class="close" data-dismiss="alert" aria-label="{% trans 'Закрыть' %}">' +
                             '                             <span aria-hidden="true">&times;</span>' +
                             '                           </button>' +
-                            '                           <span>{% trans "Сохранено успешно." %}</span>' +
+                            '                           <span>{% trans "Произошла ошибка при сохранении. Попробуйте снова." %}</span>' +
                             '                         </div>');
-                })
-                        .fail(function () {
-                            $('#submit_error_text').html('<div class="alert alert-danger alert-dismissible fade in" role ="alert" id="user_settings_err">' +
-                                    '                           <button type="button" class="close" data-dismiss="alert" aria-label="{% trans 'Закрыть' %}">' +
-                                    '                             <span aria-hidden="true">&times;</span>' +
-                                    '                           </button>' +
-                                    '                           <span>{% trans "Произошла ошибка при сохранении. Попробуйте снова." %}</span>' +
-                                    '                         </div>');
-                        })
-                        .always(function () {
-                            $('#user_settings_err', '#submit_error_text').alert();
-                        })
+                    })
+                    .always(function () {
+                        $('#user_settings_err', '#submit_error_text').alert();
+                    })
 
             });
             $('#user_settings').change(function () {
@@ -55,8 +55,75 @@
 {% endblock navbar %}
 
 {% block content %}
+    <style>
+        .social-acc {
+            display: inline-block;
+            padding: .375rem .7rem;
+            line-height: 1.5;
+            border-radius: .25rem;
+            outline: none;
+            vertical-align: top;
+            text-align: center;
+        }
+        .social-acc-ya {
+            background-color: #fc2e1c;
+        }
+        .social-acc-contest {
+            background-color: #ffdb4d;
+        }
+        .social-acc-ya-item {
+            color: #fff;
+        }
+        .social-acc-contest-item {
+            color: #333;
+        }
+        .btn-icon {
+            margin: 2px;
+            padding: 6px;
+        }
+
+        .social-acc-panel {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            width: 100%;
+        }
+        .social-acc-panel li{
+            display: table;
+            margin-bottom: 1rem;
+            width: 100%;
+        }
+        .social-acc-panel .social-acc-panel-item{
+            display: table-row;
+        }
+        .social-acc-panel .social-acc-type,
+        .social-acc-panel .social-acc-login,
+        .social-acc-panel .social-acc-action {
+            display: table-cell;
+            text-align: center;
+        }
+        .social-acc-panel .social-acc-type {
+            width: 7rem;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            cursor: default;
+        }
+        .social-acc-panel .social-acc-login{
+            max-width: 150px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding: .375rem .7rem;
+        }
+        .social-acc-panel .social-acc-action {
+            width: 90px;
+        }
+    </style>
+
     <div class="row">
-        <div class="col-md-5 col-xs-12">
+        <div class="col-lg-6 col-md-5 col-xs-12">
             <div class="card">
                 <div class="card-block">
                     <h5 class="card-title">{% trans "Настройки" %}</h5>
@@ -77,6 +144,61 @@
                         <div id="submit_error_text"></div>
                         <button type="button" class="btn btn-primary" id="submit_btn" style="margin-top: 0.5rem">{% trans "Сохранить" %}</button>
                     </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 col-md-7 col-xs-12">
+            <div class="card">
+                <div class="card-block">
+                    <h5 class="card-title">{% trans "Привязка аккаунтов" %}</h5>
+                    <ul class="social-acc-panel">
+                        <li>
+                            <div class="social-acc-panel-item">
+                                <div class="social-acc-type social-acc social-acc-ya">
+                                    <span class="social-icons social-acc-ya-item">{% trans "Яндекс" %}</span>
+                                </div>
+                                <div class="social-acc-login">
+                                    {% if user_profile.ya_passport_oauth %}
+                                        {{ user_profile.ya_passport_login }}
+                                    {% else %}
+                                        &nbsp;
+                                    {% endif %}
+                                </div>
+                                <div class="social-acc-action">
+                                    {% if user_profile.ya_passport_oauth %}
+                                        <button class="btn btn-secondary btn-icon" type="button" onclick="location.href='{% url users.views.ya_oauth_request type_of_oauth='passport'%}'"><i class="fa fa-fw fa-refresh"></i></button>
+                                        <button class="btn btn-secondary btn-icon" type="button" onclick="location.href='{% url users.views.ya_oauth_disable type_of_oauth='passport'%}'"><i class="fa fa-fw fa-trash-o"></i></button>
+                                    {% else %}
+                                        <button class="btn btn-secondary btn-icon" type="button" onclick="location.href='{% url users.views.ya_oauth_request type_of_oauth='passport'%}'"><i class="fa fa-fw fa-plus"></i></button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </li>
+                        {% if user_profile.can_sync_contest %}
+                            <li>
+                                <div class="social-acc-panel-item">
+                                    <div class="social-acc-type social-acc social-acc-contest">
+                                        <span class="social-icons social-acc-contest-item">{% trans "Я.Контест" %}</span>
+                                    </div>
+                                    <div class="social-acc-login">
+                                        {% if user_profile.ya_contest_oauth %}
+                                            {{ user_profile.ya_contest_login }}
+                                        {% else %}
+                                            &nbsp;
+                                        {% endif %}
+                                    </div>
+                                    <div class="social-acc-action">
+                                        {% if user_profile.ya_contest_oauth %}
+                                            <button class="btn btn-secondary btn-icon" type="button" onclick="location.href='{% url users.views.ya_oauth_request type_of_oauth='contest'%}'"><i class="fa fa-fw fa-refresh"></i></button>
+                                            <button class="btn btn-secondary btn-icon" type="button" disabled="disabled" title="{% trans "Для того, чтобы отвязать свой профиль обратитесь к администратору." %}"><i class="fa fa-fw fa-trash-o"></i></button>
+                                        {% else %}
+                                            <button class="btn btn-secondary btn-icon" type="button" onclick="location.href='{% url users.views.ya_oauth_request type_of_oauth='contest'%}'"><i class="fa fa-fw fa-plus"></i></button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </li>
+                        {% endif %}
+                    </ul>
                 </div>
             </div>
         </div>
