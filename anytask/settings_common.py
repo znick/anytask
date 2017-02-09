@@ -216,3 +216,8 @@ HAYSTACK_CONNECTIONS = {
         'PATH': os.path.join(PROJECT_PATH, 'search/whoosh'),
     },
 }
+
+TEST_RUNNER = 'runner.ExcludeAppsTestSuiteRunner'
+TEST_EXCLUDE = (
+    'reversion',
+)

@@ -2,8 +2,9 @@
 {% load i18n %}
 {% block main_width %}475px{% endblock %}
 {% block content %}
-    <p style="color:#373a3c;line-height:20px;margin:0 0 20px">У
-        вас {{ unread_count }} {{ unread_count_string }}.</p>
+    <p style="color:#373a3c;line-height:20px;margin:0 0 20px">
+        {% blocktrans %}У вас {{ unread_count }} {{ unread_count_string }}.{% endblocktrans %}
+    </p>
     <table cellpadding="0" cellspacing="0" style="border-collapse: separate;">
         <tbody>
         <tr>

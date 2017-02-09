@@ -149,7 +149,7 @@
                     </div>
                 {% endif %}
                 <div class="form-group row" id="task_edit_label_for_changed_task">
-                    <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_changed_task">Уведомить студентов о создании задач</label>
+                    <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_changed_task">{% trans "Уведомить студентов о создании задач" %}</label>
                     <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7" style="padding-top: 5px;">
                         <input type="checkbox" name="changed_task" id="task_edit_changed_task" {% if course.default_task_send_to_users %}checked{% endif %}>
                     </div>
