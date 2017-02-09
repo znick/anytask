@@ -5,7 +5,6 @@
 {% load task_taken_func %}
 {% load django_bootstrap_breadcrumbs %}
 
-{% trans "Редактирование задачи" as edit_task %}
 
 {% block title %}{% if is_create %}{% trans "Создание задачи" %}{% else %}{{ task.title }}{% endif %} | {{ course.name }} | {{ course.year }}{% endblock %}
 
@@ -21,9 +20,9 @@
     {% endif %}
     {% breadcrumb course.name course.get_absolute_url %}
     {% if is_create %}
-        {% breadcrumb "Создание задачи" "" %}
+        {% breadcrumb_for "" %}{% trans "Создание задачи" %}{% endbreadcrumb_for %}
     {% else %}
-        {% breadcrumb edit_task "" %}
+        {% breadcrumb_for "" %}{% trans "Редактирование задачи" %}{% endbreadcrumb_for %}
     {% endif %}
 {% endblock breadcrumbs %}
 
