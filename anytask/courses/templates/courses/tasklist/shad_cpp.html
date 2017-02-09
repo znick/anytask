@@ -55,7 +55,8 @@
         font-weight: inherit;
         color: inherit;
     }
-    .ui-state-default .task-delete{
+    .ui-state-default .task-delete,
+    .ui-state-default .task-seminar-notempty {
         position:absolute;
         right: 0px;
         padding-right: 3px;
@@ -103,6 +104,18 @@
         padding: 6px;
         line-height: 1rem;
     }
+
+    .ui-state-default .task-seminar-notempty .fa {
+        opacity:0.2;
+        filter: alpha(opacity=20);
+        color:#000000;
+        line-height: inherit;
+    }
+    .ui-state-default .task-seminar-notempty:hover .fa{
+        opacity:0.7;
+        filter: alpha(opacity=70);
+    }
+
 </style>
 
 {% for group,student_information in group_information.items %}
@@ -292,6 +305,8 @@
                                     <a class="task-delete pull-xs-right" data-name="task_delete_{{ task.id }}" {% autoescape off %}{{ task|group_info }}{% endautoescape %} style="cursor: pointer" tabindex="0" data-toggle="popover" type="button">
                                         <i class="fa fa-trash-o" aria-hidden="true"></i>
                                     </a>
+                                    <a class="task-seminar-notempty pull-xs-right" {% autoescape off %}{{ task|group_info }}{% endautoescape %} style="cursor: pointer" tabindex="0" data-toggle="popover-help" data-trigger="hover" data-content="{%  trans "Чтобы удалить семинар, нужно сначала удалить все подзадчи" %}" type="button">
+                                        <i class="fa fa-question-circle" aria-hidden="true"></i></a>
                                 </li>
                             {% endfor %}
                         </ul>
