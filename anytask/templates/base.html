@@ -48,18 +48,7 @@
                         url: '{% url search.views.ajax_search_users %}?q=%QUERY',
                         transform: function(response) {
                             $('#navbar_search').data('up_limited', response.is_limited);
-                            return $.map(response.result, function(user) {
-                                return {
-                                    'fullname': user[0],
-                                    'username': user[1],
-                                    'ya_login': user[2],
-                                    'url': user[3],
-                                    'avatar': user[4],
-                                    'email': user[5],
-                                    'id': user[6],
-                                    'statuses': user[7]
-                                };
-                            });
+                            return response.result;
                         }
                     }
                 });
@@ -73,15 +62,7 @@
                         url: '{% url search.views.ajax_search_courses %}?q=%QUERY',
                         transform: function(response) {
                             $('#navbar_search').data('course_limited', response.is_limited);
-                            return $.map(response.result, function(user) {
-                                return {
-                                    'name': user[0],
-                                    'year': user[1],
-                                    'url': user[2],
-                                    'schools': user[3],
-                                    'is_active': user[4]
-                                };
-                            });
+                            return response.result;
                         }
                     }
                 });
@@ -105,9 +86,11 @@
                                     '<tr><td></td><td><strong>{% trans "Логины" %}</strong></td></tr>' +
                                     '<tr><td></td><td>{5}@ <small class="text-muted">Anytask</small></td></tr>' +
                                     '{6}' +
+                                    '{7}' +
                                     '</table></div>';
                                 var email_html = '';
-                                var ya_login_html = '';
+                                var ya_contest_login_html = '';
+                                var ya_passport_email_html = '';
                                 var avatar = data.avatar;
                                 var status_html = '';
                                 var status_template = '<span class="label label-status-sgs" style="background-color: {0}">{1}</span>';
@@ -128,9 +111,12 @@
                                     avatar = 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mm&f=y';
                                 if (data.email)
                                     email_html = '<div class="sgs-email">{0}</div>'.format(data.email);
-                                if (data.ya_login)
-                                    ya_login_html = '<tr><td></td><td>{0}@ <small class="text-muted">{% trans "Я.Контест" %}</small></td></tr>'.format(data.ya_login);
-                                return table_html.format(data.url, avatar, data.fullname, email_html, status_html, data.username, ya_login_html)
+                                if (data.ya_contest_login)
+                                    ya_contest_login_html = '<tr><td></td><td>{0}@ <small class="text-muted">{% trans "Я.Контест" %}</small></td></tr>'.format(data.ya_contest_login);
+                                if (data.ya_passport_email)
+                                    ya_passport_email_html = '<tr><td></td><td>{0} <small class="text-muted">{% trans "Я.Почта" %}</small></td></tr>'.format(data.ya_passport_email);
+
+                                return table_html.format(data.url, avatar, data.fullname, email_html, status_html, data.username, ya_contest_login_html, ya_passport_email_html)
                             },
                             {#                            footer: '<div><a href="#">Все результаты</a></div>'#}
                         }

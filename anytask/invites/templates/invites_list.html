@@ -1,17 +1,21 @@
 {% load sanitize_html %}
 {% load i18n %}
 <html>
-	<head>
-		<title>{% trans "Инвайты" %}</title>
-	</head>
-	<body>
-	{% trans "Инвайт на Anytask" %} {% if group %} {% trans "для {{ group.name }}" %}{% endif %}<br/>
-	{% trans "Действителен до " %}{{ invite_expired_date }}
-		<pre>
-			{% for invite in invites %}
+    <head>
+        <title>{% trans "Инвайты" %}</title>
+    </head>
+    <body>
+        {% trans "Инвайт на Anytask" %}
+        {% if group %}
+                {% blocktrans with group_name=group.name %}для {{ group_name }}{% endblocktrans %}
+        {% endif %}
+    <br/>
+    {% trans "Действителен до " %}{{ invite_expired_date }}
+        <pre>
+            {% for invite in invites %}
 {{ invite }}
 -------------------------------------------------------
-			{% endfor %}
-		</pre>
-	</body>
+            {% endfor %}
+        </pre>
+    </body>
 </html>
