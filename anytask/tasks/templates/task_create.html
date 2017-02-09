@@ -20,9 +20,9 @@
     {% endif %}
     {% breadcrumb course.name course.get_absolute_url %}
     {% if is_create %}
-        {% breadcrumb_for "" %}{% trans "Создание задачи" %}{% endbreadcrumb_for "" %}
+        {% breadcrumb_for "" %}{% trans "Создание задачи" %}{% endbreadcrumb_for %}
     {% else %}
-        {% breadcrumb_for "" %}{% trans "Редактирование задачи" %}{% endbreadcrumb_for "" %}
+        {% breadcrumb_for "" %}{% trans "Редактирование задачи" %}{% endbreadcrumb_for %}
     {% endif %}
 {% endblock breadcrumbs %}
 
