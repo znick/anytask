@@ -405,7 +405,7 @@ def contest_task_import(request):
 
     problems_with_score = {problem['id']:problem['score'] if 'score' in problem else None for problem in problems}
     problems_with_end = {problem['id']:problem['end'] if 'end' in problem else None for problem in problems}
-
+    contest_info['problems'].sort(key=lambda x: x['alias'])
     if got_info:
         contest_problems = dict(request.POST)['contest_problems[]']
         for problem in contest_info['problems']:
