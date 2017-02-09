@@ -670,9 +670,15 @@ def change_table_tasks_pos(request):
             group_ids = list(set(group_ids))
             task = get_object_or_404(Task, id=int(task_id))
             task_groups = task.groups.filter(id__in=group_ids)
-            for tg in task_groups:
-                if Issue.objects.filter(task=task, student__in=tg.students.all()).count():
+            if task.type == task.TYPE_SEMINAR:
+                children_groups = reduce(lambda x, y: x + y,
+                                         [list(child.groups.all()) for child in task.children.all()], [])
+                if set(children_groups).intersection(task_groups):
                     return HttpResponseForbidden()
+            else:
+                for tg in task_groups:
+                    if Issue.objects.filter(task=task, student__in=tg.students.all()).count():
+                        return HttpResponseForbidden()
             task.groups.remove(*task.groups.filter(id__in=group_ids))
             task.save()
 
@@ -683,6 +689,9 @@ def change_table_tasks_pos(request):
     if 'task_deleted[]' in request.POST:
         task_deleted = map(lambda x: int(x), dict(request.POST)['task_deleted[]'])
         for task in Task.objects.filter(id__in=task_deleted):
+            if task.type == task.TYPE_SEMINAR and not task.children.count():
+                Issue.objects.filter(task=task).delete()
+
             if not Issue.objects.filter(task=task).count():
                 try:
                     task.delete()
