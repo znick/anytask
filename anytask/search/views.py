@@ -6,7 +6,6 @@ from django.http import HttpResponse, HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
 from haystack.query import SearchQuerySet
 
-
 from users.models import UserProfile
 from courses.models import Course
 from schools.models import School
@@ -118,20 +117,21 @@ def search_users(query, user, max_result=None):
                 if courses_teacher & courses_user_to_show:
                     user_teach_user_to_show = True
 
-                show_email = user_to_show.get_profile().show_email or \
+                show_email = sg.object.show_email or \
                              user_teach_user_to_show or \
                              user_to_show_teach_user
 
-                result.append([user_to_show.get_full_name(),
-                               user_to_show.username,
-                               sg.object.ya_contest_login if user_is_teacher else '',
-                               user_to_show.get_absolute_url(),
-                               sg.object.avatar.url if sg.object.avatar else '',
-                               user_to_show.email if show_email else '',
-                               user_to_show.ya_passport_email if show_email else '',
-                               user_to_show.id,
-                               list(sg.object.user_status.values_list('name', 'color'))
-                               ])
+                result.append({
+                    "fullname"         : user_to_show.get_full_name(),
+                    "username"         : user_to_show.username,
+                    "ya_contest_login" : sg.object.ya_contest_login if user_is_teacher else '',
+                    "url"              : user_to_show.get_absolute_url(),
+                    "avatar"           : sg.object.avatar.url if sg.object.avatar else '',
+                    "email"            : user_to_show.email if show_email else '',
+                    "ya_passport_email": sg.object.ya_passport_email if show_email else '',
+                    "id"               : user_to_show.id,
+                    "statuses"         : list(sg.object.user_status.values_list('name', 'color'))
+                })
                 result_objs.append(sg.object)
 
                 if len(result) == max_result:
@@ -139,16 +139,17 @@ def search_users(query, user, max_result=None):
 
         else:
             for sg in sgs[:max_result]:
-                result.append([sg.object.user.get_full_name(),
-                               sg.object.user.username,
-                               sg.object.ya_contest_login,
-                               sg.object.user.get_absolute_url(),
-                               sg.object.avatar.url if sg.object.avatar else '',
-                               sg.object.user.email,
-                               sg.object.ya_passport_email,
-                               sg.object.user.id,
-                               list(sg.object.user_status.values_list('name', 'color'))
-                               ])
+                result.append({
+                    "fullname"         : sg.object.user.get_full_name(),
+                    "username"         : sg.object.user.username,
+                    "ya_contest_login" : sg.object.ya_contest_login,
+                    "url"              : sg.object.user.get_absolute_url(),
+                    "avatar"           : sg.object.avatar.url if sg.object.avatar else '',
+                    "email"            : sg.object.user.email,
+                    "ya_passport_email": sg.object.ya_passport_email,
+                    "id"               : sg.object.user.id,
+                    "statuses"         : list(sg.object.user_status.values_list('name', 'color'))
+                })
                 result_objs.append(sg.object)
 
     return result, result_objs
@@ -172,11 +173,13 @@ def search_courses(query, user, max_result=None):
             sgs_name = sgs_name.autocomplete(name_auto=query)
 
         for sg in sgs_name[:max_result]:
-            result.append([unicode(sg.object.name),
-                           unicode(sg.object.year),
-                           sg.object.get_absolute_url(),
-                           [sch.name for sch in sg.object.school_set.all()],
-                           sg.object.is_active])
+            result.append({
+                'name'     : unicode(sg.object.name),
+                'year'     : unicode(sg.object.year),
+                'url'      : sg.object.get_absolute_url(),
+                'schools'  : [sch.name for sch in sg.object.school_set.all()],
+                'is_active': sg.object.is_active
+            })
             result_objs.append(sg.object)
 
     return result, result_objs

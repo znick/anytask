@@ -48,19 +48,7 @@
                         url: '{% url search.views.ajax_search_users %}?q=%QUERY',
                         transform: function(response) {
                             $('#navbar_search').data('up_limited', response.is_limited);
-                            return $.map(response.result, function(user) {
-                                return {
-                                    'fullname': user[0],
-                                    'username': user[1],
-                                    'ya_contest_login': user[2],
-                                    'url': user[3],
-                                    'avatar': user[4],
-                                    'email': user[5],
-                                    'ya_passport_email': user[6],
-                                    'id': user[7],
-                                    'statuses': user[8]
-                                };
-                            });
+                            return response.result;
                         }
                     }
                 });
@@ -74,15 +62,7 @@
                         url: '{% url search.views.ajax_search_courses %}?q=%QUERY',
                         transform: function(response) {
                             $('#navbar_search').data('course_limited', response.is_limited);
-                            return $.map(response.result, function(user) {
-                                return {
-                                    'name': user[0],
-                                    'year': user[1],
-                                    'url': user[2],
-                                    'schools': user[3],
-                                    'is_active': user[4]
-                                };
-                            });
+                            return response.result;
                         }
                     }
                 });

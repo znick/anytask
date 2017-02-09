@@ -119,7 +119,7 @@
             </div>
 
             {% if request.user == user_to_show %}
-                {% if can_sync_contest %}
+                {% if user_to_show_profile.can_sync_contest %}
                     {% if not user_to_show_profile.ya_contest_oauth %}
                         <div class="card card-inverse card-warning">
                             <div class="card-block">
@@ -137,7 +137,7 @@
                             <div class="card-block">
                                 <h5 class="card-title">{% trans "Привязать профиль Яндекс.Контеста" %}</h5>
                                 <p class="card-text">
-                                    <strong>{% blocktrans %}Вы привязали профиль {{ user.get_profile.ya_contest_login }}.{% endblocktrans %}</strong> {% blocktrans %}Теперь все посылки в соревнования будут отправляться от Вашего имени. Для того, чтобы отвязать свой профиль обратитесь к <a href="mailto:anytask@yandex.ru">администратору</a>.{% endblocktrans %}
+                                    <strong>{% blocktrans with login=user_to_show_profile.ya_contest_login %}Вы привязали профиль {{ login }}.{% endblocktrans %}</strong> {% blocktrans %}Теперь все посылки в соревнования будут отправляться от Вашего имени. Для того, чтобы отвязать свой профиль обратитесь к <a href="mailto:anytask@yandex.ru">администратору</a>.{% endblocktrans %}
                                 </p>
                                 <a href="/user/ya_oauth_request/contest" type="button" class="btn btn-secondary">
                                     {% trans "Обновить привязку текущего профиля" %}

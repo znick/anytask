@@ -464,19 +464,11 @@
                 transform: function (response) {
                     $('#navbar_search').data('up_limited', response.is_limited);
                     return $.map(response.result, function (user) {
-                        return {
-                            'fullname': user[0],
-                            'username': user[1],
-                            'ya_contest_login': user[2],
-                            'url': user[3],
-                            'avatar': user[4],
-                            'email': user[5],
-                            'ya_passport_email': user[6],
-                            'id': "u_" + user[7],
-                            'id_post': user[7],
-                            'type': "user",
-                            'statuses': user[8]
-                        };
+                        return $.extend({}, user, {
+                            'id': "u_" + user.id,
+                            'id_post': user.id,
+                            'type': "user"
+                        });
                     });
                 }
             }
