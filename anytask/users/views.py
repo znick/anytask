@@ -282,6 +282,7 @@ def set_user_statuses(request, username=None):
                         content_type="application/json")
 
 
+@login_required
 def ya_oauth_request(request, type_of_oauth):
     if type_of_oauth == 'contest':
         OAUTH = settings.CONTEST_OAUTH_ID
@@ -335,6 +336,7 @@ def ya_oauth_passport(user, ya_response, ya_passport_response):
     return redirect('users.views.profile_settings')
 
 
+@login_required
 def ya_oauth_response(request, type_of_oauth):
     if request.method != 'GET':
         return HttpResponseForbidden()
@@ -354,6 +356,8 @@ def ya_oauth_response(request, type_of_oauth):
     ya_response = ya_oauth.get_token(int(request.GET['code']))
     ya_passport_response = requests.get('https://login.yandex.ru/info?json&oauth_token=' + ya_response['access_token'])
 
+    request.session["ya_oauth_login"] = ya_passport_response.json()['login']
+
     if type_of_oauth == 'contest':
         return ya_oauth_contest(user, ya_response, ya_passport_response.json())
     elif type_of_oauth == 'passport':
@@ -362,6 +366,7 @@ def ya_oauth_response(request, type_of_oauth):
     return HttpResponseForbidden()
 
 
+@login_required
 def ya_oauth_disable(request, type_of_oauth):
     user = request.user
     user_profile = user.get_profile()
@@ -377,15 +382,16 @@ def ya_oauth_disable(request, type_of_oauth):
 
     return redirect('users.views.profile_settings')
 
+
+@login_required
 def ya_oauth_forbidden(request, type_of_oauth):
     oauth_error_text_header = ''
-    oauth_error_text = ''
+    oauth_error_text = _(u"Профиль {0} уже привязан к аккаунту другого пользователя на Anytask!")\
+        .format(request.session["ya_oauth_login"])
     if type_of_oauth == 'contest':
         oauth_error_text_header = _(u"Привязать профиль Яндекс.Контеста")
-        oauth_error_text = _(u"Данный профиль уже привязан к аккаунту другого пользователя на Anytask!")
     elif type_of_oauth == 'passport':
         oauth_error_text_header = _(u"Привязать профиль Яндекса")
-        oauth_error_text = _(u"Данный профиль уже привязан к аккаунту другого пользователя на Anytask!")
     context = {
         'oauth_error_text_header' : oauth_error_text_header,
         'oauth_error_text'        : oauth_error_text,
@@ -394,6 +400,7 @@ def ya_oauth_forbidden(request, type_of_oauth):
     return render_to_response('oauth_error.html', context, context_instance=RequestContext(request))
 
 
+@login_required
 def ya_oauth_changed(request):
     context = {
         'oauth_error_text_header':  _(u"Привязать профиль Яндекс.Контеста"),
