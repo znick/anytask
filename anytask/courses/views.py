@@ -289,6 +289,9 @@ def tasklist_shad_cpp(request, course, seminar=None, group=None):
     group_x_max_score = {}
     default_teacher = {}
     show_hidden_tasks = request.session.get(str(request.user.id) + '_' + str(course.id) + '_show_hidden_tasks', False)
+    show_academ_users = request.session.get(str(request.user.id) + '_' + str(course.id) + '_show_academ_users', False)
+
+    all_students = []
 
     for group in groups:
         student_x_task_x_task_takens = {}
@@ -328,7 +331,15 @@ def tasklist_shad_cpp(request, course, seminar=None, group=None):
             student_id = issue.student.id
             issues_x_student[student_id].append(issue)
 
-        for student in group.students.filter(is_active=True):
+        if show_academ_users:
+            students = group.students.filter(is_active=True)
+        else:
+            active_users = UserProfile.objects.filter(Q(user__in=group.students.filter(is_active=True)) &
+                                                      (Q(user_status__tag='active') | Q(user_status__tag=None)))
+            students = [x.user for x in active_users]
+        all_students += students
+
+        for student in students:
             if user == student:
                 user_is_attended = True
                 user_is_attended_special_course = True
@@ -385,8 +396,12 @@ def tasklist_shad_cpp(request, course, seminar=None, group=None):
 
         'seminar': seminar,
         'visible_queue': course.user_can_see_queue(user),
-        'visible_hide_button': Task.objects.filter(Q(course=course) & Q(is_hidden=True)).count(),
-        'show_hidden_tasks': show_hidden_tasks
+        'visible_hide_button': Task.objects.filter(Q(course=course) & Q(is_hidden=True) & Q(groups__in=groups)).count(),
+        'show_hidden_tasks': show_hidden_tasks,
+        'visible_hide_button_users': UserProfile.objects.filter(Q(user__in=all_students) &
+                                                      Q(user_status__tag='academic')).count(),
+        'show_academ_users': show_academ_users
+
     }
 
     return context
@@ -589,6 +604,20 @@ def change_visibility_hidden_tasks(request):
         return HttpResponseForbidden()
 
     session_var_name = str(request.user.id) + '_' + request.POST['course_id'] + '_show_hidden_tasks'
+    request.session[session_var_name] = not request.session.get(session_var_name, False)
+
+    return HttpResponse("OK")
+
+
+def change_visibility_academ_users(request):
+    if not request.method == 'POST':
+        return HttpResponseForbidden()
+
+    course = get_object_or_404(Course, id=int(request.POST['course_id']))
+    if not course.user_is_teacher(request.user):
+        return HttpResponseForbidden()
+
+    session_var_name = str(request.user.id) + '_' + request.POST['course_id'] + '_show_academ_users'
     request.session[session_var_name] = not request.session.get(session_var_name, False)
 
     return HttpResponse("OK")

@@ -795,6 +795,15 @@
 
     }
 
+    function change_visibility_academ_users(course_id) {
+        $.post('{% url courses.views.change_visibility_academ_users %}',
+                {'course_id': course_id, 'csrfmiddlewaretoken': "{{ csrf_token }}"},
+                function (data) {
+                    window.location.reload();
+                });
+
+    }
+
     function change_table_column_order(div_group_id, deleting_tasks) {
         div_group_id = $(div_group_id);
         if (div_group_id.data('deleted') === undefined)
