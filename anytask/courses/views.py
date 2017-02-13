@@ -398,7 +398,7 @@ def tasklist_shad_cpp(request, course, seminar=None, group=None):
 
         'seminar': seminar,
         'visible_queue': course.user_can_see_queue(user),
-        'visible_hide_button': Task.objects.filter(Q(course=course) & Q(is_hidden=True) & Q(groups__in=groups)).count(),
+        'visible_hide_button': Task.objects.filter(Q(course=course) & Q(is_hidden=True)).count(),
         'show_hidden_tasks': show_hidden_tasks,
         'visible_hide_button_users': UserProfile.objects.filter(Q(user__in=all_students) &
                                                       Q(user_status__tag='academic')).count(),
