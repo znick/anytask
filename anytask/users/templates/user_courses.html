@@ -133,7 +133,7 @@
                                                                     <a href="{{ course.url }}">{{ course.name }}</a>
                                                                 </td>
                                                                 <td><label class="label label-inverse big-label">{{ course.summ_score }}</label></td>
-                                                                <td><label class="label label-success ">{{ course.mark }}</label></td>
+                                                                <td><label class="label label-success big-label">{{ course.mark }}</label></td>
                                                                 {% for status, sum in course.issues_count %}
                                                                     <td><label class="label big-label" style="background-color: {{ status.color }};">{{ sum }}</label></td>
                                                                 {% endfor %}
