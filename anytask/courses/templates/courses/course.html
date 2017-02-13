@@ -99,16 +99,6 @@
                             {% endif %}
                         </a>
                     {% endif %}
-                    {% if show_academ_user_button %}
-                        <a class="btn btn-secondary btn-sm"
-                           href="javascript:change_visibility_academ_users({{ course.id }});" role="button">
-                            {% if show_academ_users %}
-                                {% trans "Не показывать отчисленных студентов" %}
-                            {% else %}
-                                {% trans "Показать отчисленных студентов" %}
-                            {% endif %}
-                        </a>
-                    {% endif %}
                 </div>
                 <div class="list-group" id="courseTab">
                     <a id="info-link" href="#course-information-tab"
