@@ -4,6 +4,7 @@ from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template import RequestContext
 from django.http import HttpResponse, HttpResponseForbidden
 from django.db.models import Q
+from django.db.models import Sum
 from django.conf import settings
 from django.http import Http404
 from django.contrib.auth.decorators import login_required
@@ -454,10 +455,7 @@ def user_courses(request, username=None, year=None):
         else:
             mark = None
 
-        student_summ_score = 0
-        for task_taken in issues:
-            if not task_taken.task.is_hidden:
-                student_summ_score += task_taken.mark
+        student_summ_score = issues.aggregate(Sum('mark'))['mark__sum'] or 0
 
         new_course_statistics = dict()
         new_course_statistics['name'] = course.name

@@ -64,12 +64,6 @@
             background-color: inherit;
             border-bottom: none;
         }
-        .card-block {
-            overflow: auto;
-            width: 100%;
-            border: 0rem solid #e5e5e5;
-            padding: 0rem;
-        }
         .text-arrow:after {
             content: "\f0dc";
             display: inline-block;
@@ -78,7 +72,14 @@
             font-weight: normal;
             position: absolute;
             padding-left: .3rem;
-            /* vertical-align: -webkit-baseline-middle; */
+        }
+        .big-label {
+            font-size: 1rem;
+        }
+        .card-table{
+            overflow: auto;
+            width: 100%;
+            position: relative;
         }
     </style>
 
@@ -110,41 +111,40 @@
                             <div class="tab-content">
                                 {% for year, courses_in_year in table %}
                                     <div class="tab-pane fade {% if year == current_year or forloop.last and not table|has_item:current_year  %}in active{% endif %}" id="{% if forloop.parentloop.first %}courses_{% else %}courses_archive_{% endif %}{{ forloop.counter }}" role="tabpanel">
-                                        </div></div>
-                                    <div class="row" style="padding-right: 2.25rem; padding-left: 2.25rem; padding-top: 1.25rem;">
+                                        <div class="card-block">
                                             {% for table_id, course_statistics in courses_in_year.iteritems %}
-                                                <div class="card card-block">
-                                                <table class="table table_courses">
-                                                    <thead>
-                                                    <tr style="background-color: #ffffff;">
-                                                        <th><div class="text-arrow">{%  trans "Курс" %}</div></th>
-                                                        <th><div class="text-arrow">{%  trans "Суммарный балл" %}</div></th>
-                                                        <th><div class="text-arrow">{%  trans "Итоговая оценка" %}</div></th>
-                                                        {% for status, sum in course_statistics.0.issues_count %}
-                                                            <th><div class="text-arrow">{{ status.name }}</div></th>
-                                                        {% endfor %}
-                                                        <th><div class="text-arrow">{%  trans "Всего задач" %}</div></th>
-                                                    </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                    {% for course in course_statistics %}
-                                                        <tr>
-                                                            <td>
-                                                                <a href="{{ course.url }}">{{ course.name }}</a>
-                                                            </td>
-                                                            <td><h5><label class="label label-inverse">{{ course.summ_score }}</label></h5></td>
-                                                            <td><h5><label class="label label-success">{{ course.mark }}</label></h5></td>
-                                                            {% for status, sum in course.issues_count %}
-                                                                <td><h5><label class="label" style="background-color: {{ status.color }};">{{ sum }}</label></h5></td>
+                                                <div class="card-table">
+                                                    <table class="table table_courses">
+                                                        <thead>
+                                                        <tr style="background-color: #ffffff;">
+                                                            <th><div class="text-arrow">{%  trans "Курс" %}</div></th>
+                                                            <th><div class="text-arrow">{%  trans "Суммарный балл" %}</div></th>
+                                                            <th><div class="text-arrow">{%  trans "Итоговая оценка" %}</div></th>
+                                                            {% for status, sum in course_statistics.0.issues_count %}
+                                                                <th><div class="text-arrow">{{ status.name }}</div></th>
                                                             {% endfor %}
-                                                            <td><h5><label class="label label-inverse">{{ course.tasks }}</label></h5></td>
+                                                            <th><div class="text-arrow">{%  trans "Всего задач" %}</div></th>
                                                         </tr>
-                                                    {% endfor %}
-                                                    </tbody>
-                                                </table>
+                                                        </thead>
+                                                        <tbody>
+                                                        {% for course in course_statistics %}
+                                                            <tr>
+                                                                <td>
+                                                                    <a href="{{ course.url }}">{{ course.name }}</a>
+                                                                </td>
+                                                                <td><label class="label label-inverse big-label">{{ course.summ_score }}</label></td>
+                                                                <td><label class="label label-success ">{{ course.mark }}</label></td>
+                                                                {% for status, sum in course.issues_count %}
+                                                                    <td><label class="label big-label" style="background-color: {{ status.color }};">{{ sum }}</label></td>
+                                                                {% endfor %}
+                                                                <td><label class="label label-inverse big-label">{{ course.tasks }}</label></td>
+                                                            </tr>
+                                                        {% endfor %}
+                                                        </tbody>
+                                                    </table>
                                                 </div>
                                             {% endfor %}
-
+                                        </div>
                                     </div>
                                 {% endfor %}
                             </div>
