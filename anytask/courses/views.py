@@ -153,6 +153,8 @@ def gradebook(request, course_id, task_id=None, group_id=None):
     context['group_gradebook'] = True if group else False
     context['show_hidden_tasks'] = request.session.get(
         str(request.user.id) + '_' + str(course.id) + '_show_hidden_tasks', False)
+    context['show_academ_users'] = request.session.get(
+        str(request.user.id) + '_' + str(course.id) + '_show_academ_users', True)
     context['school'] = schools[0] if schools else ''
 
     return render_to_response('courses/gradebook.html', context, context_instance=RequestContext(request))
@@ -289,7 +291,7 @@ def tasklist_shad_cpp(request, course, seminar=None, group=None):
     group_x_max_score = {}
     default_teacher = {}
     show_hidden_tasks = request.session.get(str(request.user.id) + '_' + str(course.id) + '_show_hidden_tasks', False)
-    show_academ_users = request.session.get(str(request.user.id) + '_' + str(course.id) + '_show_academ_users', False)
+    show_academ_users = request.session.get(str(request.user.id) + '_' + str(course.id) + '_show_academ_users', True)
 
     all_students = []
 
@@ -337,7 +339,7 @@ def tasklist_shad_cpp(request, course, seminar=None, group=None):
             active_users = UserProfile.objects.filter(Q(user__in=group.students.filter(is_active=True)) &
                                                       (Q(user_status__tag='active') | Q(user_status__tag=None)))
             students = [x.user for x in active_users]
-        all_students += students
+        all_students += group.students.filter(is_active=True)
 
         for student in students:
             if user == student:
@@ -618,7 +620,7 @@ def change_visibility_academ_users(request):
         return HttpResponseForbidden()
 
     session_var_name = str(request.user.id) + '_' + request.POST['course_id'] + '_show_academ_users'
-    request.session[session_var_name] = not request.session.get(session_var_name, False)
+    request.session[session_var_name] = not request.session.get(session_var_name, True)
 
     return HttpResponse("OK")
 
