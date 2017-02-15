@@ -401,7 +401,7 @@ def get_course_mark(course, group, student):
     course_mark = '--'
 
     try:
-        student_course_mark = StudentCourseMark.objects.get(course=course, group=group, student=student)
+        student_course_mark = StudentCourseMark.objects.get(course=course, student=student)
         if student_course_mark.mark:
             mark_id = student_course_mark.mark.id
             course_mark = unicode(student_course_mark)
@@ -600,7 +600,6 @@ def set_course_mark(request):
         return HttpResponseForbidden()
 
     course = get_object_or_404(Course, id=request.POST['course_id'])
-    group = get_object_or_404(Group, id=request.POST['group_id'])
     student = get_object_or_404(User, id=request.POST['student_id'])
     if request.POST['mark_id'] != '-1':
         mark = get_object_or_404(MarkField, id=request.POST['mark_id'])
@@ -609,10 +608,9 @@ def set_course_mark(request):
 
     student_course_mark = StudentCourseMark()
     try:
-        student_course_mark = StudentCourseMark.objects.get(course=course, group=group, student=student)
+        student_course_mark = StudentCourseMark.objects.get(course=course, student=student)
     except StudentCourseMark.DoesNotExist:
         student_course_mark.course = course
-        student_course_mark.group = group
         student_course_mark.student = student
 
     student_course_mark.teacher = request.user
