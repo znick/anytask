@@ -69,7 +69,7 @@
                     username: {
                         required : "{% trans 'Обязательное поле' %}",
                         remote : "{% trans 'Пользователь с таким именем уже существует' %}",
-                        username_characters : "{% trans 'Только латинские буквы, цифры и ' %}'.-+_'"
+                        username_characters : "{% trans 'Только латинские буквы, цифры и .-+_' %}"
                     },
                     first_name: {
                         required : "{% trans 'Обязательное поле' %}",
@@ -82,7 +82,7 @@
                     email: {
                         required : "{% trans 'Обязательное поле' %}",
                         email : "{% trans 'Введите корректный адрес' %}",
-                        remote : "{% trans 'Пользователь с таким адресом уже существует. ' %}<a class='text-muted' href='{% url django.contrib.auth.views.login %}'>{% trans 'Войдите' %}</a>"
+                        remote : "{% trans 'Пользователь с таким адресом уже существует' %} <a class='text-muted' href='{% url django.contrib.auth.views.login %}'>{% trans 'Войдите' %}</a>"
                     },
                     password1: {
                         required : "{% trans 'Обязательное поле' %}"

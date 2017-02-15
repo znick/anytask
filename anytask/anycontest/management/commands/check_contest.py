@@ -38,7 +38,7 @@ class Command(BaseCommand):
                                        u'<a href="{1}/r/{0}">Review request {0}</a>'. \
                                            format(review_request_id, settings.RB_API_URL)
                         else:
-                            comment += '\n' + _(u'Ошибка отправки в Review Board.')
+                            comment += '\n' + _(u'Ошибка отправки в Review Board')
                     if contest_submission.verdict == 'ok' and task.accepted_after_contest_ok:
                         issue.set_status_by_tag(IssueStatus.STATUS_ACCEPTED)
                     if issue.task.course.id in settings.COURSES_WITH_CONTEST_MARKS:

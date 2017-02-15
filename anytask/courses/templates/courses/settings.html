@@ -157,7 +157,7 @@
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item">
                             <div class="row">
-                                <p class="card-text">{% trans "Отправлять один файл" %}</p>
+                                <p class="card-text">{% trans "Отправлять только один файл" %}</p>
                                 <div class="col-md-12">
                                     <input type="checkbox" name="show_task_one_file_upload" id="show_task_one_file_upload" {% if course.show_task_one_file_upload %}checked{% endif %}>
                                     <label class="checkbox-block" for="show_task_one_file_upload">{% trans "Отображать настройку" %}</label>
@@ -170,7 +170,7 @@
                         </li>
                         <li class="list-group-item">
                             <div class="row">
-                                <p class="card-text">{% trans "Переводить в Зачтено после положительного вердикта Я.Контеста" %}</p>
+                                <p class="card-text">{% trans "Переводить в статус Зачтено после положительного вердикта Я.Контеста" %}</p>
                                 <div class="col-md-12">
                                     <input type="checkbox" name="show_accepted_after_contest_ok" id="show_accepted_after_contest_ok" {% if course.show_accepted_after_contest_ok %}checked{% endif %}>
                                     <label class="checkbox-block" for="show_accepted_after_contest_ok">{% trans "Отображать настройку" %}</label>

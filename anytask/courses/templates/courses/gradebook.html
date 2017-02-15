@@ -67,7 +67,7 @@
                     {{ seminar.title }} {% endif %}</h5>
 
                 <p class="card-text course_teachers" style="border-bottom: 1px solid #e5e5e5;">
-                    {% trans "Преподаватели:" %}
+                    {% trans "Преподаватели" %}:
                     {% for teacher in course.get_teachers %}
                         <a href="{% url users.views.profile teacher.username %}">{{ teacher.last_name }} {{ teacher.first_name }}</a>
                         {% if not forloop.last %},{% endif %}

@@ -190,7 +190,7 @@ class Course(models.Model):
 
     def add_group_with_extern(self):
         if self.group_with_extern is None and self.can_be_chosen_by_extern:
-            group, ok = Group.objects.get_or_create(year=self.year,name=_(u'%s - слушатели') % self.name)
+            group, ok = Group.objects.get_or_create(year=self.year,name=u'%s - слушатели' % self.name)
             group.save()
             self.group_with_extern = group
             self.groups.add(group)

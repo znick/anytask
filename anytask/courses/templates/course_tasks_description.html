@@ -3,16 +3,16 @@
 
 {% load sanitize_html %}
 
-{% block title %}{% trans "Описание задач курса " %}{{ course.name }} | {{ course.year }}{% endblock %}
+{% block title %}Описание задач курса {{ course.name }} | {{ course.year }}{% endblock %}
 
 {% block content %}
 
 <div class="subnav">
     <ul class="nav nav-pills">
-      <li><a href="{% url courses.views.tasks_list course_id=course.id %}">{% trans "Список по группам" %}</a></li>
-      <li class="active"><a href="{% url courses.views.tasks_description course.id %}">{% trans "Описание задач" %}</a></li>
+      <li><a href="{% url courses.views.tasks_list course_id=course.id %}">Список по группам</a></li>
+      <li class="active"><a href="{% url courses.views.tasks_description course.id %}">Описание задач</a></li>
       {% if visible_queue %}
-      <li><a href="{% url courses.views.queue_tasks_to_check course_id=course.id %}"> {% trans "Очередь на проверку " %}</a> </li>
+      <li><a href="{% url courses.views.queue_tasks_to_check course_id=course.id %}"> "Очередь на проверку </a> </li>
       {% endif %}
     </ul>
 </div>
@@ -31,7 +31,7 @@
 		</dl>
 	{% endfor %}
 	{% if course_tasks %}
-		<h2>{% trans "Задачи курса" %}</h2>
+		<h2>Задачи курса</h2>
 		<dl>
 		{% for task in course_tasks %}
 				<dt>{{ task.title }}</dt>

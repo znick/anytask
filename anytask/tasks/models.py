@@ -95,7 +95,7 @@ class Task(models.Model):
         try:
             task_taken = TaskTaken.objects.filter(task=self).filter(user=user).get(status=TaskTaken.STATUS_BLACKLISTED)
             black_list_expired_date = task_taken.update_time + timedelta(days=course.days_drop_from_blacklist)
-            return (False, _(u'Вы сможете взять эту задачу с %s') % black_list_expired_date.strftime("%d.%m.%Y"))
+            return (False, u'Вы сможете взять эту задачу с %s' % black_list_expired_date.strftime("%d.%m.%Y"))
         except TaskTaken.DoesNotExist:
             pass
 
@@ -237,8 +237,8 @@ class TaskTaken(models.Model):
     QUEUE = 'QUEUE'
     OK = 'OK'
     STATUS_CHECK_CHOICES = (
-        (EDIT, _(u'Дорешивание')),
-        (QUEUE, _(u'Ожидает проверки')),
+        (EDIT, u'Дорешивание'),
+        (QUEUE, u'Ожидает проверки'),
         (OK, u'Задача зачтена и/или больше не принимается'),
     )
     status_check = models.CharField(db_index=True, max_length=5, choices=STATUS_CHECK_CHOICES, default=EDIT)

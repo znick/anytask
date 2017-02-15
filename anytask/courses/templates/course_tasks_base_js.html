@@ -56,10 +56,10 @@
 
             messages: {
                 score: {
-                    required    : "{% trans 'Укажите оценку' %}",
-                    number      : "{% trans 'Ведите корректное число' %}",
-                    min         : "{% trans 'Оценка слишком маленькая' %}",
-                    lessThanMax : "{% trans 'Оценка слишком большая' %}",
+                    required    : "Укажите оценку",
+                    number      : "Ведите корректное число",
+                    min         : "Оценка слишком маленькая",
+                    lessThanMax : "Оценка слишком большая",
                 },
             },
 
@@ -102,13 +102,13 @@
 
             messages: {
                 max_score: {
-                    required : "{% trans 'Необходимо указать максимальный балл' %}",
-                    digits : "{% trans 'Максимальный балл должен быть целым числом' %}",
-                    min : "{% trans 'Максимальный балл должен быть больше или равен 0' %}",
+                    required : "Необходимо указать максимальный балл}",
+                    digits : "Максимальный балл должен быть целым числом",
+                    min : "Максимальный балл должен быть больше или равен 0",
                 },
                 task_title: {
-                    required : "{% trans 'Название у задачи необходимо' %}",
-                    maxlength : "{% trans 'Не так много' %}",
+                    required : "Название у задачи необходимо",
+                    maxlength : "Не так много",
                 },
             },
 
@@ -177,21 +177,21 @@
                 url: "/task/ajax_get_teacher/" + task_id + "/"+ student_id,
             }).done(function(data) {
                 var teacher_name = data['teacher_name'];
-                $('#teaher_information').html("{% trans 'Преподаватель:' %} " + teacher_name);
+                $('#teaher_information').html("Преподаватель: " + teacher_name);
                 if (!teacher_name)
                 {
                     $('#manage_teacher').attr('onClick', 'set_teacher(' + task_id + ', '+ student_id +', {{request.user.id}})');
-                    $('#manage_teacher').val('{% trans "Взять себе" %}');
+                    $('#manage_teacher').val('"Взять себе');
                 }
                 else if (teacher_name != '{{request.user.get_full_name}}')
                 {
                     $('#manage_teacher').attr('onClick', 'set_teacher(' + task_id + ', '+ student_id +', {{request.user.id}})');
-                    $('#manage_teacher').val('{% trans "Отобрать" %}');                    
+                    $('#manage_teacher').val('Отобрать');
                 }
                 else
                 {
                     $('#manage_teacher').attr('onClick', 'delete_teacher(' + task_id + ', '+ student_id +')');
-                    $('#manage_teacher').val('{% trans "Отказаться" %}');
+                    $('#manage_teacher').val('Отказаться');
                 }
             });
         }
@@ -234,13 +234,13 @@
             $('#modal_score_score').val('');
         }
 
-        $('#modal_scored_task_other_text').html('{% trans "Текущая оценка:" %} ' + score + "<br> {% trans 'Предыдущие комментарии:' %}");
+        $('#modal_scored_task_other_text').html('Текущая оценка: ' + score + '<br> Предыдущие комментарии: ');
         if (comment)
         {
             $('#modal_scored_comments').html(comment);
             $('#modal_scored_comments').show();
         }
-        $('#modal_scores_range').html("{% trans 'Оцените задачу ' %}[0-" + max_score + "]: ");
+        $('#modal_scores_range').html("Оцените задачу [0-" + max_score + "]: ");
         $('#modal_max_score').val(max_score);
         $('#modal_control_group').attr('class', 'control-group');
         $('#modal_error_text').empty();

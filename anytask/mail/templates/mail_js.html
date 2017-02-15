@@ -71,7 +71,7 @@
             "thousands": ",",
             "lengthMenu": "{% trans "Показать _MENU_" %}",
             "loadingRecords": "{% trans "Загрузка..." %}",
-            "processing": "<span class='fa fa-circle-o-notch fa-spin'></span>&nbsp;Загрузка...",
+            "processing": "<span class='fa fa-circle-o-notch fa-spin'></span>&nbsp;{% trans "Загрузка..." %}",
             "search": "",
             "searchPlaceholder": "{% trans "Найти..." %}",
             "zeroRecords": "{% trans "Ничего не найдено" %}",
@@ -272,7 +272,7 @@
                             $("body").on("click", 'div.replay-show', function (e) {
                                 if ($(this).data("opened")) {
                                     $(this).data("opened", false);
-                                    $(this).html('<span class="fa fa-quote-left" aria-hidden="true"></span>&nbsp;Показать цитирование');
+                                    $(this).html('<span class="fa fa-quote-left" aria-hidden="true"></span>&nbsp;{% trans "Показать цитирование" %}');
                                 }
                                 else {
                                     $(this).data("opened", true);
@@ -577,7 +577,7 @@
             enableClickableOptGroups: true,
             includeSelectAllOption: true,
             enableCaseInsensitiveFiltering: true,
-            filterPlaceholder: "{%  trans 'Найти' %}",
+            filterPlaceholder: "{%  trans 'Найти...' %}",
             selectAllText: '{%  trans "Выделить все" %}',
             selectAllName: 'task_group_id_all',
             selectAllValue: 'on',

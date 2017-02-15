@@ -79,7 +79,7 @@
                         {{ mark }}</span>{% endif %}
                     </h5>
                     <p class="card-text course_teachers">
-                        {% trans "Преподаватели:" %}
+                        {% trans "Преподаватели" %}:
                         {% for teacher in course.get_teachers %}
                             <a href="{% url users.views.profile teacher.username %}">{{ teacher.last_name }} {{ teacher.first_name }}</a>{% if not forloop.last %},{% endif %}
                         {% endfor %}
@@ -199,7 +199,7 @@
                                                         {% if task.type == task.TYPE_FULL and not user_is_teacher %}
                                                             <a style="width: 100%"
                                                                class="btn btn-sm btn-primary pull-xs-right"
-                                                               href="/issue/get_or_create/{{ task.id }}/{{ user.id }}">{% trans "Cдать" %}</a>
+                                                               href="/issue/get_or_create/{{ task.id }}/{{ user.id }}">{% trans "Сдать" %}</a>
                                                         {% elif task.type == task.TYPE_SEMINAR %}
                                                             <a style="width: 100%"
                                                                class="btn btn-sm btn-primary pull-xs-right"
@@ -307,7 +307,7 @@
                                                     {% if task.type == task.TYPE_FULL and not user_is_teacher %}
                                                         <a style="width: 100%"
                                                            class="btn btn-sm btn-primary pull-xs-right"
-                                                           href="/issue/get_or_create/{{ task.id }}/{{ user.id }}">{% trans "Cдать" %}</a>
+                                                           href="/issue/get_or_create/{{ task.id }}/{{ user.id }}">{% trans "Сдать" %}</a>
                                                     {% endif %}
                                                 </div>
                                             </div>

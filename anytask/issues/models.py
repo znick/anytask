@@ -280,7 +280,7 @@ class Issue(models.Model):
                                     if self.status_field.tag != IssueStatus.STATUS_ACCEPTED:
                                         self.set_status_by_tag(IssueStatus.STATUS_AUTO_VERIFICATION)
                                 else:
-                                    value['comment'] += u"<p>{0}('{1}')</p>".format(_(u'Ошибка отправки в Я.Контест.'),
+                                    value['comment'] += u"<p>{0}('{1}')</p>".format(_(u'Ошибка отправки в Я.Контест'),
                                                                                      contest_submission.send_error)
                                     self.followers.add(User.objects.get(username='anytask.monitoring'))
                                 break
@@ -295,7 +295,7 @@ class Issue(models.Model):
                                     value['comment'] += u'<p><a href="{1}/r/{0}">Review request {0}</a></p>'. \
                                         format(review_request_id,settings.RB_API_URL)
                                 else:
-                                    value['comment'] += u'<p>{0}</p>'.format(_(u'Ошибка отправки в Review Board.'))
+                                    value['comment'] += u'<p>{0}</p>'.format(_(u'Ошибка отправки в Review Board'))
                                     self.followers.add(User.objects.get(username='anytask.monitoring'))
                                 break
 
@@ -466,7 +466,7 @@ class Event(models.Model):
 class IssueFilter(django_filters.FilterSet):
     status_field = django_filters.MultipleChoiceFilter(label=u'<strong>{0}</strong>'.format(_(u'Статус')), widget=forms.SelectMultiple)
     update_time = django_filters.DateRangeFilter(label=u'<strong>{0}</strong>'.format(_(u'Дата последнего изменения')))
-    responsible = django_filters.ChoiceFilter(label=u'<strong>{0}</strong>'.format(_(u'Ответственный')))
+    responsible = django_filters.ChoiceFilter(label=u'<strong>{0}</strong>'.format(_(u'Проверяющий')))
     followers = django_filters.MultipleChoiceFilter(label=u'<strong>{0}</strong>'.format(_(u'Наблюдатели')), widget=forms.SelectMultiple)
     task = django_filters.ChoiceFilter(label=u'<strong>{0}</strong>'.format(_(u'Задача')))
 
