@@ -9,6 +9,61 @@
     <script type="text/javascript">
         $(document).ready(function() {
             $(".table_users").stickyTableHeaders({fixedOffset: $('.navbar')});
+
+            $('select[multiple]').multiselect({
+                buttonClass: 'btn btn-secondary btn-block',
+                templates: {
+                    ul: '<ul class="multiselect-container dropdown-menu" style="left:inherit;top: inherit;"></ul>',
+                    li: '<li><a tabindex="0" class="dropdown-item"><label></label></a></li>',
+                    filter: '<li class="multiselect-item filter"><div class="input-group"><input class="form-control multiselect-search" type="text"></div></li>',
+                    filterClearBtn: '<span class="input-group-btn"><button class="btn btn-secondary btn-block multiselect-clear-filter" type="button"><i class="fa fa-times"></i></button></span>'
+
+                },
+                includeSelectAllOption: true,
+                enableCaseInsensitiveFiltering: true,
+                filterPlaceholder: "{% trans "Найти..." %}",
+                selectAllText: '{% trans "Выбрать все" %}',
+                allSelectedText: '{% trans "Все выбрано" %}',
+                maxHeight: 200,
+                buttonContainer: '<div style="width:100%;" class="multiselect-dropdown"/>',
+                buttonWidth: '100%',
+                buttonTitle: function(options, select) {
+                    var labels = [];
+
+                    if (options.length === 0) {
+                        return '---';
+                    }
+                    else if (options.length === $('option', select).length) {
+                        return '{% trans "Все выбрано" %}';
+                    }
+                    else {
+                        options.each(function () {
+                            labels.push($(this).text());
+                        });
+                    }
+                    return labels.join(', ');
+                },
+                buttonText: function(options, select) {
+                    if (options.length === 0) {
+                        return '---';
+                    }
+                    else if (options.length === $('option', select).length) {
+                        return '{% trans "Все выбрано" %}';
+                    }
+                    else {
+                        var labels = [];
+                        options.each(function() {
+                            if ($(this).attr('label') !== undefined) {
+                                labels.push($(this).attr('label'));
+                            }
+                            else {
+                                labels.push($(this).text());
+                            }
+                        });
+                        return labels.join(', ') + '';
+                    }
+                }
+            });
         });
     </script>
 
@@ -50,27 +105,31 @@
                 <div class="card">
                     <div class="card-block">
                         <h5 class="card-title">{% trans "Пользователи" %}</h5>
-                        {% if filter.count %}
+                        {% if filter.users_info %}
                             <table class="table table_users">
                                 <thead>
                                 <tr style="background-color: #ffffff;">
                                     <th>{% trans "Имя" %}<i class="fa fa-fw fa-sort"></i></th>
                                     <th>{% trans "Почта" %}<i class="fa fa-fw fa-sort"></i></th>
                                     <th>{% trans "Статус" %}<i class="fa fa-fw fa-sort"></i></th>
+                                    <th>{% trans "Курс" %}<i class="fa fa-fw fa-sort"></i></th>
+                                    <th>{% trans "Балл" %}<i class="fa fa-fw fa-sort"></i></th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {% for user_profile in filter %}
+                                {% for info in filter.users_info.values %}
                                     <tr>
                                         <td>
-                                            <a href="/users/{{ user_profile.user }}">{{ user_profile.user.get_full_name }}</a>
+                                            <a href="/users/{{ info.user_profile.user }}">{{ info.user_profile.user.get_full_name }}</a>
                                         </td>
-                                        <td>{{ user_profile.user.email }}</td>
+                                        <td>{{ info.user_profile.user.email }}</td>
                                         <td>
-                                            {% for user_status in user_profile.user_status.all %}
+                                            {% for user_status in info.user_profile.user_status.all %}
                                                 <span class="label" style="font-size: 1rem; background-color: {{ user_status.color }}">{{ user_status.name }}</span>
                                             {% endfor %}
                                         </td>
+                                        <td>{{ info.course.name }}</td>
+                                        <td>{{ info.sum_score }}</td>
                                     </tr>
                                 {% endfor %}
                                 </tbody>

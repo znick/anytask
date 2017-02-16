@@ -13,8 +13,8 @@ from crispy_forms.layout import HTML
 
 from courses.models import StudentCourseMark
 from courses.models import Course
-from users.models import UserProfile, IssueFilterStudent, UserProfileFilter, UserStatus
-
+from staff.models import UserProfileFilter
+from users.models import UserProfile, UserStatus
 
 
 @require_http_methods(['GET'])
@@ -28,21 +28,20 @@ def staff_page(request):
     user_profiles = UserProfile.objects.all()
 
     user_as_str = str(user.username) + '_userprofiles_filter'
-
-    f = UserProfileFilter(request.GET, user_profiles)
+    f = UserProfileFilter(request.GET)
     f.set()
 
-    if f.form.data:
-        request.session[user_as_str] = f.form.data
-    elif user_as_str in request.session:
-        f.form.data = request.session.get(user_as_str)
+
+    # if f.form.data:
+    #     request.session[user_as_str] = f.form.data
+    # elif user_as_str in request.session:
+    #     f.form.data = request.session.get(user_as_str)
 
     f.form.helper = FormHelper(f.form)
     f.form.helper.form_method = 'get'
     f.form.helper.layout.append(HTML(u"""<div class="form-group row">
         <button id="button_filter" class="btn btn-secondary pull-xs-right" type="submit">{0}</button>
 </div>""".format(_(u'Применить'))))
-
     context = {
         'filter': f,
     }
