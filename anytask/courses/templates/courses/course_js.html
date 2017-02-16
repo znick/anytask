@@ -487,10 +487,12 @@
 
         $('.mark-form').change(function () {
             $(this).collapse('hide');
-            var mark_value = $($(this).closest('td')).find('.mark-value');
-            $(mark_value).collapse('show');
+            var student_id = $($(this).closest('td')).prop('class');
+            var mark_td = $('td.' + student_id);
+            $($(this).closest('td')).find('.mark-value').collapse('show');
             $.post('{% url courses.views.set_course_mark %}', $(this).serialize(), function (data) {
-                $($(mark_value).find('span')).text(data.mark);
+                $($(mark_td).find('.mark-value').find('span')).text(data.mark);
+                $($(mark_td).find('.mark-form').find('select')).val(data.mark_id);
             });
         });
 

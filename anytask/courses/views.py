@@ -618,7 +618,7 @@ def set_course_mark(request):
     student_course_mark.mark = mark
     student_course_mark.save()
 
-    return HttpResponse(json.dumps({'mark': unicode(mark), 'student_course_mark_id': student_course_mark.id}),
+    return HttpResponse(json.dumps({'mark': unicode(mark), 'mark_id': mark.id}),
                         content_type="application/json")
 
 
