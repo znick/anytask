@@ -293,7 +293,7 @@ def tasklist_shad_cpp(request, course, seminar=None, group=None):
     show_hidden_tasks = request.session.get(str(request.user.id) + '_' + str(course.id) + '_show_hidden_tasks', False)
     show_academ_users = request.session.get(str(request.user.id) + '_' + str(course.id) + '_show_academ_users', True)
 
-    all_students = []
+    academ_students = []
 
     for group in groups:
         student_x_task_x_task_takens = {}
@@ -333,13 +333,12 @@ def tasklist_shad_cpp(request, course, seminar=None, group=None):
             student_id = issue.student.id
             issues_x_student[student_id].append(issue)
 
-        if show_academ_users:
-            students = group.students.filter(is_active=True)
-        else:
-            active_users = UserProfile.objects.filter(Q(user__in=group.students.filter(is_active=True)) &
-                                                      (Q(user_status__tag='active') | Q(user_status__tag=None)))
-            students = [x.user for x in active_users]
-        all_students += group.students.filter(is_active=True)
+        students = group.students.filter(is_active=True)
+        not_active_students = UserProfile.objects.filter(Q(user__in=group.students.filter(is_active=True)) &
+                                                  (Q(user_status__tag='not_active') | Q(user_status__tag='academic')))
+        academ_students += [x.user for x in not_active_students]
+        if not show_academ_users:
+            students = set(students) - set(academ_students)
 
         for student in students:
             if user == student:
@@ -400,8 +399,7 @@ def tasklist_shad_cpp(request, course, seminar=None, group=None):
         'visible_queue': course.user_can_see_queue(user),
         'visible_hide_button': Task.objects.filter(Q(course=course) & Q(is_hidden=True)).count(),
         'show_hidden_tasks': show_hidden_tasks,
-        'visible_hide_button_users': UserProfile.objects.filter(Q(user__in=all_students) &
-                                                      Q(user_status__tag='academic')).count(),
+        'visible_hide_button_users': len(academ_students),
         'show_academ_users': show_academ_users
 
     }
