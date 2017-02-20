@@ -50,6 +50,8 @@ def register(request):
             new_user_profile.login_via_yandex = True
         if not new_user_profile.ya_passport_uid:
             new_user_profile.ya_passport_uid = request.META['HTTP_UID']
+        if not new_user_profile.ya_contest_uid:
+            new_user_profile.ya_contest_uid = request.META['HTTP_UID']
         new_user_profile.save()
 
     return HttpResponse("OK")
@@ -61,7 +63,7 @@ def contest_register(user):
     req = requests.get(
         settings.CONTEST_API_URL + 'register-user?uidToRegister=' + str(user.get_profile().ya_contest_uid) +
         '&contestId=' + str(contest_id),
-        headers={'Authorization': 'OAutsh ' + settings.CONTEST_OAUTH})
+        headers={'Authorization': 'OAuth ' + settings.CONTEST_OAUTH})
 
     if 'error' in req.json():
         logger.error("Cant register user %s to contest %s. Error: %s",

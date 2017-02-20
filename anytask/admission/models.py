@@ -7,7 +7,6 @@ from registration.models import RegistrationProfile, RegistrationManager
 from django.template.loader import render_to_string
 from django.db.models import Q
 from django.core.mail import send_mail
-from mail.management.commands.send_mail_notifications import send_mass_mail_html
 
 from django.contrib.auth.models import User
 # from users.models import UserProfile
@@ -99,5 +98,7 @@ class AdmissionRegistrationProfile(RegistrationProfile):
 
         plain_text = '...'
         html = render_to_string('email_activate.html', context)
+
+        from mail.management.commands.send_mail_notifications import send_mass_mail_html
 
         send_mass_mail_html([(subject, plain_text, html, settings.DEFAULT_FROM_EMAIL, [self.user.email])])
