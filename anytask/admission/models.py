@@ -7,9 +7,10 @@ from registration.models import RegistrationProfile, RegistrationManager
 from django.template.loader import render_to_string
 from django.db.models import Q
 from django.core.mail import send_mail
+from mail.management.commands.send_mail_notifications import send_mass_mail_html
 
 from django.contrib.auth.models import User
-from users.models import UserProfile
+# from users.models import UserProfile
 
 import datetime
 import hashlib
@@ -39,10 +40,11 @@ class AdmissionRegistrationProfileManager(RegistrationManager):
     def create_or_update_user(self, username, email, password, uid=None, send_email=True, request=None):
         user_by_username = User.objects.filter(username=username)
         user_by_email = User.objects.filter(email=email)
-        if uid:
-            user_by_uid = UserProfile.objects.filter(Q(ya_passport_uid=uid) | Q(ya_contest_uid=uid))
-        else:
-            user_by_uid = User.objects.none()
+        # if uid:
+        #     user_by_uid = [u_p.user for u_p in
+        #                    UserProfile.objects.filter(Q(ya_passport_uid=uid) | Q(ya_contest_uid=uid))]
+        # else:
+        user_by_uid = User.objects.none()
         users = user_by_username | user_by_email | user_by_uid
 
         if not users:
@@ -95,7 +97,7 @@ class AdmissionRegistrationProfile(RegistrationProfile):
             'activation_key': self.activation_key
         }
 
-        message = render_to_string('email_activate.html',
-                                   context)
+        plain_text = '...'
+        html = render_to_string('email_activate.html', context)
 
-        self.user.email_user(subject, message, settings.DEFAULT_FROM_EMAIL)
+        send_mass_mail_html([(subject, plain_text, html, settings.DEFAULT_FROM_EMAIL, [self.user.email])])
