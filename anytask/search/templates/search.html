@@ -71,9 +71,9 @@
                     {% trans "Минимальная длина запроса должна быть больше 3 символов." %}
                 {% else %}
                     {% if user_profiles or courses %}
-                        {% blocktrans with user_length=user_profiles|length course_length=courses|length %}По запросу {{ query }} найдено {{ user_length }} пользов(ей) и {{ course_length }} курса(ов).{% endblocktrans %}
+                        {% trans "По запросу" %} "{{ query }}" {% trans "найдено" %} {{ user_profiles|length }} {% trans "пользователя(ей) и" %} {{ courses|length }} {% trans "курса(ов)" %}.
                     {% else %}
-                        {% blocktrans %}По запросу {{ query }} ничего не найдено.{% endblocktrans %}
+                        {% trans "По запросу" %} "{{ query }}" {% trans "ничего не найдено" %}.
                     {% endif %}
                 {% endif %}
             </small>

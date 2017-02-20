@@ -128,7 +128,7 @@
                                     <strong>{%  trans "Привязать можно только один профиль!" %}</strong> {% blocktrans %}Для того, чтобы отвязать свой профиль обратитесь к <a href="mailto:anytask@yandex.ru">администратору</a>.{% endblocktrans %}
                                 </p>
                                 <a href="/user/ya_oauth_request/contest" type="button" class="btn btn-secondary">
-                                    Привязать
+                                    {%  trans "Привязать" %}
                                 </a>
                             </div>
                         </div>
@@ -137,7 +137,7 @@
                             <div class="card-block">
                                 <h5 class="card-title">{% trans "Привязать профиль Яндекс.Контеста" %}</h5>
                                 <p class="card-text">
-                                    <strong>{% blocktrans with login=user_to_show_profile.ya_contest_login %}Вы привязали профиль {{ login }}.{% endblocktrans %}</strong> {% blocktrans %}Теперь все посылки в соревнования будут отправляться от Вашего имени. Для того, чтобы отвязать свой профиль обратитесь к <a href="mailto:anytask@yandex.ru">администратору</a>.{% endblocktrans %}
+                                    <strong>{% trans "Вы привязали профиль" %} {{ user_to_show_profile.ya_contest_login }}.</strong> {% blocktrans %}Теперь все посылки в соревнования будут отправляться от Вашего имени. Для того, чтобы отвязать свой профиль обратитесь к <a href="mailto:anytask@yandex.ru">администратору</a>.{% endblocktrans %}
                                 </p>
                                 <a href="/user/ya_oauth_request/contest" type="button" class="btn btn-secondary">
                                     {% trans "Обновить привязку текущего профиля" %}

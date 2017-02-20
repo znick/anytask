@@ -7,7 +7,7 @@
     <body>
         {% trans "Инвайт на Anytask" %}
         {% if group %}
-                {% blocktrans with group_name=group.name %}для {{ group_name }}{% endblocktrans %}
+                {% trans "для" %} {{ group.name }}
         {% endif %}
     <br/>
     {% trans "Действителен до " %}{{ invite_expired_date }}

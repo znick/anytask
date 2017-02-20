@@ -620,7 +620,7 @@
 
             var confirmed_delete = true;
             if (remaining_groups_ids.length == 0)
-                if (!confirm('{% trans "Удаленную задачу невозможно восстановить. Вы уверены, что хотить удалить?" %}'))
+                if (!confirm('{% trans "Удаленную задачу невозможно восстановить. Вы уверены, что хотите удалить?" %}'))
                     confirmed_delete = false;
             if (confirmed_delete) {
                 var group = $('.group-sortable');

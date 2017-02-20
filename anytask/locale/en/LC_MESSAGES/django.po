@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-15 12:19+0500\n"
+"POT-Creation-Date: 2017-02-20 14:04+0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -45,8 +45,9 @@ msgstr ""
 msgid "Тест"
 msgstr ""
 
-#: anycontest/management/commands/check_contest.py:41
-msgid "Ошибка отправки в Review Board."
+#: anycontest/management/commands/check_contest.py:41 issues/models.py:298
+#: issues/views.py:104
+msgid "Ошибка отправки в Review Board"
 msgstr ""
 
 #: anyrb/common.py:83 courses/templates/courses/queue.html:74
@@ -103,14 +104,6 @@ msgstr ""
 
 #: courses/forms.py:26
 msgid "Наблюдаемые мной"
-msgstr ""
-
-#: courses/forms.py:27
-msgid "Не мои"
-msgstr ""
-
-#: courses/forms.py:28
-msgid "Ничьи"
 msgstr ""
 
 #: courses/views.py:104 staff/views.py:44 users/views.py:453
@@ -219,12 +212,15 @@ msgstr ""
 
 #: courses/templates/courses/course.html:162
 #: courses/templates/courses/gradebook.html:92
-msgid "Импорт задачи из Я.Контеста"
+#: tasks/templates/task_import.html:22 tasks/templates/task_import.html:39
+msgid "Импорт задачи из Яндекс.Контеста"
 msgstr ""
 
 #: courses/templates/courses/course.html:164
 #: courses/templates/courses/gradebook.html:94
-msgid "Импорт соревнования из Я.Контеста"
+#: tasks/templates/contest_import.html:20
+#: tasks/templates/contest_import.html:37
+msgid "Импорт соревнования из Яндекс.Контеста"
 msgstr ""
 
 #: courses/templates/courses/course.html:202
@@ -379,7 +375,7 @@ msgstr ""
 
 #: courses/templates/courses/course_js.html:623
 msgid ""
-"Удаленную задачу невозможно восстановить. Вы уверены, что хотить удалить?"
+"Удаленную задачу невозможно восстановить. Вы уверены, что хотите удалить?"
 msgstr ""
 
 #: courses/templates/courses/course_js.html:672
@@ -679,8 +675,7 @@ msgid "Инвайт на Anytask"
 msgstr ""
 
 #: invites/templates/invites_list.html:10
-#, python-format
-msgid "для %(group_name)s"
+msgid "для"
 msgstr ""
 
 #: invites/templates/invites_list.html:13
@@ -711,10 +706,6 @@ msgstr ""
 
 #: issues/models.py:283 issues/views.py:91
 msgid "Ошибка отправки в Я.Контест"
-msgstr ""
-
-#: issues/models.py:298 issues/views.py:104
-msgid "Ошибка отправки в Review Board"
 msgstr ""
 
 #: issues/models.py:468 users/models.py:186
@@ -752,12 +743,14 @@ msgstr ""
 #: issues/management/commands/send_notifications.py:53
 #: mail/management/commands/send_mail_notifications.py:39
 #: tasks/management/commands/send_deadline_notifications.py:50
+#: templates/registration/activation_email.txt:10
 msgid "С уважением,"
 msgstr ""
 
 #: issues/management/commands/send_notifications.py:54
 #: mail/management/commands/send_mail_notifications.py:40
 #: tasks/management/commands/send_deadline_notifications.py:51
+#: templates/registration/activation_email.txt:11
 msgid "команда Anytask."
 msgstr ""
 
@@ -940,8 +933,7 @@ msgid "новых сообщения"
 msgstr ""
 
 #: mail/templates/email_notification_mail.html:40
-#, python-format
-msgid "У вас %(unread_count)s %(unread_count_string)s."
+msgid "У вас"
 msgstr ""
 
 #: mail/templates/email_notification_mail.html:49
@@ -1103,16 +1095,24 @@ msgstr ""
 msgid "Минимальная длина запроса должна быть больше 3 символов."
 msgstr ""
 
+#: search/templates/search.html:74 search/templates/search.html.py:76
+msgid "По запросу"
+msgstr ""
+
 #: search/templates/search.html:74
-#, python-format
-msgid ""
-"По запросу %(query)s найдено %(user_length)s пользов(ей) и %(course_length)s "
-"курса(ов)."
+msgid "найдено"
+msgstr ""
+
+#: search/templates/search.html:74
+msgid "пользователя(ей) и"
+msgstr ""
+
+#: search/templates/search.html:74
+msgid "курса(ов)"
 msgstr ""
 
 #: search/templates/search.html:76
-#, python-format
-msgid "По запросу %(query)s ничего не найдено."
+msgid "ничего не найдено"
 msgstr ""
 
 #: search/templates/search.html:88 staff/templates/staff.html:52
@@ -1189,11 +1189,6 @@ msgstr ""
 
 #: tasks/templates/contest_import.html:8 tasks/templates/task_import.html:9
 msgid "Импорт "
-msgstr ""
-
-#: tasks/templates/contest_import.html:20
-#: tasks/templates/contest_import.html:37
-msgid "Импорт соревнования из Яндекс.Контеста"
 msgstr ""
 
 #: tasks/templates/contest_import.html:43 tasks/templates/task_edit.html:203
@@ -1373,11 +1368,7 @@ msgid "Обновление данных из Яндекс.Контеста"
 msgstr ""
 
 #: tasks/templates/task_edit.html:333
-msgid "Имортировать следующие поля из Яндекс.Контеста:"
-msgstr ""
-
-#: tasks/templates/task_import.html:22 tasks/templates/task_import.html:39
-msgid "Импорт задачи из Яндекс.Контеста"
+msgid "Импортировать следующие поля из Яндекс.Контеста:"
 msgstr ""
 
 #: tasks/templates/task_import_js.html:194
@@ -1450,16 +1441,15 @@ msgid "Войти"
 msgstr ""
 
 #: templates/registration/activation_email.txt:3
-#, python-format
-msgid ""
-"Для активации аккаунта на AnyTask перейдите по ссылке\n"
-"\n"
-"http://%(site)s/accounts/activate/%(activation_key)s\n"
-"\n"
-"Ссылка действительна в течение %(expiration_days)s дней.\n"
-"\n"
-"-- \n"
-"Команда AnyTask"
+msgid "Для активации аккаунта на AnyTask перейдите по ссылке"
+msgstr ""
+
+#: templates/registration/activation_email.txt:7
+msgid "Ссылка действительна в течение"
+msgstr ""
+
+#: templates/registration/activation_email.txt:7
+msgid "дней"
 msgstr ""
 
 #: templates/registration/login.html:5 templates/registration/login.html:18
@@ -1741,9 +1731,12 @@ msgid ""
 "anytask@yandex.ru\">администратору</a>."
 msgstr ""
 
+#: users/templates/user_profile.html:131
+msgid "Привязать"
+msgstr ""
+
 #: users/templates/user_profile.html:140
-#, python-format
-msgid "Вы привязали профиль %(login)s."
+msgid "Вы привязали профиль"
 msgstr ""
 
 #: users/templates/user_profile.html:140
