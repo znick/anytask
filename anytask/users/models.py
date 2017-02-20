@@ -46,11 +46,13 @@ class UserStatus(models.Model):
     )
 
     TYPE_ACTIVITY = 'activity'
+    TYPE_FILIAL = 'filial'
     TYPE_EDUCATION_FORM = 'education_form'
 
 
     TYPE_STATUSES = (
         (TYPE_ACTIVITY, _(u'Статус студента')),
+        (TYPE_FILIAL, _(u'Филлиал')),
         # (TYPE_EDUCATION_FORM, _(u'Форма обучения')),
     )
 
@@ -90,6 +92,8 @@ class UserProfile(models.Model):
 
     updated_by = models.ForeignKey(User, db_index=False, null=True, blank=True)
 
+    login_via_yandex = models.BooleanField(db_index=False, null=False, blank=False, default=True)
+
     ya_uid = models.IntegerField(null=True, blank=True)
     ya_login = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
 
@@ -113,6 +117,15 @@ class UserProfile(models.Model):
             if status.tag == 'not_active' or status.tag == 'academic':
                 return False
         return True
+
+    def set_status(self, new_status):
+        if not isinstance(new_status, UserStatus):
+            new_status = UserStatus.objects.get(id=new_status)
+
+        for status in self.user_status.all():
+            if status.type == new_status.type:
+                self.user_status.remove(status)
+        self.user_status.add(new_status)
 
     def get_unread_count(self):
         return self.unread_messages.exclude(id__in=self.deleted_messages.all()).count()

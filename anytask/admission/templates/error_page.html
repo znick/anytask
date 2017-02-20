@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load index_messages %}
+
+{% block title %}{% trans "Ошибка" %}{% endblock %}
+
+{% block navbar_all %}{% endblock %}
+
+{% block content %}
+    <style>
+        div.card {
+            max-width: 40rem;
+            margin: 0 auto;
+        }
+    </style>
+    <div class="card text-center">
+        <div class="card-block">
+            <h4 class="card-title">{% trans "Ошибка" %}</h4>
+            <p class="card-text">{{ error_text }}</p>
+        </div>
+    </div>
+{% endblock %}
+
+{% block footer_all %}{% endblock %}
+
