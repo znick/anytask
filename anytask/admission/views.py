@@ -66,8 +66,11 @@ def contest_register(user):
         headers={'Authorization': 'OAuth ' + settings.CONTEST_OAUTH})
 
     if 'error' in req.json():
-        logger.error("Cant register user %s to contest %s. Error: %s",
-                     user.username, contest_id, req.json()["error"]["message"])
+        error_message = req.json()["error"]["message"]
+        if error_message == 'User already registered for contest':
+            return contest_id
+
+        logger.error("Cant register user %s to contest %s. Error: %s", user.username, contest_id, error_message)
         return False
     return contest_id
 

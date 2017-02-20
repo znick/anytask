@@ -15,9 +15,12 @@ import datetime
 import hashlib
 import random
 import logging
+import re
+
 
 logger = logging.getLogger('django.request')
 
+SHA1_RE = re.compile('^[a-f0-9]{40}$')
 
 def send_mail_admin(subject, message=None, request=None):
     if not message:
@@ -48,13 +51,13 @@ class AdmissionRegistrationProfileManager(RegistrationManager):
 
         if not users:
             return self.create_inactive_user(username, email, password, send_email), True
-        elif len(users) == 1:
-            return self.update_user(users[0]), False
         elif user_by_username and not (user_by_email | user_by_uid):
             new_username = self.generate_username()
             user = self.create_inactive_user(new_username, email, password, send_email)
             logger.info("Admission: User with email %s was created with generated login %s", user.email, user.username)
             return user, True
+        elif len(users) == 1:
+            return self.update_user(users[0]), False
         else:
             logger.error("Admission: User not created ", username, email, uid)
             send_mail_admin(u'Ошибка поступления', request=request)
@@ -77,14 +80,43 @@ class AdmissionRegistrationProfileManager(RegistrationManager):
                 break
         return username
 
+    def activate_user(self, activation_key):
+        if SHA1_RE.search(activation_key):
+            has_profile = True
+            try:
+                profile = self.get(activation_key=activation_key)
+            except self.model.DoesNotExist:
+                has_profile = False
+            if has_profile and not profile.activation_key_expired():
+                user = profile.user
+                user.is_active = True
+                user.save()
+                profile.activation_key = self.model.ACTIVATED
+                profile.old_activation_key = activation_key
+                profile.save()
+                return user
+            else:
+                return self.get_activated_user(activation_key)
+        return False
+
+    def get_activated_user(self, activation_key):
+        try:
+            profile = self.get(old_activation_key=activation_key)
+        except self.model.DoesNotExist:
+            return False
+        return profile.user
+
 
 class AdmissionRegistrationProfile(RegistrationProfile):
     objects = AdmissionRegistrationProfileManager()
+    old_activation_key = ''
 
     def activation_key_expired(self):
         expiration_date = datetime.datetime.strptime(settings.ADMISSION_DATE_END, "%d.%m.%y %H:%M")
-        return self.activation_key == self.ACTIVATED or \
-               (expiration_date <= datetime.datetime.now())
+        return expiration_date <= datetime.datetime.now()
+
+    def activation_key_activated(self):
+        return self.activation_key == self.ACTIVATED
 
     def send_activation_email(self, site):
         subject = render_to_string('email_activate_subject.txt')
