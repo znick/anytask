@@ -10,7 +10,12 @@ class Migration(SchemaMigration):
     def forwards(self, orm):
         # Adding model 'AdmissionRegistrationProfile'
         db.create_table('admission_admissionregistrationprofile', (
-            ('registrationprofile_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['registration.RegistrationProfile'], unique=True, primary_key=True)),
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
+            ('activation_key', self.gf('django.db.models.fields.CharField')(max_length=40, null=True, blank=True)),
+            ('old_activation_key', self.gf('django.db.models.fields.CharField')(max_length=40, null=True, blank=True)),
+            ('is_updating', self.gf('django.db.models.fields.BooleanField')(default=False)),
+            ('user_info', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
         ))
         db.send_create_signal('admission', ['AdmissionRegistrationProfile'])
 
@@ -22,8 +27,13 @@ class Migration(SchemaMigration):
 
     models = {
         'admission.admissionregistrationprofile': {
-            'Meta': {'object_name': 'AdmissionRegistrationProfile', '_ormbases': ['registration.RegistrationProfile']},
-            'registrationprofile_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['registration.RegistrationProfile']", 'unique': 'True', 'primary_key': 'True'})
+            'Meta': {'object_name': 'AdmissionRegistrationProfile'},
+            'activation_key': ('django.db.models.fields.CharField', [], {'max_length': '40', 'null': 'True', 'blank': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'is_updating': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'old_activation_key': ('django.db.models.fields.CharField', [], {'max_length': '40', 'null': 'True', 'blank': 'True'}),
+            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"}),
+            'user_info': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'})
         },
         'auth.group': {
             'Meta': {'object_name': 'Group'},
@@ -60,12 +70,6 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
-        },
-        'registration.registrationprofile': {
-            'Meta': {'object_name': 'RegistrationProfile'},
-            'activation_key': ('django.db.models.fields.CharField', [], {'max_length': '40'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']", 'unique': 'True'})
         }
     }
 

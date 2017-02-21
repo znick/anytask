@@ -137,11 +137,16 @@ class AdmissionRegistrationProfileManager(RegistrationManager):
         return None
 
 
-class AdmissionRegistrationProfile(RegistrationProfile):
-    objects = AdmissionRegistrationProfileManager()
+class AdmissionRegistrationProfile(models.Model):
+    user = models.ForeignKey(User, unique=False, null=False, blank=False)
+    activation_key = models.CharField(max_length=40, null=True, blank=True)
     old_activation_key = models.CharField(max_length=40, null=True, blank=True)
     is_updating = models.BooleanField(default=False)
     user_info = models.TextField(null=True, blank=True)
+
+    ACTIVATED = u"ALREADY_ACTIVATED"
+
+    objects = AdmissionRegistrationProfileManager()
 
     def activation_key_expired(self):
         expiration_date = datetime.datetime.strptime(settings.ADMISSION_DATE_END, "%d.%m.%y %H:%M")
