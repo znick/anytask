@@ -486,11 +486,16 @@
         });
 
         $('.mark-form').change(function () {
-            $(this).collapse('hide');
-            var mark_value = $($(this).closest('td')).find('.mark-value');
-            $(mark_value).collapse('show');
-            $.post('{% url courses.views.set_course_mark %}', $(this).serialize(), function (data) {
-                $($(mark_value).find('span')).text(data.mark);
+            var $form = $(this);
+            var student_id = $form.closest('td').prop('class');
+            var $mark_cell = $('td.' + student_id);
+
+            $form.collapse('hide');
+            $form.closest('td').find('.mark-value').collapse('show');
+
+            $.post('{% url courses.views.set_course_mark %}', $form.serialize(), function (data) {
+                $mark_cell.find('.mark-value').find('span').text(data.mark);
+                $mark_cell.find('.mark-form').find('select').val(data.mark_id);
             });
         });
 
