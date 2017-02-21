@@ -38,8 +38,6 @@ def send_mail_admin(subject, message=None, request=None):
 
 
 class AdmissionRegistrationProfileManager(RegistrationManager):
-    site = Site.objects.get_current()
-
     def create_or_update_user(self, username, email, password, uid=None, send_email=True, request=None):
         user_by_username = User.objects.filter(username=username)
         user_by_email = User.objects.filter(email=email)
@@ -71,14 +69,15 @@ class AdmissionRegistrationProfileManager(RegistrationManager):
 
     def create_inactive_user(self, username, email, password, send_email=True):
         return super(AdmissionRegistrationProfileManager, self).create_inactive_user(username, email, password,
-                                                                                     self.site, send_email)
+                                                                                     Site.objects.get_current(),
+                                                                                     send_email)
 
     def update_user(self, user):
         registration_profile = self.create_profile(user)
         registration_profile.is_updating = True
         registration_profile.save()
 
-        registration_profile.send_activation_email(self.site, True)
+        registration_profile.send_activation_email(Site.objects.get_current(), True)
 
         return user, registration_profile
 
