@@ -78,8 +78,10 @@
         }
         .card-table{
             overflow: auto;
-            width: 100%;
             position: relative;
+        }
+        .card-table thead tr {
+        background-color: #ffffff;
         }
     </style>
 
@@ -116,7 +118,7 @@
                                                 <div class="card-table">
                                                     <table class="table table_courses">
                                                         <thead>
-                                                        <tr style="background-color: #ffffff;">
+                                                        <tr>
                                                             <th><div class="text-arrow">{%  trans "Курс" %}</div></th>
                                                             <th><div class="text-arrow">{%  trans "Суммарный балл" %}</div></th>
                                                             <th><div class="text-arrow">{%  trans "Итоговая оценка" %}</div></th>
