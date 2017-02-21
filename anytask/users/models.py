@@ -50,7 +50,7 @@ class UserStatus(models.Model):
 
 
     TYPE_STATUSES = (
-        (TYPE_ACTIVITY, _(u'Статус студента')),
+        (TYPE_ACTIVITY, _(u'status_studenta')),
         # (TYPE_EDUCATION_FORM, _(u'Форма обучения')),
     )
 
@@ -162,15 +162,15 @@ class UserProfileLog(models.Model):
 
 class UserProfileFilter(django_filters.FilterSet):
     # user_status_education_form = django_filters.ChoiceFilter(label=_(u'<strong>Форма обучения</strong>'), name='user_status')
-    user_status = django_filters.ChoiceFilter(label=u'<strong>{0}</strong>'.format(_(u'Статус студента')), name='user_status')
+    user_status = django_filters.ChoiceFilter(label=u'<strong>{0}</strong>'.format(_(u'status_studenta')), name='user_status')
 
     def set(self):
         activity_choices = [(status.id, status.name) for status in UserStatus.objects.filter(type='activity')]
-        activity_choices.insert(0, (u'', _(u'Любой')))
+        activity_choices.insert(0, (u'', _(u'luboj')))
         self.filters['user_status'].field.choices = tuple(activity_choices)
 
         # education_form_choices = [(status.id, _(status.name)) for status in UserStatus.objects.filter(type='education_form')]
-        # education_form_choices.insert(0, (u'', _(u'Любой')))
+        # education_form_choices.insert(0, (u'', _(u'luboj')))
         # self.filters['user_status_education_form'].field.choices = tuple(education_form_choices)
 
     class Meta:
@@ -178,12 +178,12 @@ class UserProfileFilter(django_filters.FilterSet):
         fields = ['user_status']
 
 class IssueFilterStudent(django_filters.FilterSet):
-    is_active = django_filters.ChoiceFilter(label=u'<strong>{0}</strong>'.format(_(u'Тип курса')), name='task__course__is_active')
-    years = django_filters.MultipleChoiceFilter(label=u'<strong>{0}</strong>'.format(_(u'Год курса')), name='task__course__year', widget=forms.CheckboxSelectMultiple)
-    courses = django_filters.MultipleChoiceFilter(label=u'<strong>{0}</strong>'.format(_(u'Курс')), name='task__course', widget=forms.SelectMultiple)
-    responsible = django_filters.MultipleChoiceFilter(label=u'<strong>{0}</strong>'.format(_(u'Преподаватели')), widget=forms.SelectMultiple)
-    status_field = django_filters.MultipleChoiceFilter(label=u'<strong>{0}</strong>'.format(_(u'Статус')), widget=forms.SelectMultiple)
-    update_time = django_filters.DateRangeFilter(label=u'<strong>{0}</strong>'.format(_(u'Дата последнего изменения')))
+    is_active = django_filters.ChoiceFilter(label=u'<strong>{0}</strong>'.format(_(u'tip_kursa')), name='task__course__is_active')
+    years = django_filters.MultipleChoiceFilter(label=u'<strong>{0}</strong>'.format(_(u'god_kursa')), name='task__course__year', widget=forms.CheckboxSelectMultiple)
+    courses = django_filters.MultipleChoiceFilter(label=u'<strong>{0}</strong>'.format(_(u'kurs')), name='task__course', widget=forms.SelectMultiple)
+    responsible = django_filters.MultipleChoiceFilter(label=u'<strong>{0}</strong>'.format(_(u'prepodavateli')), widget=forms.SelectMultiple)
+    status_field = django_filters.MultipleChoiceFilter(label=u'<strong>{0}</strong>'.format(_(u'status')), widget=forms.SelectMultiple)
+    update_time = django_filters.DateRangeFilter(label=u'<strong>{0}</strong>'.format(_(u'data_poslednego_izmenenija')))
 
     def set_user(self, user):
         groups = user.group_set.all()
@@ -203,9 +203,9 @@ class IssueFilterStudent(django_filters.FilterSet):
             for status in course.issue_status_system.statuses.all():
                 status_set.add(status)
 
-        self.filters['is_active'].field.choices = ((u'', _(u'Любой')),
-                                                   (1, _(u'Активный')),
-                                                   (0, _(u'Архив')))
+        self.filters['is_active'].field.choices = ((u'', _(u'luboj')),
+                                                   (1, _(u'aktivnyj')),
+                                                   (0, _(u'arhiv')))
         self.filters['years'].field.choices = tuple(year_choices)
         self.filters['courses'].field.choices = tuple(course_choices)
 

@@ -2,15 +2,15 @@
 {% load i18n %}
 <html>
     <head>
-        <title>{% trans "Инвайты" %}</title>
+        <title>{% trans "invajty" %}</title>
     </head>
     <body>
-        {% trans "Инвайт на Anytask" %}
+        {% trans "invajt_na_anytask" %}
         {% if group %}
-                {% trans "для" %} {{ group.name }}
+                {% trans "dlja" %} {{ group.name }}
         {% endif %}
     <br/>
-    {% trans "Действителен до " %}{{ invite_expired_date }}
+    {% trans "dejstvitelen_do" %} {{ invite_expired_date }}
         <pre>
             {% for invite in invites %}
 {{ invite }}

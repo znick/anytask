@@ -24,27 +24,27 @@
     <ul class="nav navbar-nav">
         {%  if user_to_show == user %}
             <li class="nav-item">
-                <a class="nav-link" href="{% url users.views.profile %}">{%  trans "Профиль" %}</a>
+                <a class="nav-link" href="{% url users.views.profile %}">{%  trans "profil" %}</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{% url users.views.my_tasks %}">{%  trans "Мои задачи" %}</a>
+                <a class="nav-link" href="{% url users.views.my_tasks %}">{%  trans "moi_zadachi" %}</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link active" href="">{%  trans "Мои курсы" %}</a>
+                <a class="nav-link active" href="">{%  trans "moi_kursy" %}</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{% url users.views.profile_settings %}">{%  trans "Настройки" %}</a>
+                <a class="nav-link" href="{% url users.views.profile_settings %}">{%  trans "nastrojki" %}</a>
             </li>
         {% else %}
             <li class="nav-item">
-                <a class="nav-link" href="{% url users.views.profile user_to_show %}">{%  trans "Профиль студента" %}</a>
+                <a class="nav-link" href="{% url users.views.profile user_to_show %}">{%  trans "profil_studenta" %}</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link active" href="">{%  trans "Курсы студента" %}</a>
+                <a class="nav-link active" href="">{%  trans "kursy_studenta" %}</a>
             </li>
             {% if user.is_staff %}
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url users.views.profile_history user_to_show %}">{%  trans "Редактирование статусов" %}</a>
+                    <a class="nav-link" href="{% url users.views.profile_history user_to_show %}">{%  trans "redaktirovanie_statusov" %}</a>
                 </li>
             {% endif %}
         {% endif %}
@@ -77,14 +77,14 @@
                         <div class="card">
                             <div class="card-header" >
                                 {% if tables|exist:forloop.counter0 %}
-                                    <a class="close switch-tab" href="#{% if forloop.first %}course_list_archive{% else %}course_list{% endif %}" role="tab" title='{% if forloop.first %}{%  trans "Активные" %}{% else %}{%  trans "Архив" %}{% endif %}'>
+                                    <a class="close switch-tab" href="#{% if forloop.first %}course_list_archive{% else %}course_list{% endif %}" role="tab" title='{% if forloop.first %}{%  trans "aktivnye" %}{% else %}{%  trans "arhiv" %}{% endif %}'>
                                         <i class="fa {% if forloop.first %}fa-file-archive-o{% else %}fa-file-text-o{% endif %}" aria-hidden="true"></i>
                                     </a>
                                 {% endif %}
                                 <h5 class="card-title">
-                                    {%  if user_to_show != user %}{%  trans "Текущая успеваемость" %} {{ user_to_show.get_full_name }}
-                                    {% else %}{%  trans "Мои курсы" %}{% endif %}
-                                    {% if not forloop.first %}({%  trans "Архив" %}){% endif %}
+                                    {%  if user_to_show != user %}{%  trans "tekushaja_uspevaemost" %} {{ user_to_show.get_full_name }}
+                                    {% else %}{%  trans "moi_kursy" %}{% endif %}
+                                    {% if not forloop.first %}({%  trans "arhiv" %}){% endif %}
                                 </h5>
                                 <ul class="nav nav-pills" role="tablist">
                                     {% for year, _ in table %}
@@ -102,12 +102,12 @@
                                                 <table class="table table_courses">
                                                     <thead>
                                                     <tr style="background-color: #ffffff;">
-                                                        <th>{%  trans "Курс" %}<i class="fa fa-fw fa-sort"></i></th>
+                                                        <th>{%  trans "kurs" %}<i class="fa fa-fw fa-sort"></i></th>
                                                         {% for status, sum in course_statistics.0.issues_count %}
                                                             <th>{{ status.name }}<i class="fa fa-fw fa-sort"></i></th>
                                                         {% endfor %}
-                                                        <th>{%  trans "Всего задач" %}<i class="fa fa-fw fa-sort"></i></th>
-                                                        <th>{%  trans "Итоговая оценка" %}<i class="fa fa-fw fa-sort"></i></th>
+                                                        <th>{%  trans "vsego_zadach" %}<i class="fa fa-fw fa-sort"></i></th>
+                                                        <th>{%  trans "itogovaja_ocenka" %}<i class="fa fa-fw fa-sort"></i></th>
                                                     </tr>
                                                     </thead>
                                                     <tbody>
@@ -138,9 +138,9 @@
     {% else %}
         <div class="card">
             <div class="card-block">
-                <h5 class="card-title"> {%  if user_to_show != user %} {%  trans "Текущая успеваемость" %} {{ user_to_show.get_full_name }}
-                {% else %}{%  trans "Мои курсы" %}{% endif %}</h5>
-                <p class="card-text">{%  trans "Нет ни одного курса" %}</p>
+                <h5 class="card-title"> {%  if user_to_show != user %} {%  trans "tekushaja_uspevaemost" %} {{ user_to_show.get_full_name }}
+                {% else %}{%  trans "moi_kursy" %}{% endif %}</h5>
+                <p class="card-text">{%  trans "net_kursov" %}</p>
             </div>
         </div>
     {% endif %}

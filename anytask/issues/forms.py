@@ -142,7 +142,7 @@ class IntForm(DefaultForm):
 
 class MarkForm(DefaultForm):
     float_field_attrs = {
-        'placeholder': _(u'Формат: 5.31, 14')
+        'placeholder': _(u'format14')
     }
     mark = forms.FloatField(label='',
                             widget=forms.TextInput(attrs=float_field_attrs),

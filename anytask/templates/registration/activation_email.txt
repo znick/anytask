@@ -1,11 +1,11 @@
 {% load i18n %}
 
-{% trans "Для активации аккаунта на AnyTask перейдите по ссылке" %}
+{% trans "activacia_akkaunta" %}
 
 http://{{ site }}/accounts/activate/{{ activation_key }}
 
-{% trans "Ссылка действительна в течение" %} {{ expiration_days }} {% trans "дней" %}.
+{% trans "ssilka_dejstvitelna" %} {{ expiration_days }} {% trans "dnej" %}.
 
 --
-{% trans "С уважением," %},
-{% trans "команда Anytask." %}
+{% trans "s_uvazheniem" %},
+{% trans "komanda_anytask" %}.

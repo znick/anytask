@@ -19,9 +19,9 @@
             },
             includeSelectAllOption: true,
             enableCaseInsensitiveFiltering: true,
-            filterPlaceholder: '{% trans "Найти..." %}',
-            selectAllText: '{% trans "Все" %}',
-            allSelectedText: '{% trans "Все" %}',
+            filterPlaceholder: '{% trans "najti" %}',
+            selectAllText: '{% trans "vse" %}',
+            allSelectedText: '{% trans "vse" %}',
             maxHeight: 200,
             buttonContainer: '<div style="width:100%;" class="multiselect-dropdown"/>',
             buttonWidth: '100%',
@@ -32,7 +32,7 @@
                     return '---';
                 }
                 else if (options.length === $('option', select).length) {
-                    return '{% trans "Все" %}';
+                    return '{% trans "vse" %}';
                 }
                 else {
                     options.each(function () {
@@ -46,7 +46,7 @@
                     return '---';
                 }
                 else if (options.length === $('option', select).length) {
-                    return '{% trans "Все" %}';
+                    return '{% trans "vse" %}';
                 }
                 else {
                     var labels = [];

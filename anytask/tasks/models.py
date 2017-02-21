@@ -38,9 +38,9 @@ class Task(models.Model):
     TYPE_SIMPLE = 'Only mark'
     TYPE_SEMINAR = 'Seminar'
     TASK_TYPE_CHOICES = (
-        (TYPE_FULL, _(u'с обсуждением')),
-        (TYPE_SIMPLE, _(u'только оценка')),
-        (TYPE_SEMINAR, _(u'семинар')),
+        (TYPE_FULL, _(u's_obsuzhdeniem')),
+        (TYPE_SIMPLE, _(u'tolko_ocenka')),
+        (TYPE_SEMINAR, _(u'seminar')),
     )
     type = models.CharField(db_index=False, max_length=128, choices=TASK_TYPE_CHOICES, default=TYPE_FULL)
 
@@ -196,8 +196,8 @@ class TaskLog(models.Model):
     TYPE_FULL = 'All'
     TYPE_SIMPLE = 'Only mark'
     TASK_TYPE_CHOICES = (
-        (TYPE_FULL, _(u'с обсуждением')),
-        (TYPE_SIMPLE, _(u'только оценка')),
+        (TYPE_FULL, _(u's_obsuzhdeniem')),
+        (TYPE_SIMPLE, _(u'tolko_ocenka')),
     )
     type = models.CharField(db_index=False, max_length=128, choices=TASK_TYPE_CHOICES, default=TYPE_FULL)
 

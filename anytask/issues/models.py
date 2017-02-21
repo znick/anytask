@@ -73,12 +73,12 @@ class Issue(models.Model):
     STATUS_ACCEPTED = IssueStatus.STATUS_ACCEPTED
 
     ISSUE_STATUSES = (
-        (STATUS_NEW, _(u'Новый')),
-        (STATUS_REWORK, _(u'На доработке')),
-        (STATUS_VERIFICATION, _(u'На проверке')),
-        (STATUS_ACCEPTED, _(u'Зачтено')),
-        (STATUS_AUTO_VERIFICATION, _(u'На автоматической проверке')),
-        (STATUS_NEED_INFO, _(u'Требуется информация')),
+        (STATUS_NEW, _(u'novyj')),
+        (STATUS_REWORK, _(u'na_dorabotke')),
+        (STATUS_VERIFICATION, _(u'na_proverke')),
+        (STATUS_ACCEPTED, _(u'zachteno')),
+        (STATUS_AUTO_VERIFICATION, _(u'na_avtomaticheskoj_proverke')),
+        (STATUS_NEED_INFO, _(u'trebuetsja_informacija')),
     )
 
     status = models.CharField(max_length=20, choices=ISSUE_STATUSES, default=STATUS_NEW)
@@ -276,11 +276,11 @@ class Issue(models.Model):
                                 contest_submission = self.contestsubmission_set.create(issue=self, author=author, file=uploaded_file)
                                 sent = contest_submission.upload_contest(ext, compiler_id=value['compilers'][file_id])
                                 if sent:
-                                    value['comment'] += u"<p>{0}</p>".format(_(u'Отправлено на проверку в Я.Контест'))
+                                    value['comment'] += u"<p>{0}</p>".format(_(u'otpravleno_v_kontest'))
                                     if self.status_field.tag != IssueStatus.STATUS_ACCEPTED:
                                         self.set_status_by_tag(IssueStatus.STATUS_AUTO_VERIFICATION)
                                 else:
-                                    value['comment'] += u"<p>{0}('{1}')</p>".format(_(u'Ошибка отправки в Я.Контест'),
+                                    value['comment'] += u"<p>{0}('{1}')</p>".format(_(u'oshibka_otpravki_v_kontest'),
                                                                                      contest_submission.send_error)
                                     self.followers.add(User.objects.get(username='anytask.monitoring'))
                                 break
@@ -295,7 +295,7 @@ class Issue(models.Model):
                                     value['comment'] += u'<p><a href="{1}/r/{0}">Review request {0}</a></p>'. \
                                         format(review_request_id,settings.RB_API_URL)
                                 else:
-                                    value['comment'] += u'<p>{0}</p>'.format(_(u'Ошибка отправки в Review Board'))
+                                    value['comment'] += u'<p>{0}</p>'.format(_(u'oshibka_otpravki_v_rb'))
                                     self.followers.add(User.objects.get(username='anytask.monitoring'))
                                 break
 
@@ -464,22 +464,22 @@ class Event(models.Model):
 
 
 class IssueFilter(django_filters.FilterSet):
-    status_field = django_filters.MultipleChoiceFilter(label=u'<strong>{0}</strong>'.format(_(u'Статус')), widget=forms.SelectMultiple)
-    update_time = django_filters.DateRangeFilter(label=u'<strong>{0}</strong>'.format(_(u'Дата последнего изменения')))
-    responsible = django_filters.ChoiceFilter(label=u'<strong>{0}</strong>'.format(_(u'Проверяющий')))
-    followers = django_filters.MultipleChoiceFilter(label=u'<strong>{0}</strong>'.format(_(u'Наблюдатели')), widget=forms.SelectMultiple)
-    task = django_filters.ChoiceFilter(label=u'<strong>{0}</strong>'.format(_(u'Задача')))
+    status_field = django_filters.MultipleChoiceFilter(label=u'<strong>{0}</strong>'.format(_(u'status')), widget=forms.SelectMultiple)
+    update_time = django_filters.DateRangeFilter(label=u'<strong>{0}</strong>'.format(_(u'data_poslednego_izmenenija')))
+    responsible = django_filters.ChoiceFilter(label=u'<strong>{0}</strong>'.format(_(u'proverjaushij')))
+    followers = django_filters.MultipleChoiceFilter(label=u'<strong>{0}</strong>'.format(_(u'nabludateli')), widget=forms.SelectMultiple)
+    task = django_filters.ChoiceFilter(label=u'<strong>{0}</strong>'.format(_(u'zadacha')))
 
     def set_course(self, course):
         teacher_choices = [(teacher.id, teacher.get_full_name()) for teacher in course.get_teachers()]
-        teacher_choices.insert(0, (u'', _(u'Любой')))
+        teacher_choices.insert(0, (u'', _(u'luboj')))
         self.filters['responsible'].field.choices = tuple(teacher_choices)
 
         teacher_choices.pop(0)
         self.filters['followers'].field.choices = tuple(teacher_choices)
 
         task_choices = [(task.id, task.title) for task in Task.objects.all().filter(course=course)]
-        task_choices.insert(0, (u'', _(u'Любая')))
+        task_choices.insert(0, (u'', _(u'lubaja')))
         self.filters['task'].field.choices = tuple(task_choices)
 
         status_choices = [(status.id, status.name) for status in course.issue_status_system.statuses.all()]

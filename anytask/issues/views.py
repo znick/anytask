@@ -83,12 +83,12 @@ def contest_rejudge(issue):
                                                             file=file_copy)
     sent = contest_submission.upload_contest(compiler_id=old_contest_submission.compiler_id)
     if sent:
-        event.value = u"<p>{0}</p>".format(_(u'Отправлено на проверку в Я.Контест'))
+        event.value = u"<p>{0}</p>".format(_(u'otpravleno_v_kontest'))
         if issue.status_field.tag != IssueStatus.STATUS_ACCEPTED:
             issue.set_status_by_tag(IssueStatus.STATUS_AUTO_VERIFICATION)
     else:
         event.value = u"<p>{1}('{0}').</p>".format(
-            contest_submission.send_error, _(u'Ошибка отправки в Я.Контест'))
+            contest_submission.send_error, _(u'oshibka_otpravki_v_kontest'))
         issue.followers.add(User.objects.get(username='anytask.monitoring'))
 
     if issue.task.rb_integrated and issue.task.course.send_rb_and_contest_together:
@@ -101,7 +101,7 @@ def contest_rejudge(issue):
                     event.value += u'<p><a href="{1}/r/{0}">Review request {0}</a></p>'. \
                         format(review_request_id, settings.RB_API_URL)
                 else:
-                    event.value += u'<p>{0}.</p>'.format(_(u'Ошибка отправки в Review Board'))
+                    event.value += u'<p>{0}.</p>'.format(_(u'oshibka_otpravki_v_rb'))
                     issue.followers.add(User.objects.get(username='anytask.monitoring'))
                 break
 
