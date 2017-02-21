@@ -1,8 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% load index_messages %}
 
-{% block title %}{% trans "Ошибка" %}{% endblock %}
+{% block title %}{{ info_title }}{% endblock %}
 
 {% block navbar_all %}{% endblock %}
 
@@ -15,8 +14,8 @@
     </style>
     <div class="card text-center">
         <div class="card-block">
-            <h4 class="card-title">{% trans "Ошибка" %}</h4>
-            <p class="card-text">{{ error_text }}</p>
+            <h4 class="card-title">{{ info_title }}</h4>
+            <p class="card-text">{{ info_text }}</p>
         </div>
     </div>
 {% endblock %}

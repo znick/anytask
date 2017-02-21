@@ -75,6 +75,8 @@ class UserProfile(models.Model):
 
     info = models.TextField(default="", blank=True, null=True)
 
+    phone = models.CharField(max_length=128, null=True, blank=True)
+
     unit = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
     position = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
     academic_degree = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)

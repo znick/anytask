@@ -21,6 +21,22 @@ def get_post_value(post_data, key):
     return json.loads(post_data[key])['value']
 
 
+def set_user_info(user, user_info):
+    user.first_name = user_info['first_name']
+    user.last_name = user_info['last_name']
+    user.save()
+
+    user_profile = user.get_profile()
+    user_profile.set_status(settings.FILIAL_STATUSES[user_info['filial']])
+    user_profile.set_status(settings.ENROLLEE_STATUS)
+    user_profile.phone = user_info['phone']
+    user_profile.ya_passport_uid = user_info['uid']
+    user_profile.ya_contest_uid = user_info['uid']
+    if not user_info['is_updating']:
+        user_profile.login_via_yandex = True
+    user_profile.save()
+
+
 @csrf_exempt
 @require_POST
 def register(request):
@@ -32,27 +48,23 @@ def register(request):
     username = request.META['HTTP_LOGIN']
     email = get_post_value(post_data, settings.YA_FORMS_FIELDS['email'])
     password = None
-    new_user, is_created = AdmissionRegistrationProfile.objects.create_or_update_user(username, email, password,
-                                                                                      request=request)
+    new_user, registration_profile = AdmissionRegistrationProfile.objects.create_or_update_user(username, email,
+                                                                                                password,
+                                                                                                request=request)
     if new_user is not None:
-        last_name = get_post_value(post_data, settings.YA_FORMS_FIELDS['last_name'])
-        first_name = get_post_value(post_data, settings.YA_FORMS_FIELDS['first_name'])
-        new_user.first_name = first_name
-        new_user.last_name = last_name
-        new_user.save()
+        user_info = {
+            'last_name': get_post_value(post_data, settings.YA_FORMS_FIELDS['last_name']),
+            'first_name': get_post_value(post_data, settings.YA_FORMS_FIELDS['first_name']),
+            'phone': get_post_value(post_data, settings.YA_FORMS_FIELDS['phone']),
+            'filial': get_post_value(post_data, settings.YA_FORMS_FIELDS['filial']),
+            'uid': request.META['HTTP_UID'],
+            'is_updating': True if registration_profile else False
+        }
 
-        new_user_profile = new_user.get_profile()
-        new_user_profile.set_status(
-            settings.FILIAL_STATUSES[get_post_value(post_data, settings.YA_FORMS_FIELDS['filial'])]
-        )
-        new_user_profile.set_status(settings.ENROLLEE_STATUS)
-        if is_created:
-            new_user_profile.login_via_yandex = True
-        if not new_user_profile.ya_passport_uid:
-            new_user_profile.ya_passport_uid = request.META['HTTP_UID']
-        if not new_user_profile.ya_contest_uid:
-            new_user_profile.ya_contest_uid = request.META['HTTP_UID']
-        new_user_profile.save()
+        if user_info['is_updating']:
+            registration_profile.user_info = json.dumps(user_info)
+        else:
+            set_user_info(new_user, user_info)
 
     return HttpResponse("OK")
 
@@ -68,24 +80,50 @@ def contest_register(user):
     if 'error' in req.json():
         error_message = req.json()["error"]["message"]
         if error_message == 'User already registered for contest':
+            logger.info("Activate user - %s %s", user.username, error_message)
             return contest_id
 
-        logger.error("Cant register user %s to contest %s. Error: %s", user.username, contest_id, error_message)
+        logger.error("Activate user - Cant register user %s to contest %s. Error: %s", user.username, contest_id,
+                     error_message)
         return False
     return contest_id
 
 
 @require_GET
 def activate(request, activation_key):
-    context = {}
-    user = AdmissionRegistrationProfile.objects.activate_user(activation_key)
+    context = {'info_title': _(u'Ошибка')}
+    user, user_info = AdmissionRegistrationProfile.objects.activate_user(activation_key)
     if user:
+        if user_info:
+            set_user_info(user, json.loads(user_info))
+
         contest_id = contest_register(user)
         if contest_id:
             return HttpResponsePermanentRedirect(settings.CONTEST_URL + contest_id)
         else:
-            context['error_text'] = _(u'Ошибка регистрации в Яндекс.Контесте.')
+            context['info_text'] = _(u'Ошибка регистрации в Яндекс.Контесте.')
     else:
-        context['error_text'] = _(u'Неверный код активации.')
+        context['info_text'] = _(u'Неверный код активации.')
 
-    return render_to_response('error_page.html', context, context_instance=RequestContext(request))
+    return render_to_response('info_page.html', context, context_instance=RequestContext(request))
+
+
+@require_GET
+def decline(request, activation_key):
+    try:
+        registration_profile = AdmissionRegistrationProfile.objects.decline_user(activation_key)
+
+        if registration_profile:
+            logger.info("Decline user - user %s requests deletion. Activation key %s",
+                        registration_profile.user.username, registration_profile.activation_key)
+        else:
+            logger.warning("Decline user - wrong activation key %s", activation_key)
+    except Exception as e:
+        logger.error("Decline user - %s", e)
+
+    context = {
+        'info_title': _(u'Спасибо'),
+        'info_text': _(u'Информация о Вас была удалена.'),
+    }
+
+    return render_to_response('info_page.html', context, context_instance=RequestContext(request))
