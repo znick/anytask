@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.utils.translation import ugettext as _
+from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST, require_GET
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponsePermanentRedirect
@@ -63,6 +64,7 @@ def register(request):
 
         if user_info['is_updating']:
             registration_profile.user_info = json.dumps(user_info)
+            registration_profile.save()
         else:
             set_user_info(new_user, user_info)
 
@@ -89,6 +91,7 @@ def contest_register(user):
     return contest_id
 
 
+@never_cache
 @require_GET
 def activate(request, activation_key):
     context = {'info_title': _(u'Ошибка')}
@@ -108,6 +111,7 @@ def activate(request, activation_key):
     return render_to_response('info_page.html', context, context_instance=RequestContext(request))
 
 
+@never_cache
 @require_GET
 def decline(request, activation_key):
     try:

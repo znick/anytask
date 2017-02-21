@@ -3,7 +3,7 @@
 from django.db import models
 from django.conf import settings
 from django.contrib.sites.models import Site
-from registration.models import RegistrationProfile, RegistrationManager
+from registration.models import RegistrationManager
 from django.template.loader import render_to_string
 from django.db.models import Q
 from django.core.mail import send_mail
@@ -58,7 +58,7 @@ class AdmissionRegistrationProfileManager(RegistrationManager):
             logger.info("Admission: User %s was created", user.username)
         elif user_by_username and not (user_by_email | user_by_uid):
             new_username = self.generate_username()
-            user = self.create_inactive_user(new_username, email, password, send_email),
+            user = self.create_inactive_user(new_username, email, password, send_email)
             logger.info("Admission: User with email %s was created with generated login %s", user.email, user.username)
         elif len(user_by_email | user_by_uid) == 1:
             user, registration_profile = self.update_user(user_by_email[0])
