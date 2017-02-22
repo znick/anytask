@@ -12,7 +12,8 @@ from django.core.files.base import ContentFile
 from django.utils.translation import ugettext as _
 
 
-from users.models import UserProfile, UserProfileLog, UserStatus, IssueFilterStudent, UserProfileFilter
+from users.models import UserProfile, UserProfileLog, UserStatus
+from issues.model_issue_student_filter import IssueFilterStudent
 from django.contrib.auth.models import User
 from tasks.models import TaskTaken
 from years.models import Year

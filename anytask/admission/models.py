@@ -10,6 +10,7 @@ from django.core.mail import send_mail
 from mail.common import send_mass_mail_html
 
 from django.contrib.auth.models import User
+from users.models import UserProfile
 
 import datetime
 import hashlib
@@ -41,8 +42,6 @@ class AdmissionRegistrationProfileManager(RegistrationManager):
     def create_or_update_user(self, username, email, password, uid=None, send_email=True, request=None):
         user_by_username = User.objects.filter(username=username)
         user_by_email = User.objects.filter(email=email)
-
-        from users.models import UserProfile
 
         if uid:
             user_by_uid = [u_p.user for u_p in
