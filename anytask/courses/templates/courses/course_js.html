@@ -49,6 +49,9 @@
          return $.trim($(td).text());
     };
 
+     $.fn.dataTable.ext.type.order['dom-number-title'] = function (td) {
+         return parseFloat($('span', td).title());
+    };
 
     $.fn.dataTable.ext.type.search.selectText = function (data) {
         return !data ? '' : $('select option:selected', $(data)).text()
@@ -291,7 +294,7 @@
                     },
                     {
                         "targets": "dom-select-text",
-                        "orderDataType": "dom-select",
+                        "orderDataType": "dom-number-title",
                         "type": "selectText",
                     },
                 ],

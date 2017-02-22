@@ -362,13 +362,14 @@ def tasklist_shad_cpp(request, course, seminar=None, group=None):
             elif not course.user_can_see_transcript(user, student):
                 continue
 
-            mark_id, course_mark = get_course_mark(course, group, student)
+            mark_id, course_mark, course_mark_int = get_course_mark(course, student)
 
             group_x_student_information[group].append((student,
                                                        student_x_task_x_task_takens[student][0],
                                                        student_x_task_x_task_takens[student][1],
                                                        mark_id,
-                                                       course_mark))
+                                                       course_mark,
+                                                       course_mark_int))
 
     context = {
         'course': course,
@@ -396,19 +397,21 @@ def get_tasklist_context(request, course):
     return tasklist_shad_cpp(request, course)
 
 
-def get_course_mark(course, group, student):
+def get_course_mark(course, student):
     mark_id = -1
     course_mark = '--'
+    course_mark_int = -1
 
     try:
         student_course_mark = StudentCourseMark.objects.get(course=course, student=student)
         if student_course_mark.mark:
             mark_id = student_course_mark.mark.id
             course_mark = unicode(student_course_mark)
+            course_mark_int = student_course_mark.get_int
     except StudentCourseMark.DoesNotExist:
         pass
 
-    return mark_id, course_mark
+    return mark_id, course_mark, course_mark_int
 
 
 def courses_list(request, year=None):
