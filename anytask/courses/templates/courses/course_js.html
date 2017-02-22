@@ -215,7 +215,7 @@
 {#        $("#tasks-table").DataTable();#}
 
         var table_min_height = '30vh';
-        $(".table_results").each(function (i) {
+        $(".table-results").each(function (i) {
             var t = $(this).DataTable({
                 scrollY: table_min_height,
                 scrollX: true,
@@ -303,7 +303,7 @@
                     $(".zui-wrapper").show();
                     $(".btn-table-fullscreen").css('display', 'table-cell');
                     $(".btn-table-edit").css('display', 'table-cell');
-                    $(".loading_table_img").hide();
+                    $(".loading-table-img").hide();
                 },
                 autoWidth: false,
                 colReorder: {
@@ -369,7 +369,7 @@
                     'height': '100%'
                 });
                 $('.dataTables_scrollBody', card).css('max-height',
-                        card.height() - $('.table_results thead', card).height() - 90 + 'px');
+                        card.height() - $('.table-results thead', card).height() - 90 + 'px');
                 $($(this).attr('for')).DataTable().draw();
             }
             else {
@@ -385,7 +385,7 @@
             }
         });
 
-        $('.table_results th a').click(function (e) {
+        $('.table-results th a').click(function (e) {
             e.stopPropagation();
         });
 

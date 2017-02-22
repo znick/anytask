@@ -26,24 +26,22 @@
         {% endif %}
 
         $("#task_edit_hidden_task").change(function () {
-            $('#task_edit_label_for_changed_task').toggle();
-            toggle_inputs($('#task_edit_label_for_changed_task'));
+            var $task_edit_label_for_changed_task = $('#task_edit_label_for_changed_task');
+            $task_edit_label_for_changed_task.toggle();
+            toggle_inputs($task_edit_label_for_changed_task);
         });
 
         $('#task_edit_rb_integrated').change(function() {
             if ($(this).is(':checked')) {
-                $("#task_edit_one_file_upload").closest('div.form-group').collapse('show');
-                $('#task_edit_one_file_upload').show();
+                $("#task_edit_one_file_upload").show().closest('div.form-group').collapse('show');
             }
             else {
-                $("#task_edit_one_file_upload").closest('div.form-group').collapse('hide');
-                $('#task_edit_one_file_upload').hide();
+                $("#task_edit_one_file_upload").hide().closest('div.form-group').collapse('hide');
             }
         });
 
         $("#task_edit_one_file_upload").closest('div.form-group').on('show.bs.collapse hide.bs.collapse', function(e) {
-            $('#task_edit_rb_integrated').attr('disabled', 'disabled');
-            $('#task_edit_rb_integrated').css('cursor', 'default');
+            $('#task_edit_rb_integrated').attr('disabled', 'disabled').css('cursor', 'default');
         }).on('shown.bs.collapse hidden.bs.collapse', function(e) {
             $('#task_edit_rb_integrated').removeAttr('disabled');
         });
@@ -52,7 +50,7 @@
             $('#get_tasks').show();
             $('#task_contest_body').hide();
             $('#task_contest_id_editable').show();
-            $('#task_contest_id_readonly').hide();
+            $('#task_contest_id_readonly').addClass('hidden');
             $('#task_group').removeClass('need-validate');
             $('#contest_problems').empty();
             $('#task_contest_id').removeAttr("readonly");
@@ -95,7 +93,7 @@
                     }
                     $('#task_contest_body').show();
                     $('#task_contest_id_editable').hide();
-                    $('#task_contest_id_readonly').show();
+                    $('#task_contest_id_readonly').removeClass('hidden');
                     $('#task_group').addClass('need-validate');
                     $('#task_contest_id_readonly').find('input').val($('#task_contest_id').val());
                     $('#task_contest_id').hide();
@@ -126,7 +124,7 @@
 
         $('#task_edit_get_deadline_from_contest').change(function(){
             if ( $('#task_edit_datepicker').prop('disabled') ){
-                $('#task_edit_datepicker').prop('disabled', false).css("background-color", "white");
+                $('#task_edit_datepicker').prop('disabled', false);
                 $('.task_datetime').datetimepicker({
                     format: 'dd-mm-yyyy hh:ii',
                     language: "ru",
@@ -142,7 +140,7 @@
                 $('#task_edit_datepicker').prop('disabled', true).val('').closest('.form-group').removeClass('has-success has-danger');
                 $('#task_edit_datepicker_error_text').text('');
                 $('.task_datetime').datetimepicker('remove');
-                $('#task_edit_datepicker').css("background-color", "#eceeef");
+{#                $('#task_edit_datepicker').css("background-color", "#eceeef");#}
             }
         });
 
@@ -230,7 +228,7 @@
                             }
                             $('#task_contest_body').show();
                             $('#task_contest_id_editable').hide();
-                            $('#task_contest_id_readonly').show();
+                            $('#task_contest_id_readonly').removeClass('hidden');
                             $('#task_contest_id_readonly').find('input').val($('#task_contest_id').val());
                             $('#task_contest_id').hide();
                             $('#task_group').addClass('need-validate');
@@ -252,7 +250,7 @@
                             $('#get_tasks').show();
                             $('#task_contest_body').hide();
                             $('#task_contest_id_editable').show();
-                            $('#task_contest_id_readonly').hide();
+                            $('#task_contest_id_readonly').addClass('hidden');
                             $('#task_group').removeClass('need-validate');
                             $('#task_contest_id').show();
                             $('#contest_problems').empty();
@@ -313,11 +311,12 @@
                 else {
                     var labels = [];
                     options.each(function() {
-                        if ($(this).attr('label') !== undefined) {
-                            labels.push($(this).attr('label'));
+                        var $this = $(this)
+                        if ($this.attr('label') !== undefined) {
+                            labels.push($this.attr('label'));
                         }
                         else {
-                            labels.push($(this).text());
+                            labels.push($this.text());
                         }
                     });
                     return labels.join(', ') + '';
@@ -353,10 +352,11 @@
 
     function toggle_inputs($div) {
         $("input, select, textarea", $div).each(function () {
-            if ($(this).is(':disabled'))
-                $(this).prop('disabled', false);
+            var $this= $(this);
+            if ($this.is(':disabled'))
+                $this.prop('disabled', false);
             else
-                $(this).prop('disabled', true);
+                $this.prop('disabled', true);
         });
     }
 

@@ -4,154 +4,45 @@
 {% load task_taken_func %}
 
 {% block scripts %}
+    <link href="{{ STATIC_URL }}shad_cpp.css" rel='stylesheet'/>
 
     {% include "courses/course_js.html" %}
-
 {% endblock scripts %}
-
-<style type = "text/css">
-    .table_results td {
-        vertical-align: middle;
-    }
-
-    .table_results td {
-        padding: .3rem;
-    }
-
-    .table_results tr.odd td.sticky-col{
-        background-color: #f1f1f1;
-    }
-
-    .table_results tr.even td.sticky-col{
-        background-color: #fafafa;
-    }
-
-    .table_results tr.odd.table-info td.sticky-col{
-        background-color: #d9edf7;
-    }
-
-    .table_results tr.even.table-info td.sticky-col{
-        background-color: #d9edf7;
-    }
-
-    .word-wrap {
-        font-weight: normal;
-        white-space: nowrap;
-    }
-
-    .group-sortable {
-        list-style-type: none;
-        margin: 0 0 1rem 0;
-        padding: 0;
-    }
-    .group-sortable li {
-        margin: 0 5px 5px 5px;
-        padding: 5px;
-        word-wrap: break-word;
-    }
-    .ui-state-default {
-        background: inherit;
-        background-color: #f6f6f6;
-        font-weight: inherit;
-        color: inherit;
-    }
-    .ui-state-default .task-delete,
-    .ui-state-default .task-seminar-notempty {
-        position:absolute;
-        right: 0px;
-        padding-right: 3px;
-        top: 50%;
-        transform: translateY(-50%);
-        -webkit-transform: translateY(-50%);
-        -ms-transform: translateY(-50%);
-
-    }
-    .ui-state-default .task-delete .fa {
-        color:#333333;
-        line-height: inherit;
-    }
-
-    .ui-state-default .task-delete:hover .fa {
-        color:#d9534f;
-    }
-
-    .ui-state-delete {
-        background-color: #ff856a;
-        border-color: #ae574b;
-    }
-
-    .popover-content ul {
-        margin-bottom: 0;
-        list-style: none;
-    }
-    .popover-content label.checkbox.disabled {
-        color: #777;
-    }
-    .popover-content li:last-child label {
-        margin-bottom: 0;
-    }
-    .popover-footer {
-        padding: 5px;
-        text-align: right;
-        border-top: 1px solid #e5e5e5;
-    }
-    .popover-footer .btn+.btn {
-        margin-bottom: 0;
-        margin-left: 5px;
-    }
-    .buttons-html5 {
-        margin: 2px;
-        padding: 6px;
-        line-height: 1rem;
-    }
-
-    .ui-state-default .task-seminar-notempty .fa {
-        opacity:0.2;
-        filter: alpha(opacity=20);
-        color:#000000;
-        line-height: inherit;
-    }
-    .ui-state-default .task-seminar-notempty:hover .fa{
-        opacity:0.7;
-        filter: alpha(opacity=70);
-    }
-
-</style>
 
 {% for group,student_information in group_information.items %}
     <div class="card card-block">
         <div class="row">
             <div class="col-md-6">
-                <div class="card-title-block" style="display: table; margin-bottom: 0.5rem;">
+                <div class="card-title-block">
                     {% ifnotequal group course.group_with_extern %}
-                        <h5 class="card-title" style="display: table-cell;margin: 0;vertical-align: middle;">{% if group.name %}{{ group.name }}&nbsp;{% else %}&nbsp;{% endif %}
+                        <h5 class="card-title">{% if group.name %}{{ group.name }}&nbsp;{% else %}&nbsp;{% endif %}
                             {% if default_teacher|key:group %}
-                                (<a class="card-link" href="{{ default_teacher|get_url:group }}" style="color:#373a3c;">{{ default_teacher|get_name:group }}</a>)
+                                (<a class="card-link table-link" href="{{ default_teacher|get_url:group }}">{{ default_teacher|get_name:group }}</a>)
                             {% endif %}
                         </h5>
                     {% endifnotequal %}
-                    <button class="btn btn-secondary btn-table-fullscreen" type="button" for="#table_results_{{ group.id }}" style="display: none;vertical-align: top;margin: 2px; padding: 6px;"><i class="fa fa-expand fa-lg"></i></button>
+                    <button class="btn btn-secondary btn-table-fullscreen" type="button" for="#table_results_{{ group.id }}"><i class="fa fa-expand fa-lg"></i></button>
                     {% if user_is_teacher %}
                         <span class="card-title-teacher-buttons">
-                            <button class="btn btn-secondary btn-table-edit" type="button" data-toggle="modal" data-target="#modal_table_edit" for="#group_sort_{{ group.id }}" data-table="#table_results_{{ group.id }}" style="display: none;vertical-align: top;margin: 2px;padding: 6px"><i class="fa fa-pencil fa-lg"></i></button>
+                            <button class="btn btn-secondary btn-table-edit" type="button" data-toggle="modal" data-target="#modal_table_edit" for="#group_sort_{{ group.id }}" data-table="#table_results_{{ group.id }}"><i class="fa fa-pencil fa-lg"></i></button>
                         </span>
                     {% endif %}
                 </div>
             </div>
         </div>
-        <div class="loading_table_img"  style="text-align: center">
-            <span class="fa fa-circle-o-notch fa-spin fa-3x fa-fw" style="opacity:0.2;filter: alpha(opacity=20);color:#000000;"></span>
+        <div class="loading-table-img">
+            <span class="fa fa-circle-o-notch fa-spin fa-3x fa-fw loading"></span>
         </div>
-        <div class="zui-wrapper collapse" style="margin-top: -2.8rem;">
-            <table class="table table-striped table-bordered table_results order-column hover" cellspacing="0"  id="table_results_{{ group.id }}">
+        <div class="zui-wrapper collapse">
+            <table class="table table-striped table-bordered table-results order-column hover" cellspacing="0"  id="table_results_{{ group.id }}">
                 <thead>
                 <tr>
-                    <th class="no-font-weight" style="text-align: center;">#</th>
+                    <th class="no-font-weight text-center">#</th>
                     <th class="no-font-weight"><b>{% trans "Студент" %}</b></th>
                     {% for task in group_tasks|key:group %}
                         {% if not task.is_hidden or user_is_teacher %}
                             <th align="center" class="{% if task.type == task.TYPE_SIMPLE and user_is_teacher %}dom-live-number{% else %}dom-number{% endif %} word-wrap">
-                                <a {% if task.is_hidden %} style="color:gray" {% endif %} href="javascript:get_task_modal({{task.id}}, '{{task.title|escapejs}}',
+                                <a class="{% if task.is_hidden %}hidden-task-title{% endif %}" href="javascript:get_task_modal({{task.id}}, '{{task.title|escapejs}}',
                     '{{task.task_text|safe|escapejs}}',
                      {% if task.deadline_time %} '{{task.deadline_time|date:'d-m-Y H:i'}}' {% else %}''{% endif %})">
                                     {{ task.title }}
@@ -180,7 +71,7 @@
                         <td class="sticky-col" align="center"></td>
                         <td class="sticky-col">
                             {% if not student.get_profile.is_active  %}<del>{% endif %}
-                            <a class="card-link" href="{{ student.get_absolute_url }}" style="color:#373a3c;">{{ student.last_name }}&nbsp;{{ student.first_name }}</a>
+                            <a class="card-link table-link" href="{{ student.get_absolute_url }}">{{ student.last_name }}&nbsp;{{ student.first_name }}</a>
                             {% if not student.get_profile.is_active  %}</del>{% endif %}
                         </td>
                         {% for task in group_tasks|key:group %}
@@ -203,14 +94,14 @@
                                                 </span>
                                                 </div>
                                                 {% if user_is_teacher %}
-                                                    <form method="post" class="task-mark-form collapse" style="margin:0;">
+                                                    <form method="post" class="task-mark-form collapse">
                                                         {% csrf_token %}
-                                                        <fieldset class="form-group" style="margin:0;">
+                                                        <fieldset class="form-group">
                                                             <input type="hidden" name="task_id" value="{{task.id}}"/>
                                                             <input type="hidden" name="student_id" value="{{student.id}}"/>
                                                             <input type="hidden" name="mark_max" class="mark_max" value="{{ task.score_max }}">
-                                                            <input class="form-control" name="mark_value" type="text" maxlength="25" size="5" style="margin:0;width:22px;height:18px;line-height:14px;font-size:12px;padding:0px 2px;" autocomplete="off" value="{{ task_x_task_takens|score:task }}">
-                                                            <span class="text-help" style="display: none;"></span>
+                                                            <input class="form-control" name="mark_value" type="text" maxlength="25" size="5" autocomplete="off" value="{{ task_x_task_takens|score:task }}">
+                                                            <span class="text-help"></span>
                                                         </fieldset>
                                                     </form>
                                                 {% endif %}
@@ -263,12 +154,12 @@
                   </span>
                                 </div>
                                 {% if user_is_teacher %}
-                                    <form method="post" class="mark-form collapse" style="margin:0">
+                                    <form method="post" class="mark-form collapse">
                                         {% csrf_token %}
                                         <input type="hidden" name="course_id" value="{{ course.id }}"/>
                                         <input type="hidden" name="group_id" value="{{ group.id }}"/>
                                         <input type="hidden" name="student_id" value="{{ student.id }}"/>
-                                        <select style="margin:0;width:auto;height: 1rem;line-height: 1rem;font-size:12px;padding: 2px 6px;" name="mark_id">
+                                        <select name="mark_id">
                                             <option value=-1>--</option>
                                             {% for mark in course_mark_system_vals %}
                                                 <option value="{{ mark.id }}" {% ifequal mark_id mark.id %}selected="selected"{% endifequal %}>{{ mark }}</option>
@@ -294,19 +185,19 @@
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title" id="modal_table_edit_header">{% trans "Итоговая таблица" %}</h4>
                 </div>
-                <div class="modal-body" style="max-height: none;">
+                <div class="modal-body">
                     <p>{% trans "Изменение порядка столбцов в итоговой таблице курса, а также их удаление(удалять можно только те задачи, в которых не было комментариев)." %}</p>
                     {% for group, tasks in group_tasks.iteritems %}
                         <div id="group_sort_{{ group.id }}" data-group="{{ group.id }}" data-table="#table_results_{{ group.id }}" data-marksystem="{% if course_mark_system_vals %}true{% endif %}" class="collapse">
-                            <p  class="modal-group-name" style="font-weight: bold">{{ group.name }}</p>
+                            <p  class="modal-group-name">{{ group.name }}</p>
                             <ul class="group-sortable" name="group_sort_{{ group.id }}">
                                 {% for task in tasks %}
-                                    <li class="ui-state-default" name="task_sort_{{ task.id }}" value="{{ task.id }}" style="padding-right: 20px;position: relative;cursor: -webkit-grab;">
+                                    <li class="ui-state-default" name="task_sort_{{ task.id }}" value="{{ task.id }}">
                                         <span>{{ task.title }}</span>
-                                        <a class="task-delete pull-xs-right" data-name="task_delete_{{ task.id }}" {% autoescape off %}{{ task|group_info }}{% endautoescape %} style="cursor: pointer" tabindex="0" data-toggle="popover" type="button">
+                                        <a class="task-delete pull-xs-right" data-name="task_delete_{{ task.id }}" {% autoescape off %}{{ task|group_info }}{% endautoescape %} tabindex="0" data-toggle="popover" type="button">
                                             <i class="fa fa-trash-o" aria-hidden="true"></i>
                                         </a>
-                                        <a class="task-seminar-notempty pull-xs-right" {% autoescape off %}{{ task|group_info }}{% endautoescape %} style="cursor: pointer" tabindex="0" data-toggle="popover-help" data-trigger="hover" data-content="{%  trans "Чтобы удалить семинар, нужно сначала удалить все подзадчи" %}" type="button">
+                                        <a class="task-seminar-notempty pull-xs-right" {% autoescape off %}{{ task|group_info }}{% endautoescape %} tabindex="0" data-toggle="popover-help" data-trigger="hover" data-content="{%  trans "Чтобы удалить семинар, нужно сначала удалить все подзадчи" %}" type="button">
                                             <i class="fa fa-question-circle" aria-hidden="true"></i>
                                         </a>
                                     </li>

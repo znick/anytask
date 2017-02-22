@@ -23,7 +23,8 @@
                 });
                 {% if task %}
                     editor.on('init', function() {
-                        $("#task_edit_body").data("value",  $("#task_edit_body").val());
+                        var $task_edit_body = $("#task_edit_body");
+                        $task_edit_body.data("value",  $task_edit_body.val());
                     });
                 {% endif %}
                 editor.on('change', function(e) {
@@ -60,10 +61,11 @@
                 check_changed($(this));
             });
             $("#task_edit_hidden_task").change(function () {
-                if ($(this).data("value") && !$(this).is(':checked'))
-                    $(this).data("changed", true);
+                var $this = $(this);
+                if ($this.data("value") && !$this.is(':checked'))
+                    $this.data("changed", true);
                 else
-                    $(this).data("changed", false);
+                    $this.data("changed", false);
                 show_notify();
             });
         {% endif %}
@@ -79,11 +81,13 @@
         }
 
         function show_notify() {
+            var $task_edit_hidden_task = $("#task_edit_hidden_task");
+
             if (($("#task_edit_header").data("changed") ||
                 $("#task_edit_max_score").data("changed") ||
                 $("#task_edit_datepicker").data("changed") ||
                 $("#task_edit_body").data("changed") ||
-                $("#task_edit_hidden_task").data("changed")) && !$("#task_edit_hidden_task").is(':checked'))
+                $task_edit_hidden_task.data("changed")) && !$task_edit_hidden_task.is(':checked'))
 
                 $("#task_edit_label_for_changed_task").show().find("input").prop('disabled', false);
             else

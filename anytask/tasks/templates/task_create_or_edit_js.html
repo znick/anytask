@@ -55,11 +55,12 @@
                 else {
                     var labels = [];
                     options.each(function () {
-                        if ($(this).attr('label') !== undefined) {
-                            labels.push($(this).attr('label'));
+                        var $this =$(this);
+                        if ($this.attr('label') !== undefined) {
+                            labels.push($this.attr('label'));
                         }
                         else {
-                            labels.push($(this).text());
+                            labels.push($this.text());
                         }
                     });
                     return labels.join(', ') + '';
@@ -81,13 +82,17 @@
 
         {% if is_create %}
             $("#task_edit_hidden_task").change(function () {
-                $('#task_edit_label_for_changed_task').toggle();
-                toggle_inputs($('#task_edit_label_for_changed_task'));
+                var $task_edit_label_for_changed_task = $('#task_edit_label_for_changed_task');
+
+                $task_edit_label_for_changed_task.toggle();
+                toggle_inputs($task_edit_label_for_changed_task);
             });
         {% endif %}
 
         $('#task_edit_type').change(function () {
-            if ($('#task_edit_type').val() === 'All') {
+            var $task_edit_type = $('#task_edit_type');
+
+            if ($task_edit_type.val() === 'All') {
                 $('#contest_rb_body').collapse('show');
                 $("#task_edit_contest_integrated").show();
                 $("#task_edit_contest_id").show();
@@ -98,7 +103,7 @@
                 $("#parent_body").show();
                 $("#children_body").hide();
             }
-            else if ($('#task_edit_type').val() === 'Only mark') {
+            else if ($task_edit_type.val() === 'Only mark') {
                 $('#contest_rb_body').collapse('hide');
                 $("#task_edit_contest_integrated").hide();
                 $("#task_edit_contest_id").hide();
@@ -109,7 +114,7 @@
                 $("#parent_body").show();
                 $("#children_body").hide();
             }
-            else if ($('#task_edit_type').val() === 'Seminar') {
+            else if ($task_edit_type.val() === 'Seminar') {
                 $('#contest_rb_body').collapse('hide');
                 $("#task_edit_contest_integrated").hide();
                 $("#task_edit_contest_id").hide();
@@ -124,18 +129,15 @@
 
         $('#task_edit_rb_integrated').change(function () {
             if ($(this).is(':checked')) {
-                $("#task_edit_one_file_upload").closest('div.form-group').collapse('show');
-                $('#task_edit_one_file_upload').show();
+                $("#task_edit_one_file_upload").show().closest('div.form-group').collapse('show');
             }
             else {
-                $("#task_edit_one_file_upload").closest('div.form-group').collapse('hide');
-                $('#task_edit_one_file_upload').hide();
+                $("#task_edit_one_file_upload").hide().closest('div.form-group').collapse('hide');
             }
         });
 
         $("#task_edit_one_file_upload").closest('div.form-group').on('show.bs.collapse hide.bs.collapse', function (e) {
-            $('#task_edit_rb_integrated').attr('disabled', 'disabled');
-            $('#task_edit_rb_integrated').css('cursor', 'default');
+            $('#task_edit_rb_integrated').attr('disabled', 'disabled').css('cursor', 'default');
         }).on('shown.bs.collapse hidden.bs.collapse', function (e) {
             $('#task_edit_rb_integrated').removeAttr('disabled');
         });
@@ -159,22 +161,23 @@
         });
 
         $.validator.addMethod("required_with_disabled", function(value, element) {
-            return value? true: false;
+            return !!value;
         });
 
         var form_validator = $('#task_edit_form').validate({
             submitHandler: function (form) {
-                if ($('#task_edit_form').data('changed')) {
+                var $task_edit_form = $(form);
+                if ($task_edit_form.data('changed')) {
                     $('#task_edit_form').ajaxSubmit({
                         success: function (data) {
-                            $('#task_edit_form').data('changed', false);
+                            $task_edit_form.data('changed', false);
                             $('#task_submit_error_text').html('<div class="alert alert-success alert-dismissible" role ="alert" id="edit_task_err">' +
                                     '                            <button type="button" class="close" data-dismiss="alert" aria-label="{% trans "Закрыть" %}">' +
                                     '                               <span aria-hidden="true">&times;</span>' +
                                     '                            </button>' +
                                     '                            <span>{% trans "Задача сохранена успешно." %}</span>' +
                                     '                          </div>');
-                            if ($('#task_edit_form').data('quit'))
+                            if ($task_edit_form.data('quit'))
                                 redirect();
                             else if (data.redirect_page)
                                 window.location.replace(data.redirect_page);
@@ -315,11 +318,12 @@
                 else {
                     var labels = [];
                     options.each(function() {
-                        if ($(this).attr('label') !== undefined) {
-                            labels.push($(this).attr('label'));
+                        var $this = $(this);
+                        if ($this.attr('label') !== undefined) {
+                            labels.push($this.attr('label'));
                         }
                         else {
-                            labels.push($(this).text());
+                            labels.push($this.text());
                         }
                     });
                     return labels.join(', ') + '';
@@ -354,25 +358,24 @@
 
         $('#button_save').click(function () {
             set_disabled();
-            $('#task_edit_form').data('quit', false);
-            $('#task_edit_form').submit();
+            $('#task_edit_form').data('quit', false).submit();
             remove_disabled();
         });
 
         $('#button_save_quit').click(function () {
             set_disabled();
-            $('#task_edit_form').data('quit', true);
-            $('#task_edit_form').submit();
+            $('#task_edit_form').data('quit', true).submit();
             remove_disabled();
         });
     });
 
     function toggle_inputs($div) {
         $("input, select, textarea", $div).each(function () {
-            if ($(this).is(':disabled'))
-                $(this).prop('disabled', false);
+            var $this = $(this);
+            if ($this.is(':disabled'))
+                $this.prop('disabled', false);
             else
-                $(this).prop('disabled', true);
+                $this.prop('disabled', true);
         });
     }
 

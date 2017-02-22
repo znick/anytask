@@ -9,6 +9,9 @@
 {% block title %}{% trans "Импорт " %}| {{ course.name }} | {{ course.year }}{% endblock %}
 
 {% block scripts %}
+    <link href="{{ STATIC_URL }}task.css" rel='stylesheet'/>
+    <link href="{{ STATIC_URL }}task_import.css" rel='stylesheet'/>
+
     {% include "task_import_js.html" %}
     {% include "task_tinymce_js.html" %}
 {% endblock scripts %}
@@ -33,10 +36,9 @@
 
 {% block content %}
     {{ block.super }}
-    {% include "task_css.html" %}
 
     <div id="task_edit" class="card card-block">
-        <h5 class="card-title" style="margin-bottom:1rem;">{% trans "Импорт задачи из Яндекс.Контеста" %}</h5>
+        <h5 class="card-title">{% trans "Импорт задачи из Яндекс.Контеста" %}</h5>
 
         <form id="contest_task_form">
             {% csrf_token %}
@@ -48,23 +50,23 @@
                         <input class="form-control" id='task_contest_id' name="contest_id" type='text' maxlength='25' size='20'>
                         <small class="text-help" id="task_contest_id_error_text"></small>
                     </div>
-                    <div class="input-group" id="task_contest_id_readonly" style="display: none;margin-bottom: 0">
-                        <input class="form-control" name="contest_id_for_task" type='text' maxlength='25' size='20' readonly style="cursor: default;">
-                        <span class="input-group-addon" id='button_task_contest_id_clear' style="cursor: pointer;"><i class="fa fa-times fa-lg"></i></span>
+                    <div class="input-group hidden" id="task_contest_id_readonly">
+                        <input class="form-control" name="contest_id_for_task" type='text' maxlength='25' size='20' readonly>
+                        <span class="input-group-addon" id='button_task_contest_id_clear'><i class="fa fa-times fa-lg"></i></span>
                     </div>
                 </div>
                 <div id="get_tasks" class="in collapse">
                     <button id="button_get_tasks" type="submit" class="btn btn-secondary">{% trans "Получить список задач" %}</button>
                 </div>
-                <div id="loading_contest_img" class="col-sm-1 collapse" style="margin-top:0.6rem">
-                    <span class="fa fa-circle-o-notch fa-spin fa-lg fa-fw" style="opacity:0.2;filter: alpha(opacity=20);color:#000000;"></span>
+                <div id="loading_contest_img" class="col-sm-1 collapse loading-img">
+                    <span class="fa fa-circle-o-notch fa-spin fa-lg fa-fw"></span>
                 </div>
             </div>
 
             <div class="collapse" id="task_contest_body">
                 <div class="form-group row">
                     <div class="controls col-lg-offset-3 col-md-offset-3 col-sm-offset-4 col-lg-9 col-md-9 col-sm-8 col-xs-12">
-                        <ol id='contest_problems' name="contest_problems_id" class="radio_problems" style="white-space: nowrap;"></ol>
+                        <ol id='contest_problems' name="contest_problems_id" class="radio_problems"></ol>
                         <small class="text-help" id="contest_problems_error_text"></small>
                     </div>
                 </div>
@@ -74,8 +76,8 @@
                         <input class="form-control" id='task_max_score' name='max_score' type='text' maxlength='25' size='20'>
                         <small class="text-help" id="task_max_score_error_text"></small>
                     </div>
-                    <div id="loading_max_score_img" class="col-sm-1 collapse" style="margin-top:0.6rem">
-                        <span class="fa fa-circle-o-notch fa-spin fa-lg fa-fw" style="opacity:0.2;filter: alpha(opacity=20);color:#000000;"></span>
+                    <div id="loading_max_score_img" class="col-sm-1 collapse loading-img">
+                        <span class="fa fa-circle-o-notch fa-spin fa-lg fa-fw"></span>
                     </div>
                 </div>
                 <div class="form-group row">
@@ -92,8 +94,8 @@
 
                 <div id='parent_body'>
                     <div class="form-group row">
-                        <label class="col-sm-3 form-control-label" for="task_edit_parent">{% trans "Родительская задача" %}</label>
-                        <div class="controls col-sm-3" style="padding-top: 5px">
+                        <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_parent">{% trans "Родительская задача" %}</label>
+                        <div class="controls no-validate col-lg-4 col-md-6 col-sm-7 col-xs-7">
                             <select class="form-control" name="parent_id" id="task_edit_parent">
                                 <option value=""> ---</option>
                                 {% for seminar in seminar_tasks %}
@@ -108,16 +110,16 @@
                     <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_datepicker">{% trans "Дата сдачи" %}</label>
                     <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
                         <div class="input-group date task_datetime">
-                            <input class="form-control" id='task_edit_datepicker' name='deadline' type='text'  readonly value="{{task.deadline_time|date:'d-m-Y H:i'}}" style="background-color: white; cursor: pointer">
-                            <span class="input-group-addon" style="cursor: pointer;"><i class="fa fa-times fa-lg"></i></span>
-                            <span class="input-group-addon" style="cursor: pointer;"><i class="fa fa-calendar fa-lg"></i></span>
+                            <input class="form-control" id='task_edit_datepicker' name='deadline' type='text'  readonly value="{{task.deadline_time|date:'d-m-Y H:i'}}">
+                            <span class="input-group-addon"><i class="fa fa-times fa-lg"></i></span>
+                            <span class="input-group-addon"><i class="fa fa-calendar fa-lg"></i></span>
                         </div>
                         <small class="text-help" id="task_edit_datepicker_error_text"></small>
                     </div>
                 </div>
                 <div class="form-group row">
                     <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_rb_integrated">{% trans "Интеграция с Review Board" %}</label>
-                    <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7" style="padding-top: 5px">
+                    <div class="controls no-validate col-lg-4 col-md-6 col-sm-7 col-xs-7">
                         <input type="checkbox" name="rb_integrated" id="task_edit_rb_integrated"  {% if rb_integrated %}checked{% endif %}>
                     </div>
                 </div>
@@ -126,7 +128,7 @@
                         <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_one_file_upload">{% trans "Отправлять только один файл" %}
                             <a tabindex="0" data-toggle="popover" data-trigger="hover" data-content="{% trans 'Имя файла будет изменено на upload. Расширение останется исходное.' %}" type="button"><i class="fa fa-question-circle help-button" aria-hidden="true"></i></a>
                         </label>
-                        <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7" style="padding-top: 5px">
+                        <div class="controls no-validate col-lg-4 col-md-6 col-sm-7 col-xs-7">
                             <input type="checkbox" name="one_file_upload" id="task_edit_one_file_upload"  {% if task.one_file_upload or is_create and course.default_task_one_file_upload %}checked{% endif %}>
                         </div>
                     </div>
@@ -134,37 +136,36 @@
                 {% if course.show_accepted_after_contest_ok %}
                     <div class="form-group row">
                         <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_accepted_after_contest_ok">{% trans "Переводить в статус Зачтено после положительного вердикта Я.Контеста" %}</label>
-                        <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7" style="padding-top: 5px">
+                        <div class="controls no-validate col-lg-4 col-md-6 col-sm-7 col-xs-7">
                             <input type="checkbox" name="accepted_after_contest_ok" id="task_edit_accepted_after_contest_ok"  {% if task.accepted_after_contest_ok or is_create and course.default_accepted_after_contest_ok %}checked{% endif %}>
                         </div>
                     </div>
                 {% endif %}
                 <div class="form-group row" id="task_edit_label_for_changed_task">
                     <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_changed_task">{% trans "Уведомить студентов о создании задачи" %}</label>
-                    <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7" style="padding-top: 5px;">
+                    <div class="controls no-validate col-lg-4 col-md-6 col-sm-7 col-xs-7">
                         <input type="checkbox" name="changed_task" id="task_edit_changed_task" {% if course.default_task_send_to_users %}checked{% endif %}>
                     </div>
                 </div>
                 <div class="form-group row">
                     <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_hidden_task">{% trans "Скрыть задачу" %}</label>
-                    <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7" style="padding-top: 5px">
+                    <div class="controls no-validate col-lg-4 col-md-6 col-sm-7 col-xs-7">
                         <input type="checkbox" name="hidden_task" id="task_edit_hidden_task">
                     </div>
                 </div>
                 <div class="form-group row">
                     <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_body">{% trans "Формулировка" %}</label>
                     <br>
-                    <div class="controls col-sm-12" style="padding-top: 15px">
-                        <textarea class='input-xlarge form-control' style="max-width:100%;width:100%;height:200px;"
-                                  id='task_edit_body' name='task_text'>{{ task.task_text }}</textarea>
+                    <div class="controls col-sm-12">
+                        <textarea class='input-xlarge form-control' id='task_edit_body' name='task_text'>{{ task.task_text }}</textarea>
                     </div>
                 </div>
-                <div class="form-group rowfooter-buttons" style="margin-bottom:0">
+                <div class="form-group row footer-buttons">
                     <div id="task_submit_error_text"class="col-xs-12"></div>
-                    <div class="col-sm-12 col-lg-2" style="padding: .375rem .75rem;">
+                    <div class="col-sm-12 col-lg-2">
                         <button type="button" id="button_preview" class="btn btn-secondary pull-xs-left">{% trans "Предпросмотр" %}</button>
                     </div>
-                    <div class="col-sm-12 col-lg-10" style="padding: .375rem .75rem;">
+                    <div class="col-sm-12 col-lg-10">
                         <div class="btn-group pull-xs-right" role="group">
                         <button type="button" id="button_cancel_quit" class="btn btn-secondary">{% trans "Отменить и выйти" %}</button>
                         <button type="submit" id="button_save_quit" class="btn btn-primary">{% trans "Сохранить и выйти" %}</button></div>

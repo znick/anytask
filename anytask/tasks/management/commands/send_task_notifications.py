@@ -37,20 +37,22 @@ class Command(BaseCommand):
             version_list = reversion.get_unique_for_object(task)
 
             task_info = [''] * len(DIFF_FIELDS)
-            for i, version in enumerate(version_list):
+            for i_version, version in enumerate(version_list):
                 if version.field_dict['sended_notify']:
                     break
-                if i + 1 == len(version_list):
+
+                i_version_next = i_version + 1
+                if i_version_next == len(version_list):
                     task_created = True
                     break
                 if not version.field_dict['send_to_users']:
                     continue
 
                 for i_field, field in enumerate(DIFF_FIELDS):
-                    if version.field_dict[field] != version_list[i + 1].field_dict[field]:
+                    if version.field_dict[field] != version_list[i_version_next].field_dict[field]:
                         task_info[i_field] = DIFF_FIELDS_STR[i_field]
                         task_changed = True
-                if not version.field_dict['is_hidden'] and version_list[i + 1].field_dict['is_hidden']:
+                if not version.field_dict['is_hidden'] and version_list[i_version_next].field_dict['is_hidden']:
                     task_created = True
 
             if task_created or task_changed:

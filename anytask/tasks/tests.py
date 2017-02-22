@@ -345,7 +345,7 @@ class ViewsTest(TestCase):
         container = html.body.find('div', 'container', recursive=False)
 
         # table results
-        table = container.find('table', 'table_results')
+        table = container.find('table', 'table-results')
 
         table_head = table.thead('th')[2]
         self.assertEqual(table_head.a.string.strip().strip('\n'), 'task_title_0', 'Wrong title 1st task')
