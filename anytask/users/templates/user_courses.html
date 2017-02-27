@@ -6,6 +6,7 @@
 {% block title %} {{ user_to_show.get_full_name }} {% endblock %}
 
 {% block scripts %}
+    <link href="{{ STATIC_URL }}user_courses.css" rel='stylesheet'/>
     <script src="{{ STATIC_URL }}jquery.stickytableheaders.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function() {
@@ -52,38 +53,6 @@
 {% endblock navbar %}
 
 {% block content %}
-
-    <style>
-        .card .nav-pills{
-            font-size: 0.8em;
-        }
-        .switch-tab i{
-            font-size: 1.5rem
-        }
-        .card-header {
-            background-color: inherit;
-            border-bottom: none;
-        }
-        .text-arrow:after {
-            content: "\f0dc";
-            display: inline-block;
-            font-family: FontAwesome;
-            font-style: normal;
-            font-weight: normal;
-            position: absolute;
-            padding-left: .3rem;
-        }
-        .big-label {
-            font-size: 1rem;
-        }
-        .card-table{
-            overflow: auto;
-            position: relative;
-        }
-        .card-table thead tr {
-        background-color: #ffffff;
-        }
-    </style>
 
     {% if tables.0 or tables.1 %}
         <div class="tab-content">
