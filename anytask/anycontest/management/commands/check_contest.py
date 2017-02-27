@@ -2,6 +2,7 @@
 
 from django.core.management.base import BaseCommand
 from django.conf import settings
+from django.utils import translation
 from django.utils.translation import ugettext as _
 from anycontest.common import comment_verdict, get_contest_mark
 from anyrb.common import AnyRB
@@ -17,6 +18,7 @@ class Command(BaseCommand):
     help = "Check contest submissions and comment verdict"
 
     def handle(self, **options):
+        translation.activate(settings.LANGUAGE_CODE)
         for contest_submission in ContestSubmission.objects \
                 .filter(got_verdict=False, send_error__isnull=True) \
                 .exclude(run_id__exact="") \
@@ -50,3 +52,4 @@ class Command(BaseCommand):
                     comment_verdict(issue, contest_submission.verdict == 'ok', comment)
             except Exception as e:
                 logger.exception(e)
+        translation.deactivate()
