@@ -229,6 +229,7 @@ def get_or_create(request, task_id, student_id):
     return HttpResponseRedirect("/issue/"+str(issue.id))#(json.dumps(data), content_type='application/json')
 
 
+@login_required
 @require_POST
 def upload(request):
 
@@ -315,6 +316,8 @@ def upload(request):
 
     return UploadResponse(request, file_dict)
 
+
+@login_required
 @require_POST
 def upload_delete(request, pk):
     success = True
