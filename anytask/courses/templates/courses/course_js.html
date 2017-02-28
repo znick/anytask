@@ -212,6 +212,14 @@
             $("#btn_group_edit_course").css('background-color', '#e5e5e5');
         });
 
+        $('#hide_academ_student_btn').click(function () {
+            $.post('{% url courses.views.change_visibility_academ_users %}',
+                {'course_id': {{ course.id }}, 'csrfmiddlewaretoken': "{{ csrf_token }}"},
+                function (data) {
+                    window.location.reload();
+                });
+        });
+
 {#        $("#tasks-table").DataTable();#}
 
         var table_min_height = '30vh';
@@ -788,15 +796,6 @@
 
     function change_visibility_hidden_tasks(course_id) {
         $.post('{% url courses.views.change_visibility_hidden_tasks %}',
-                {'course_id': course_id, 'csrfmiddlewaretoken': "{{ csrf_token }}"},
-                function (data) {
-                    window.location.reload();
-                });
-
-    }
-
-    function change_visibility_academ_users(course_id) {
-        $.post('{% url courses.views.change_visibility_academ_users %}',
                 {'course_id': course_id, 'csrfmiddlewaretoken': "{{ csrf_token }}"},
                 function (data) {
                     window.location.reload();

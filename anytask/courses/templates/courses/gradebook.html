@@ -106,8 +106,7 @@
                             </a>
                         {% endif %}
                         {% if visible_hide_button_users %}
-                            <a class="btn btn-secondary btn-sm"
-                               href="javascript:change_visibility_academ_users({{ course.id }});" role="button">
+                            <a class="btn btn-secondary btn-sm" id="hide_academ_student_btn">
                                 {% if show_academ_users %}
                                     {% trans "Не показывать отчисленных студентов" %}
                                 {% else %}
