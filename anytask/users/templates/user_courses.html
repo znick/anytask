@@ -6,6 +6,7 @@
 {% block title %} {{ user_to_show.get_full_name }} {% endblock %}
 
 {% block scripts %}
+    <link href="{{ STATIC_URL }}user_courses.css" rel='stylesheet'/>
     <script src="{{ STATIC_URL }}jquery.stickytableheaders.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function() {
@@ -53,22 +54,6 @@
 
 {% block content %}
 
-    <style>
-        .table_courses th {
-            white-space: nowrap
-        }
-        .card .nav-pills{
-            font-size: 0.8em;
-        }
-        .switch-tab i{
-            font-size: 1.5rem
-        }
-        .card-header {
-            background-color: inherit;
-            border-bottom: none;
-        }
-    </style>
-
     {% if tables.0 or tables.1 %}
         <div class="tab-content">
             {% for table in tables %}
@@ -99,32 +84,36 @@
                                     <div class="tab-pane fade {% if year == current_year or forloop.last and not table|has_item:current_year  %}in active{% endif %}" id="{% if forloop.parentloop.first %}courses_{% else %}courses_archive_{% endif %}{{ forloop.counter }}" role="tabpanel">
                                         <div class="card-block">
                                             {% for table_id, course_statistics in courses_in_year.iteritems %}
-                                                <table class="table table_courses">
-                                                    <thead>
-                                                    <tr style="background-color: #ffffff;">
-                                                        <th>{%  trans "Курс" %}<i class="fa fa-fw fa-sort"></i></th>
-                                                        {% for status, sum in course_statistics.0.issues_count %}
-                                                            <th>{{ status.name }}<i class="fa fa-fw fa-sort"></i></th>
-                                                        {% endfor %}
-                                                        <th>{%  trans "Всего задач" %}<i class="fa fa-fw fa-sort"></i></th>
-                                                        <th>{%  trans "Итоговая оценка" %}<i class="fa fa-fw fa-sort"></i></th>
-                                                    </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                    {% for course in course_statistics %}
+                                                <div class="card-table">
+                                                    <table class="table table_courses">
+                                                        <thead>
                                                         <tr>
-                                                            <td>
-                                                                <a href="{{ course.url }}">{{ course.name }}</a>
-                                                            </td>
-                                                            {% for status, sum in course.issues_count %}
-                                                                <td><h5><label class="label" style="background-color: {{ status.color }};">{{ sum }}</label></h5></td>
+                                                            <th><div class="text-arrow">{%  trans "Курс" %}</div></th>
+                                                            <th><div class="text-arrow">{%  trans "Суммарный балл" %}</div></th>
+                                                            <th><div class="text-arrow">{%  trans "Итоговая оценка" %}</div></th>
+                                                            {% for status, sum in course_statistics.0.issues_count %}
+                                                                <th><div class="text-arrow">{{ status.name }}</div></th>
                                                             {% endfor %}
-                                                            <td><h5><label class="label label-inverse">{{ course.tasks }}</label></h5></td>
-                                                            <td><h5><label class="label label-success">{{ course.mark }}</label></h5></td>
+                                                            <th><div class="text-arrow">{%  trans "Всего задач" %}</div></th>
                                                         </tr>
-                                                    {% endfor %}
-                                                    </tbody>
-                                                </table>
+                                                        </thead>
+                                                        <tbody>
+                                                        {% for course in course_statistics %}
+                                                            <tr>
+                                                                <td>
+                                                                    <a href="{{ course.url }}">{{ course.name }}</a>
+                                                                </td>
+                                                                <td><label class="label label-inverse big-label">{{ course.summ_score }}</label></td>
+                                                                <td><label class="label label-success big-label">{{ course.mark }}</label></td>
+                                                                {% for status, sum in course.issues_count %}
+                                                                    <td><label class="label big-label" style="background-color: {{ status.color }};">{{ sum }}</label></td>
+                                                                {% endfor %}
+                                                                <td><label class="label label-inverse big-label">{{ course.tasks }}</label></td>
+                                                            </tr>
+                                                        {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
                                             {% endfor %}
                                         </div>
                                     </div>
