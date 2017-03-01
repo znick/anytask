@@ -104,6 +104,15 @@
                                 {% endif %}
                             </a>
                         {% endif %}
+                        {% if visible_hide_button_users %}
+                            <a class="btn btn-secondary btn-sm" id="hide_academ_student_btn">
+                                {% if show_academ_users %}
+                                    {% trans "Не показывать отчисленных студентов" %}
+                                {% else %}
+                                    {% trans "Показать отчисленных студентов" %}
+                                {% endif %}
+                            </a>
+                        {% endif %}
                     </div>
                 {% endif %}
 
