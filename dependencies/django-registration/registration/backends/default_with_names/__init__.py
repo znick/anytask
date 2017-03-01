@@ -100,14 +100,17 @@ class AnytaskPasswordChangeForm(PasswordChangeForm):
 
 
 class RegistrationFormWithNames(RegistrationForm):
-    first_name = forms.CharField(widget=forms.TextInput(attrs=attrs_dict), label=_(u"Имя"))
-    last_name = forms.CharField(widget=forms.TextInput(attrs=attrs_dict), label=_(u"Фамилия"))
-    show_email = forms.BooleanField(required=False, initial=True, label=_(u"Показывать мой e-mail всем пользователям"))
+    first_name = forms.CharField(widget=forms.TextInput(attrs=attrs_dict))
+    last_name = forms.CharField(widget=forms.TextInput(attrs=attrs_dict))
+    show_email = forms.BooleanField(required=False, initial=True)
     #invite = forms.CharField(widget=forms.TextInput(attrs=attrs_dict), label="Инвайт")
 
     def __init__(self, *args, **kwargs):
         super(RegistrationForm, self).__init__(*args, **kwargs)
-        self.fields['username'].label = "Логин"
+        self.fields['username'].label = _(u"Логин")
+        self.fields['first_name'].label = _(u"Имя")
+        self.fields['last_name'].label = _(u"Фамилия")
+        self.fields['show_email'].label = _(u"Показывать мой e-mail всем пользователям")
 
         self.fields.keyOrder = [
             'username',
