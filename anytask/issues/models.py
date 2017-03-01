@@ -85,7 +85,7 @@ class Issue(models.Model):
     status_field = models.ForeignKey(IssueStatus, db_index=True, null=False, blank=False, default=1)
 
     def score(self):
-        field = get_object_or_404(IssueField, id=8)
+        field = IssueField.objects.get(id=8)
 
         mark = self.get_field_value(field)
         if mark:
@@ -98,7 +98,7 @@ class Issue(models.Model):
         return self.status_field.name
 
     def last_comment(self):
-        field = get_object_or_404(IssueField, id=1)
+        field = IssueField.objects.get(id=1)
         comment = self.get_field_value(field)
         if not comment:
             comment = ''
@@ -150,7 +150,7 @@ class Issue(models.Model):
         return self.get_field_value(field)
 
     def get_byname(self, name):
-        field = get_object_or_404(IssueField, name=name)
+        field = IssueField.objects.get(name=name)
         return self.get_field_value(field)
 
     def get_field_value(self, field):
@@ -223,7 +223,7 @@ class Issue(models.Model):
         return
 
     def set_byname(self, name, value, author=None):
-        field = get_object_or_404(IssueField, name=name)
+        field = IssueField.objects.get(name=name)
         return self.set_field(field, value, author)
 
     def set_field(self, field, value, author=None):
@@ -312,7 +312,7 @@ class Issue(models.Model):
                         self.set_status_by_tag(IssueStatus.STATUS_VERIFICATION)
                     if author == self.responsible:
                         if self.status_field.tag == IssueStatus.STATUS_NEED_INFO:
-                            status_field = get_object_or_404(IssueField, name='status')
+                            status_field = IssueField.objects.get(name='status')
                             status_events = Event.objects\
                                 .filter(issue_id=self.id, field=status_field)\
                                 .exclude(author__isnull=True)\

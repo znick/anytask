@@ -49,6 +49,18 @@ def user_can_read(user, issue):
 
 
 def prepare_info_fields(info_fields, request, issue):
+    title_map = {'comment': _('kommentarij'),
+                 'course_name': _('predmet'),
+                 'task_name': _('zadacha'),
+                 'student_name': _('student'),
+                 'responsible_name': _('proverjaushij'),
+                 'followers_names': _('nabludateli'),
+                 'status': _('status'),
+                 'mark': _('ocenka'),
+                 'file': _('fajl'),
+                 'rewiev_id': _('nomer_revju'),
+                 'run_id': _('nomer_posylki_kontest')
+                 }
     user = request.user
     for field in info_fields:
         field.editable = field.can_edit(user, issue)
@@ -59,6 +71,7 @@ def prepare_info_fields(info_fields, request, issue):
 
         data = { field.name : field.value }
         field.form = field.get_form(request, issue, data)
+        field.title = title_map[field.name]
 
 
 def contest_rejudge(issue):

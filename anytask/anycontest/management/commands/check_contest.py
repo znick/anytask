@@ -8,6 +8,7 @@ from anycontest.common import comment_verdict, get_contest_mark
 from anyrb.common import AnyRB
 from anycontest.models import ContestSubmission
 from issues.model_issue_status import IssueStatus
+from users.models import UserProfile
 
 import logging
 
@@ -18,7 +19,6 @@ class Command(BaseCommand):
     help = "Check contest submissions and comment verdict"
 
     def handle(self, **options):
-        translation.activate(settings.LANGUAGE_CODE)
         for contest_submission in ContestSubmission.objects \
                 .filter(got_verdict=False, send_error__isnull=True) \
                 .exclude(run_id__exact="") \
@@ -27,6 +27,8 @@ class Command(BaseCommand):
                 issue = contest_submission.issue
                 run_id = contest_submission.run_id
                 task = issue.task
+                lang = UserProfile.objects.get(user=contest_submission.author).language
+                translation.activate(lang)
 
                 comment = contest_submission.check_submission()
                 if contest_submission.got_verdict:
@@ -50,6 +52,7 @@ class Command(BaseCommand):
                             if mark and float(mark) > 0:
                                 issue.set_byname('mark', float(mark))
                     comment_verdict(issue, contest_submission.verdict == 'ok', comment)
+                translation.deactivate()
             except Exception as e:
                 logger.exception(e)
-        translation.deactivate()
+

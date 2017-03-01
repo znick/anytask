@@ -14,4 +14,5 @@ urlpatterns = patterns('users.views',
     url(r'^(?P<username>.*)/profile_history', 'profile_history'),
     url(r'^(?P<username>.*)/set_user_statuses', 'set_user_statuses'),
     url(r'^ajax_edit_user_info$', 'ajax_edit_user_info'),
+    url(r'^change_user_language$', 'set_user_language')
 )

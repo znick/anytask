@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.core.files.base import ContentFile
 from django.utils.translation import ugettext as _
+from django.utils.translation import get_language_from_request
 
 
 from users.models import UserProfile, UserProfileLog, UserStatus, IssueFilterStudent, UserProfileFilter
@@ -590,3 +591,16 @@ def ajax_edit_user_info(request):
 
     return HttpResponse(json.dumps({'info': user_info}),
                         content_type="application/json")
+
+
+@login_required
+def set_user_language(request):
+    user = request.user
+    if request.method != 'POST':
+        return HttpResponseForbidden()
+
+    user = request.user
+    user_profile = user.get_profile()
+    lang = get_language_from_request(request)
+    user_profile.language = lang
+    user_profile.save()

@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 from django.contrib.sites.models import RequestSite
 from django.contrib.sites.models import Site
 from django.utils.translation import ugettext as _
+from django.utils.translation import get_language_from_request
 from django import forms
 from django.shortcuts import get_object_or_404
 from users.models import UserProfile
@@ -218,6 +219,7 @@ class DefaultBackend(object):
 
         new_user_profile = UserProfile.objects.get(user=new_user)
         new_user_profile.show_email = show_email
+        new_user_profile.language = get_language_from_request(request)
         new_user_profile.save()
 
         #if invite.group:
