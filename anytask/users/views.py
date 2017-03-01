@@ -2,15 +2,15 @@
 
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template import RequestContext
-from django.http import HttpResponse, HttpResponseForbidden
+from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect
 from django.db.models import Q
 from django.conf import settings
-from django.http import Http404
+from django.utils.http import is_safe_url
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.core.files.base import ContentFile
 from django.utils.translation import ugettext as _
-from django.utils.translation import get_language_from_request
+from django.utils.translation import check_for_language
 
 
 from users.models import UserProfile, UserProfileLog, UserStatus, IssueFilterStudent, UserProfileFilter
@@ -593,14 +593,27 @@ def ajax_edit_user_info(request):
                         content_type="application/json")
 
 
-@login_required
 def set_user_language(request):
-    user = request.user
-    if request.method != 'POST':
-        return HttpResponseForbidden()
+    next = request.REQUEST.get('next')
+    if not is_safe_url(url=next, host=request.get_host()):
+        next = request.META.get('HTTP_REFERER')
+        if not is_safe_url(url=next, host=request.get_host()):
+            next = '/'
+    response = HttpResponseRedirect(next)
+    if request.method == 'POST':
+        lang_code = request.POST.get('language', None)
+        if lang_code and check_for_language(lang_code):
+            if hasattr(request, 'session'):
+                request.session['django_language'] = lang_code
+            else:
+                response.set_cookie(settings.LANGUAGE_COOKIE_NAME, lang_code)
 
-    user = request.user
-    user_profile = user.get_profile()
-    lang = get_language_from_request(request)
-    user_profile.language = lang
-    user_profile.save()
+        try:
+            user = request.user
+            if user.is_authenticated():
+                user_profile = user.get_profile()
+                user_profile.language = lang_code
+                user_profile.save()
+        except:
+            pass
+    return response
