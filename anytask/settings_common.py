@@ -178,6 +178,7 @@ RB_SYMLINK_DIR = '/var/lib/anytask/repos/'
 RB_EXTENSIONS = ['.py', '.py2', '.py3', '.cpp', '.sage', '.m', '.java', '.h', '.cs', '.sh', '.c', '.txt', '.fs', '.hpp', '.cc', '.rkt', '.sql']
 
 CONTEST_API_URL = 'https://api.contest.yandex.net/anytask/'
+CONTEST_URL = "https://contest.yandex.ru/"
 CONTEST_OAUTH = 'OAUTH'
 CONTEST_OAUTH_ID = 'OAUTH_ID'
 CONTEST_OAUTH_PASSWORD = 'OAUTH_PASSWORD'
