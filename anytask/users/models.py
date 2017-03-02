@@ -3,7 +3,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 from django import forms
 
 from datetime import datetime
@@ -164,9 +164,11 @@ class UserProfileLog(models.Model):
 
 class UserProfileFilter(django_filters.FilterSet):
     # user_status_education_form = django_filters.ChoiceFilter(label=_(u'<strong>Форма обучения</strong>'), name='user_status')
-    user_status = django_filters.ChoiceFilter(label=u'<strong>{0}</strong>'.format(_(u'status_studenta')), name='user_status')
+    user_status = django_filters.ChoiceFilter(label=_('status_studenta'), name='user_status')
 
     def set(self):
+        self.filters['user_status'].field.label = u'<strong>{0}</strong>'.format(
+            self.filters['user_status'].field.label)
         activity_choices = [(status.id, status.name) for status in UserStatus.objects.filter(type='activity')]
         activity_choices.insert(0, (u'', _(u'luboj')))
         self.filters['user_status'].field.choices = tuple(activity_choices)
@@ -180,14 +182,16 @@ class UserProfileFilter(django_filters.FilterSet):
         fields = ['user_status']
 
 class IssueFilterStudent(django_filters.FilterSet):
-    is_active = django_filters.ChoiceFilter(label=u'<strong>{0}</strong>'.format(_(u'tip_kursa')), name='task__course__is_active')
-    years = django_filters.MultipleChoiceFilter(label=u'<strong>{0}</strong>'.format(_(u'god_kursa')), name='task__course__year', widget=forms.CheckboxSelectMultiple)
-    courses = django_filters.MultipleChoiceFilter(label=u'<strong>{0}</strong>'.format(_(u'kurs')), name='task__course', widget=forms.SelectMultiple)
-    responsible = django_filters.MultipleChoiceFilter(label=u'<strong>{0}</strong>'.format(_(u'prepodavateli')), widget=forms.SelectMultiple)
-    status_field = django_filters.MultipleChoiceFilter(label=u'<strong>{0}</strong>'.format(_(u'status')), widget=forms.SelectMultiple)
-    update_time = django_filters.DateRangeFilter(label=u'<strong>{0}</strong>'.format(_(u'data_poslednego_izmenenija')))
+    is_active = django_filters.ChoiceFilter(label=_('tip_kursa'), name='task__course__is_active')
+    years = django_filters.MultipleChoiceFilter(label=_('god_kursa'), name='task__course__year', widget=forms.CheckboxSelectMultiple)
+    courses = django_filters.MultipleChoiceFilter(label=_('kurs'), name='task__course', widget=forms.SelectMultiple)
+    responsible = django_filters.MultipleChoiceFilter(label=_('prepodavateli'), widget=forms.SelectMultiple)
+    status_field = django_filters.MultipleChoiceFilter(label=_('status'), widget=forms.SelectMultiple)
+    update_time = django_filters.DateRangeFilter(label=_('data_poslednego_izmenenija'))
 
     def set_user(self, user):
+        for field in self.filters:
+            self.filters[field].field.label = u'<strong>{0}</strong>'.format(self.filters[field].field.label)
         groups = user.group_set.all()
         courses = Course.objects.filter(groups__in=groups)
 
@@ -222,7 +226,7 @@ class IssueFilterStudent(django_filters.FilterSet):
 
     class Meta:
         model = Issue
-        fields = ['status_field', 'responsible', 'courses', 'update_time', 'years', 'is_active']
+        fields = ['is_active', 'years', 'courses', 'responsible', 'status_field', 'update_time']
 
 
 def create_user_profile(sender, instance, created, **kwargs):

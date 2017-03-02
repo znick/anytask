@@ -602,7 +602,7 @@
         });
 
         $("#new_text").tinymce({
-            language: 'ru',
+            language: '{{ user.get_profile.language }}',
             skin: 'bootstrap4',
             menubar: false,
             content_css: [

@@ -464,13 +464,15 @@ class Event(models.Model):
 
 
 class IssueFilter(django_filters.FilterSet):
-    status_field = django_filters.MultipleChoiceFilter(label=u'<strong>{0}</strong>'.format(_(u'status')), widget=forms.SelectMultiple)
-    update_time = django_filters.DateRangeFilter(label=u'<strong>{0}</strong>'.format(_(u'data_poslednego_izmenenija')))
-    responsible = django_filters.ChoiceFilter(label=u'<strong>{0}</strong>'.format(_(u'proverjaushij')))
-    followers = django_filters.MultipleChoiceFilter(label=u'<strong>{0}</strong>'.format(_(u'nabludateli')), widget=forms.SelectMultiple)
-    task = django_filters.ChoiceFilter(label=u'<strong>{0}</strong>'.format(_(u'zadacha')))
+    status_field = django_filters.MultipleChoiceFilter(label=_('status'), widget=forms.SelectMultiple)
+    update_time = django_filters.DateRangeFilter(label=_('data_poslednego_izmenenija'))
+    responsible = django_filters.ChoiceFilter(label=_('proverjaushij'))
+    followers = django_filters.MultipleChoiceFilter(label=_('nabludateli'), widget=forms.SelectMultiple)
+    task = django_filters.ChoiceFilter(label=_('zadacha'))
 
     def set_course(self, course):
+        for field in self.filters:
+            self.filters[field].field.label = u'<strong>{0}</strong>'.format(self.filters[field].field.label)
         teacher_choices = [(teacher.id, teacher.get_full_name()) for teacher in course.get_teachers()]
         teacher_choices.insert(0, (u'', _(u'luboj')))
         self.filters['responsible'].field.choices = tuple(teacher_choices)
@@ -490,7 +492,7 @@ class IssueFilter(django_filters.FilterSet):
 
     class Meta:
         model = Issue
-        fields = ['status_field', 'responsible', 'followers', 'update_time']
+        fields = ['responsible', 'followers', 'task', 'status_field', 'update_time']
 
 
 @receiver(models.signals.post_save, sender=Issue)
