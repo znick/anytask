@@ -19,7 +19,17 @@
 <script type="text/javascript">
     $(document).ready(function () {
         $('a', '#filters .card-header li.nav-item').click(function (e) {
-            window.location.hash = $(this).attr("href");
+            var $this = $(this);
+            var $filters = $("#filters");
+            var hash = $this.attr("href");
+            if ($filters.data("chosen_filter") != hash) {
+                $filters.data("chosen_filter", hash);
+                window.location.hash = hash;
+            }
+            else {
+                e.preventDefault();
+            }
+
         });
 
         $('select[multiple]').multiselect({
@@ -73,13 +83,6 @@
                         }
                     });
                     return labels.join(', ') + '';
-                }
-            },
-            onInitialized: function (select, container) {
-                var url_hash = window.location.hash ? window.location.hash : "#simple_filter";
-                var $a = $('a[href="' + url_hash + '"]', '#filters .card-header li.nav-item');
-                if (!$a.data('init')) {
-                    $a.data('init', true).click();
                 }
             }
         });
@@ -147,11 +150,12 @@
                 var $table_buttons = $(".table-buttons");
                 var api = new $.fn.dataTable.Api(settings);
 
+                var url_hash = window.location.hash ? window.location.hash : "#simple_filter";
+                $('a[href="' + url_hash + '"]').trigger("click");
+
                 $(".table-options-group", $table.closest(".main-table")).html($table_buttons.html());
                 $table_buttons.remove();
                 api.fixedHeader.adjust();
-                console.log();
-                {#                $table.data("rows_count", $table.rows().length);#}
                 $table.closest(".main-table").collapse("show").siblings(".loading").hide();
             },
             language: {
@@ -190,7 +194,6 @@
         }).on('draw.dt', function (e, settings) {
             var api = new $.fn.dataTable.Api(settings);
             set_all_selected(table_users);
-            console.log(table_users.rows({search: 'applied'}));
             $('input.table-checkbox-all', '.table-users tbody tr:selected').prop("checked", true);
 
         });
@@ -214,14 +217,14 @@
             if (rows.data().length == 0)
                 rows = table_users.rows();
 
-            var student_ids = [];
+            var profile_ids = [];
 
             rows.every(function () {
-                student_ids.push($(this.node()).data('id_user'));
+                profile_ids.push($(this.node()).data('id_profile'));
             });
 
             $(".selected_users_count", "#modal_change_status").text(rows.data().length);
-            $("#form_change_status").data("student_ids", {"student_ids": student_ids});
+            $("#form_change_status").data("profile_ids", {"profile_ids": profile_ids});
         });
 
         $("input.no-change", "#modal_change_status").change(function () {
@@ -246,8 +249,7 @@
             $('#modal_change_status').data("is_form_submitting", true);
 
             var $form_change_status = $("#form_change_status");
-            var post_data = $form_change_status.serialize() + '&' + $.param($form_change_status.data("student_ids"));
-            console.log(post_data);
+            var post_data = $form_change_status.serialize() + '&' + $.param($form_change_status.data("profile_ids"));
             $.post('{% url staff.views.ajax_change_status %}', post_data)
                 .always(function () {
                     var d = 'disabled';

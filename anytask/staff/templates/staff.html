@@ -51,16 +51,18 @@
                             <p class="card-text">
                                 {% trans 'Файл формата CSV. Возможны варианты поиска по логину (login) и почте (email).' %}
                             </p>
-                            <div id="error_file_input_from_post" class="alert {% if is_error %}alert-danger{% elif file_filter_err %}alert-warning{% else %}alert-success{% endif %} alert-dismissible">
-                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                                {% if file_filter_err %}
-                                    {{ file_filter_err }}
-                                {% else %}
-                                    {% trans "Найдено пользователей: " %}{{ filter.users_info|length }}
-                                {% endif %}
-                            </div>
+                            {% if show_file_alert %}
+                                <div id="error_file_input_from_post" class="alert {% if is_error %}alert-danger{% elif file_filter_err %}alert-warning{% else %}alert-success{% endif %} alert-dismissible">
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                    {% if file_filter_err %}
+                                        {{ file_filter_err }}
+                                    {% else %}
+                                        {% trans "Найдено пользователей: " %}{{ filter.users_info|length }}
+                                    {% endif %}
+                                </div>
+                            {% endif %}
                             <form method="post" enctype="multipart/form-data">
                                 {% csrf_token %}
                                 <input type="file" class="" name="file_input" id="file_input">
@@ -91,7 +93,7 @@
                                 </thead>
                                 <tbody>
                                 {% for id_user, user_info in filter.users_info.iteritems %}
-                                    <tr data-id_user="{{ id_user }}">
+                                    <tr data-id_user="{{ id_user }}" data-id_profile="{{ user_info.id_profile }}">
                                         <td>
                                             <input type='checkbox' class='table-checkbox'>
                                         </td>
@@ -129,7 +131,6 @@
                     <p>{% trans "Выбрано пользователей: " %}<span class="selected_users_count"></span>.</p>
                     <form id="form_change_status">
                         {% csrf_token %}
-                        {#                        <input type="hidden" name="student_ids[]" id="student_ids">#}
                         {% for status_type, status_values in statuses.iteritems %}
                             <fieldset class="form-group">
                                 <label class="status-type-label" data-type="{{ status_type }}">

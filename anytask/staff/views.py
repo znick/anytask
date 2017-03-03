@@ -39,7 +39,9 @@ def staff_page(request):
     user_profiles = None
     file_filter_err = ''
     is_error = False
+    show_file_alert = False
     if request.method == 'POST':
+        show_file_alert = True
         if 'file_input' not in request.FILES:
             raise PermissionDenied
 
@@ -97,6 +99,7 @@ def staff_page(request):
         'file_filter_err': file_filter_err,
         'is_error': is_error,
         'statuses': statuses,
+        'show_file_alert': show_file_alert,
     }
 
     return render_to_response('staff.html', context, context_instance=RequestContext(request))
@@ -108,7 +111,16 @@ def ajax_change_status(request):
     if not request.is_ajax():
         return HttpResponseForbidden()
 
-    print request.POST
+    post_dict = dict(request.POST)
+    statuses_id = []
+    for key, value in post_dict.iteritems():
+        if key.startswith('status_') and u'0' not in value:
+            statuses_id += value
+
+    if statuses_id and 'profile_ids[]' in post_dict:
+        for profile in UserProfile.objects.filter(id__in=post_dict['profile_ids[]']):
+            for status in statuses_id:
+                profile.set_status(status)
 
     return HttpResponse("OK")
 

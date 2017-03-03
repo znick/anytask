@@ -4,6 +4,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.utils.translation import ugettext as _
+from django import forms
 
 from datetime import datetime
 from collections import defaultdict
@@ -127,9 +128,9 @@ class UserProfile(models.Model):
         if not isinstance(new_status, UserStatus):
             new_status = UserStatus.objects.get(id=new_status)
 
-        for status in self.user_status.all():
-            if status.type == new_status.type:
-                self.user_status.remove(status)
+        if new_status.type:
+            self.user_status.remove(*self.user_status.filter(type=new_status.type))
+
         self.user_status.add(new_status)
 
     def get_unread_count(self):
@@ -215,6 +216,7 @@ class UserProfileFilter(django_filters.FilterSet):
 
                 users_info = {}
                 for info in qs.filter(**qs_filter).values(
+                        'id',
                         'user__id',
                         'user__username',
                         'user__email',
@@ -229,6 +231,7 @@ class UserProfileFilter(django_filters.FilterSet):
                 ):
                     if info['user__id'] not in users_info:
                         users_info[info['user__id']] = defaultdict(dict)
+                        users_info[info['user__id']]['id_profile'] = info['id']
                         users_info[info['user__id']]['username'] = info['user__username']
                         users_info[info['user__id']]['email'] = info['user__email']
                         users_info[info['user__id']]['last_name'] = info['user__last_name']
