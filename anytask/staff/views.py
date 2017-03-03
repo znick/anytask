@@ -1,23 +1,34 @@
 # -*- coding: utf-8 -*-
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
-
+from django.conf import settings
+from django.http import HttpResponse, HttpResponseForbidden
 from django.core.exceptions import PermissionDenied
 
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 from django.utils.translation import ugettext as _
 
+from collections import defaultdict
+
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML
 
 from courses.models import StudentCourseMark
 from courses.models import Course
-from staff.models import UserProfileFilter
-from users.models import UserProfile, UserStatus
+from users.models import UserProfile, UserStatus, UserProfileFilter
+
+import csv, logging
+
+logger = logging.getLogger('django.request')
+
+MAX_FILE_SIZE = settings.FILE_UPLOAD_MAX_MEMORY_SIZE
+SEARCH_FIELDS = {
+    'login': 'user__username',
+    'email': 'user__email',
+}
 
 
-@require_http_methods(['GET'])
 @login_required
 def staff_page(request):
     user = request.user
@@ -25,28 +36,81 @@ def staff_page(request):
     if not user.is_staff:
         raise PermissionDenied
 
-    user_profiles = UserProfile.objects.all()
+    user_profiles = None
+    file_filter_err = ''
+    is_error = False
+    if request.method == 'POST':
+        if 'file_input' not in request.FILES:
+            raise PermissionDenied
 
-    user_as_str = str(user.username) + '_userprofiles_filter'
-    f = UserProfileFilter(request.GET)
+        file_filter = request.FILES['file_input']
+        if file_filter.size > MAX_FILE_SIZE:
+            file_filter.close()
+            raise PermissionDenied
+
+        reader = csv.reader(file_filter, delimiter=";")
+
+        try:
+            fieldnames = reader.next()
+
+            if len(fieldnames) == 1 and fieldnames[0] in SEARCH_FIELDS:
+                search_values = set(row[0] for row in reader)
+                user_profiles = UserProfile.objects.filter(
+                    **{SEARCH_FIELDS[fieldnames[0]] + '__in': list(search_values)})
+                if len(user_profiles) != len(search_values):
+                    err_search_values = search_values - set(
+                        user_profiles.values_list(SEARCH_FIELDS[fieldnames[0]], flat=True))
+                    file_filter_err = _(u'Данные пользователи не найдены: ') + u', '.join(err_search_values)
+            else:
+                file_filter_err = _(u'Неверный формат файла')
+                is_error = True
+        except Exception as e:
+            logger.error('Error in staff page file filter upload: %s', e)
+            file_filter_err = str(e)
+            is_error = True
+
+    f = UserProfileFilter(request.GET if request.method == 'GET' else {}, queryset=user_profiles)
     f.set()
-
-
-    # if f.form.data:
-    #     request.session[user_as_str] = f.form.data
-    # elif user_as_str in request.session:
-    #     f.form.data = request.session.get(user_as_str)
 
     f.form.helper = FormHelper(f.form)
     f.form.helper.form_method = 'get'
     f.form.helper.layout.append(HTML(u"""<div class="form-group row">
         <button id="button_filter" class="btn btn-secondary pull-xs-right" type="submit">{0}</button>
 </div>""".format(_(u'Применить'))))
+
+    statuses = {}
+    for status in UserStatus.objects.all():
+        status_info = {
+            'id': status.id,
+            'name': status.name,
+        }
+        if status.type in statuses:
+            statuses[status.type]['values'].append(status_info)
+        else:
+            statuses[status.type] = {
+                'type_name': status.get_type_display(),
+                'values': [status_info],
+            }
+
     context = {
         'filter': f,
+        'file_filter_err': file_filter_err,
+        'is_error': is_error,
+        'statuses': statuses,
     }
 
     return render_to_response('staff.html', context, context_instance=RequestContext(request))
+
+
+@require_http_methods(['POST'])
+@login_required
+def ajax_change_status(request):
+    if not request.is_ajax():
+        return HttpResponseForbidden()
+
+    print request.POST
+
+    return HttpResponse("OK")
 
 
 @require_http_methods(['GET'])

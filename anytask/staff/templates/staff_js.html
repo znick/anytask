@@ -1,55 +1,66 @@
 {% load i18n %}
+
+<link rel="stylesheet" href="{{ STATIC_URL }}kartik-v-bootstrap-fileinput/css/fileinput.min.css"/>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap4.min.css"/>
+<link rel="stylesheet" type="text/css"
+      href="https://cdn.datatables.net/fixedheader/3.1.2/css/fixedHeader.bootstrap4.min.css"/>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/select/1.2.0/css/select.bootstrap4.min.css"/>
+
+
+<script src="{{ STATIC_URL }}kartik-v-bootstrap-fileinput/js/fileinput.min.js"></script>
+<script src="{{ STATIC_URL }}kartik-v-bootstrap-fileinput/js/locales/ru.js"></script>
+<script src="{{ STATIC_URL }}kartik-v-bootstrap-fileinput/themes/fa/theme.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap4.min.js"></script>
 <script type="text/javascript"
-        src="https://cdn.datatables.net/colreorder/1.3.2/js/dataTables.colReorder.min.js"></script>
-<script type="text/javascript"
-        src="https://cdn.datatables.net/fixedcolumns/3.2.2/js/dataTables.fixedColumns.min.js"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.2.2/js/dataTables.buttons.min.js"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.html5.min.js"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.bootstrap4.min.js"></script>
-<script type="text/javascript" src="//cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/pdfmake.min.js"></script>
-<script type="text/javascript" src="//cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js"></script>
-
-
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap4.min.css"/>
-<link rel="stylesheet" type="text/css"
-      href="https://cdn.datatables.net/colreorder/1.3.2/css/colReorder.bootstrap4.min.css"/>
-<link rel="stylesheet" type="text/css"
-      href="https://cdn.datatables.net/fixedcolumns/3.2.2/css/fixedColumns.bootstrap4.min.css"/>
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.2.2/css/buttons.bootstrap4.min.css"/>
-
+        src="https://cdn.datatables.net/fixedheader/3.1.2/js/dataTables.fixedHeader.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/select/1.2.0/js/dataTables.select.min.js"></script>
 
 <script type="text/javascript">
-
-
     $(document).ready(function () {
-        var orderCount = 0;
+        $('a', '#filters .card-header li.nav-item').click(function (e) {
+            window.location.hash = $(this).attr("href");
+        });
 
-        $("#edit_statuses").multiselect({
+        $('select[multiple]').multiselect({
             buttonClass: 'btn btn-secondary btn-block',
             templates: {
-                ul: '<ul class="multiselect-container dropdown-menu"></ul>',
+                ul: '<ul class="multiselect-container dropdown-menu" style="left:inherit;top: inherit;"></ul>',
                 li: '<li><a tabindex="0" class="dropdown-item"><label></label></a></li>',
-                filter: '<li class="multiselect-item filter"><div class="input-group"><span class="input-group-addon"><i class="fa fa-search"></i></span><input class="form-control multiselect-search" type="text"></div></li>',
+                filter: '<li class="multiselect-item filter"><div class="input-group"><input class="form-control multiselect-search" type="text"></div></li>',
                 filterClearBtn: '<span class="input-group-btn"><button class="btn btn-secondary btn-block multiselect-clear-filter" type="button"><i class="fa fa-times"></i></button></span>'
+
             },
-            selectAllJustVisible: false,
+            includeSelectAllOption: true,
             enableCaseInsensitiveFiltering: true,
-            selectAllText: '{% trans "Все статусы" %}',
-            allSelectedText: '{% trans "Все статусы" %}',
+            filterPlaceholder: "{% trans "Найти..." %}",
+            selectAllText: '{% trans "Выбрать все" %}',
+            allSelectedText: '{% trans "Все выбрано" %}',
             maxHeight: 200,
             buttonContainer: '<div style="width:100%;" class="multiselect-dropdown"/>',
             buttonWidth: '100%',
-            checkboxName: function(option) {
-                return 'children[]';
+            buttonTitle: function (options, select) {
+                var labels = [];
+
+                if (options.length === 0) {
+                    return '---';
+                }
+                else if (options.length === $('option', select).length) {
+                    return '{% trans "Все выбрано" %}';
+                }
+                else {
+                    options.each(function () {
+                        labels.push($(this).text());
+                    });
+                }
+                return labels.join(', ');
             },
             buttonText: function (options, select) {
                 if (options.length === 0) {
-                    return '{% trans "Не выбрано ни одного статуса" %}';
+                    return '---';
                 }
                 else if (options.length === $('option', select).length) {
-                    return '{% trans "Все статусы" %}';
+                    return '{% trans "Все выбрано" %}';
                 }
                 else {
                     var labels = [];
@@ -64,94 +75,228 @@
                     return labels.join(', ') + '';
                 }
             },
-            onChange: function(option, checked) {
-                if (checked) {
-                    orderCount++;
-                    $(option).data('order', orderCount);
-                }
-                else {
-                    $(option).data('order', '');
+            onInitialized: function (select, container) {
+                var url_hash = window.location.hash ? window.location.hash : "#simple_filter";
+                var $a = $('a[href="' + url_hash + '"]', '#filters .card-header li.nav-item');
+                if (!$a.data('init')) {
+                    $a.data('init', true).click();
                 }
             }
         });
 
-        $("#btn-generate").click(function() {
-            var selected = [];
-            $("#edit_statuses option:selected").each(function(){
-                selected.push([$(this).val(), $(this).data('order')]);
-            });
-
-            selected.sort(function(a, b) {
-                return a[1] - b[1];
-            });
-
-            var url = '';
-            for (var i = 0; i < selected.length; i++) {
-                url += selected[i][0] + '_';
-            }
-            url = url.substring(0, url.length - 1);
-            window.location.href = "gradebook/" + url;
+        $('#file_input').fileinput({
+            language: 'ru',
+            theme: 'fa',
+            showPreview: false,
+            showCancel: false,
+            allowedFileExtensions: ['csv'],
+            maxFileSize: 2560,
+            layoutTemplates: {
+                main1: '{preview}' +
+                '<div class="kv-upload-progress hidden"></div>' +
+                '<div id="error_file_input"></div>' +
+                '<div class="input-group {class}">' +
+                '    {caption}' +
+                '    <div class="input-group-btn">' +
+                '        {remove}' +
+                '        {cancel}' +
+                '        {browse}' +
+                '        {upload}' +
+                '    </div>' +
+                '</div>',
+            },
+            removeIcon: '<i class="fa fa-trash-o"></i>',
+            uploadClass: 'btn btn-primary',
+            removeClass: 'btn btn-secondary',
+            browseClass: 'btn btn-secondary',
+            elErrorContainer: '#error_file_input',
+            msgErrorClass: 'alert alert-danger alert-dismissible'
         });
 
-        var table_min_height = '50vh';
-        $(".table_users").each(function (i) {
-            var t = $(this).DataTable({
-                dom: 'Bfrtip',
-                scrollY: table_min_height,
-                scrollX: true,
-                scrollCollapse: true,
-                paging: false,
-                buttons: [
-                    {
-                        extend: 'copy',
-                        text: '{% trans "Скопировать" %}',
-                        exportOptions: {
-                            columns: function (idx, data, node) {
-                                return $.inArray('', data) === -1;
-                            }
-                        }
-                    },
-                    {
-                        extend: 'csv',
-                        exportOptions: {
-                            columns: function (idx, data, node) {
-                                return $.inArray('', data) === -1;
-                            }
-                        }
-                    }],
-                language: {
-                    "decimal": "",
-                    "emptyTable": "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{% trans 'Пустая таблица' %}",
-                    "info": "{% trans '_TOTAL_ студента(ов)' %}",
-                    "infoEmpty": "{% trans '0 студентов' %}",
-                    "infoFiltered": "{% trans '(из _MAX_)' %}",
-                    "infoPostFix": "",
-                    "thousands": ",",
-                    "lengthMenu": "{% trans 'Показать _MENU_ студентов' %}",
-                    "loadingRecords": "{% trans 'Загрузка...' %}",
-                    "processing": "{% trans 'Вычисление...' %}",
-                    "search": "{% trans 'Поиск:' %}",
-                    "zeroRecords": "{% trans 'Ничего не найдено' %}",
-                    "paginate": {
-                        "first": "{% trans 'Первая' %}",
-                        "last": "{% trans 'Последняя' %}",
-                        "next": "{% trans 'Вперед' %}",
-                        "previous": "{% trans 'Назад' %}"
-                    },
-                    "aria": {
-                        "sortAscending": ": activate to sort column ascending",
-                        "sortDescending": ": activate to sort column descending"
-                    },
-                    buttons: {
-                        copyTitle: '{% trans "Данные скопированы в буфер обмена" %}',
-                        copySuccess: {
-                            _: '%d {% trans "записей из таблицы" %}',
-                            1: '{% trans "1 запись из таблицы" %}'
-                        }
+        $('#file_filter').on("click", '#error_file_input .close.kv-error-close', function (e) {
+            $('#file_input').fileinput('clear');
+        }).on("click", 'div.btn-file', function (e) {
+            $('#error_file_input_from_post').hide();
+        });
+
+        var table_users = $('.table-users').DataTable({
+            searching: true,
+            ordering: true,
+            paging: false,
+            autoWidth: false,
+            deferRender: true,
+            order: [[2, 'asc']],
+            fixedHeader: {
+                headerOffset: $('nav.navbar').outerHeight()
+            },
+            dom: "<'row'<'table-options-group col-xs-12 col-sm-12 col-md-7 col-lg-8'><'table-search col-xs-12 col-sm-12 col-md-5 col-lg-4'f>>" +
+            "<'row'<'col-xs-12'tr>>" +
+            "<'row'<'col-xs-12 col-sm-12 col-md-4 col-lg-4'i><'col-xs-12 col-sm-12 col-md-8 col-lg-8'p>>",
+            columnDefs: [
+                {
+                    targets: "no-sort",
+                    orderable: false
+                }
+            ],
+            select: {
+                style: 'multi',
+                className: 'selected row-selected'
+            },
+            initComplete: function (settings, json) {
+                var $table = $(settings.nTable);
+                var $table_buttons = $(".table-buttons");
+                var api = new $.fn.dataTable.Api(settings);
+
+                $(".table-options-group", $table.closest(".main-table")).html($table_buttons.html());
+                $table_buttons.remove();
+                api.fixedHeader.adjust();
+                console.log();
+                {#                $table.data("rows_count", $table.rows().length);#}
+                $table.closest(".main-table").collapse("show").siblings(".loading").hide();
+            },
+            language: {
+                "decimal": "",
+                "emptyTable": "{% trans 'Ничего не найдено' %}",
+                "info": "{% trans "_START_-_END_ из _TOTAL_" %}",
+                "infoEmpty": "0",
+                "infoFiltered": "(из _MAX_)",
+                "infoPostFix": "",
+                "thousands": ",",
+                "lengthMenu": "{% trans "Показать _MENU_" %}",
+                "loadingRecords": "{% trans "Загрузка..." %}",
+                "processing": "<span class='fa fa-circle-o-notch fa-spin'></span>&nbsp;Загрузка...",
+                "search": "",
+                "searchPlaceholder": "{% trans "Найти..." %}",
+                "zeroRecords": "{% trans "Ничего не найдено" %}",
+                "paginate": {
+                    "next": '<i class="fa fa-angle-right" aria-hidden="true"></i>',
+                    "previous": '<i class="fa fa-angle-left" aria-hidden="true"></i>'
+                },
+                "select": {
+                    "rows": {
+                        _: "{% trans "Выбрано: %d" %}",
+                        0: ""
                     }
                 }
-            });
-            t.draw();
+            }
         });
-    })
+
+        table_users.on('select', function (e, dt, type, indexes) {
+            table_users.rows(indexes).nodes().to$().find('input.table-checkbox').prop("checked", true);
+            set_all_selected(table_users);
+        }).on('deselect', function (e, dt, type, indexes) {
+            table_users.rows(indexes).nodes().to$().find('input.table-checkbox').prop("checked", false);
+            set_all_selected(table_users);
+        }).on('draw.dt', function (e, settings) {
+            var api = new $.fn.dataTable.Api(settings);
+            set_all_selected(table_users);
+            console.log(table_users.rows({search: 'applied'}));
+            $('input.table-checkbox-all', '.table-users tbody tr:selected').prop("checked", true);
+
+        });
+
+        $('input.table-checkbox-all').click(function () {
+            if ($(this).is(":checked")) {
+                table_users.rows({search: 'applied'}).select();
+            }
+            else {
+                table_users.rows({search: 'applied'}).deselect();
+            }
+            $(this).blur();
+        });
+
+        $('a', '.table-users tbody').click(function (e) {
+            e.stopPropagation();
+        });
+
+        $('.main-table').on('click', 'button.table-change-status', function () {
+            var rows = table_users.rows({selected: true});
+            if (rows.data().length == 0)
+                rows = table_users.rows();
+
+            var student_ids = [];
+
+            rows.every(function () {
+                student_ids.push($(this.node()).data('id_user'));
+            });
+
+            $(".selected_users_count", "#modal_change_status").text(rows.data().length);
+            $("#form_change_status").data("student_ids", {"student_ids": student_ids});
+        });
+
+        $("input.no-change", "#modal_change_status").change(function () {
+            var $this = $(this);
+            if ($this.is(":checked"))
+                $this.closest(".form-group").find("input[type='checkbox']").prop("checked", false);
+        });
+
+        $("input[type='checkbox']", "#modal_change_status").change(function () {
+            var $this = $(this);
+
+            if ($this.is(":checked"))
+                $this.closest(".form-group").find("input.no-change").prop("checked", false);
+        });
+
+        $("#modal_change_status_ok").click(function () {
+            var modal_button_ok = $(this);
+            var d = 'disabled';
+
+            modal_button_ok.data('resetText', modal_button_ok.html()).html(modal_button_ok.data('loadingText'));
+            $('button', '#modal_change_status .modal-footer').addClass(d).attr(d, d).prop(d, true);
+            $('#modal_change_status').data("is_form_submitting", true);
+
+            var $form_change_status = $("#form_change_status");
+            var post_data = $form_change_status.serialize() + '&' + $.param($form_change_status.data("student_ids"));
+            console.log(post_data);
+            $.post('{% url staff.views.ajax_change_status %}', post_data)
+                .always(function () {
+                    var d = 'disabled';
+
+                    modal_button_ok.html(modal_button_ok.data('resetText'));
+                    $('button', '#modal_change_status .modal-footer').removeClass(d).removeAttr(d).prop(d, false);
+                    $('#modal_change_status').data("is_form_submitting", false);
+                })
+                .done(function (data) {
+                    $('#modal_change_status_error_text').html('<div class="alert alert-success" role ="alert">' +
+                        '                                     <a class="close" data-dismiss="alert">&times;</a>' +
+                        '                                     <span>{% trans "Сохранено успешно." %}</span>' +
+                        '                                   </div>');
+                    window.location.reload();
+                })
+                .fail(function (data) {
+                    $('#modal_change_status_error_text').html('<div class="alert alert-danger" role ="alert">' +
+                        '                                     <a class="close" data-dismiss="alert">&times;</a>' +
+                        '                                     <span>{% trans "Произошла ошибка при сохранении. Попробуйте снова." %}</span>' +
+                        '                                   </div>');
+                });
+        });
+
+        $("#form_change_status").change(function () {
+            $('#modal_change_status_error_text').html("");
+        });
+
+        $('#modal_change_status').on('hide.bs.modal', function (e) {
+            if ($('#modal_change_status').data("is_form_submitting"))
+                e.preventDefault();
+        }).on('hidden.bs.modal', function (e) {
+            $("#form_change_status").trigger("reset");
+            $('#modal_change_status_error_text').html("");
+        })
+    });
+
+    function set_all_selected(table_users) {
+        if ($('.table-users tbody tr').length == $('.table-users tbody tr.selected').length)
+            $('input.table-checkbox-all').prop("checked", true);
+        else
+            $('input.table-checkbox-all').prop("checked", false);
+
+        var btn_text = "";
+        var selected_count = table_users.rows({selected: true}).data().length;
+        if (selected_count == 0 || selected_count == table_users.rows().data().length)
+            btn_text = "{% trans "Изменить статус для всех пользователей" %}";
+        else
+            btn_text = "{% trans "Изменить статус для выбранных пользователей" %}";
+
+        $('button.table-change-status').text(btn_text).prop("title", btn_text);
+    }
 </script>

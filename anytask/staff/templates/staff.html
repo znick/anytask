@@ -2,70 +2,12 @@
 {% load i18n %}
 {% load crispy_forms_tags %}
 
-{% block title %} Staff{% endblock %}
+{% block title %}Staff{% endblock %}
 
 {% block scripts %}
-    <script src="{{ STATIC_URL }}jquery.stickytableheaders.min.js"></script>
-    <script type="text/javascript">
-        $(document).ready(function() {
-            $(".table_users").stickyTableHeaders({fixedOffset: $('.navbar')});
+    {% include "staff_js.html" %}
 
-            $('select[multiple]').multiselect({
-                buttonClass: 'btn btn-secondary btn-block',
-                templates: {
-                    ul: '<ul class="multiselect-container dropdown-menu" style="left:inherit;top: inherit;"></ul>',
-                    li: '<li><a tabindex="0" class="dropdown-item"><label></label></a></li>',
-                    filter: '<li class="multiselect-item filter"><div class="input-group"><input class="form-control multiselect-search" type="text"></div></li>',
-                    filterClearBtn: '<span class="input-group-btn"><button class="btn btn-secondary btn-block multiselect-clear-filter" type="button"><i class="fa fa-times"></i></button></span>'
-
-                },
-                includeSelectAllOption: true,
-                enableCaseInsensitiveFiltering: true,
-                filterPlaceholder: "{% trans "Найти..." %}",
-                selectAllText: '{% trans "Выбрать все" %}',
-                allSelectedText: '{% trans "Все выбрано" %}',
-                maxHeight: 200,
-                buttonContainer: '<div style="width:100%;" class="multiselect-dropdown"/>',
-                buttonWidth: '100%',
-                buttonTitle: function(options, select) {
-                    var labels = [];
-
-                    if (options.length === 0) {
-                        return '---';
-                    }
-                    else if (options.length === $('option', select).length) {
-                        return '{% trans "Все выбрано" %}';
-                    }
-                    else {
-                        options.each(function () {
-                            labels.push($(this).text());
-                        });
-                    }
-                    return labels.join(', ');
-                },
-                buttonText: function(options, select) {
-                    if (options.length === 0) {
-                        return '---';
-                    }
-                    else if (options.length === $('option', select).length) {
-                        return '{% trans "Все выбрано" %}';
-                    }
-                    else {
-                        var labels = [];
-                        options.each(function() {
-                            if ($(this).attr('label') !== undefined) {
-                                labels.push($(this).attr('label'));
-                            }
-                            else {
-                                labels.push($(this).text());
-                            }
-                        });
-                        return labels.join(', ') + '';
-                    }
-                }
-            });
-        });
-    </script>
+    <link href="{{ STATIC_URL }}staff.css" rel='stylesheet' />
 
 {% endblock %}
 
@@ -85,70 +27,150 @@
 
 {% block content %}
 
-    <style>
-        .table_tasks th {
-            white-space: nowrap
-        }
-    </style>
-
     <div class="row">
-        {% if filter.count or filter.form.data %}
-            <div class="col-md-2 col-xs-12">
-                <div class="card card-block" id="filters" style="min-width:11.5rem;">
-                    <div style="padding: 0px 15px 0px 15px;">
-                        {% crispy filter.form %}
+        <div class="col-xl-3 col-lg-4 col-md-12">
+            <div class="card" id="filters">
+                <div class="card-header">
+                    <ul class="nav nav-pills">
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="pill" href="#simple_filter" role="tab" aria-controls="simple_filter">{% trans "Простой фильтр" %}</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="pill" href="#file_filter" role="tab" aria-controls="file_filter">{% trans "Загрузить список студентов" %}</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-block">
+                    <div class="tab-content">
+                        <div class="tab-pane fade" id="simple_filter" role="tabpanel">
+                            <div class="crispy-form">
+                                {% crispy filter.form %}
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="file_filter" role="tabpanel">
+                            <p class="card-text">
+                                {% trans 'Файл формата CSV. Возможны варианты поиска по логину (login) и почте (email).' %}
+                            </p>
+                            <div id="error_file_input_from_post" class="alert {% if is_error %}alert-danger{% elif file_filter_err %}alert-warning{% else %}alert-success{% endif %} alert-dismissible">
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                                {% if file_filter_err %}
+                                    {{ file_filter_err }}
+                                {% else %}
+                                    {% trans "Найдено пользователей: " %}{{ filter.users_info|length }}
+                                {% endif %}
+                            </div>
+                            <form method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <input type="file" class="" name="file_input" id="file_input">
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <div class="col-md-10 col-xs-12">
-                <div class="card">
-                    <div class="card-block">
-                        <h5 class="card-title">{% trans "Пользователи" %}</h5>
-                        {% if filter.users_info %}
-                            <table class="table table_users">
+        <div class="col-xl-9 col-lg-8 col-md-12">
+            <div class="card">
+                <div class="card-block">
+                    <h5 class="card-title">{% trans "Пользователи" %}</h5>
+                    {% if not is_error and filter.count and filter.users_info %}
+                        <div class="loading">
+                            <span class='fa fa-circle-o-notch fa-spin fa-fw'></span>
+                        </div>
+                        <div class="main-table collapse">
+                            <table class="table  table-hover table-users">
                                 <thead>
-                                <tr style="background-color: #ffffff;">
-                                    <th>{% trans "Имя" %}<i class="fa fa-fw fa-sort"></i></th>
-                                    <th>{% trans "Почта" %}<i class="fa fa-fw fa-sort"></i></th>
-                                    <th>{% trans "Статус" %}<i class="fa fa-fw fa-sort"></i></th>
-                                    <th>{% trans "Курс" %}<i class="fa fa-fw fa-sort"></i></th>
-                                    <th>{% trans "Балл" %}<i class="fa fa-fw fa-sort"></i></th>
+                                <tr>
+                                    <th class="th-checkbox no-sort"><input type='checkbox' class='table-checkbox-all'></th>
+                                    <th class="th-name">{% trans "Имя" %}</th>
+                                    <th class="th-email">{% trans "Почта" %}</th>
+                                    <th class="th-status no-sort">{% trans "Статусы" %}</th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {% for info in filter.users_info.values %}
-                                    <tr>
+                                {% for id_user, user_info in filter.users_info.iteritems %}
+                                    <tr data-id_user="{{ id_user }}">
                                         <td>
-                                            <a href="/users/{{ info.user_profile.user }}">{{ info.user_profile.user.get_full_name }}</a>
+                                            <input type='checkbox' class='table-checkbox'>
                                         </td>
-                                        <td>{{ info.user_profile.user.email }}</td>
+                                        <td title="{{ user_info.last_name }}&nbsp;{{ user_info.first_name }}">
+                                            <a href="/users/{{ user_info.username }}">{{ user_info.last_name }}&nbsp;{{ user_info.first_name }}</a>
+                                        </td>
+                                        <td title="{{ user_info.email }}">{{ user_info.email }}</td>
                                         <td>
-                                            {% for user_status in info.user_profile.user_status.all %}
-                                                <span class="label" style="font-size: 1rem; background-color: {{ user_status.color }}">{{ user_status.name }}</span>
+                                            {% for id_status, status_info in user_info.statuses.iteritems %}
+                                                <span class="label" title="{{ status_info.name }}" style="background-color: {{ status_info.color }}">{{ status_info.name }}</span>
                                             {% endfor %}
                                         </td>
-                                        <td>{{ info.course.name }}</td>
-                                        <td>{{ info.sum_score }}</td>
                                     </tr>
                                 {% endfor %}
                                 </tbody>
                             </table>
-                        {% else %}
-                            <p class="card-text">{% trans "Не найдено ни одного пользователя" %}</p>
-                        {% endif %}
-                    </div>
+                        </div>
+                    {% else %}
+                        <p class="card-text">{% trans "Не найдено ни одного пользователя" %}</p>
+                    {% endif %}
                 </div>
             </div>
-        {% else %}
-            <div class="col-xs-12">
-                <div class="card">
-                    <div class="card-block">
-                        <h5 class="card-title">{% trans "Пользователи" %}</h5>
-                        <p class="card-text">{% trans "Нет пользователей" %}</p>
-                    </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal_change_status" tabindex="-1" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="modal_table_edit_header">{% trans "Изменение статусов" %}</h4>
+                </div>
+                <div class="modal-body">
+                    <p>{% trans "Выберите новые статусы." %}</p>
+                    <p>{% trans "Выбрано пользователей: " %}<span class="selected_users_count"></span>.</p>
+                    <form id="form_change_status">
+                        {% csrf_token %}
+                        {#                        <input type="hidden" name="student_ids[]" id="student_ids">#}
+                        {% for status_type, status_values in statuses.iteritems %}
+                            <fieldset class="form-group">
+                                <label class="status-type-label" data-type="{{ status_type }}">
+                                    {% if status_type %}
+                                        {{ status_values.type_name }}
+                                    {% else %}
+                                        {% trans "Без типа" %}
+                                    {% endif %}
+                                </label>
+                                <div class="form-check">
+                                    <label class="form-check-label">
+                                        <input type="radio" class="form-check-input {% if not status_type %}no-change{% endif %}" name="status_{{ status_type }}" value="0" checked>
+                                        {% trans "Не менять" %}
+                                    </label>
+                                </div>
+                                {% for status_info in status_values.values %}
+                                    <div class="form-check">
+                                        <label class="form-check-label">
+                                            <input type="{% if status_type %}radio{% else %}checkbox{% endif %}" class="form-check-input" name="status_{{ status_type }}" value="{{ status_info.id }}">
+                                            {{ status_info.name }}
+                                        </label>
+                                    </div>
+                                {% endfor %}
+                            </fieldset>
+                        {% endfor %}
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <div id="modal_change_status_error_text"></div>
+                    <button class="btn btn-secondary" data-dismiss="modal" type="button">{% trans "Закрыть" %}</button>
+                    <button class="btn btn-primary" id="modal_change_status_ok" type="button" data-dismiss="modal" data-loading-text="<span class='fa fa-circle-o-notch fa-spin'></span> {% trans "Сохранение" %}">{% trans "Сохранить" %}</button>
                 </div>
             </div>
-        {% endif %}
+        </div>
+    </div>
+
+    <div class="table-buttons remove-after-init">
+        <div class="table-options" >
+            <button type="button" class="btn btn-secondary table-change-status" data-toggle="modal" data-target="#modal_change_status" title="{% trans "Изменить статус для всех пользователей" %}">
+                {% trans "Изменить статус для всех пользователей" %}
+            </button>
+        </div>
     </div>
 {% endblock %}
