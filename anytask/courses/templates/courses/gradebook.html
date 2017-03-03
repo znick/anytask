@@ -69,8 +69,7 @@
                 <p class="card-text course_teachers" style="border-bottom: 1px solid #e5e5e5;">
                     {% trans "prepodavateli" %}:
                     {% for teacher in course.get_teachers %}
-                        <a href="{% url users.views.profile teacher.username %}">{{ teacher.last_name }} {{ teacher.first_name }}</a>
-                        {% if not forloop.last %},{% endif %}
+                        <a href="{% url users.views.profile teacher.username %}">{{ teacher.last_name }} {{ teacher.first_name }}</a>{% if not forloop.last %},{% endif %}
                     {% endfor %}
                 </p>
 
@@ -102,6 +101,15 @@
                                     {% trans "ne_pokazyvat_skrytye_zadachi" %}
                                 {% else %}
                                     {% trans "pokazat_skrytye_zadachi" %}
+                                {% endif %}
+                            </a>
+                        {% endif %}
+                        {% if visible_hide_button_users %}
+                            <a class="btn btn-secondary btn-sm" id="hide_academ_student_btn">
+                                {% if show_academ_users %}
+                                    {% trans "Не показывать отчисленных студентов" %}
+                                {% else %}
+                                    {% trans "Показать отчисленных студентов" %}
                                 {% endif %}
                             </a>
                         {% endif %}
