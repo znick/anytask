@@ -130,7 +130,7 @@
         <span class="label label-default">{% trans "novyj" %}</span>
         <span class="label label-info">{% trans "trebuetsja_informacija" %}</span>
         {% for issue_status in course.issue_status_system.statuses.all %}
-            <span class="label" style="background-color: {{ issue_status.color }}">{{ issue_status.name }}</span>
+            <span class="label" style="background-color: {{ issue_status.color }}">{{ issue_status.get_name }}</span>
         {% endfor %}
         <span class="label label-inverse">{% trans "summarnyj_ball" %}</span>
     </h5>

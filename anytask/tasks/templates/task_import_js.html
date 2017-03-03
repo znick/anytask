@@ -15,7 +15,7 @@
         {%if not contest_import %}
             $('.task_datetime').datetimepicker({
                 format: 'dd-mm-yyyy hh:ii',
-                language: "ru",
+                language: '{{ user.get_profile.language }}',
                 todayBtn: true,
                 autoclose: true,
                 todayHighlight: true,

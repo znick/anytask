@@ -95,7 +95,7 @@ class Issue(models.Model):
         return mark
 
     def get_status(self):
-        return self.status_field.name
+        return self.status_field.get_name()
 
     def last_comment(self):
         field = IssueField.objects.get(id=1)
@@ -422,11 +422,20 @@ class Event(models.Model):
         pass
 
     def get_message(self):
-        message = list()
+        msg_map = {
+            'responsible_name': _('zadachu_proveriaet'),
+            'followers_names': _('nabludaiut'),
+            'status': _('status_izmenen'),
+            'mark': _('ocenka_izmenena'),
+            'file': _('zagruzhen_faij')
+        }
+        message = ''
         if self.field.history_message:
-            message.append(self.field.history_message)
-        message.append(self.value)
-        return ' '.join(message)
+            if self.field.name in msg_map:
+                self.field.history_message = msg_map[self.field.name]
+            message += self.field.history_message + ' '
+        message += self.value
+        return message
 
     def get_notify_message(self):
         message = list()
@@ -484,10 +493,10 @@ class IssueFilter(django_filters.FilterSet):
         task_choices.insert(0, (u'', _(u'lubaja')))
         self.filters['task'].field.choices = tuple(task_choices)
 
-        status_choices = [(status.id, status.name) for status in course.issue_status_system.statuses.all()]
+        status_choices = [(status.id, status.get_name()) for status in course.issue_status_system.statuses.all()]
         for status_id in sorted(IssueStatus.HIDDEN_STATUSES.values(), reverse=True):
             status_field = IssueStatus.objects.get(pk=status_id)
-            status_choices.insert(0, (status_field.id, status_field.name))
+            status_choices.insert(0, (status_field.id, status_field.get_name()))
         self.filters['status_field'].field.choices = tuple(status_choices)
 
     class Meta:

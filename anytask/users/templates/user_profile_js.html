@@ -75,7 +75,7 @@
 
 
             $("#user_info").tinymce({
-                language: 'ru',
+                language: '{{ user.get_profile.language }}',
                 skin: 'bootstrap4',
                 resize: false,
                 content_css: [

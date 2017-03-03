@@ -61,6 +61,7 @@ def prepare_info_fields(info_fields, request, issue):
                  'rewiev_id': _('nomer_revju'),
                  'run_id': _('nomer_posylki_kontest')
                  }
+
     user = request.user
     for field in info_fields:
         field.editable = field.can_edit(user, issue)
@@ -71,7 +72,7 @@ def prepare_info_fields(info_fields, request, issue):
 
         data = { field.name : field.value }
         field.form = field.get_form(request, issue, data)
-        field.title = title_map[field.name]
+        field.title = title_map[field.name] if field.name in title_map else field.title
 
 
 def contest_rejudge(issue):
@@ -192,6 +193,8 @@ def issue_page(request, issue_id):
             break
 
     statuses_accepted = issue.task.course.issue_status_system.statuses.filter(tag=Issue.STATUS_ACCEPTED)
+    for i in range(len(statuses_accepted)):
+        statuses_accepted[i].name = statuses_accepted[i].get_name()
 
     schools = issue.task.course.school_set.all()
 
