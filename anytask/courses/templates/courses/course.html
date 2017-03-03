@@ -144,7 +144,7 @@
                         </div>
                     </div>
                     <div class="tab-pane fade" id="tasks-tab" role="tabpanel">
-                        <h5>{% if not user_is_teacher %}Задачи{% else %}{% trans "Список групп и задач" %}{% endif %}
+                        <h5>{% if not user_is_teacher %}{% trans "Задачи"%}{% else %}{% trans "Список групп и задач" %}{% endif %}
                             {% if course.can_edit %}
                                 <div class="btn-group pull-xs-right">
                                     <a type="button" class="btn btn-secondary btn-sm"
@@ -191,7 +191,7 @@
                                                         </span>
                                                     </div>
                                                     <div style="width: 20%">
-                                                        {% if task.deadline_time %}сдать до
+                                                        {% if task.deadline_time %}{%  trans "сдать до" %}
                                                             {{ task.deadline_time|date:"H:i d-m-Y" }}
                                                         {% endif %}
                                                     </div>
@@ -205,7 +205,7 @@
                                                                class="btn btn-sm btn-primary pull-xs-right"
                                                                href="{% if task.children.count != 0 %}
                                                        {{ course.id }}/seminar/{{ task.id }}{% endif %}">
-                                                                Перейти</a>
+                                                                {%  trans "Перейти" %}</a>
                                                         {% endif %}
                                                     </div>
                                                 </div>
@@ -259,7 +259,7 @@
                                                                     class="label label-inverse">{{ task.task.score_max }}</span>
                                                             </div>
                                                             <div style="width: 25%">
-                                                                {% if task.task.deadline_time %}сдать до
+                                                                {% if task.task.deadline_time %}{%  trans "сдать до" %}
                                                                     {{ task.task.deadline_time|date:"H:i d-m-Y"}}
                                                                 {% endif %}
                                                             </div>
@@ -299,7 +299,7 @@
                                                     </span>
                                                 </div>
                                                 <div style="width: 20%">
-                                                    {% if task.deadline_time %}сдать до
+                                                    {% if task.deadline_time %}{% trans "сдать до" %}
                                                         {{ task.deadline_time|date:"H:i d-m-Y" }}
                                                     {% endif %}
                                                 </div>
@@ -358,7 +358,7 @@
                                                                 class="label label-inverse">{{ task.task.score_max }}</span>
                                                         </div>
                                                         <div style="width: 25%">
-                                                            {% if task.task.deadline_time %}сдать до
+                                                            {% if task.task.deadline_time %}{% trans "сдать до" %}
                                                                 {{ task.task.deadline_time|date:"H:i d-m-Y"}}
                                                             {% endif %}
                                                         </div>
@@ -368,7 +368,7 @@
                                                                    class="btn btn-sm btn-primary pull-xs-right"
                                                                    href="{% if task.task.children.count != 0 %}
                                                             {{ course.id }}/seminar/{{ task.task.id }}{% endif %}">
-                                                                    Перейти</a>
+                                                                    {% trans "Перейти" %</a>
                                                             {% endif %}
                                                         </div>
                                                     </div>

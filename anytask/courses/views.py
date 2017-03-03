@@ -153,6 +153,8 @@ def gradebook(request, course_id, task_id=None, group_id=None):
     context['group_gradebook'] = True if group else False
     context['show_hidden_tasks'] = request.session.get(
         str(request.user.id) + '_' + str(course.id) + '_show_hidden_tasks', False)
+    context['show_academ_users'] = request.session.get(
+        str(request.user.id) + '_' + str(course.id) + '_show_academ_users', True)
     context['school'] = schools[0] if schools else ''
 
     return render_to_response('courses/gradebook.html', context, context_instance=RequestContext(request))
@@ -289,6 +291,9 @@ def tasklist_shad_cpp(request, course, seminar=None, group=None):
     group_x_max_score = {}
     default_teacher = {}
     show_hidden_tasks = request.session.get(str(request.user.id) + '_' + str(course.id) + '_show_hidden_tasks', False)
+    show_academ_users = request.session.get(str(request.user.id) + '_' + str(course.id) + '_show_academ_users', True)
+
+    academ_students = []
 
     for group in groups:
         student_x_task_x_task_takens = {}
@@ -328,7 +333,14 @@ def tasklist_shad_cpp(request, course, seminar=None, group=None):
             student_id = issue.student.id
             issues_x_student[student_id].append(issue)
 
-        for student in group.students.filter(is_active=True):
+        students = group.students.filter(is_active=True)
+        not_active_students = UserProfile.objects.filter(Q(user__in=group.students.filter(is_active=True)) &
+                                                  (Q(user_status__tag='not_active') | Q(user_status__tag='academic')))
+        academ_students += [x.user for x in not_active_students]
+        if not show_academ_users:
+            students = set(students) - set(academ_students)
+
+        for student in students:
             if user == student:
                 user_is_attended = True
                 user_is_attended_special_course = True
@@ -386,7 +398,10 @@ def tasklist_shad_cpp(request, course, seminar=None, group=None):
         'seminar': seminar,
         'visible_queue': course.user_can_see_queue(user),
         'visible_hide_button': Task.objects.filter(Q(course=course) & Q(is_hidden=True)).count(),
-        'show_hidden_tasks': show_hidden_tasks
+        'show_hidden_tasks': show_hidden_tasks,
+        'visible_hide_button_users': len(academ_students),
+        'show_academ_users': show_academ_users
+
     }
 
     return context
@@ -401,7 +416,7 @@ def get_course_mark(course, group, student):
     course_mark = '--'
 
     try:
-        student_course_mark = StudentCourseMark.objects.get(course=course, group=group, student=student)
+        student_course_mark = StudentCourseMark.objects.get(course=course, student=student)
         if student_course_mark.mark:
             mark_id = student_course_mark.mark.id
             course_mark = unicode(student_course_mark)
@@ -594,13 +609,26 @@ def change_visibility_hidden_tasks(request):
     return HttpResponse("OK")
 
 
+def change_visibility_academ_users(request):
+    if not request.method == 'POST':
+        return HttpResponseForbidden()
+
+    course = get_object_or_404(Course, id=int(request.POST['course_id']))
+    if not course.user_is_teacher(request.user):
+        return HttpResponseForbidden()
+
+    session_var_name = str(request.user.id) + '_' + request.POST['course_id'] + '_show_academ_users'
+    request.session[session_var_name] = not request.session.get(session_var_name, True)
+
+    return HttpResponse("OK")
+
+
 @login_required
 def set_course_mark(request):
     if request.method != 'POST':
         return HttpResponseForbidden()
 
     course = get_object_or_404(Course, id=request.POST['course_id'])
-    group = get_object_or_404(Group, id=request.POST['group_id'])
     student = get_object_or_404(User, id=request.POST['student_id'])
     if request.POST['mark_id'] != '-1':
         mark = get_object_or_404(MarkField, id=request.POST['mark_id'])
@@ -609,10 +637,9 @@ def set_course_mark(request):
 
     student_course_mark = StudentCourseMark()
     try:
-        student_course_mark = StudentCourseMark.objects.get(course=course, group=group, student=student)
+        student_course_mark = StudentCourseMark.objects.get(course=course, student=student)
     except StudentCourseMark.DoesNotExist:
         student_course_mark.course = course
-        student_course_mark.group = group
         student_course_mark.student = student
 
     student_course_mark.teacher = request.user
@@ -620,7 +647,7 @@ def set_course_mark(request):
     student_course_mark.mark = mark
     student_course_mark.save()
 
-    return HttpResponse(json.dumps({'mark': unicode(mark), 'student_course_mark_id': student_course_mark.id}),
+    return HttpResponse(json.dumps({'mark': unicode(mark), 'mark_id': mark.id}),
                         content_type="application/json")
 
 

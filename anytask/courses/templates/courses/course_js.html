@@ -212,6 +212,14 @@
             $("#btn_group_edit_course").css('background-color', '#e5e5e5');
         });
 
+        $('#hide_academ_student_btn').click(function () {
+            $.post('{% url courses.views.change_visibility_academ_users %}',
+                {'course_id': {{ course.id }}, 'csrfmiddlewaretoken': "{{ csrf_token }}"},
+                function (data) {
+                    window.location.reload();
+                });
+        });
+
 {#        $("#tasks-table").DataTable();#}
 
         var table_min_height = '30vh';
@@ -486,11 +494,16 @@
         });
 
         $('.mark-form').change(function () {
-            $(this).collapse('hide');
-            var mark_value = $($(this).closest('td')).find('.mark-value');
-            $(mark_value).collapse('show');
-            $.post('{% url courses.views.set_course_mark %}', $(this).serialize(), function (data) {
-                $($(mark_value).find('span')).text(data.mark);
+            var $form = $(this);
+            var student_id = $form.closest('td').prop('class');
+            var $mark_cell = $('td.' + student_id);
+
+            $form.collapse('hide');
+            $form.closest('td').find('.mark-value').collapse('show');
+
+            $.post('{% url courses.views.set_course_mark %}', $form.serialize(), function (data) {
+                $mark_cell.find('.mark-value').find('span').text(data.mark);
+                $mark_cell.find('.mark-form').find('select').val(data.mark_id);
             });
         });
 
