@@ -362,7 +362,7 @@ def tasklist_shad_cpp(request, course, seminar=None, group=None):
             elif not course.user_can_see_transcript(user, student):
                 continue
 
-            mark_id, course_mark = get_course_mark(course, group, student)
+            mark_id, course_mark = get_course_mark(course, student)
 
             group_x_student_information[group].append((student,
                                                        student_x_task_x_task_takens[student][0],
@@ -396,7 +396,7 @@ def get_tasklist_context(request, course):
     return tasklist_shad_cpp(request, course)
 
 
-def get_course_mark(course, group, student):
+def get_course_mark(course, student):
     mark_id = -1
     course_mark = '--'
 
