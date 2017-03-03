@@ -155,7 +155,7 @@ class ViewsTest(TestCase):
 
         # title
         self.assertEqual(html.find('title').string.strip().strip('\n'),
-                         u'Создание задачи | course_name | 2016-2017',
+                         u'sozdanie_zadachi | course_name | 2016-2017',
                          'Wrong page title')
 
         # navbar
@@ -432,9 +432,7 @@ class ViewsTest(TestCase):
         response = client.post(reverse('tasks.views.contest_task_import'), post_data)
         self.assertEqual(response.status_code, 200, "Can't get get_contest_info via teacher")
         self.assertEqual(response.content,
-                         '{"is_error": true, "error": "\u0423 anytask \u043d\u0435\u0442 '
-                         '\u043f\u0440\u0430\u0432 \u043d\u0430 \u0434\u0430\u043d\u043d\u044b\u0439 '
-                         '\u043a\u043e\u043d\u0442\u0435\u0441\u0442"}',
+                         '{"is_error": true, "error": "net_prav_na_kontest"}',
                          'Wrong response text')
 
         # get contest_task_import page with unknown error

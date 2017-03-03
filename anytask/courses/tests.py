@@ -304,7 +304,7 @@ class ViewsTest(TestCase):
         self.assertEqual(breadcrumbs[1].a.string.strip().strip('\n'), u'school_name')
         self.assertEqual(breadcrumbs[2].a['href'], u'/course/1')
         self.assertEqual(breadcrumbs[2].a.string.strip().strip('\n'), u'course_name')
-        self.assertEqual(breadcrumbs[3].string.strip().strip('\n'), u'Очередь на проверку')
+        self.assertEqual(breadcrumbs[3].string.strip().strip('\n'), u'ochered_na_proverku')
 
         # filter
         form = container.form
@@ -391,7 +391,7 @@ class ViewsTest(TestCase):
         self.assertEqual(breadcrumbs[1].a.string.strip().strip('\n'), u'school_name')
         self.assertEqual(breadcrumbs[2].a['href'], u'/course/1')
         self.assertEqual(breadcrumbs[2].a.string.strip().strip('\n'), u'course_name')
-        self.assertEqual(breadcrumbs[3].string.strip().strip('\n'), u'Настройки')
+        self.assertEqual(breadcrumbs[3].string.strip().strip('\n'), u'nastrojki')
 
         # form
         form = container.form
@@ -453,7 +453,7 @@ class ViewsTest(TestCase):
         self.assertEqual(len(btn_group), 2)
         self.assertEqual(btn_group[0]['href'], u'/task/create/1')
         self.assertEqual(btn_group[1]['href'], u'javascript:change_visibility_hidden_tasks(1);')
-        self.assertEqual(btn_group[1].string.strip().strip('\n'), u'Показать скрытые задачи')
+        self.assertEqual(btn_group[1].string.strip().strip('\n'), u'pokazat_skrytye_zadachi')
 
         # table results
         table = container.find('table', 'table_results')
