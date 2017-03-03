@@ -4,7 +4,6 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.utils.translation import ugettext as _
-from django import forms
 
 from datetime import datetime
 from collections import defaultdict
@@ -12,8 +11,6 @@ from collections import defaultdict
 from years.common import get_current_year
 from groups.models import Group
 from courses.models import Course
-from issues.models import Issue
-from issues.model_issue_status import IssueStatus
 from mail.models import Message
 
 from colorfield.fields import ColorField
@@ -51,10 +48,12 @@ class UserStatus(models.Model):
     )
 
     TYPE_ACTIVITY = 'activity'
+    TYPE_FILIAL = 'filial'
     TYPE_EDUCATION_FORM = 'education_form'
 
     TYPE_STATUSES = (
         (TYPE_ACTIVITY, _(u'Статус студента')),
+        (TYPE_FILIAL, _(u'Филлиал')),
         # (TYPE_EDUCATION_FORM, _(u'Форма обучения')),
     )
 
@@ -79,6 +78,8 @@ class UserProfile(models.Model):
 
     info = models.TextField(default="", blank=True, null=True)
 
+    phone = models.CharField(max_length=128, null=True, blank=True)
+
     unit = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
     position = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
     academic_degree = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
@@ -95,6 +96,8 @@ class UserProfile(models.Model):
     update_time = models.DateTimeField(auto_now=True, default=datetime.now)
 
     updated_by = models.ForeignKey(User, db_index=False, null=True, blank=True)
+
+    login_via_yandex = models.BooleanField(db_index=False, null=False, blank=False, default=True)
 
     ya_uid = models.IntegerField(null=True, blank=True)
     ya_login = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
@@ -119,6 +122,15 @@ class UserProfile(models.Model):
             if status.tag == 'not_active' or status.tag == 'academic':
                 return False
         return True
+
+    def set_status(self, new_status):
+        if not isinstance(new_status, UserStatus):
+            new_status = UserStatus.objects.get(id=new_status)
+
+        for status in self.user_status.all():
+            if status.type == new_status.type:
+                self.user_status.remove(status)
+        self.user_status.add(new_status)
 
     def get_unread_count(self):
         return self.unread_messages.exclude(id__in=self.deleted_messages.all()).count()
@@ -164,58 +176,6 @@ class UserProfileLog(models.Model):
 
     def __unicode__(self):
         return unicode(self.user)
-
-
-class IssueFilterStudent(django_filters.FilterSet):
-    is_active = django_filters.ChoiceFilter(label=u'<strong>{0}</strong>'.format(_(u'Тип курса')),
-                                            name='task__course__is_active')
-    years = django_filters.MultipleChoiceFilter(label=u'<strong>{0}</strong>'.format(_(u'Год курса')),
-                                                name='task__course__year', widget=forms.CheckboxSelectMultiple)
-    courses = django_filters.MultipleChoiceFilter(label=u'<strong>{0}</strong>'.format(_(u'Курс')), name='task__course',
-                                                  widget=forms.SelectMultiple)
-    responsible = django_filters.MultipleChoiceFilter(label=u'<strong>{0}</strong>'.format(_(u'Преподаватели')),
-                                                      widget=forms.SelectMultiple)
-    status_field = django_filters.MultipleChoiceFilter(label=u'<strong>{0}</strong>'.format(_(u'Статус')),
-                                                       widget=forms.SelectMultiple)
-    update_time = django_filters.DateRangeFilter(label=u'<strong>{0}</strong>'.format(_(u'Дата последнего изменения')))
-
-    def set_user(self, user):
-        groups = user.group_set.all()
-        courses = Course.objects.filter(groups__in=groups)
-
-        course_choices = set()
-        year_choices = set()
-        teacher_set = set()
-        status_set = set()
-        for course in courses:
-            course_choices.add((course.id, course.name))
-            year_choices.add((course.year.id, unicode(course.year)))
-
-            for teacher in course.get_teachers():
-                teacher_set.add(teacher)
-
-            for status in course.issue_status_system.statuses.all():
-                status_set.add(status)
-
-        self.filters['is_active'].field.choices = ((u'', _(u'Любой')),
-                                                   (1, _(u'Активный')),
-                                                   (0, _(u'Архив')))
-        self.filters['years'].field.choices = tuple(year_choices)
-        self.filters['courses'].field.choices = tuple(course_choices)
-
-        teacher_choices = [(teacher.id, teacher.get_full_name()) for teacher in teacher_set]
-        self.filters['responsible'].field.choices = tuple(teacher_choices)
-
-        status_choices = [(status.id, status.name) for status in status_set]
-        for status_id in sorted(IssueStatus.HIDDEN_STATUSES.values(), reverse=True):
-            status_field = IssueStatus.objects.get(pk=status_id)
-            status_choices.insert(0, (status_field.id, status_field.name))
-        self.filters['status_field'].field.choices = tuple(status_choices)
-
-    class Meta:
-        model = Issue
-        fields = ['status_field', 'responsible', 'courses', 'update_time', 'years', 'is_active']
-
 
 class CustomMethodFilter(django_filters.MethodFilter):
     def __init__(self, *args, **kwargs):
