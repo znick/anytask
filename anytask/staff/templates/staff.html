@@ -112,7 +112,11 @@
                             </table>
                         </div>
                     {% else %}
-                        <p class="card-text">{% trans "Не найдено ни одного пользователя" %}</p>
+                        {% if empty_filter %}
+                            <p class="card-text">{% trans "Выберите значения для фильтрации" %}</p>
+                        {% else %}
+                            <p class="card-text">{% trans "Не найдено ни одного пользователя" %}</p>
+                        {% endif %}
                     {% endif %}
                 </div>
             </div>
@@ -140,16 +144,17 @@
                                         {% trans "Без типа" %}
                                     {% endif %}
                                 </label>
+                                <input type="hidden" name="status_types[]" value="{{ status_type }}">
                                 <div class="form-check">
                                     <label class="form-check-label">
-                                        <input type="radio" class="form-check-input {% if not status_type %}no-change{% endif %}" name="status_{{ status_type }}" value="0" checked>
+                                        <input type="radio" class="form-check-input {% if not status_type %}no-change{% endif %} zero-input" name="status_{{ status_type }}[]" value="0" checked>
                                         {% trans "Не менять" %}
                                     </label>
                                 </div>
                                 {% for status_info in status_values.values %}
                                     <div class="form-check">
                                         <label class="form-check-label">
-                                            <input type="{% if status_type %}radio{% else %}checkbox{% endif %}" class="form-check-input" name="status_{{ status_type }}" value="{{ status_info.id }}">
+                                            <input type="{% if status_type %}radio{% else %}checkbox{% endif %}" class="form-check-input" name="status_{{ status_type }}[]" value="{{ status_info.id }}">
                                             {{ status_info.name }}
                                         </label>
                                     </div>

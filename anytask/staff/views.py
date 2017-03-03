@@ -40,6 +40,7 @@ def staff_page(request):
     file_filter_err = ''
     is_error = False
     show_file_alert = False
+    empty_filter = False
     if request.method == 'POST':
         show_file_alert = True
         if 'file_input' not in request.FILES:
@@ -70,6 +71,10 @@ def staff_page(request):
             logger.error('Error in staff page file filter upload: %s', e)
             file_filter_err = str(e)
             is_error = True
+    else:
+        if not request.GET:
+            user_profiles = UserProfile.objects.none()
+            empty_filter = True
 
     f = UserProfileFilter(request.GET if request.method == 'GET' else {}, queryset=user_profiles)
     f.set()
@@ -100,6 +105,7 @@ def staff_page(request):
         'is_error': is_error,
         'statuses': statuses,
         'show_file_alert': show_file_alert,
+        'empty_filter': empty_filter,
     }
 
     return render_to_response('staff.html', context, context_instance=RequestContext(request))
@@ -112,12 +118,8 @@ def ajax_change_status(request):
         return HttpResponseForbidden()
 
     post_dict = dict(request.POST)
-    statuses_id = []
-    for key, value in post_dict.iteritems():
-        if key.startswith('status_') and u'0' not in value:
-            statuses_id += value
-
-    if statuses_id and 'profile_ids[]' in post_dict:
+    if 'statuses_id[]' in post_dict and 'profile_ids[]' in post_dict:
+        statuses_id = post_dict['statuses_id[]']
         for profile in UserProfile.objects.filter(id__in=post_dict['profile_ids[]']):
             for status in statuses_id:
                 profile.set_status(status)

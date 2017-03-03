@@ -128,7 +128,7 @@
             paging: false,
             autoWidth: false,
             deferRender: true,
-            order: [[2, 'asc']],
+            order: [[1, 'asc']],
             fixedHeader: {
                 headerOffset: $('nav.navbar').outerHeight()
             },
@@ -249,7 +249,23 @@
             $('#modal_change_status').data("is_form_submitting", true);
 
             var $form_change_status = $("#form_change_status");
-            var post_data = $form_change_status.serialize() + '&' + $.param($form_change_status.data("profile_ids"));
+            var statuses_id = [];
+            $("input[name='status_types[]']").each(function () {
+                var $this = $(this);
+                if ($("input[name='status_"+ $this.val() +"[]'].zero-input").is(":not(:checked)")) {
+                    statuses_id = statuses_id.concat(
+                        $("input[name='status_"+ $this.val() +"[]']:checked:not(.zero-input)").map(function(){
+                            return $(this).val();
+                        }).get()
+                    );
+                }
+            });
+            var post_data = $form_change_status.serialize() +
+                '&' +
+                $.param($form_change_status.data("profile_ids")) +
+                '&' +
+                $.param({"statuses_id": statuses_id});
+
             $.post('{% url staff.views.ajax_change_status %}', post_data)
                 .always(function () {
                     var d = 'disabled';
