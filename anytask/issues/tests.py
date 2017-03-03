@@ -228,7 +228,7 @@ class ViewsTest(TestCase):
                          u'ja',
                          '5th issue field 2st button wrong ')
 
-        self.assertEqual(labels[5].a.string.strip().strip('\n'), u'status', '6th issue field label text wrong')
+        self.assertEqual(labels[5].a.string.strip().strip('\n'), u'статус', '6th issue field label text wrong')
         self.assertEqual(labels[5].a['data-target'], u'#collapse7', '6th issue field label data-target wrong')
         self.assertEqual(results[5].string.strip().strip('\n'), u'novyj', '6th issue field text wrong')
         self.assertEqual(forms[2].find('input', {'name': 'form_name'})['value'],
@@ -398,7 +398,7 @@ class ViewsTest(TestCase):
                          'teacher_last_name teacher_name',
                          'Wrong comment author name')
         self.assertEqual(history[0].find('div', 'history-body').find('p').string.strip().strip('\n'),
-                         u'nabludaiut: teacher_last_name teacher_name',
+                         u'nabludaiut teacher_last_name teacher_name',
                          'Wrong comment text')
 
         # info
@@ -446,7 +446,7 @@ class ViewsTest(TestCase):
                          'teacher_last_name teacher_name',
                          'Wrong comment author name')
         self.assertEqual(history[0].find('div', 'history-body').find('p').string.strip().strip('\n'),
-                         u'nabludaiut: teacher_last_name teacher_name',
+                         u'nabludaiut teacher_last_name teacher_name',
                          'Wrong comment text')
 
         # info
@@ -688,7 +688,7 @@ class ViewsTest(TestCase):
         self.assertEqual(labels[4].string.strip().strip('\n'), u'nabludateli:', '5th issue field label text wrong')
         self.assertEqual(results[4].string.strip().strip('\n'), '---', '5th issue field text wrong')
 
-        self.assertEqual(labels[5].string.strip().strip('\n'), u'status:', '6th issue field label text wrong')
+        self.assertEqual(labels[5].string.strip().strip('\n'), u'статус:', '6th issue field label text wrong')
         self.assertEqual(results[5].string.strip().strip('\n'), u'novyj', '6th issue field text wrong')
 
         self.assertEqual(labels[6].string.strip().strip('\n'), u'ocenka:', '7th issue field label text wrong')
@@ -860,7 +860,7 @@ class ViewsTest(TestCase):
                          'Wrong comment text')
         comment_body = comment_body.next.next
         self.assertEqual(comment_body.string.strip().strip('\n'),
-                         u'oshibka_otpravki_v_rb.',
+                         u'oshibka_otpravki_v_rb',
                          'Wrong comment text about RB')
         comment_body = history[0].find('div', 'history-body').find('div', 'files')
         self.assertEqual(comment_body.a.string.strip().strip('\n'),
