@@ -119,9 +119,9 @@ def ajax_change_status(request):
 
     post_dict = dict(request.POST)
     if 'statuses_id[]' in post_dict and 'profile_ids[]' in post_dict:
-        statuses_id = post_dict['statuses_id[]']
+        statuses = UserStatus.objects.filter(id__in=post_dict['statuses_id[]'])
         for profile in UserProfile.objects.filter(id__in=post_dict['profile_ids[]']):
-            for status in statuses_id:
+            for status in statuses:
                 profile.set_status(status)
 
     return HttpResponse("OK")
