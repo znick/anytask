@@ -88,13 +88,13 @@
                                                     <table class="table table_courses">
                                                         <thead>
                                                         <tr>
-                                                            <th><div class="text-arrow">{%  trans "Курс" %}</div></th>
-                                                            <th><div class="text-arrow">{%  trans "Суммарный балл" %}</div></th>
-                                                            <th><div class="text-arrow">{%  trans "Итоговая оценка" %}</div></th>
+                                                            <th><div class="text-arrow">{%  trans "kurs" %}</div></th>
+                                                            <th><div class="text-arrow">{%  trans "summarnyj_ball" %}</div></th>
+                                                            <th><div class="text-arrow">{%  trans "itogovaja_ocenka" %}</div></th>
                                                             {% for status, sum in course_statistics.0.issues_count %}
                                                                 <th><div class="text-arrow">{{ status.name }}</div></th>
                                                             {% endfor %}
-                                                            <th><div class="text-arrow">{%  trans "Всего задач" %}</div></th>
+                                                            <th><div class="text-arrow">{%  trans "vsego_zadach" %}</div></th>
                                                         </tr>
                                                         </thead>
                                                         <tbody>
