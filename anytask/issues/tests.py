@@ -181,16 +181,16 @@ class ViewsTest(TestCase):
         self.assertEqual(results[0].a['href'], '/course/1', '1st issue field link wrong')
         self.assertEqual(results[0].a.string.strip().strip('\n'), 'course_name', '1st issue field link text wrong')
 
-        self.assertEqual(labels[1].string.strip().strip('\n'), u'Задача:', '2nd issue field label wrong')
+        self.assertEqual(labels[1].string.strip().strip('\n'), u'zadacha:', '2nd issue field label wrong')
         self.assertEqual(results[1].a.string.strip().strip('\n'), 'task_title', '2nd issue field text wrong')
 
-        self.assertEqual(labels[2].string.strip().strip('\n'), u'Студент:', '3rd issue field label wrong')
+        self.assertEqual(labels[2].string.strip().strip('\n'), u'student:', '3rd issue field label wrong')
         self.assertEqual(results[2].a['href'], '/users/student/', '3rd issue field link wrong')
         self.assertEqual(results[2].a.string.strip().strip('\n'),
                          'student_last_name student_name',
                          '3rd issue field link text wrong')
 
-        self.assertEqual(labels[3].a.string.strip().strip('\n'), u'Проверяющий', '4th issue field label text wrong')
+        self.assertEqual(labels[3].a.string.strip().strip('\n'), u'proverjaushij', '4th issue field label text wrong')
         self.assertEqual(labels[3].a['data-target'], u'#collapse5', '4th issue field label data-target wrong')
         self.assertEqual(results[3].string.strip().strip('\n'), '---', '4th issue field text wrong')
         self.assertEqual(forms[0].find('input', {'name': 'form_name'})['value'],
@@ -203,13 +203,13 @@ class ViewsTest(TestCase):
                          '4th issue field select option text wrong')
         self.assertEqual(len(forms[0]('button')), 2, '4th issue field button len is not 2')
         self.assertEqual(forms[0]('button')[0].string.strip().strip('\n'),
-                         u'Отправить',
+                         u'otpravit',
                          '4th issue field 1st button wrong ')
         self.assertEqual(forms[0]('button')[1].string.strip().strip('\n'),
-                         u'Я',
+                         u'ja',
                          '4th issue field 2st button wrong ')
 
-        self.assertEqual(labels[4].a.string.strip().strip('\n'), u'Наблюдатели', '5th issue field label text wrong')
+        self.assertEqual(labels[4].a.string.strip().strip('\n'), u'nabludateli', '5th issue field label text wrong')
         self.assertEqual(labels[4].a['data-target'], u'#collapse6', '5th issue field label data-target wrong')
         self.assertEqual(results[4].string.strip().strip('\n'), '---', '5th issue field text wrong')
         self.assertEqual(forms[1].find('input', {'name': 'form_name'})['value'],
@@ -222,37 +222,37 @@ class ViewsTest(TestCase):
                          '5th issue field select option text wrong')
         self.assertEqual(len(forms[1]('button')), 2, '5th issue field button len is not 2')
         self.assertEqual(forms[1]('button')[0].string.strip().strip('\n'),
-                         u'Отправить',
+                         u'otpravit',
                          '5th issue field 1st button wrong ')
         self.assertEqual(forms[1]('button')[1].string.strip().strip('\n'),
-                         u'Я',
+                         u'ja',
                          '5th issue field 2st button wrong ')
 
-        self.assertEqual(labels[5].a.string.strip().strip('\n'), u'Статус', '6th issue field label text wrong')
+        self.assertEqual(labels[5].a.string.strip().strip('\n'), u'status', '6th issue field label text wrong')
         self.assertEqual(labels[5].a['data-target'], u'#collapse7', '6th issue field label data-target wrong')
-        self.assertEqual(results[5].string.strip().strip('\n'), u'Новый', '6th issue field text wrong')
+        self.assertEqual(results[5].string.strip().strip('\n'), u'novyj', '6th issue field text wrong')
         self.assertEqual(forms[2].find('input', {'name': 'form_name'})['value'],
                          'status_form',
                          '6th issue field input form_name wrong')
         self.assertEqual(len(forms[2]('option')), 3, '6th issue field select option len is not 4')
         self.assertIn('value="3"', str(forms[2]('option')[0]), '6th issue field select 1st option value wrong')
-        self.assertIn(u'На проверке',
+        self.assertIn(u'na_proverke',
                       unicode(forms[2]('option')[0]),
                       '6th issue field select 1st option text wrong')
         self.assertIn('value="4"', str(forms[2]('option')[1]), '6th issue field select 2st option value wrong')
-        self.assertIn(u'На доработке',
+        self.assertIn(u'na_dorabotke',
                       unicode(forms[2]('option')[1]),
                       '6th issue field select 2st option text wrong')
         self.assertIn('value="5"', str(forms[2]('option')[2]), '6th issue field select 3st option value wrong')
-        self.assertIn(u'Зачтено',
+        self.assertIn(u'zachteno',
                       unicode(forms[2]('option')[2]),
                       '6th issue field select 3st option text wrong')
         self.assertEqual(len(forms[2]('button')), 1, '6th issue field button len is not 1')
         self.assertEqual(forms[2]('button')[0].string.strip().strip('\n'),
-                         u'Отправить',
+                         u'otpravit',
                          '6th issue field 1st button wrong ')
 
-        self.assertEqual(labels[6].a.string.strip().strip('\n'), u'Оценка', '7th issue field label text wrong')
+        self.assertEqual(labels[6].a.string.strip().strip('\n'), u'ocenka', '7th issue field label text wrong')
         self.assertEqual(labels[6].a['data-target'], u'#collapse8', '7th issue field label data-target wrong')
         self.assertEqual(results[6].string.strip().strip('\n'), '0', '7th issue field text wrong')
         self.assertEqual(forms[3].find('input', {'name': 'form_name'})['value'],
@@ -264,13 +264,13 @@ class ViewsTest(TestCase):
         self.assertIsNotNone(forms[3].find('input', {'name': 'mark'}), '7th issue field mark input wrong')
         self.assertEqual(len(forms[3]('button')), 2, '7th issue field button len is not 2')
         self.assertEqual(forms[3]('button')[0].string.strip().strip('\n'),
-                         u'Отправить',
+                         u'otpravit',
                          '7th issue field 1st button wrong ')
         self.assertEqual(forms[3]('button')[1].string.strip().strip('\n'),
-                         u'Зачтено',
+                         u'zachteno',
                          '7th issue field 2st button wrong ')
 
-        self.assertEqual(labels[7].string.strip().strip('\n'), u'Дата сдачи:', '8th issue field label wrong')
+        self.assertEqual(labels[7].string.strip().strip('\n'), u'data_sdachi:', '8th issue field label wrong')
         self.assertEqual(results[7].string.strip().strip('\n'), '', '8th issue field text wrong')
 
     def test_post_responsible_name_form_send_button_with_teacher(self):
@@ -495,13 +495,13 @@ class ViewsTest(TestCase):
                          'teacher_last_name teacher_name',
                          'Wrong comment author name')
         self.assertEqual(history[0].find('div', 'history-body').find('p').string.strip().strip('\n'),
-                         u'Статус изменен: На доработке',
+                         u'status_izmenen na_dorabotke',
                          'Wrong comment text')
 
         # info
         info = container.find('div', {'id': 'accordion2'})
         results = info('div', 'accordion2-result')
-        self.assertEqual(results[5].string.strip().strip('\n'), u'На доработке', '6th issue field text wrong')
+        self.assertEqual(results[5].string.strip().strip('\n'), u'na_dorabotke', '6th issue field text wrong')
 
     def test_post_mark_form_send_button_with_teacher(self):
         client = self.client
@@ -537,7 +537,7 @@ class ViewsTest(TestCase):
         # info
         info = container.find('div', {'id': 'accordion2'})
         results = info('div', 'accordion2-result')
-        self.assertEqual(results[5].string.strip().strip('\n'), u'Новый', '6th issue field text wrong')
+        self.assertEqual(results[5].string.strip().strip('\n'), u'novyj', '6th issue field text wrong')
         self.assertEqual(results[6].string.strip().strip('\n'), u'3', '7th issue field text wrong')
 
     def test_post_mark_form_accept_button_with_teacher(self):
@@ -578,13 +578,13 @@ class ViewsTest(TestCase):
                          'teacher_last_name teacher_name',
                          'Wrong comment author name')
         self.assertEqual(history[1].find('div', 'history-body').find('p').string.strip().strip('\n'),
-                         u'Оценка изменена на 3',
+                         u'ocenka_izmenena 3',
                          'Wrong comment text')
 
         # info
         info = container.find('div', {'id': 'accordion2'})
         results = info('div', 'accordion2-result')
-        self.assertEqual(results[5].string.strip().strip('\n'), u'Зачтено', '6th issue field text wrong')
+        self.assertEqual(results[5].string.strip().strip('\n'), u'zachteno', '6th issue field text wrong')
         self.assertEqual(results[6].string.strip().strip('\n'), u'3', '7th issue field text wrong')
 
     def test_comment_with_teacher(self):
@@ -682,19 +682,19 @@ class ViewsTest(TestCase):
                          'student_last_name student_name',
                          '3rd issue field link text wrong')
 
-        self.assertEqual(labels[3].string.strip().strip('\n'), u'Проверяющий:', '4th issue field label text wrong')
+        self.assertEqual(labels[3].string.strip().strip('\n'), u'proverjaushij:', '4th issue field label text wrong')
         self.assertEqual(results[3].string.strip().strip('\n'), '---', '4th issue field text wrong')
 
-        self.assertEqual(labels[4].string.strip().strip('\n'), u'Наблюдатели:', '5th issue field label text wrong')
+        self.assertEqual(labels[4].string.strip().strip('\n'), u'nabludateli:', '5th issue field label text wrong')
         self.assertEqual(results[4].string.strip().strip('\n'), '---', '5th issue field text wrong')
 
-        self.assertEqual(labels[5].string.strip().strip('\n'), u'Статус:', '6th issue field label text wrong')
-        self.assertEqual(results[5].string.strip().strip('\n'), u'Новый', '6th issue field text wrong')
+        self.assertEqual(labels[5].string.strip().strip('\n'), u'status:', '6th issue field label text wrong')
+        self.assertEqual(results[5].string.strip().strip('\n'), u'novyj', '6th issue field text wrong')
 
-        self.assertEqual(labels[6].string.strip().strip('\n'), u'Оценка:', '7th issue field label text wrong')
+        self.assertEqual(labels[6].string.strip().strip('\n'), u'ocenka:', '7th issue field label text wrong')
         self.assertEqual(results[6].string.strip().strip('\n'), '0', '7th issue field text wrong')
 
-        self.assertEqual(labels[7].string.strip().strip('\n'), u'Дата сдачи:', '8th issue field label wrong')
+        self.assertEqual(labels[7].string.strip().strip('\n'), u'data_sdachi:', '8th issue field label wrong')
         self.assertEqual(results[7].string.strip().strip('\n'), '', '8th issue field text wrong')
 
     def test_comment_with_student(self):
@@ -926,7 +926,7 @@ class ViewsTest(TestCase):
                          'Wrong comment author name')
         comment_body = history[2].find('div', 'history-body').strong
         self.assertEqual(comment_body.next.string.strip().strip('\n'),
-                         u'Добавлен новый комментарий в',
+                         u'novyj_kommentarij',
                          'Wrong comment text')
         self.assertEqual(comment_body.a.string.strip().strip('\n'),
                          u'Review request 1',

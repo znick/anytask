@@ -314,7 +314,7 @@ class ViewsTest(TestCase):
         self.assertEqual(len(form_id_responsible), 2)
         self.assertEqual(form_id_responsible[0]['value'], '')
         self.assertTrue(form_id_responsible[0].has_key('selected'))
-        self.assertEqual(form_id_responsible[0].string.strip().strip('\n'), u'Любой')
+        self.assertEqual(form_id_responsible[0].string.strip().strip('\n'), u'luboj')
         self.assertEqual(form_id_responsible[1]['value'], '1')
         self.assertFalse(form_id_responsible[1].has_key('selected'))
         self.assertEqual(form_id_responsible[1].string.strip().strip('\n'), u'teacher_name teacher_last_name')
@@ -484,7 +484,7 @@ class ViewsTest(TestCase):
         self.assertEqual(len(btn_group), 2)
         self.assertEqual(btn_group[0]['href'], u'/task/create/1')
         self.assertEqual(btn_group[1]['href'], u'javascript:change_visibility_hidden_tasks(1);')
-        self.assertEqual(btn_group[1].string.strip().strip('\n'), u'Не показывать скрытые задачи')
+        self.assertEqual(btn_group[1].string.strip().strip('\n'), u'ne_pokazyvat_skrytye_zadachi')
 
         # table results
         table = container.find('table', 'table_results')
