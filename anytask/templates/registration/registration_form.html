@@ -18,7 +18,7 @@
             });
 
             jQuery.validator.addMethod("name_characters", function(value, element) {
-                return this.optional(element) || /^[A-Za-zА-Яа-я\.\- ]+$/i.test(value);
+                return this.optional(element) || /^[A-Za-zА-Яа-яЁё\.\- ]+$/i.test(value);
             });
 
 

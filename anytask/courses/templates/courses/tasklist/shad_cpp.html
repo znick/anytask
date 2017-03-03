@@ -256,7 +256,7 @@
                             </div>
                         </td>
                         {% if course_mark_system_vals %}
-                            <td align="center">
+                            <td align="center" class="student_course_mark_{{ student.id }}">
                                 <div {% if user_is_teacher %}class="mark-value in collapse"{% endif %}>
                     <span class="label label-success">
                     {{ student_course_mark }}
