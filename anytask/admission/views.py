@@ -31,10 +31,15 @@ def set_user_info(user, user_info):
     user_profile.set_status(settings.FILIAL_STATUSES[user_info['filial']])
     user_profile.set_status(settings.ENROLLEE_STATUS)
     user_profile.phone = user_info['phone']
-    user_profile.ya_passport_uid = user_info['uid']
+
     user_profile.ya_contest_uid = user_info['uid']
+
+    user_profile.ya_passport_uid = user_info['uid']
+    user_profile.ya_passport_email = user_info['email']
+    user_profile.ya_passport_login = user_info['login']
     if not user_info['is_updating']:
         user_profile.login_via_yandex = True
+
     user_profile.save()
 
 
@@ -54,6 +59,8 @@ def register(request):
                                                                                                 request=request)
     if new_user is not None:
         user_info = {
+            'username': username,
+            'email': email,
             'last_name': get_post_value(post_data, settings.YA_FORMS_FIELDS['last_name']),
             'first_name': get_post_value(post_data, settings.YA_FORMS_FIELDS['first_name']),
             'phone': get_post_value(post_data, settings.YA_FORMS_FIELDS['phone']),
