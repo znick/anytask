@@ -36,7 +36,7 @@ def set_user_info(user, user_info):
 
     user_profile.ya_passport_uid = user_info['uid']
     user_profile.ya_passport_email = user_info['email']
-    user_profile.ya_passport_login = user_info['login']
+    user_profile.ya_passport_login = user_info['username']
     if not user_info['is_updating']:
         user_profile.login_via_yandex = True
 
