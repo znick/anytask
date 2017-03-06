@@ -118,6 +118,8 @@ class AdmissionRegistrationProfileManager(RegistrationManager):
         if SHA1_RE.search(activation_key):
             try:
                 profile = self.get(activation_key=activation_key)
+                profile.activation_key = self.model.DECLINED
+                profile.save()
             except self.model.DoesNotExist:
                 return None
             return profile
@@ -143,6 +145,7 @@ class AdmissionRegistrationProfile(models.Model):
     user_info = models.TextField(null=True, blank=True)
 
     ACTIVATED = u"ALREADY_ACTIVATED"
+    DECLINED = u"DECLINED"
 
     objects = AdmissionRegistrationProfileManager()
 
