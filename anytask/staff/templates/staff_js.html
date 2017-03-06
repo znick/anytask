@@ -18,7 +18,7 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
-        $('a', '#filters .card-header li.nav-item').click(function (e) {
+        $('span.nav-link', '#filters .card-header li.nav-item').click(function (e) {
             var $this = $(this);
             var $filters = $("#filters");
             var hash = $this.attr("href");
@@ -31,6 +31,9 @@
             }
 
         });
+
+        var url_hash = window.location.hash ? window.location.hash : "#simple_filter";
+        $('span[href="' + url_hash + '"]').trigger("click");
 
         $('select[multiple]').multiselect({
             buttonClass: 'btn btn-secondary btn-block',
@@ -149,9 +152,6 @@
                 var $table = $(settings.nTable);
                 var $table_buttons = $(".table-buttons");
                 var api = new $.fn.dataTable.Api(settings);
-
-                var url_hash = window.location.hash ? window.location.hash : "#simple_filter";
-                $('a[href="' + url_hash + '"]').trigger("click");
 
                 $(".table-options-group", $table.closest(".main-table")).html($table_buttons.html());
                 $table_buttons.remove();
