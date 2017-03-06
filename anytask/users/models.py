@@ -218,10 +218,10 @@ class IssueFilterStudent(django_filters.FilterSet):
         teacher_choices = [(teacher.id, teacher.get_full_name()) for teacher in teacher_set]
         self.filters['responsible'].field.choices = tuple(teacher_choices)
 
-        status_choices = [(status.id, status.name) for status in status_set]
+        status_choices = [(status.id, status.get_name()) for status in status_set]
         for status_id in sorted(IssueStatus.HIDDEN_STATUSES.values(), reverse=True):
             status_field = IssueStatus.objects.get(pk=status_id)
-            status_choices.insert(0, (status_field.id, status_field.name))
+            status_choices.insert(0, (status_field.id, status_field.get_name()))
         self.filters['status_field'].field.choices = tuple(status_choices)
 
     class Meta:
