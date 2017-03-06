@@ -56,7 +56,7 @@ class UserStatus(models.Model):
     TYPE_STATUSES = (
         (TYPE_ACTIVITY, _(u'Статус студента')),
         (TYPE_FILIAL, _(u'Филлиал')),
-        (TYPE_FILIAL, _(u'Статус поступления')),
+        (TYPE_ADMISSION, _(u'Статус поступления')),
         # (TYPE_EDUCATION_FORM, _(u'Форма обучения')),
     )
 
