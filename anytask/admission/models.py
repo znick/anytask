@@ -17,6 +17,7 @@ import hashlib
 import random
 import logging
 import re
+import json
 
 logger = logging.getLogger('django.request')
 
@@ -51,14 +52,14 @@ class AdmissionRegistrationProfileManager(RegistrationManager):
         user = registration_profile = None
 
         if not (user_by_username | user_by_email | user_by_uid):
-            user = self.create_inactive_user(username, email, password, send_email)
+            user, registration_profile = self.create_inactive_user(username, email, password, send_email)
             logger.info("Admission: User %s was created", user.username)
         elif user_by_username and not (user_by_email | user_by_uid):
             new_username = self.generate_username()
-            user = self.create_inactive_user(new_username, email, password, send_email)
+            user, registration_profile = self.create_inactive_user(new_username, email, password, send_email)
             logger.info("Admission: User with email %s was created with generated login %s", user.email, user.username)
         elif len(user_by_email | user_by_uid) == 1:
-            user, registration_profile = self.update_user(user_by_email[0])
+            user, registration_profile = self.update_user(user_by_email[0], send_email)
             logger.info("Admission: User %s was updated", user.username)
         else:
             send_mail_admin(u'Ошибка поступления', request=request)
@@ -67,16 +68,24 @@ class AdmissionRegistrationProfileManager(RegistrationManager):
         return user, registration_profile
 
     def create_inactive_user(self, username, email, password, send_email=True):
-        return super(AdmissionRegistrationProfileManager, self).create_inactive_user(username, email, password,
-                                                                                     Site.objects.get_current(),
-                                                                                     send_email)
+        new_user = User.objects.create_user(username, email, password)
+        new_user.is_active = False
+        new_user.save()
 
-    def update_user(self, user):
+        registration_profile = self.create_profile(new_user)
+
+        if send_email:
+            registration_profile.send_activation_email(Site.objects.get_current())
+
+        return new_user, registration_profile
+
+    def update_user(self, user, send_email=False):
         registration_profile = self.create_profile(user)
         registration_profile.is_updating = True
         registration_profile.save()
 
-        registration_profile.send_activation_email(Site.objects.get_current(), True)
+        if send_email:
+            registration_profile.send_activation_email(Site.objects.get_current())
 
         return user, registration_profile
 
@@ -156,15 +165,19 @@ class AdmissionRegistrationProfile(models.Model):
     def activation_key_activated(self):
         return self.activation_key == self.ACTIVATED
 
-    def send_activation_email(self, site, is_updating=False):
+    def send_activation_email(self, site=None):
+        if not site:
+            site = Site.objects.get_current()
+
         subject = render_to_string('email_activate_subject.txt')
         subject = ''.join(subject.splitlines())
 
         context = {
             'user': self.user,
+            'user_info': json.loads(self.user_info),
             'domain': 'http://' + str(site),
             'activation_key': self.activation_key,
-            'is_updating': is_updating
+            'is_updating': self.is_updating
         }
 
         plain_text = render_to_string('email_activate.txt', context)
