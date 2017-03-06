@@ -66,14 +66,16 @@ def register(request):
             'phone': get_post_value(post_data, settings.YA_FORMS_FIELDS['phone']),
             'filial': get_post_value(post_data, settings.YA_FORMS_FIELDS['filial']),
             'uid': request.META['HTTP_UID'],
-            'is_updating': True if registration_profile else False
+            'is_updating': registration_profile.is_updating
         }
 
-        if user_info['is_updating']:
-            registration_profile.user_info = json.dumps(user_info)
-            registration_profile.save()
-        else:
+        registration_profile.user_info = json.dumps(user_info)
+        registration_profile.save()
+
+        if not registration_profile.is_updating:
             set_user_info(new_user, user_info)
+
+        registration_profile.send_activation_email()
 
     return HttpResponse("OK")
 
