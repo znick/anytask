@@ -200,9 +200,14 @@ class UserProfileFilter(django_filters.FilterSet):
         label=u'<strong>{0}</strong>'.format(_(u'Статус студента')),
         name='user_status',
         widget=forms.SelectMultiple)
-    user_status_filial = django_filters.MultipleChoiceFilter(label=u'<strong>{0}</strong>'.format(_(u'Филиал')),
-                                                             name='user_status',
-                                                             widget=forms.SelectMultiple)
+    user_status_filial = django_filters.MultipleChoiceFilter(
+        label=u'<strong>{0}</strong>'.format(_(u'Филиал')),
+        name='user_status',
+        widget=forms.SelectMultiple)
+    user_status_admission = django_filters.MultipleChoiceFilter(
+        label=u'<strong>{0}</strong>'.format(_(u'Статус поступления')),
+        name='user_status',
+        widget=forms.SelectMultiple)
 
     @property
     def qs(self):
@@ -243,9 +248,9 @@ class UserProfileFilter(django_filters.FilterSet):
                             'name': info['user_status__name'],
                             'color': info['user_status__color'],
                         }
-                    # users_info[info['user__id']]['courses'][info['user__group__course__id']] = {
-                    #     'name': info['user__group__course__name']
-                    # }
+                        # users_info[info['user__id']]['courses'][info['user__group__course__id']] = {
+                        #     'name': info['user__group__course__name']
+                        # }
                 self.users_info = users_info
         return self._qs
 
@@ -270,15 +275,24 @@ class UserProfileFilter(django_filters.FilterSet):
         groups = [(group.id, unicode(group)) for group in self.groups_qs]
         self.filters['groups'].field.choices = tuple(groups)
 
-        activity_choices = [(status.id, status.name) for status in UserStatus.objects.filter(type='activity')]
-        self.filters['user_status_activity'].field.choices = tuple(activity_choices)
+        activity_choices = []
+        filial_choices = []
+        admission_choices = []
+        for status in UserStatus.objects.exclude(type__isnull=True):
+            if status.type == 'activity':
+                activity_choices.append((status.id, status.name))
+            elif status.type == 'filial':
+                filial_choices.append((status.id, status.name))
+            elif status.type == 'admission':
+                admission_choices.append((status.id, status.name))
 
-        activity_choices = [(status.id, status.name) for status in UserStatus.objects.filter(type='filial')]
-        self.filters['user_status_filial'].field.choices = tuple(activity_choices)
+        self.filters['user_status_activity'].field.choices = tuple(activity_choices)
+        self.filters['user_status_filial'].field.choices = tuple(filial_choices)
+        self.filters['user_status_admission'].field.choices = tuple(admission_choices)
 
     class Meta:
         model = UserProfile
-        fields = ['courses', 'groups', 'user_status_filial', 'user_status_activity']
+        fields = ['courses', 'groups', 'user_status_filial', 'user_status_activity', 'user_status_admission']
 
 
 def create_user_profile(sender, instance, created, **kwargs):
