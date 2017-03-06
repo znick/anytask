@@ -57,20 +57,6 @@ import json
 logger = logging.getLogger('django.request')
 
 
-@login_required
-def filemanager(request, path, course_id):
-    course = get_object_or_404(Course, id=course_id)
-    if course.user_is_teacher(request.user):
-        course_folder = UPLOAD_ROOT + "/" + course.name
-        if os.path.exists(course_folder):
-            fm = FileManager(course_folder)
-        else:
-            os.mkdir(course_folder)
-            fm = FileManager(course_folder)
-        return fm.render(request, path)
-    else:
-        return HttpResponseForbidden()
-
 
 @login_required
 def queue_page(request, course_id):
