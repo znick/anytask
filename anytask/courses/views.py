@@ -620,8 +620,7 @@ def set_course_mark(request):
     student_course_mark.update_time = datetime.datetime.now()
     student_course_mark.mark = mark
     student_course_mark.save()
-
-    return HttpResponse(json.dumps({'mark': unicode(mark), 'mark_id': mark.id}),
+    return HttpResponse(json.dumps({'mark': unicode(mark), 'mark_id': mark.id, 'mark_int': mark.name_int}),
                         content_type="application/json")
 
 
