@@ -56,6 +56,7 @@ def register(request):
     password = None
     new_user, registration_profile = AdmissionRegistrationProfile.objects.create_or_update_user(username, email,
                                                                                                 password,
+                                                                                                send_email=False,
                                                                                                 request=request)
     if new_user is not None:
         user_info = {
