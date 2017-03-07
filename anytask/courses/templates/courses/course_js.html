@@ -494,7 +494,6 @@
             $form.closest('td').find('.mark-value').collapse('show');
 
             $.post('{% url courses.views.set_course_mark %}', $form.serialize(), function (data) {
-
                 $mark_cell.find('.mark-form select').val(data.mark_id);
                 $mark_cell.find('.mark-value span').text(data.mark);
                 $mark_cell.find('.mark-value span').data('mark-int', data.mark_int);
