@@ -243,9 +243,6 @@ class StudentCourseMark(models.Model):
     def __unicode__(self):
         return unicode(self.mark)
 
-    def get_int(self):
-        return self.mark.name_int
-
     class Meta:
         unique_together = (("student", "course"),)
 

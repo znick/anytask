@@ -407,7 +407,7 @@ def get_course_mark(course, student):
         if student_course_mark.mark:
             mark_id = student_course_mark.mark.id
             course_mark = unicode(student_course_mark)
-            course_mark_int = student_course_mark.get_int
+            course_mark_int = student_course_mark.mark.name_int
     except StudentCourseMark.DoesNotExist:
         pass
 
