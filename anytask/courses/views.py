@@ -400,10 +400,8 @@ def get_tasklist_context(request, course):
 def get_course_mark(course, student):
     mark_id = -1
     course_mark = '--'
-    try:
-        course_mark_int = -1 if MarkField.objects.get(id=1).name_int else 0
-    except MarkField.DoesNotExist:
-        course_mark_int = 0
+    course_mark_int = -10 if course.mark_system.marks.all()[0].name_int != -1 else -1
+
     try:
         student_course_mark = StudentCourseMark.objects.get(course=course, student=student)
         if student_course_mark.mark:
