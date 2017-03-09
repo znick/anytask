@@ -553,7 +553,7 @@ class ViewsTest(TestCase):
                                 'student_id': self.student.id,
                                 'mark_id': mark_fields[0].id})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content, '{"mark_int": 0, "mark_id": 1, "mark": "mark1"}')
+        self.assertEqual(response.content, '{"mark_int": -1, "mark_id": 1, "mark": "mark1"}')
 
         # get course page
         response = client.get(reverse('courses.views.gradebook', kwargs={'course_id': self.course.id}))
@@ -854,7 +854,7 @@ class ViewsTest(TestCase):
                                 'student_id': self.student.id,
                                 'mark_id': mark_fields[0].id})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content, '{"mark_int": 0, "mark_id": 1, "mark": "mark1"}')
+        self.assertEqual(response.content, '{"mark_int": -1, "mark_id": 1, "mark": "mark1"}')
 
         # get course page
         self.assertTrue(client.login(username=self.student.username, password=self.student_password))
