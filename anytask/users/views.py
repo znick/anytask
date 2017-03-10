@@ -123,9 +123,11 @@ def profile(request, username=None, year=None):
             if 'input-avatar' in request.FILES:
                 image_content = request.FILES['input-avatar']
                 user_profile.avatar.save(filename, image_content)
-            elif request.POST['gravatar-link']:
-                image_content = ContentFile(requests.get(request.POST['gravatar-link']).content)
-                user_profile.avatar.save(filename, image_content)
+            elif request.POST['delete-avatar']:
+                user_profile.avatar.delete()
+            # elif request.POST['gravatar-link']:
+            #     image_content = ContentFile(requests.get(request.POST['gravatar-link']).content)
+            #     user_profile.avatar.save(filename, image_content)
 
             user_profile.save()
         else:

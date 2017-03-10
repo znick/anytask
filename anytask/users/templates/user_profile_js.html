@@ -25,21 +25,21 @@
         });
 
         {% if user == user_to_show %}
-            $('#get-gravatar').click(function () {
-                var gravatar_link = 'https://www.gravatar.com/avatar/' + SparkMD5.hash('{{ user_to_show.email }}') + '?d=identicon';
-                $('#edit-avatar').attr({src: gravatar_link});
-                input_avatar = $('#input-avatar');
-                input_avatar.replaceWith(input_avatar.val('').clone(true));
-                $('#gravatar-link').val(gravatar_link);
-
-            });
+{#            $('#get-gravatar').click(function () {#}
+{#                var gravatar_link = 'https://www.gravatar.com/avatar/' + SparkMD5.hash('{{ user_to_show.email }}') + '?d=identicon';#}
+{#                $('#edit-avatar').attr({src: gravatar_link});#}
+{#                input_avatar = $('#input-avatar');#}
+{#                input_avatar.replaceWith(input_avatar.val('').clone(true));#}
+{#                $('#gravatar-link').val(gravatar_link);#}
+{##}
+{#            });#}
 
             $('#dismiss-avatar').click(function () {
                 var gravatar_link = 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mm&f=y';
                 $('#edit-avatar').attr({src: gravatar_link});
                 input_avatar = $('#input-avatar');
                 input_avatar.replaceWith(input_avatar.val('').clone(true));
-                $('#gravatar-link').val(gravatar_link);
+                $('#delete-avatar').val(gravatar_link);
             });
 
 
