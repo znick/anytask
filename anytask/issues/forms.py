@@ -4,7 +4,7 @@ from django import forms
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 
 from issues.model_issue_status import IssueStatus
 
@@ -56,8 +56,7 @@ def get_followers_form(field_name, request, issue, data=None, *args, **kwargs):
 def get_status_choice(issue):
     statuses = []
     for status in issue.task.course.issue_status_system.statuses.all():
-        statuses.append((status.id, status.name))
-
+        statuses.append((status.id, status.get_name()))
     return statuses
 
 
@@ -142,7 +141,7 @@ class IntForm(DefaultForm):
 
 class MarkForm(DefaultForm):
     float_field_attrs = {
-        'placeholder': _(u'Формат: 5.31, 14')
+        'placeholder': _(u'format14')
     }
     mark = forms.FloatField(label='',
                             widget=forms.TextInput(attrs=float_field_attrs),

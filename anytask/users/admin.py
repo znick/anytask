@@ -17,7 +17,7 @@ def display_color(obj):
            u'border-radius: .25rem;' \
            u'background-color:{0}' \
            u'">{1}</span>'.format(obj.color, obj.name)
-display_color.short_description = _(u'Статус')
+display_color.short_description = _(u'status')
 display_color.allow_tags = True
 
 class UserStatusAdmin(admin.ModelAdmin):

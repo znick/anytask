@@ -25,7 +25,7 @@ def message_from_rb(request, review_id):
     if request.method == 'POST':
         value = {'files':[], 'comment':''}
         value['comment'] = u'<p><strong>{2} <a href="{1}/r/{0}">Review request {0}</a></strong>.</p>'\
-                           .format(review_id, settings.RB_API_URL, _(u'Добавлен новый комментарий в'))
+                           .format(review_id, settings.RB_API_URL, _(u'novyj_kommentarij'))
         #if request.POST.get('diff-url',0):
         #    value += u'<a href="{0}">Комментарий к коду</a> '.format(settings.RB_API_URL+request.POST.get('diff-url',''))
         #value += request.POST.get('diff','')
