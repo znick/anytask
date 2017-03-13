@@ -15,17 +15,17 @@ class PdfForm(forms.Form):
         if file:
             name, extension = os.path.splitext(file.name)
             if extension not in self.extensions:
-                raise forms.ValidationError(_(u'Файл должен иметь одно из расширений: ') + ",".join(self.extensions))
+                raise forms.ValidationError(_(u'rasshirenia_fajla') + ": " + ",".join(self.extensions))
 
 
 class QueueForm(forms.Form):
-    rework = forms.BooleanField(initial=False, label=_(u'На доработке'), required=False)
-    verefication = forms.BooleanField(initial=True, label=_(u'На проверке'), required=False)
-    need_info = forms.BooleanField(initial=False, label=_(u'Требуется информация'), required=False)
-    mine = forms.BooleanField(initial=True, label=_(u'Мои задачи'), required=False)
-    following = forms.BooleanField(initial=True, label=_(u'Наблюдаемые мной'), required=False)
-    not_mine = forms.BooleanField(initial=True, label=_(u'Не мои'), required=False)
-    not_owned = forms.BooleanField(initial=True, label=_(u'Ничьи'), required=False)
+    rework = forms.BooleanField(initial=False, label=_(u'na_dorabotke'), required=False)
+    verefication = forms.BooleanField(initial=True, label=_(u'na_proverke'), required=False)
+    need_info = forms.BooleanField(initial=False, label=_(u'trebuetsja_informacija'), required=False)
+    mine = forms.BooleanField(initial=True, label=_(u'moi_zadachi'), required=False)
+    following = forms.BooleanField(initial=True, label=_(u'nabludaemye_mnoj'), required=False)
+    not_mine = forms.BooleanField(initial=True, label=u'Не мои', required=False)
+    not_owned = forms.BooleanField(initial=True, label=u'Ничьи', required=False)
     overdue = forms.IntegerField(initial=0, label=u'Ждут проверки несколько дней')
 
 def get_teacher_choises(course):

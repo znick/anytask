@@ -3,7 +3,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 from django import forms
 
 from datetime import datetime
@@ -50,7 +50,7 @@ class UserStatus(models.Model):
 
 
     TYPE_STATUSES = (
-        (TYPE_ACTIVITY, _(u'Статус студента')),
+        (TYPE_ACTIVITY, _(u'status_studenta')),
         # (TYPE_EDUCATION_FORM, _(u'Форма обучения')),
     )
 
@@ -101,6 +101,8 @@ class UserProfile(models.Model):
     ya_passport_oauth = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
     ya_passport_login = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
     ya_passport_email = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
+
+    language = models.CharField(default="ru", max_length=128, unique=False, null=True, blank=True)
 
     def is_current_year_student(self):
         return Group.objects.filter(year=get_current_year()).filter(students=self.user).count() > 0
@@ -162,15 +164,17 @@ class UserProfileLog(models.Model):
 
 class UserProfileFilter(django_filters.FilterSet):
     # user_status_education_form = django_filters.ChoiceFilter(label=_(u'<strong>Форма обучения</strong>'), name='user_status')
-    user_status = django_filters.ChoiceFilter(label=u'<strong>{0}</strong>'.format(_(u'Статус студента')), name='user_status')
+    user_status = django_filters.ChoiceFilter(label=_('status_studenta'), name='user_status')
 
     def set(self):
+        self.filters['user_status'].field.label = u'<strong>{0}</strong>'.format(
+            self.filters['user_status'].field.label)
         activity_choices = [(status.id, status.name) for status in UserStatus.objects.filter(type='activity')]
-        activity_choices.insert(0, (u'', _(u'Любой')))
+        activity_choices.insert(0, (u'', _(u'luboj')))
         self.filters['user_status'].field.choices = tuple(activity_choices)
 
         # education_form_choices = [(status.id, _(status.name)) for status in UserStatus.objects.filter(type='education_form')]
-        # education_form_choices.insert(0, (u'', _(u'Любой')))
+        # education_form_choices.insert(0, (u'', _(u'luboj')))
         # self.filters['user_status_education_form'].field.choices = tuple(education_form_choices)
 
     class Meta:
@@ -178,14 +182,16 @@ class UserProfileFilter(django_filters.FilterSet):
         fields = ['user_status']
 
 class IssueFilterStudent(django_filters.FilterSet):
-    is_active = django_filters.ChoiceFilter(label=u'<strong>{0}</strong>'.format(_(u'Тип курса')), name='task__course__is_active')
-    years = django_filters.MultipleChoiceFilter(label=u'<strong>{0}</strong>'.format(_(u'Год курса')), name='task__course__year', widget=forms.CheckboxSelectMultiple)
-    courses = django_filters.MultipleChoiceFilter(label=u'<strong>{0}</strong>'.format(_(u'Курс')), name='task__course', widget=forms.SelectMultiple)
-    responsible = django_filters.MultipleChoiceFilter(label=u'<strong>{0}</strong>'.format(_(u'Преподаватели')), widget=forms.SelectMultiple)
-    status_field = django_filters.MultipleChoiceFilter(label=u'<strong>{0}</strong>'.format(_(u'Статус')), widget=forms.SelectMultiple)
-    update_time = django_filters.DateRangeFilter(label=u'<strong>{0}</strong>'.format(_(u'Дата последнего изменения')))
+    is_active = django_filters.ChoiceFilter(label=_('tip_kursa'), name='task__course__is_active')
+    years = django_filters.MultipleChoiceFilter(label=_('god_kursa'), name='task__course__year', widget=forms.CheckboxSelectMultiple)
+    courses = django_filters.MultipleChoiceFilter(label=_('kurs'), name='task__course', widget=forms.SelectMultiple)
+    responsible = django_filters.MultipleChoiceFilter(label=_('prepodavateli'), widget=forms.SelectMultiple)
+    status_field = django_filters.MultipleChoiceFilter(label=_('status'), widget=forms.SelectMultiple)
+    update_time = django_filters.DateRangeFilter(label=_('data_poslednego_izmenenija'))
 
     def set_user(self, user):
+        for field in self.filters:
+            self.filters[field].field.label = u'<strong>{0}</strong>'.format(self.filters[field].field.label)
         groups = user.group_set.all()
         courses = Course.objects.filter(groups__in=groups)
 
@@ -203,24 +209,24 @@ class IssueFilterStudent(django_filters.FilterSet):
             for status in course.issue_status_system.statuses.all():
                 status_set.add(status)
 
-        self.filters['is_active'].field.choices = ((u'', _(u'Любой')),
-                                                   (1, _(u'Активный')),
-                                                   (0, _(u'Архив')))
+        self.filters['is_active'].field.choices = ((u'', _(u'luboj')),
+                                                   (1, _(u'aktivnyj')),
+                                                   (0, _(u'arhiv')))
         self.filters['years'].field.choices = tuple(year_choices)
         self.filters['courses'].field.choices = tuple(course_choices)
 
         teacher_choices = [(teacher.id, teacher.get_full_name()) for teacher in teacher_set]
         self.filters['responsible'].field.choices = tuple(teacher_choices)
 
-        status_choices = [(status.id, status.name) for status in status_set]
+        status_choices = [(status.id, status.get_name()) for status in status_set]
         for status_id in sorted(IssueStatus.HIDDEN_STATUSES.values(), reverse=True):
             status_field = IssueStatus.objects.get(pk=status_id)
-            status_choices.insert(0, (status_field.id, status_field.name))
+            status_choices.insert(0, (status_field.id, status_field.get_name()))
         self.filters['status_field'].field.choices = tuple(status_choices)
 
     class Meta:
         model = Issue
-        fields = ['status_field', 'responsible', 'courses', 'update_time', 'years', 'is_active']
+        fields = ['is_active', 'years', 'courses', 'responsible', 'status_field', 'update_time']
 
 
 def create_user_profile(sender, instance, created, **kwargs):

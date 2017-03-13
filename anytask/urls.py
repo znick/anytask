@@ -18,7 +18,7 @@ urlpatterns = patterns('',
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
     # Uncomment the next line to enable the admin:
-    url(r'^i18n/', include('django.conf.urls.i18n')),
+
     url(r'^admin/', include(admin.site.urls)),
     url(r'^course/', include('courses.urls')),
     url(r'^issue/', include('issues.urls')),
@@ -26,6 +26,7 @@ urlpatterns = patterns('',
     url(r'^task/', include('tasks.urls')),
     url(r'^user/', include('users.urls')),
     url(r'^users/(?P<username>.*)/', 'users.views.users_redirect'),
+    url(r'^setlanguage/', 'users.views.set_user_language'),
     url(r'^invites/', include('invites.urls')),
     url(r'^anyrb/', include('anyrb.urls')),
     url(r'^accounts/logout/$', 'django.contrib.auth.views.logout', {'next_page': '/'}),

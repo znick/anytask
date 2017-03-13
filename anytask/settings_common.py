@@ -28,7 +28,7 @@ TIME_ZONE = 'Europe/Moscow'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = 'ru-RU'
+LANGUAGE_CODE = 'ru'
 LANGUAGES = (('ru', u'Русский'),
              ('en', 'English'))
 LOCALE_PATHS = (os.path.join(PROJECT_PATH, 'locale'))
@@ -194,7 +194,7 @@ CONTEST_EXTENSIONS_COURSE = {
     }
 }
 
-COURSES_WITH_CONTEST_MARKS = [11, 10, 65, 85, 93, 82, 79, 80, 104]
+COURSES_WITH_CONTEST_MARKS = [11, 10, 65, 85, 93, 82, 79, 80, 104, 137, 160, 155]
 
 PASSPORT_OAUTH_ID = 'OAUTH_ID'
 PASSPORT_OAUTH_PASSWORD = 'PASSWORD'
