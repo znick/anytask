@@ -608,7 +608,7 @@
 <body data-spy="scroll" style="">
 
 <nav class="navbar navbar-fixed-top navbar-dark navbar-blue">
-    <div class="container">
+    <div class="{% if full_width_page %}container-fluid{% else %}container{% endif %}">
         <a class="navbar-brand" href="/">Anytask</a>
         <!--
         <ul class="nav">
@@ -690,7 +690,7 @@
     </div>
 </nav>
 
-<div class="container">
+<div class="{% if full_width_page %}container-fluid{% else %}container{% endif %}">
     {% load django_bootstrap_breadcrumbs %}
     {% load index_messages %}
     {% block breadcrumbs %}
@@ -706,7 +706,7 @@
 </div>
 
 <footer class="footer">
-    <div class="container">
+    <div class="{% if full_width_page %}container-fluid{% else %}container{% endif %}">
         {% block footer %} {% endblock footer %}
         <div style="display: inline-block; width: 100%">
             <small class="text-muted" ><a href="{% url blog.views.blog_page %}">{% trans "Блог" %}</a></small>
