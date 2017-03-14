@@ -217,7 +217,6 @@ class ViewsTest(TestCase):
         # get page
         response = client.get(reverse('mail.views.ajax_get_message'), get_data)
         self.assertEqual(response.status_code, 200)
-        print json.loads(response.content)
 
         self.assertEqual(json.loads(response.content), response_data)
 
