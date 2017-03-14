@@ -71,7 +71,7 @@ def queue_page(request, course_id):
     for profile in active_profiles:
         active_students.append(profile.user)
 
-    issues = Issue.objects.filter(task__course=course, student__in=active_students).order_by('update_time')
+    issues = Issue.objects.filter(task__course=course, student__in=active_students).exclude(status_field__tag=IssueStatus.STATUS_SEMINAR).order_by('update_time')
 
     f = IssueFilter(request.GET, issues)
     f.set_course(course)
