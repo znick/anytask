@@ -241,12 +241,20 @@ def ajax_send_message(request):
 
     data = dict(request.POST)
 
+    hidden_copy = False
+    if 'hidden_copy' in data and data['hidden_copy'][0]:
+        hidden_copy = True
+
+    variable = False
+    if 'variable' in data and data['variable'][0]:
+        variable = True
+
     message = Message()
     message.sender = user
     message.title = data['new_title'][0]
     message.text = data['new_text'][0]
-    message.hidden_copy = True if data['hidden_copy'][0] else False
-    message.variable = True if data['variable'][0] else False
+    message.hidden_copy = hidden_copy
+    message.variable = variable
     message.save()
 
     recipients_ids = set()
