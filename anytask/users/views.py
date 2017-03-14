@@ -13,7 +13,8 @@ from django.core.files.base import ContentFile
 from django.utils.translation import ugettext as _
 
 
-from users.models import UserProfile, UserProfileLog, UserStatus
+from users.models import UserProfile, UserProfileLog
+from users.model_user_status import UserStatus
 from issues.model_issue_student_filter import IssueFilterStudent
 from django.contrib.auth.models import User
 from tasks.models import TaskTaken

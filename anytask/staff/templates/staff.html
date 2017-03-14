@@ -128,7 +128,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="modal_table_edit_header">{% trans "Изменение статусов" %}</h4>
+                    <h4 class="modal-title">{% trans "Изменение статусов" %}</h4>
                 </div>
                 <div class="modal-body">
                     <p>{% trans "Выберите новые статусы." %}</p>
@@ -165,6 +165,11 @@
                 </div>
                 <div class="modal-footer">
                     <div id="modal_change_status_error_text"></div>
+                    <div class="checkbox-footer">
+                        <label>
+                            <input type="checkbox" name="send_mail">&nbsp;{% trans 'создать сообщение?' %}
+                        </label>
+                    </div>
                     <button class="btn btn-secondary" data-dismiss="modal" type="button">{% trans "Закрыть" %}</button>
                     <button class="btn btn-primary" id="modal_change_status_ok" type="button" data-dismiss="modal" data-loading-text="<span class='fa fa-circle-o-notch fa-spin'></span> {% trans "Сохранение" %}">{% trans "Сохранить" %}</button>
                 </div>
@@ -172,10 +177,36 @@
         </div>
     </div>
 
+    <div class="modal fade" id="modal_send_mail" tabindex="-1" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">{% trans "Отправка сообщения" %}</h4>
+                </div>
+                <div class="modal-body">
+                    <p>{% trans "Перейти к созданию сообщения?" %}</p>
+                    <p>{% trans "Выбрано пользователей: " %}<span class="selected_users_count"></span>.</p>
+                    <form id="form_send_mail">
+                        {% csrf_token %}
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <div id="modal_send_mail_error_text"></div>
+                    <button class="btn btn-secondary" data-dismiss="modal" type="button">{% trans "Закрыть" %}</button>
+                    <button class="btn btn-primary" id="modal_send_mail_ok" type="button" data-loading-text="<span class='fa fa-circle-o-notch fa-spin'></span> {% trans "Сохранение" %}">{% trans "Перейти" %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="table-buttons remove-after-init">
         <div class="table-options" >
-            <button type="button" class="btn btn-secondary table-change-status" data-toggle="modal" data-target="#modal_change_status" title="{% trans "Изменить статус для всех пользователей" %}">
-                {% trans "Изменить статус для всех пользователей" %}
+            <button type="button" class="btn btn-sm btn-secondary table-change-status" data-toggle="modal" data-target="#modal_change_status" title="{% trans "Изменить статус для всех пользователей" %}">
+                <span class="fa fa-cog fa-fw" aria-hidden="true"></span>
+            </button>
+            <button type="button" class="btn btn-sm btn-secondary table-send-mail" data-toggle="modal" data-target="#modal_send_mail" title="{% trans "Отправить сообщение всем пользователям" %}">
+                <span class="fa fa-envelope fa-fw" aria-hidden="true"></span>
             </button>
         </div>
     </div>

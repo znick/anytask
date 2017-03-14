@@ -12,12 +12,12 @@
 {% block content %}
     <div class="row">
         <div class="mailbox_menu col-xs-12 col-sm-12 col-md-12 col-lg-3 col-xl-3">
-            <button type="button" class="btn btn-secondary" id="btn_new_msg" data-toggle="pill" href="#new" style="margin-bottom: .75rem">
+            <button type="button" class="btn btn-secondary" id="btn_new_msg" data-toggle="pill" href="#new">
                 <span class="fa fa-edit"></span>&nbsp;{% trans "Написать" %}
             </button>
             <div class="card" >
                 <ul class="list-group list-group-flush">
-                    <li class="list-group-item active" data-toggle="pill" href="#inbox" data-type="inbox">
+                    <li class="list-group-item" data-toggle="pill" href="#inbox" data-type="inbox">
                         <span class="fa fa-inbox fa-fw"></span>&nbsp;{% trans "Входящие" %}
                         <span id="inbox_count" class="label label-danger pull-xs-right"></span>
                     </li>
@@ -36,10 +36,10 @@
             <div class="card">
                 <div class="card-block">
                     <div class="tab-content">
-                        <div class="tab-pane fade in active" id="inbox" role="tabpanel">
+                        <div class="tab-pane fade" id="inbox" role="tabpanel">
                             <h5 class="card-title">{% trans "Входящие" %}</h5>
                             <div class="loading">
-                                <span class='fa fa-circle-o-notch fa-spin'></span>&nbsp;{% trans "Загрузка..." %}
+                                <span class='fa fa-circle-o-notch fa-spin'></span>
                             </div>
                             <div class="main-table collapse" >
                                 <table class="table table-mailbox table-hover" id="table_inbox" data-init="false">
@@ -57,7 +57,7 @@
                         <div class="tab-pane fade" id="sent" role="tabpanel">
                             <h5 class="card-title">{% trans "Отправленные" %}</h5>
                             <div class="loading">
-                                <span class='fa fa-circle-o-notch fa-spin'></span>&nbsp;{% trans "Загрузка..." %}
+                                <span class='fa fa-circle-o-notch fa-spin'></span>
                             </div>
                             <div class="main-table collapse" >
                                 <table class="table table-mailbox table-hover" id="table_sent" data-init="false">
@@ -75,7 +75,7 @@
                         <div class="tab-pane fade" id="trash" role="tabpanel">
                             <h5 class="card-title">{% trans "Удаленные" %}</h5>
                             <div class="loading">
-                                <span class='fa fa-circle-o-notch fa-spin'></span>&nbsp;{% trans "Загрузка..." %}
+                                <span class='fa fa-circle-o-notch fa-spin'></span>
                             </div>
                             <div class="main-table collapse" >
                                 <table class="table table-mailbox table-hover" id="table_trash" data-init="false">
@@ -93,36 +93,67 @@
 
                         <div class="tab-pane fade" id="new" role="tabpanel">
                             <h5 class="card-title">{% trans "Новое сообщение" %}</h5>
-                            <form method="post" id="new_msg_form">
-                                {% csrf_token %}
-                                <div class="form-group form-search row form-recipients">
-                                    <label class="col-xs-12 col-md-1 form-control-label " for="new_recipients">{% trans "Кому" %}</label>
-                                    <div class="controls col-xs-12 col-md-11" >
-                                        <input type="text" class="form-control typeahead" name="new_recipients" id="new_recipients" placeholder="{% trans "Начните вводить имя" %}" maxlength='25' >
-                                        {% if courses_teacher %}
-                                            <button type="button" class="btn-add" data-toggle="modal" data-target="#modal_add_group" id="add_group" title="{% trans "Добавить курс или группу" %}" style="position: absolute; top: 0; right: .9375rem;">
-                                                <span style="font-weight: bold">+</span><span class="fa fa-users" aria-hidden="true"></span>
-                                            </button>
-                                        {% endif %}
-                                        <small class="text-help" ></small>
+                            <div class="loading" id="loading_new">
+                                <span class='fa fa-circle-o-notch fa-spin'></span>
+                            </div>
+                            <div class="new-msg-form collapse">
+                                <form method="post" id="new_msg_form">
+                                    {% csrf_token %}
+                                    <div class="form-group form-search row form-recipients">
+                                        <label class="col-xs-12 col-md-1 form-control-label " for="new_recipients">{% trans "Кому" %}</label>
+                                        <div class="controls col-xs-12 col-md-11" >
+                                            <input type="text" class="form-control typeahead" name="new_recipients" id="new_recipients" placeholder="{% trans "Начните вводить имя" %}" maxlength='25' >
+                                            {% if courses_teacher %}
+                                                <button type="button" class="btn-add" data-toggle="modal" data-target="#modal_add_group" id="add_group" title="{% trans "Добавить курс или группу" %}">
+                                                    <span class="add-group">+</span><span class="fa fa-users" aria-hidden="true"></span>
+                                                </button>
+                                            {% endif %}
+                                            <small class="text-help" ></small>
+                                            {% if user.is_staff %}
+                                                <div class="new-mail-settings">
+                                                    <div class="hidden_copy_body">
+                                                        <label for="hidden_copy">
+                                                            <input type="checkbox" name="hidden_copy" id="hidden_copy">
+                                                            <span>{% trans "скрытые копии" %}</span>
+                                                        </label>
+                                                        <a tabindex="0" data-toggle="popover" data-trigger="hover"
+                                                           data-content="{% trans "Получатели не будут знать о других получателях этого сообщения" %}"
+                                                           type="button">
+                                                            <span class="fa fa-question-circle help-button" aria-hidden="true"></span>
+                                                        </a>
+                                                    </div>
+                                                    <div class="variable_body">
+                                                        <label for="variable">
+                                                            <input type="checkbox" name="variable" id="variable">
+                                                            <span>{% trans "переменные" %}</span>
+                                                        </label>
+                                                        <a tabindex="0" data-toggle="popover" data-trigger="hover"
+                                                           data-content="{% trans "Можно использовать переменные в тексте сообщения, которые будут менться в зависимости от получателя." %}"
+                                                           type="button">
+                                                            <span class="fa fa-question-circle help-button" aria-hidden="true"></span>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label class="form-control-label col-xs-12 col-md-1" for="new_title">{% trans "Тема" %}</label>
-                                    <div class="controls col-xs-12 col-md-11">
-                                        <input type="text" class="form-control" name="new_title" id="new_title" autocomplete="off" tabindex="2">
-                                        <small class="text-help" ></small>
+                                    <div class="form-group row">
+                                        <label class="form-control-label col-xs-12 col-md-1" for="new_title">{% trans "Тема" %}</label>
+                                        <div class="controls col-xs-12 col-md-11">
+                                            <input type="text" class="form-control" name="new_title" id="new_title" autocomplete="off" tabindex="2">
+                                            <small class="text-help" ></small>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label class="sr-only" for="new_text">{% trans "Текст" %}</label>
-                                    <div class="controls col-xs-12 col-md-12">
-                                        <textarea class="form-control" name="new_text" id="new_text"></textarea>
+                                    <div class="form-group row">
+                                        <label class="sr-only" for="new_text">{% trans "Текст" %}</label>
+                                        <div class="controls col-xs-12 col-md-12">
+                                            <textarea class="form-control" name="new_text" id="new_text"></textarea>
+                                        </div>
                                     </div>
-                                </div>
-                                <button type="button" class="btn btn-primary" id="btn_send_msg">{% trans "Отправить" %}</button>
-                                <button type="reset" class="btn btn-secondary" id="btn_send_cancel">{% trans "Отмена" %}</button>
-                            </form>
+                                    <button type="button" class="btn btn-primary" id="btn_send_msg">{% trans "Отправить" %}</button>
+                                    <button type="reset" class="btn btn-secondary" id="btn_send_cancel">{% trans "Отмена" %}</button>
+                                </form>
+                            </div>
                         </div>
 
                         <div class="modal fade" id="modal_add_group" tabindex="-1" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
@@ -132,16 +163,40 @@
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                                         <h4 class="modal-title">{% trans "Добавить группу пользователей" %}</h4>
                                     </div>
-                                    <div class="modal-body" style="max-height: none;">
-                                        <select id="modal_add_group_select" multiple>
-                                            {% for course in courses_teacher|order_by:"name" %}
-                                                <optgroup label="{{ course.name }}" data-id="{{ course.id  }}" data-count="{{ course.groups.count }}">
-                                                    {% for group in course.groups.all|order_by:"name" %}
-                                                        <option value="{{ course.id }}_{{ group.id }}" data-id="{{ group.id }}">{{ group.name }}</option>
+                                    <div class="modal-body">
+                                        <ul class="nav nav-pills" role="tablist">
+                                            <li class="nav-item">
+                                                <a class="nav-link active" data-toggle="pill" href="#courses" role="tab">{% trans 'Курс/Группа' %}</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" data-toggle="pill" href="#statuses" role="tab">{% trans 'Статусы' %}</a>
+                                            </li>
+                                        </ul>
+
+                                        <div class="tab-content">
+                                            <div class="tab-pane fade active in" id="courses" role="tabpanel">
+                                                <select id="modal_add_group_select" multiple>
+                                                    {% for course in courses_teacher|order_by:"name" %}
+                                                        <optgroup label="{{ course.name }}" data-id="{{ course.id  }}" data-count="{{ course.groups.count }}">
+                                                            {% for group in course.groups.all|order_by:"name" %}
+                                                                <option value="{{ course.id }}_{{ group.id }}" data-id="{{ group.id }}" data-type="group">{{ group.name }}</option>
+                                                            {% endfor %}
+                                                        </optgroup>
                                                     {% endfor %}
-                                                </optgroup>
-                                            {% endfor %}
-                                        </select>
+                                                </select>
+                                            </div>
+                                            <div class="tab-pane fade" id="statuses" role="tabpanel">
+                                                <select id="modal_add_status_select" multiple>
+                                                    {% for status_type, status_values in user_statuses.iteritems %}
+                                                        <optgroup data-not_selectable="1" label="{% if status_type %}{{ status_values.type_name }}{% else %}{% trans "Без типа" %}{% endif %}">
+                                                            {% for status_info in status_values.values %}
+                                                                <option value="{{ status_info.id }}" data-id="{{ status_info.id }}" data-type="status">{{ status_info.name }}</option>
+                                                            {% endfor %}
+                                                        </optgroup>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="modal-footer">
                                         <button class="btn btn-secondary" data-dismiss="modal">{% trans "Закрыть" %}</button>
@@ -152,9 +207,9 @@
                         </div>
 
                         <div class="collapse" id="read" role="tabpanel">
-                            <h5 class="card-title" style="overflow: hidden;text-overflow: ellipsis;">Title</h5>
+                            <h5 class="card-title">Title</h5>
                             <div class="loading" id="loading_info">
-                                <span class='fa fa-circle-o-notch fa-spin'></span>&nbsp;{% trans "Загрузка..." %}
+                                <span class='fa fa-circle-o-notch fa-spin'></span>
                             </div>
                             <div id="msg_info" class="collapse">
                                 <div class="mail-option" >
@@ -178,26 +233,26 @@
                                         {% trans "Восстановить" %}
                                     </button>
                                 </div>
-                                <div id="sender_info" style="margin-bottom: 0.5rem;margin-top: 6px;">
+                                <div id="sender_info">
                                     <a class="card-link card-clickable" href="#" id="sender_url">
                                         <span>
                                             <img class="avatar" src="" data-default="https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mm&f=y" >
                                         </span>
-                                        <span  style="margin-left: .5rem;font-weight: bold" id="sender_id"></span>
+                                        <span id="sender_id"></span>
                                     </a>
-                                    <div id="sender_time" class="pull-xs-right" style="margin-top: 10px"></div>
+                                    <div id="sender_time" class="pull-xs-right"></div>
                                 </div>
-                                <div style="position: relative">
+                                <div class="recipients-info">
                                     <div id="recipients_info">
-                                        <div style="display: inline-block;width: 50px;margin-right: .5rem;">
+                                        <div id="recipients_info_title">
                                             <span class="text-muted">{% trans "Кому:" %}</span>
                                         </div>
-                                        <div id="recipients_users_info" style="display: inline">
+                                        <div id="recipients_users_info">
 
                                         </div>
                                     </div>
                                 </div>
-                                <div id="text_info" style="margin-top: 2rem"></div>
+                                <div id="text_info"></div>
                             </div>
                         </div>
                     </div>
@@ -206,7 +261,7 @@
         </div>
     </div>
 
-    <div class="inbox-body remove-after-init" style="display: none; position: absolute;">
+    <div class="inbox-body remove-after-init">
         <div class="mail-option" >
             {#            <div class="btn-group">#}
             {#                <button type="button" class="btn btn-sm btn-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">#}
@@ -227,11 +282,11 @@
                 {% trans "Отметить все как прочитанное" %}
             </button>
 
-            <button type="button" class="btn btn-sm btn-secondary mail-delete" style="display: none;">
+            <button type="button" class="btn btn-sm btn-secondary mail-delete">
                 <span class="fa fa-trash-o"></span>
             </button>
 
-            <button type="button" class="btn btn-sm btn-secondary mail-undelete" style="display: none;">
+            <button type="button" class="btn btn-sm btn-secondary mail-undelete">
                 {% trans "Восстановить" %}
             </button>
         </div>

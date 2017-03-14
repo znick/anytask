@@ -2,6 +2,10 @@
     white-space: nowrap
 }
 
+#filters .nav-pills .nav-item {
+    cursor: pointer;
+}
+
 .hidden {
     display: none !important;
 }
@@ -81,10 +85,12 @@
     background-color: rgba(2, 133, 255, 0.29);
 }
 
-.main-table button.table-change-status {
+.table-options button .fa{
+    line-height: 1.5;
+}
+
+.main-table .table-search label {
     width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
 .main-table .table-search input[type="search"] {
@@ -96,17 +102,15 @@
     font-weight: bold;
 }
 
+#modal_change_status .modal-footer .checkbox-footer{
+    text-align: left;
+    margin-bottom: 1rem;
+}
+
 #modal_change_status_error_text {
     text-align: left;
 }
 
-@media screen and (max-width: 768px) {
-    .main-table .table-search label {
-        width: 100%;
-        margin-top: .5rem;
-    }
-
-}
 
 @media screen and (max-width: 575px), screen and (min-width: 992px) {
     .nav-pills .nav-item {

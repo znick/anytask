@@ -16,9 +16,12 @@ from crispy_forms.layout import HTML
 
 from courses.models import StudentCourseMark
 from courses.models import Course
-from users.models import UserProfile, UserStatus, UserProfileFilter
+from users.models import UserProfile, UserProfileFilter
+from users.model_user_status import UserStatus
 
-import csv, logging
+import csv
+import logging
+import json
 
 logger = logging.getLogger('django.request')
 
@@ -27,6 +30,23 @@ SEARCH_FIELDS = {
     'login': 'user__username',
     'email': 'user__email',
 }
+
+
+def get_statuses():
+    statuses = {}
+    for status in UserStatus.objects.all():
+        status_info = {
+            'id': status.id,
+            'name': status.name,
+        }
+        if status.type in statuses:
+            statuses[status.type]['values'].append(status_info)
+        else:
+            statuses[status.type] = {
+                'type_name': status.get_type_display(),
+                'values': [status_info],
+            }
+    return statuses
 
 
 @login_required
@@ -85,25 +105,11 @@ def staff_page(request):
         <button id="button_filter" class="btn btn-secondary pull-xs-right" type="submit">{0}</button>
 </div>""".format(_(u'Применить'))))
 
-    statuses = {}
-    for status in UserStatus.objects.all():
-        status_info = {
-            'id': status.id,
-            'name': status.name,
-        }
-        if status.type in statuses:
-            statuses[status.type]['values'].append(status_info)
-        else:
-            statuses[status.type] = {
-                'type_name': status.get_type_display(),
-                'values': [status_info],
-            }
-
     context = {
         'filter': f,
         'file_filter_err': file_filter_err,
         'is_error': is_error,
-        'statuses': statuses,
+        'statuses': get_statuses(),
         'show_file_alert': show_file_alert,
         'empty_filter': empty_filter,
     }
@@ -125,6 +131,29 @@ def ajax_change_status(request):
                 profile.set_status(status)
 
     return HttpResponse("OK")
+
+
+@require_http_methods(['POST'])
+@login_required
+def ajax_save_ids(request):
+    if not request.is_ajax():
+        return HttpResponseForbidden()
+
+    post_dict = dict(request.POST)
+    if 'user_ids[]' in post_dict:
+        index = save_to_session(request, post_dict['user_ids[]'])
+    else:
+        return HttpResponseForbidden()
+
+    return HttpResponse(json.dumps({'index': index}), content_type="application/json")
+
+
+def save_to_session(request, user_ids):
+    index = request.session.get('user_ids_send_mail_counter', -1) + 1
+    request.session['user_ids_send_mail_counter'] = index
+    request.session['user_ids_send_mail_' + str(index)] = user_ids
+
+    return index
 
 
 @require_http_methods(['GET'])

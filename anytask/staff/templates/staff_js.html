@@ -135,7 +135,7 @@
             fixedHeader: {
                 headerOffset: $('nav.navbar').outerHeight()
             },
-            dom: "<'row'<'table-options-group col-xs-12 col-sm-12 col-md-7 col-lg-8'><'table-search col-xs-12 col-sm-12 col-md-5 col-lg-4'f>>" +
+            dom: "<'row'<'table-options-group col-xs-5 col-sm-5 col-md-5 col-lg-7'><'table-search col-xs-7 col-sm-7 col-md-7 col-lg-5'f>>" +
             "<'row'<'col-xs-12'tr>>" +
             "<'row'<'col-xs-12 col-sm-12 col-md-4 col-lg-4'i><'col-xs-12 col-sm-12 col-md-8 col-lg-8'p>>",
             columnDefs: [
@@ -156,6 +156,7 @@
                 $(".table-options-group", $table.closest(".main-table")).html($table_buttons.html());
                 $table_buttons.remove();
                 api.fixedHeader.adjust();
+                $('input', '.main-table .table-search').addClass('form-control-sm');
                 $table.closest(".main-table").collapse("show").siblings(".loading").hide();
             },
             language: {
@@ -213,18 +214,15 @@
         });
 
         $('.main-table').on('click', 'button.table-change-status', function () {
-            var rows = table_users.rows({selected: true});
-            if (rows.data().length == 0)
-                rows = table_users.rows();
+            var profile_ids = get_selected_user_info(table_users, 'id_profile');
 
-            var profile_ids = [];
-
-            rows.every(function () {
-                profile_ids.push($(this.node()).data('id_profile'));
-            });
-
-            $(".selected_users_count", "#modal_change_status").text(rows.data().length);
+            $(".selected_users_count", "#modal_change_status").text(profile_ids.length);
             $("#form_change_status").data("profile_ids", {"profile_ids": profile_ids});
+        }).on('click', 'button.table-send-mail', function () {
+            var user_ids = get_selected_user_info(table_users, 'id_user');
+
+            $(".selected_users_count", "#modal_send_mail").text(user_ids.length);
+            $("#form_send_mail").data("user_ids", {"user_ids": user_ids});
         });
 
         $("input.no-change", "#modal_change_status").change(function () {
@@ -242,12 +240,6 @@
 
         $("#modal_change_status_ok").click(function () {
             var modal_button_ok = $(this);
-            var d = 'disabled';
-
-            modal_button_ok.data('resetText', modal_button_ok.html()).html(modal_button_ok.data('loadingText'));
-            $('button', '#modal_change_status .modal-footer').addClass(d).attr(d, d).prop(d, true);
-            $('#modal_change_status').data("is_form_submitting", true);
-
             var $form_change_status = $("#form_change_status");
             var statuses_id = [];
             $("input[name='status_types[]']").each(function () {
@@ -266,12 +258,20 @@
                 '&' +
                 $.param({"statuses_id": statuses_id});
 
+            var d = 'disabled';
+
+            modal_button_ok.data('resetText', modal_button_ok.html()).html(modal_button_ok.data('loadingText'));
+            $('button', '#modal_change_status .modal-footer').addClass(d).attr(d, d).prop(d, true);
+            $('input', '#modal_change_status').addClass(d).attr(d, d).prop(d, true);
+            $('#modal_change_status').data("is_form_submitting", true);
+
             $.post('{% url staff.views.ajax_change_status %}', post_data)
                 .always(function () {
                     var d = 'disabled';
 
                     modal_button_ok.html(modal_button_ok.data('resetText'));
                     $('button', '#modal_change_status .modal-footer').removeClass(d).removeAttr(d).prop(d, false);
+                    $('input', '#modal_change_status').removeClass(d).removeAttr(d).prop(d, false);
                     $('#modal_change_status').data("is_form_submitting", false);
                 })
                 .done(function (data) {
@@ -279,7 +279,17 @@
                         '                                     <a class="close" data-dismiss="alert">&times;</a>' +
                         '                                     <span>{% trans "Сохранено успешно." %}</span>' +
                         '                                   </div>');
-                    window.location.reload();
+                    if ($("input[name='send_mail']", '#modal_change_status').is(":checked")) {
+                        var user_ids = get_selected_user_info(table_users, 'id_user');
+                        $.post('{% url staff.views.ajax_save_ids %}', {
+                            'csrfmiddlewaretoken': "{{ csrf_token }}",
+                            'user_ids': user_ids
+                        }).done(function (data) {
+                            window.location.href = '{% url mail.views.mail_page %}' + '?from_staff='+ data.index + '#new'
+                        });
+                    }
+                    else
+                        window.location.reload();
                 })
                 .fail(function (data) {
                     $('#modal_change_status_error_text').html('<div class="alert alert-danger" role ="alert">' +
@@ -298,8 +308,49 @@
                 e.preventDefault();
         }).on('hidden.bs.modal', function (e) {
             $("#form_change_status").trigger("reset");
+            $("input[name='send_mail']", '#modal_change_status').prop("checked", false);
             $('#modal_change_status_error_text').html("");
-        })
+        });
+
+        $("#modal_send_mail_ok").click(function () {
+            var modal_button_ok = $(this);
+            var $form_send_mail = $("#form_send_mail");
+
+            var post_data = $form_send_mail.serialize() +
+                '&' +
+                $.param($form_send_mail.data("user_ids"));
+
+            var d = 'disabled';
+
+            modal_button_ok.data('resetText', modal_button_ok.html()).html(modal_button_ok.data('loadingText'));
+            $('button', '#modal_send_mail .modal-footer').addClass(d).attr(d, d).prop(d, true);
+            $('#modal_send_mail').data("is_form_submitting", true);
+
+            $.post('{% url staff.views.ajax_save_ids %}', post_data)
+                .always(function () {
+                    var d = 'disabled';
+
+                    modal_button_ok.html(modal_button_ok.data('resetText'));
+                    $('button', '#modal_send_mail .modal-footer').removeClass(d).removeAttr(d).prop(d, false);
+                    $('#modal_send_mail').data("is_form_submitting", false);
+                })
+                .done(function (data) {
+                    window.location.href = '{% url mail.views.mail_page %}' + '?from_staff='+ data.index + '#new'
+                })
+                .fail(function (data) {
+                    $('#modal_send_mail_error_text').html('<div class="alert alert-danger" role ="alert">' +
+                        '                                     <a class="close" data-dismiss="alert">&times;</a>' +
+                        '                                     <span>{% trans "Произошла ошибка при сохранении. Попробуйте снова." %}</span>' +
+                        '                                   </div>');
+                });
+        });
+
+        $('#modal_send_mail').on('hide.bs.modal', function (e) {
+            if ($('#modal_send_mail').data("is_form_submitting"))
+                e.preventDefault();
+        }).on('hidden.bs.modal', function (e) {
+            $('#modal_send_mail_error_text').html("");
+        });
     });
 
     function set_all_selected(table_users) {
@@ -308,13 +359,33 @@
         else
             $('input.table-checkbox-all').prop("checked", false);
 
-        var btn_text = "";
+        var btn_status_text = "";
+        var btn_send_text = "";
         var selected_count = table_users.rows({selected: true}).data().length;
-        if (selected_count == 0 || selected_count == table_users.rows().data().length)
-            btn_text = "{% trans "Изменить статус для всех пользователей" %}";
-        else
-            btn_text = "{% trans "Изменить статус для выбранных пользователей" %}";
+        if (selected_count == 0 || selected_count == table_users.rows().data().length) {
+            btn_status_text = "{% trans "Изменить статус для всех пользователей" %}";
+            btn_send_text = "{% trans "Отправить сообщение всем пользователям" %}";
+        }
+        else {
+            btn_status_text = "{% trans "Изменить статус для выбранных пользователей" %}";
+            btn_send_text = "{% trans "Отправить сообщение выбранным пользователям" %}";
+        }
 
-        $('button.table-change-status').text(btn_text).prop("title", btn_text);
+        $('button.table-change-status').prop("title", btn_status_text);
+        $('button.table-send-mail').prop("title", btn_send_text);
+    }
+
+    function get_selected_user_info(table_users, info_type) {
+        var rows = table_users.rows({selected: true});
+        if (rows.data().length == 0)
+            rows = table_users.rows();
+
+        var info = [];
+
+        rows.every(function () {
+            info.push($(this.node()).data(info_type));
+        });
+
+        return info;
     }
 </script>
