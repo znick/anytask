@@ -250,17 +250,16 @@ class Issue(models.Model):
         elif name == 'followers_names':
             if self.responsible and str(self.responsible.id) in value:
                 value.remove(str(self.responsible.id))
-            prev_followers = self.followers
-            self.followers = list(value)
+            new_followers = User.objects.filter(id__in=value)
 
-            if prev_followers == self.followers:
+            if list(new_followers) == list(self.followers.all()):
                 delete_event = True
-
-            value = []
-            for follower in self.followers.all():
-                value.append(follower.last_name + ' ' + follower.first_name)
-
-            value = ', '.join(value)
+            else:
+                old_fnames = [follower.last_name + ' ' + follower.first_name
+                                 for follower in set(self.followers.all()).difference(set(new_followers))]
+                new_fnames = [follower.last_name + ' ' + follower.first_name for follower in new_followers.all()]
+                self.followers = value
+                value = '+{0}\n-{1}'.format(', '.join(new_fnames), ', '.join(old_fnames))
 
         elif name == 'comment':
             if value:
@@ -424,17 +423,27 @@ class Event(models.Model):
     def get_message(self):
         msg_map = {
             'responsible_name': _('zadachu_proveriaet'),
-            'followers_names': _('nabludaiut'),
             'status': _('status_izmenen'),
             'mark': _('ocenka_izmenena'),
             'file': _('zagruzhen_faij')
         }
         message = ''
-        if self.field.history_message:
-            if self.field.name in msg_map:
-                self.field.history_message = msg_map[self.field.name]
-            message += self.field.history_message + ' '
-        message += self.value
+        if self.field.name == 'followers_names':
+            value = self.value.split('\n')
+            if len(value) == 1:
+                return _('nabludaiut') + ' ' + self.value if self.value else _('nabludaet_nikto')
+            new_ones, old_ones = value[0][1:], value[1][1:]
+            if new_ones:
+                message += u'{0} {1}'.format(_('nabludaiut'), new_ones)
+            if old_ones:
+                message += u'\n{0} {1}'.format(_('ne_nabludaiut'), old_ones)
+        else:
+            if self.field.history_message:
+                if self.field.name in msg_map:
+                    message += msg_map[self.field.name] + ' '
+                else:
+                    message += self.field.history_message + ' '
+            message += self.value
         return message
 
     def get_notify_message(self):
