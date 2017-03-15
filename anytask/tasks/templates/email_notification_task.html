@@ -7,20 +7,20 @@
         {% if key_course != 'user' %}
             {% with course=tasks_info|key:"course" %}
                 <div style="color:#373a3c;line-height:20px;margin:0 0 20px">
-                    {% trans "В курсе" %}
+                    {% trans "v_kurse" %}
                     <a href="{{ domain }}{{ course.get_absolute_url }}"
                        style="text-decoration:none;font-weight:bold;color: #0275d8;"
                        target="_blank"
                     >"{{ course.name }}"</a>
-                    {% trans "произошли изменения:" %}
+                    {% trans "proizoshli_izmeneniya" %}
                     <ul>
                         {% for key_task, task_info in tasks_info.iteritems %}
                             {% if key_task != 'course' %}
                                 <li>
                                     {% if task_info.1 %}
-                                        {% blocktrans with task_title=task_info.0.title %}добавлена задача "{{ task_title }}"{% endblocktrans %}
+                                        {% trans 'dobavlena_zadacha' %}&nbsp;"{{ task_info.0.title }}"
                                     {% else %}
-                                        {% blocktrans with task_title=task_info.0.title task_changes=task_info|slice:"2:"|join:", " %}в задаче "{{ task_title }}" изменились: {{ task_changes }}{% endblocktrans %}
+                                        {% trans 'v_zadache' %}&nbsp;"{{ task_info.0.title }}"&nbsp;{% trans 'izmenilis' %}&nbsp;{{ task_info|slice:"2:"|join:", " }}
                                     {% endif %}
                                 </li>
                             {% endif %}

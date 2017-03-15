@@ -99,7 +99,7 @@
 
                                 while (status_counter < data.statuses.length) {
                                     if (status_counter == MAX_STATUSES) {
-                                        status_html += '<span class="label label-status-sgs label-default ">еще ' + '1' + '</span>';
+                                        status_html += '<span class="label label-status-sgs label-default ">{% trans 'yeshcho' %} ' + (data.statuses.length - MAX_STATUSES) + '</span>';
                                         break;
                                     }
 
@@ -152,7 +152,7 @@
 
                         if ($('#navbar_search').data('course_limited') || $('#navbar_search').data('up_limited')) {
                             if (!$('.search-show-more', menu).length)
-                                $(menu).append("<div class='search-show-more'><button type='submit'>Все результаты</button></div>");
+                                $(menu).append("<div class='search-show-more'><button type='submit'>{% trans 'vse_resultaty' %}</button></div>");
                         }
                         else
                             $('.search-show-more', menu).remove();

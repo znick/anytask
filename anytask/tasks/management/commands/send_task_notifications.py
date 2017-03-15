@@ -24,7 +24,12 @@ class Command(BaseCommand):
 
     def handle(self, **options):
         DIFF_FIELDS = [u'title', u'task_text', u'score_max', u'deadline_time']
-        DIFF_FIELDS_STR = [_(u'название'), _(u'формулировка'), _(u'максимальный балл'), _(u'дата сдачи')]
+        DIFF_FIELDS_STR = [
+            _(u'nazvanie').lower(),
+            _(u'formulirovka').lower(),
+            _(u'max_ball').lower(),
+            _(u'data_sdachi').lower()
+        ]
         students_tasks_info = {}
         for task in Task.objects.filter(sended_notify=False):
             course = task.course
@@ -84,22 +89,22 @@ class Command(BaseCommand):
 
         domain = Site.objects.get_current().domain
         from_email = settings.DEFAULT_FROM_EMAIL
-        plain_header = _(u'Здравствуйте, {0}.\n\n')
-        plain_body_course = _(u'В курсе "{0}" изменились следующие задачи:\n') + \
+        plain_header = _(u'zdravstvujte') + u', {0}.\n\n'
+        plain_body_course = _(u'v_kurse_izmenilis_zadachi') + u'\n'\
                             u'{1}\n' + \
-                            _(u'Перейти в курс:\n') + \
+                            _(u'pereyti_v_kurs') + u'\n' \
                             u'{2}\n\n'
-        plain_body_task = _(u'  - в задаче "{0}" изменились: {1}\n')
-        plain_body_task_new = _(u'  - добавлена задача "{0}"\n')
+        plain_body_task = _(u'v_zadache') + u' "{0}" ' + _(u'izmenilis') + u' {1}\n'
+        plain_body_task_new = u'  - ' + _(u'dobavlena_zadacha') + u' "{0}"\n'
 
         plain_footer = u'\n\n' + \
                        u'-- \n' + \
-                       _(u'С уважением,\n') + \
-                       _(u'команда Anytask.')
+                       _(u's_uvazheniem') + u',\n' + \
+                       _(u'komanda_anytask')
         notify_messages = []
         for key_user, courses_info in students_tasks_info.iteritems():
             user = courses_info['user']
-            subject = _(u'{0}, произошли изменения в Ваших курсах').format(user.first_name)
+            subject = _(u'proizoshli_izmeneniya_v_kursah').format(user.first_name)
 
             plain_body = u''
             for key_course, tasks_info in courses_info.iteritems():
