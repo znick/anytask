@@ -30,14 +30,14 @@
 
 <style type = "text/css">
     .popover.legend.static {
-        transform: translateX(15px) translateY(187px) translateZ(0px) !important;
+        transform: translateX(15px) translateY(140px) translateZ(0px) !important;
     }
     .popover.legend.sticky {
         transform: translateX(15px) translateY(94px) translateZ(0px) !important;
         position: fixed !important;
     }
     .popover-arrow.legend {
-        left: 25% !important;
+        left: 20% !important;
     }
 </style>
 <script type="text/javascript">
@@ -232,11 +232,10 @@
         $("#legend").sticky({
             topSpacing: $("nav.navbar").outerHeight()
         }).on('sticky-start', function () {
-            $(".card", "#legend").css('background-color', '#f5f8fa').css('border-color', '#f5f8fa')
-                .css('padding-bottom', '.5rem').css('padding-top', '.5rem');
+            $(".card", "#legend").css('padding-bottom', '.5rem').css('padding-top', '.5rem');
             $('.popover.legend').removeClass('static').addClass('sticky');
         }).on('sticky-end', function () {
-            $("#legend .card").css('background-color', '#fff').css('border-color', '#e5e5e5').css('padding', '.9rem');
+            $("#legend .card").css('padding', '.1rem');
             $('.popover.legend').removeClass('sticky').addClass('static');
         });
 
