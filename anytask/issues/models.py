@@ -255,11 +255,14 @@ class Issue(models.Model):
             if list(new_followers) == list(self.followers.all()):
                 delete_event = True
             else:
-                old_fnames = [follower.last_name + ' ' + follower.first_name
-                                 for follower in set(self.followers.all()).difference(set(new_followers))]
-                new_fnames = [follower.last_name + ' ' + follower.first_name for follower in new_followers.all()]
+                old_names = [follower.last_name + ' ' + follower.first_name
+                             for follower in set(self.followers.all()).difference(set(new_followers))]
+                if new_followers:
+                    new_names = [follower.last_name + ' ' + follower.first_name for follower in new_followers.all()]
+                else:
+                    new_names = ''
                 self.followers = value
-                value = '+{0}\n-{1}'.format(', '.join(new_fnames), ', '.join(old_fnames))
+                value = u'+{0}\n-{1}'.format(', '.join(new_names), ', '.join(old_names))
 
         elif name == 'comment':
             if value:
