@@ -26,26 +26,26 @@
     <ul class="nav navbar-nav">
         {% if user_to_show == user %}
             <li class="nav-item">
-                <a class="nav-link" href="{% url users.views.profile %}">{% trans "Профиль" %}</a>
+                <a class="nav-link" href="{% url users.views.profile %}">{% trans "profil" %}</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{% url users.views.my_tasks %}">{% trans "Мои задачи" %}</a>
+                <a class="nav-link" href="{% url users.views.my_tasks %}">{% trans "moi_zadachi" %}</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{% url users.views.user_courses %}">{% trans "Мои курсы" %}</a>
+                <a class="nav-link" href="{% url users.views.user_courses %}">{% trans "moi_kursy" %}</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{% url users.views.profile_settings %}">{% trans "Настройки" %}</a>
+                <a class="nav-link" href="{% url users.views.profile_settings %}">{% trans "nastrojki" %}</a>
             </li>
         {% else %}
             <li class="nav-item">
-                <a class="nav-link" href="{% url users.views.profile user_to_show %}">{% trans "Профиль студента" %}</a>
+                <a class="nav-link" href="{% url users.views.profile user_to_show %}">{% trans "profil_studenta" %}</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{% url users.views.user_courses user_to_show %}">{% trans "Курсы студента" %}</a>
+                <a class="nav-link" href="{% url users.views.user_courses user_to_show %}">{% trans "kursy_studenta" %}</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link active" href="">{% trans "Редактирование статусов" %}</a>
+                <a class="nav-link active" href="">{% trans "redaktirovanie_statusov" %}</a>
             </li>
         {% endif %}
     </ul>
@@ -67,7 +67,7 @@
         <div class="col-md-3 col-xs-12">
             <div class="card">
                 <div class="card-header">
-                    <h5 class="card-title">{% trans "Статусы" %} {{ user_profile.user.get_full_name }}</h5>
+                    <h5 class="card-title">{% trans "statusy" %} {{ user_profile.user.get_full_name }}</h5>
                 </div>
                 <div class="card-block" id="user_statuses">
                     {% if user_profile.user_status.all %}
@@ -76,12 +76,12 @@
                                   style="font-size: 1rem; background-color: {{ user_status.color }}">{{ user_status.name }}</span>
                         {% endfor %}
                     {% else %}
-                        <p class="card-text">{% trans "Нет статусов" %}</p>
+                        <p class="card-text">{% trans "net_statusov" %}</p>
                     {% endif %}
                 </div>
                 <div class="card-block">
                     <button class="btn btn-secondary" type="button" data-toggle="modal"
-                            data-target="#modal_status_edit">{% trans "Редактировать" %}
+                            data-target="#modal_status_edit">{% trans "redaktirovat" %}
                     </button>
                 </div>
             </div>
@@ -89,14 +89,14 @@
         <div class="col-md-9 col-xs-12">
             <div class="card">
                 <div class="card-block">
-                    <h5 class="card-title">{% trans "История изменений" %} {{ user_profile.user.get_full_name }}</h5>
+                    <h5 class="card-title">{% trans "istorija_izmenenij" %} {{ user_profile.user.get_full_name }}</h5>
 
                     <table class="table table_history">
                         <thead>
                         <tr style="background-color: #ffffff;">
-                            <th>{% trans "Когда был изменен" %}<i class="fa fa-fw fa-sort"></i></th>
-                            <th>{% trans "Кем" %}<i class="fa fa-fw fa-sort"></i></th>
-                            <th>{% trans "Статусы пользователя" %}<i class="fa fa-fw fa-sort"></i></th>
+                            <th>{% trans "kogda_byl_izmenen" %}<i class="fa fa-fw fa-sort"></i></th>
+                            <th>{% trans "kem" %}<i class="fa fa-fw fa-sort"></i></th>
+                            <th>{% trans "statusy_polzovatelja" %}<i class="fa fa-fw fa-sort"></i></th>
                         </tr>
                         </thead>
                         <tbody id="tbody_history">
@@ -127,10 +127,10 @@
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                             aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="modal_status_edit_header">{% trans "Статусы пользователя" %}</h4>
+                    <h4 class="modal-title" id="modal_status_edit_header">{% trans "statusy_polzovatelja" %}</h4>
                 </div>
                 <div class="modal-body" style="max-height: none;">
-                    <p>{% trans "Добавление и удаление статусов пользователя." %}</p>
+                    <p>{% trans "dobavlenie_udalenie_statusov_polzovatelja" %}</p>
                     <form method="post" id="status_edit_form">
                         {% csrf_token %}
                         {% for type, name in status_types %}
@@ -155,9 +155,9 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" data-dismiss="modal">{% trans "Закрыть" %}</button>
+                    <button class="btn btn-secondary" data-dismiss="modal">{% trans "zakryt" %}</button>
                     <button class="btn btn-primary" id="modal_status_edit_ok" data-dismiss="modal"
-                            data-loading-text="<span class='fa fa-circle-o-notch fa-spin'></span> {% trans "Сохранение" %}">{% trans "Сохранить" %}
+                            data-loading-text="<span class='fa fa-circle-o-notch fa-spin'></span> {% trans "sohranenie" %}">{% trans "sohranit" %}
                     </button>
                 </div>
             </div>

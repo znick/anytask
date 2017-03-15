@@ -7,7 +7,7 @@
 <script type="text/javascript">
     $(document).ready(function () {
         $("#task_edit_body").tinymce({
-            language: 'ru',
+            language: '{{ user.get_profile.language }}',
             skin: 'bootstrap4',
             resize: false,
             content_css: [

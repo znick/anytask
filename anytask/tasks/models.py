@@ -2,7 +2,7 @@
 
 from django.db import models
 from datetime import datetime
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 from django.db.models.signals import post_save, pre_delete
 
 from courses.models import Course
@@ -38,9 +38,9 @@ class Task(models.Model):
     TYPE_SIMPLE = 'Only mark'
     TYPE_SEMINAR = 'Seminar'
     TASK_TYPE_CHOICES = (
-        (TYPE_FULL, _(u'с обсуждением')),
-        (TYPE_SIMPLE, _(u'только оценка')),
-        (TYPE_SEMINAR, _(u'семинар')),
+        (TYPE_FULL, _(u's_obsuzhdeniem')),
+        (TYPE_SIMPLE, _(u'tolko_ocenka')),
+        (TYPE_SEMINAR, _(u'seminar')),
     )
     type = models.CharField(db_index=False, max_length=128, choices=TASK_TYPE_CHOICES, default=TYPE_FULL)
 
@@ -96,7 +96,7 @@ class Task(models.Model):
         try:
             task_taken = TaskTaken.objects.filter(task=self).filter(user=user).get(status=TaskTaken.STATUS_BLACKLISTED)
             black_list_expired_date = task_taken.update_time + timedelta(days=course.days_drop_from_blacklist)
-            return (False, _(u'Вы сможете взять эту задачу с %s') % black_list_expired_date.strftime("%d.%m.%Y"))
+            return (False, u'Вы сможете взять эту задачу с %s' % black_list_expired_date.strftime("%d.%m.%Y"))
         except TaskTaken.DoesNotExist:
             pass
 
@@ -197,8 +197,8 @@ class TaskLog(models.Model):
     TYPE_FULL = 'All'
     TYPE_SIMPLE = 'Only mark'
     TASK_TYPE_CHOICES = (
-        (TYPE_FULL, _(u'с обсуждением')),
-        (TYPE_SIMPLE, _(u'только оценка')),
+        (TYPE_FULL, _(u's_obsuzhdeniem')),
+        (TYPE_SIMPLE, _(u'tolko_ocenka')),
     )
     type = models.CharField(db_index=False, max_length=128, choices=TASK_TYPE_CHOICES, default=TYPE_FULL)
 
@@ -238,8 +238,8 @@ class TaskTaken(models.Model):
     QUEUE = 'QUEUE'
     OK = 'OK'
     STATUS_CHECK_CHOICES = (
-        (EDIT, _(u'Дорешивание')),
-        (QUEUE, _(u'Ожидает проверки')),
+        (EDIT, u'Дорешивание'),
+        (QUEUE, u'Ожидает проверки'),
         (OK, u'Задача зачтена и/или больше не принимается'),
     )
     status_check = models.CharField(db_index=True, max_length=5, choices=STATUS_CHECK_CHOICES, default=EDIT)

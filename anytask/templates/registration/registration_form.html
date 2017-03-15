@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load crispy_forms_tags %}
 
-{% block title %}{% trans "Регистрация" %}{% endblock %}
+{% block title %}{% trans "registracija" %}{% endblock %}
 
 {% block scripts %}
     <script src="{{ STATIC_URL }}jquery.validate.min.js"></script>
@@ -18,7 +18,7 @@
             });
 
             jQuery.validator.addMethod("name_characters", function(value, element) {
-                return this.optional(element) || /^[A-Za-zА-Яа-я\.\- ]+$/i.test(value);
+                return this.optional(element) || /^[A-Za-zА-Яа-яЁё\.\- ]+$/i.test(value);
             });
 
 
@@ -67,29 +67,29 @@
 
                 messages: {
                     username: {
-                        required : "{% trans 'Обязательное поле' %}",
-                        remote : "{% trans 'Пользователь с таким именем уже существует' %}",
-                        username_characters : "{% trans 'Только латинские буквы, цифры и ' %}'.-+_'"
+                        required : "{% trans 'objazatelnoe_pole' %}",
+                        remote : "{% trans 'polzovatel_s_imenem_sushestvuet' %}",
+                        username_characters : "{% trans 'tolko_bukvy_cifry_punc' %}"
                     },
                     first_name: {
-                        required : "{% trans 'Обязательное поле' %}",
-                        name_characters : "{% trans 'Только буквы' %}"
+                        required : "{% trans 'objazatelnoe_pole' %}",
+                        name_characters : "{% trans 'tolko_bukvy' %}"
                     },
                     last_name: {
-                        required : "{% trans 'Обязательное поле' %}",
-                        name_characters : "{% trans 'Только буквы' %}"
+                        required : "{% trans 'objazatelnoe_pole' %}",
+                        name_characters : "{% trans 'tolko_bukvy' %}"
                     },
                     email: {
-                        required : "{% trans 'Обязательное поле' %}",
-                        email : "{% trans 'Введите корректный адрес' %}",
-                        remote : "{% trans 'Пользователь с таким адресом уже существует. ' %}<a class='text-muted' href='{% url django.contrib.auth.views.login %}'>{% trans 'Войдите' %}</a>"
+                        required : "{% trans 'objazatelnoe_pole' %}",
+                        email : "{% trans 'vvedite_korrektnyj_adres' %}",
+                        remote : "{% trans 'polzovatel_s_adresom_sushestvuet' %} <a class='text-muted' href='{% url django.contrib.auth.views.login %}'>{% trans 'vojdite' %}</a>"
                     },
                     password1: {
-                        required : "{% trans 'Обязательное поле' %}"
+                        required : "{% trans 'objazatelnoe_pole' %}"
                     },
                     password2: {
-                        required : "{% trans 'Обязательное поле' %}",
-                        equalTo : "{% trans 'Пароли не совпадают' %}"
+                        required : "{% trans 'objazatelnoe_pole' %}",
+                        equalTo : "{% trans 'paroli_ne_sovpadaut' %}"
                     }
                 },
 
@@ -116,7 +116,7 @@
         <div class="col-md-7 col-sm-10 col-xs-12">
             <div class="card">
                 <div class="card-block">
-                    <h5 class="card-title">{% trans "Регистрация" %}</h5>
+                    <h5 class="card-title">{% trans "registracija" %}</h5>
                     {% if form.non_field_errors %}
                         <div class="alert alert-danger alert-dismissible fade in" id="reg_form_alert">
                             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -162,7 +162,7 @@
                         {% endfor %}
                         <div class="form-group row">
                             <div class="col-md-offset-4 col-md-8">
-                                <button type="submit" class="btn btn-secondary">{% trans "Зарегистрироваться" %}</button>
+                                <button type="submit" class="btn btn-secondary">{% trans "zaregistrirovatsja" %}</button>
                             </div>
                         </div>
                     </form>

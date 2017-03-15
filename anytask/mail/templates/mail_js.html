@@ -63,18 +63,18 @@
         },
         language: {
             "decimal": "",
-            "emptyTable": "{% trans 'Сообщений нет' %}",
-            "info": "{% trans "_START_-_END_ из _TOTAL_" %}",
+            "emptyTable": "{% trans 'soobshenij_net' %}",
+            "info": "{% trans "_start_-_end__iz__total_" %}",
             "infoEmpty": "0",
-            "infoFiltered": "(из _MAX_)",
+            "infoFiltered": "{% trans "(iz__max_)" %}",
             "infoPostFix": "",
             "thousands": ",",
-            "lengthMenu": "{% trans "Показать _MENU_" %}",
-            "loadingRecords": "{% trans "Загрузка..." %}",
-            "processing": "<span class='fa fa-circle-o-notch fa-spin'></span>&nbsp;Загрузка...",
+            "lengthMenu": "{% trans "pokazat__menu_" %}",
+            "loadingRecords": "{% trans "zagruzka" %}",
+            "processing": "<span class='fa fa-circle-o-notch fa-spin'></span>&nbsp;{% trans "zagruzka" %}",
             "search": "",
-            "searchPlaceholder": "{% trans "Найти..." %}",
-            "zeroRecords": "{% trans "Ничего не найдено" %}",
+            "searchPlaceholder": "{% trans "najti" %}",
+            "zeroRecords": "{% trans "nichego_ne_najdeno" %}",
             "paginate": {
                 "next": '<i class="fa fa-angle-right" aria-hidden="true"></i>',
                 "previous": '<i class="fa fa-angle-left" aria-hidden="true"></i>'
@@ -149,14 +149,14 @@
             }
 
             if (selected_rows.length == 0) {
-                $("button.mail-change-state").html("{% trans "Отметить все как прочитанное" %}");
+                $("button.mail-change-state").html("{% trans "otmetit_vse_kak_prochitannoe" %}");
                 $(".mail-delete, .mail-undelete", $row.closest(".card")).hide();
             }
             else {
                 if (selected_unread == 0)
-                    $("button.mail-change-state").html("{% trans "Отметить как непрочитанное" %}");
+                    $("button.mail-change-state").html("{% trans "kak_neprochitannoe" %}");
                 else
-                    $("button.mail-change-state").html("{% trans "Отметить как прочитанное" %}");
+                    $("button.mail-change-state").html("{% trans "otmetit_kak_prochitannoe" %}");
 
                 $(".mail-delete, .mail-undelete", $row.closest(".card")).show();
             }
@@ -193,12 +193,12 @@
                         if (parseInt(data.unread_count, 10) == 0) {
                             $("#inbox_count").html("").hide();
                             $("#top_notify_count").html("").hide();
-                            title_inbox = "{% trans "Входящие" %}"
+                            title_inbox = "{% trans "vhodjashie" %}"
                         }
                         else {
                             $("#inbox_count").html(data.unread_count).show();
                             $("#top_notify_count").html(data.unread_count).show();
-                            title_inbox = "(" + data.unread_count + ") {% trans "Входящие" %}"
+                            title_inbox = "(" + data.unread_count + ") {% trans "vhodjashie" %}"
                         }
                         if ($("#msg_info").data("mailbox") == "inbox") {
                             $(document).prop('title', title_inbox)
@@ -259,7 +259,7 @@
 
                             $first_blockquote
                                 .addClass("first-quote collapse")
-                                .before('<div class="replay-show"><span class="fa fa-quote-left" aria-hidden="true"></span>&nbsp;"{% trans "Показать цитирование" %}</div>');
+                                .before('<div class="replay-show"><span class="fa fa-quote-left" aria-hidden="true"></span>&nbsp;"{% trans "pokazat_citirovanie" %}</div>');
                             $("blockquote.replay-quote", $text).each(function () {
                                 var $pre_replay_quote = $(this).siblings('.pre-replay-quote');
                                 $(this).prepend('<div style="margin-bottom: 0.5rem;margin-top: 6px;">' +
@@ -272,11 +272,11 @@
                             $("body").on("click", 'div.replay-show', function (e) {
                                 if ($(this).data("opened")) {
                                     $(this).data("opened", false);
-                                    $(this).html('<span class="fa fa-quote-left" aria-hidden="true"></span>&nbsp;Показать цитирование');
+                                    $(this).html('<span class="fa fa-quote-left" aria-hidden="true"></span>&nbsp;{% trans "pokazat_citirovanie" %}');
                                 }
                                 else {
                                     $(this).data("opened", true);
-                                    $(this).html('<span class="fa fa-quote-right" aria-hidden="true"></span>&nbsp;{% trans "Скрыть цитирование" %}');
+                                    $(this).html('<span class="fa fa-quote-right" aria-hidden="true"></span>&nbsp;{% trans "skryt_citirovanie" %}');
                                 }
                                 $("blockquote.replay-quote.collapse").collapse("toggle");
                             });
@@ -321,7 +321,7 @@
             window.location.hash = $(this).attr("href");
             selected_rows = [];
             selected_unread = [];
-            $("button.mail-change-state").html("{% trans "Отметить все как прочитанное" %}");
+            $("button.mail-change-state").html("{% trans "otmetit_vse_kak_prochitannoe" %}");
             $("button.mail-delete, button.mail-undelete", ".main-table").hide();
 
             if (msg_opened) {
@@ -358,11 +358,11 @@
                         var $table = $(settings.nTable);
 
                         if ($("tr.selected", $table).length == 0) {
-                            $("button.mail-change-state").html("{% trans "Отметить все как прочитанное" %}");
+                            $("button.mail-change-state").html("{% trans "otmetit_vse_kak_prochitannoe" %}");
                             $(".mail-delete, .mail-undelete", $table.closest(".card")).hide();
                         }
                         else {
-                            $("button.mail-change-state").html("{% trans "Отметить как прочитанное" %}");
+                            $("button.mail-change-state").html("{% trans "otmetit_kak_prochitannoe" %}");
                             $(".mail-delete, .mail-undelete", $table.closest(".card")).show();
                         }
 
@@ -374,14 +374,14 @@
                         });
 
                         if (selected_rows.length == 0) {
-                            $("button.mail-change-state").html("{% trans "Отметить все как прочитанное" %}");
+                            $("button.mail-change-state").html("{% trans "otmetit_vse_kak_prochitannoe" %}");
                             $(".mail-delete, .mail-undelete", $table.closest(".card")).hide();
                         }
                         else {
                             if (selected_unread == 0)
-                                $("button.mail-change-state").html("{% trans "Отметить как непрочитанное" %}");
+                                $("button.mail-change-state").html("{% trans "kak_neprochitannoe" %}");
                             else
-                                $("button.mail-change-state").html("{% trans "Отметить как прочитанное" %}");
+                                $("button.mail-change-state").html("{% trans "otmetit_kak_prochitannoe" %}");
                         }
 
                         $("ul", ".dataTables_paginate").addClass("pagination-sm");
@@ -392,7 +392,7 @@
                     make_delete = [];
                     make_undelete = [];
 
-                    var title_inbox = "{% trans  "Входящие" %}";
+                    var title_inbox = "{% trans  "vhodjashie" %}";
 
                     if (parseInt(json.unread_count, 10) == 0) {
                         $("#inbox_count").html("").hide();
@@ -401,17 +401,17 @@
                     else {
                         $("#inbox_count").html(json.unread_count).show();
                         $("#top_notify_count").html(json.unread_count).show();
-                        title_inbox = "(" + json.unread_count + ") {% trans "Входящие" %}"
+                        title_inbox = "(" + json.unread_count + ") {% trans "vhodjashie" %}"
                     }
 
                     if (json.type == "inbox") {
                         $(document).prop('title', title_inbox)
                     }
                     else if (json.type == "sent") {
-                        $(document).prop('title', "{% trans "Отправленные" %}");
+                        $(document).prop('title', "{% trans "otpravlennye" %}");
                     }
                     else if (json.type == "trash") {
-                        $(document).prop('title', "{% trans "Удаленные" %}");
+                        $(document).prop('title', "{% trans "udalennye" %}");
                     }
                 });
                 $table.data("init", true);
@@ -505,7 +505,7 @@
                                 '<tr><td style="padding-right: 10px;"><img class="avatar" src="{1}" style="width: 30px; height: 30px;"></td>' +
                                 '<td><div><strong>{2}</strong></div>{3}</td></tr>' +
                                 '<tr><td></td><td>{4}</td></tr>' +
-                                '<tr><td></td><td><strong>{% trans "Логины" %}</strong></td></tr>' +
+                                '<tr><td></td><td><strong>{% trans "loginy" %}</strong></td></tr>' +
                                 '<tr><td></td><td>{5}@ <small class="text-muted">Anytask</small></td></tr>' +
                                 '{6}' +
                                 '{7}' +
@@ -534,9 +534,9 @@
                             if (data.email)
                                 email_html = '<div class="sgs-email">{0}</div>'.format(data.email);
                             if (data.ya_contest_login)
-                                ya_contest_login_html = '<tr><td></td><td>{0}@ <small class="text-muted">{% trans "Я.Контест" %}</small></td></tr>'.format(data.ya_contest_login);
+                                ya_contest_login_html = '<tr><td></td><td>{0}@ <small class="text-muted">{% trans "jakontest" %}</small></td></tr>'.format(data.ya_contest_login);
                             if (data.ya_passport_email)
-                                ya_passport_email_html = '<tr><td></td><td>{0} <small class="text-muted">{% trans "Я.Почта" %}</small></td></tr>'.format(data.ya_passport_email);
+                                ya_passport_email_html = '<tr><td></td><td>{0} <small class="text-muted">{% trans "ja.pochta" %}</small></td></tr>'.format(data.ya_passport_email);
                             return table_html.format(data.url, avatar, data.fullname, email_html, status_html, data.username, ya_contest_login_html, ya_passport_email_html)
                         }
                     }
@@ -577,8 +577,8 @@
             enableClickableOptGroups: true,
             includeSelectAllOption: true,
             enableCaseInsensitiveFiltering: true,
-            filterPlaceholder: "{%  trans 'Найти' %}",
-            selectAllText: '{%  trans "Выделить все" %}',
+            filterPlaceholder: "{%  trans 'najti' %}",
+            selectAllText: '{%  trans "vydelit_vse" %}',
             selectAllName: 'task_group_id_all',
             selectAllValue: 'on',
             buttonContainer: '<div style="width:100%;" class="multiselect-dropdown"/>',
@@ -602,7 +602,7 @@
         });
 
         $("#new_text").tinymce({
-            language: 'ru',
+            language: '{{ user.get_profile.language }}',
             skin: 'bootstrap4',
             menubar: false,
             content_css: [
@@ -647,7 +647,7 @@
 
         var new_msg_form_validator = $('#new_msg_form').validate({
             submitHandler: function (form) {
-                $("body").prepend('<div id="blockDiv"><div><span class="fa fa-circle-o-notch fa-spin"></span>&nbsp;{% trans "Отправка..." %}</div></div>');
+                $("body").prepend('<div id="blockDiv"><div><span class="fa fa-circle-o-notch fa-spin"></span>&nbsp;{% trans "otpravka" %}</div></div>');
                 var $new_recipients = $('#new_recipients');
 
                 $.post('{% url mail.views.ajax_send_message %}', {
@@ -686,10 +686,10 @@
 
             messages: {
                 new_recipients: {
-                    required: "{%  trans "Необходимо указать получателя" %}"
+                    required: "{%  trans "ukazat_poluchatelja" %}"
                 },
                 new_title: {
-                    required: "{%  trans "Необходимо указать тему" %}"
+                    required: "{%  trans "neobhodimo_ukazat_temu" %}"
                 },
             },
 

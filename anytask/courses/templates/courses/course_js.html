@@ -59,8 +59,8 @@
     var readmore_opts = {
         speed: 700,
         collapsedHeight: 700,
-        moreLink: '<small><a href="#">{% trans "Развернуть" %} <i class="fa fa-chevron-down"></a></small>',
-        lessLink: '<small><a href="#">{% trans "Свернуть" %} <i class="fa fa-chevron-up"></a></small>'
+        moreLink: '<small><a href="#">{% trans "razvernut" %} <i class="fa fa-chevron-down"></a></small>',
+        lessLink: '<small><a href="#">{% trans "svernut" %} <i class="fa fa-chevron-up"></a></small>'
     };
 
     $(document).ready(function () {
@@ -92,7 +92,7 @@
         });
 
         $("#course_info_edit").tinymce({
-            language: 'ru',
+            language: '{{ user.get_profile.language }}',
             skin: 'bootstrap4',
             resize: false,
             content_css: [
@@ -143,7 +143,7 @@
             if (!modal_button_ok.data('exit_modal')) {
                 if (!modal_button_ok.data('btn_clicked')) {
                     if ($("#course_info_edit").data('changed'))
-                        if (confirm('{% trans "Сохранить изменения?" %}')) {
+                        if (confirm('{% trans "sohranit_izmenenija" %}?')) {
                             modal_button_ok.click();
                             e.preventDefault();
                         }
@@ -165,7 +165,7 @@
             var d = 'disabled';
 
             modal_button_ok.data('resetText', modal_button_ok.html());
-            modal_button_ok.html("<span class='fa fa-circle-o-notch fa-spin fa-fw'></span> {% trans 'Сохранение' %}");
+            modal_button_ok.html("<span class='fa fa-circle-o-notch fa-spin fa-fw'></span> {% trans 'sohranenie' %}");
             modal_button_ok.addClass(d).attr(d, d).prop(d, true);
             modal_button_ok.data('btn_clicked', true);
 
@@ -212,6 +212,14 @@
             $("#btn_group_edit_course").css('background-color', '#e5e5e5');
         });
 
+        $('#hide_academ_student_btn').click(function () {
+            $.post('{% url courses.views.change_visibility_academ_users %}',
+                {'course_id': {{ course.id }}, 'csrfmiddlewaretoken': "{{ csrf_token }}"},
+                function (data) {
+                    window.location.reload();
+                });
+        });
+
 {#        $("#tasks-table").DataTable();#}
 
         var table_min_height = '30vh';
@@ -224,7 +232,7 @@
                 buttons: [
                     {
                         extend: 'copy',
-                        text: '{% trans "Скопировать" %}',
+                        text: '{% trans "skopirovat" %}',
                         exportOptions: {
                             columns: function (idx, data, node) {
                                 return $.inArray('', data) === -1;
@@ -241,32 +249,32 @@
                     }],
                 language: {
                     "decimal": "",
-                    "emptyTable": "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{% trans 'Пустая таблица' %}",
-                    "info": "{% trans '_TOTAL_ студента(ов)' %}",
-                    "infoEmpty": "{% trans '0 студентов' %}",
-                    "infoFiltered": "{% trans '(из _MAX_)' %}",
+                    "emptyTable": "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{% trans 'pustaja_tablica' %}",
+                    "info": "{% trans '_total__studentov' %}",
+                    "infoEmpty": "{% trans '0_studentov' %}",
+                    "infoFiltered": "{% trans '(iz__max_)' %}",
                     "infoPostFix": "",
                     "thousands": ",",
-                    "lengthMenu": "{% trans 'Показать _MENU_ студентов' %}",
-                    "loadingRecords": "{% trans 'Загрузка...' %}",
-                    "processing": "{% trans 'Вычисление...' %}",
-                    "search": "{% trans 'Поиск:' %}",
-                    "zeroRecords": "{% trans 'Ничего не найдено' %}",
+                    "lengthMenu": "{% trans 'pokazat__menu__studentov' %}",
+                    "loadingRecords": "{% trans 'zagruzka' %}",
+                    "processing": "{% trans 'vychislenie' %}",
+                    "search": "{% trans 'poisk' %}:",
+                    "zeroRecords": "{% trans 'nichego_ne_najdeno' %}",
                     "paginate": {
-                        "first": "{% trans 'Первая' %}",
-                        "last": "{% trans 'Последняя' %}",
-                        "next": "{% trans 'Вперед' %}",
-                        "previous": "{% trans 'Назад' %}"
+                        "first": "{% trans 'pervaja' %}",
+                        "last": "{% trans 'poslednjaja' %}",
+                        "next": "{% trans 'vpered' %}",
+                        "previous": "{% trans 'nazad' %}"
                     },
                     "aria": {
                         "sortAscending": ": activate to sort column ascending",
                         "sortDescending": ": activate to sort column descending"
                     },
                     buttons: {
-                        copyTitle: '{% trans "Данные скопированы в буфер обмена" %}',
+                        copyTitle: '{% trans "dannye_skopirovany" %}',
                         copySuccess: {
-                            _: '%d {% trans "записей из таблицы" %}',
-                            1: '{% trans "1 запись из таблицы" %}'
+                            _: '%d {% trans "zapisej_iz_tablicy" %}',
+                            1: '{% trans "1_zapis_iz_tablicy" %}'
                         }
                     }
                 },
@@ -486,11 +494,16 @@
         });
 
         $('.mark-form').change(function () {
-            $(this).collapse('hide');
-            var mark_value = $($(this).closest('td')).find('.mark-value');
-            $(mark_value).collapse('show');
-            $.post('{% url courses.views.set_course_mark %}', $(this).serialize(), function (data) {
-                $($(mark_value).find('span')).text(data.mark);
+            var $form = $(this);
+            var student_id = $form.closest('td').prop('class');
+            var $mark_cell = $('td.' + student_id);
+
+            $form.collapse('hide');
+            $form.closest('td').find('.mark-value').collapse('show');
+
+            $.post('{% url courses.views.set_course_mark %}', $form.serialize(), function (data) {
+                $mark_cell.find('.mark-value').find('span').text(data.mark);
+                $mark_cell.find('.mark-form').find('select').val(data.mark_id);
             });
         });
 
@@ -579,7 +592,7 @@
                 }
                 return '<form action""><ul>' + group_ul + '</ul></form>';
             },
-            title: "{% trans 'Удалить задачу из следующих групп?' %}",
+            title: "{% trans 'udalit_zadachu_iz_grupp' %}",
             template: '<div class="popover" role="tooltip">' +
             '<div class="popover-arrow"></div>' +
             '<h3 class="popover-title"></h3>' +
@@ -620,7 +633,7 @@
 
             var confirmed_delete = true;
             if (remaining_groups_ids.length == 0)
-                if (!confirm('{% trans "Удаленную задачу невозможно восстановить. Вы уверены, что хотить удалить?" %}'))
+                if (!confirm('{% trans "uvereny_cho_hotite_udalit?" %}'))
                     confirmed_delete = false;
             if (confirmed_delete) {
                 var group = $('.group-sortable');
@@ -669,7 +682,7 @@
             var modal_button_ok = $('#modal_table_edit_ok');
             var div_group_id = $(modal_button_ok.data('div_group_id'));
             if ((group.data('changed') || !$.isEmptyObject(group.data('deleting_id_in_other_groups'))) && !modal_button_ok.data('btn_clicked'))
-                if (confirm('{% trans "Сохранить изменения" %}?')) {
+                if (confirm('{% trans "sohranit_izmenenija" %}?')) {
                     modal_button_ok.click();
                 }
                 else {
@@ -762,7 +775,7 @@
             Prism.highlightElement(codesample);
 
         if (deadline != '') {
-            $('#modal_header_deadline_time').html('<strong>{% trans "Дата сдачи" %}: ' + deadline + ' MSK UTC+3</strong>');
+            $('#modal_header_deadline_time').html('<strong>{% trans "data_sdachi" %}: ' + deadline + ' MSK UTC+3</strong>');
         }
         else {
             $('#modal_header_deadline_time').empty();

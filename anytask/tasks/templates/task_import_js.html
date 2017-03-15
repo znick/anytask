@@ -15,7 +15,7 @@
         {%if not contest_import %}
             $('.task_datetime').datetimepicker({
                 format: 'dd-mm-yyyy hh:ii',
-                language: "ru",
+                language: '{{ user.get_profile.language }}',
                 todayBtn: true,
                 autoclose: true,
                 todayHighlight: true,
@@ -179,21 +179,21 @@
 
             messages: {
                 max_score: {
-                    required : "{% trans "Необходимо указать максимальный балл" %}",
-                    number : "{% trans "Максимальный балл должен быть натуральным числом" %}",
-                    min : "{% trans "Максимальный балл должен быть больше или равен 0" %}",
-                    digits : "{% trans "Максимальный балл должен быть натуральным числом" %}"
+                    required : "{% trans "ukazat_maxball" %}",
+                    number : "{% trans "maxball_naturalnoe_chislo" %}",
+                    min : "{% trans "maxball_bolshe_0" %}",
+                    digits : "{% trans "maxball_naturalnoe_chislo" %}"
                 },
                 contest_id: {
-                    required : "{% trans "Необходимо указать номер контеста" %}",
-                    number : "{% trans "Номер контеста должен натуральным числом" %}",
-                    digits : "{% trans "Номер контеста должен натуральным числом" %}"
+                    required : "{% trans "ukazat_nomer_kontesta" %}",
+                    number : "{% trans "nomer_kontesta_naturalnoe_chislo" %}",
+                    digits : "{% trans "nomer_kontesta_naturalnoe_chislo" %}"
                 },
                 'contest_problems[]': {
-                    required : "{% trans "Необходимо выбрать хотя бы одну задачу" %}"
+                    required : "{% trans "neobhodimo_vybrat_zadachu" %}"
                 },
                 'task_group_id[]': {
-                    required : "{% trans "Необходимо выбрать группу" %}"
+                    required : "{% trans "neobhodimo_vybrat_gruppu" %}"
                 }
             },
 
@@ -275,8 +275,8 @@
                 li: '<li><a tabindex="0" class="dropdown-item"><label></label></a></li>'
             },
             includeSelectAllOption: true,
-            selectAllText: '{% trans "Для всех групп" %}',
-            allSelectedText: '{% trans "Для всех групп" %}',
+            selectAllText: '{% trans "dlja_vseh_grupp" %}',
+            allSelectedText: '{% trans "dlja_vseh_grupp" %}',
             selectAllName: 'task_group_id_all',
             selectAllValue: 'on',
             maxHeight: 200,
@@ -286,10 +286,10 @@
                 var labels = [];
 
                 if (options.length === 0) {
-                    return '{% trans "Не выбрано ни одной группы" %}';
+                    return '{% trans "ne_vybrano_ni_odnoj_gruppy" %}';
                 }
                 else if (options.length === $('option', select).length) {
-                    return '{% trans "Для всех групп" %}';
+                    return '{% trans "dlja_vseh_grupp" %}';
                 }
                 else {
                     options.each(function () {
@@ -300,13 +300,13 @@
             },
             buttonText: function(options, select) {
                 if (options.length === 0) {
-                    return '{% trans "Не выбрано ни одной группы" %}';
+                    return '{% trans "ne_vybrano_ni_odnoj_gruppy" %}';
                 }
                 else if (options.length === $('option', select).length) {
-                    return '{% trans "Для всех групп" %}';
+                    return '{% trans "dlja_vseh_grupp" %}';
                 }
                 else if (options.length > 1) {
-                    return '{% trans "Выбрано несколько групп - " %}' + options.length;
+                    return '{% trans "vybrano_neskolko_grupp" %} - ' + options.length;
                 }
                 else {
                     var labels = [];
@@ -365,7 +365,7 @@
         var deadline = $('#task_edit_datepicker').val();
         $('#modal_task_header').show();
         if (deadline) {
-            $('#modal_task_deadline').html('<strong>{% trans "Дата сдачи" %}: ' + deadline + ' MSK UTC+3</strong>');
+            $('#modal_task_deadline').html('<strong>{% trans "data_sdachi" %}: ' + deadline + ' MSK UTC+3</strong>');
         }
         else {
             $('#modal_task_deadline').empty();

@@ -20,10 +20,10 @@
             <a class="nav-link active" href="#">Staff</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link active" href="#">{% trans "Фильтры по статусам" %}</a>
+            <a class="nav-link active" href="#">{% trans "filtry_po_statusam" %}</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="{% url staff.views.get_gradebook %}">{% trans "Общая ведомость" %}</a>
+            <a class="nav-link" href="{% url staff.views.get_gradebook %}">{% trans "obshaja_vedomost" %}</a>
         </li>
     </ul>
 {% endblock navbar %}
@@ -49,14 +49,14 @@
             <div class="col-md-10 col-xs-12">
                 <div class="card">
                     <div class="card-block">
-                        <h5 class="card-title">{% trans "Пользователи" %}</h5>
+                        <h5 class="card-title">{% trans "polzovateli" %}</h5>
                         {% if filter.count %}
                             <table class="table table_users">
                                 <thead>
                                 <tr style="background-color: #ffffff;">
-                                    <th>{% trans "Имя" %}<i class="fa fa-fw fa-sort"></i></th>
-                                    <th>{% trans "Почта" %}<i class="fa fa-fw fa-sort"></i></th>
-                                    <th>{% trans "Статус" %}<i class="fa fa-fw fa-sort"></i></th>
+                                    <th>{% trans "imja" %}<i class="fa fa-fw fa-sort"></i></th>
+                                    <th>{% trans "pochta" %}<i class="fa fa-fw fa-sort"></i></th>
+                                    <th>{% trans "status" %}<i class="fa fa-fw fa-sort"></i></th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -76,7 +76,7 @@
                                 </tbody>
                             </table>
                         {% else %}
-                            <p class="card-text">{% trans "Не найдено ни одного пользователя" %}</p>
+                            <p class="card-text">{% trans "ne_najdeno_polzovatelej" %}</p>
                         {% endif %}
                     </div>
                 </div>
@@ -85,8 +85,8 @@
             <div class="col-xs-12">
                 <div class="card">
                     <div class="card-block">
-                        <h5 class="card-title">{% trans "Пользователи" %}</h5>
-                        <p class="card-text">{% trans "Нет пользователей" %}</p>
+                        <h5 class="card-title">{% trans "polzovateli" %}</h5>
+                        <p class="card-text">{% trans "net_polzovatelej" %}</p>
                     </div>
                 </div>
             </div>

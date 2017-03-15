@@ -36,8 +36,8 @@
             },
             selectAllJustVisible: false,
             enableCaseInsensitiveFiltering: true,
-            selectAllText: '{% trans "Все статусы" %}',
-            allSelectedText: '{% trans "Все статусы" %}',
+            selectAllText: '{% trans "vse_statusy" %}',
+            allSelectedText: '{% trans "vse_statusy" %}',
             maxHeight: 200,
             buttonContainer: '<div style="width:100%;" class="multiselect-dropdown"/>',
             buttonWidth: '100%',
@@ -46,10 +46,10 @@
             },
             buttonText: function (options, select) {
                 if (options.length === 0) {
-                    return '{% trans "Не выбрано ни одного статуса" %}';
+                    return '{% trans "ne_vybrano_statusov" %}';
                 }
                 else if (options.length === $('option', select).length) {
-                    return '{% trans "Все статусы" %}';
+                    return '{% trans "vse_statusy" %}';
                 }
                 else {
                     var labels = [];
@@ -104,7 +104,7 @@
                 buttons: [
                     {
                         extend: 'copy',
-                        text: '{% trans "Скопировать" %}',
+                        text: '{% trans "skopirovat" %}',
                         exportOptions: {
                             columns: function (idx, data, node) {
                                 return $.inArray('', data) === -1;
@@ -121,32 +121,32 @@
                     }],
                 language: {
                     "decimal": "",
-                    "emptyTable": "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{% trans 'Пустая таблица' %}",
-                    "info": "{% trans '_TOTAL_ студента(ов)' %}",
-                    "infoEmpty": "{% trans '0 студентов' %}",
-                    "infoFiltered": "{% trans '(из _MAX_)' %}",
+                    "emptyTable": "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{% trans 'pustaja_tablica' %}",
+                    "info": "{% trans '_total__studentov' %}",
+                    "infoEmpty": "{% trans '0_studentov' %}",
+                    "infoFiltered": "{% trans '(iz__max_)' %}",
                     "infoPostFix": "",
                     "thousands": ",",
-                    "lengthMenu": "{% trans 'Показать _MENU_ студентов' %}",
-                    "loadingRecords": "{% trans 'Загрузка...' %}",
-                    "processing": "{% trans 'Вычисление...' %}",
-                    "search": "{% trans 'Поиск:' %}",
-                    "zeroRecords": "{% trans 'Ничего не найдено' %}",
+                    "lengthMenu": "{% trans 'pokazat__menu__studentov' %}",
+                    "loadingRecords": "{% trans 'zagruzka' %}",
+                    "processing": "{% trans 'vychislenie' %}",
+                    "search": "{% trans 'poisk' %}:",
+                    "zeroRecords": "{% trans 'nichego_ne_najdeno' %}",
                     "paginate": {
-                        "first": "{% trans 'Первая' %}",
-                        "last": "{% trans 'Последняя' %}",
-                        "next": "{% trans 'Вперед' %}",
-                        "previous": "{% trans 'Назад' %}"
+                        "first": "{% trans 'pervaja' %}",
+                        "last": "{% trans 'poslednjaja' %}",
+                        "next": "{% trans 'vpered' %}",
+                        "previous": "{% trans 'nazad' %}"
                     },
                     "aria": {
                         "sortAscending": ": activate to sort column ascending",
                         "sortDescending": ": activate to sort column descending"
                     },
                     buttons: {
-                        copyTitle: '{% trans "Данные скопированы в буфер обмена" %}',
+                        copyTitle: '{% trans "dannye_skopirovany" %}',
                         copySuccess: {
-                            _: '%d {% trans "записей из таблицы" %}',
-                            1: '{% trans "1 запись из таблицы" %}'
+                            _: '%d {% trans "zapisej_iz_tablicy" %}',
+                            1: '{% trans "1_zapis_iz_tablicy" %}'
                         }
                     }
                 }

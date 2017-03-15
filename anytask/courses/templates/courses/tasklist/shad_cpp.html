@@ -38,7 +38,7 @@
                 <thead>
                 <tr>
                     <th class="no-font-weight text-center">#</th>
-                    <th class="no-font-weight"><b>{% trans "Студент" %}</b></th>
+                    <th class="no-font-weight"><b>{% trans "student" %}</b></th>
                     {% for task in group_tasks|key:group %}
                         {% if not task.is_hidden or user_is_teacher %}
                             <th align="center" class="{% if task.type == task.TYPE_SIMPLE and user_is_teacher %}dom-live-number{% else %}dom-number{% endif %} word-wrap">
@@ -56,11 +56,11 @@
                         <th></th>
                     {% endfor %}
                     <th align="center" class="no-font-weight dom-number">
-                        {% trans "Суммарный балл " %}<span class="label label-inverse">{{ group_x_max_score|key:group }}</span>
+                        {% trans "summarnyj_ball" %} <span class="label label-inverse">{{ group_x_max_score|key:group }}</span>
                     </th>
                     {% if course.mark_system %}
                         <th align="center" class="no-font-weight dom-select-text">
-                            {% trans "Итоговая оценка" %}
+                            {% trans "itogovaja_ocenka" %}
                         </th>
                     {% endif %}
                 </tr>
@@ -147,7 +147,7 @@
                             </div>
                         </td>
                         {% if course_mark_system_vals %}
-                            <td align="center">
+                            <td align="center" class="student_course_mark_{{ student.id }}">
                                 <div {% if user_is_teacher %}class="mark-value in collapse"{% endif %}>
                     <span class="label label-success">
                     {{ student_course_mark }}
@@ -183,10 +183,10 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="modal_table_edit_header">{% trans "Итоговая таблица" %}</h4>
+                    <h4 class="modal-title" id="modal_table_edit_header">{% trans "itogovaja_tablica" %}</h4>
                 </div>
                 <div class="modal-body">
-                    <p>{% trans "Изменение порядка столбцов в итоговой таблице курса, а также их удаление(удалять можно только те задачи, в которых не было комментариев)." %}</p>
+                    <p>{% trans "izmenenie_udalenie_zadach" %}</p>
                     {% for group, tasks in group_tasks.iteritems %}
                         <div id="group_sort_{{ group.id }}" data-group="{{ group.id }}" data-table="#table_results_{{ group.id }}" data-marksystem="{% if course_mark_system_vals %}true{% endif %}" class="collapse">
                             <p  class="modal-group-name">{{ group.name }}</p>
@@ -197,7 +197,7 @@
                                         <a class="task-delete pull-xs-right" data-name="task_delete_{{ task.id }}" {% autoescape off %}{{ task|group_info }}{% endautoescape %} tabindex="0" data-toggle="popover" type="button">
                                             <i class="fa fa-trash-o" aria-hidden="true"></i>
                                         </a>
-                                        <a class="task-seminar-notempty pull-xs-right" {% autoescape off %}{{ task|group_info }}{% endautoescape %} tabindex="0" data-toggle="popover-help" data-trigger="hover" data-content="{%  trans "Чтобы удалить семинар, нужно сначала удалить все подзадчи" %}" type="button">
+                                        <a class="task-seminar-notempty pull-xs-right" {% autoescape off %}{{ task|group_info }}{% endautoescape %} tabindex="0" data-toggle="popover-help" data-trigger="hover" data-content="{%  trans "snachala_udalit_podzadchi" %}" type="button">
                                             <i class="fa fa-question-circle" aria-hidden="true"></i>
                                         </a>
                                     </li>
@@ -207,8 +207,8 @@
                     {% endfor %}
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" data-dismiss="modal">{% trans "Закрыть" %}</button>
-                    <button class="btn btn-primary" id="modal_table_edit_ok" data-dismiss="modal" data-loading-text="<span class='fa fa-circle-o-notch fa-spin'></span> {% trans "Сохранение" %}">{% trans "Сохранить" %}</button>
+                    <button class="btn btn-secondary" data-dismiss="modal">{% trans "zakryt" %}</button>
+                    <button class="btn btn-primary" id="modal_table_edit_ok" data-dismiss="modal" data-loading-text="<span class='fa fa-circle-o-notch fa-spin'></span> {% trans "sohranenie" %}">{% trans "sohranit" %}</button>
                 </div>
             </div>
         </div>

@@ -155,7 +155,7 @@ class ViewsTest(TestCase):
 
         # title
         self.assertEqual(html.find('title').string.strip().strip('\n'),
-                         u'Создание задачи | course_name | 2016-2017',
+                         u'sozdanie_zadachi | course_name | 2016-2017',
                          'Wrong page title')
 
         # navbar
@@ -172,13 +172,13 @@ class ViewsTest(TestCase):
         self.assertEqual(breadcrumbs[1].a.string.strip().strip('\n'), u'school_name', 'breadcrumbs 2nd text wrong')
         self.assertEqual(breadcrumbs[2].a['href'], u'/course/1', 'breadcrumbs 3rd link wrong')
         self.assertEqual(breadcrumbs[2].a.string.strip().strip('\n'), u'course_name', 'breadcrumbs 3rd text wrong')
-        self.assertEqual(breadcrumbs[3].string.strip().strip('\n'), u'Создание задачи', 'breadcrumbs 4th text wrong')
+        self.assertEqual(breadcrumbs[3].string.strip().strip('\n'), u'sozdanie_zadachi', 'breadcrumbs 4th text wrong')
 
         # form
         div_task_id = container.find('div', {'id': 'task_edit'})
         self.assertIsNotNone(div_task_id, "No main div with id 'task_edit'")
         self.assertEqual(container.find('h5', 'card-title').string,
-                         u'Создание задачи',
+                         u'sozdanie_zadachi',
                          "Wrong card title")
 
         form_inputs = div_task_id.form('input', 'form-control')
@@ -201,12 +201,12 @@ class ViewsTest(TestCase):
         self.assertEqual(len(form_select_type), 2, "form select type len not 2")
         self.assertEqual(form_select_type[0]['value'], 'All', 'form select type 1st option value wrong')
         self.assertEqual(form_select_type[0].string.strip().strip('\n'),
-                         u'с обсуждением',
+                         u's_obsuzhdeniem',
                          'form select type 1st option text wrong')
         self.assertEqual(form_select_type[1]['value'], 'Only mark', 'form select type 2nd option value wrong')
         self.assertFalse(form_select_type[1].has_key('selected'), 'form select type 2nd option selected')
         self.assertEqual(form_select_type[1].string.strip().strip('\n'),
-                         u'только оценка',
+                         u'tolko_ocenka',
                          'form select type 2nd option text wrong')
 
         form_textarea = div_task_id.form.textarea
@@ -282,14 +282,14 @@ class ViewsTest(TestCase):
         self.assertEqual(breadcrumbs[2].a['href'], u'/course/1', 'breadcrumbs 3rd link wrong')
         self.assertEqual(breadcrumbs[2].a.string.strip().strip('\n'), u'course_name', 'breadcrumbs 3rd text wrong')
         self.assertEqual(breadcrumbs[3].string.strip().strip('\n'),
-                         u'Редактирование задачи',
+                         u'redaktirovanie_zadachi',
                          'breadcrumbs 4th text wrong')
 
         # form
         div_task_id = container.find('div', {'id': 'task_edit'})
         self.assertIsNotNone(div_task_id, "No main div with id 'task_edit'")
         self.assertEqual(container.find('h5', 'card-title').string,
-                         u'Редактирование задачи',
+                         u'redaktirovanie_zadachi',
                          "Wrong card title")
 
         form_inputs = div_task_id.form('input', 'form-control')
@@ -322,12 +322,12 @@ class ViewsTest(TestCase):
         self.assertEqual(form_select_type[0]['value'], 'All', 'form select type 1st option value wrong')
         self.assertTrue(form_select_type[0].has_key('selected'), 'form select type 1nd option not selected')
         self.assertEqual(form_select_type[0].string.strip().strip('\n'),
-                         u'с обсуждением',
+                         u's_obsuzhdeniem',
                          'form select type 1st option text wrong')
         self.assertEqual(form_select_type[1]['value'], 'Only mark', 'form select type 2nd option value wrong')
         self.assertFalse(form_select_type[1].has_key('selected'), 'form select type 2nd option selected')
         self.assertEqual(form_select_type[1].string.strip().strip('\n'),
-                         u'только оценка',
+                         u'tolko_ocenka',
                          'form select type 2nd option text wrong')
 
         form_textarea = div_task_id.form.textarea
@@ -413,15 +413,15 @@ class ViewsTest(TestCase):
                      'hidden_task': 'on',
                      'parent_id': ""}
 
-        problems = [{'problemId': '1055/2013_02_24/rqW5cRAAgR',
+        problems = [{'problemId': '1055/2013_02_24/NuAYb8aSXw',
                      'problemTitle': 'Task1',
                      'statement': 'text1',
                      'alias': 'A'},
-                    {'problemId': '1055/2013_02_24/9GxnHhigh2',
+                    {'problemId': '1055/2013_02_24/dY74Gd2fyz',
                      'problemTitle': 'Task2',
                      'statement': 'text2',
                      'alias': 'B'},
-                    {'problemId': '1055/2013_02_24/NuAYb8aSXw',
+                    {'problemId': '1055/2013_02_24/rqW5cRAAgR',
                      'problemTitle': 'Task3',
                      'statement': 'text3',
                      'alias': 'C'}]
@@ -435,9 +435,7 @@ class ViewsTest(TestCase):
         response = client.post(reverse('tasks.views.contest_task_import'), post_data)
         self.assertEqual(response.status_code, 200, "Can't get get_contest_info via teacher")
         self.assertEqual(response.content,
-                         '{"is_error": true, "error": "\u0423 anytask \u043d\u0435\u0442 '
-                         '\u043f\u0440\u0430\u0432 \u043d\u0430 \u0434\u0430\u043d\u043d\u044b\u0439 '
-                         '\u043a\u043e\u043d\u0442\u0435\u0441\u0442"}',
+                         '{"is_error": true, "error": "net_prav_na_kontest"}',
                          'Wrong response text')
 
         # get contest_task_import page with unknown error

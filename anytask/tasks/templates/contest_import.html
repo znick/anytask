@@ -5,7 +5,7 @@
 {% load task_taken_func %}
 {% load django_bootstrap_breadcrumbs %}
 
-{% block title %}{% trans "Импорт " %}| {{ course.name }} | {{ course.year }}{% endblock %}
+{% block title %}{% trans "import" %} | {{ course.name }} | {{ course.year }}{% endblock %}
 
 {% block scripts %}
     <link href="{{ STATIC_URL }}task.css" rel='stylesheet'/>
@@ -20,13 +20,13 @@
         {% breadcrumb school.name school.get_absolute_url %}
     {% endif %}
     {% breadcrumb course.name course.get_absolute_url %}
-    {% breadcrumb_for "" %}{% trans "Импорт соревнования из Яндекс.Контеста" %}{% endbreadcrumb_for %}
+    {% breadcrumb_for "" %}{% trans "import_sorevnovanija" %}{% endbreadcrumb_for %}
 {% endblock breadcrumbs %}
 
 {% block navbar %}
     <ul class="nav navbar-nav">
         <li class="nav-item">
-            <a class="nav-link" id="course_url" href="{{ course.get_absolute_url }}">{% trans "Список задач" %}</a>
+            <a class="nav-link" id="course_url" href="{{ course.get_absolute_url }}">{% trans "spisok_zadach" %}</a>
         </li>
     </ul>
 {% endblock navbar %}
@@ -55,13 +55,13 @@
     </style>
 
     <div id="task_edit" class="card card-block">
-        <h5 class="card-title">{% trans "Импорт соревнования из Яндекс.Контеста" %}</h5>
+        <h5 class="card-title">{% trans "import_sorevnovanija" %}</h5>
 
         <form id="contest_task_form">
             {% csrf_token %}
             <input id='course_id' name="course_id" type='hidden' value="{{ course.id }}">
             <div class="form-group row">
-                <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_contest_id">{% trans "ID контеста" %}</label>
+                <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_contest_id">{% trans "id_kontesta" %}</label>
                 <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
                     <div id="task_contest_id_editable">
                         <input class="form-control" id='task_contest_id' name="contest_id" type='text' maxlength='25' size='20'>
@@ -73,7 +73,7 @@
                     </div>
                 </div>
                 <div id="get_tasks" class="in collapse">
-                    <button id="button_get_tasks" type="submit" class="btn btn-secondary">{% trans "Получить список задач" %}</button>
+                    <button id="button_get_tasks" type="submit" class="btn btn-secondary">{% trans "poluchit_spisok_zadach" %}</button>
                 </div>
                 <div id="loading_contest_img" class="col-sm-1 collapse loading-img">
                     <span class="fa fa-circle-o-notch fa-spin fa-lg fa-fw"></span>
@@ -88,20 +88,20 @@
                     </div>
                 </div>
                 <div class="form-group row">
-                    <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_max_score">{% trans "Максимальный балл" %}</label>
+                    <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_max_score">{% trans "max_ball" %}</label>
                     <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
                         <input disabled class="form-control" id='task_max_score'name='max_score' type='text' maxlength='25' size='20'>
                         <label class="form-control-label label-get-from-contest" for="task_edit_get_max_score_from_contest">
                             <input checked type="checkbox" name="get_max_score_from_contest"
                                    id="task_edit_get_max_score_from_contest">
-                            <small class="text-muted">{% trans "Брать из Я.Контеста" %}</small>
+                            <small class="text-muted">{% trans "brat_iz_kontesta" %}</small>
                         </label>
                         <br/>
                         <small class="text-help" id="task_max_score_error_text"></small>
                     </div>
                 </div>
                 <div class="form-group row">
-                    <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_group">{% trans "Группа" %}</label>
+                    <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_group">{% trans "gruppa" %}</label>
                     <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
                         <select class="form-control" id='task_group' name="task_group_id[]" multiple="multiple">
                             {% for group in course.groups.all %}
@@ -113,7 +113,7 @@
                 </div>
                 <div id='parent_body'>
                     <div class="form-group row">
-                        <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_parent">{% trans "Родительская задача" %}</label>
+                        <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_parent">{% trans "roditelskaja_zadacha" %}</label>
                         <div class="controls no-validate col-lg-4 col-md-6 col-sm-7 col-xs-7">
                             <select class="form-control" name="parent_id" id="task_edit_parent">
                                 <option value=""> ---</option>
@@ -126,7 +126,7 @@
                     </div>
                 </div>
                 <div class="form-group row">
-                    <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_datepicker">{% trans "Дата сдачи" %}</label>
+                    <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_datepicker">{% trans "data_sdachi" %}</label>
                     <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
                         <div class="input-group date task_datetime">
                             <input disabled class="form-control" id='task_edit_datepicker' name='deadline' type='text' readonly value="{{task.deadline_time|date:'d-m-Y H:i'}}">
@@ -137,20 +137,20 @@
                         <label class="form-control-label label-get-from-contest" for="task_edit_get_deadline_from_contest">
                             <input checked type="checkbox" name="get_deadline_from_contest"
                                    id="task_edit_get_deadline_from_contest">
-                            <small class="text-muted">{% trans "Брать из Я.Контеста" %}</small>
+                            <small class="text-muted">{% trans "brat_iz_kontesta" %}</small>
                         </label>
                     </div>
                 </div>
                 <div class="form-group row">
-                    <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_rb_integrated">{% trans "Интеграция с Review Board" %}</label>
+                    <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_rb_integrated">{% trans "integracija_s_rb" %}</label>
                     <div class="controls no-validate col-lg-4 col-md-6 col-sm-7 col-xs-7">
                         <input type="checkbox" name="rb_integrated" id="task_edit_rb_integrated"  {% if rb_integrated %}checked{% endif %}>
                     </div>
                 </div>
                 {% if course.show_task_one_file_upload %}
                     <div class="form-group row collapse {% if rb_integrated %}in{% endif %}">
-                        <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_one_file_upload">{% trans "Отправлять только один файл" %}
-                            <a tabindex="0" data-toggle="popover" data-trigger="hover" data-content='{% trans "Имя файла будет изменено на upload. Расширение останется исходное." %}' type="button"><i class="fa fa-question-circle help-button" aria-hidden="true"></i></a>
+                        <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_one_file_upload">{% trans "otpravljat_tolko_odin_fajl" %}
+                            <a tabindex="0" data-toggle="popover" data-trigger="hover" data-content='{% trans "imja_fajla_budet_izmeneno" %}' type="button"><i class="fa fa-question-circle help-button" aria-hidden="true"></i></a>
                         </label>
                         <div class="controls no-validate col-lg-4 col-md-6 col-sm-7 col-xs-7">
                             <input type="checkbox" name="one_file_upload" id="task_edit_one_file_upload"  {% if task.one_file_upload or is_create and course.default_task_one_file_upload %}checked{% endif %}>
@@ -159,7 +159,7 @@
                 {% endif %}
                 {% if course.show_accepted_after_contest_ok %}
                     <div class="form-group row">
-                        <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_accepted_after_contest_ok">{% trans "Переводить в статус Зачтено после положительного вердикта Я.Контеста" %}</label>
+                        <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_accepted_after_contest_ok">{% trans "perevodit_v_zachteno" %}</label>
                         <div class="controls no-validate col-lg-4 col-md-6 col-sm-7 col-xs-7">
                             <input type="checkbox" name="accepted_after_contest_ok" id="task_edit_accepted_after_contest_ok"  {% if task.accepted_after_contest_ok or is_create and course.default_accepted_after_contest_ok %}checked{% endif %}>
                         </div>
@@ -172,7 +172,7 @@
                     </div>
                 </div>
                 <div class="form-group row">
-                    <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_hidden_task">{% trans "Скрыть задачи" %}</label>
+                    <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_hidden_task">{% trans "skryt_zadachi" %}</label>
                     <div class="controls no-validate col-lg-4 col-md-6 col-sm-7 col-xs-7">
                         <input type="checkbox" name="hidden_task" id="task_edit_hidden_task">
                     </div>
@@ -181,8 +181,8 @@
                     <div id="task_submit_error_text" class="col-xs-12"></div>
                     <div class="col-lg-offset-2 col-sm-12 col-lg-10">
                         <div class="btn-group pull-xs-right" role="group">
-                            <button type="button" id="button_cancel_quit" class="btn btn-secondary">{% trans "Отменить и выйти" %}</button>
-                            <button type="submit" id="button_save_quit" class="btn btn-primary">{% trans "Сохранить и выйти" %}</button>
+                            <button type="button" id="button_cancel_quit" class="btn btn-secondary">{% trans "otmenit_i_vyjti" %}</button>
+                            <button type="submit" id="button_save_quit" class="btn btn-primary">{% trans "sohranit_i_vyjti" %}</button>
                         </div>
                     </div>
                 </div>
