@@ -175,7 +175,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                {% for student, task_x_task_takens, student_summ_score, mark_id, student_course_mark in student_information %}
+                {% for student, task_x_task_takens, student_summ_score, mark_id, student_course_mark, student_course_mark_int in student_information %}
                     <tr class="{% if user.username == student.username %}table-info{% endif %}">
                         <td class="sticky-col" align="center"></td>
                         <td class="sticky-col">
@@ -256,9 +256,9 @@
                             </div>
                         </td>
                         {% if course_mark_system_vals %}
-                            <td align="center" class="student_course_mark_{{ student.id }}">
+                            <td align="center" data-class="student_course_mark_{{ student.id }}">
                                 <div {% if user_is_teacher %}class="mark-value in collapse"{% endif %}>
-                    <span class="label label-success">
+                    <span class="label label-success" data-mark-int="{{ student_course_mark_int }}">
                     {{ student_course_mark }}
                   </span>
                                 </div>
