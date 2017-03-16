@@ -190,24 +190,24 @@ class CustomMethodFilter(django_filters.MethodFilter):
 
 
 class UserProfileFilter(django_filters.FilterSet):
-    courses = CustomMethodFilter(label=u'<strong>{0}</strong>'.format(_(u'Курс')),
+    courses = CustomMethodFilter(label=u'<strong>{0}</strong>'.format(_(u'kurs')),
                                  action='filter_course',
                                  widget=forms.SelectMultiple,
                                  field_class=forms.MultipleChoiceField)
-    groups = CustomMethodFilter(label=u'<strong>{0}</strong>'.format(_(u'Группа')),
+    groups = CustomMethodFilter(label=u'<strong>{0}</strong>'.format(_(u'gruppa')),
                                 action='filter_group',
                                 widget=forms.SelectMultiple,
                                 field_class=forms.MultipleChoiceField)
     user_status_activity = django_filters.MultipleChoiceFilter(
-        label=u'<strong>{0}</strong>'.format(_(u'Статус студента')),
+        label=u'<strong>{0}</strong>'.format(_(u'status_studenta')),
         name='user_status',
         widget=forms.SelectMultiple)
     user_status_filial = django_filters.MultipleChoiceFilter(
-        label=u'<strong>{0}</strong>'.format(_(u'Филиал')),
+        label=u'<strong>{0}</strong>'.format(_(u'filial')),
         name='user_status',
         widget=forms.SelectMultiple)
     user_status_admission = django_filters.MultipleChoiceFilter(
-        label=u'<strong>{0}</strong>'.format(_(u'Статус поступления')),
+        label=u'<strong>{0}</strong>'.format(_(u'status_postupleniya')),
         name='user_status',
         widget=forms.SelectMultiple)
 

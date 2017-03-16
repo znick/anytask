@@ -46,9 +46,9 @@
             },
             includeSelectAllOption: true,
             enableCaseInsensitiveFiltering: true,
-            filterPlaceholder: "{% trans "Найти..." %}",
-            selectAllText: '{% trans "Выбрать все" %}',
-            allSelectedText: '{% trans "Все выбрано" %}',
+            filterPlaceholder: "{% trans "najti" %}",
+            selectAllText: '{% trans "vybrat_vse" %}',
+            allSelectedText: '{% trans "vse_vybrano" %}',
             maxHeight: 200,
             buttonContainer: '<div style="width:100%;" class="multiselect-dropdown"/>',
             buttonWidth: '100%',
@@ -59,7 +59,7 @@
                     return '---';
                 }
                 else if (options.length === $('option', select).length) {
-                    return '{% trans "Все выбрано" %}';
+                    return '{% trans "vse_vybrano" %}';
                 }
                 else {
                     options.each(function () {
@@ -73,7 +73,7 @@
                     return '---';
                 }
                 else if (options.length === $('option', select).length) {
-                    return '{% trans "Все выбрано" %}';
+                    return '{% trans "vse_vybrano" %}';
                 }
                 else {
                     var labels = [];
@@ -91,7 +91,7 @@
         });
 
         $('#file_input').fileinput({
-            language: 'ru',
+            language: '{{ user.get_profile.language }}',
             theme: 'fa',
             showPreview: false,
             showCancel: false,
@@ -160,25 +160,25 @@
             },
             language: {
                 "decimal": "",
-                "emptyTable": "{% trans 'Ничего не найдено' %}",
-                "info": "{% trans "_START_-_END_ из _TOTAL_" %}",
+                "emptyTable": "{% trans 'nichego_ne_najdeno' %}",
+                "info": "{% trans "_start_-_end__iz__total_" %}",
                 "infoEmpty": "0",
-                "infoFiltered": "(из _MAX_)",
+                "infoFiltered": "{% trans "(iz__max_)" %}",
                 "infoPostFix": "",
                 "thousands": ",",
-                "lengthMenu": "{% trans "Показать _MENU_" %}",
-                "loadingRecords": "{% trans "Загрузка..." %}",
-                "processing": "<span class='fa fa-circle-o-notch fa-spin'></span>&nbsp;Загрузка...",
+                "lengthMenu": "{% trans "pokazat__menu_" %}",
+                "loadingRecords": "{% trans "zagruzka" %}",
+                "processing": "<span class='fa fa-circle-o-notch fa-spin'></span>&nbsp;{% trans "zagruzka" %}",
                 "search": "",
-                "searchPlaceholder": "{% trans "Найти..." %}",
-                "zeroRecords": "{% trans "Ничего не найдено" %}",
+                "searchPlaceholder": "{% trans "najti" %}",
+                "zeroRecords": "{% trans "nichego_ne_najdeno" %}",
                 "paginate": {
                     "next": '<i class="fa fa-angle-right" aria-hidden="true"></i>',
                     "previous": '<i class="fa fa-angle-left" aria-hidden="true"></i>'
                 },
                 "select": {
                     "rows": {
-                        _: "{% trans "Выбрано: %d" %}",
+                        _: "{% trans "vybrano" %}: %d",
                         0: ""
                     }
                 }
@@ -277,14 +277,14 @@
                 .done(function (data) {
                     $('#modal_change_status_error_text').html('<div class="alert alert-success" role ="alert">' +
                         '                                     <a class="close" data-dismiss="alert">&times;</a>' +
-                        '                                     <span>{% trans "Сохранено успешно." %}</span>' +
+                        '                                     <span>{% trans "sohraneno_uspeshno" %}</span>' +
                         '                                   </div>');
                     window.location.reload();
                 })
                 .fail(function (data) {
                     $('#modal_change_status_error_text').html('<div class="alert alert-danger" role ="alert">' +
                         '                                     <a class="close" data-dismiss="alert">&times;</a>' +
-                        '                                     <span>{% trans "Произошла ошибка при сохранении. Попробуйте снова." %}</span>' +
+                        '                                     <span>{% trans "oshibka_pri_sohranenii" %}</span>' +
                         '                                   </div>');
                 });
         });
@@ -311,9 +311,9 @@
         var btn_text = "";
         var selected_count = table_users.rows({selected: true}).data().length;
         if (selected_count == 0 || selected_count == table_users.rows().data().length)
-            btn_text = "{% trans "Изменить статус для всех пользователей" %}";
+            btn_text = "{% trans "izmenit_status_dlya_vsekh_polzovateley" %}";
         else
-            btn_text = "{% trans "Изменить статус для выбранных пользователей" %}";
+            btn_text = "{% trans "izmenit_status_dlya_vybrannykh_polzovateley" %}";
 
         $('button.table-change-status').text(btn_text).prop("title", btn_text);
     }
