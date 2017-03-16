@@ -18,7 +18,7 @@
             <b>{{ group.name }}</b>
             {% if course.can_edit %}
                 <a class="btn-small" href="javascript:get_add_task_modal({{ course.id }}, {{ group.id }},  null, '{{course.can_edit}}');">
-                    {% trans "Добавить задачу" %}
+                    Добавить задачу
                 </a>
             {% endif %}
             <table class="table table-striped table-bordered table-condensed table_results" id="table_results">
@@ -44,7 +44,7 @@
                             <th></th>
                         {% endfor %}
                         <th class="no-font-weight">
-                            {% trans "Суммарный балл " %}<span class="label label-success">{{ group_x_max_score|key:group }}</span>
+                            Суммарный балл <span class="label label-success">{{ group_x_max_score|key:group }}</span>
                         </th>
                     </tr>
                 </thead>
@@ -80,10 +80,10 @@
         {% endfor %}
 
             {% if course.can_edit or extern_tasks %}
-                <b>{% trans "Слушатели курса" %}</b>
+                <b>Слушатели курса</b>
                 {% if course.can_edit and not course.is_special_course %}
                     <a class="btn-small" href="javascript:get_add_task_modal({{ course.id }}, null,  null, '{{course.can_edit}}');">
-                        {% trans "Добавить задачу" %}
+                        Добавить задачу
                     </a>
                 {% endif %}
 
@@ -110,7 +110,7 @@
                                 <th></th>
                             {% endfor %}
                             <th>
-                                {% trans "Суммарный балл " %}<span class="label label-success">{{ extern_max_score }}</span>
+                                Суммарный балл <span class="label label-success">{{ extern_max_score }}</span>
                             </th>
                         </tr>
                     </thead>

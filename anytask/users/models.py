@@ -3,7 +3,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
+from django import forms
 
 from datetime import datetime
 
@@ -48,7 +49,7 @@ class UserStatus(models.Model):
     TYPE_EDUCATION_FORM = 'education_form'
 
     TYPE_STATUSES = (
-        (TYPE_ACTIVITY, _(u'Статус студента')),
+        (TYPE_ACTIVITY, _(u'status_studenta')),
         (TYPE_FILIAL, _(u'Филлиал')),
         (TYPE_ADMISSION, _(u'Статус поступления')),
         # (TYPE_EDUCATION_FORM, _(u'Форма обучения')),
@@ -105,6 +106,8 @@ class UserProfile(models.Model):
     ya_passport_oauth = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
     ya_passport_login = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
     ya_passport_email = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
+
+    language = models.CharField(default="ru", max_length=128, unique=False, null=True, blank=True)
 
     def is_current_year_student(self):
         return Group.objects.filter(year=get_current_year()).filter(students=self.user).count() > 0
@@ -175,15 +178,17 @@ class UserProfileLog(models.Model):
 
 class UserProfileFilter(django_filters.FilterSet):
     # user_status_education_form = django_filters.ChoiceFilter(label=_(u'<strong>Форма обучения</strong>'), name='user_status')
-    user_status = django_filters.ChoiceFilter(label=u'<strong>{0}</strong>'.format(_(u'Статус студента')), name='user_status')
+    user_status = django_filters.ChoiceFilter(label=_('status_studenta'), name='user_status')
 
     def set(self):
+        self.filters['user_status'].field.label = u'<strong>{0}</strong>'.format(
+            self.filters['user_status'].field.label)
         activity_choices = [(status.id, status.name) for status in UserStatus.objects.filter(type='activity')]
-        activity_choices.insert(0, (u'', _(u'Любой')))
+        activity_choices.insert(0, (u'', _(u'luboj')))
         self.filters['user_status'].field.choices = tuple(activity_choices)
 
         # education_form_choices = [(status.id, _(status.name)) for status in UserStatus.objects.filter(type='education_form')]
-        # education_form_choices.insert(0, (u'', _(u'Любой')))
+        # education_form_choices.insert(0, (u'', _(u'luboj')))
         # self.filters['user_status_education_form'].field.choices = tuple(education_form_choices)
 
     class Meta:

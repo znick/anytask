@@ -13,7 +13,7 @@
 
 <script type="text/javascript">
     var tinymce_default = {
-        language: 'ru',
+        language: '{{ user.get_profile.language }}',
         skin: 'bootstrap4',
         content_css: [
             'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css',
@@ -38,7 +38,7 @@
                 filterClearBtn: '<span class="input-group-btn"><button class="btn btn-secondary btn-block multiselect-clear-filter" type="button"><i class="fa fa-times"></i></button></span>'
             },
             enableCaseInsensitiveFiltering: true,
-            filterPlaceholder: "{% trans "Найти..." %}",
+            filterPlaceholder: "{% trans "najti" %}",
             maxHeight: 200,
             buttonContainer: '<div style="width:100%;" class="multiselect-dropdown"/>',
             buttonWidth: '100%',
@@ -139,7 +139,7 @@
         $('div.container form:not(.navbar-form)').submit(function(e){
             var d = 'disabled';
             if ($(this).valid()) {
-                $(this).find('button[type="submit"]:first').attr(d, d).prop(d, true).html("<span class='fa fa-circle-o-notch fa-spin fa-fw'></span> {% trans "Сохранение" %}");
+                $(this).find('button[type="submit"]:first').attr(d, d).prop(d, true).html("<span class='fa fa-circle-o-notch fa-spin fa-fw'></span> {% trans "sohranenie" %}");
                 $(this).find('button[type="submit"]:not(:first)').hide();
                 $(this).find('.dropdown-submit').hide();
             }
@@ -179,10 +179,10 @@
 
             messages: {
                 mark: {
-                    required : "{% trans "Необходимо указать оценку" %}",
-                    number : "{% trans "Оценка должна быть натуральным числом" %}",
-                    min : "{% trans "Оценка должна быть больше или равна 0" %}",
-                    lt_max : "{% trans "Оценка не должна быть больше " %}" + $('#max_mark').val()
+                    required : "{% trans "neobhodimo_ukazat_ocenku" %}",
+                    number : "{% trans "naturalnoe_chislo" %}",
+                    min : "{% trans "ocenka_bolshe_ili_ravna_0" %}",
+                    lt_max : "{% trans "ocenka_ne_bolshe" %} " + $('#max_mark').val()
                 }
             },
 

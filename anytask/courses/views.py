@@ -57,20 +57,6 @@ import json
 logger = logging.getLogger('django.request')
 
 
-@login_required
-def filemanager(request, path, course_id):
-    course = get_object_or_404(Course, id=course_id)
-    if course.user_is_teacher(request.user):
-        course_folder = UPLOAD_ROOT + "/" + course.name
-        if os.path.exists(course_folder):
-            fm = FileManager(course_folder)
-        else:
-            os.mkdir(course_folder)
-            fm = FileManager(course_folder)
-        return fm.render(request, path)
-    else:
-        return HttpResponseForbidden()
-
 
 @login_required
 def queue_page(request, course_id):
@@ -101,7 +87,7 @@ def queue_page(request, course_id):
     # f.form.helper.field_class = 'selectpicker'
     f.form.helper.layout.append(HTML(u"""<div class="form-group row">
                                            <button id="button_filter" class="btn btn-secondary pull-xs-right" type="submit">{0}</button>
-                                         </div>""".format(_(u'Применить'))))
+                                         </div>""".format(_(u'primenit'))))
 
     schools = course.school_set.all()
 
@@ -153,6 +139,8 @@ def gradebook(request, course_id, task_id=None, group_id=None):
     context['group_gradebook'] = True if group else False
     context['show_hidden_tasks'] = request.session.get(
         str(request.user.id) + '_' + str(course.id) + '_show_hidden_tasks', False)
+    context['show_academ_users'] = request.session.get(
+        str(request.user.id) + '_' + str(course.id) + '_show_academ_users', True)
     context['school'] = schools[0] if schools else ''
 
     return render_to_response('courses/gradebook.html', context, context_instance=RequestContext(request))
@@ -289,6 +277,9 @@ def tasklist_shad_cpp(request, course, seminar=None, group=None):
     group_x_max_score = {}
     default_teacher = {}
     show_hidden_tasks = request.session.get(str(request.user.id) + '_' + str(course.id) + '_show_hidden_tasks', False)
+    show_academ_users = request.session.get(str(request.user.id) + '_' + str(course.id) + '_show_academ_users', True)
+
+    academ_students = []
 
     for group in groups:
         student_x_task_x_task_takens = {}
@@ -328,7 +319,14 @@ def tasklist_shad_cpp(request, course, seminar=None, group=None):
             student_id = issue.student.id
             issues_x_student[student_id].append(issue)
 
-        for student in group.students.filter(is_active=True):
+        students = group.students.filter(is_active=True)
+        not_active_students = UserProfile.objects.filter(Q(user__in=group.students.filter(is_active=True)) &
+                                                  (Q(user_status__tag='not_active') | Q(user_status__tag='academic')))
+        academ_students += [x.user for x in not_active_students]
+        if not show_academ_users:
+            students = set(students) - set(academ_students)
+
+        for student in students:
             if user == student:
                 user_is_attended = True
                 user_is_attended_special_course = True
@@ -362,7 +360,7 @@ def tasklist_shad_cpp(request, course, seminar=None, group=None):
             elif not course.user_can_see_transcript(user, student):
                 continue
 
-            mark_id, course_mark = get_course_mark(course, group, student)
+            mark_id, course_mark = get_course_mark(course, student)
 
             group_x_student_information[group].append((student,
                                                        student_x_task_x_task_takens[student][0],
@@ -386,7 +384,10 @@ def tasklist_shad_cpp(request, course, seminar=None, group=None):
         'seminar': seminar,
         'visible_queue': course.user_can_see_queue(user),
         'visible_hide_button': Task.objects.filter(Q(course=course) & Q(is_hidden=True)).count(),
-        'show_hidden_tasks': show_hidden_tasks
+        'show_hidden_tasks': show_hidden_tasks,
+        'visible_hide_button_users': len(academ_students),
+        'show_academ_users': show_academ_users
+
     }
 
     return context
@@ -396,12 +397,12 @@ def get_tasklist_context(request, course):
     return tasklist_shad_cpp(request, course)
 
 
-def get_course_mark(course, group, student):
+def get_course_mark(course, student):
     mark_id = -1
     course_mark = '--'
 
     try:
-        student_course_mark = StudentCourseMark.objects.get(course=course, group=group, student=student)
+        student_course_mark = StudentCourseMark.objects.get(course=course, student=student)
         if student_course_mark.mark:
             mark_id = student_course_mark.mark.id
             course_mark = unicode(student_course_mark)
@@ -594,13 +595,26 @@ def change_visibility_hidden_tasks(request):
     return HttpResponse("OK")
 
 
+def change_visibility_academ_users(request):
+    if not request.method == 'POST':
+        return HttpResponseForbidden()
+
+    course = get_object_or_404(Course, id=int(request.POST['course_id']))
+    if not course.user_is_teacher(request.user):
+        return HttpResponseForbidden()
+
+    session_var_name = str(request.user.id) + '_' + request.POST['course_id'] + '_show_academ_users'
+    request.session[session_var_name] = not request.session.get(session_var_name, True)
+
+    return HttpResponse("OK")
+
+
 @login_required
 def set_course_mark(request):
     if request.method != 'POST':
         return HttpResponseForbidden()
 
     course = get_object_or_404(Course, id=request.POST['course_id'])
-    group = get_object_or_404(Group, id=request.POST['group_id'])
     student = get_object_or_404(User, id=request.POST['student_id'])
     if request.POST['mark_id'] != '-1':
         mark = get_object_or_404(MarkField, id=request.POST['mark_id'])
@@ -609,10 +623,9 @@ def set_course_mark(request):
 
     student_course_mark = StudentCourseMark()
     try:
-        student_course_mark = StudentCourseMark.objects.get(course=course, group=group, student=student)
+        student_course_mark = StudentCourseMark.objects.get(course=course, student=student)
     except StudentCourseMark.DoesNotExist:
         student_course_mark.course = course
-        student_course_mark.group = group
         student_course_mark.student = student
 
     student_course_mark.teacher = request.user
@@ -620,7 +633,7 @@ def set_course_mark(request):
     student_course_mark.mark = mark
     student_course_mark.save()
 
-    return HttpResponse(json.dumps({'mark': unicode(mark), 'student_course_mark_id': student_course_mark.id}),
+    return HttpResponse(json.dumps({'mark': unicode(mark), 'mark_id': mark.id}),
                         content_type="application/json")
 
 
@@ -736,9 +749,9 @@ def ajax_update_contest_tasks(request):
         if 'error' in problem_req:
             response['is_error'] = True
             if 'IndexOutOfBoundsException' in problem_req['error']['name']:
-                response['error'] = _(u'Такого контеста не существует')
+                response['error'] = _(u'kontesta_ne_sushestvuet')
             else:
-                response['error'] = _(u'Ошибка Я.Контеста: ') + problem_req['error']['message']
+                response['error'] = _(u'oshibka_kontesta') + ' ' + problem_req['error']['message']
         if 'result' in problem_req.json():
             problems = problem_req.json()['result']['problems']
 
@@ -746,11 +759,11 @@ def ajax_update_contest_tasks(request):
     else:
         response['is_error'] = True
         if "You're not allowed to view this contest." in contest_info:
-            response['error'] = _(u"У anytask нет прав на данный контест")
+            response['error'] = _(u"net_prav_na_kontest")
         elif "Contest with specified id does not exist." in contest_info:
-            response['error'] = _(u'Такого контеста не существует')
+            response['error'] = _(u'kontesta_ne_sushestvuet')
         else:
-            response['error'] = _(u'Ошибка Я.Контеста: ') + contest_info
+            response['error'] = _(u'oshibka_kontesta') + contest_info
 
     if not response['is_error']:
         for task in Task.objects.filter(id__in=dict(request.POST)['tasks_with_contest[]']):

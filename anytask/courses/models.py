@@ -190,7 +190,7 @@ class Course(models.Model):
 
     def add_group_with_extern(self):
         if self.group_with_extern is None and self.can_be_chosen_by_extern:
-            group, ok = Group.objects.get_or_create(year=self.year,name=_(u'%s - слушатели') % self.name)
+            group, ok = Group.objects.get_or_create(year=self.year,name=u'%s - слушатели' % self.name)
             group.save()
             self.group_with_extern = group
             self.groups.add(group)
@@ -235,7 +235,6 @@ class DefaultTeacher(models.Model):
 class StudentCourseMark(models.Model):
     student = models.ForeignKey(User, db_index=True, null=False, blank=False)
     course = models.ForeignKey(Course, db_index=False, null=False, blank=False)
-    group = models.ForeignKey(Group, db_index=False, null=True, blank=True)
     mark = models.ForeignKey(MarkField, db_index=False, null=True, blank=True)
 
     teacher = models.ForeignKey(User, related_name='teacher_change_mark', db_index=False, null=True, blank=True)
@@ -245,7 +244,7 @@ class StudentCourseMark(models.Model):
         return unicode(self.mark)
 
     class Meta:
-        unique_together = (("student", "course", "group"),)
+        unique_together = (("student", "course"),)
 
 
 def add_default_issue_fields(sender, instance, action, **kwargs):

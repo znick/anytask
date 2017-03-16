@@ -41,7 +41,7 @@ def staff_page(request):
     f.form.helper.form_method = 'get'
     f.form.helper.layout.append(HTML(u"""<div class="form-group row">
         <button id="button_filter" class="btn btn-secondary pull-xs-right" type="submit">{0}</button>
-</div>""".format(_(u'Применить'))))
+</div>""".format(_(u'primenit'))))
 
     context = {
         'filter': f,

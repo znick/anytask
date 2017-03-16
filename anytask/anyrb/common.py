@@ -80,10 +80,10 @@ class AnyRB(object):
                                            issue.task.course.get_user_group(issue.student),
                                            issue.task.title)
 
-        description_template = _(u'Задача') + ': "{0}", ' + \
-                               _(u'курс') + ': [{1}](http://{2}{3})\n' + \
-                               _(u'Студент') + ': [{4}](http://{2}{5})\n' + \
-                               '[' + _(u'Обсуждение задачи') + '](http://{2}{6})'
+        description_template = _(u'zadacha') + ': "{0}", ' + \
+                               _(u'kurs') + ': [{1}](http://{2}{3})\n' + \
+                               _(u'student') + ': [{4}](http://{2}{5})\n' + \
+                               '[' + _(u'obsuzhdenie_zadachi') + '](http://{2}{6})'
         description = description_template.format(
                         issue.task.title,
                         issue.task.course,
