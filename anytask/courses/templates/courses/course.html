@@ -184,7 +184,11 @@
                                                            href="#collapse_{{ task.id }}">
                                                             {{ task.title }}</a>
                                                     </div>
-                                                    <div style="width: 10%">{{ task|get_score:user }}</div>
+                                                    <div style="width: 10%">
+                                                        {% if task.type != task.TYPE_MATERIAL %}
+                                                            {{ task|get_score:user }}
+                                                        {% endif %}
+                                                    </div>
                                                     <div style="width: 15%">
                                                         {% if task.type != task.TYPE_MATERIAL %}
                                                             <span class="label" style="width: 80%;
@@ -294,7 +298,11 @@
                                                        href="#collapse_{{ task.id }}">
                                                         {{ task.title }}</a>
                                                 </div>
-                                                <div style="width: 10%">{{ task|get_score:user }}</div>
+                                                <div style="width: 10%">
+                                                    {% if task.type != task.TYPE_MATERIAL %}
+                                                        {{ task|get_score:user }}
+                                                    {% endif %}
+                                                </div>
                                                 <div style="width: 15%">
                                                     {% if task.type != task.TYPE_MATERIAL %}
                                                         <span class="label" style="width: 80%;
