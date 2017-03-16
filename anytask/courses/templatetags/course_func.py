@@ -30,7 +30,7 @@ def get_status_name(task, user):
     try:
         return Issue.objects.get(task=task, student=user).status_field.name
     except Exception as e:
-        return _(u"Новый")
+        return _(u"novyj")
 
 
 @register.filter(name='get_default_teacher')

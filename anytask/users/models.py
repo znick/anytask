@@ -3,7 +3,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 from django import forms
 
 from datetime import datetime
@@ -54,9 +54,9 @@ class UserStatus(models.Model):
     TYPE_EDUCATION_FORM = 'education_form'
 
     TYPE_STATUSES = (
-        (TYPE_ACTIVITY, _(u'Статус студента')),
-        (TYPE_FILIAL, _(u'Филлиал')),
-        (TYPE_ADMISSION, _(u'Статус поступления')),
+        (TYPE_ACTIVITY, _(u'status_studenta')),
+        (TYPE_FILIAL, _(u'filial')),
+        (TYPE_ADMISSION, _(u'status_postupleniya')),
         # (TYPE_EDUCATION_FORM, _(u'Форма обучения')),
     )
 
@@ -113,6 +113,8 @@ class UserProfile(models.Model):
     ya_passport_oauth = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
     ya_passport_login = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
     ya_passport_email = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
+
+    language = models.CharField(default="ru", max_length=128, unique=False, null=True, blank=True)
 
     def is_current_year_student(self):
         return Group.objects.filter(year=get_current_year()).filter(students=self.user).count() > 0

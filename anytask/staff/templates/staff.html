@@ -17,10 +17,10 @@
             <a class="nav-link active" href="#">Staff</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link active" href="#">{% trans "Фильтры по статусам" %}</a>
+            <a class="nav-link active" href="#">{% trans "filtry_po_statusam" %}</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="{% url staff.views.get_gradebook %}">{% trans "Общая ведомость" %}</a>
+            <a class="nav-link" href="{% url staff.views.get_gradebook %}">{% trans "obshaja_vedomost" %}</a>
         </li>
     </ul>
 {% endblock navbar %}
@@ -76,7 +76,7 @@
         <div class="col-xl-9 col-lg-8 col-md-12">
             <div class="card">
                 <div class="card-block">
-                    <h5 class="card-title">{% trans "Пользователи" %}</h5>
+                    <h5 class="card-title">{% trans "polzovateli" %}</h5>
                     {% if not is_error and filter.count and filter.users_info %}
                         <div class="loading">
                             <span class='fa fa-circle-o-notch fa-spin fa-fw'></span>
@@ -86,9 +86,9 @@
                                 <thead>
                                 <tr>
                                     <th class="th-checkbox no-sort"><input type='checkbox' class='table-checkbox-all'></th>
-                                    <th class="th-name">{% trans "Имя" %}</th>
-                                    <th class="th-email">{% trans "Почта" %}</th>
-                                    <th class="th-status no-sort">{% trans "Статусы" %}</th>
+                                    <th class="th-name">{% trans "imja" %}</th>
+                                    <th class="th-email">{% trans "pochta" %}</th>
+                                    <th class="th-status no-sort">{% trans "status" %}</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -115,7 +115,7 @@
                         {% if empty_filter %}
                             <p class="card-text">{% trans "Выберите значения для фильтрации" %}</p>
                         {% else %}
-                            <p class="card-text">{% trans "Не найдено ни одного пользователя" %}</p>
+                            <p class="card-text">{% trans "ne_najdeno_polzovatelej" %}</p>
                         {% endif %}
                     {% endif %}
                 </div>

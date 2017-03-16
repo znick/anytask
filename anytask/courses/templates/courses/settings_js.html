@@ -13,8 +13,8 @@
         $('.card').matchHeight();
 
         $('#rb_ext_select').multiSelect({
-            selectableHeader: '<input type="text" class="form-control form-control-sm" style="margin-bottom: 5px;" autocomplete="off" placeholder="{% trans "Поиск..." %}">',
-            selectionHeader: '<input type="text" class="form-control form-control-sm" style="margin-bottom: 5px;" autocomplete="off" placeholder="Поиск...">',
+            selectableHeader: '<input type="text" class="form-control form-control-sm" style="margin-bottom: 5px;" autocomplete="off" placeholder="{% trans "poisk" %}...">',
+            selectionHeader: '<input type="text" class="form-control form-control-sm" style="margin-bottom: 5px;" autocomplete="off" placeholder="{% trans "poisk" %}...">',
             selectableFooter: '<button type="button" id="rb_ext_select_rightAll" class="btn btn-secondary btn-block" style="margin-top: 5px;"><i class="fa fa-forward fa"></i></button>',
             selectionFooter: '<button type="button" id="rb_ext_select_leftAll" class="btn btn-secondary btn-block" style="margin-top: 5px;"><i class="fa fa-backward fa"></i></button>',
             afterInit: function(ms){
@@ -79,8 +79,8 @@
             },
             enableClickableOptGroups: true,
             includeSelectAllOption: true,
-            selectAllText: '{% trans "Все задачи" %}',
-            allSelectedText: '{% trans "Все задачи" %}',
+            selectAllText: '{% trans "vse_zadachi" %}',
+            allSelectedText: '{% trans "vse_zadachi" %}',
             selectAllName: 'task_group_id_all',
             selectAllValue: 'on',
             maxHeight: 200,
@@ -89,10 +89,10 @@
             buttonTitle: function(options, select) {
                 var labels = [];
                 if (options.length === 0) {
-                    return '{% trans "Не выбрано ни одной задачи" %}';
+                    return '{% trans "ne_vybrano_zadach" %}';
                 }
                 else if (options.length === $('option', select).length) {
-                    return '{% trans "Все задачи" %}';
+                    return '{% trans "vse_zadachi" %}';
                 }
                 else {
                     options.each(function () {
@@ -103,13 +103,13 @@
             },
             buttonText: function(options, select) {
                 if (options.length === 0) {
-                    return '{% trans "Не выбрано ни одной задачи" %}';
+                    return '{% trans "ne_vybrano_zadach" %}';
                 }
                 else if (options.length === $('option', select).length) {
-                    return '{% trans "Все задачи" %}';
+                    return '{% trans "vse_zadachi" %}';
                 }
                 else if (options.length > 1) {
-                    return '{% trans "Выбрано несколько задач - " %}' + options.length;
+                    return '{% trans "vybrano_neskolko_zadach" %} - ' + options.length;
                 }
                 else {
                     var labels = [];
@@ -161,7 +161,7 @@
             var $progress = $('#progress_contest_update');
             var $progress_caption = $("#progress_contest_update_caption");
 
-            $progress_caption.html('{% trans "Обновление задач... " %}<span>0</span>%');
+            $progress_caption.html('{% trans "obnovlenie_zadach" %} <span>0</span>%');
             $progress.prop('max', tasks_keys.length);
             $progress.val(0);
             $progress.show();
@@ -172,9 +172,9 @@
                             'contest_id': tasks_keys[i],
                             'tasks_with_contest[]': tasks[tasks_keys[i]]})
                         .done(function (data) {
-                            var alert_text = '<div><strong>{% trans "Контест " %}' + data.contest_id + '. </strong>';
+                            var alert_text = '<div><strong>{% trans "kontest" %} ' + data.contest_id + '. </strong>';
                             if (data.is_error == false) {
-                                alert_text += '{% trans "Задачи обновлены" %}';
+                                alert_text += '{% trans "zadachi_obnovleny" %}';
                                 $('#update_submit_success_text').show().append(alert_text + '</div>');
                                 for (var key in data.tasks_title) {
                                     if (data.tasks_title.hasOwnProperty(key)) {
@@ -183,7 +183,7 @@
                                 }
                             }
                             else {
-                                var err_text = data.error ? data.error: '{% trans "Произошла ошибка при получении данных." %}';
+                                var err_text = data.error ? data.error: '{% trans "oshibka_pri_poluchenii" %}';
                                 $('#update_submit_error_text').show().append(alert_text +  err_text + '</div>');
                             }
                         })
@@ -223,18 +223,18 @@
                     'tasks_with_contest[]': $('#tasks_with_contest_rejudge_select').val()})
                 .done(function (data) {
                     $('#rejudge_tasks_error').html('<div class="alert alert-success alert-dismissible" role ="alert">' +
-                            '                            <button type="button" class="close" data-dismiss="alert" aria-label="{% trans "Закрыть" %}">' +
+                            '                            <button type="button" class="close" data-dismiss="alert" aria-label="{% trans "zakryt" %}">' +
                             '                               <span aria-hidden="true">&times;</span>' +
                             '                            </button>' +
-                            '                            <span>{% trans "Отправлено на проверку успешно." %}</span>' +
+                            '                            <span>{% trans "otpravleno_na_proverku" %}</span>' +
                             '                          </div>');
                 })
                 .fail(function () {
                     $('#rejudge_tasks_error').html('<div class="alert alert-danger alert-dismissible" role ="alert">' +
-                            '                            <button type="button" class="close" data-dismiss="alert" aria-label="{% trans "Закрыть" %}">' +
+                            '                            <button type="button" class="close" data-dismiss="alert" aria-label="{% trans "zakryt" %}">' +
                             '                               <span aria-hidden="true">&times;</span>' +
                             '                            </button>' +
-                            '                            <span>{% trans "Ошибка отправки." %}</span>' +
+                            '                            <span>{% trans "oshibka_otpravki" %}</span>' +
                             '                          </div>');
                 })
                 .always(function () {
@@ -259,7 +259,7 @@
                     success: function (data) {
                         $('#course_settings_form_error_text').html('<div class="alert alert-success" role ="alert" id="edit_task_err">' +
                                 '                                     <a class="close" data-dismiss="alert">&times;</a>' +
-                                '                                     <span>{% trans "Сохранено успешно." %}</span>' +
+                                '                                     <span>{% trans "sohraneno_uspeshno" %}</span>' +
                                 '                                   </div>');
                         if ($('#course_settings_form').data('quit'))
                             redirect();
@@ -269,7 +269,7 @@
                     error: function (data) {
                         $('#course_settings_form_error_text').html('<div  class="alert alert-danger" role ="alert" id="edit_task_err">' +
                                 '                                     <a class="close" data-dismiss="alert">&times;</a>' +
-                                '                                     <span>{% trans "Произошла ошибка при сохранении. Попробуйте снова." %}</span>' +
+                                '                                     <span>{% trans "oshibka_pri_sohranenii" %}</span>' +
                                 '                                   </div>');
                         remove_disabled();
                     }

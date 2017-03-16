@@ -104,7 +104,7 @@ def contest_register(user):
 @never_cache
 @require_GET
 def activate(request, activation_key):
-    context = {'info_title': _(u'Ошибка')}
+    context = {'info_title': _(u'oshibka')}
     user, user_info = AdmissionRegistrationProfile.objects.activate_user(activation_key)
     if user:
         if user_info:
@@ -114,9 +114,9 @@ def activate(request, activation_key):
         if contest_id:
             return HttpResponsePermanentRedirect(settings.CONTEST_URL + contest_id)
         else:
-            context['info_text'] = _(u'Ошибка регистрации в Яндекс.Контесте.')
+            context['info_text'] = _(u'oshibka_registracii_v_contest')
     else:
-        context['info_text'] = _(u'Неверный код активации.')
+        context['info_text'] = _(u'nevernyy_kod_aktivatsii')
 
     return render_to_response('info_page.html', context, context_instance=RequestContext(request))
 
@@ -136,8 +136,8 @@ def decline(request, activation_key):
         logger.error("Decline user - %s", e)
 
     context = {
-        'info_title': _(u'Спасибо'),
-        'info_text': _(u'Информация о Вас была удалена.'),
+        'info_title': _(u'spasibo'),
+        'info_text': _(u'informatsiya_o_vas_byla_udalena'),
     }
 
     return render_to_response('info_page.html', context, context_instance=RequestContext(request))

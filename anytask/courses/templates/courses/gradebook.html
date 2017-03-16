@@ -25,21 +25,21 @@
         <li class="nav-item">
             <a class="nav-link"
                href="{{ course.get_absolute_url }}{% if seminar %}/seminar/{{ seminar.id }}{% endif %}">
-                {% if not seminar %}{% trans "Страница курса" %}{% else %}{% trans "Страница семинара" %}{% endif %}</a>
+                {% if not seminar %}{% trans "stranica_kursa" %}{% else %}{% trans "stranica_seminara" %}{% endif %}</a>
         </li>
         <li class="nav-item">
             <a class="nav-link {% if not group_gradebook %}active{% endif %}"
-               href="{{ course.get_absolute_url }}/gradebook/{% if seminar %}seminar/{{ seminar.id }}{% endif %}">{% trans "Общая ведомость" %}</a>
+               href="{{ course.get_absolute_url }}/gradebook/{% if seminar %}seminar/{{ seminar.id }}{% endif %}">{% trans "obshaja_vedomost" %}</a>
         </li>
         {% if not seminar %}
             {% if visible_queue %}
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ course.get_absolute_url }}/queue">{% trans "Очередь на проверку" %}</a>
+                    <a class="nav-link" href="{{ course.get_absolute_url }}/queue">{% trans "ochered_na_proverku" %}</a>
                 </li>
             {% endif %}
             {% if user_is_teacher %}
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url courses.views.course_settings course.id %}">{% trans "Настройки" %}</a>
+                    <a class="nav-link" href="{% url courses.views.course_settings course.id %}">{% trans "nastrojki" %}</a>
                 </li>
             {% endif %}
         {% endif %}
@@ -67,7 +67,7 @@
                     {{ seminar.title }} {% endif %}</h5>
 
                 <p class="card-text course_teachers" style="border-bottom: 1px solid #e5e5e5;">
-                    {% trans "Преподаватели:" %}
+                    {% trans "prepodavateli" %}:
                     {% for teacher in course.get_teachers %}
                         <a href="{% url users.views.profile teacher.username %}">{{ teacher.last_name }} {{ teacher.first_name }}</a>{% if not forloop.last %},{% endif %}
                     {% endfor %}
@@ -77,7 +77,7 @@
                     <div id="btn_group_edit_course"
                          style="z-index: 1; padding: 6px;border:1px solid #e5e5e5;background-color: #e5e5e5">
                         <div class="btn-group">
-                            <a type="button" class="btn btn-secondary btn-sm" href="/task/create/{{ course.id }}">{% trans "Добавить задачу" %}</a>
+                            <a type="button" class="btn btn-secondary btn-sm" href="/task/create/{{ course.id }}">{% trans "dobavit_zadachu" %}</a>
                             {% if course.contest_integrated %}
                                 <button type="button"
                                         style="height: 1.95rem;"
@@ -88,9 +88,9 @@
                                 <div style="font-size: .875rem;" class="dropdown-menu"
                                      aria-labelledby="dropdownMenuButton">
                                     <a class="dropdown-item" href="/task/import/{{ course.id }}" role="button">
-                                        {% trans "Импорт задачи из Я.Контеста" %}
+                                        {% trans "import_zadachi_iz_kontesta" %}
                                     </a>
-                                    <a class="dropdown-item" href="/task/contest_import/{{ course.id }}">{% trans "Импорт соревнования из Я.Контеста" %}</a>
+                                    <a class="dropdown-item" href="/task/contest_import/{{ course.id }}">{% trans "import_sorevnovanija" %}</a>
                                 </div>
                             {% endif %}
                         </div>
@@ -98,18 +98,18 @@
                             <a class="btn btn-secondary btn-sm"
                                href="javascript:change_visibility_hidden_tasks({{ course.id }});" role="button">
                                 {% if show_hidden_tasks %}
-                                    {% trans "Не показывать скрытые задачи" %}
+                                    {% trans "ne_pokazyvat_skrytye_zadachi" %}
                                 {% else %}
-                                    {% trans "Показать скрытые задачи" %}
+                                    {% trans "pokazat_skrytye_zadachi" %}
                                 {% endif %}
                             </a>
                         {% endif %}
                         {% if visible_hide_button_users %}
                             <a class="btn btn-secondary btn-sm" id="hide_academ_student_btn">
                                 {% if show_academ_users %}
-                                    {% trans "Не показывать отчисленных студентов" %}
+                                    {% trans "ne_pokazyvat_otchislennyh" %}
                                 {% else %}
-                                    {% trans "Показать отчисленных студентов" %}
+                                    {% trans "pokazyvat_otchislennyh" %}
                                 {% endif %}
                             </a>
                         {% endif %}
@@ -135,12 +135,12 @@
     </div>
 
     <h5 style="padding-left: 1px;">
-        <span class="label label-default">{% trans "Новый" %}</span>
-        <span class="label label-info">{% trans "Требуется информация" %}</span>
+        <span class="label label-default">{% trans "novyj" %}</span>
+        <span class="label label-info">{% trans "trebuetsja_informacija" %}</span>
         {% for issue_status in course.issue_status_system.statuses.all %}
-            <span class="label" style="background-color: {{ issue_status.color }}">{{ issue_status.name }}</span>
+            <span class="label" style="background-color: {{ issue_status.color }}">{{ issue_status.get_name }}</span>
         {% endfor %}
-        <span class="label label-inverse">{% trans "Суммарный балл" %}</span>
+        <span class="label label-inverse">{% trans "summarnyj_ball" %}</span>
     </h5>
 
     {% include "courses/task.html" %}

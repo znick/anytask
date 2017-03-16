@@ -30,20 +30,20 @@
 {% block navbar %}
     <ul class="nav navbar-nav">
         <li class="nav-item active">
-            <a class="nav-link" href="{{ course.get_absolute_url }}"> {% if not seminar %}{% trans "Страница курса" %}{% else %}
-                {% trans "Страница семинара" %}{% endif %}</a>
+            <a class="nav-link" href="{{ course.get_absolute_url }}"> {% if not seminar %}{% trans "stranica_kursa" %}{% else %}
+                {% trans "stranica_seminara" %}{% endif %}</a>
         </li>
         <li class="nav-item">
             <a class="nav-link"
-               href="{{ course.get_absolute_url }}/gradebook/{% if seminar %}seminar/{{ seminar.id }}{% endif %}">{% trans "Общая ведомость" %}</a>
+               href="{{ course.get_absolute_url }}/gradebook/{% if seminar %}seminar/{{ seminar.id }}{% endif %}">{% trans "obshaja_vedomost" %}</a>
         </li>
         {% if not seminar %}
             {% if user_is_teacher %}
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ course.get_absolute_url }}/queue">{% trans "Очередь на проверку" %}</a>
+                    <a class="nav-link" href="{{ course.get_absolute_url }}/queue">{% trans "ochered_na_proverku" %}</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url courses.views.course_settings course.id %}">{% trans "Настройки" %}</a>
+                    <a class="nav-link" href="{% url courses.views.course_settings course.id %}">{% trans "nastrojki" %}</a>
                 </li>
             {% endif %}
         {% endif %}
@@ -79,23 +79,23 @@
                         {{ mark }}</span>{% endif %}
                     </h5>
                     <p class="card-text course_teachers">
-                        {% trans "Преподаватели:" %}
+                        {% trans "prepodavateli" %}:
                         {% for teacher in course.get_teachers %}
                             <a href="{% url users.views.profile teacher.username %}">{{ teacher.last_name }} {{ teacher.first_name }}</a>{% if not forloop.last %},{% endif %}
                         {% endfor %}
                     </p>
                     {% if seminar %}
                         <a class="btn btn-secondary btn-sm" href="{% url tasks.views.task_edit_page seminar.id %}">
-                            {% trans "Редактировать семинар" %}
+                            {% trans "redaktirovat_seminar" %}
                         </a>
                     {% endif %}
                     {% if visible_hide_button %}
                         <a class="btn btn-secondary btn-sm"
                            href="javascript:change_visibility_hidden_tasks({{ course.id }});" role="button">
                             {% if show_hidden_tasks %}
-                                {% trans "Не показывать скрытые задачи" %}
+                                {% trans "ne_pokazyvat_skrytye_zadachi" %}
                             {% else %}
-                                {% trans "Показать скрытые задачи" %}
+                                {% trans "pokazat_skrytye_zadachi" %}
                             {% endif %}
                         </a>
                     {% endif %}
@@ -103,11 +103,11 @@
                 <div class="list-group" id="courseTab">
                     <a id="info-link" href="#course-information-tab"
                        class="list-group-item scrollto"><span
-                            class="fa fa-file-text-o"></span> {% if not seminar %}{% trans "Описание курса" %}{% else %}
-                        {% trans "Описание занятия" %}{% endif %}</a>
+                            class="fa fa-file-text-o"></span> {% if not seminar %}{% trans "opisanie_kursa" %}{% else %}
+                        {% trans "opisanie_zanjatija" %}{% endif %}</a>
                     <a id="tasks-link" href="#tasks-tab"
                        class="list-group-item scrollto"><span class="fa fa-tasks"></span> {% if not user_is_teacher %}
-                        {% trans "Задачи" %}{% else %}{% trans "Список групп и задач" %}{% endif %}</a>
+                        {% trans "zadachi" %}{% else %}{% trans "spisok_grupp_i_zadach" %}{% endif %}</a>
                 </div>
                 <br>
             </div>
@@ -116,7 +116,7 @@
             <div class="card card-block">
                 <div class="tab-content">
                     <div class="tab-pane fade in" id="course-information-tab" role="tabpanel">
-                        <h5 class="card-title">{% if not seminar %}{% trans "Описание курса" %}{% else %}{% trans "Описание занятия" %}{% endif %}
+                        <h5 class="card-title">{% if not seminar %}{% trans "opisanie_kursa" %}{% else %}{% trans "opisanie_zanjatija" %}{% endif %}
                             {% if course.can_edit %}
 
                                 {% if seminar %}
@@ -144,11 +144,11 @@
                         </div>
                     </div>
                     <div class="tab-pane fade" id="tasks-tab" role="tabpanel">
-                        <h5>{% if not user_is_teacher %}{% trans "Задачи"%}{% else %}{% trans "Список групп и задач" %}{% endif %}
+                        <h5>{% if not user_is_teacher %}{% trans "zadachi" %}{% else %}{% trans "spisok_grupp_i_zadach" %}{% endif %}
                             {% if course.can_edit %}
                                 <div class="btn-group pull-xs-right">
                                     <a type="button" class="btn btn-secondary btn-sm"
-                                       href="/task/create/{{ course.id }}">{% trans "Добавить задачу" %}</a>
+                                       href="/task/create/{{ course.id }}">{% trans "dobavit_zadachu" %}</a>
                                     {% if course.contest_integrated %}
                                         <button type="button"
                                                 style="height: 1.95rem;"
@@ -159,9 +159,9 @@
                                         <div style="font-size: .875rem;" class="dropdown-menu"
                                              aria-labelledby="dropdownMenuButton">
                                             <a class="dropdown-item" href="/task/import/{{ course.id }}" role="button">
-                                                {% trans "Импорт задачи из Я.Контеста" %}
+                                                {% trans "import_zadachi_iz_kontesta" %}
                                             </a>
-                                            <a class="dropdown-item" href="/task/contest_import/{{ course.id }}">{% trans "Импорт соревнования из Я.Контеста" %}</a>
+                                            <a class="dropdown-item" href="/task/contest_import/{{ course.id }}">{% trans "import_sorevnovanija" %}</a>
                                         </div>
                                     {% endif %}
                                 </div>
@@ -191,7 +191,7 @@
                                                         </span>
                                                     </div>
                                                     <div style="width: 20%">
-                                                        {% if task.deadline_time %}{%  trans "сдать до" %}
+                                                        {% if task.deadline_time %}{% trans "sdat_do" %}
                                                             {{ task.deadline_time|date:"H:i d-m-Y" }}
                                                         {% endif %}
                                                     </div>
@@ -199,13 +199,13 @@
                                                         {% if task.type == task.TYPE_FULL and not user_is_teacher %}
                                                             <a style="width: 100%"
                                                                class="btn btn-sm btn-primary pull-xs-right"
-                                                               href="/issue/get_or_create/{{ task.id }}/{{ user.id }}">{% trans "Cдать" %}</a>
+                                                               href="/issue/get_or_create/{{ task.id }}/{{ user.id }}">{% trans "sdat" %}</a>
                                                         {% elif task.type == task.TYPE_SEMINAR %}
                                                             <a style="width: 100%"
                                                                class="btn btn-sm btn-primary pull-xs-right"
                                                                href="{% if task.children.count != 0 %}
                                                        {{ course.id }}/seminar/{{ task.id }}{% endif %}">
-                                                                {%  trans "Перейти" %}</a>
+                                                                {% trans "perejti" %}</a>
                                                         {% endif %}
                                                     </div>
                                                 </div>
@@ -238,7 +238,7 @@
                                             </div>
                                             <div style="width: 20%"><a style="width: 100%"
                                                                        class="btn btn-secondary btn-sm"
-                                                                       href="{{ course.get_absolute_url }}/gradebook/group/{{ task_item.grouper.id }}">{% trans "Ведомость" %}</a>
+                                                                       href="{{ course.get_absolute_url }}/gradebook/group/{{ task_item.grouper.id }}">{% trans "vedomost" %}</a>
                                             </div>
                                         </div>
                                         <div id="collapse_group_{{ task_item.grouper.id }}" class="collapse">
@@ -259,7 +259,7 @@
                                                                     class="label label-inverse">{{ task.task.score_max }}</span>
                                                             </div>
                                                             <div style="width: 25%">
-                                                                {% if task.task.deadline_time %}{%  trans "сдать до" %}
+                                                                {% if task.task.deadline_time %}{% trans "sdat_do" %}
                                                                     {{ task.task.deadline_time|date:"H:i d-m-Y"}}
                                                                 {% endif %}
                                                             </div>
@@ -269,7 +269,7 @@
                                                                        class="btn btn-sm btn-primary pull-xs-right"
                                                                        href="{% if task.task.children.count != 0 %}
                                                             {{ course.id }}/seminar/{{ task.task.id }}{% endif %}">
-                                                                        {% trans "Перейти" %}</a>
+                                                                        {% trans "perejti" %}</a>
                                                                 {% endif %}
                                                             </div>
                                                         </div>
@@ -299,7 +299,7 @@
                                                     </span>
                                                 </div>
                                                 <div style="width: 20%">
-                                                    {% if task.deadline_time %}{% trans "сдать до" %}
+                                                    {% if task.deadline_time %}{% trans "sdat_do" %}
                                                         {{ task.deadline_time|date:"H:i d-m-Y" }}
                                                     {% endif %}
                                                 </div>
@@ -307,7 +307,7 @@
                                                     {% if task.type == task.TYPE_FULL and not user_is_teacher %}
                                                         <a style="width: 100%"
                                                            class="btn btn-sm btn-primary pull-xs-right"
-                                                           href="/issue/get_or_create/{{ task.id }}/{{ user.id }}">{% trans "Cдать" %}</a>
+                                                           href="/issue/get_or_create/{{ task.id }}/{{ user.id }}">{% trans "sdat" %}</a>
                                                     {% endif %}
                                                 </div>
                                             </div>
@@ -338,7 +338,7 @@
                                             </div>
                                             <div style="width: 20%"><a style="width: 100%"
                                                                        class="btn btn-secondary btn-sm"
-                                                                       href="{{ course.get_absolute_url }}/gradebook/{{ seminar.id }}/{{ task_item.grouper.id }}">{% trans "Ведомость" %}</a>
+                                                                       href="{{ course.get_absolute_url }}/gradebook/{{ seminar.id }}/{{ task_item.grouper.id }}">{% trans "vedomost" %}</a>
                                             </div>
                                         </div>
                                         <div id="collapse_group_{{ task_item.grouper.id }}" class="collapse">
@@ -358,7 +358,7 @@
                                                                 class="label label-inverse">{{ task.task.score_max }}</span>
                                                         </div>
                                                         <div style="width: 25%">
-                                                            {% if task.task.deadline_time %}{% trans "сдать до" %}
+                                                            {% if task.task.deadline_time %}{% trans "sdat_do" %}
                                                                 {{ task.task.deadline_time|date:"H:i d-m-Y"}}
                                                             {% endif %}
                                                         </div>
@@ -368,7 +368,7 @@
                                                                    class="btn btn-sm btn-primary pull-xs-right"
                                                                    href="{% if task.task.children.count != 0 %}
                                                             {{ course.id }}/seminar/{{ task.task.id }}{% endif %}">
-                                                                    {% trans "Перейти" %</a>
+                                                                    {% trans "perejti" %}</a>
                                                             {% endif %}
                                                         </div>
                                                     </div>

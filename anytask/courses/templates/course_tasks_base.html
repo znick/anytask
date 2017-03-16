@@ -4,9 +4,9 @@
         <button type="button" class="close" data-dismiss="modal">×</button>
         <h3 id="modal_score_header"> modal!!!</h3>
         <div class="row-fluid">
-            <h4 id="teaher_information" class="span9"> {% trans "Преподаватель:" %} </h4>
+            <h4 id="teaher_information" class="span9"> Преподаватель: </h4>
             <input id="manage_teacher" onClick="" type="submit" class="btn btn-primary span3" data-loading-text="Updating ..."
-            value="{% trans "Взять себе" %}" style="display: inline;"/>
+            value="Взять себе" style="display: inline;"/>
         </div>
     </div>
     <form action="{% url courses.views.score_task %}" method="post" id="modal-score-form" class="form-horizontal" style="margin-bottom: 0px;">
@@ -46,7 +46,7 @@
 
             <div name="status_body">
                 <div>
-                    <label class="help-inline" for="modal_current_status"> {% trans "Текущий статус:" %} </label>
+                    <label class="help-inline" for="modal_current_status"> Текущий статус:} </label>
                     <span type="" id="modal_current_status"> </span> 
                 </div>
                 <div class="radio">
@@ -55,7 +55,7 @@
 
             <br>
 
-            {% trans "Комментарий (необязательно):" %}
+            Комментарий (необязательно):
             <br>
             <textarea class='input-xlarge' style="width: 98%" id='score_comment' rows='10' cols='800' name='comment'></textarea>
         </div>
@@ -69,7 +69,7 @@
 <div class="modal hide" id="modal_comment">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal">×</button>
-        <h3 id="modal_comment_header">{% trans "Комментарии" %}</h3>
+        <h3 id="modal_comment_header">"Комментарии</h3>
     </div>
     <div class="modal-body">
         <div id="modal_comment_body"></div>
@@ -79,7 +79,7 @@
 <div class="modal hide" id="modal_status">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal">×</button>
-        <h3 id="modal_status_header">{% trans "Статус задачи" %}</h3>
+        <h3 id="modal_status_header">Статус задачи</h3>
     </div>
     <div class="modal-body">
         <div name="status_body">
@@ -104,7 +104,7 @@
             <button type="button" class="close" data-dismiss="modal">×</button>
             <h3 id="modal_header_task_descr"></h3>
             <div class="hide" id="edit_task_descr">
-                <a href="javascript:change_to_edit();">{% trans "Редактировать" %}</a>
+                <a href="javascript:change_to_edit();">Редактировать</a>
             </div>
         </div>
         <div class="modal-body">
@@ -119,7 +119,7 @@
                 <button type="button" class="close" data-dismiss="modal">×</button>
 
                 <div class="control-group" id="modal_control_edit_title_group">
-                    <label class="control-label" for="modal_edit_task_title">{% trans "Название:" %}</label>
+                    <label class="control-label" for="modal_edit_task_title">Название:}</label>
                     <div class="controls">
                         <input id='modal_task_header_edit' name='task_title' type='text' size='20'>
                         <span class="help-inline" id="modal_edit_task_title_error_text"></span>
@@ -135,7 +135,7 @@
                 <input type="hidden" id="modal_edit_task_parent_id" name="parent_id" />
 
                 <div class="control-group" id="modal_control_edit_score_group">
-                    <label class="control-label" for="modal_task_max_score_edit">{% trans "Максимальный балл:" %}</label>
+                    <label class="control-label" for="modal_task_max_score_edit">Максимальный балл:</label>
                     <div class="controls">
                         <input id='modal_task_max_score_edit' name='max_score' type='text' maxlength='25' size='20'>
                         <span class="help-inline" id="modal_edit_task_score_error_text"></span>
@@ -145,10 +145,10 @@
                 <br>
                 <div>
                     <label class="checkbox inline">
-                        <input type="checkbox" name="hidden_task" id="hidden_task">{% trans "Скрыть задачу" %}
+                        <input type="checkbox" name="hidden_task" id="hidden_task">Скрыть задачу
                     </label>
                 </div><br/>
-                {% trans "Формулировка:" %} <br>
+                Формулировка: <br>
                 <textarea class='input-xlarge' style="width: 98%" id='modal_task_body_edit' rows='10' cols='800' name='task_text'></textarea>
             </div>
             <div class="modal-footer">
@@ -163,7 +163,7 @@
 <div class="modal hide" id="modal_course_information">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal">×</button>
-        <h3 id="modal_course_information_header">{% trans "Описание курса" %}</h3>
+        <h3 id="modal_course_information_header">Описание курса</h3>
     </div>
     <div class="modal-body">
         <textarea class='input-xlarge' style="width: 98%" id='course_information' rows='10' cols='800' name='text'></textarea>
@@ -176,7 +176,7 @@
 
 <div class="modal hide" id="modal_pass_task">
     <div class="modal-header">
-        <h3 id="modal_course_information_header">{% trans "Сдать задачу" %}</h3>
+        <h3 id="modal_course_information_header">Сдать задачу</h3>
     </div>
     <div class="modal-body">
         Path: <input type="text" id="modal_pass_task_path">
