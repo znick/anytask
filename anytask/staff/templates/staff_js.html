@@ -340,7 +340,7 @@
                 .fail(function (data) {
                     $('#modal_send_mail_error_text').html('<div class="alert alert-danger" role ="alert">' +
                         '                                     <a class="close" data-dismiss="alert">&times;</a>' +
-                        '                                     <span>{% trans "Произошла ошибка при сохранении. Попробуйте снова." %}</span>' +
+                        '                                     <span>{% trans "oshibka_pri_sohranenii" %}</span>' +
                         '                                   </div>');
                 });
         });
@@ -364,11 +364,11 @@
         var selected_count = table_users.rows({selected: true}).data().length;
         if (selected_count == 0 || selected_count == table_users.rows().data().length) {
             btn_status_text = "{% trans "izmenit_status_dlya_vsekh_polzovateley" %}";
-            btn_send_text = "{% trans "Отправить сообщение всем пользователям" %}";
+            btn_send_text = "{% trans "otpravit_soobshcheniye_vsem_polzovatelyam" %}";
         }
         else {
             btn_status_text = "{% trans "izmenit_status_dlya_vybrannykh_polzovateley" %}";
-            btn_send_text = "{% trans "Отправить сообщение выбранным пользователям" %}";
+            btn_send_text = "{% trans "otpravit_soobshcheniye_vybrannym_polzovatelyam" %}";
         }
 
         $('button.table-change-status').prop("title", btn_status_text);

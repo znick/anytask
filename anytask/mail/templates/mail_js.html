@@ -440,7 +440,7 @@
 
         $("#btn_new_msg").click(function () {
             window.location.hash = $(this).attr("href");
-            $(document).prop('title', "{% trans "Новое сообщение" %}");
+            $(document).prop('title', "{% filter capfirst %}{% trans "novoe_soobshenie" %}{% endfilter %}");
 
             if (msg_opened) {
                 close_msg();
@@ -674,13 +674,13 @@
             nonbreaking_force_tab: true,
             variables: [
                 {
-                    title: '{% trans "Фамилия" %}',
-                    description: '{% trans "Фамилия получателя" %}',
+                    title: '{% trans "familiya" %}',
+                    description: '{% trans "familiya_poluchatelya" %}',
                     content: '\{\{ last_name \}\}'
                 },
                 {
-                    title: '{% trans "Имя" %}',
-                    description: '{% trans "Имя получателя" %}',
+                    title: '{% trans "imya" %}',
+                    description: '{% trans "imya_poluchatelya" %}',
                     content: '\{\{ first_name \}\}'
                 },
             ],
@@ -846,7 +846,7 @@
                     type: 'preinit',
                     id: 'p' + "_" + {{ users_from_staff_len.index }},
                     id_post: {{ users_from_staff_len.index }},
-                    fullname: "{% trans "Пользователей: " %}" + {{ users_from_staff_len.length }}
+                    fullname: "{% trans "vybrano_polzovateley" %} " + {{ users_from_staff_len.length }}
                 });
                 $("#hidden_copy").prop("checked", true);
                 $('#new_title').focus();

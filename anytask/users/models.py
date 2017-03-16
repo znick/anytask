@@ -151,24 +151,24 @@ class CustomMethodFilter(django_filters.MethodFilter):
 
 
 class UserProfileFilter(django_filters.FilterSet):
-    courses = CustomMethodFilter(label=u'<strong>{0}</strong>'.format(_(u'kurs')),
+    courses = CustomMethodFilter(label=_(u'kurs'),
                                  action='filter_course',
                                  widget=forms.SelectMultiple,
                                  field_class=forms.MultipleChoiceField)
-    groups = CustomMethodFilter(label=u'<strong>{0}</strong>'.format(_(u'gruppa')),
+    groups = CustomMethodFilter(label=_(u'gruppa'),
                                 action='filter_group',
                                 widget=forms.SelectMultiple,
                                 field_class=forms.MultipleChoiceField)
     user_status_activity = django_filters.MultipleChoiceFilter(
-        label=u'<strong>{0}</strong>'.format(_(u'status_studenta')),
+        label=_(u'status_studenta'),
         name='user_status',
         widget=forms.SelectMultiple)
     user_status_filial = django_filters.MultipleChoiceFilter(
-        label=u'<strong>{0}</strong>'.format(_(u'filial')),
+        label=_(u'filial'),
         name='user_status',
         widget=forms.SelectMultiple)
     user_status_admission = django_filters.MultipleChoiceFilter(
-        label=u'<strong>{0}</strong>'.format(_(u'status_postupleniya')),
+        label=_(u'status_postupleniya'),
         name='user_status',
         widget=forms.SelectMultiple)
 
@@ -230,6 +230,9 @@ class UserProfileFilter(django_filters.FilterSet):
         return qs
 
     def set(self):
+        for field in self.filters:
+            self.filters[field].field.label = u'<strong>{0}</strong>'.format(self.filters[field].field.label)
+
         self.courses_qs = Course.objects.filter(is_active=True)
         courses_choices = [(course.id, unicode(course)) for course in self.courses_qs]
         self.filters['courses'].field.choices = tuple(courses_choices)

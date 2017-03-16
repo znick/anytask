@@ -167,7 +167,7 @@
                     <div id="modal_change_status_error_text"></div>
                     <div class="checkbox-footer">
                         <label>
-                            <input type="checkbox" name="send_mail">&nbsp;{% trans 'создать сообщение?' %}
+                            <input type="checkbox" name="send_mail">&nbsp;{% trans 'sozdat_soobshcheniye_vopros' %}
                         </label>
                     </div>
                     <button class="btn btn-secondary" data-dismiss="modal" type="button">{% trans "zakryt" %}</button>
@@ -182,19 +182,19 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title">{% trans "Отправка сообщения" %}</h4>
+                    <h4 class="modal-title">{% trans "otpravka_soobshcheniya" %}</h4>
                 </div>
                 <div class="modal-body">
-                    <p>{% trans "Перейти к созданию сообщения?" %}</p>
-                    <p>{% trans "Выбрано пользователей: " %}<span class="selected_users_count"></span>.</p>
+                    <p>{% trans "pereyti_k_sozdaniyu_soobshcheniya_vopros" %}</p>
+                    <p>{% trans "vybrano_polzovateley" %}&nbsp;<span class="selected_users_count"></span>.</p>
                     <form id="form_send_mail">
                         {% csrf_token %}
                     </form>
                 </div>
                 <div class="modal-footer">
                     <div id="modal_send_mail_error_text"></div>
-                    <button class="btn btn-secondary" data-dismiss="modal" type="button">{% trans "Закрыть" %}</button>
-                    <button class="btn btn-primary" id="modal_send_mail_ok" type="button" data-loading-text="<span class='fa fa-circle-o-notch fa-spin'></span> {% trans "Сохранение" %}">{% trans "Перейти" %}</button>
+                    <button class="btn btn-secondary" data-dismiss="modal" type="button">{% trans "zakryt" %}</button>
+                    <button class="btn btn-primary" id="modal_send_mail_ok" type="button" data-loading-text="<span class='fa fa-circle-o-notch fa-spin'></span> {% trans "sohranenie" %}">{% trans "perejti" %}</button>
                 </div>
             </div>
         </div>
@@ -205,7 +205,7 @@
             <button type="button" class="btn btn-sm btn-secondary table-change-status" data-toggle="modal" data-target="#modal_change_status" title="{% trans "izmenit_status_dlya_vsekh_polzovateley" %}">
                 <span class="fa fa-cog fa-fw" aria-hidden="true"></span>
             </button>
-            <button type="button" class="btn btn-sm btn-secondary table-send-mail" data-toggle="modal" data-target="#modal_send_mail" title="{% trans "Отправить сообщение всем пользователям" %}">
+            <button type="button" class="btn btn-sm btn-secondary table-send-mail" data-toggle="modal" data-target="#modal_send_mail" title="{% trans "otpravit_soobshcheniye_vsem_polzovatelyam" %}">
                 <span class="fa fa-envelope fa-fw" aria-hidden="true"></span>
             </button>
         </div>

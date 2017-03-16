@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-16 08:25+0000\n"
+"POT-Creation-Date: 2017-03-16 10:19+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -78,8 +78,8 @@ msgid "zadacha"
 msgstr "Задача"
 
 #: anyrb/common.py:84 issues/model_issue_student_filter.py:20
-#: users/models.py:193 users/templates/my_tasks.html:137
-#: users/templates/user_courses.html:91
+#: mail/templates/mail.html:169 users/models.py:154
+#: users/templates/my_tasks.html:137 users/templates/user_courses.html:91
 msgid "kurs"
 msgstr "Курс"
 
@@ -130,7 +130,7 @@ msgstr "Мои задачи"
 msgid "nabludaemye_mnoj"
 msgstr "Наблюдаемые мной"
 
-#: courses/views.py:90 staff/views.py:86 users/views.py:458
+#: courses/views.py:90 staff/views.py:106 users/views.py:459
 msgid "primenit"
 msgstr "Применить"
 
@@ -264,7 +264,7 @@ msgstr "Сдать"
 
 #: courses/templates/courses/course.html:208
 #: courses/templates/courses/course.html:272
-#: courses/templates/courses/course.html:371
+#: courses/templates/courses/course.html:371 staff/templates/staff.html:197
 msgid "perejti"
 msgstr "Перейти"
 
@@ -305,8 +305,8 @@ msgstr "Сохранить изменения"
 #: courses/templates/courses/course_js.html:168
 #: courses/templates/courses/task.html:35
 #: courses/templates/courses/tasklist/shad_cpp.html:318
-#: issues/templates/issues/issue_js.html:142 staff/templates/staff.html:169
-#: users/templates/status_history.html:160
+#: issues/templates/issues/issue_js.html:142 staff/templates/staff.html:174
+#: staff/templates/staff.html.py:197 users/templates/status_history.html:160
 #: users/templates/user_profile.html:420 users/templates/user_profile.html:444
 #: users/templates/user_profile_js.html:151
 msgid "sohranenie"
@@ -333,7 +333,7 @@ msgid "0_studentov"
 msgstr "0 студентов"
 
 #: courses/templates/courses/course_js.html:255 mail/templates/mail_js.html:69
-#: staff/templates/gradebook_js.html:127 staff/templates/staff_js.html:166
+#: staff/templates/gradebook_js.html:127 staff/templates/staff_js.html:167
 msgid "(iz__max_)"
 msgstr "(из _MAX_)"
 
@@ -343,11 +343,9 @@ msgid "pokazat__menu__studentov"
 msgstr "Показать _MENU_ студентов"
 
 #: courses/templates/courses/course_js.html:259 mail/templates/mail.html:5
-#: mail/templates/mail.html.py:42 mail/templates/mail.html:60
-#: mail/templates/mail.html.py:78 mail/templates/mail.html:157
 #: mail/templates/mail_js.html:73 mail/templates/mail_js.html.py:74
-#: staff/templates/gradebook_js.html:131 staff/templates/staff_js.html:170
-#: staff/templates/staff_js.html.py:171
+#: staff/templates/gradebook_js.html:131 staff/templates/staff_js.html:171
+#: staff/templates/staff_js.html.py:172
 msgid "zagruzka"
 msgstr "Загрузка..."
 
@@ -365,7 +363,7 @@ msgstr "Поиск"
 
 #: courses/templates/courses/course_js.html:262 mail/templates/mail_js.html:77
 #: search/templates/search.html:76 staff/templates/gradebook_js.html:134
-#: staff/templates/staff_js.html:163 staff/templates/staff_js.html.py:174
+#: staff/templates/staff_js.html:164 staff/templates/staff_js.html.py:175
 msgid "nichego_ne_najdeno"
 msgstr "ничего не найдено"
 
@@ -462,8 +460,8 @@ msgstr "Проверяющий"
 
 #: courses/templates/courses/queue_js.html:22
 #: issues/templates/issues/issue_js.html:41 mail/templates/mail_js.html:76
-#: mail/templates/mail_js.html.py:580 search/templates/search.html:62
-#: staff/templates/staff_js.html:49 staff/templates/staff_js.html.py:173
+#: mail/templates/mail_js.html.py:604 search/templates/search.html:62
+#: staff/templates/staff_js.html:49 staff/templates/staff_js.html.py:174
 #: tasks/templates/task_create_or_edit_js.html:34 templates/base.html:634
 #: users/templates/my_tasks.html:42
 msgid "najti"
@@ -513,7 +511,7 @@ msgid "perevodit_v_zachteno"
 msgstr "Переводить в статус Зачтено после положительного вердикта Я.Контеста"
 
 #: courses/templates/courses/settings.html:193
-#: issues/templates/issues/issue.html:41 mail/templates/mail_js.html:537
+#: issues/templates/issues/issue.html:41 mail/templates/mail_js.html:561
 #: search/templates/search.html:138 templates/base.html:115
 #: users/templates/user_settings.html:181
 msgid "jakontest"
@@ -603,7 +601,8 @@ msgstr "Произошла ошибка при получении данных."
 #: courses/templates/courses/settings_js.html:234
 #: courses/templates/courses/task.html:34
 #: courses/templates/courses/tasklist/shad_cpp.html:317
-#: mail/templates/mail.html:147 staff/templates/staff.html:168
+#: mail/templates/mail.html:202 staff/templates/staff.html:173
+#: staff/templates/staff.html.py:196
 #: tasks/templates/task_create_or_edit_js.html:167
 #: tasks/templates/task_create_or_edit_js.html:182
 #: tasks/templates/task_create_or_edit_js.html:193
@@ -629,7 +628,7 @@ msgid "sohraneno_uspeshno"
 msgstr "Сохранено успешно."
 
 #: courses/templates/courses/settings_js.html:272
-#: staff/templates/staff_js.html:287
+#: staff/templates/staff_js.html:297 staff/templates/staff_js.html.py:343
 #: tasks/templates/task_create_or_edit_js.html:185
 #: users/templates/user_settings.html:24
 msgid "oshibka_pri_sohranenii"
@@ -642,7 +641,7 @@ msgstr "Произошла ошибка. Попробуйте еще раз."
 
 #: courses/templates/courses/task.html:35
 #: courses/templates/courses/tasklist/shad_cpp.html:318
-#: staff/templates/staff.html:169 users/templates/status_history.html:160
+#: staff/templates/staff.html:174 users/templates/status_history.html:160
 #: users/templates/user_profile.html:420 users/templates/user_profile.html:444
 #: users/templates/user_settings.html:145
 msgid "sohranit"
@@ -738,7 +737,7 @@ msgstr "Действителен до"
 #: issues/admin.py:23 issues/model_issue_student_filter.py:22
 #: issues/models.py:476 issues/views.py:58
 #: issues/templates/issues/info.html:108 staff/templates/staff.html:91
-#: users/admin.py:20 users/templates/my_tasks.html:140
+#: users/admin.py:21 users/templates/my_tasks.html:140
 msgid "status"
 msgstr "Статус"
 
@@ -906,7 +905,7 @@ msgid "zadat_vopros"
 msgstr "Задать вопрос"
 
 #: issues/templates/file_uploader.html:145
-#: issues/templates/issues/info.html:100 mail/templates/mail.html:123
+#: issues/templates/issues/info.html:100 mail/templates/mail.html:153
 msgid "otpravit"
 msgstr "Отправить"
 
@@ -968,47 +967,47 @@ msgstr "Оценка должна быть больше или равна 0"
 msgid "ocenka_ne_bolshe"
 msgstr "Оценка не должна быть больше"
 
-#: mail/views.py:18
+#: mail/views.py:23
 msgid "january"
 msgstr "янв."
 
-#: mail/views.py:19
+#: mail/views.py:24
 msgid "february"
 msgstr "февр."
 
-#: mail/views.py:20 mail/views.py:22
+#: mail/views.py:25 mail/views.py:27
 msgid "may"
 msgstr "мая"
 
-#: mail/views.py:21
+#: mail/views.py:26
 msgid "april"
 msgstr "апр."
 
-#: mail/views.py:23
+#: mail/views.py:28
 msgid "june"
 msgstr "июн."
 
-#: mail/views.py:24
+#: mail/views.py:29
 msgid "july"
 msgstr "июл."
 
-#: mail/views.py:25
+#: mail/views.py:30
 msgid "august"
 msgstr "авг."
 
-#: mail/views.py:26
+#: mail/views.py:31
 msgid "september"
 msgstr "сент."
 
-#: mail/views.py:27
+#: mail/views.py:32
 msgid "october"
 msgstr "окт."
 
-#: mail/views.py:28
+#: mail/views.py:33
 msgid "november"
 msgstr "нояб."
 
-#: mail/views.py:29
+#: mail/views.py:34
 msgid "december"
 msgstr "дек."
 
@@ -1031,7 +1030,7 @@ msgid "novyh_soobshenij"
 msgstr "новых сообщений"
 
 #: mail/management/commands/send_mail_notifications.py:64
-#: mail/templates/mail.html:95
+#: mail/templates/mail.html:95 mail/templates/mail_js.html:443
 msgid "novoe_soobshenie"
 msgstr "новое сообщение"
 
@@ -1052,68 +1051,98 @@ msgid "napisat"
 msgstr "Написать"
 
 #: mail/templates/mail.html:21 mail/templates/mail.html.py:40
-#: mail/templates/mail_js.html:196 mail/templates/mail_js.html.py:201
-#: mail/templates/mail_js.html:395 mail/templates/mail_js.html.py:404
+#: mail/templates/mail_js.html:204 mail/templates/mail_js.html.py:209
+#: mail/templates/mail_js.html:411 mail/templates/mail_js.html.py:420
 msgid "vhodjashie"
 msgstr "Входящие"
 
 #: mail/templates/mail.html:25 mail/templates/mail.html.py:58
-#: mail/templates/mail_js.html:411
+#: mail/templates/mail_js.html:427
 msgid "otpravlennye"
 msgstr "Отправленные"
 
 #: mail/templates/mail.html:29 mail/templates/mail.html.py:76
-#: mail/templates/mail_js.html:414
+#: mail/templates/mail_js.html:430
 msgid "udalennye"
 msgstr "Удаленные"
 
-#: mail/templates/mail.html:99 mail/templates/mail.html.py:193
+#: mail/templates/mail.html:103 mail/templates/mail.html.py:248
 msgid "komu"
 msgstr "Кому"
 
-#: mail/templates/mail.html:101
+#: mail/templates/mail.html:105
 msgid "nachnite_vvodit_imja"
 msgstr "Начните вводить имя"
 
-#: mail/templates/mail.html:103
-msgid "dobavit_kurs_ili_gruppu"
-msgstr "Добавить курс или группу"
+#: mail/templates/mail.html:107
+msgid "dobavit_kurs_gruppu_ili_status"
+msgstr "Добавить пользователей по курсу, группе или статусу"
 
-#: mail/templates/mail.html:111
+#: mail/templates/mail.html:117
+msgid "skrytyye_kopii"
+msgstr "скрытые копии"
+
+#: mail/templates/mail.html:120
+msgid "poluchateli_ne_budut_videt_drugikh"
+msgstr "Получатели не будут видеть других получателей этого сообщения"
+
+#: mail/templates/mail.html:128
+msgid "peremennyye"
+msgstr "переменные"
+
+#: mail/templates/mail.html:131
+msgid "mozhno_ispolzovat_peremennyye_v_tekste"
+msgstr "Можно использовать переменные в тексте сообщения, которые будут меняться в зависимости от получателя."
+
+#: mail/templates/mail.html:141
 msgid "tema"
 msgstr "Тема"
 
-#: mail/templates/mail.html:118
+#: mail/templates/mail.html:148
 msgid "tekst"
 msgstr "Текст"
 
-#: mail/templates/mail.html:124
+#: mail/templates/mail.html:154
 msgid "otmena"
 msgstr "Отмена"
 
-#: mail/templates/mail.html:133
+#: mail/templates/mail.html:164
 msgid "dobavit_gruppu_polzovatelej"
 msgstr "Добавить группу пользователей"
 
-#: mail/templates/mail.html:148
+#: mail/templates/mail.html:169 tasks/templates/contest_import.html:85
+#: tasks/templates/task_create.html:93 tasks/templates/task_edit.html:151
+#: tasks/templates/task_import.html:82 users/models.py:158
+msgid "gruppa"
+msgstr "Группа"
+
+#: mail/templates/mail.html:172 users/templates/status_history.html:70
+msgid "statusy"
+msgstr "Статусы"
+
+#: mail/templates/mail.html:191 staff/templates/staff.html:144
+msgid "bez_tipa"
+msgstr "Без типа"
+
+#: mail/templates/mail.html:203
 msgid "dobavit"
 msgstr "Добавить"
 
-#: mail/templates/mail.html:166
+#: mail/templates/mail.html:221
 msgid "otvetit"
 msgstr "Ответить"
 
-#: mail/templates/mail.html:170
+#: mail/templates/mail.html:225
 msgid "otvetit_vsem"
 msgstr "Ответить всем"
 
-#: mail/templates/mail.html:178 mail/templates/mail.html.py:235
+#: mail/templates/mail.html:233 mail/templates/mail.html.py:290
 msgid "vosstanovit"
 msgstr "Восстановить"
 
-#: mail/templates/mail.html:227 mail/templates/mail_js.html:152
-#: mail/templates/mail_js.html.py:324 mail/templates/mail_js.html:361
-#: mail/templates/mail_js.html.py:377
+#: mail/templates/mail.html:282 mail/templates/mail_js.html:160
+#: mail/templates/mail_js.html.py:340 mail/templates/mail_js.html:377
+#: mail/templates/mail_js.html.py:393
 msgid "otmetit_vse_kak_prochitannoe"
 msgstr "Отметить все как прочитанное"
 
@@ -1121,56 +1150,77 @@ msgstr "Отметить все как прочитанное"
 msgid "soobshenij_net"
 msgstr "Сообщений нет"
 
-#: mail/templates/mail_js.html:67 staff/templates/staff_js.html:164
+#: mail/templates/mail_js.html:67 staff/templates/staff_js.html:165
 msgid "_start_-_end__iz__total_"
 msgstr "_START_-_END_ из _TOTAL_"
 
-#: mail/templates/mail_js.html:72 staff/templates/staff_js.html:169
+#: mail/templates/mail_js.html:72 staff/templates/staff_js.html:170
 msgid "pokazat__menu_"
 msgstr "Показать _MENU_"
 
-#: mail/templates/mail_js.html:157 mail/templates/mail_js.html.py:382
+#: mail/templates/mail_js.html:165 mail/templates/mail_js.html.py:398
 msgid "kak_neprochitannoe"
 msgstr "Отметить как непрочитанное"
 
-#: mail/templates/mail_js.html:159 mail/templates/mail_js.html.py:365
-#: mail/templates/mail_js.html:384
+#: mail/templates/mail_js.html:167 mail/templates/mail_js.html.py:381
+#: mail/templates/mail_js.html:400
 msgid "otmetit_kak_prochitannoe"
 msgstr "Отметить как прочитанное"
 
-#: mail/templates/mail_js.html:262 mail/templates/mail_js.html.py:275
+#: mail/templates/mail_js.html:278 mail/templates/mail_js.html.py:291
 msgid "pokazat_citirovanie"
 msgstr "Показать цитирование"
 
-#: mail/templates/mail_js.html:279
+#: mail/templates/mail_js.html:295
 msgid "skryt_citirovanie"
 msgstr "Скрыть цитирование"
 
-#: mail/templates/mail_js.html:508 search/templates/search.html:124
+#: mail/templates/mail_js.html:532 search/templates/search.html:124
 #: templates/base.html:86
 msgid "loginy"
 msgstr "Логины"
 
-#: mail/templates/mail_js.html:539 search/templates/search.html:146
+#: mail/templates/mail_js.html:563 search/templates/search.html:146
 #: templates/base.html:117
 msgid "ja.pochta"
 msgstr "Я.Почта"
 
-#: mail/templates/mail_js.html:581
+#: mail/templates/mail_js.html:605
 msgid "vydelit_vse"
 msgstr "Выделить все"
 
-#: mail/templates/mail_js.html:650
+#: mail/templates/mail_js.html:677
+msgid "familiya"
+msgstr "Фамилия"
+
+#: mail/templates/mail_js.html:678
+msgid "familiya_poluchatelya"
+msgstr "Фамилия получателя"
+
+#: mail/templates/mail_js.html:682
+msgid "imya"
+msgstr "Имя"
+
+#: mail/templates/mail_js.html:683
+msgid "imya_poluchatelya"
+msgstr "Имя получателя"
+
+#: mail/templates/mail_js.html:695
 msgid "otpravka"
 msgstr "Отправка..."
 
-#: mail/templates/mail_js.html:689
+#: mail/templates/mail_js.html:738
 msgid "ukazat_poluchatelja"
 msgstr "Необходимо указать получателя"
 
-#: mail/templates/mail_js.html:692
+#: mail/templates/mail_js.html:741
 msgid "neobhodimo_ukazat_temu"
 msgstr "Необходимо указать тему"
+
+#: mail/templates/mail_js.html:849 staff/templates/staff.html:135
+#: staff/templates/staff.html.py:189
+msgid "vybrano_polzovateley"
+msgstr "Выбрано пользователей:"
 
 #: schools/templates/archive_page.html:20
 #: schools/templates/school_page.html:19
@@ -1210,11 +1260,11 @@ msgstr "Пользователи"
 msgid "kursy"
 msgstr "Курсы"
 
-#: staff/views.py:66
+#: staff/views.py:86
 msgid "dannyye_polzovateli_ne_naydeny"
 msgstr "Данные пользователи не найдены:"
 
-#: staff/views.py:68
+#: staff/views.py:88
 msgid "nevernyy_format_fayla"
 msgstr "Неверный формат файла"
 
@@ -1258,7 +1308,8 @@ msgstr "Загрузить список студентов"
 
 #: staff/templates/staff.html:52
 msgid "fayl_formata_CSV_poisk"
-msgstr "Файл формата CSV. Возможны варианты поиска по логину (login) и почте (email)."
+msgstr ""
+"Файл формата CSV. Возможны варианты поиска по логину (login) и почте (email)."
 
 #: staff/templates/staff.html:62
 msgid "naydeno_polzovateley"
@@ -1285,22 +1336,29 @@ msgstr "Редактирование статусов"
 msgid "vyberite_novyye_statusy"
 msgstr "Выберите новые статусы."
 
-#: staff/templates/staff.html:135
-msgid "vybrano_polzovateley"
-msgstr "Выбрано пользователей:"
-
-#: staff/templates/staff.html:144
-msgid "bez_tipa"
-msgstr "Без типа"
-
 #: staff/templates/staff.html:151
 msgid "ne_menyat"
 msgstr "Не менять"
 
-#: staff/templates/staff.html:177 staff/templates/staff.html.py:178
-#: staff/templates/staff_js.html:314
+#: staff/templates/staff.html:170
+msgid "sozdat_soobshcheniye_vopros"
+msgstr "создать сообщение?"
+
+#: staff/templates/staff.html:185
+msgid "otpravka_soobshcheniya"
+msgstr "Отправка сообщения"
+
+#: staff/templates/staff.html:188
+msgid "pereyti_k_sozdaniyu_soobshcheniya_vopros"
+msgstr "Перейти к созданию сообщения?"
+
+#: staff/templates/staff.html:205 staff/templates/staff_js.html:366
 msgid "izmenit_status_dlya_vsekh_polzovateley"
 msgstr "Изменить статус для всех пользователей"
+
+#: staff/templates/staff.html:208 staff/templates/staff_js.html:367
+msgid "otpravit_soobshcheniye_vsem_polzovatelyam"
+msgstr "Отправить сообщение всем пользователям"
 
 #: staff/templates/staff_js.html:50 users/templates/my_tasks.html:43
 msgid "vybrat_vse"
@@ -1312,13 +1370,17 @@ msgstr "Выбрать все"
 msgid "vse_vybrano"
 msgstr "Все выбрано"
 
-#: staff/templates/staff_js.html:181
+#: staff/templates/staff_js.html:182
 msgid "vybrano"
 msgstr "Выбрано"
 
-#: staff/templates/staff_js.html:316
+#: staff/templates/staff_js.html:370
 msgid "izmenit_status_dlya_vybrannykh_polzovateley"
 msgstr "Изменить статус для выбранных пользователей"
+
+#: staff/templates/staff_js.html:371
+msgid "otpravit_soobshcheniye_vybrannym_polzovatelyam"
+msgstr "Отправить сообщение выбранным пользователям"
 
 #: tasks/models.py:41 tasks/models.py:199
 msgid "s_obsuzhdeniem"
@@ -1363,12 +1425,6 @@ msgstr "Максимальный балл"
 #: tasks/templates/contest_import.html:123
 msgid "brat_iz_kontesta"
 msgstr "Брать из Я.Контеста"
-
-#: tasks/templates/contest_import.html:85 tasks/templates/task_create.html:93
-#: tasks/templates/task_edit.html:151 tasks/templates/task_import.html:82
-#: users/models.py:197
-msgid "gruppa"
-msgstr "Группа"
 
 #: tasks/templates/contest_import.html:97 tasks/templates/task_create.html:105
 #: tasks/templates/task_edit.html:259 tasks/templates/task_import.html:95
@@ -1725,36 +1781,36 @@ msgstr "Такого инвайта не существует."
 msgid "srok_dejstvija_invajta_istek"
 msgstr "Срок действия инвайта истек."
 
-#: users/models.py:57 users/models.py:202
+#: users/model_user_status.py:36 users/models.py:163
 msgid "status_studenta"
 msgstr "Статус студента"
 
-#: users/models.py:58 users/models.py:206
+#: users/model_user_status.py:37 users/models.py:167
 msgid "filial"
 msgstr "Филиал"
 
-#: users/models.py:59 users/models.py:210
+#: users/model_user_status.py:38 users/models.py:171
 msgid "status_postupleniya"
 msgstr "Статус поступления"
 
-#: users/views.py:394
+#: users/views.py:395
 msgid "profil_uzhe_privjazan"
 msgstr "Профиль {0} уже привязан к аккаунту другого пользователя на Anytask!"
 
-#: users/views.py:397 users/views.py:411 users/templates/user_profile.html:126
+#: users/views.py:398 users/views.py:412 users/templates/user_profile.html:126
 #: users/templates/user_profile.html:138
 msgid "privjazat_profil_kontesta"
 msgstr "Привязать профиль Яндекс.Контеста"
 
-#: users/views.py:399
+#: users/views.py:400
 msgid "privjazat_profil_ja"
 msgstr "Привязать профиль Яндекса"
 
-#: users/views.py:412
+#: users/views.py:413
 msgid "pereprivjazat_tolko_svoj_profil"
 msgstr "Можно перепривязать только тот профиль, который был привязан ранее!"
 
-#: users/views.py:565
+#: users/views.py:566
 msgid "invajt_drugogo_kursa"
 msgstr "Инвайт относится к другому курсу."
 
@@ -1790,10 +1846,6 @@ msgstr "Профиль студента"
 #: users/templates/user_profile.html:34
 msgid "kursy_studenta"
 msgstr "Курсы студента"
-
-#: users/templates/status_history.html:70
-msgid "statusy"
-msgstr "Статусы"
 
 #: users/templates/status_history.html:79
 #: users/templates/user_profile_js.html:190
