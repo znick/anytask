@@ -196,7 +196,7 @@
                                                   {{ task_x_task_takens|score:task }}
                                                 </span>
                                                 </a>
-                                            {% elif task.type == task.TYPE_SIMPLE  %}
+                                            {% elif task.type == task.TYPE_SIMPLE or task.type == task.TYPE_MATERIAL  %}
                                                 <div {% if user_is_teacher %}class="task-mark-value"{% endif %}>
                                                 <span class="label {{ task_x_task_takens|have_issue:task }}" style="background-color: {{ task_x_task_takens|label_color:task }};">
                                                   {{ task_x_task_takens|score:task }}

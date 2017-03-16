@@ -138,7 +138,8 @@ def task_edit_page(request, task_id):
         'not_seminar_tasks': not_seminar_tasks,
         'contest_integrated': task.contest_integrated,
         'rb_integrated': task.rb_integrated,
-        'hide_contest_settings': True if not task.contest_integrated or task.type == task.TYPE_SIMPLE else False,
+        'hide_contest_settings': True if not task.contest_integrated
+                                         or task.type in [task.TYPE_SIMPLE, task.TYPE_MATERIAL] else False,
         'school': schools[0] if schools else '',
     }
 
@@ -193,13 +194,13 @@ def task_create_ot_edit(request, course, task_id=None):
     contest_integrated = False
     contest_id = 0
     problem_id = None
-    if 'contest_integrated' in request.POST and task_type != Task().TYPE_SIMPLE:
+    if 'contest_integrated' in request.POST and task_type not in [Task().TYPE_SIMPLE, Task().TYPE_MATERIAL]:
         contest_integrated = True
         contest_id = int(request.POST['contest_id'])
         problem_id = request.POST['problem_id'].strip()
 
     rb_integrated = False
-    if 'rb_integrated' in request.POST and task_type != Task().TYPE_SIMPLE:
+    if 'rb_integrated' in request.POST and task_type not in [Task().TYPE_SIMPLE, Task().TYPE_MATERIAL]:
         rb_integrated = True
 
     one_file_upload = False
