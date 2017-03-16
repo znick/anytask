@@ -305,7 +305,7 @@ def get_contest_problems(request):
     if "You're not allowed to view this contest." in contest_info:
         return HttpResponse(json.dumps({'problems': problems,
                                         'is_error': True,
-                                        'error': _(u"У anytask нет прав на данный контест")}),
+                                        'error': _(u"net_prav_na_kontest")}),
                             content_type="application/json")
 
     problem_req = requests.get(settings.CONTEST_API_URL + 'problems?contestId=' + str(contest_id),
@@ -315,9 +315,9 @@ def get_contest_problems(request):
     if 'error' in problem_req:
         is_error = True
         if 'IndexOutOfBoundsException' in problem_req['error']['name']:
-            error = _(u'Такого контеста не существует')
+            error = _(u'kontesta_ne_sushestvuet')
         else:
-            error = _(u'Ошибка Я.Контеста: ') + problem_req['error']['message']
+            error = _(u'oshibka_kontesta') + ' ' + problem_req['error']['message']
     else:
         problems = problem_req['result']['problems']
 
@@ -432,7 +432,7 @@ def contest_task_import(request):
 
     elif "You're not allowed to view this contest." in contest_info:
         return HttpResponse(json.dumps({'is_error': True,
-                                        'error': _(u"У anytask нет прав на данный контест")}),
+                                        'error': _(u"net_prav_na_kontest")}),
                             content_type="application/json")
     else:
         return HttpResponseForbidden()

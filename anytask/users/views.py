@@ -2,15 +2,16 @@
 
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template import RequestContext
-from django.http import HttpResponse, HttpResponseForbidden
+from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect
 from django.db.models import Q
 from django.db.models import Sum
 from django.conf import settings
-from django.http import Http404
+from django.utils.http import is_safe_url
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.core.files.base import ContentFile
 from django.utils.translation import ugettext as _
+from django.utils.translation import check_for_language
 
 
 from users.models import UserProfile, UserProfileLog
@@ -125,9 +126,11 @@ def profile(request, username=None, year=None):
             if 'input-avatar' in request.FILES:
                 image_content = request.FILES['input-avatar']
                 user_profile.avatar.save(filename, image_content)
-            elif request.POST['gravatar-link']:
-                image_content = ContentFile(requests.get(request.POST['gravatar-link']).content)
-                user_profile.avatar.save(filename, image_content)
+            elif request.POST['delete-avatar']:
+                user_profile.avatar.delete()
+            # elif request.POST['gravatar-link']:
+            #     image_content = ContentFile(requests.get(request.POST['gravatar-link']).content)
+            #     user_profile.avatar.save(filename, image_content)
 
             user_profile.save()
         else:
@@ -389,12 +392,12 @@ def ya_oauth_disable(request, type_of_oauth):
 @login_required
 def ya_oauth_forbidden(request, type_of_oauth):
     oauth_error_text_header = ''
-    oauth_error_text = _(u"Профиль {0} уже привязан к аккаунту другого пользователя на Anytask!")\
+    oauth_error_text = _(u"profil_uzhe_privjazan")\
         .format(request.session["ya_oauth_login"])
     if type_of_oauth == 'contest':
-        oauth_error_text_header = _(u"Привязать профиль Яндекс.Контеста")
+        oauth_error_text_header = _(u"privjazat_profil_kontesta")
     elif type_of_oauth == 'passport':
-        oauth_error_text_header = _(u"Привязать профиль Яндекса")
+        oauth_error_text_header = _(u"privjazat_profil_ja")
     context = {
         'oauth_error_text_header' : oauth_error_text_header,
         'oauth_error_text'        : oauth_error_text,
@@ -406,8 +409,8 @@ def ya_oauth_forbidden(request, type_of_oauth):
 @login_required
 def ya_oauth_changed(request):
     context = {
-        'oauth_error_text_header':  _(u"Привязать профиль Яндекс.Контеста"),
-        'oauth_error_text'       : _(u"Можно перепривязать только тот профиль, который был привязан ранее!"),
+        'oauth_error_text_header':  _(u"privjazat_profil_kontesta"),
+        'oauth_error_text'       : _(u"pereprivjazat_tolko_svoj_profil"),
     }
 
     return render_to_response('oauth_error.html', context, context_instance=RequestContext(request))
@@ -453,7 +456,7 @@ def my_tasks(request):
     f.form.helper.form_method = 'get'
     f.form.helper.layout.append(HTML(u"""<div class="form-group row">
                                            <button id="button_filter" class="btn btn-secondary pull-xs-right" type="submit">{0}</button>
-                                         </div>""".format(_(u'Применить'))))
+                                         </div>""".format(_(u'primenit'))))
 
     context = {
         'filter': f,
@@ -560,7 +563,7 @@ def activate_invite(request):
                 invite.invited_users.add(user)
             else:
                 return HttpResponse(json.dumps({'is_error': True,
-                                                'invite': _(u'Инвайт относится к другому курсу.')}),
+                                                'invite': _(u'invajt_drugogo_kursa')}),
                                     content_type="application/json")
 
         elif invite.group:
@@ -596,3 +599,26 @@ def ajax_edit_user_info(request):
 
     return HttpResponse(json.dumps({'info': user_info}),
                         content_type="application/json")
+
+
+def set_user_language(request):
+    next = request.REQUEST.get('next')
+    if not is_safe_url(url=next, host=request.get_host()):
+        next = request.META.get('HTTP_REFERER')
+        if not is_safe_url(url=next, host=request.get_host()):
+            next = '/'
+    response = HttpResponseRedirect(next)
+    if request.method == 'POST':
+        lang_code = request.POST.get('language', None)
+        if lang_code and check_for_language(lang_code):
+            if hasattr(request, 'session'):
+                request.session['django_language'] = lang_code
+            else:
+                response.set_cookie(settings.LANGUAGE_COOKIE_NAME, lang_code)
+
+        user = request.user
+        if user.is_authenticated():
+            user_profile = user.get_profile()
+            user_profile.language = lang_code
+            user_profile.save()
+    return response

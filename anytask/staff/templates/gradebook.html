@@ -15,10 +15,10 @@
             <a class="nav-link active" href="#">Staff</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="{% url staff.views.staff_page %}">{% trans "Фильтры по статусам" %}</a>
+            <a class="nav-link" href="{% url staff.views.staff_page %}">{% trans "filtry_po_statusam" %}</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link active" href="{% url staff.views.get_gradebook %}">{% trans "Общая ведомость" %}</a>
+            <a class="nav-link active" href="{% url staff.views.get_gradebook %}">{% trans "obshaja_vedomost" %}</a>
         </li>
     </ul>
 {% endblock navbar %}
@@ -35,12 +35,12 @@
         <div class="col-xs-12">
             <div class="card">
                 <div class="card-block">
-                    <h5 class="card-title">{% trans "Общая ведомость" %}</h5>
+                    <h5 class="card-title">{% trans "obshaja_vedomost" %}</h5>
                     {% if students %}
                         <table class="table table_users table-striped table-bordered">
                             <thead>
                             <tr style="background-color: #ffffff;">
-                                <th>{% trans "Студент" %}</th>
+                                <th>{% trans "student" %}</th>
                                 {% for course in courses %}
                                     <th>{{ course.name }}</th>
                                 {% endfor %}
@@ -58,7 +58,7 @@
                             </tbody>
                         </table>
                     {% else %}
-                        <p class="card-text">{% trans "Не найдено ни одного пользователя" %}</p>
+                        <p class="card-text">{% trans "ne_najdeno_polzovatelej" %}</p>
                     {% endif %}
                 </div>
             </div>

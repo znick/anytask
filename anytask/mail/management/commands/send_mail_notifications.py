@@ -25,19 +25,19 @@ class Command(BaseCommand):
 
             user_profile.send_notify_messages.clear()
 
-            subject = _(u'{0}, у вас есть новые сообщения').format(user.first_name)
+            subject = _(u'est_novye_soobshenija').format(user.first_name)
 
             domain = Site.objects.get_current().domain
             mail_url = 'http://' + domain + reverse('mail.views.mail_page')
             unread_count_string = get_string(unread_count)
 
-            plain_text = _(u'Здравствуйте, {0}.') + '\n\n' + \
-                         _(u'У вас {1} {2}.') + '\n' + \
-                         _(u'Посмотреть сообщения:') + '\n' + \
+            plain_text = _(u'zdravstvujte') + ', {0}.\n\n' + \
+                         _(u'u_vas_soobshenij') + '\n' + \
+                         _(u'posmotret_soobshenija') + ':\n' + \
                          u'{3}\n\n' + \
                          u'-- \n' + \
-                         _(u'С уважением,') + '\n' + \
-                         _(u'команда Anytask.')
+                         _(u's_uvazheniem') + ',\n' + \
+                         _(u'komanda_anytask') + '.'
             plain_text = plain_text.format(user.first_name, unread_count, unread_count_string, mail_url)
 
             context = {
@@ -59,10 +59,10 @@ class Command(BaseCommand):
 
 def get_string(num):
     if 11 <= num <= 14:
-        return _(u"новых сообщений")
+        return _(u"novyh_soobshenij")
     elif str(num)[-1] == "1":
-        return _(u"новое сообщение")
+        return _(u"novoe_soobshenie")
     elif str(num)[-1] in ["2", "3", "4"]:
-        return _(u"новых сообщения")
+        return _(u"novyh_soobshenija")
     else:
-        return _(u"новых сообщений")
+        return _(u"novyh_soobshenij")

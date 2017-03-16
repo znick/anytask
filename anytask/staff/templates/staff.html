@@ -17,10 +17,10 @@
             <a class="nav-link active" href="#">Staff</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link active" href="#">{% trans "Фильтры по статусам" %}</a>
+            <a class="nav-link active" href="#">{% trans "filtry_po_statusam" %}</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="{% url staff.views.get_gradebook %}">{% trans "Общая ведомость" %}</a>
+            <a class="nav-link" href="{% url staff.views.get_gradebook %}">{% trans "obshaja_vedomost" %}</a>
         </li>
     </ul>
 {% endblock navbar %}
@@ -33,10 +33,10 @@
                 <div class="card-header">
                     <ul class="nav nav-pills">
                         <li class="nav-item">
-                            <span class="nav-link" data-toggle="pill" href="#simple_filter" role="tab" aria-controls="simple_filter">{% trans "Простой фильтр" %}</span>
+                            <span class="nav-link" data-toggle="pill" href="#simple_filter" role="tab" aria-controls="simple_filter">{% trans "prostoy_filtr" %}</span>
                         </li>
                         <li class="nav-item">
-                            <span class="nav-link" data-toggle="pill" href="#file_filter" role="tab" aria-controls="file_filter">{% trans "Загрузить список студентов" %}</span>
+                            <span class="nav-link" data-toggle="pill" href="#file_filter" role="tab" aria-controls="file_filter">{% trans "zagruzit_spisok_studentov" %}</span>
                         </li>
                     </ul>
                 </div>
@@ -49,7 +49,7 @@
                         </div>
                         <div class="tab-pane fade" id="file_filter" role="tabpanel">
                             <p class="card-text">
-                                {% trans 'Файл формата CSV. Возможны варианты поиска по логину (login) и почте (email).' %}
+                                {% trans 'fayl_formata_CSV_poisk' %}
                             </p>
                             {% if show_file_alert %}
                                 <div id="error_file_input_from_post" class="alert {% if is_error %}alert-danger{% elif file_filter_err %}alert-warning{% else %}alert-success{% endif %} alert-dismissible">
@@ -59,7 +59,7 @@
                                     {% if file_filter_err %}
                                         {{ file_filter_err }}
                                     {% else %}
-                                        {% trans "Найдено пользователей: " %}{{ filter.users_info|length }}
+                                        {% trans "naydeno_polzovateley" %}&nbsp;{{ filter.users_info|length }}
                                     {% endif %}
                                 </div>
                             {% endif %}
@@ -76,7 +76,7 @@
         <div class="col-xl-9 col-lg-8 col-md-12">
             <div class="card">
                 <div class="card-block">
-                    <h5 class="card-title">{% trans "Пользователи" %}</h5>
+                    <h5 class="card-title">{% trans "polzovateli" %}</h5>
                     {% if not is_error and filter.count and filter.users_info %}
                         <div class="loading">
                             <span class='fa fa-circle-o-notch fa-spin fa-fw'></span>
@@ -86,9 +86,9 @@
                                 <thead>
                                 <tr>
                                     <th class="th-checkbox no-sort"><input type='checkbox' class='table-checkbox-all'></th>
-                                    <th class="th-name">{% trans "Имя" %}</th>
-                                    <th class="th-email">{% trans "Почта" %}</th>
-                                    <th class="th-status no-sort">{% trans "Статусы" %}</th>
+                                    <th class="th-name">{% trans "imja" %}</th>
+                                    <th class="th-email">{% trans "pochta" %}</th>
+                                    <th class="th-status no-sort">{% trans "status" %}</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -113,9 +113,9 @@
                         </div>
                     {% else %}
                         {% if empty_filter %}
-                            <p class="card-text">{% trans "Выберите значения для фильтрации" %}</p>
+                            <p class="card-text">{% trans "vyberite_znacheniya_dlya_filtratsii" %}</p>
                         {% else %}
-                            <p class="card-text">{% trans "Не найдено ни одного пользователя" %}</p>
+                            <p class="card-text">{% trans "ne_najdeno_polzovatelej" %}</p>
                         {% endif %}
                     {% endif %}
                 </div>
@@ -128,11 +128,11 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title">{% trans "Изменение статусов" %}</h4>
+                    <h4 class="modal-title">{% trans "redaktirovanie_statusov" %}</h4>
                 </div>
                 <div class="modal-body">
-                    <p>{% trans "Выберите новые статусы." %}</p>
-                    <p>{% trans "Выбрано пользователей: " %}<span class="selected_users_count"></span>.</p>
+                    <p>{% trans "vyberite_novyye_statusy" %}</p>
+                    <p>{% trans "vybrano_polzovateley" %}&nbsp;<span class="selected_users_count"></span>.</p>
                     <form id="form_change_status">
                         {% csrf_token %}
                         {% for status_type, status_values in statuses.iteritems %}
@@ -141,14 +141,14 @@
                                     {% if status_type %}
                                         {{ status_values.type_name }}
                                     {% else %}
-                                        {% trans "Без типа" %}
+                                        {% trans "bez_tipa" %}
                                     {% endif %}
                                 </label>
                                 <input type="hidden" name="status_types[]" value="{{ status_type }}">
                                 <div class="form-check">
                                     <label class="form-check-label">
                                         <input type="radio" class="form-check-input {% if not status_type %}no-change{% endif %} zero-input" name="status_{{ status_type }}[]" value="0" checked>
-                                        {% trans "Не менять" %}
+                                        {% trans "ne_menyat" %}
                                     </label>
                                 </div>
                                 {% for status_info in status_values.values %}
@@ -170,8 +170,8 @@
                             <input type="checkbox" name="send_mail">&nbsp;{% trans 'создать сообщение?' %}
                         </label>
                     </div>
-                    <button class="btn btn-secondary" data-dismiss="modal" type="button">{% trans "Закрыть" %}</button>
-                    <button class="btn btn-primary" id="modal_change_status_ok" type="button" data-dismiss="modal" data-loading-text="<span class='fa fa-circle-o-notch fa-spin'></span> {% trans "Сохранение" %}">{% trans "Сохранить" %}</button>
+                    <button class="btn btn-secondary" data-dismiss="modal" type="button">{% trans "zakryt" %}</button>
+                    <button class="btn btn-primary" id="modal_change_status_ok" type="button" data-dismiss="modal" data-loading-text="<span class='fa fa-circle-o-notch fa-spin'></span> {% trans "sohranenie" %}">{% trans "sohranit" %}</button>
                 </div>
             </div>
         </div>
@@ -202,7 +202,7 @@
 
     <div class="table-buttons remove-after-init">
         <div class="table-options" >
-            <button type="button" class="btn btn-sm btn-secondary table-change-status" data-toggle="modal" data-target="#modal_change_status" title="{% trans "Изменить статус для всех пользователей" %}">
+            <button type="button" class="btn btn-sm btn-secondary table-change-status" data-toggle="modal" data-target="#modal_change_status" title="{% trans "izmenit_status_dlya_vsekh_polzovateley" %}">
                 <span class="fa fa-cog fa-fw" aria-hidden="true"></span>
             </button>
             <button type="button" class="btn btn-sm btn-secondary table-send-mail" data-toggle="modal" data-target="#modal_send_mail" title="{% trans "Отправить сообщение всем пользователям" %}">

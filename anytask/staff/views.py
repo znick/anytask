@@ -83,9 +83,9 @@ def staff_page(request):
                 if len(user_profiles) != len(search_values):
                     err_search_values = search_values - set(
                         user_profiles.values_list(SEARCH_FIELDS[fieldnames[0]], flat=True))
-                    file_filter_err = _(u'Данные пользователи не найдены: ') + u', '.join(err_search_values)
+                    file_filter_err = _(u'dannyye_polzovateli_ne_naydeny') + u', '.join(err_search_values)
             else:
-                file_filter_err = _(u'Неверный формат файла')
+                file_filter_err = _(u'nevernyy_format_fayla')
                 is_error = True
         except Exception as e:
             logger.error('Error in staff page file filter upload: %s', e)
@@ -103,7 +103,7 @@ def staff_page(request):
     f.form.helper.form_method = 'get'
     f.form.helper.layout.append(HTML(u"""<div class="form-group row">
         <button id="button_filter" class="btn btn-secondary pull-xs-right" type="submit">{0}</button>
-</div>""".format(_(u'Применить'))))
+</div>""".format(_(u'primenit'))))
 
     context = {
         'filter': f,

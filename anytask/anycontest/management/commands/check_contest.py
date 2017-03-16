@@ -2,11 +2,13 @@
 
 from django.core.management.base import BaseCommand
 from django.conf import settings
+from django.utils import translation
 from django.utils.translation import ugettext as _
 from anycontest.common import comment_verdict, get_contest_mark
 from anyrb.common import AnyRB
 from anycontest.models import ContestSubmission
 from issues.model_issue_status import IssueStatus
+from users.models import UserProfile
 
 import logging
 
@@ -25,6 +27,8 @@ class Command(BaseCommand):
                 issue = contest_submission.issue
                 run_id = contest_submission.run_id
                 task = issue.task
+                lang = UserProfile.objects.get(user=contest_submission.author).language
+                translation.activate(lang)
 
                 comment = contest_submission.check_submission()
                 if contest_submission.got_verdict:
@@ -38,7 +42,7 @@ class Command(BaseCommand):
                                        u'<a href="{1}/r/{0}">Review request {0}</a>'. \
                                            format(review_request_id, settings.RB_API_URL)
                         else:
-                            comment += '\n' + _(u'Ошибка отправки в Review Board.')
+                            comment += '\n' + _(u'oshibka_otpravki_v_rb')
                     if contest_submission.verdict == 'ok' and task.accepted_after_contest_ok:
                         issue.set_status_by_tag(IssueStatus.STATUS_ACCEPTED)
                     if issue.task.course.id in settings.COURSES_WITH_CONTEST_MARKS:
@@ -48,5 +52,7 @@ class Command(BaseCommand):
                             if mark and float(mark) > 0:
                                 issue.set_byname('mark', float(mark))
                     comment_verdict(issue, contest_submission.verdict == 'ok', comment)
+                translation.deactivate()
             except Exception as e:
                 logger.exception(e)
+

@@ -16,7 +16,7 @@
     {% endif %}
     {% breadcrumb course.name course.get_absolute_url %}
     {% breadcrumb_for "" %}
-        {%  trans "Настройки" %}
+        {%  trans "nastrojki" %}
     {% endbreadcrumb_for %}
 {% endblock breadcrumbs %}
 
@@ -28,20 +28,20 @@
 {% block navbar %}
     <ul class="nav navbar-nav">
         <li class="nav-item">
-            <a class="nav-link" href="{{ course.get_absolute_url }}">{% trans "Страница курса" %}</a>
+            <a class="nav-link" href="{{ course.get_absolute_url }}">{% trans "stranica_kursa" %}</a>
         </li>
         <li class="nav-item">
             <a class="nav-link"
-               href="{{ course.get_absolute_url }}/gradebook">{% trans "Общая ведомость" %}</a>
+               href="{{ course.get_absolute_url }}/gradebook">{% trans "obshaja_vedomost" %}</a>
         </li>
         {% if visible_queue %}
             <li class="nav-item">
-                <a class="nav-link" href="{{ course.get_absolute_url }}/queue">{% trans "Очередь на проверку" %}</a>
+                <a class="nav-link" href="{{ course.get_absolute_url }}/queue">{% trans "ochered_na_proverku" %}</a>
             </li>
         {% endif %}
         {% if user_is_teacher %}
             <li class="nav-item active">
-                <a class="nav-link" href="">{% trans "Настройки" %}</a>
+                <a class="nav-link" href="">{% trans "nastrojki" %}</a>
             </li>
         {% endif %}
     </ul>
@@ -130,8 +130,8 @@
         <div class="row" >
             <div class="col-md-6 col-sm-12">
                 <div class="card card-block" >
-                    <h5 class="card-title">{% trans "Преподаватели" %}</h5>
-                    <p class="card-text">{% trans "Эти преподаватели будут назначаться проверяющими во время перехода задачи в статус 'на проверке' если другой преподаватель не был назначен ранее" %}</p>
+                    <h5 class="card-title">{% trans "prepodavateli" %}</h5>
+                    <p class="card-text">{% trans "prepodavateli_po_umolchaniu" %}</p>
                     {% for field in form %}
                         {% if field.is_hidden %}
                             {{ field }}
@@ -152,32 +152,32 @@
             </div>
             <div class="col-md-6 col-sm-12">
                 <div class="card card-block">
-                    <h5 class="card-title">{% trans "Настройка задач" %}</h5>
-                    <p class="card-text">{% trans "Скрытие полей и установка значений по умолчанию" %}</p>
+                    <h5 class="card-title">{% trans "nastrojka_zadach" %}</h5>
+                    <p class="card-text">{% trans "skrytie_polej_ustanovka_znachenij" %}</p>
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item">
                             <div class="row">
-                                <p class="card-text">{% trans "Отправлять один файл" %}</p>
+                                <p class="card-text">{% trans "otpravljat_tolko_odin_fajl" %}</p>
                                 <div class="col-md-12">
                                     <input type="checkbox" name="show_task_one_file_upload" id="show_task_one_file_upload" {% if course.show_task_one_file_upload %}checked{% endif %}>
-                                    <label class="checkbox-block" for="show_task_one_file_upload">{% trans "Отображать настройку" %}</label>
+                                    <label class="checkbox-block" for="show_task_one_file_upload">{% trans "otobrazhat_nastrojku" %}</label>
                                 </div>
                                 <div class="col-md-12 collapse {% if course.show_task_one_file_upload %}in{% endif %}">
                                     <input type="checkbox" name="default_task_one_file_upload" id="default_task_one_file_upload" {% if course.default_task_one_file_upload %}checked{% endif %}>
-                                    <label class="checkbox-block" for="default_task_one_file_upload">{% trans "Значение по умолчанию" %}</label>
+                                    <label class="checkbox-block" for="default_task_one_file_upload">{% trans "po_umolchaniu" %}</label>
                                 </div>
                             </div>
                         </li>
                         <li class="list-group-item">
                             <div class="row">
-                                <p class="card-text">{% trans "Переводить в Зачтено после положительного вердикта Я.Контеста" %}</p>
+                                <p class="card-text">{% trans "perevodit_v_zachteno" %}</p>
                                 <div class="col-md-12">
                                     <input type="checkbox" name="show_accepted_after_contest_ok" id="show_accepted_after_contest_ok" {% if course.show_accepted_after_contest_ok %}checked{% endif %}>
-                                    <label class="checkbox-block" for="show_accepted_after_contest_ok">{% trans "Отображать настройку" %}</label>
+                                    <label class="checkbox-block" for="show_accepted_after_contest_ok">{% trans "otobrazhat_nastrojku" %}</label>
                                 </div>
                                 <div class="col-md-12 collapse {% if course.show_accepted_after_contest_ok %}in{% endif %}">
                                     <input type="checkbox" name="default_accepted_after_contest_ok" id="default_accepted_after_contest_ok" {% if course.default_accepted_after_contest_ok %}checked{% endif %}>
-                                    <label class="checkbox-block" for="default_accepted_after_contest_ok">{% trans "Значение по умолчанию" %}</label>
+                                    <label class="checkbox-block" for="default_accepted_after_contest_ok">{% trans "po_umolchaniu" %}</label>
                                 </div>
                             </div>
                         </li>
@@ -190,9 +190,9 @@
                 {% if tasks_with_contest %}
                     <div class="col-lg-6 col-md-5 col-sm-12">
                         <div class="card card-block" id="card_contest">
-                            <h5 class="card-title">{% trans "Яндекс.Контест" %}</h5>
+                            <h5 class="card-title">{% trans "jakontest" %}</h5>
                             <div class="card-block-part">
-                                <p class="card-text">{% trans "Пересудить решения студентов" %}</p>
+                                <p class="card-text">{% trans "peresudit_reshenija_studentov" %}</p>
                                 <div class="form-group row" style="display: none;" >
                                     <div class="controls col-lg-8 col-md-12">
                                         <select name="tasks_with_contest_rejudge[]" id="tasks_with_contest_rejudge_select" class="form-control" multiple="multiple">
@@ -206,14 +206,14 @@
                                         </select>
                                     </div>
                                     <div class="btn-div col-lg-4 col-md-12">
-                                        <button type="button" id="rejudge_tasks_btn" class="btn btn-secondary btn-block" style="display: inline">{% trans "Пересудить" %}</button>
+                                        <button type="button" id="rejudge_tasks_btn" class="btn btn-secondary btn-block" style="display: inline">{% trans "peresudit" %}</button>
                                     </div>
                                 </div>
                                 <div id="rejudge_tasks_error">
                                 </div>
                             </div>
                             <div class="card-block-part">
-                                <p class="card-text">{% trans "Обновить название, максимальный балл, дату сдачи и формулировку для задач" %}</p>
+                                <p class="card-text">{% trans "obnovit_dannie_zadach" %}</p>
                                 <div class="form-group row" style="display: none;" >
                                     <div class="controls col-lg-8 col-md-12">
                                         <select name="tasks_with_contest[]" id="tasks_with_contest_select" class="form-control" multiple="multiple">
@@ -227,7 +227,7 @@
                                         </select>
                                     </div>
                                     <div class="btn-div col-lg-4 col-md-12">
-                                        <button type="button" id="update_tasks_btn" class="btn btn-secondary btn-block" style="display: inline">{% trans "Обновить" %}</button>
+                                        <button type="button" id="update_tasks_btn" class="btn btn-secondary btn-block" style="display: inline">{% trans "obnovit" %}</button>
                                     </div>
                                 </div>
                                 <div class="text-xs-center" id="progress_contest_update_caption"></div>
@@ -244,7 +244,7 @@
                     <div class="col-lg-6 col-md-7 col-sm-12">
                         <div class="card card-block">
                             <h5 class="card-title">Review Board</h5>
-                            <p class="card-text">{% trans "Расширения файлов" %}</p>
+                            <p class="card-text">{% trans "rasshirenija_fajlov" %}</p>
                             <select name="rb_extensions[]" id="rb_ext_select" class="form-control" size="7" multiple="multiple" style="display: none;">
                                 {% for file_ext, selected in file_extensions %}
                                     <option value="{{ file_ext.id }}" {% if selected %}selected{% endif %}>{{ file_ext.name }}</option>
@@ -258,9 +258,9 @@
         <div style="margin-top: 1rem;">
             <div id="course_settings_form_error_text"></div>
             <div class="btn-group pull-xs-right" role="group">
-                <button type="button" id="button_cancel_quit" class="btn btn-secondary">{% trans "Отменить и выйти" %}</button>
-                <button type="button" id="button_save" class="btn btn-secondary">{% trans "Сохранить и продолжить редактирование" %}</button>
-                <button type="button" id="button_save_quit" class="btn btn-primary">{% trans "Сохранить и выйти" %}</button>
+                <button type="button" id="button_cancel_quit" class="btn btn-secondary">{% trans "otmenit_i_vyjti" %}</button>
+                <button type="button" id="button_save" class="btn btn-secondary">{% trans "sohranit_i_prodolzhit" %}</button>
+                <button type="button" id="button_save_quit" class="btn btn-primary">{% trans "sohranit_i_vyjti" %}</button>
             </div>
         </div>
     </form>

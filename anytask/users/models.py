@@ -3,7 +3,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 from django import forms
 
 from datetime import datetime
@@ -74,6 +74,8 @@ class UserProfile(models.Model):
     ya_passport_oauth = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
     ya_passport_login = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
     ya_passport_email = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
+
+    language = models.CharField(default="ru", max_length=128, unique=False, null=True, blank=True)
 
     def is_current_year_student(self):
         return Group.objects.filter(year=get_current_year()).filter(students=self.user).count() > 0
@@ -149,24 +151,24 @@ class CustomMethodFilter(django_filters.MethodFilter):
 
 
 class UserProfileFilter(django_filters.FilterSet):
-    courses = CustomMethodFilter(label=u'<strong>{0}</strong>'.format(_(u'Курс')),
+    courses = CustomMethodFilter(label=u'<strong>{0}</strong>'.format(_(u'kurs')),
                                  action='filter_course',
                                  widget=forms.SelectMultiple,
                                  field_class=forms.MultipleChoiceField)
-    groups = CustomMethodFilter(label=u'<strong>{0}</strong>'.format(_(u'Группа')),
+    groups = CustomMethodFilter(label=u'<strong>{0}</strong>'.format(_(u'gruppa')),
                                 action='filter_group',
                                 widget=forms.SelectMultiple,
                                 field_class=forms.MultipleChoiceField)
     user_status_activity = django_filters.MultipleChoiceFilter(
-        label=u'<strong>{0}</strong>'.format(_(u'Статус студента')),
+        label=u'<strong>{0}</strong>'.format(_(u'status_studenta')),
         name='user_status',
         widget=forms.SelectMultiple)
     user_status_filial = django_filters.MultipleChoiceFilter(
-        label=u'<strong>{0}</strong>'.format(_(u'Филиал')),
+        label=u'<strong>{0}</strong>'.format(_(u'filial')),
         name='user_status',
         widget=forms.SelectMultiple)
     user_status_admission = django_filters.MultipleChoiceFilter(
-        label=u'<strong>{0}</strong>'.format(_(u'Статус поступления')),
+        label=u'<strong>{0}</strong>'.format(_(u'status_postupleniya')),
         name='user_status',
         widget=forms.SelectMultiple)
 
