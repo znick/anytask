@@ -186,9 +186,11 @@
                                                     </div>
                                                     <div style="width: 10%">{{ task|get_score:user }}</div>
                                                     <div style="width: 15%">
-                                                        <span class="label" style="width: 80%;
-                                                                                   background-color:{{ task|get_status_color:user }}"> {{ task|get_status_name:user }}
-                                                        </span>
+                                                        {% if task.type != task.TYPE_MATERIAL %}
+                                                            <span class="label" style="width: 80%;
+                                                                                       background-color:{{ task|get_status_color:user }}"> {{ task|get_status_name:user }}
+                                                            </span>
+                                                        {% endif %}
                                                     </div>
                                                     <div style="width: 20%">
                                                         {% if task.deadline_time %}{% trans "sdat_do" %}
@@ -294,9 +296,11 @@
                                                 </div>
                                                 <div style="width: 10%">{{ task|get_score:user }}</div>
                                                 <div style="width: 15%">
-                                                    <span class="label" style="width: 80%;
-                                                                               background-color:{{ task|get_status_color:user }}"> {{ task|get_status_name:user }}
-                                                    </span>
+                                                    {% if task.type != task.TYPE_MATERIAL %}
+                                                        <span class="label" style="width: 80%;
+                                                                                   background-color:{{ task|get_status_color:user }}"> {{ task|get_status_name:user }}
+                                                        </span>
+                                                    {% endif %}
                                                 </div>
                                                 <div style="width: 20%">
                                                     {% if task.deadline_time %}{% trans "sdat_do" %}
