@@ -4,10 +4,12 @@ from django.core.management.base import BaseCommand
 from django.core.mail import get_connection, EmailMultiAlternatives
 from django.contrib.sites.models import Site
 from django.conf import settings
-from django.utils.translation import ugettext as _
+from django.utils import translation
+from django.utils.translation import ugettext_lazy as _
 
 from tasks.models import Task
 from issues.management.commands.send_notifications import send_mass_mail_html
+from users.models import UserProfile
 import time
 
 
@@ -26,7 +28,7 @@ class Command(BaseCommand):
 
                 message_header = '<div>' + \
                                  '<p>' + _(u'zdravstvujte') + ', {0}.<br></p>' + \
-                                 '<p>' + _(u'v_zadache_kursa') + ', ' + \
+                                 '<p>' + _(u'v_zadache') + ' {1}, ' + _(u'kursa') + ' {2}, ' + \
                                  _(u'novaja_data_sdachi') + ': <br></p>' + \
                                  '</div>'
 
@@ -46,7 +48,7 @@ class Command(BaseCommand):
                     empty_message = False
 
                 message_body.append('<div>')
-                message_body.append(u'-- <br>')
+                message_body.append('-- <br>')
                 message_body.append(_(u's_uvazheniem') + ',<br>')
                 message_body.append(_(u'komanda_anytask') + '.<br>')
                 message_body.append('</div>')
@@ -55,7 +57,11 @@ class Command(BaseCommand):
                 notify_messages = []
 
                 for student in group.students.all():
-                    subject = _(u'kurs_zadacha_student').\
+                    user_profile = UserProfile.objects.get(id=student.id)
+                    lang = user_profile.language
+                    translation.activate(lang)
+
+                    subject = _(u'kurs') + ': {0} | ' + _(u'zadacha') + ': {1} | ' + _(u'student') + ' {2} {3}'.\
                         format(task.course, task.title, student.last_name, student.first_name)
 
                     from_email = settings.DEFAULT_FROM_EMAIL
@@ -68,8 +74,9 @@ class Command(BaseCommand):
 
                     if not empty_message:
                         message_text = message.\
-                            format(student.first_name, task.title, get_html_url(course_url,task.course.name))
+                            format(student.first_name, task.title, get_html_url(course_url, task.course.name))
                         notify_messages.append(get_message(student.email))
+                    translation.deactivate()
 
                 send_mass_mail_html(notify_messages)
                 time.sleep(1)

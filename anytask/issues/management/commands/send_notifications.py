@@ -5,10 +5,12 @@ from django.core.mail import get_connection, EmailMultiAlternatives
 from django.contrib.sites.models import Site
 from django.conf import settings
 from django.db.models import Q
+from django.utils import translation
 from django.utils.translation import ugettext as _
 
 from issues.models import Issue
 from issues.models import Event
+from users.models import UserProfile
 import time
 
 
@@ -23,11 +25,15 @@ class Command(BaseCommand):
         domain = Site.objects.get_current().domain
 
         for issue in issues:
+            user_profile = UserProfile.objects.get(id=issue.student.id)
+            lang = user_profile.language
+            translation.activate(lang)
+
             events = all_events.filter(issue=issue).all()
             issue_url = 'http://' + domain + issue.get_absolute_url()
             message_header = '<div>' + \
                              '<p>' + _(u'zdravstvujte') + ', {0}.<br></p>' + \
-                             '<p>' + _(u'v_zadache_vy_javljaetes') + ' <strong>{2}</strong>, ' + \
+                             '<p>' + _(u'v_zadache') + ' {1}, ' + _(u'vy_javljaetes') + ' <strong>{2}</strong>, ' + \
                              _(u'pojavilis_novye_kommentarii') + ': <br></p>' + \
                              '</div>'
 
@@ -54,7 +60,7 @@ class Command(BaseCommand):
                              u'{0}<br>.'.format(_(u'komanda_anytask')) + \
                              '</div>'
 
-            subject = _(u'kurs_zadacha_student').\
+            subject = _(u'kurs') + ': {0} | ' + _(u'zadacha') + ': {1} | ' + _(u'student') + ' {2} {3}'.\
                 format(issue.task.course, issue.task.title, issue.student.last_name, issue.student.first_name)
 
             from_email = settings.DEFAULT_FROM_EMAIL
@@ -109,6 +115,8 @@ class Command(BaseCommand):
 
             for event in events_to_send:
                 event.save()
+
+            translation.deactivate()
 
 
 def get_message_body(messages_author, messages_body, author):
