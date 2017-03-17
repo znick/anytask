@@ -64,9 +64,11 @@ class Issue(models.Model):
     STATUS_NEW = 'new'
     STATUS_AUTO_VERIFICATION = 'auto_verification'
     STATUS_NEED_INFO = 'need_info'
+    STATUS_ACCEPTED_DEADLINE = 'accepted_deadline'
     HIDDEN_STATUSES = {STATUS_NEW: 1,
                        STATUS_AUTO_VERIFICATION: 2,
-                       STATUS_NEED_INFO: 6}
+                       STATUS_NEED_INFO: 6,
+                       STATUS_ACCEPTED_DEADLINE: 7}
 
     STATUS_REWORK = IssueStatus.STATUS_REWORK
     STATUS_VERIFICATION = IssueStatus.STATUS_VERIFICATION
@@ -79,6 +81,7 @@ class Issue(models.Model):
         (STATUS_ACCEPTED, _(u'zachteno')),
         (STATUS_AUTO_VERIFICATION, _(u'na_avtomaticheskoj_proverke')),
         (STATUS_NEED_INFO, _(u'trebuetsja_informacija')),
+        (STATUS_ACCEPTED_DEADLINE, _(u'zachteno_posle_dedlajna')),
     )
 
     status = models.CharField(max_length=20, choices=ISSUE_STATUSES, default=STATUS_NEW)
