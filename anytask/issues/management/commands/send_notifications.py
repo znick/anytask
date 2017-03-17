@@ -32,8 +32,8 @@ class Command(BaseCommand):
             events = all_events.filter(issue=issue).all()
             issue_url = 'http://' + domain + issue.get_absolute_url()
             message_header = '<div>' + \
-                             '<p>' + _(u'zdravstvujte') + ', {0}.<br></p>' + \
-                             '<p>' + _(u'v_zadache') + ' {1}, ' + _(u'vy_javljaetes') + ' <strong>{2}</strong>, ' + \
+                             '<p>' + _(u'zdravstvujte') + u', {0}.<br></p>' + \
+                             '<p>' + _(u'v_zadache') + u' {1}, ' + _(u'vy_javljaetes') + u' <strong>{2}</strong>, ' + \
                              _(u'pojavilis_novye_kommentarii') + ': <br></p>' + \
                              '</div>'
 
@@ -60,7 +60,7 @@ class Command(BaseCommand):
                              u'{0}<br>.'.format(_(u'komanda_anytask')) + \
                              '</div>'
 
-            subject = _(u'kurs') + ': {0} | ' + _(u'zadacha') + ': {1} | ' + _(u'student') + ' {2} {3}'.\
+            subject = _(u'kurs') + u': {0} | ' + _(u'zadacha') + u': {1} | ' + _(u'student') + u' {2} {3}'.\
                 format(issue.task.course, issue.task.title, issue.student.last_name, issue.student.first_name)
 
             from_email = settings.DEFAULT_FROM_EMAIL

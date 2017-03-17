@@ -813,7 +813,7 @@ msgstr "в который вы являетесь"
 
 #: issues/management/commands/send_notifications.py:37
 msgid "pojavilis_novye_kommentarii"
-msgstr "появились новые комментарии:"
+msgstr "появились новые комментарии"
 
 #: issues/management/commands/send_notifications.py:59
 #: mail/management/commands/send_mail_notifications.py:43
@@ -982,7 +982,7 @@ msgstr "У вас"
 
 #: mail/management/commands/send_mail_notifications.py:40
 msgid "posmotret_soobshenija"
-msgstr "Посмотреть сообщения:"
+msgstr "Посмотреть сообщения"
 
 #: mail/management/commands/send_mail_notifications.py:68
 #: mail/management/commands/send_mail_notifications.py:74

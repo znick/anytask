@@ -5,7 +5,7 @@ from django.core.mail import get_connection, EmailMultiAlternatives
 from django.contrib.sites.models import Site
 from django.conf import settings
 from django.utils import translation
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext as _
 
 from tasks.models import Task
 from issues.management.commands.send_notifications import send_mass_mail_html
@@ -27,8 +27,8 @@ class Command(BaseCommand):
             for group in task.groups.all():
 
                 message_header = '<div>' + \
-                                 '<p>' + _(u'zdravstvujte') + ', {0}.<br></p>' + \
-                                 '<p>' + _(u'v_zadache') + ' {1}, ' + _(u'kursa') + ' {2}, ' + \
+                                 '<p>' + _(u'zdravstvujte') + u', {0}.<br></p>' + \
+                                 '<p>' + _(u'v_zadache') + u' {1}, ' + _(u'kursa') + u' {2}, ' + \
                                  _(u'novaja_data_sdachi') + ': <br></p>' + \
                                  '</div>'
 
@@ -61,7 +61,7 @@ class Command(BaseCommand):
                     lang = user_profile.language
                     translation.activate(lang)
 
-                    subject = _(u'kurs') + ': {0} | ' + _(u'zadacha') + ': {1} | ' + _(u'student') + ' {2} {3}'.\
+                    subject = _(u'kurs') + u': {0} | ' + _(u'zadacha') + u': {1} | ' + _(u'student') + u' {2} {3}'.\
                         format(task.course, task.title, student.last_name, student.first_name)
 
                     from_email = settings.DEFAULT_FROM_EMAIL
