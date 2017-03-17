@@ -262,7 +262,7 @@ class Issue(models.Model):
                 else:
                     new_names = ''
                 self.followers = value
-                value = u'+{0}\n-{1}'.format(', '.join(new_names), ', '.join(old_names))
+                value = ', '.join(new_names) + '\n' + ', '.join(old_names)
 
         elif name == 'comment':
             if value:
@@ -435,7 +435,7 @@ class Event(models.Model):
             value = self.value.split('\n')
             if len(value) == 1:
                 return _('nabludaiut') + ' ' + self.value if self.value else _('nabludaet_nikto')
-            new_ones, old_ones = value[0][1:], value[1][1:]
+            new_ones, old_ones = value
             if new_ones:
                 message += u'{0} {1}'.format(_('nabludaiut'), new_ones)
             if old_ones:
