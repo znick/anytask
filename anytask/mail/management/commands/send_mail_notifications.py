@@ -29,14 +29,14 @@ class Command(BaseCommand):
 
             user_profile.send_notify_messages.clear()
 
-            subject = '{0}, ' + _(u'est_novye_soobshenija').format(user.first_name)
+            subject = u'{0}, ' + _(u'est_novye_soobshenija').format(user.first_name)
 
             domain = Site.objects.get_current().domain
             mail_url = 'http://' + domain + reverse('mail.views.mail_page')
             unread_count_string = get_string(unread_count)
 
-            plain_text = _(u'zdravstvujte') + ', {0}.\n\n' + \
-                         _(u'u_vas_soobshenij') + ' {1} {2}.' + '\n' + \
+            plain_text = _(u'zdravstvujte') + u', {0}.\n\n' + \
+                         _(u'u_vas_soobshenij') + u' {1} {2}.' + '\n' + \
                          _(u'posmotret_soobshenija') + ':\n' + \
                          u'{3}\n\n' + \
                          u'-- \n' + \
