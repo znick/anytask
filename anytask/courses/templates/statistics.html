@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans "Статистика по курсу " %}{{ course.name }} | {{ course.year }}{% endblock %}
+{% block title %}Статистика по курсу {{ course.name }} | {{ course.year }}{% endblock %}
 
 {% block content %}
 
 <div class="subnav">
     <ul class="nav nav-pills">
-      <li><a href="{% url courses.views.tasks_list course.id %}">{% trans "Задачи" %}</a></li>
-      <li class="active"><a href="{% url courses.views.course_statistics course_id=course.id %}">{% trans "Статистика" %}</a></li>
+      <li><a href="{% url courses.views.tasks_list course.id %}">Задачи</a></li>
+      <li class="active"><a href="{% url courses.views.course_statistics course_id=course.id %}">Статистика</a></li>
     </ul>
 </div>
 

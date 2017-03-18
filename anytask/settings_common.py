@@ -28,7 +28,7 @@ TIME_ZONE = 'Europe/Moscow'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = 'ru-RU'
+LANGUAGE_CODE = 'ru'
 LANGUAGES = (('ru', u'Русский'),
              ('en', 'English'))
 LOCALE_PATHS = (os.path.join(PROJECT_PATH, 'locale'))

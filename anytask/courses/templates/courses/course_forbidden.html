@@ -27,7 +27,7 @@
                         error: function (data) {
                             $('#id_invite').removeClass('form-control-success').addClass('form-control-danger')
                                     .closest('.form-group').removeClass('has-success').addClass('has-danger');
-                            $('#id_invite').siblings('small.text-help').empty().append('{% trans "Ошибка:" %} '+ data.status);
+                            $('#id_invite').siblings('small.text-help').empty().append('{% trans "oshibka" %} '+ data.status);
                         }
                     });
                 },
@@ -50,7 +50,7 @@
 
                 messages: {
                     invite: {
-                        required : "{% trans "Необходимо указать инвайт" %}"
+                        required : "{% trans "ukazat_invajt" %}"
                     }
                 },
 
@@ -76,8 +76,8 @@
     <div class="row">
         <div class="col-md-6 col-sm-12">
             <div class="card card-block">
-                <h5 class="card-title">{% trans "Доступ к этому курсу ограничен" %}</h5>
-                <p class="card-text">{% trans "У Вас нет доступа к этому курсу. Если у Вас есть инвайт, то введите его в поле ниже." %}</p>
+                <h5 class="card-title">{% trans "dostup_ogranichen" %}</h5>
+                <p class="card-text">{% trans "vvedite_invajt" %}</p>
                 <form id="invites_form" action="{% url users.views.activate_invite %}" method="post">
                     <div class="row">
                         {% csrf_token %}
@@ -85,7 +85,7 @@
                         {% for field in invite_form %}
                             <div class="form-group col-md-9" style="height: 3rem">
                                 <div class="controls">
-                                    <input class="form-control" id='{{ field.id_for_label }}' name='{{ field.html_name }}' type='text' placeholder="{% trans "Введите инвайт..." %}">
+                                    <input class="form-control" id='{{ field.id_for_label }}' name='{{ field.html_name }}' type='text' placeholder="{% trans "vvedite_invajt" %}">
                                     <small class="text-help" id="{{ field.id_for_label }}_error_text">&nbsp;</small>
                                 </div>
                             </div>
