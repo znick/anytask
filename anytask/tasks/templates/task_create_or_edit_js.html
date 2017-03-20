@@ -104,6 +104,17 @@
                 $("#parent_body").show();
                 $("#children_body").hide();
             }
+            else if ($('#task_edit_type').val() === 'Material') {
+                $('#contest_rb_body').collapse('hide');
+                $("#task_edit_contest_integrated").hide();
+                $("#task_edit_contest_id").hide();
+                $("#task_edit_problem_id").hide();
+                $("#task_edit_rb_integrated").hide();
+                $("#max_score_body").collapse('hide');
+                $("#deadline_body").collapse('hide');
+                $("#parent_body").show();
+                $("#children_body").hide();
+            }
             else if ($('#task_edit_type').val() === 'Seminar') {
                 $('#contest_rb_body').collapse('hide');
                 $("#task_edit_contest_integrated").hide();

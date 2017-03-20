@@ -156,7 +156,7 @@
                      {% if task.deadline_time %} '{{task.deadline_time|date:'d-m-Y H:i'}}' {% else %}''{% endif %})">
                                     {{ task.title }}
                                 </a>
-                                {% if task.type != task.TYPE_SEMINAR %}
+                                {% if task.type != task.TYPE_SEMINAR and task.type != task.TYPE_MATERIAL %}
                                     <span class="label {% if not task.is_hidden %} label-inverse {% else %} label-default {% endif %}">{{ task.score_max }}</span>
                                 {% endif %}
                             </th>
@@ -196,7 +196,7 @@
                                                   {{ task_x_task_takens|score:task }}
                                                 </span>
                                                 </a>
-                                            {% elif task.type == task.TYPE_SIMPLE  %}
+                                            {% elif task.type == task.TYPE_SIMPLE or task.type == task.TYPE_MATERIAL  %}
                                                 <div {% if user_is_teacher %}class="task-mark-value"{% endif %}>
                                                 <span class="label {{ task_x_task_takens|have_issue:task }}" style="background-color: {{ task_x_task_takens|label_color:task }};">
                                                   {{ task_x_task_takens|score:task }}

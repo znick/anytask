@@ -403,7 +403,7 @@ msgstr ""
 #: courses/templates/courses/course_js.html:778
 #: issues/templates/issues/info.html:131 issues/templates/issues/info.html:151
 #: tasks/templates/contest_import.html:110 tasks/templates/task_create.html:129
-#: tasks/templates/task_create_or_edit_js.html:366
+#: tasks/templates/task_create_or_edit_js.html:377
 #: tasks/templates/task_edit.html:167 tasks/templates/task_edit.html.py:357
 #: tasks/templates/task_import.html:108 tasks/templates/task_import_js.html:358
 msgid "data_sdachi"
@@ -585,9 +585,9 @@ msgstr "Произошла ошибка при получении данных."
 #: courses/templates/courses/settings_js.html:234
 #: courses/templates/courses/task.html:34
 #: courses/templates/courses/tasklist/shad_cpp.html:317
-#: mail/templates/mail.html:147 tasks/templates/task_create_or_edit_js.html:167
-#: tasks/templates/task_create_or_edit_js.html:182
+#: mail/templates/mail.html:147 tasks/templates/task_create_or_edit_js.html:178
 #: tasks/templates/task_create_or_edit_js.html:193
+#: tasks/templates/task_create_or_edit_js.html:204
 #: tasks/templates/task_edit.html:72 tasks/templates/task_edit.html.py:81
 #: users/templates/status_history.html:158
 #: users/templates/user_profile.html:419 users/templates/user_profile.html:443
@@ -610,7 +610,7 @@ msgid "sohraneno_uspeshno"
 msgstr "Сохранено успешно."
 
 #: courses/templates/courses/settings_js.html:272
-#: tasks/templates/task_create_or_edit_js.html:185
+#: tasks/templates/task_create_or_edit_js.html:196
 #: users/templates/user_settings.html:24
 msgid "oshibka_pri_sohranenii"
 msgstr "Произошла ошибка при сохранении. Попробуйте снова."
@@ -671,7 +671,7 @@ msgid "kolichestvo_invajtov_celoe"
 msgstr "Количество инвайтов должно быть целым числом"
 
 #: invites/templates/generate.html:46
-#: tasks/templates/task_create_or_edit_js.html:256
+#: tasks/templates/task_create_or_edit_js.html:267
 #: tasks/templates/task_import_js.html:197
 msgid "neobhodimo_vybrat_gruppu"
 msgstr "Необходимо выбрать группу"
@@ -1219,6 +1219,10 @@ msgstr "с обсуждением"
 msgid "tolko_ocenka"
 msgstr "только оценка"
 
+#: tasks/models.py:44
+msgid "material"
+msgstr "материал"
+
 #: tasks/models.py:43
 msgid "seminar"
 msgstr "семинар"
@@ -1323,24 +1327,24 @@ msgstr "Формулировка"
 msgid "predprosmotr"
 msgstr "Предпросмотр"
 
-#: tasks/templates/task_create_or_edit_js.html:170
-#: tasks/templates/task_create_or_edit_js.html:196
+#: tasks/templates/task_create_or_edit_js.html:181
+#: tasks/templates/task_create_or_edit_js.html:207
 msgid "zadacha_sohranena_uspeshno"
 msgstr "Задача сохранена успешно."
 
-#: tasks/templates/task_create_or_edit_js.html:239
+#: tasks/templates/task_create_or_edit_js.html:250
 #: tasks/templates/task_import_js.html:183
 msgid "ukazat_maxball"
 msgstr "Необходимо указать максимальный балл"
 
-#: tasks/templates/task_create_or_edit_js.html:240
-#: tasks/templates/task_create_or_edit_js.html:242
+#: tasks/templates/task_create_or_edit_js.html:251
+#: tasks/templates/task_create_or_edit_js.html:253
 #: tasks/templates/task_import_js.html:184
 #: tasks/templates/task_import_js.html:186
 msgid "maxball_naturalnoe_chislo"
 msgstr "Максимальный балл должен быть натуральным числом"
 
-#: tasks/templates/task_create_or_edit_js.html:241
+#: tasks/templates/task_create_or_edit_js.html:252
 #: tasks/templates/task_import_js.html:185
 msgid "maxball_bolshe_0"
 msgstr "Максимальный балл должен быть больше или равен 0"
@@ -1353,18 +1357,18 @@ msgstr "Название у задачи необходимо"
 msgid "ne_tak_mnogo"
 msgstr "Не так много"
 
-#: tasks/templates/task_create_or_edit_js.html:249
+#: tasks/templates/task_create_or_edit_js.html:260
 #: tasks/templates/task_import_js.html:189
 msgid "ukazat_nomer_kontesta"
 msgstr "Необходимо указать номер контеста"
 
-#: tasks/templates/task_create_or_edit_js.html:250
+#: tasks/templates/task_create_or_edit_js.html:261
 #: tasks/templates/task_import_js.html:190
 #: tasks/templates/task_import_js.html:191
 msgid "nomer_kontesta_naturalnoe_chislo"
 msgstr "Номер контеста должен натуральным числом"
 
-#: tasks/templates/task_create_or_edit_js.html:253
+#: tasks/templates/task_create_or_edit_js.html:264
 msgid "ukazat_literu_zadachi"
 msgstr "Необходимо указать литеру задачи контеста"
 
@@ -1379,14 +1383,14 @@ msgstr "Необходимо указать литеру задачи конте
 msgid "dlja_vseh_grupp"
 msgstr "Для всех групп"
 
-#: tasks/templates/task_create_or_edit_js.html:283
-#: tasks/templates/task_create_or_edit_js.html:297
+#: tasks/templates/task_create_or_edit_js.html:294
+#: tasks/templates/task_create_or_edit_js.html:308
 #: tasks/templates/task_import_js.html:290
 #: tasks/templates/task_import_js.html:304
 msgid "ne_vybrano_ni_odnoj_gruppy"
 msgstr "Не выбрано ни одной группы"
 
-#: tasks/templates/task_create_or_edit_js.html:303
+#: tasks/templates/task_create_or_edit_js.html:314
 #: tasks/templates/task_import_js.html:310
 msgid "vybrano_neskolko_grupp"
 msgstr "Выбрано несколько групп"
@@ -1438,6 +1442,10 @@ msgstr "нам"
 #: templates/base.html:649
 msgid "base_est_novye_soobshenija"
 msgstr "Есть новые сообщения"
+
+#: templates/500.html:13
+msgid "nam"
+msgstr "нам"
 
 #: templates/base.html:652
 msgid "net_novyh_soobshenij"
