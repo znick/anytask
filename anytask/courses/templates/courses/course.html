@@ -84,20 +84,22 @@
                             <a href="{% url users.views.profile teacher.username %}">{{ teacher.last_name }} {{ teacher.first_name }}</a>{% if not forloop.last %},{% endif %}
                         {% endfor %}
                     </p>
-                    {% if seminar %}
-                        <a class="btn btn-secondary btn-sm" href="{% url tasks.views.task_edit_page seminar.id %}">
-                            {% trans "redaktirovat_seminar" %}
-                        </a>
-                    {% endif %}
-                    {% if visible_hide_button %}
-                        <a class="btn btn-secondary btn-sm"
-                           href="javascript:change_visibility_hidden_tasks({{ course.id }});" role="button">
-                            {% if show_hidden_tasks %}
-                                {% trans "ne_pokazyvat_skrytye_zadachi" %}
-                            {% else %}
-                                {% trans "pokazat_skrytye_zadachi" %}
-                            {% endif %}
-                        </a>
+                    {% if course.can_edit %}
+                        {% if seminar %}
+                            <a class="btn btn-secondary btn-sm" href="{% url tasks.views.task_edit_page seminar.id %}">
+                                {% trans "redaktirovat_seminar" %}
+                            </a>
+                        {% endif %}
+                        {% if visible_hide_button %}
+                            <a class="btn btn-secondary btn-sm"
+                               href="javascript:change_visibility_hidden_tasks({{ course.id }});" role="button">
+                                {% if show_hidden_tasks %}
+                                    {% trans "ne_pokazyvat_skrytye_zadachi" %}
+                                {% else %}
+                                    {% trans "pokazat_skrytye_zadachi" %}
+                                {% endif %}
+                            </a>
+                        {% endif %}
                     {% endif %}
                 </div>
                 <div class="list-group" id="courseTab">
