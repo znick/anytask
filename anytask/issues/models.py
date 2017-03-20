@@ -255,14 +255,11 @@ class Issue(models.Model):
             if list(new_followers) == list(self.followers.all()):
                 delete_event = True
             else:
-                old_names = [follower.last_name + ' ' + follower.first_name
-                             for follower in set(self.followers.all()).difference(set(new_followers))]
-                if new_followers:
-                    new_names = [follower.last_name + ' ' + follower.first_name for follower in new_followers.all()]
-                else:
-                    new_names = ''
+                delete_followers = [follower.last_name + ' ' + follower.first_name
+                                    for follower in set(self.followers.all()).difference(set(new_followers))]
+                add_followers = [follower.last_name + ' ' + follower.first_name for follower in new_followers.all()]
                 self.followers = value
-                value = ', '.join(new_names) + '\n' + ', '.join(old_names)
+                value = ', '.join(add_followers) + '\n' + ', '.join(delete_followers)
 
         elif name == 'comment':
             if value:
@@ -435,11 +432,11 @@ class Event(models.Model):
             value = self.value.split('\n')
             if len(value) == 1:
                 return _('nabludaiut') + ' ' + self.value if self.value else _('nabludaet_nikto')
-            new_ones, old_ones = value
-            if new_ones:
-                message += u'{0} {1}'.format(_('nabludaiut'), new_ones)
-            if old_ones:
-                message += u'\n{0} {1}'.format(_('ne_nabludaiut'), old_ones)
+            new_users, delete_users = value
+            if new_users:
+                message += u'{0} {1}'.format(_('nabludaiut'), new_users)
+            if delete_users:
+                message += u'\n{0} {1}'.format(_('ne_nabludaiut'), delete_users)
         else:
             if self.field.history_message:
                 if self.field.name in msg_map:
