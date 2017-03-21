@@ -7,7 +7,7 @@ from django.contrib.sites.models import Site
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
-
+from django.utils import translation
 from django.utils.translation import ugettext as _
 
 from tasks.models import Task
@@ -65,6 +65,7 @@ class Command(BaseCommand):
 
                 for group in task.groups.all():
                     for student in group.students.all():
+                        translation.activate(student.get_profile().language)
                         if student.id in students_tasks_info:
                             if course.id in students_tasks_info[student.id]:
                                 students_tasks_info[student.id][course.id][task.id] = task_info
@@ -81,6 +82,7 @@ class Command(BaseCommand):
                                     task.id: task_info
                                 }
                             }
+                        translation.deactivate()
 
             with reversion.create_revision():
                 task.sended_notify = True
@@ -90,9 +92,9 @@ class Command(BaseCommand):
         domain = Site.objects.get_current().domain
         from_email = settings.DEFAULT_FROM_EMAIL
         plain_header = _(u'zdravstvujte') + u', {0}.\n\n'
-        plain_body_course = _(u'v_kurse_izmenilis_zadachi') + u'\n'\
+        plain_body_course = _(u'v_kurse') + u' "{0}" ' + _(u'izmenilis_zadachi') + u':\n'\
                             u'{1}\n' + \
-                            _(u'pereyti_v_kurs') + u'\n' \
+                            _(u'pereyti_v_kurs') + u':\n' \
                             u'{2}\n\n'
         plain_body_task = _(u'v_zadache') + u' "{0}" ' + _(u'izmenilis') + u' {1}\n'
         plain_body_task_new = u'  - ' + _(u'dobavlena_zadacha') + u' "{0}"\n'
@@ -104,7 +106,7 @@ class Command(BaseCommand):
         notify_messages = []
         for key_user, courses_info in students_tasks_info.iteritems():
             user = courses_info['user']
-            subject = _(u'proizoshli_izmeneniya_v_kursah').format(user.first_name)
+            subject = u"{0}, ".format(user.first_name) + _(u'proizoshli_izmeneniya_v_kursah')
 
             plain_body = u''
             for key_course, tasks_info in courses_info.iteritems():
