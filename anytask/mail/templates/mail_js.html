@@ -521,7 +521,7 @@
 
                             while (status_counter < data.statuses.length) {
                                 if (status_counter == MAX_STATUSES) {
-                                    status_html += '<span class="label label-status-sgs label-default ">еще ' + '1' + '</span>';
+                                    status_html += '<span class="label label-status-sgs label-default ">{% trans 'yeshcho' %} ' + (data.statuses.length - MAX_STATUSES) + '</span>';
                                     break;
                                 }
 

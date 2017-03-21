@@ -20,6 +20,7 @@ from django.utils.translation import ugettext as _
 
 import datetime
 import requests
+import reversion
 
 import json
 
@@ -147,6 +148,7 @@ def task_edit_page(request, task_id):
 
 
 def task_create_ot_edit(request, course, task_id=None):
+    user = request.user
     task_title = request.POST['task_title'].strip()
 
     if 'max_score' in request.POST:
@@ -231,7 +233,11 @@ def task_create_ot_edit(request, course, task_id=None):
     task.parent_task = parent
 
     task.deadline_time = task_deadline
-    task.sended_notify = not changed_task
+    if changed_task:
+        task.send_to_users = True
+        task.sended_notify = False
+    else:
+        task.send_to_users = False
 
     if task_type in dict(task.TASK_TYPE_CHOICES):
         task.type = task_type
@@ -251,14 +257,13 @@ def task_create_ot_edit(request, course, task_id=None):
 
     task.is_hidden = hidden_task
 
-    task.save()
-
     for course_task in Task.objects.filter(course=course):
         if children and course_task.id in map(int, children):
             course_task.parent_task = task
+            course_task.save()
         elif course_task.parent_task == task:
             course_task.parent_task = None
-        course_task.save()
+            course_task.save()
 
     if task.parent_task:
         if task.parent_task.is_hidden:
@@ -269,7 +274,7 @@ def task_create_ot_edit(request, course, task_id=None):
 
     task.task_text = task_text
 
-    task.updated_by = request.user
+    task.updated_by = user
     task.save()
 
     task.groups = task_groups
@@ -282,6 +287,12 @@ def task_create_ot_edit(request, course, task_id=None):
             issue.set_status_by_tag('seminar')
             issue.mark = sum([x.mark for x in Issue.objects.filter(task__parent_task=task, student_id=student.id).all()])
             issue.save()
+
+    reversion.set_user(user)
+    if task_id:
+        reversion.set_comment("Edit task")
+    else:
+        reversion.set_comment("Create task")
 
     return HttpResponse(json.dumps({'page_title': task.title + ' | ' + course.name + ' | ' + str(course.year),
                                     'redirect_page': '/task/edit/' + str(task.id) if not task_id else None}),
@@ -446,10 +457,12 @@ def contest_task_import(request):
         real_task = Task()
         real_task.course = course
         real_task.parent_task = parent
+
         if changed_task:
+            real_task.send_to_users = True
             real_task.sended_notify = False
         else:
-            real_task.sended_notify = True
+            real_task.send_to_users = False
 
         if task_deadline:
             real_task.deadline_time = task_deadline
@@ -490,6 +503,9 @@ def contest_task_import(request):
 
         real_task.groups = task_groups
         real_task.set_position_in_new_group(task_groups)
+
+        reversion.set_user(request.user)
+        reversion.set_comment("Import task")
 
     return HttpResponse("OK")
 

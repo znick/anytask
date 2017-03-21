@@ -258,7 +258,7 @@ class ViewsTest(TestCase):
         self.assertEqual(btn_group[0]['href'], u'/task/create/1')
 
         # table results
-        table = container('table', 'table_results')
+        table = container('table', 'table-results')
         self.assertEqual(len(table), 1)
 
         table_body_rows = table[0].tbody('tr')
@@ -456,7 +456,7 @@ class ViewsTest(TestCase):
         self.assertEqual(btn_group[1].string.strip().strip('\n'), u'pokazat_skrytye_zadachi')
 
         # table results
-        table = container.find('table', 'table_results')
+        table = container.find('table', 'table-results')
 
         table_head = table.thead('th')[2]
         self.assertIsNone(table_head.string)
@@ -487,7 +487,7 @@ class ViewsTest(TestCase):
         self.assertEqual(btn_group[1].string.strip().strip('\n'), u'ne_pokazyvat_skrytye_zadachi')
 
         # table results
-        table = container.find('table', 'table_results')
+        table = container.find('table', 'table-results')
 
         table_head = table.thead('th')[2]
         self.assertEqual(table_head.a.string.strip().strip('\n'), 'task_title')
@@ -521,7 +521,7 @@ class ViewsTest(TestCase):
         container = html.body.find('div', 'container', recursive=False)
 
         # table results
-        table = container.find('table', 'table_results')
+        table = container.find('table', 'table-results')
 
         table_body_rows_cells = table.tbody('td')
         table_course_mark_inputs = table_body_rows_cells[4]('input')
@@ -563,7 +563,7 @@ class ViewsTest(TestCase):
         container = html.body.find('div', 'container', recursive=False)
 
         # table results
-        table = container.find('table', 'table_results')
+        table = container.find('table', 'table-results')
 
         table_body_rows_cells = table.tbody('td')
         table_course_mark_inputs = table_body_rows_cells[4]('input')
@@ -613,7 +613,7 @@ class ViewsTest(TestCase):
         container = html.body.find('div', 'container', recursive=False)
 
         # table results
-        table = container.find('table', 'table_results')
+        table = container.find('table', 'table-results')
 
         table_head = table.thead('th')[2]
         self.assertEqual(table_head.a.string.strip().strip('\n'), 'task_title')
@@ -655,7 +655,7 @@ class ViewsTest(TestCase):
         container = html.body.find('div', 'container', recursive=False)
 
         # table results
-        table = container.find('table', 'table_results')
+        table = container.find('table', 'table-results')
 
         table_head = table.thead('th')[2]
         self.assertEqual(table_head.a.string.strip().strip('\n'), 'task_title')
@@ -734,7 +734,7 @@ class ViewsTest(TestCase):
         self.assertIsNone(btn_group)
 
         # table results
-        table = container('table', 'table_results')
+        table = container('table', 'table-results')
         self.assertEqual(len(table), 1)
 
         table_body_rows = table[0].tbody('tr')
@@ -828,7 +828,7 @@ class ViewsTest(TestCase):
         container = html.body.find('div', 'container', recursive=False)
 
         # table results
-        table = container.find('table', 'table_results')
+        table = container.find('table', 'table-results')
 
         table_body_rows_cells = table.tbody('td')
         table_course_mark_form = table_body_rows_cells[4].form
@@ -865,7 +865,7 @@ class ViewsTest(TestCase):
         container = html.body.find('div', 'container', recursive=False)
 
         # table results
-        table = container.find('table', 'table_results')
+        table = container.find('table', 'table-results')
 
         table_body_rows_cells = table.tbody('td')
         table_course_mark_form = table_body_rows_cells[4].form
@@ -897,7 +897,7 @@ class ViewsTest(TestCase):
         container = html.body.find('div', 'container', recursive=False)
 
         # table results
-        table = container.find('table', 'table_results')
+        table = container.find('table', 'table-results')
 
         table_head = table.thead('th')[2]
         self.assertEqual(table_head.a.string.strip().strip('\n'), 'task_title')
@@ -941,7 +941,7 @@ class ViewsTest(TestCase):
         container = html.body.find('div', 'container', recursive=False)
 
         # table results
-        table = container.find('table', 'table_results')
+        table = container.find('table', 'table-results')
 
         table_head = table.thead('th')[2]
         self.assertEqual(table_head.a.string.strip().strip('\n'), 'task_title')

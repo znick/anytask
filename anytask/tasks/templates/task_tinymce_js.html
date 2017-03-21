@@ -21,8 +21,17 @@
                     text: 'Insert/Edit code sample',
                     cmd: 'codesample'
                 });
+                {% if task %}
+                    editor.on('init', function() {
+                        var $task_edit_body = $("#task_edit_body");
+                        $task_edit_body.data("value",  $task_edit_body.val());
+                    });
+                {% endif %}
                 editor.on('change', function(e) {
                     $('#task_edit_form').data('changed', true);
+                    {% if task %}
+                        check_changed($("#task_edit_body"));
+                    {% endif %}
                 });
             },
             plugins: [
@@ -46,6 +55,43 @@
             ],
             contextmenu: "link image codesample",
         });
+
+        {% if task %}
+            $("#task_edit_header, #task_edit_max_score, #task_edit_datepicker").change(function () {
+                check_changed($(this));
+            });
+            $("#task_edit_hidden_task").change(function () {
+                var $this = $(this);
+                if ($this.data("value") && !$this.is(':checked'))
+                    $this.data("changed", true);
+                else
+                    $this.data("changed", false);
+                show_notify();
+            });
+        {% endif %}
     });
 
+    {% if task %}
+        function check_changed($elem) {
+            if ($elem.val() != $elem.data("value"))
+                $elem.data("changed", true);
+            else
+                $elem.data("changed", false);
+            show_notify();
+        }
+
+        function show_notify() {
+            var $task_edit_hidden_task = $("#task_edit_hidden_task");
+
+            if (($("#task_edit_header").data("changed") ||
+                $("#task_edit_max_score").data("changed") ||
+                $("#task_edit_datepicker").data("changed") ||
+                $("#task_edit_body").data("changed") ||
+                $task_edit_hidden_task.data("changed")) && !$task_edit_hidden_task.is(':checked'))
+
+                $("#task_edit_label_for_changed_task").show().find("input").prop('disabled', false);
+            else
+                $("#task_edit_label_for_changed_task").hide().find("input").prop('disabled', true);
+        }
+    {% endif %}
 </script>

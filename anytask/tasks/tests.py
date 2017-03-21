@@ -300,11 +300,14 @@ class ViewsTest(TestCase):
         self.assertEqual(form_inputs[4]['value'], 'A', "form input id='{}' wrong".format(form_inputs[4]['id']))
 
         form_checkbox = div_task_id.form('input', {'type': 'checkbox'})
-        self.assertFalse(form_checkbox[0].has_key('checked'),
-                         "form checkbox id='{}' checked".format(form_checkbox[0]['id']))
-        for i in range(1, len(form_checkbox)):
-            self.assertTrue(form_checkbox[i].has_key('checked'),
-                            "form checkbox id='{}' not checked".format(form_checkbox[i]['id']))
+
+        for i in range(len(form_checkbox)):
+            if form_checkbox[i]['id'] == "task_edit_changed_task":
+                self.assertFalse(form_checkbox[i].has_key('checked'),
+                                "form checkbox id='{}' checked".format(form_checkbox[i]['id']))
+            else:
+                self.assertTrue(form_checkbox[i].has_key('checked'),
+                                "form checkbox id='{}' not checked".format(form_checkbox[i]['id']))
 
         form_select_group = div_task_id.form.find('select', {'id': 'task_edit_group'})('option')
         self.assertEqual(len(form_select_group), 1, "form select group len not 2")
@@ -342,7 +345,7 @@ class ViewsTest(TestCase):
         container = html.body.find('div', 'container', recursive=False)
 
         # table results
-        table = container.find('table', 'table_results')
+        table = container.find('table', 'table-results')
 
         table_head = table.thead('th')[2]
         self.assertEqual(table_head.a.string.strip().strip('\n'), 'task_title_0', 'Wrong title 1st task')
