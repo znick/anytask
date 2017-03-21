@@ -6,6 +6,7 @@ from django.core.mail import get_connection, EmailMultiAlternatives
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
+from django.utils import translation
 from django.utils.translation import ugettext as _
 
 from users.models import UserProfile
@@ -25,15 +26,18 @@ class Command(BaseCommand):
             user = user_profile.user
             unread_count = user_profile.send_notify_messages.count()
 
+            lang = user_profile.language
+            translation.activate(lang)
+
             user_profile.send_notify_messages.clear()
 
-            subject = _(u'est_novye_soobshenija').format(user.first_name)
+            subject = u'{0}, ' + _(u'est_novye_soobshenija').format(user.first_name)
 
             mail_url = 'http://' + domain + reverse('mail.views.mail_page')
             unread_count_string = get_string(unread_count)
 
-            plain_text = _(u'zdravstvujte') + ', {0}.\n\n' + \
-                         _(u'u_vas_soobshenij') + '\n' + \
+            plain_text = _(u'zdravstvujte') + u', {0}.\n\n' + \
+                         _(u'u_vas_soobshenij') + u' {1} {2}.' + '\n' + \
                          _(u'posmotret_soobshenija') + ':\n' + \
                          u'{3}\n\n' + \
                          u'-- \n' + \
@@ -50,6 +54,8 @@ class Command(BaseCommand):
             }
             html = render_to_string('email_notification_mail.html', context)
             notify_messages.append((subject, plain_text, html, from_email, [user.email]))
+
+            translation.deactivate()
 
         if notify_messages:
             send_mass_mail_html(notify_messages)

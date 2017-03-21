@@ -37,10 +37,12 @@ class Task(models.Model):
     TYPE_FULL = 'All'
     TYPE_SIMPLE = 'Only mark'
     TYPE_SEMINAR = 'Seminar'
+    TYPE_MATERIAL = 'Material'
     TASK_TYPE_CHOICES = (
-        (TYPE_FULL, _(u's_obsuzhdeniem')),
-        (TYPE_SIMPLE, _(u'tolko_ocenka')),
-        (TYPE_SEMINAR, _(u'seminar')),
+        (TYPE_FULL, _('s_obsuzhdeniem')),
+        (TYPE_SIMPLE, _('tolko_ocenka')),
+        (TYPE_MATERIAL, _('material')),
+        (TYPE_SEMINAR, _('seminar')),
     )
     type = models.CharField(db_index=False, max_length=128, choices=TASK_TYPE_CHOICES, default=TYPE_FULL)
 
@@ -155,7 +157,7 @@ class Task(models.Model):
         self.is_shown = not self.is_hidden or self.course.user_is_teacher(user)
 
     def has_issue_access(self):
-        return self.type != self.TYPE_SIMPLE
+        return self.type not in [self.TYPE_SIMPLE, self.TYPE_MATERIAL]
 
     def set_position_in_new_group(self, groups=None):
         if not groups:

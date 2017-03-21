@@ -23,11 +23,28 @@
     };
 
     $(document).ready(function () {
+
         $(document).on('focusin', function(e) {
             if ($(e.target).closest(".mce-window").length) {
                 e.stopImmediatePropagation();
             }
         });
+
+        $('#task-text').on('hide.bs.collapse', function () {
+            window.sessionStorage.setItem('collapsed', true);
+        });
+
+        $('#task-text').on('show.bs.collapse', function () {
+            window.sessionStorage.setItem('collapsed', false);
+        });
+
+        collapsed = window.sessionStorage.getItem('collapsed');
+
+        if(collapsed == "true") {
+            $('#task-text').collapse('hide');
+        } else {
+            $('#task-text').collapse('show');
+        }
 
         $("select[multiple]").multiselect({
             buttonClass: 'btn btn-secondary btn-block',

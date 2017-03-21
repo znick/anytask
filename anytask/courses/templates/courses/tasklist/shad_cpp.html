@@ -47,7 +47,7 @@
                      {% if task.deadline_time %} '{{task.deadline_time|date:'d-m-Y H:i'}}' {% else %}''{% endif %})">
                                     {{ task.title }}
                                 </a>
-                                {% if task.type != task.TYPE_SEMINAR %}
+                                {% if task.type != task.TYPE_SEMINAR and task.type != task.TYPE_MATERIAL %}
                                     <span class="label {% if not task.is_hidden %} label-inverse {% else %} label-default {% endif %}">{{ task.score_max }}</span>
                                 {% endif %}
                             </th>
@@ -66,7 +66,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                {% for student, task_x_task_takens, student_summ_score, mark_id, student_course_mark in student_information %}
+                {% for student, task_x_task_takens, student_summ_score, mark_id, student_course_mark, student_course_mark_int in student_information %}
                     <tr class="{% if user.username == student.username %}table-info{% endif %}">
                         <td class="sticky-col" align="center"></td>
                         <td class="sticky-col">
@@ -87,7 +87,7 @@
                                                   {{ task_x_task_takens|score:task }}
                                                 </span>
                                                 </a>
-                                            {% elif task.type == task.TYPE_SIMPLE  %}
+                                            {% elif task.type == task.TYPE_SIMPLE or task.type == task.TYPE_MATERIAL  %}
                                                 <div {% if user_is_teacher %}class="task-mark-value"{% endif %}>
                                                 <span class="label {{ task_x_task_takens|have_issue:task }}" style="background-color: {{ task_x_task_takens|label_color:task }};">
                                                   {{ task_x_task_takens|score:task }}
@@ -147,9 +147,9 @@
                             </div>
                         </td>
                         {% if course_mark_system_vals %}
-                            <td align="center" class="student_course_mark_{{ student.id }}">
+                            <td align="center" data-class="student_course_mark_{{ student.id }}">
                                 <div {% if user_is_teacher %}class="mark-value in collapse"{% endif %}>
-                    <span class="label label-success">
+                    <span class="label label-success" data-mark-int="{{ student_course_mark_int }}">
                     {{ student_course_mark }}
                   </span>
                                 </div>
