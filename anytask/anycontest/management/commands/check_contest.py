@@ -47,8 +47,12 @@ class Command(BaseCommand):
                     if contest_submission.verdict == 'ok' and \
                             task.accepted_after_contest_ok and \
                             issue.status_field.tag != IssueStatus.STATUS_ACCEPTED:
-                        if issue.task.deadline_time and issue.task.deadline_time < datetime.now():
-                            issue.set_status_by_tag(IssueStatus.STATUS_ACCEPTED_DEADLINE)
+                        deadline_status = task.course.issue_status_system.statuses.filter(
+                            name=u'Зачтено после дедлайна')
+                        if issue.task.deadline_time and \
+                                        issue.task.deadline_time < datetime.now() and \
+                                        deadline_status:
+                            issue.set_byname('status', deadline_status[0])
                         else:
                             issue.set_status_by_tag(IssueStatus.STATUS_ACCEPTED)
                     if issue.task.course.id in settings.COURSES_WITH_CONTEST_MARKS:

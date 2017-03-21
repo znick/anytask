@@ -12,11 +12,9 @@ class IssueStatus(models.Model):
     STATUS_NEW = 'new'
     STATUS_AUTO_VERIFICATION = 'auto_verification'
     STATUS_NEED_INFO = 'need_info'
-    STATUS_ACCEPTED_DEADLINE = 'accepted_deadline'
     HIDDEN_STATUSES = {STATUS_NEW: 1,
                        STATUS_AUTO_VERIFICATION: 2,
-                       STATUS_NEED_INFO: 6,
-                       STATUS_ACCEPTED_DEADLINE: 7}
+                       STATUS_NEED_INFO: 6}
 
     STATUS_REWORK = 'rework'
     STATUS_VERIFICATION = 'verification'
