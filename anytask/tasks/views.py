@@ -210,13 +210,13 @@ def task_create_ot_edit(request, course, task_id=None):
     if 'accepted_after_contest_ok' in request.POST and contest_integrated:
         accepted_after_contest_ok = True
 
-    hidden_task = False
-    if 'hidden_task' in request.POST:
-        hidden_task = True
-
     not_score_deadline = False
     if 'not_score_deadline' in request.POST and contest_integrated:
         not_score_deadline = True
+
+    hidden_task = False
+    if 'hidden_task' in request.POST:
+        hidden_task = True
 
     task_text = request.POST['task_text'].strip()
 
@@ -385,6 +385,10 @@ def contest_task_import(request):
     if 'accepted_after_contest_ok' in request.POST:
         accepted_after_contest_ok = True
 
+    not_score_deadline = False
+    if 'not_score_deadline' in request.POST:
+        not_score_deadline = True
+
     hidden_task = False
     if 'hidden_task' in request.POST:
         hidden_task = True
@@ -487,6 +491,8 @@ def contest_task_import(request):
         real_task.one_file_upload = one_file_upload
 
         real_task.accepted_after_contest_ok = accepted_after_contest_ok
+
+        real_task.not_score_deadline = not_score_deadline
 
         real_task.is_hidden = hidden_task
         real_task.updated_by = request.user
