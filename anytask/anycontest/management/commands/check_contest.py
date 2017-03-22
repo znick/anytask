@@ -53,6 +53,8 @@ class Command(BaseCommand):
                                         issue.task.deadline_time < datetime.now() and \
                                         deadline_status:
                             issue.set_byname('status', deadline_status[0])
+                            if issue.task.not_score_deadline:
+                                comment += '\n' + _(u'bally_ne_uchityvautsia')
                         else:
                             issue.set_status_by_tag(IssueStatus.STATUS_ACCEPTED)
                     if issue.task.course.id in settings.COURSES_WITH_CONTEST_MARKS:

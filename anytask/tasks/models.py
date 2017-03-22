@@ -58,6 +58,8 @@ class Task(models.Model):
     one_file_upload = models.BooleanField(db_index=False, null=False, blank=False, default=False)
     accepted_after_contest_ok = models.BooleanField(db_index=False, null=False, blank=False, default=False)
 
+    not_score_deadline = models.BooleanField(db_index=False, null=False, blank=False, default=False)
+
     def __unicode__(self):
         return unicode(self.title)
 

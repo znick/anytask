@@ -337,7 +337,9 @@ def tasklist_shad_cpp(request, course, seminar=None, group=None):
             student_summ_scores = 0
             for task_taken in student_task_takens:
                 task_x_task_taken[task_taken.task.id] = task_taken
-                if not task_taken.task.is_hidden:
+                if not task_taken.task.is_hidden and \
+                        not (task_taken.task.not_score_deadline and
+                                     task_taken.status_field.name == u'Зачтено после дедлайна'):
                     student_summ_scores += task_taken.mark
 
             student_x_task_x_task_takens[student] = (task_x_task_taken, student_summ_scores)

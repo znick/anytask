@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-21 17:20+0300\n"
+"POT-Creation-Date: 2017-03-22 12:51+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -52,8 +52,12 @@ msgstr "Тест"
 msgid "oshibka_otpravki_v_rb"
 msgstr "Ошибка отправки в Review Board"
 
+#: anycontest/management/commands/check_contest.py:56
+msgid "bally_ne_uchityvautsia"
+msgstr "Задача сдана после дедлайна. Баллы не будут учтены в общей сумме."
+
 #: anyrb/common.py:83 courses/templates/courses/queue.html:74
-#: issues/models.py:478 issues/views.py:54 users/templates/my_tasks.html:136
+#: issues/models.py:480 issues/views.py:54 users/templates/my_tasks.html:136
 msgid "zadacha"
 msgstr "Задача"
 
@@ -85,16 +89,16 @@ msgstr "Блог Anytask"
 msgid "rasshirenia_fajla"
 msgstr "Файл должен иметь одно из расширений"
 
-#: courses/forms.py:22 issues/model_issue_status.py:29 issues/models.py:77
+#: courses/forms.py:22 issues/model_issue_status.py:26 issues/models.py:77
 msgid "na_dorabotke"
 msgstr "На доработке"
 
-#: courses/forms.py:23 issues/model_issue_status.py:30 issues/models.py:78
+#: courses/forms.py:23 issues/model_issue_status.py:27 issues/models.py:78
 msgid "na_proverke"
 msgstr "На проверке"
 
 #: courses/forms.py:24 courses/templates/courses/gradebook.html:139
-#: issues/model_issue_status.py:34 issues/models.py:81
+#: issues/model_issue_status.py:31 issues/models.py:81
 msgid "trebuetsja_informacija"
 msgstr "Требуется информация"
 
@@ -113,15 +117,15 @@ msgstr "Наблюдаемые мной"
 msgid "primenit"
 msgstr "Применить"
 
-#: courses/views.py:752 courses/views.py:764 tasks/views.py:318
+#: courses/views.py:754 courses/views.py:766 tasks/views.py:324
 msgid "kontesta_ne_sushestvuet"
 msgstr "Такого контеста не существует"
 
-#: courses/views.py:754 courses/views.py:766 tasks/views.py:320
+#: courses/views.py:756 courses/views.py:768 tasks/views.py:326
 msgid "oshibka_kontesta"
 msgstr "Ошибка Я.Контеста:"
 
-#: courses/views.py:762 tasks/views.py:308 tasks/views.py:435
+#: courses/views.py:764 tasks/views.py:314 tasks/views.py:441
 msgid "net_prav_na_kontest"
 msgstr "У anytask нет прав на данный контест"
 
@@ -396,7 +400,7 @@ msgstr ""
 #: issues/templates/issues/info.html:131 issues/templates/issues/info.html:151
 #: tasks/templates/contest_import.html:110 tasks/templates/task_create.html:129
 #: tasks/templates/task_create_or_edit_js.html:366
-#: tasks/templates/task_edit.html:167 tasks/templates/task_edit.html.py:357
+#: tasks/templates/task_edit.html:167 tasks/templates/task_edit.html.py:366
 #: tasks/templates/task_import.html:108 tasks/templates/task_import_js.html:358
 msgid "data_sdachi"
 msgstr "Дата сдачи"
@@ -410,7 +414,7 @@ msgid "pokazyvat_otchislennyh"
 msgstr "Показать отчисленных студентов"
 
 #: courses/templates/courses/gradebook.html:138
-#: courses/templatetags/course_func.py:33 issues/model_issue_status.py:28
+#: courses/templatetags/course_func.py:33 issues/model_issue_status.py:25
 #: issues/models.py:76
 msgid "novyj"
 msgstr "Новый"
@@ -432,7 +436,7 @@ msgstr "Обновлена"
 msgid "ocenka"
 msgstr "Оценка"
 
-#: courses/templates/courses/queue.html:77 issues/models.py:476
+#: courses/templates/courses/queue.html:77 issues/models.py:478
 #: issues/views.py:56
 msgid "proverjaushij"
 msgstr "Проверяющий"
@@ -510,7 +514,7 @@ msgstr ""
 "Обновить название, максимальный балл, дату сдачи и формулировку для задач"
 
 #: courses/templates/courses/settings.html:230
-#: tasks/templates/task_edit.html:369
+#: tasks/templates/task_edit.html:378
 msgid "obnovit"
 msgstr "Обновить"
 
@@ -520,18 +524,18 @@ msgstr "Расширения файлов"
 
 #: courses/templates/courses/settings.html:261
 #: tasks/templates/contest_import.html:167 tasks/templates/task_create.html:162
-#: tasks/templates/task_edit.html:299 tasks/templates/task_import.html:167
+#: tasks/templates/task_edit.html:308 tasks/templates/task_import.html:167
 msgid "otmenit_i_vyjti"
 msgstr "Отменить и выйти"
 
 #: courses/templates/courses/settings.html:262
-#: tasks/templates/task_create.html:163 tasks/templates/task_edit.html:300
+#: tasks/templates/task_create.html:163 tasks/templates/task_edit.html:309
 msgid "sohranit_i_prodolzhit"
 msgstr "Сохранить и продолжить редактирование"
 
 #: courses/templates/courses/settings.html:263
 #: tasks/templates/contest_import.html:168 tasks/templates/task_create.html:164
-#: tasks/templates/task_edit.html:301 tasks/templates/task_import.html:168
+#: tasks/templates/task_edit.html:310 tasks/templates/task_import.html:168
 msgid "sohranit_i_vyjti"
 msgstr "Сохранить и выйти"
 
@@ -706,7 +710,7 @@ msgstr "для"
 msgid "dejstvitelen_do"
 msgstr "Действителен до"
 
-#: issues/admin.py:23 issues/models.py:474 issues/views.py:58
+#: issues/admin.py:23 issues/models.py:476 issues/views.py:58
 #: issues/templates/issues/info.html:108 staff/templates/staff.html:59
 #: users/admin.py:20 users/models.py:189 users/templates/my_tasks.html:140
 msgid "status"
@@ -716,15 +720,15 @@ msgstr "Статус"
 msgid "format14"
 msgstr "Формат: 5.31, 14"
 
-#: issues/model_issue_status.py:31 issues/models.py:79
+#: issues/model_issue_status.py:28 issues/models.py:79
 msgid "zachteno"
 msgstr "Зачтено"
 
-#: issues/model_issue_status.py:32
+#: issues/model_issue_status.py:29
 msgid "zachteno_posle_dedlajna"
 msgstr "Зачтено после дедлайна"
 
-#: issues/model_issue_status.py:33 issues/models.py:80
+#: issues/model_issue_status.py:30 issues/models.py:80
 msgid "na_avtomaticheskoj_proverke"
 msgstr "На автоматической проверке"
 
@@ -736,39 +740,39 @@ msgstr "Отправлено на проверку в Я.Контест"
 msgid "oshibka_otpravki_v_kontest"
 msgstr "Ошибка отправки в Я.Контест"
 
-#: issues/models.py:424
+#: issues/models.py:426
 msgid "zadachu_proveriaet"
 msgstr "Теперь задачу проверяет"
 
-#: issues/models.py:425
+#: issues/models.py:427
 msgid "nabludaiut"
 msgstr "За задачей наблюдают:"
 
-#: issues/models.py:426
+#: issues/models.py:428
 msgid "status_izmenen"
 msgstr "Статус изменен:"
 
-#: issues/models.py:427
+#: issues/models.py:429
 msgid "ocenka_izmenena"
 msgstr "Оценка изменена на"
 
-#: issues/models.py:428
+#: issues/models.py:430
 msgid "zagruzhen_faij"
 msgstr "Загружен файл:"
 
-#: issues/models.py:475 users/models.py:190
+#: issues/models.py:477 users/models.py:190
 msgid "data_poslednego_izmenenija"
 msgstr "Дата последнего изменения"
 
-#: issues/models.py:477 issues/views.py:57
+#: issues/models.py:479 issues/views.py:57
 msgid "nabludateli"
 msgstr "Наблюдатели"
 
-#: issues/models.py:484 users/models.py:173 users/models.py:212
+#: issues/models.py:486 users/models.py:173 users/models.py:212
 msgid "luboj"
 msgstr "Любой"
 
-#: issues/models.py:491
+#: issues/models.py:493
 msgid "lubaja"
 msgstr "Любая"
 
@@ -1212,11 +1216,11 @@ msgstr "Все статусы"
 msgid "ne_vybrano_statusov"
 msgstr "Не выбрано ни одного статуса"
 
-#: tasks/models.py:41 tasks/models.py:199
+#: tasks/models.py:41 tasks/models.py:201
 msgid "s_obsuzhdeniem"
 msgstr "с обсуждением"
 
-#: tasks/models.py:42 tasks/models.py:200
+#: tasks/models.py:42 tasks/models.py:202
 msgid "tolko_ocenka"
 msgstr "только оценка"
 
@@ -1246,7 +1250,7 @@ msgid "poluchit_spisok_zadach"
 msgstr "Получить список задач"
 
 #: tasks/templates/contest_import.html:70 tasks/templates/task_create.html:86
-#: tasks/templates/task_edit.html:143 tasks/templates/task_edit.html.py:351
+#: tasks/templates/task_edit.html:143 tasks/templates/task_edit.html.py:360
 #: tasks/templates/task_import.html:72
 msgid "max_ball"
 msgstr "Максимальный балл"
@@ -1262,7 +1266,7 @@ msgid "gruppa"
 msgstr "Группа"
 
 #: tasks/templates/contest_import.html:97 tasks/templates/task_create.html:105
-#: tasks/templates/task_edit.html:259 tasks/templates/task_import.html:95
+#: tasks/templates/task_edit.html:268 tasks/templates/task_import.html:95
 msgid "roditelskaja_zadacha"
 msgstr "Родительская задача"
 
@@ -1301,25 +1305,25 @@ msgid "tip_zadachi"
 msgstr "Тип задачи"
 
 #: tasks/templates/task_create.html:79 tasks/templates/task_edit.html:135
-#: tasks/templates/task_edit.html.py:345
+#: tasks/templates/task_edit.html.py:354
 msgid "nazvanie"
 msgstr "Название"
 
-#: tasks/templates/task_create.html:118 tasks/templates/task_edit.html:272
+#: tasks/templates/task_create.html:118 tasks/templates/task_edit.html:281
 msgid "podzadachi"
 msgstr "Подзадачи"
 
-#: tasks/templates/task_create.html:146 tasks/templates/task_edit.html:283
+#: tasks/templates/task_create.html:146 tasks/templates/task_edit.html:292
 #: tasks/templates/task_import.html:149
 msgid "skryt_zadachu"
 msgstr "Скрыть задачу"
 
-#: tasks/templates/task_create.html:152 tasks/templates/task_edit.html:289
-#: tasks/templates/task_edit.html.py:363 tasks/templates/task_import.html:155
+#: tasks/templates/task_create.html:152 tasks/templates/task_edit.html:298
+#: tasks/templates/task_edit.html.py:372 tasks/templates/task_import.html:155
 msgid "formulirovka"
 msgstr "Формулировка"
 
-#: tasks/templates/task_create.html:160 tasks/templates/task_edit.html:297
+#: tasks/templates/task_create.html:160 tasks/templates/task_edit.html:306
 #: tasks/templates/task_import.html:164
 msgid "predprosmotr"
 msgstr "Предпросмотр"
@@ -1408,11 +1412,15 @@ msgstr "Литера задачи в контесте"
 msgid "obnovit_iz_kontesta"
 msgstr "Обновить из Я.Контеста"
 
-#: tasks/templates/task_edit.html:329
+#: tasks/templates/task_edit.html:257
+msgid "uchityvat_bally_dedlajn"
+msgstr "Не учитывать баллы за задачи, зачтенные после дедлайна"
+
+#: tasks/templates/task_edit.html:338
 msgid "obnovlenie_dannyh_iz_kontesta"
 msgstr "Обновление данных из Яндекс.Контеста"
 
-#: tasks/templates/task_edit.html:333
+#: tasks/templates/task_edit.html:342
 msgid "importirovat_polja_iz_kontesta"
 msgstr "Импортировать следующие поля из Яндекс.Контеста"
 

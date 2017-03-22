@@ -252,6 +252,15 @@
                                            {% if task.accepted_after_contest_ok or is_create and course.default_accepted_after_contest_ok %}checked{% endif %}>
                                 </div>
                             </div>
+                            <div class="form-group row collapse {% if contest_integrated %}in{% endif %}">
+                                <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_not_score_deadline">
+                                    {% trans "uchityvat_bally_dedlajn" %}</label>
+                                <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7" style="padding-top: 5px">
+                                    <input type="checkbox" name="not_score_deadline"
+                                           id="task_edit_not_score_deadline"
+                                           {% if task.not_score_deadline%}checked{% endif %}>
+                                </div>
+                            </div>
                         {% endif %}
                     </div>
                     <div id='parent_body' class="{% if is_create or task.type != task.TYPE_SEMINAR %}in{% endif %} collapse">
