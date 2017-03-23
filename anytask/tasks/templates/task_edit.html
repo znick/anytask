@@ -38,6 +38,9 @@
                                 if ($('input[name="title_update"]', $form).is(':checked'))
                                     $('#task_edit_header').val(problems[i].name);
 
+                                if ($('input[name="short_title_update"]', $form).is(':checked'))
+                                    $('#task_edit_short_header').val(problems[i].title);
+
                                 if ($('input[name="max_score_update"]', $form).is(':checked'))
                                     $('#task_edit_max_score').val(problems[i].score);
 
@@ -149,6 +152,14 @@
                         <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
                             <input class="form-control" id='task_edit_header' name='task_title' type='text' size='20' data-value="{{task.title}}" value="{{task.title}}" />
                             <small class="text-help" id="task_edit_header_error_text"></small>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_short_header">{% trans "kratkoe_nazvanie" %}
+                        <a tabindex="0" data-toggle="popover" data-trigger="hover" data-content="{% trans "kratkoe_nazvanie_help_text" %}" type="button"><i class="fa fa-question-circle help-button" aria-hidden="true"></i></a></label>
+                        <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
+                            <input class="form-control" id='task_edit_short_header' name='task_short_title' type='text' size='20' data-value="{{task.short_title}}" value="{% if task.short_title %}{{task.short_title}}{% endif %}" />
+                            <small class="text-help" id="task_edit_short_header_error_text"></small>
                         </div>
                     </div>
                     {% if is_create or task.type != task.TYPE_SEMINAR and task.type != task.TYPE_MATERIAL %}
@@ -358,6 +369,12 @@
                             <label class="form-control-label">
                                 <input type="checkbox" name="title_update" checked>
                                 {% trans "nazvanie" %}
+                            </label>
+                        </div>
+                         <div class="form-check">
+                            <label class="form-control-label">
+                                <input type="checkbox" name="short_title_update" checked>
+                                {% trans "kratkoe_nazvanie" %}
                             </label>
                         </div>
                         <div class="form-check">

@@ -17,6 +17,7 @@ import copy
 
 class Task(models.Model):
     title = models.CharField(max_length=191, db_index=True, null=True, blank=True)
+    short_title = models.CharField(max_length=15, db_index=True, null=True, blank=True)
     course = models.ForeignKey(Course, db_index=True, null=False, blank=False)
     group = models.ForeignKey(Group, db_index=False, null=True, blank=True, default=None)
     groups = models.ManyToManyField(Group, null=False, blank=False, related_name='groups_set')

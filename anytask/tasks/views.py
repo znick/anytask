@@ -150,6 +150,7 @@ def task_edit_page(request, task_id):
 def task_create_ot_edit(request, course, task_id=None):
     user = request.user
     task_title = request.POST['task_title'].strip()
+    task_short_title = request.POST['task_short_title'].strip() if 'task_short_title' in request.POST else task_title
 
     if 'max_score' in request.POST:
         max_score = request.POST['max_score']
@@ -228,6 +229,7 @@ def task_create_ot_edit(request, course, task_id=None):
         task.course = course
 
     task.title = task_title
+    task.short_title = task_short_title
     task.score_max = max_score
 
     task.parent_task = parent
@@ -360,6 +362,8 @@ def contest_task_import(request):
 
     contest_id = int(request.POST['contest_id_for_task'])
 
+    task_short_title = request.POST['task_short_title'].strip() if 'task_short_title' in request.POST else ''
+
     if 'max_score' in request.POST:
         max_score = int(request.POST['max_score'])
     else:
@@ -472,6 +476,7 @@ def contest_task_import(request):
             real_task.deadline_time = None
 
         real_task.title = task['task_title']
+        real_task.short_title = task_short_title if task_short_title else task['problem_id']
 
         if task_text:
             real_task.task_text = task_text

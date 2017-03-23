@@ -235,6 +235,9 @@
                     required: true,
                     maxlength: 254
                 },
+                task_short_title: {
+                    maxlength: 15
+                },
                 contest_id: {
                     required: true,
                     number: true
@@ -267,6 +270,9 @@
                 },
                 task_title: {
                     required: "{% trans 'nazvanie_neobhodimo' %}",
+                    maxlength: "{% trans 'ne_tak_mnogo' %}"
+                },
+                task_short_title: {
                     maxlength: "{% trans 'ne_tak_mnogo' %}"
                 },
                 contest_id: {
