@@ -132,17 +132,6 @@ class AdmissionRegistrationProfileManager(RegistrationManager):
             except self.model.DoesNotExist:
                 return None
             return profile
-
-            # try:
-            #     user = profile.user
-            #     if not user.is_active:
-            #         user.delete()
-            # except User.DoesNotExist:
-            #     pass
-            #
-            # profile.delete()
-            #
-            # return True
         return None
 
 
