@@ -66,7 +66,7 @@ class UserStatus(models.Model):
 
 class UserProfile(models.Model):
     user = models.ForeignKey(User, db_index=True, null=False, blank=False, unique=True, related_name='profile')
-    second_name = models.CharField(max_length=128, db_index=True, null=True, blank=True)
+    middle_name = models.CharField(max_length=128, db_index=True, null=True, blank=True)
     user_status = models.ManyToManyField(UserStatus, db_index=True, null=True, blank=True, related_name='users_by_status')
 
     avatar = models.ImageField('profile picture', upload_to=get_upload_path, blank=True, null=True, storage=OverwriteStorage())
@@ -75,6 +75,15 @@ class UserProfile(models.Model):
     info = models.TextField(default="", blank=True, null=True)
 
     phone = models.CharField(max_length=128, null=True, blank=True)
+    city_of_residence = models.CharField(max_length=191, null=True, blank=True)
+
+    university = models.CharField(max_length=191, null=True, blank=True)
+    university_in_process = models.BooleanField(null=False, blank=False, default=False)
+    university_class = models.CharField(max_length=50, null=True, blank=True)
+    university_department = models.CharField(max_length=191, null=True, blank=True)
+    university_year_end = models.CharField(max_length=20, null=True, blank=True)
+
+    additional_info = models.TextField(null=True, blank=True)
 
     unit = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
     position = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
