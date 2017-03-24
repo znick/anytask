@@ -102,6 +102,8 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.transaction.TransactionMiddleware',
+    'reversion.middleware.RevisionMiddleware',
     'django.middleware.locale.LocaleMiddleware'
 )
 
@@ -156,6 +158,7 @@ INSTALLED_APPS = (
     'staff',
     'blog',
     'mail',
+    'reversion',
     'admission',
 )
 
@@ -215,3 +218,8 @@ HAYSTACK_CONNECTIONS = {
         'PATH': os.path.join(PROJECT_PATH, 'search/whoosh'),
     },
 }
+
+TEST_RUNNER = 'runner.ExcludeAppsTestSuiteRunner'
+TEST_EXCLUDE = (
+    'reversion',
+)

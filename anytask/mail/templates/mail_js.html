@@ -64,12 +64,12 @@
         language: {
             "decimal": "",
             "emptyTable": "{% trans 'soobshenij_net' %}",
-            "info": "{% trans "_start_-_end__iz__total_" %}",
+            "info": "_START_-_END_ {% trans 'iz' %} _TOTAL_",
             "infoEmpty": "0",
-            "infoFiltered": "{% trans "(iz__max_)" %}",
+            "infoFiltered": "({% trans 'iz' %} _MAX_)",
             "infoPostFix": "",
             "thousands": ",",
-            "lengthMenu": "{% trans "pokazat__menu_" %}",
+            "lengthMenu": "{% trans "pokazat" %} _MENU_",
             "loadingRecords": "{% trans "zagruzka" %}",
             "processing": "<span class='fa fa-circle-o-notch fa-spin'></span>&nbsp;{% trans "zagruzka" %}",
             "search": "",
@@ -521,7 +521,7 @@
 
                             while (status_counter < data.statuses.length) {
                                 if (status_counter == MAX_STATUSES) {
-                                    status_html += '<span class="label label-status-sgs label-default ">еще ' + '1' + '</span>';
+                                    status_html += '<span class="label label-status-sgs label-default ">{% trans 'yeshcho' %} ' + (data.statuses.length - MAX_STATUSES) + '</span>';
                                     break;
                                 }
 

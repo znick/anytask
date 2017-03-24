@@ -24,6 +24,18 @@
 </style>
 
 <div class="card card-block">
+    <h5 class="card-title">{{ issue.task.title }}
+        <a class="btn btn-secondary btn-sm btn-square" data-toggle="collapse" href="#task-text"
+           aria-expanded="false" aria-controls="task-text">
+            <span class="fa fa-caret-down"></span>
+        </a>
+    </h5>
+    <div class="collapse" id="task-text">
+        {{ issue.task.task_text|safe }}
+    </div>
+</div>
+<div class="card card-block">
+    <h5 class="card-title">{% trans "obsuzhdenie_zadachi" %}</h5>
     <ul class="history">
         {% if issue.get_history.count > events_to_show %}
             <li>
@@ -99,6 +111,9 @@
 
 
         {% endfor %}
+        {% if not issue.get_history %}
+            {% trans "zdes_nichego_net" %}
+        {% endif %}
     </ul>
 </div>
 
