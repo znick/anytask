@@ -45,8 +45,7 @@ class AdmissionRegistrationProfileManager(RegistrationManager):
         user_by_email = User.objects.filter(email=email)
 
         if uid:
-            user_by_uid = [u_p.user for u_p in
-                           UserProfile.objects.filter(Q(ya_passport_uid=uid) | Q(ya_contest_uid=uid))]
+            user_by_uid = User.objects.filter(Q(profile__ya_passport_uid=uid) | Q(profile__ya_contest_uid=uid))
         else:
             user_by_uid = User.objects.none()
         user = registration_profile = None
@@ -59,7 +58,7 @@ class AdmissionRegistrationProfileManager(RegistrationManager):
             user, registration_profile = self.create_inactive_user(new_username, email, password, send_email)
             logger.info("Admission: User with email %s was created with generated login %s", user.email, user.username)
         elif len(user_by_email | user_by_uid) == 1:
-            user, registration_profile = self.update_user(user_by_email[0], send_email)
+            user, registration_profile = self.update_user((user_by_email | user_by_uid)[0], send_email)
             logger.info("Admission: User %s was updated", user.username)
         else:
             send_mail_admin(u'Ошибка поступления', request=request)

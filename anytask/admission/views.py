@@ -19,6 +19,23 @@ import datetime
 
 logger = logging.getLogger('django.request')
 
+ANOTHER = u'Другое'
+YES = u'Да'
+MONTH = {
+    u'января': 1,
+    u'февраля': 2,
+    u'марта': 3,
+    u'апреля': 4,
+    u'мая': 5,
+    u'июня': 6,
+    u'июля': 7,
+    u'августа': 8,
+    u'сентября': 9,
+    u'октября': 10,
+    u'ноября': 11,
+    u'декабря': 12
+}
+
 
 def get_post_value(post_data, key):
     return json.loads(post_data[key])['value']
@@ -29,11 +46,9 @@ def get_post_question(post_data, key):
 
 
 def set_user_info(user, user_info):
-    ANOTHER = u'Другое'
-    YES = u'Да'
-
     user.first_name = user_info['first_name']
     user.last_name = user_info['last_name']
+    user.email = user_info['email']
     user.save()
 
     user_profile = user.get_profile()
@@ -41,8 +56,12 @@ def set_user_info(user, user_info):
     user_profile.set_status(settings.ENROLLEE_STATUS)
     user_profile.middle_name = user_info['middle_name']
 
-    locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
-    user_profile.birth_date = datetime.datetime.strptime(user_info['birth_date'][:-3].encode('utf-8'), "%d %B %Y")
+    birth_date_split = user_info['birth_date'][:-3].split()
+    user_profile.birth_date = datetime.datetime(
+        int(birth_date_split[2]),
+        MONTH[birth_date_split[1]],
+        int(birth_date_split[0])
+    )
 
     user_profile.phone = user_info['phone']
     user_profile.city_of_residence = user_info['city_of_residence']
@@ -90,15 +109,16 @@ def register(request):
     username = request.META['HTTP_LOGIN']
     email = get_post_value(post_data, settings.YA_FORMS_FIELDS['email'])
     password = None
+    uid = request.META['HTTP_UID']
     new_user, registration_profile = AdmissionRegistrationProfile.objects.create_or_update_user(username, email,
-                                                                                                password,
+                                                                                                password, uid,
                                                                                                 send_email=False,
                                                                                                 request=request)
     if new_user is not None and registration_profile is not None:
         user_info = {
             'username': username,
-            'uid': request.META['HTTP_UID'],
-            'ya_email': request.META['HTTP_EMAIL'],
+            'uid': uid,
+            'ya_email': request.META['HTTP_EMAIL'] if request.META['HTTP_EMAIL'] else "",
             'is_updating': registration_profile.is_updating
         }
 
