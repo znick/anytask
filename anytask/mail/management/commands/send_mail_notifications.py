@@ -37,7 +37,7 @@ class Command(BaseCommand):
             unread_count_string = get_string(unread_count)
 
             plain_text = _(u'zdravstvujte') + u', {0}.\n\n' + \
-                         _(u'u_vas_soobshenij') + u' {1} {2}.' + '\n' + \
+                         _(u'u_vas') + u' {1} {2}.' + '\n' + \
                          _(u'posmotret_soobshenija') + ':\n' + \
                          u'{3}\n\n' + \
                          u'-- \n' + \
