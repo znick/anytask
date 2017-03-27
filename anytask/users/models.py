@@ -7,6 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 from django import forms
 
 from datetime import datetime
+from collections import defaultdict
 
 from years.common import get_current_year
 from groups.models import Group
@@ -20,6 +21,10 @@ from anytask.storage import OverwriteStorage
 import os
 import django_filters
 import copy
+
+import logging
+
+logger = logging.getLogger('django.request')
 
 
 def get_upload_path(instance, filename):
@@ -67,9 +72,11 @@ class UserStatus(models.Model):
 class UserProfile(models.Model):
     user = models.ForeignKey(User, db_index=True, null=False, blank=False, unique=True, related_name='profile')
     middle_name = models.CharField(max_length=128, db_index=True, null=True, blank=True)
-    user_status = models.ManyToManyField(UserStatus, db_index=True, null=True, blank=True, related_name='users_by_status')
+    user_status = models.ManyToManyField(UserStatus, db_index=True, null=True, blank=True,
+                                         related_name='users_by_status')
 
-    avatar = models.ImageField('profile picture', upload_to=get_upload_path, blank=True, null=True, storage=OverwriteStorage())
+    avatar = models.ImageField('profile picture', upload_to=get_upload_path, blank=True, null=True,
+                               storage=OverwriteStorage())
     birth_date = models.DateField(blank=True, null=True)
 
     info = models.TextField(default="", blank=True, null=True)
@@ -134,9 +141,9 @@ class UserProfile(models.Model):
         if not isinstance(new_status, UserStatus):
             new_status = UserStatus.objects.get(id=new_status)
 
-        for status in self.user_status.all():
-            if status.type == new_status.type:
-                self.user_status.remove(status)
+        if new_status.type:
+            self.user_status.remove(*self.user_status.filter(type=new_status.type))
+
         self.user_status.add(new_status)
 
     def get_unread_count(self):
@@ -212,24 +219,122 @@ class UserProfileLog(models.Model):
         return unicode(self.user)
 
 
+class CustomMethodFilter(django_filters.MethodFilter):
+    def __init__(self, *args, **kwargs):
+        self.field_class = kwargs.pop('field_class', forms.Field)
+
+        super(CustomMethodFilter, self).__init__(*args, **kwargs)
+
+
 class UserProfileFilter(django_filters.FilterSet):
-    # user_status_education_form = django_filters.ChoiceFilter(label=_(u'<strong>Форма обучения</strong>'), name='user_status')
-    user_status = django_filters.ChoiceFilter(label=_('status_studenta'), name='user_status')
+    courses = CustomMethodFilter(label=u'<strong>{0}</strong>'.format(_(u'kurs')),
+                                 action='empty_filter',
+                                 widget=forms.SelectMultiple,
+                                 field_class=forms.MultipleChoiceField)
+    groups = CustomMethodFilter(label=u'<strong>{0}</strong>'.format(_(u'gruppa')),
+                                action='empty_filter',
+                                widget=forms.SelectMultiple,
+                                field_class=forms.MultipleChoiceField)
+    user_status_activity = django_filters.MultipleChoiceFilter(
+        label=u'<strong>{0}</strong>'.format(_(u'status_studenta')),
+        name='user_status',
+        widget=forms.SelectMultiple)
+    user_status_filial = django_filters.MultipleChoiceFilter(
+        label=u'<strong>{0}</strong>'.format(_(u'filial')),
+        name='user_status',
+        widget=forms.SelectMultiple)
+    user_status_admission = django_filters.MultipleChoiceFilter(
+        label=u'<strong>{0}</strong>'.format(_(u'status_postupleniya')),
+        name='user_status',
+        widget=forms.SelectMultiple)
+
+    @property
+    def qs(self):
+        if not hasattr(self, '_qs'):
+            qs = super(UserProfileFilter, self).qs
+            if not hasattr(self, '_users_info'):
+                qs_filter = {}
+
+                if u'courses' in self.data:
+                    qs_filter['user__group__course__id__in'] = self.data.getlist(u'courses')
+                if u'groups' in self.data:
+                    qs_filter['user__group__id__in'] = self.data.getlist(u'groups')
+
+                users_info = {}
+                for info in qs.filter(**qs_filter).values(
+                        'id',
+                        'user__id',
+                        'user__username',
+                        'user__email',
+                        'user__last_name',
+                        'user__first_name',
+                        'user_status__id',
+                        'user_status__name',
+                        'user_status__color',
+                        # 'user__group__course__id',
+                        # 'user__group__course__name',
+                        # 'user__group__course__is_active'
+                ):
+                    if info['user__id'] not in users_info:
+                        users_info[info['user__id']] = defaultdict(dict)
+                        users_info[info['user__id']]['id_profile'] = info['id']
+                        users_info[info['user__id']]['username'] = info['user__username']
+                        users_info[info['user__id']]['email'] = info['user__email']
+                        users_info[info['user__id']]['last_name'] = info['user__last_name']
+                        users_info[info['user__id']]['first_name'] = info['user__first_name']
+                    if info['user_status__id']:
+                        users_info[info['user__id']]['statuses'][info['user_status__id']] = {
+                            'name': info['user_status__name'],
+                            'color': info['user_status__color'],
+                        }
+                        # users_info[info['user__id']]['courses'][info['user__group__course__id']] = {
+                        #     'name': info['user__group__course__name']
+                        # }
+                self.users_info = users_info
+        return self._qs
+
+    def empty_filter(self, qs, value):
+        return qs
+
+    # def filter_course(self, qs, value):
+    #     if not hasattr(self, '_qs'):
+    #         if value and qs:
+    #             return qs.filter(user__group__course__id__in=value).distinct()
+    #     return qs
+    #
+    # def filter_group(self, qs, value):
+    #     if not hasattr(self, '_qs'):
+    #         if value and qs:
+    #             return qs.filter(user__group__id__in=value).distinct()
+    #     return qs
 
     def set(self):
-        self.filters['user_status'].field.label = u'<strong>{0}</strong>'.format(
-            self.filters['user_status'].field.label)
-        activity_choices = [(status.id, status.name) for status in UserStatus.objects.filter(type='activity')]
-        activity_choices.insert(0, (u'', _(u'luboj')))
-        self.filters['user_status'].field.choices = tuple(activity_choices)
+        self.courses_qs = Course.objects.filter(is_active=True)
+        courses_choices = [(course.id, unicode(course)) for course in self.courses_qs]
+        self.filters['courses'].field.choices = tuple(courses_choices)
 
-        # education_form_choices = [(status.id, _(status.name)) for status in UserStatus.objects.filter(type='education_form')]
-        # education_form_choices.insert(0, (u'', _(u'luboj')))
-        # self.filters['user_status_education_form'].field.choices = tuple(education_form_choices)
+        self.groups_qs = Group.objects.all()
+        groups = [(group.id, unicode(group)) for group in self.groups_qs]
+        self.filters['groups'].field.choices = tuple(groups)
+
+        activity_choices = []
+        filial_choices = []
+        admission_choices = []
+        for status in UserStatus.objects.exclude(type__isnull=True):
+            if status.type == 'activity':
+                activity_choices.append((status.id, status.name))
+            elif status.type == 'filial':
+                filial_choices.append((status.id, status.name))
+            elif status.type == 'admission':
+                admission_choices.append((status.id, status.name))
+
+        self.filters['user_status_activity'].field.choices = tuple(activity_choices)
+        self.filters['user_status_filial'].field.choices = tuple(filial_choices)
+        self.filters['user_status_admission'].field.choices = tuple(admission_choices)
 
     class Meta:
         model = UserProfile
-        fields = ['user_status']
+        fields = ['courses', 'groups', 'user_status_filial', 'user_status_activity', 'user_status_admission']
 
 
 def create_user_profile(sender, instance, created, **kwargs):
@@ -239,7 +344,7 @@ def create_user_profile(sender, instance, created, **kwargs):
 
 def user_profile_log_save_to_log_post_save(sender, instance, created, **kwargs):
     user_profile_log = UserProfileLog()
-    user_profile_log_dict  = copy.deepcopy(instance.__dict__)
+    user_profile_log_dict = copy.deepcopy(instance.__dict__)
     user_profile_log_dict['id'] = None
     user_profile_log.__dict__ = user_profile_log_dict
     user_profile_log.save()
@@ -247,6 +352,7 @@ def user_profile_log_save_to_log_post_save(sender, instance, created, **kwargs):
     user_profile_log.unread_messages.add(*instance.unread_messages.all())
     user_profile_log.deleted_messages.add(*instance.deleted_messages.all())
     user_profile_log.send_notify_messages.add(*instance.send_notify_messages.all())
+
 
 post_save.connect(create_user_profile, sender=User)
 post_save.connect(user_profile_log_save_to_log_post_save, sender=UserProfile)
