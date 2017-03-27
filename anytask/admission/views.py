@@ -14,29 +14,84 @@ from admission.models import AdmissionRegistrationProfile
 import json
 import requests
 import logging
+import locale
+import datetime
 
 logger = logging.getLogger('django.request')
+
+ANOTHER = u'Другое'
+YES = u'Да'
+MONTH = {
+    u'января': 1,
+    u'февраля': 2,
+    u'марта': 3,
+    u'апреля': 4,
+    u'мая': 5,
+    u'июня': 6,
+    u'июля': 7,
+    u'августа': 8,
+    u'сентября': 9,
+    u'октября': 10,
+    u'ноября': 11,
+    u'декабря': 12
+}
 
 
 def get_post_value(post_data, key):
     return json.loads(post_data[key])['value']
 
 
+def get_post_question(post_data, key):
+    return json.loads(post_data[key])['question']['label']['ru']
+
+
 def set_user_info(user, user_info):
     user.first_name = user_info['first_name']
     user.last_name = user_info['last_name']
+    user.email = user_info['email']
     user.save()
 
     user_profile = user.get_profile()
     user_profile.set_status(settings.FILIAL_STATUSES[user_info['filial']])
     user_profile.set_status(settings.ENROLLEE_STATUS)
+    user_profile.middle_name = user_info['middle_name']
+
+    birth_date_split = user_info['birth_date'][:-3].split()
+    user_profile.birth_date = datetime.datetime(
+        int(birth_date_split[2]),
+        MONTH[birth_date_split[1]],
+        int(birth_date_split[0])
+    )
+
     user_profile.phone = user_info['phone']
+    user_profile.city_of_residence = user_info['city_of_residence']
+
+    if user_info['university'] == ANOTHER:
+        user_profile.university = user_info['university_text']
+    else:
+        user_profile.university = user_info['university']
+
+    if user_info['university_in_process'] == YES:
+        user_profile.university_in_process = True
+    else:
+        user_profile.university_in_process = False
+
+    if user_info['university_class'] == ANOTHER:
+        user_profile.university_class = user_info['university_class_text']
+    else:
+        user_profile.university_class = user_info['university_class']
+
+    user_profile.university_department = user_info['university_department']
+    user_profile.university_year_end = user_info['university_year_end']
+    user_profile.additional_info = user_info['additional_info']
 
     user_profile.ya_contest_uid = user_info['uid']
+    user_profile.ya_contest_login = user_info['username']
 
     user_profile.ya_passport_uid = user_info['uid']
-    user_profile.ya_passport_email = user_info['email']
+    user_profile.ya_passport_email = user_info['ya_email']
     user_profile.ya_passport_login = user_info['username']
+
     if not user_info['is_updating']:
         user_profile.login_via_yandex = True
 
@@ -54,21 +109,30 @@ def register(request):
     username = request.META['HTTP_LOGIN']
     email = get_post_value(post_data, settings.YA_FORMS_FIELDS['email'])
     password = None
+    uid = request.META['HTTP_UID']
     new_user, registration_profile = AdmissionRegistrationProfile.objects.create_or_update_user(username, email,
-                                                                                                password,
+                                                                                                password, uid,
                                                                                                 send_email=False,
                                                                                                 request=request)
-    if new_user is not None:
+    if new_user is not None and registration_profile is not None:
         user_info = {
             'username': username,
-            'email': email,
-            'last_name': get_post_value(post_data, settings.YA_FORMS_FIELDS['last_name']),
-            'first_name': get_post_value(post_data, settings.YA_FORMS_FIELDS['first_name']),
-            'phone': get_post_value(post_data, settings.YA_FORMS_FIELDS['phone']),
-            'filial': get_post_value(post_data, settings.YA_FORMS_FIELDS['filial']),
-            'uid': request.META['HTTP_UID'],
+            'uid': uid,
+            'ya_email': request.META['HTTP_EMAIL'] if request.META['HTTP_EMAIL'] else "",
             'is_updating': registration_profile.is_updating
         }
+
+        for key, post_data_key in settings.YA_FORMS_FIELDS.iteritems():
+            user_info[key] = get_post_value(post_data, post_data_key)
+
+        for key, post_data_keys in settings.YA_FORMS_FIELDS_ADDITIONAL.iteritems():
+            info_json = []
+            for post_data_key in post_data_keys:
+                info_json.append({
+                    'question': get_post_question(post_data, post_data_key),
+                    'value': get_post_value(post_data, post_data_key)
+                })
+            user_info[key] = json.dumps(info_json)
 
         registration_profile.user_info = json.dumps(user_info)
         registration_profile.save()
