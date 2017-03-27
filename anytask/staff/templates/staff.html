@@ -57,7 +57,9 @@
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                     {% if file_filter_err %}
+                                        {% autoescape off %}
                                         {{ file_filter_err }}
+                                        {% endautoescape %}
                                     {% else %}
                                         {% trans "naydeno_polzovateley" %}&nbsp;{{ filter.users_info|length }}
                                     {% endif %}
