@@ -478,7 +478,7 @@ msgstr "Отображение полей и установка значений
 
 #: courses/templates/courses/settings.html:160
 msgid "izmenenie_v_zadache"
-msgstr ""
+msgstr "Уведомить студентов о создании/изменении в задаче"
 
 #: courses/templates/courses/settings.html:163
 #: courses/templates/courses/settings.html:176
@@ -1131,7 +1131,7 @@ msgstr "Логины"
 #. Показать ещё статусы студента.  Сокращение в интерфейсе
 #: mail/templates/mail_js.html:524 templates/base.html:102
 msgid "yeshcho"
-msgstr ""
+msgstr "ещё"
 
 #: mail/templates/mail_js.html:539 search/templates/search.html:146
 #: templates/base.html:117
@@ -1349,18 +1349,18 @@ msgstr "Перейти в курс"
 #: tasks/management/commands/send_task_notifications.py:99
 #: tasks/templates/email_notification_task.html:23
 msgid "izmenilis"
-msgstr ""
+msgstr "изменились"
 
 #. В курсе {0} произошли изменения: добавлена задача {1}
 #: tasks/management/commands/send_task_notifications.py:100
 #: tasks/templates/email_notification_task.html:21
 msgid "dobavlena_zadacha"
-msgstr ""
+msgstr "добавлена задача"
 
 #. {0}, произошли изменения в ваших курсах
 #: tasks/management/commands/send_task_notifications.py:109
 msgid "proizoshli_izmeneniya_v_kursah"
-msgstr ""
+msgstr "произошли изменения в ваших курсах"
 
 #. Тип задачи: только оценка/с обсужденим/семинар
 #: tasks/models.py:42 tasks/models.py:204
@@ -1375,7 +1375,7 @@ msgstr "только оценка"
 #. Тип задачи
 #: tasks/models.py:44
 msgid "material"
-msgstr ""
+msgstr "материал"
 
 #. Тип задачи: только оценка/с обсужденим/семинар
 #: tasks/models.py:45
@@ -1424,7 +1424,7 @@ msgstr "Имя файла будет изменено на upload. Расшир�
 
 #: tasks/templates/contest_import.html:169
 msgid "uvedomit_o_sozdanii_zadach"
-msgstr ""
+msgstr "Уведомить студентов о создании задач"
 
 #: tasks/templates/contest_import.html:175
 msgid "skryt_zadachi"
@@ -1433,7 +1433,7 @@ msgstr "Скрыть задачи"
 #. В курсе {0} произошли изменения 
 #: tasks/templates/email_notification_task.html:15
 msgid "proizoshli_izmeneniya"
-msgstr ""
+msgstr "произошли изменения"
 
 #: tasks/templates/task_create.html:9 tasks/templates/task_create.html.py:25
 #: tasks/templates/task_create.html:46 tasks/templates/task_edit.html:8
@@ -1456,7 +1456,7 @@ msgstr "Подзадачи"
 
 #: tasks/templates/task_create.html:141 tasks/templates/task_import.html:145
 msgid "uvedomit_o_sozdanii_zadachi"
-msgstr ""
+msgstr "Уведомить студентов о создании задачи"
 
 #: tasks/templates/task_create.html:147 tasks/templates/task_edit.html:296
 #: tasks/templates/task_import.html:151
@@ -1560,7 +1560,7 @@ msgstr "Обновить данные из Я.Контеста"
 
 #: tasks/templates/task_edit.html:290
 msgid "uvedomit_ob_izmenenii_v_zadache"
-msgstr ""
+msgstr "Уведомить студентов об изменении в задаче"
 
 #: tasks/templates/task_edit.html:346
 msgid "obnovlenie_dannyh_iz_kontesta"
@@ -1596,7 +1596,7 @@ msgstr "Что-то пошло не так... Пожалуйста, сообщи
 
 #: templates/base.html:155
 msgid "vse_resultaty"
-msgstr ""
+msgstr "Все результаты"
 
 #. Сообщение в интерфейсе, если есть непрочитанные. 
 #: templates/base.html:657
