@@ -4,6 +4,7 @@
 {% load sanitize_html icon %}
 {% load dict_func %}
 {% load task_taken_func %}
+<link href="{{ STATIC_URL }}shad_cpp.css" rel='stylesheet'/>
 
 {% block title %}{% if seminar %}{{ seminar.title }} | {% endif %}{{ course.name }} | {{ course.year }}{% endblock %}
 
@@ -48,9 +49,8 @@
 
 {% block content %}
     {{ block.super }}
-<div id="legend" style="height: 45px; z-index: 5;">
-    <div class="card card-block" style="padding: .1rem; background-color: #f5f8fa;
-    border-color: #f5f8fa; margin-bottom: 0px; padding-left: 0rem;">
+<div id="legend">
+    <div class="card card-block">
         <div class="row">
             <div class="col-md-12 col-xs-12">
                     <a class="btn btn-secondary btn-sm" id="status_btn" data-toggle="popover-status" data-placement="bottom" data-container="document"
@@ -61,8 +61,7 @@
                                             <li><span class="label" style="background-color: {{ issue_status.color }}">{{ issue_status.name }}</span></li>
                                         {% endfor %}
                                         <li><span class="label label-inverse">{% trans "summarnyj_ball" %}</span></li>
-                                    </ul>'>
-                      Статусы
+                                    </ul>'>{% trans "statusy" %}
                     </a>
                     {% if user_is_teacher %}
                         {% if visible_hide_button %}
