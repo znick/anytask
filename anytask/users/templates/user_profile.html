@@ -14,29 +14,29 @@
     <ul class="nav navbar-nav">
         {% if request.user == user_to_show %}
             <li class="nav-item active">
-                <a class="nav-link" href="">{% trans "Профиль" %}</a>
+                <a class="nav-link" href="">{% trans "profil" %}</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{% url users.views.my_tasks %}">{% trans "Мои задачи" %}</a>
+                <a class="nav-link" href="{% url users.views.my_tasks %}">{% trans "moi_zadachi" %}</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{% url users.views.user_courses username=user_to_show %}">{% trans "Мои курсы" %}</a>
+                <a class="nav-link" href="{% url users.views.user_courses username=user_to_show %}">{% trans "moi_kursy" %}</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{% url users.views.profile_settings %}">{% trans "Настройки" %}</a>
+                <a class="nav-link" href="{% url users.views.profile_settings %}">{% trans "nastrojki" %}</a>
             </li>
         {% else %}
             <li class="nav-item active">
-                <a class="nav-link" href="{% url users.views.profile user_to_show %}">{% trans "Профиль студента" %}</a>
+                <a class="nav-link" href="{% url users.views.profile user_to_show %}">{% trans "profil_studenta" %}</a>
             </li>
             {% if user_above_user_to_show %}
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url users.views.user_courses username=user_to_show %}">{% trans "Курсы студента" %}</a>
+                    <a class="nav-link" href="{% url users.views.user_courses username=user_to_show %}">{% trans "kursy_studenta" %}</a>
                 </li>
             {% endif %}
             {% if user.is_staff %}
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url users.views.profile_history user_to_show %}">{% trans "Редактирование статусов" %}</a>
+                    <a class="nav-link" href="{% url users.views.profile_history user_to_show %}">{% trans "redaktirovanie_statusov" %}</a>
                 </li>
             {% endif %}
         {% endif %}
@@ -100,7 +100,7 @@
                             <small class="text-muted">{{ user_to_show.email }}</small>
                             <div class="social-acc-info">
                                 {% if user_to_show_profile.ya_passport_email %}
-                                    <small class="text-muted">{% trans "Яндекс.Почта" %}&nbsp;</small>
+                                    <small class="text-muted">{% trans "japochta" %}&nbsp;</small>
                                     <small class="text-muted">{{ user_to_show_profile.ya_passport_email }}</small>
                                 {% endif %}
                             </div>
@@ -113,7 +113,7 @@
                     {% if user == user_to_show and can_generate_invites %}
                         <br>
                         <br>
-                        <a type="button" class="btn btn-secondary" href="#" onclick="window.open('{% url invites.views.generate_invites %}','_blank','height=331,width=769,status=yes,toolbar=no,menubar=no,location=no');return false;">{% trans "Сгенерировать инвайты" %}</a>
+                        <a type="button" class="btn btn-secondary" href="#" onclick="window.open('{% url invites.views.generate_invites %}','_blank','height=331,width=769,status=yes,toolbar=no,menubar=no,location=no');return false;">{% trans "sgenerirovat_invajty" %}</a>
                     {% endif %}
                 </div>
             </div>
@@ -123,24 +123,24 @@
                     {% if not user_to_show_profile.ya_contest_oauth %}
                         <div class="card card-inverse card-warning">
                             <div class="card-block">
-                                <h5 class="card-title">{% trans "Привязать профиль Яндекс.Контеста" %}</h5>
+                                <h5 class="card-title">{% trans "privjazat_profil_kontesta" %}</h5>
                                 <p class="card-text">
-                                    <strong>{%  trans "Привязать можно только один профиль!" %}</strong> {% blocktrans %}Для того, чтобы отвязать свой профиль обратитесь к <a href="mailto:anytask@yandex.ru">администратору</a>.{% endblocktrans %}
+                                    <strong>{%  trans "privjazat_odin_profil" %}</strong> {% trans "otvjazat_svoj_profil" %} <a href=\mailto:anytask@yandex.ru\>{% trans "administratoru" %}</a>.
                                 </p>
                                 <a href="/user/ya_oauth_request/contest" type="button" class="btn btn-secondary">
-                                    Привязать
+                                    {%  trans "priviazat" %}
                                 </a>
                             </div>
                         </div>
                     {% else %}
                         <div class="card card-inverse card-success">
                             <div class="card-block">
-                                <h5 class="card-title">{% trans "Привязать профиль Яндекс.Контеста" %}</h5>
+                                <h5 class="card-title">{% trans "privjazat_profil_kontesta" %}</h5>
                                 <p class="card-text">
-                                    <strong>{% blocktrans with login=user_to_show_profile.ya_contest_login %}Вы привязали профиль {{ login }}.{% endblocktrans %}</strong> {% blocktrans %}Теперь все посылки в соревнования будут отправляться от Вашего имени. Для того, чтобы отвязать свой профиль обратитесь к <a href="mailto:anytask@yandex.ru">администратору</a>.{% endblocktrans %}
+                                    <strong>{% trans "privjazali_profil" %} {{ user_to_show_profile.ya_contest_login }}.</strong> {% trans "profil_kontesta_priviazan" %} <a href=\mailto:anytask@yandex.ru\>{% trans "administratoru" %}</a>.
                                 </p>
                                 <a href="/user/ya_oauth_request/contest" type="button" class="btn btn-secondary">
-                                    {% trans "Обновить привязку текущего профиля" %}
+                                    {% trans "obnovit_privjazku_profilja" %}
                                 </a>
                             </div>
                         </div>
@@ -152,8 +152,8 @@
 
                 <div class="card">
                     <div class="card-block">
-                        <h5 class="card-title">{% trans "Активация инвайтов в курсы" %}</h5>
-                        <button id="invites_form_button" type="button" class="btn btn-secondary {% if invite_form.errors %}collapse{% else %}in collapse{% endif %}"  style="margin-bottom: 1rem;">{% trans "Ввести инвайт" %}</button>
+                        <h5 class="card-title">{% trans "aktivacija_invajtov" %}</h5>
+                        <button id="invites_form_button" type="button" class="btn btn-secondary {% if invite_form.errors %}collapse{% else %}in collapse{% endif %}"  style="margin-bottom: 1rem;">{% trans "vvesti_invajt" %}</button>
                         <div class="row">
                             <div class="col-md-12">
                                 <form action="{% url users.views.profile %}" method="post" id="invites_form" class="{% if invite_form.errors %}in collapse{% else %}collapse{% endif %}">
@@ -182,7 +182,7 @@
             <div class="card">
                 <div class="card-block">
                     <h5 class="card-title">
-                        {% trans "О себе" %}
+                        {% trans "o_sebe" %}
                         {% if user == user_to_show %}
                             <a type="button" class="btn btn-secondary btn-sm" id="user_info_edit_btn" style="padding: 6px 8px;" >
                                 <i class="fa fa-pencil"></i>
@@ -191,7 +191,7 @@
                     </h5>
                     <div class="card-text" id="user_info_body">
                         {% if user_to_show.get_profile.info %}{{ user_to_show.get_profile.info|sanitize|safe }}
-                        {% else %}{% trans "Пока здесь ничего нет :(" %} {% endif %}
+                        {% else %}{% trans "zdes_nichego_net" %} {% endif %}
                     </div>
                 </div>
             </div>
@@ -207,9 +207,9 @@
                             <div class="card">
                                 <div class="card-header" >
                                     {% if teacher_in_courses_archive %}
-                                        <a class="close switch-tab" href="#teacher_course_archive" role="tab" title='{% trans "Архив" %}' ><i class="fa fa-file-archive-o" aria-hidden="true"></i></a>
+                                        <a class="close switch-tab" href="#teacher_course_archive" role="tab" title='{% trans "arhiv" %}' ><i class="fa fa-file-archive-o" aria-hidden="true"></i></a>
                                     {% endif %}
-                                    <h5 class="card-title">{% trans "Преподаватель в курсах" %}</h5>
+                                    <h5 class="card-title">{% trans "prepodavatel_v_kursah" %}</h5>
                                     <ul class="nav nav-pills" role="tablist">
                                         {% for year, _ in teacher_in_courses %}
                                             <li class="nav-item">
@@ -241,9 +241,9 @@
                             <div class="card">
                                 <div class="card-header" >
                                     {% if teacher_in_courses %}
-                                        <a class="close switch-tab" href="#teacher_course" role="tab" title='{% trans "Активные" %}'><i class="fa fa-file-text-o" aria-hidden="true"></i></a>
+                                        <a class="close switch-tab" href="#teacher_course" role="tab" title='{% trans "aktivnye" %}'><i class="fa fa-file-text-o" aria-hidden="true"></i></a>
                                     {% endif %}
-                                    <h5 class="card-title">{% trans "Преподаватель в курсах (Архив)" %}</h5>
+                                    <h5 class="card-title">{% trans "prepodavatel_v_kursah_arhiv" %}</h5>
                                     <ul class="nav nav-pills" role="tablist">
                                         {% for year, _ in teacher_in_courses_archive %}
                                             <li class="nav-item">
@@ -280,9 +280,9 @@
                             <div class="card">
                                 <div class="card-header" >
                                     {% if courses_archive %}
-                                        <a class="close switch-tab" href="#course_list_archive" role="tab" title='{%  trans  "Архив" %}'><i class="fa fa-file-archive-o" aria-hidden="true"></i></a>
+                                        <a class="close switch-tab" href="#course_list_archive" role="tab" title='{%  trans  "arhiv" %}'><i class="fa fa-file-archive-o" aria-hidden="true"></i></a>
                                     {% endif %}
-                                    <h5 class="card-title">{% trans "Состоит в курсах" %}</h5>
+                                    <h5 class="card-title">{% trans "sostoit_v_kursah" %}</h5>
                                     <ul class="nav nav-pills" role="tablist">
                                         {% for year, _ in courses %}
                                             <li class="nav-item">
@@ -314,9 +314,9 @@
                             <div class="card">
                                 <div class="card-header" >
                                     {% if courses %}
-                                        <a class="close switch-tab" href="#course_list" role="tab" title='{% trans "Архив" %}'><i class="fa fa-file-text-o" aria-hidden="true"></i></a>
+                                        <a class="close switch-tab" href="#course_list" role="tab" title='{% trans "arhiv" %}'><i class="fa fa-file-text-o" aria-hidden="true"></i></a>
                                     {% endif %}
-                                    <h5 class="card-title">{% trans "Состоит в курсах (Архив)" %}</h5>
+                                    <h5 class="card-title">{% trans "sostoit_v_kursah_arhiv" %}</h5>
                                     <ul class="nav nav-pills" role="tablist">
                                         {% for year, _ in courses_archive %}
                                             <li class="nav-item">
@@ -349,7 +349,7 @@
             <div class="{{ card_width }} col-xs-12 ">
                 <div class="card">
                     <div class="card-header" >
-                        <h5 class="card-title">{% trans "Состоит в группах" %}</h5>
+                        <h5 class="card-title">{% trans "sostoit_v_gruppah" %}</h5>
                         <ul class="nav nav-pills" role="tablist">
                             {% for year, _ in groups %}
                                 <li class="nav-item">
@@ -382,7 +382,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h5 class="modal-title" id="modal_avatar_edit_header">{% trans "Выбор аватара" %}</h5>
+                        <h5 class="modal-title" id="modal_avatar_edit_header">{% trans "vybor_avatara" %}</h5>
                     </div>
                     <div class="modal-body" style="max-height: none;">
                         <div class="row" style="text-align: center;">
@@ -401,12 +401,13 @@
                                         <input name="input-avatar" id="input-avatar" onchange="readURL(this);" type="file" style="display: none;" accept="image/*">
                                         <input name="gravatar-link" id="gravatar-link" type="text" style="display: none;" value="">
                                     </label>
-                                    <label class="btn btn-secondary" id="get-gravatar" >
-                                        <img src="https://www.gravatar.com/avatar/00000000000000000000000000000000?d=retro&amp;f=y"
-                                             style="width: 16px; height: 16px; ">
-                                        <input type="hidden" value="" />
-                                    </label>
+{#                                    <label class="btn btn-secondary" id="get-gravatar" >#}
+{#                                        <img src="https://www.gravatar.com/avatar/00000000000000000000000000000000?d=retro&amp;f=y"#}
+{#                                             style="width: 16px; height: 16px; ">#}
+{#                                        <input type="hidden" value="" />#}
+{#                                    </label>#}
                                     <label class="btn btn-secondary" id="dismiss-avatar" >
+                                        <input name="delete-avatar" id="delete-avatar" type="text" style="display: none;" value="">
                                         <i class="fa fa-times"></i>
                                     </label>
                                 </div>
@@ -415,8 +416,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <a href="#" class="btn btn-secondary btn-sm" data-dismiss="modal">{% trans "Закрыть" %}</a>
-                        <button type="submit" name="update-avatar" form="avatar-form" class="btn btn-primary btn-sm" id="modal_course_info_ok" data-loading-text="{% trans "Сохранение..." %}">{% trans "Сохранить" %}</button>
+                        <a href="#" class="btn btn-secondary btn-sm" data-dismiss="modal">{% trans "zakryt" %}</a>
+                        <button type="submit" name="update-avatar" form="avatar-form" class="btn btn-primary btn-sm" id="modal_course_info_ok" data-loading-text="{% trans "sohranenie" %}">{% trans "sohranit" %}</button>
                     </div>
                 </div>
             </div>
@@ -427,7 +428,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h5 class="modal-title" id="modal_user_info_header">{% trans "О себе" %}</h5>
+                        <h5 class="modal-title" id="modal_user_info_header">{% trans "o_sebe" %}</h5>
                     </div>
                     <div class="modal-body" style="max-height: none;">
                         <form method="post" id="user-info-form" enctype="multipart/form-data">
@@ -435,12 +436,12 @@
                             <textarea class='input-xlarge form-control' style="width: 100%;resize: none;" id='user_info' rows='13' name='user-info'></textarea>
                         </form>
                         <div class="alert alert-danger" role ="alert" id="update_user_info_error_text" style="margin: 1rem 0 0 0;">
-                            <span>{% trans "Произошла ошибка. Попробуйте еще раз." %}</span>
+                            <span>{% trans "oshibka_poprobujte_eshe" %}</span>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">{% trans "Закрыть" %}</button>
-                        <button type="button" form="user-info-form" class="btn btn-primary" id="modal_user_info_ok" data-loading-text='{% trans "Сохранение..." %}'>{% trans "Сохранить" %}</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">{% trans "zakryt" %}</button>
+                        <button type="button" form="user-info-form" class="btn btn-primary" id="modal_user_info_ok" data-loading-text='{% trans "sohranenie" %}'>{% trans "sohranit" %}</button>
                     </div>
                 </div>
             </div>
@@ -451,7 +452,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h5 class="modal-title" id="modal_avatar_edit_header">{% trans "Просмотр аватара" %}</h5>
+                    <h5 class="modal-title" id="modal_avatar_edit_header">{% trans "prosmotr_avatara" %}</h5>
                 </div>
                 <div class="modal-body" style="max-height: none;">
                     <div class="row" style="text-align: center;">
@@ -464,7 +465,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <a href="#" class="btn btn-secondary btn-sm" data-dismiss="modal">{% trans "Закрыть" %}</a>
+                    <a href="#" class="btn btn-secondary btn-sm" data-dismiss="modal">{% trans "zakryt" %}</a>
                 </div>
             </div>
         </div>
@@ -473,7 +474,7 @@
 
     <footer>
         <small class="text-muted pull-xs-right">
-            {%  blocktrans %}Если какие-либо данные неверны, обратитесь к <a href="mailto:anytask@yandex.ru">администратору</a>.{%  endblocktrans %}
+            {% trans "esli_dannye_neverny"%} <a href=\mailto:anytask@yandex.ru\>{% trans "administratoru" %}</a>.
         </small>
     </footer>
 

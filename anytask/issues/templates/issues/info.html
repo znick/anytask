@@ -61,7 +61,7 @@
                                             <form method="post" style="display: inline;">
                                                 {% csrf_token %}
                                                 <input type="hidden" name="contest_rejudge" value="on">
-                                                <button type="submit" class="btn btn-secondary">{% trans "Пересудить" %}</button>
+                                                <button type="submit" class="btn btn-secondary">{% trans "peresudit" %}</button>
                                             </form>
                                         {% elif show_contest_rejudge_loading %}
                                             <button type="submit" class="btn btn-secondary" style="cursor: default" disabled="disabled"><span class='fa fa-circle-o-notch fa-spin fa-fw'></span></button>
@@ -93,19 +93,19 @@
                                 </div>
                                 {% if field.name == 'mark' or field.name == 'status' %}
                                     <div class="form-group">
-                                        <textarea class='form-control comment-verdict' placeholder="{% trans "Комментарий" %}" style="width: 100%;height: 70px; resize: none;" rows='13' name='comment_verdict'></textarea>
+                                        <textarea class='form-control comment-verdict' placeholder="{% trans "kommentarij" %}" style="width: 100%;height: 70px; resize: none;" rows='13' name='comment_verdict'></textarea>
                                     </div>
                                 {% endif %}
                                 <div class="form-group btn-group-submit">
-                                    <button type="submit" class="btn btn-secondary">{%  trans "Отправить" %}</button>
+                                    <button type="submit" class="btn btn-secondary">{%  trans "otpravit" %}</button>
                                     {% if field.name == 'responsible_name' or field.name == 'followers_names' %}
-                                        <button type="submit" class="btn btn-secondary" name="Me">{%  trans "Я" %}</button>
+                                        <button type="submit" class="btn btn-secondary" name="Me">{%  trans "ja" %}</button>
                                     {% endif %}
                                     {% if field.name == 'mark' %}
                                         {% if statuses_accepted.count > 1 %}
                                             <div class="dropdown dropdown-submit" style="display: inline-block;">
                                                 <button class="btn btn-secondary dropdown-toggle" type="button" id="accepted_btn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                    {%  trans "Статус" %}
+                                                    {%  trans "status" %}
                                                 </button>
                                                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                                     {% for status in statuses_accepted %}
@@ -128,7 +128,7 @@
     <div class="card">
         <div class="card-header">
             <div class="row col-wrap">
-                <div class="col-md-5 accordion2-label">{%  trans "Дата сдачи" %}:</div>
+                <div class="col-md-5 accordion2-label">{%  trans "data_sdachi" %}:</div>
                 <div class="col-md-7 accordion2-result">
                     {{ issue.task.deadline_time|date:'d-m-Y H:i' }} {% if issue.task.deadline_time %} MSK UTC+3 {% endif %}
                 </div>
@@ -148,7 +148,7 @@
                 {% if teacher_or_staff %}
                     <a id="modal_task_descr_edit_button" href="{% url tasks.views.task_edit_page task_id=issue.task.id %}" type="button" style="opacity:0.2;filter: alpha(opacity=20);color:#000000;display: inline-block;vertical-align: super;margin-left: 5px;"><i class="fa fa-edit fa-lg"></i></a>
                 {% endif %}
-                <div id="modal_header_deadline_time">{% if issue.task.deadline_time %}<strong>{%  trans "Дата сдачи" %}: {{ issue.task.deadline_time|date:'d-m-Y H:i' }} MSK UTC+3 {% endif %}</strong></div>
+                <div id="modal_header_deadline_time">{% if issue.task.deadline_time %}<strong>{%  trans "data_sdachi" %}: {{ issue.task.deadline_time|date:'d-m-Y H:i' }} MSK UTC+3 {% endif %}</strong></div>
             </div>
             <div class="modal-body">
                 <div id="modal_body_task_descr">{{ issue.task.task_text|safe }}</div>

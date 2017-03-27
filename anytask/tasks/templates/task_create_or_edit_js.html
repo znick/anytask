@@ -31,11 +31,11 @@
                 filterClearBtn: '<span class="input-group-btn"><button class="btn btn-secondary btn-block multiselect-clear-filter" type="button"><i class="fa fa-times"></i></button></span>'
             },
             includeSelectAllOption: true,
-            filterPlaceholder: "{% trans "Найти..." %}",
+            filterPlaceholder: "{% trans "najti" %}",
             selectAllJustVisible: false,
             enableCaseInsensitiveFiltering: true,
-            selectAllText: '{% trans "Все задачи" %}',
-            allSelectedText: '{% trans "Все задачи" %}',
+            selectAllText: '{% trans "vse_zadachi" %}',
+            allSelectedText: '{% trans "vse_zadachi" %}',
             maxHeight: 200,
             buttonContainer: '<div style="width:100%;" class="multiselect-dropdown"/>',
             buttonWidth: '100%',
@@ -44,22 +44,23 @@
             },
             buttonText: function (options, select) {
                 if (options.length === 0) {
-                    return '{% trans "Не выбрано ни одной задачи" %}';
+                    return '{% trans "ne_vybrano_zadach" %}';
                 }
                 else if (options.length === $('option', select).length) {
-                    return '{% trans "Все задачи" %}';
+                    return '{% trans "vse_zadachi" %}';
                 }
                 else if (options.length > 1) {
-                    return '{% trans "Выбрано несколько задач - " %}' + options.length;
+                    return '{% trans "vybrano_neskolko_zadach" %} - ' + options.length;
                 }
                 else {
                     var labels = [];
                     options.each(function () {
-                        if ($(this).attr('label') !== undefined) {
-                            labels.push($(this).attr('label'));
+                        var $this =$(this);
+                        if ($this.attr('label') !== undefined) {
+                            labels.push($this.attr('label'));
                         }
                         else {
-                            labels.push($(this).text());
+                            labels.push($this.text());
                         }
                     });
                     return labels.join(', ') + '';
@@ -70,19 +71,28 @@
         $('.task_datetime').datetimepicker({
             bootcssVer: 3,
             format: 'dd-mm-yyyy hh:ii',
-            language: "ru",
+            language: '{{ user.get_profile.language }}',
             todayBtn: true,
             autoclose: true,
             todayHighlight: true,
             pickerPosition: "bottom-left",
             startDate: null,
             minuteStep: 30
-        }).on("input change", function (e) {
-            $('#task_edit_label_for_changed_task').show()
         });
 
+        {% if is_create %}
+            $("#task_edit_hidden_task").change(function () {
+                var $task_edit_label_for_changed_task = $('#task_edit_label_for_changed_task');
+
+                $task_edit_label_for_changed_task.toggle();
+                toggle_inputs($task_edit_label_for_changed_task);
+            });
+        {% endif %}
+
         $('#task_edit_type').change(function () {
-            if ($('#task_edit_type').val() === 'All') {
+            var $task_edit_type = $('#task_edit_type');
+
+            if ($task_edit_type.val() === 'All') {
                 $('#contest_rb_body').collapse('show');
                 $("#task_edit_contest_integrated").show();
                 $("#task_edit_contest_id").show();
@@ -93,7 +103,7 @@
                 $("#parent_body").show();
                 $("#children_body").hide();
             }
-            else if ($('#task_edit_type').val() === 'Only mark') {
+            else if ($task_edit_type.val() === 'Only mark') {
                 $('#contest_rb_body').collapse('hide');
                 $("#task_edit_contest_integrated").hide();
                 $("#task_edit_contest_id").hide();
@@ -104,7 +114,18 @@
                 $("#parent_body").show();
                 $("#children_body").hide();
             }
-            else if ($('#task_edit_type').val() === 'Seminar') {
+            else if ($('#task_edit_type').val() === 'Material') {
+                $('#contest_rb_body').collapse('hide');
+                $("#task_edit_contest_integrated").hide();
+                $("#task_edit_contest_id").hide();
+                $("#task_edit_problem_id").hide();
+                $("#task_edit_rb_integrated").hide();
+                $("#max_score_body").collapse('hide');
+                $("#deadline_body").collapse('hide');
+                $("#parent_body").show();
+                $("#children_body").hide();
+            }
+            else if ($task_edit_type.val() === 'Seminar') {
                 $('#contest_rb_body').collapse('hide');
                 $("#task_edit_contest_integrated").hide();
                 $("#task_edit_contest_id").hide();
@@ -119,18 +140,15 @@
 
         $('#task_edit_rb_integrated').change(function () {
             if ($(this).is(':checked')) {
-                $("#task_edit_one_file_upload").closest('div.form-group').collapse('show');
-                $('#task_edit_one_file_upload').show();
+                $("#task_edit_one_file_upload").show().closest('div.form-group').collapse('show');
             }
             else {
-                $("#task_edit_one_file_upload").closest('div.form-group').collapse('hide');
-                $('#task_edit_one_file_upload').hide();
+                $("#task_edit_one_file_upload").hide().closest('div.form-group').collapse('hide');
             }
         });
 
         $("#task_edit_one_file_upload").closest('div.form-group').on('show.bs.collapse hide.bs.collapse', function (e) {
-            $('#task_edit_rb_integrated').attr('disabled', 'disabled');
-            $('#task_edit_rb_integrated').css('cursor', 'default');
+            $('#task_edit_rb_integrated').attr('disabled', 'disabled').css('cursor', 'default');
         }).on('shown.bs.collapse hidden.bs.collapse', function (e) {
             $('#task_edit_rb_integrated').removeAttr('disabled');
         });
@@ -154,35 +172,39 @@
         });
 
         $.validator.addMethod("required_with_disabled", function(value, element) {
-            return value? true: false;
+            return !!value;
         });
 
         var form_validator = $('#task_edit_form').validate({
             submitHandler: function (form) {
-                if ($('#task_edit_form').data('changed')) {
+                var $task_edit_form = $(form);
+                if ($task_edit_form.data('changed')) {
                     $('#task_edit_form').ajaxSubmit({
                         success: function (data) {
-                            $('#task_edit_form').data('changed', false);
+                            $task_edit_form.data('changed', false);
                             $('#task_submit_error_text').html('<div class="alert alert-success alert-dismissible" role ="alert" id="edit_task_err">' +
-                                    '                            <button type="button" class="close" data-dismiss="alert" aria-label="{% trans "Закрыть" %}">' +
+                                    '                            <button type="button" class="close" data-dismiss="alert" aria-label="{% trans "zakryt" %}">' +
                                     '                               <span aria-hidden="true">&times;</span>' +
                                     '                            </button>' +
-                                    '                            <span>{% trans "Задача сохранена успешно." %}</span>' +
+                                    '                            <span>{% trans "zadacha_sohranena_uspeshno" %}</span>' +
                                     '                          </div>');
-                            if ($('#task_edit_form').data('quit'))
+                            if ($task_edit_form.data('quit'))
                                 redirect();
                             else if (data.redirect_page)
                                 window.location.replace(data.redirect_page);
+                            else
+                                $("#task_edit_changed_task").prop('checked', !!$("#task_edit_changed_task").data("default"));
+
                             $(document).prop('title', data.page_title);
                             if ($('#task_edit_contest_integrated').is(':checked'))
                                 $('#update_contest_block').show();
                         },
                         error: function (data) {
                             $('#task_submit_error_text').html('<div  class="alert alert-danger alert-dismissible" role ="alert" id="edit_task_err">' +
-                                    '                            <button type="button" class="close" data-dismiss="alert" aria-label="{% trans "Закрыть" %}">' +
+                                    '                            <button type="button" class="close" data-dismiss="alert" aria-label="{% trans "zakryt" %}">' +
                                     '                               <span aria-hidden="true">&times;</span>' +
                                     '                            </button>' +
-                                    '                            <span>{% trans "Произошла ошибка при сохранении задачи. Попробуйте снова." %}</span>' +
+                                    '                            <span>{% trans "oshibka_pri_sohranenii" %}</span>' +
                                     '                          </div>');
                             remove_disabled();
                         }
@@ -190,13 +212,15 @@
                 }
                 else {
                     $('#task_submit_error_text').html('<div class="alert alert-success alert-dismissible" role ="alert" id="edit_task_err">' +
-                            '                            <button type="button" class="close" data-dismiss="alert" aria-label="{% trans "Закрыть" %}">' +
+                            '                            <button type="button" class="close" data-dismiss="alert" aria-label="{% trans "zakryt" %}">' +
                             '                               <span aria-hidden="true">&times;</span>' +
                             '                            </button>' +
-                            '                            <span>{% trans "Задача сохранена успешно." %}</span>' +
+                            '                            <span>{% trans "zadacha_sohranena_uspeshno" %}</span>' +
                             '                          </div>');
                     if ($('#task_edit_form').data('quit'))
                         redirect();
+                    else
+                        $("#task_edit_changed_task").prop('checked', !!$("#task_edit_changed_task").data("default"));
                 }
             },
             ignore: ':hidden:not("#task_edit_group")',
@@ -236,24 +260,24 @@
 
             messages: {
                 max_score: {
-                    required: "{% trans 'Необходимо указать максимальный балл' %}",
-                    number: "{% trans 'Максимальный балл должен быть натуральным числом' %}",
-                    min: "{% trans 'Максимальный балл должен быть больше или равен 0' %}",
-                    digits: "{% trans 'Максимальный балл должен быть натуральным числом' %}"
+                    required: "{% trans 'ukazat_maxball' %}",
+                    number: "{% trans 'maxball_naturalnoe_chislo' %}",
+                    min: "{% trans 'maxball_bolshe_0' %}",
+                    digits: "{% trans 'maxball_naturalnoe_chislo' %}"
                 },
                 task_title: {
-                    required: "{% trans 'Название у задачи необходимо' %}",
-                    maxlength: "{% trans 'Не так много' %}"
+                    required: "{% trans 'nazvanie_neobhodimo' %}",
+                    maxlength: "{% trans 'ne_tak_mnogo' %}"
                 },
                 contest_id: {
-                    required: "{% trans 'Необходимо указать номер контеста' %}",
-                    number: "{% trans 'Номер контеста должен натуральным числом' %}"
+                    required: "{% trans 'ukazat_nomer_kontesta' %}",
+                    number: "{% trans 'nomer_kontesta_naturalnoe_chislo' %}"
                 },
                 problem_id: {
-                    required: "{% trans 'Необходимо указать литеру задачи контеста' %}"
+                    required: "{% trans 'ukazat_literu_zadachi' %}"
                 },
                 'task_group_id[]': {
-                    required_with_disabled: "{% trans 'Необходимо выбрать группу' %}"
+                    required_with_disabled: "{% trans 'neobhodimo_vybrat_gruppu' %}"
                 }
             },
 
@@ -269,8 +293,8 @@
                 li: '<li><a tabindex="0" class="dropdown-item"><label></label></a></li>'
             },
             includeSelectAllOption: true,
-            selectAllText: '{% trans "Для всех групп" %}',
-            allSelectedText: '{% trans "Для всех групп" %}',
+            selectAllText: '{% trans "dlja_vseh_grupp" %}',
+            allSelectedText: '{% trans "dlja_vseh_grupp" %}',
             selectAllName: 'task_group_id_all',
             selectAllValue: 'on',
             maxHeight: 200,
@@ -280,10 +304,10 @@
                 var labels = [];
 
                 if (options.length === 0) {
-                    return '{% trans "Не выбрано ни одной группы" %}';
+                    return '{% trans "ne_vybrano_ni_odnoj_gruppy" %}';
                 }
                 else if (options.length === $('option', select).length) {
-                    return '{% trans "Для всех групп" %}';
+                    return '{% trans "dlja_vseh_grupp" %}';
                 }
                 else {
                     options.each(function () {
@@ -294,22 +318,23 @@
             },
             buttonText: function(options, select) {
                 if (options.length === 0) {
-                    return '{% trans "Не выбрано ни одной группы" %}';
+                    return '{% trans "ne_vybrano_ni_odnoj_gruppy" %}';
                 }
                 else if (options.length === $('option', select).length) {
-                    return '{% trans "Для всех групп" %}';
+                    return '{% trans "dlja_vseh_grupp" %}';
                 }
                 else if (options.length > 1) {
-                    return '{% trans "Выбрано несколько групп - " %}' + options.length;
+                    return '{% trans "vybrano_neskolko_grupp" %} - ' + options.length;
                 }
                 else {
                     var labels = [];
                     options.each(function() {
-                        if ($(this).attr('label') !== undefined) {
-                            labels.push($(this).attr('label'));
+                        var $this = $(this);
+                        if ($this.attr('label') !== undefined) {
+                            labels.push($this.attr('label'));
                         }
                         else {
-                            labels.push($(this).text());
+                            labels.push($this.text());
                         }
                     });
                     return labels.join(', ') + '';
@@ -344,18 +369,26 @@
 
         $('#button_save').click(function () {
             set_disabled();
-            $('#task_edit_form').data('quit', false);
-            $('#task_edit_form').submit();
+            $('#task_edit_form').data('quit', false).submit();
             remove_disabled();
         });
 
         $('#button_save_quit').click(function () {
             set_disabled();
-            $('#task_edit_form').data('quit', true);
-            $('#task_edit_form').submit();
+            $('#task_edit_form').data('quit', true).submit();
             remove_disabled();
         });
     });
+
+    function toggle_inputs($div) {
+        $("input, select, textarea", $div).each(function () {
+            var $this = $(this);
+            if ($this.is(':disabled'))
+                $this.prop('disabled', false);
+            else
+                $this.prop('disabled', true);
+        });
+    }
 
     function description_preview() {
         var description_html = $('#task_edit_body').val();
@@ -363,7 +396,7 @@
         var task_name = $('#task_edit_header').val();
         $('#modal_task_header').show().text(task_name);
         if (deadline) {
-            $('#modal_task_deadline').html('<strong>{% trans "Дата сдачи" %}: ' + deadline + ' MSK UTC+3</strong>');
+            $('#modal_task_deadline').html('<strong>{% trans "data_sdachi" %}: ' + deadline + ' MSK UTC+3</strong>');
         }
         else {
             $('#modal_task_deadline').empty();

@@ -5,10 +5,12 @@ from django.core.mail import get_connection, EmailMultiAlternatives
 from django.contrib.sites.models import Site
 from django.conf import settings
 from django.db.models import Q
+from django.utils import translation
 from django.utils.translation import ugettext as _
 
 from issues.models import Issue
 from issues.models import Event
+from users.models import UserProfile
 import time
 
 
@@ -23,12 +25,16 @@ class Command(BaseCommand):
         domain = Site.objects.get_current().domain
 
         for issue in issues:
+            user_profile = UserProfile.objects.get(id=issue.student.id)
+            lang = user_profile.language
+            translation.activate(lang)
+
             events = all_events.filter(issue=issue).all()
             issue_url = 'http://' + domain + issue.get_absolute_url()
             message_header = '<div>' + \
-                             '<p>' + _(u'Здравствуйте, {0}.') + '<br></p>' + \
-                             '<p>' + _(u'В задаче {1}, в который вы являетесь ') + '<strong>{2}</strong>, ' + \
-                             _(u'появились новые комментарии: ') + '<br></p>' + \
+                             '<p>' + _(u'zdravstvujte') + u', {0}.<br></p>' + \
+                             '<p>' + _(u'v_zadache') + u' {1}, ' + _(u'vy_javljaetes') + u' <strong>{2}</strong>, ' + \
+                             _(u'pojavilis_novye_kommentarii') + ': <br></p>' + \
                              '</div>'
 
             messages_author = []
@@ -50,11 +56,11 @@ class Command(BaseCommand):
 
             message_footer = '<div>' + \
                              u'-- <br>' + \
-                             u'{0}<br>'.format(_(u'С уважением,')) + \
-                             u'{0}<br>'.format(_(u'команда Anytask.')) + \
+                             u'{0}<br>,'.format(_(u's_uvazheniem')) + \
+                             u'{0}<br>.'.format(_(u'komanda_anytask')) + \
                              '</div>'
 
-            subject = _(u'Курс: {0} | Задача: {1} | Студент: {2} {3}').\
+            subject = _(u'kurs') + u': {0} | ' + _(u'zadacha') + u': {1} | ' + _(u'student') + u' {2} {3}'.\
                 format(issue.task.course, issue.task.title, issue.student.last_name, issue.student.first_name)
 
             from_email = settings.DEFAULT_FROM_EMAIL
@@ -73,7 +79,7 @@ class Command(BaseCommand):
                     if message_body_text:
                         message_text = message_header.format(issue.student.first_name,
                                                              get_html_url(issue_url, issue.task.title),
-                                                             _(u'студентом')) + \
+                                                             _(u'studentom')) + \
                                        message_body_text + \
                                        message_footer
 
@@ -86,7 +92,7 @@ class Command(BaseCommand):
                         if message_body_text:
                             message_text = message_header.format(issue.responsible.first_name,
                                                                  get_html_url(issue_url, issue.task.title),
-                                                                 _(u'проверяющим')) + \
+                                                                 _(u'proverjaushim')) + \
                                            message_body_text + \
                                            message_footer
 
@@ -99,7 +105,7 @@ class Command(BaseCommand):
                         if message_body_text:
                             message_text = message_header.format(follower.first_name,
                                                                  get_html_url(issue_url, issue.task.title),
-                                                                 _(u'наблюдателем')) + \
+                                                                 _(u'nabludatelem')) + \
                                            message_body_text + \
                                            message_footer
 
@@ -109,6 +115,8 @@ class Command(BaseCommand):
 
             for event in events_to_send:
                 event.save()
+
+            translation.deactivate()
 
 
 def get_message_body(messages_author, messages_body, author):

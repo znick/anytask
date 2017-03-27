@@ -72,7 +72,7 @@ class FilenameExtension(models.Model):
 
 class MarkField(models.Model):
     name = models.CharField(max_length=191, db_index=True, null=False, blank=False)
-    name_int = models.IntegerField(db_index=False, null=False, blank=False, default=0)
+    name_int = models.IntegerField(db_index=False, null=False, blank=False, default=-1)
 
     def __unicode__(self):
         return self.name if self.name else '--'
@@ -128,6 +128,8 @@ class Course(models.Model):
 
     show_task_one_file_upload = models.BooleanField(db_index=False, null=False, blank=False, default=False)
     default_task_one_file_upload = models.BooleanField(db_index=False, null=False, blank=False, default=False)
+
+    default_task_send_to_users = models.BooleanField(db_index=False, null=False, blank=False, default=False)
 
     issue_status_system = models.ForeignKey(IssueStatusSystem, db_index=False, null=False, blank=False, default=1)
 
@@ -190,7 +192,7 @@ class Course(models.Model):
 
     def add_group_with_extern(self):
         if self.group_with_extern is None and self.can_be_chosen_by_extern:
-            group, ok = Group.objects.get_or_create(year=self.year,name=_(u'%s - слушатели') % self.name)
+            group, ok = Group.objects.get_or_create(year=self.year,name=u'%s - слушатели' % self.name)
             group.save()
             self.group_with_extern = group
             self.groups.add(group)

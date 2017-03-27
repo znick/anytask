@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans "Настройки профиля" %}{% endblock %}
+{% block title %}{% trans "nastrojki_profilja" %}{% endblock %}
 
 {% block scripts %}
     <script src="{{ STATIC_URL }}jquery.validate.min.js"></script>
@@ -10,18 +10,18 @@
             $('#submit_btn').click(function () {
                 $.post('{% url users.views.profile_settings %}', $('#user_settings').serialize(), function(data){
                     $('#submit_error_text').html('<div class="alert alert-success alert-dismissible fade in" role ="alert" id="user_settings_err">' +
-                        '                           <button type="button" class="close" data-dismiss="alert" aria-label="{% trans 'Закрыть' %}">' +
+                        '                           <button type="button" class="close" data-dismiss="alert" aria-label="{% trans 'zakryt' %}">' +
                         '                             <span aria-hidden="true">&times;</span>' +
                         '                           </button>' +
-                        '                           <span>{% trans "Сохранено успешно." %}</span>' +
+                        '                           <span>{% trans "sohraneno_uspeshno" %}</span>' +
                         '                         </div>');
                 })
                     .fail(function () {
                         $('#submit_error_text').html('<div class="alert alert-danger alert-dismissible fade in" role ="alert" id="user_settings_err">' +
-                            '                           <button type="button" class="close" data-dismiss="alert" aria-label="{% trans 'Закрыть' %}">' +
+                            '                           <button type="button" class="close" data-dismiss="alert" aria-label="{% trans 'zakryt' %}">' +
                             '                             <span aria-hidden="true">&times;</span>' +
                             '                           </button>' +
-                            '                           <span>{% trans "Произошла ошибка при сохранении. Попробуйте снова." %}</span>' +
+                            '                           <span>{% trans "oshibka_pri_sohranenii" %}</span>' +
                             '                         </div>');
                     })
                     .always(function () {
@@ -40,16 +40,16 @@
 {% block navbar %}
     <ul class="nav navbar-nav">
         <li class="nav-item">
-            <a class="nav-link" href="{% url users.views.profile %}">{% trans "Профиль" %}</a>
+            <a class="nav-link" href="{% url users.views.profile %}">{% trans "profil" %}</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="{% url users.views.my_tasks %}">{% trans "Мои задачи" %}</a>
+            <a class="nav-link" href="{% url users.views.my_tasks %}">{% trans "moi_zadachi" %}</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="{% url users.views.user_courses username=user %}">{% trans "Мои курсы" %}</a>
+            <a class="nav-link" href="{% url users.views.user_courses username=user %}">{% trans "moi_kursy" %}</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link active" href="">{% trans "Настройки" %}</a>
+            <a class="nav-link active" href="">{% trans "nastrojki" %}</a>
         </li>
     </ul>
 {% endblock navbar %}
@@ -126,23 +126,23 @@
         <div class="col-lg-6 col-md-5 col-xs-12">
             <div class="card">
                 <div class="card-block">
-                    <h5 class="card-title">{% trans "Настройки" %}</h5>
+                    <h5 class="card-title">{% trans "nastrojki" %}</h5>
                     <form method="post" id="user_settings">
                         {% csrf_token %}
                         <div class="form-check">
                             <label class="form-check-label">
                                 <input type="checkbox" class="form-check-input" id="show_email" name="show_email" {% if user_profile.show_email %}checked{% endif %}>
-                                {% trans "Показывать мой e-mail всем пользователям" %}
+                                {% trans "pokazyvat_moj_e-mail" %}
                             </label>
                         </div>
                         <div class="form-check">
                             <label class="form-check-label">
                                 <input type="checkbox" class="form-check-input" id="send_my_own_events" name="send_my_own_events" {% if user_profile.send_my_own_events %}checked{% endif %}>
-                                {% trans "Отправлять мне на e-mail мои комментарии" %}
+                                {% trans "otpravljat_mne_kommentarii" %}
                             </label>
                         </div>
                         <div id="submit_error_text"></div>
-                        <button type="button" class="btn btn-primary" id="submit_btn" style="margin-top: 0.5rem">{% trans "Сохранить" %}</button>
+                        <button type="button" class="btn btn-primary" id="submit_btn" style="margin-top: 0.5rem">{% trans "sohranit" %}</button>
                     </form>
                 </div>
             </div>
@@ -150,12 +150,12 @@
         <div class="col-lg-6 col-md-7 col-xs-12">
             <div class="card">
                 <div class="card-block">
-                    <h5 class="card-title">{% trans "Привязка аккаунтов" %}</h5>
+                    <h5 class="card-title">{% trans "privjazka_akkauntov" %}</h5>
                     <ul class="social-acc-panel">
                         <li>
                             <div class="social-acc-panel-item">
                                 <div class="social-acc-type social-acc social-acc-ya">
-                                    <span class="social-icons social-acc-ya-item">{% trans "Яндекс" %}</span>
+                                    <span class="social-icons social-acc-ya-item">{% trans "jandeks" %}</span>
                                 </div>
                                 <div class="social-acc-login">
                                     {% if user_profile.ya_passport_oauth %}
@@ -178,7 +178,7 @@
                             <li>
                                 <div class="social-acc-panel-item">
                                     <div class="social-acc-type social-acc social-acc-contest">
-                                        <span class="social-icons social-acc-contest-item">{% trans "Я.Контест" %}</span>
+                                        <span class="social-icons social-acc-contest-item">{% trans "jakontest" %}</span>
                                     </div>
                                     <div class="social-acc-login">
                                         {% if user_profile.ya_contest_oauth %}
@@ -190,7 +190,7 @@
                                     <div class="social-acc-action">
                                         {% if user_profile.ya_contest_oauth %}
                                             <button class="btn btn-secondary btn-icon" type="button" onclick="location.href='{% url users.views.ya_oauth_request type_of_oauth='contest'%}'"><i class="fa fa-fw fa-refresh"></i></button>
-                                            <button class="btn btn-secondary btn-icon" type="button" disabled="disabled" title="{% trans "Для того, чтобы отвязать свой профиль обратитесь к администратору." %}"><i class="fa fa-fw fa-trash-o"></i></button>
+                                            <button class="btn btn-secondary btn-icon" type="button" disabled="disabled" title="{% trans "title_otvjazat_svoj_profil" %}"><i class="fa fa-fw fa-trash-o"></i></button>
                                         {% else %}
                                             <button class="btn btn-secondary btn-icon" type="button" onclick="location.href='{% url users.views.ya_oauth_request type_of_oauth='contest'%}'"><i class="fa fa-fw fa-plus"></i></button>
                                         {% endif %}

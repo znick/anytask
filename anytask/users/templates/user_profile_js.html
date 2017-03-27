@@ -25,21 +25,21 @@
         });
 
         {% if user == user_to_show %}
-            $('#get-gravatar').click(function () {
-                var gravatar_link = 'https://www.gravatar.com/avatar/' + SparkMD5.hash('{{ user_to_show.email }}') + '?d=identicon';
-                $('#edit-avatar').attr({src: gravatar_link});
-                input_avatar = $('#input-avatar');
-                input_avatar.replaceWith(input_avatar.val('').clone(true));
-                $('#gravatar-link').val(gravatar_link);
-
-            });
+{#            $('#get-gravatar').click(function () {#}
+{#                var gravatar_link = 'https://www.gravatar.com/avatar/' + SparkMD5.hash('{{ user_to_show.email }}') + '?d=identicon';#}
+{#                $('#edit-avatar').attr({src: gravatar_link});#}
+{#                input_avatar = $('#input-avatar');#}
+{#                input_avatar.replaceWith(input_avatar.val('').clone(true));#}
+{#                $('#gravatar-link').val(gravatar_link);#}
+{##}
+{#            });#}
 
             $('#dismiss-avatar').click(function () {
                 var gravatar_link = 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mm&f=y';
                 $('#edit-avatar').attr({src: gravatar_link});
                 input_avatar = $('#input-avatar');
                 input_avatar.replaceWith(input_avatar.val('').clone(true));
-                $('#gravatar-link').val(gravatar_link);
+                $('#delete-avatar').val(gravatar_link);
             });
 
 
@@ -75,7 +75,7 @@
 
 
             $("#user_info").tinymce({
-                language: 'ru',
+                language: '{{ user.get_profile.language }}',
                 skin: 'bootstrap4',
                 resize: false,
                 content_css: [
@@ -126,7 +126,7 @@
                 if (!modal_button_ok.data('exit_modal')) {
                     if (!modal_button_ok.data('btn_clicked')) {
                         if ($("#user_info").data('changed'))
-                            if (confirm('{% trans "Сохранить изменения" %}?')) {
+                            if (confirm('{% trans "sohranit_izmenenija" %}?')) {
                                 modal_button_ok.click();
                                 e.preventDefault();
                             }
@@ -148,7 +148,7 @@
                 var d = 'disabled';
 
                 modal_button_ok.data('resetText', modal_button_ok.html());
-                modal_button_ok.html("<span class='fa fa-circle-o-notch fa-spin fa-fw'></span> {% trans 'Сохранение' %}");
+                modal_button_ok.html("<span class='fa fa-circle-o-notch fa-spin fa-fw'></span> {% trans 'sohranenie' %}");
                 modal_button_ok.data('btn_clicked', true);
                 $('.modal-footer', '#modal_user_info_edit').find('button').addClass(d).attr(d, d).prop(d, true);
 
@@ -187,7 +187,7 @@
                 if (data.is_error == false) {
                     $('#user_statuses').html('');
                     if (user_statuses.length == 0) {
-                        $('#user_statuses').html('<p class="card-text">{% trans "Нет статусов" %}</p>');
+                        $('#user_statuses').html('<p class="card-text">{% trans "net_statusov" %}</p>');
                     }
                     for (i = 0; i < user_statuses.length; i++){
                         var status_template = '<span class="' + 'label' + '" style="' +

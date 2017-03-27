@@ -77,13 +77,13 @@
                         displayKey: 'fullname',
                         source: user_profiles_bloodhound.ttAdapter(),
                         templates: {
-                            header: '<h6 class="search-model-name">{% trans "Пользователи" %}</h6>',
+                            header: '<h6 class="search-model-name">{% trans "polzovateli" %}</h6>',
                             suggestion: function(data) {
                                 var table_html = '<div class="sgs-result-up" data-url="{0}"><table>' +
                                     '<tr><td style="padding-right: 10px;"><img class="avatar" src="{1}" style="width: 30px; height: 30px;"></td>' +
                                     '<td><div><strong>{2}</strong></div>{3}</td></tr>' +
                                     '<tr><td></td><td>{4}</td></tr>' +
-                                    '<tr><td></td><td><strong>{% trans "Логины" %}</strong></td></tr>' +
+                                    '<tr><td></td><td><strong>{% trans "loginy" %}</strong></td></tr>' +
                                     '<tr><td></td><td>{5}@ <small class="text-muted">Anytask</small></td></tr>' +
                                     '{6}' +
                                     '{7}' +
@@ -99,7 +99,7 @@
 
                                 while (status_counter < data.statuses.length) {
                                     if (status_counter == MAX_STATUSES) {
-                                        status_html += '<span class="label label-status-sgs label-default ">еще ' + '1' + '</span>';
+                                        status_html += '<span class="label label-status-sgs label-default ">{% trans 'yeshcho' %} ' + (data.statuses.length - MAX_STATUSES) + '</span>';
                                         break;
                                     }
 
@@ -112,9 +112,9 @@
                                 if (data.email)
                                     email_html = '<div class="sgs-email">{0}</div>'.format(data.email);
                                 if (data.ya_contest_login)
-                                    ya_contest_login_html = '<tr><td></td><td>{0}@ <small class="text-muted">{% trans "Я.Контест" %}</small></td></tr>'.format(data.ya_contest_login);
+                                    ya_contest_login_html = '<tr><td></td><td>{0}@ <small class="text-muted">{% trans "jakontest" %}</small></td></tr>'.format(data.ya_contest_login);
                                 if (data.ya_passport_email)
-                                    ya_passport_email_html = '<tr><td></td><td>{0} <small class="text-muted">{% trans "Я.Почта" %}</small></td></tr>'.format(data.ya_passport_email);
+                                    ya_passport_email_html = '<tr><td></td><td>{0} <small class="text-muted">{% trans "ja.pochta" %}</small></td></tr>'.format(data.ya_passport_email);
 
                                 return table_html.format(data.url, avatar, data.fullname, email_html, status_html, data.username, ya_contest_login_html, ya_passport_email_html)
                             },
@@ -126,13 +126,13 @@
                         displayKey: 'name',
                         source: courses_bloodhound.ttAdapter(),
                         templates: {
-                            header: '<h6 class="search-model-name">{% trans "Курсы" %}</h6>',
+                            header: '<h6 class="search-model-name">{% trans "kursy" %}</h6>',
                             suggestion: function(data) {
                                 var schools_html = '';
                                 var archive_html = '';
 
                                 if (!data.is_active)
-                                    archive_html = '<small class="text-muted">{% trans "Архив" %}</small>';
+                                    archive_html = '<small class="text-muted">{% trans "arhiv" %}</small>';
 
                                 for (var i = 0; i < data.schools.length; ++i)
                                     schools_html += '<div>{0}</div>'.format(data.schools[i]);
@@ -152,7 +152,7 @@
 
                         if ($('#navbar_search').data('course_limited') || $('#navbar_search').data('up_limited')) {
                             if (!$('.search-show-more', menu).length)
-                                $(menu).append("<div class='search-show-more'><button type='submit'>Все результаты</button></div>");
+                                $(menu).append("<div class='search-show-more'><button type='submit'>{% trans 'vse_resultaty' %}</button></div>");
                         }
                         else
                             $('.search-show-more', menu).remove();
@@ -221,6 +221,10 @@
 {#                cursor: default;#}
 {#                background-color: #ffdb4d;#}
 {#            }#}
+
+            .hidden {
+                display: none !important;
+            }
 
             body {
                 padding-top: 4.75rem;
@@ -601,6 +605,10 @@
             .tt-menu {
                 min-width: 18rem;
             }
+
+            .btn-square {
+                padding: .375rem .5rem;
+            }
         </style>
 
     {% endblock %}
@@ -634,7 +642,7 @@
                                               action="{% url search.views.search_page %}">
                                             <div class="input-group">
                                                 <div class="input-group-input">
-                                                    <input class="typeahead form-control" id="navbar_search" name="q" type="text" placeholder="{% trans 'Найти...' %}">
+                                                    <input class="typeahead form-control" id="navbar_search" name="q" type="text" placeholder="{% trans 'najti' %}">
                                                 </div>
                                                 <div class="input-group-btn">
                                                     <button class="btn" type="submit"><span class="fa fa-search" style="line-height: 1.5"></span></button>
@@ -649,10 +657,10 @@
                                 <a href="{% url mail.views.mail_page %}" class="nav-link" role="button" style="position: relative;"><span class="fa fa-envelope" aria-hidden="true" style="line-height: inherit;"></span>
                                     {% if user.get_profile.get_unread_count %}
                                         <span id="top_notify_count" class="label label-pill label-danger top_notify_count">{{ user.get_profile.get_unread_count }}</span>
-                                        <span id="top_notify_count_string">{% trans "Есть новые сообщения" %}</span>
+                                        <span id="top_notify_count_string">{% trans "base_est_novye_soobshenija" %}</span>
                                     {% else %}
                                         <span id="top_notify_count" class="label label-pill label-danger top_notify_count"></span>
-                                        <span id="top_notify_count_string">{% trans "Нет новых сообщений" %}</span>
+                                        <span id="top_notify_count_string">{% trans "net_novyh_soobshenij" %}</span>
                                     {% endif %}
                                 </a>
                             </li>
@@ -664,26 +672,26 @@
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-right dropdown-username" aria-labelledby="dropdownMenu1">
                                     <h6 class="dropdown-header">{% if user.get_full_name %}{{ user.get_full_name }}{% else %}{{ user }}{% endif %}</h6>
-                                    <a class="dropdown-item" href="{% url users.views.profile %}">{% trans "Профиль" %}</a>
-                                    <a class="dropdown-item" href="{% url users.views.profile_settings %}">{% trans "Настройки" %}</a>
+                                    <a class="dropdown-item" href="{% url users.views.profile %}">{% trans "profil" %}</a>
+                                    <a class="dropdown-item" href="{% url users.views.profile_settings %}">{% trans "nastrojki" %}</a>
                                     {% if user.is_staff %}
                                         <a class="dropdown-item" href="{% url staff.views.staff_page %}">Staff</a>
-                                        <a class="dropdown-item" href="{% url admin:index %}">{% trans "Админка" %}</a>
+                                        <a class="dropdown-item" href="{% url admin:index %}">{% trans "adminka" %}</a>
                                     {% endif %}
                                     <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="{% url django.contrib.auth.views.password_change %}">{% trans "Сменить пароль" %}</a>
+                                    <a class="dropdown-item" href="{% url django.contrib.auth.views.password_change %}">{% trans "smenit_parol" %}</a>
                                     <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="{% url django.contrib.auth.views.logout %}">{% trans "Выйти" %}</a>
+                                    <a class="dropdown-item" href="{% url django.contrib.auth.views.logout %}">{% trans "vyjti" %}</a>
                                 </div>
                             </li>
                         </ul>
                     {% else %}
                         <ul class="nav navbar-nav">
                             <li class="nav-item">
-                                <a class="nav-link" href="{% url django.contrib.auth.views.login %}">{% trans "Войдите" %}</a>
+                                <a class="nav-link" href="{% url django.contrib.auth.views.login %}">{% trans "vojdite" %}</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="/accounts/register/">{% trans "Зарегистрируйтесь" %}</a>
+                                <a class="nav-link" href="/accounts/register/">{% trans "zaregistrirujtes" %}</a>
                             </li>
                         </ul>
                     {% endif %}
@@ -712,22 +720,22 @@
     <div class="{% if full_width_page %}container-fluid{% else %}container{% endif %}">
         {% block footer %} {% endblock footer %}
         <div style="display: inline-block; width: 100%">
-            <small class="text-muted" ><a href="{% url blog.views.blog_page %}">{% trans "Блог" %}</a></small>
+            <small class="text-muted" ><a href="{% url blog.views.blog_page %}">{% trans "blog" %}</a></small>
 {#            <small style="margin-left: 1.5rem" class="text-muted">#}
-{#                <form style="display: inline;" name="setLangRU" action="/i18n/setlang/" method="POST">#}
+{#                <form style="display: inline;" name="setLangRU" action="/setlanguage/" method="POST">#}
 {#                    {% csrf_token %}#}
 {#                    <input type="hidden" name="language" value="ru">#}
 {#                    <a href="#" onclick="document.setLangRU.submit();#}
 {#                            return false;">RU</a>#}
 {#                </form>/#}
-{#                <form style="display: inline;" name="setLangEN" action="/i18n/setlang/" method="POST">#}
+{#                <form style="display: inline;" name="setLangEN" action="/setlanguage/" method="POST">#}
 {#                    {% csrf_token %}#}
 {#                    <input type="hidden" name="language" value="en">#}
 {#                    <a href="#" onclick="document.setLangEN.submit();#}
 {#                            return false;">EN</a>#}
 {#                </form>#}
 {#            </small>#}
-            <small class="text-muted pull-xs-right" >{% trans "Пишите нам на" %} <a href="mailto:anytask@yandex.ru">anytask@yandex.ru</a></small>
+            <small class="text-muted pull-xs-right" >{% trans "pishite_nam" %} <a href="mailto:anytask@yandex.ru">anytask@yandex.ru</a></small>
         </div>
     </div>
 </footer>

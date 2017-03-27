@@ -15,32 +15,33 @@
         {%if not contest_import %}
             $('.task_datetime').datetimepicker({
                 format: 'dd-mm-yyyy hh:ii',
-                language: "ru",
+                language: '{{ user.get_profile.language }}',
                 todayBtn: true,
                 autoclose: true,
                 todayHighlight: true,
                 pickerPosition: "bottom-left",
                 startDate: null,
                 minuteStep: 30
-            }).on("input change", function (e) {
-                $('#task_edit_label_for_changed_task').show()
             });
         {% endif %}
 
+        $("#task_edit_hidden_task").change(function () {
+            var $task_edit_label_for_changed_task = $('#task_edit_label_for_changed_task');
+            $task_edit_label_for_changed_task.toggle();
+            toggle_inputs($task_edit_label_for_changed_task);
+        });
+
         $('#task_edit_rb_integrated').change(function() {
             if ($(this).is(':checked')) {
-                $("#task_edit_one_file_upload").closest('div.form-group').collapse('show');
-                $('#task_edit_one_file_upload').show();
+                $("#task_edit_one_file_upload").show().closest('div.form-group').collapse('show');
             }
             else {
-                $("#task_edit_one_file_upload").closest('div.form-group').collapse('hide');
-                $('#task_edit_one_file_upload').hide();
+                $("#task_edit_one_file_upload").hide().closest('div.form-group').collapse('hide');
             }
         });
 
         $("#task_edit_one_file_upload").closest('div.form-group').on('show.bs.collapse hide.bs.collapse', function(e) {
-            $('#task_edit_rb_integrated').attr('disabled', 'disabled');
-            $('#task_edit_rb_integrated').css('cursor', 'default');
+            $('#task_edit_rb_integrated').attr('disabled', 'disabled').css('cursor', 'default');
         }).on('shown.bs.collapse hidden.bs.collapse', function(e) {
             $('#task_edit_rb_integrated').removeAttr('disabled');
         });
@@ -49,7 +50,7 @@
             $('#get_tasks').show();
             $('#task_contest_body').hide();
             $('#task_contest_id_editable').show();
-            $('#task_contest_id_readonly').hide();
+            $('#task_contest_id_readonly').addClass('hidden');
             $('#task_group').removeClass('need-validate');
             $('#contest_problems').empty();
             $('#task_contest_id').removeAttr("readonly");
@@ -92,7 +93,7 @@
                     }
                     $('#task_contest_body').show();
                     $('#task_contest_id_editable').hide();
-                    $('#task_contest_id_readonly').show();
+                    $('#task_contest_id_readonly').removeClass('hidden');
                     $('#task_group').addClass('need-validate');
                     $('#task_contest_id_readonly').find('input').val($('#task_contest_id').val());
                     $('#task_contest_id').hide();
@@ -123,7 +124,7 @@
 
         $('#task_edit_get_deadline_from_contest').change(function(){
             if ( $('#task_edit_datepicker').prop('disabled') ){
-                $('#task_edit_datepicker').prop('disabled', false).css("background-color", "white");
+                $('#task_edit_datepicker').prop('disabled', false);
                 $('.task_datetime').datetimepicker({
                     format: 'dd-mm-yyyy hh:ii',
                     language: "ru",
@@ -133,15 +134,13 @@
                     pickerPosition: "bottom-left",
                     startDate: null,
                     minuteStep: 30
-                }).on("input change", function (e) {
-                    $('#task_edit_label_for_changed_task').show()
                 });
             }
             else {
                 $('#task_edit_datepicker').prop('disabled', true).val('').closest('.form-group').removeClass('has-success has-danger');
                 $('#task_edit_datepicker_error_text').text('');
                 $('.task_datetime').datetimepicker('remove');
-                $('#task_edit_datepicker').css("background-color", "#eceeef");
+{#                $('#task_edit_datepicker').css("background-color", "#eceeef");#}
             }
         });
 
@@ -180,21 +179,21 @@
 
             messages: {
                 max_score: {
-                    required : "{% trans "Необходимо указать максимальный балл" %}",
-                    number : "{% trans "Максимальный балл должен быть натуральным числом" %}",
-                    min : "{% trans "Максимальный балл должен быть больше или равен 0" %}",
-                    digits : "{% trans "Максимальный балл должен быть натуральным числом" %}"
+                    required : "{% trans "ukazat_maxball" %}",
+                    number : "{% trans "maxball_naturalnoe_chislo" %}",
+                    min : "{% trans "maxball_bolshe_0" %}",
+                    digits : "{% trans "maxball_naturalnoe_chislo" %}"
                 },
                 contest_id: {
-                    required : "{% trans "Необходимо указать номер контеста" %}",
-                    number : "{% trans "Номер контеста должен натуральным числом" %}",
-                    digits : "{% trans "Номер контеста должен натуральным числом" %}"
+                    required : "{% trans "ukazat_nomer_kontesta" %}",
+                    number : "{% trans "nomer_kontesta_naturalnoe_chislo" %}",
+                    digits : "{% trans "nomer_kontesta_naturalnoe_chislo" %}"
                 },
                 'contest_problems[]': {
-                    required : "{% trans "Необходимо выбрать хотя бы одну задачу" %}"
+                    required : "{% trans "neobhodimo_vybrat_zadachu" %}"
                 },
                 'task_group_id[]': {
-                    required : "{% trans "Необходимо выбрать группу" %}"
+                    required : "{% trans "neobhodimo_vybrat_gruppu" %}"
                 }
             },
 
@@ -229,7 +228,7 @@
                             }
                             $('#task_contest_body').show();
                             $('#task_contest_id_editable').hide();
-                            $('#task_contest_id_readonly').show();
+                            $('#task_contest_id_readonly').removeClass('hidden');
                             $('#task_contest_id_readonly').find('input').val($('#task_contest_id').val());
                             $('#task_contest_id').hide();
                             $('#task_group').addClass('need-validate');
@@ -251,7 +250,7 @@
                             $('#get_tasks').show();
                             $('#task_contest_body').hide();
                             $('#task_contest_id_editable').show();
-                            $('#task_contest_id_readonly').hide();
+                            $('#task_contest_id_readonly').addClass('hidden');
                             $('#task_group').removeClass('need-validate');
                             $('#task_contest_id').show();
                             $('#contest_problems').empty();
@@ -276,8 +275,8 @@
                 li: '<li><a tabindex="0" class="dropdown-item"><label></label></a></li>'
             },
             includeSelectAllOption: true,
-            selectAllText: '{% trans "Для всех групп" %}',
-            allSelectedText: '{% trans "Для всех групп" %}',
+            selectAllText: '{% trans "dlja_vseh_grupp" %}',
+            allSelectedText: '{% trans "dlja_vseh_grupp" %}',
             selectAllName: 'task_group_id_all',
             selectAllValue: 'on',
             maxHeight: 200,
@@ -287,10 +286,10 @@
                 var labels = [];
 
                 if (options.length === 0) {
-                    return '{% trans "Не выбрано ни одной группы" %}';
+                    return '{% trans "ne_vybrano_ni_odnoj_gruppy" %}';
                 }
                 else if (options.length === $('option', select).length) {
-                    return '{% trans "Для всех групп" %}';
+                    return '{% trans "dlja_vseh_grupp" %}';
                 }
                 else {
                     options.each(function () {
@@ -301,22 +300,23 @@
             },
             buttonText: function(options, select) {
                 if (options.length === 0) {
-                    return '{% trans "Не выбрано ни одной группы" %}';
+                    return '{% trans "ne_vybrano_ni_odnoj_gruppy" %}';
                 }
                 else if (options.length === $('option', select).length) {
-                    return '{% trans "Для всех групп" %}';
+                    return '{% trans "dlja_vseh_grupp" %}';
                 }
                 else if (options.length > 1) {
-                    return '{% trans "Выбрано несколько групп - " %}' + options.length;
+                    return '{% trans "vybrano_neskolko_grupp" %} - ' + options.length;
                 }
                 else {
                     var labels = [];
                     options.each(function() {
-                        if ($(this).attr('label') !== undefined) {
-                            labels.push($(this).attr('label'));
+                        var $this = $(this)
+                        if ($this.attr('label') !== undefined) {
+                            labels.push($this.attr('label'));
                         }
                         else {
-                            labels.push($(this).text());
+                            labels.push($this.text());
                         }
                     });
                     return labels.join(', ') + '';
@@ -350,12 +350,22 @@
         });
     });
 
+    function toggle_inputs($div) {
+        $("input, select, textarea", $div).each(function () {
+            var $this= $(this);
+            if ($this.is(':disabled'))
+                $this.prop('disabled', false);
+            else
+                $this.prop('disabled', true);
+        });
+    }
+
     function description_preview() {
         var description_html = $('#task_edit_body').val();
         var deadline = $('#task_edit_datepicker').val();
         $('#modal_task_header').show();
         if (deadline) {
-            $('#modal_task_deadline').html('<strong>{% trans "Дата сдачи" %}: ' + deadline + ' MSK UTC+3</strong>');
+            $('#modal_task_deadline').html('<strong>{% trans "data_sdachi" %}: ' + deadline + ' MSK UTC+3</strong>');
         }
         else {
             $('#modal_task_deadline').empty();

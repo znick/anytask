@@ -23,6 +23,7 @@ import urllib, urllib2
 import httplib
 import logging
 import requests
+import reversion
 
 from courses.models import Course, DefaultTeacher, StudentCourseMark, MarkField, FilenameExtension
 from groups.models import Group
@@ -71,7 +72,11 @@ def queue_page(request, course_id):
     for profile in active_profiles:
         active_students.append(profile.user)
 
-    issues = Issue.objects.filter(task__course=course, student__in=active_students).order_by('update_time')
+    issues = Issue.objects.filter(
+        task__course=course, student__in=active_students
+    ).exclude(
+        status_field__tag=IssueStatus.STATUS_SEMINAR
+    ).order_by('update_time')
 
     f = IssueFilter(request.GET, issues)
     f.set_course(course)
@@ -87,7 +92,7 @@ def queue_page(request, course_id):
     # f.form.helper.field_class = 'selectpicker'
     f.form.helper.layout.append(HTML(u"""<div class="form-group row">
                                            <button id="button_filter" class="btn btn-secondary pull-xs-right" type="submit">{0}</button>
-                                         </div>""".format(_(u'Применить'))))
+                                         </div>""".format(_(u'primenit'))))
 
     schools = course.school_set.all()
 
@@ -361,13 +366,14 @@ def tasklist_shad_cpp(request, course, seminar=None, group=None):
             elif not course.user_can_see_transcript(user, student):
                 continue
 
-            mark_id, course_mark = get_course_mark(course, group, student)
+            mark_id, course_mark, course_mark_int = get_course_mark(course, student)
 
             group_x_student_information[group].append((student,
                                                        student_x_task_x_task_takens[student][0],
                                                        student_x_task_x_task_takens[student][1],
                                                        mark_id,
-                                                       course_mark))
+                                                       course_mark,
+                                                       course_mark_int))
 
     context = {
         'course': course,
@@ -398,19 +404,25 @@ def get_tasklist_context(request, course):
     return tasklist_shad_cpp(request, course)
 
 
-def get_course_mark(course, group, student):
+def get_course_mark(course, student):
     mark_id = -1
     course_mark = '--'
+    course_mark_int = -1
+    course_marks = course.mark_system
 
-    try:
-        student_course_mark = StudentCourseMark.objects.get(course=course, student=student)
-        if student_course_mark.mark:
-            mark_id = student_course_mark.mark.id
-            course_mark = unicode(student_course_mark)
-    except StudentCourseMark.DoesNotExist:
-        pass
+    if course_marks and course_marks.marks:
+        if course_marks.marks.all()[0].name_int != -1:
+            course_mark_int = -10
+        try:
+            student_course_mark = StudentCourseMark.objects.get(course=course, student=student)
+            if student_course_mark.mark:
+                mark_id = student_course_mark.mark.id
+                course_mark = unicode(student_course_mark)
+                course_mark_int = student_course_mark.mark.name_int
+        except StudentCourseMark.DoesNotExist:
+            pass
 
-    return mark_id, course_mark
+    return mark_id, course_mark, course_mark_int
 
 
 def courses_list(request, year=None):
@@ -562,6 +574,11 @@ def course_settings(request, course_id):
     else:
         course.show_task_one_file_upload = False
 
+    if 'default_task_send_to_users' in request.POST:
+        course.default_task_send_to_users = True
+    else:
+        course.default_task_send_to_users = False
+
     if 'default_task_one_file_upload' in request.POST:
         course.default_task_one_file_upload = True
     else:
@@ -633,8 +650,7 @@ def set_course_mark(request):
     student_course_mark.update_time = datetime.datetime.now()
     student_course_mark.mark = mark
     student_course_mark.save()
-
-    return HttpResponse(json.dumps({'mark': unicode(mark), 'mark_id': mark.id}),
+    return HttpResponse(json.dumps({'mark': unicode(mark), 'mark_id': mark.id, 'mark_int': mark.name_int}),
                         content_type="application/json")
 
 
@@ -750,9 +766,9 @@ def ajax_update_contest_tasks(request):
         if 'error' in problem_req:
             response['is_error'] = True
             if 'IndexOutOfBoundsException' in problem_req['error']['name']:
-                response['error'] = _(u'Такого контеста не существует')
+                response['error'] = _(u'kontesta_ne_sushestvuet')
             else:
-                response['error'] = _(u'Ошибка Я.Контеста: ') + problem_req['error']['message']
+                response['error'] = _(u'oshibka_kontesta') + ' ' + problem_req['error']['message']
         if 'result' in problem_req.json():
             problems = problem_req.json()['result']['problems']
 
@@ -760,11 +776,11 @@ def ajax_update_contest_tasks(request):
     else:
         response['is_error'] = True
         if "You're not allowed to view this contest." in contest_info:
-            response['error'] = _(u"У anytask нет прав на данный контест")
+            response['error'] = _(u"net_prav_na_kontest")
         elif "Contest with specified id does not exist." in contest_info:
-            response['error'] = _(u'Такого контеста не существует')
+            response['error'] = _(u'kontesta_ne_sushestvuet')
         else:
-            response['error'] = _(u'Ошибка Я.Контеста: ') + contest_info
+            response['error'] = _(u'oshibka_kontesta') + contest_info
 
     if not response['is_error']:
         for task in Task.objects.filter(id__in=dict(request.POST)['tasks_with_contest[]']):
@@ -789,6 +805,10 @@ def ajax_update_contest_tasks(request):
                         task.score_max = problem['score']
 
             task.save()
+
+            reversion.set_user(request.user)
+            reversion.set_comment("Update from contest")
+
             response['tasks_title'][task.id] = task.title
 
     return HttpResponse(json.dumps(response),

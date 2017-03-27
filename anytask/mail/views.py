@@ -15,18 +15,18 @@ import json
 import datetime
 
 MONTH = {
-    1: _(u"янв."),
-    2: _(u"февр."),
-    3: _(u"мар."),
-    4: _(u"апр."),
-    5: _(u"мая"),
-    6: _(u"июн."),
-    7: _(u"июл."),
-    8: _(u"авг."),
-    9: _(u"сент."),
-    10: _(u"окт."),
-    11: _(u"нояб."),
-    12: _(u"дек.")
+    1: _(u"january"),
+    2: _(u"february"),
+    3: _(u"march"),
+    4: _(u"april"),
+    5: _(u"may"),
+    6: _(u"june"),
+    7: _(u"july"),
+    8: _(u"august"),
+    9: _(u"september"),
+    10: _(u"october"),
+    11: _(u"november"),
+    12: _(u"december")
 }
 
 

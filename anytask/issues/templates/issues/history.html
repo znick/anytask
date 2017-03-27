@@ -24,17 +24,29 @@
 </style>
 
 <div class="card card-block">
+    <h5 class="card-title">{{ issue.task.title }}
+        <a class="btn btn-secondary btn-sm btn-square" data-toggle="collapse" href="#task-text"
+           aria-expanded="false" aria-controls="task-text">
+            <span class="fa fa-caret-down"></span>
+        </a>
+    </h5>
+    <div class="collapse" id="task-text">
+        {{ issue.task.task_text|safe }}
+    </div>
+</div>
+<div class="card card-block">
+    <h5 class="card-title">{% trans "obsuzhdenie_zadachi" %}</h5>
     <ul class="history">
         {% if issue.get_history.count > events_to_show %}
             <li>
                 <button id="old_comments_button" type="button" class="btn btn-secondary" data-toggle="collapse" data-target="#old_comments">
-                    {% trans "Предыдущие сообщения" %}
+                    {% trans "predydushie_soobshenija" %}
                 </button>
             </li>
             {% if issue.update_time > issue.task.deadline_time and show_top_alert %}
                 <li>
                     <div id="top_alert" class="alert alert-danger">
-                        <strong>{% trans "Срок сдачи задания истек!" %}</strong> {% trans "Все сообщения, отправленные студентом позже срока сдачи, будут выделяться красным цветом." %}
+                        <strong>{% trans "srok_sdachi_istek" %}</strong> {% trans "soobshenija_budut_vydeljatsja" %}
                     </div>
                 </li>
             {% endif %}
@@ -44,7 +56,7 @@
             {% if event.id == first_event_after_deadline.id %}
                 <li>
                     <div id="event_alert" class="alert alert-danger">
-                        <strong>{% trans "Срок сдачи задания истек!" %}</strong> {% trans "Все сообщения, отправленные студентом позже срока сдачи, будут выделяться красным цветом." %}
+                        <strong>{% trans "srok_sdachi_istek" %}</strong> {% trans "soobshenija_budut_vydeljatsja" %}
                     </div>
                 </li>
             {% endif %}
@@ -99,6 +111,9 @@
 
 
         {% endfor %}
+        {% if not issue.get_history %}
+            {% trans "zdes_nichego_net" %}
+        {% endif %}
     </ul>
 </div>
 

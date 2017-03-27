@@ -25,21 +25,21 @@
         <li class="nav-item">
             <a class="nav-link"
                href="{{ course.get_absolute_url }}{% if seminar %}/seminar/{{ seminar.id }}{% endif %}">
-                {% if not seminar %}{% trans "Страница курса" %}{% else %}{% trans "Страница семинара" %}{% endif %}</a>
+                {% if not seminar %}{% trans "stranica_kursa" %}{% else %}{% trans "stranica_seminara" %}{% endif %}</a>
         </li>
         <li class="nav-item">
             <a class="nav-link {% if not group_gradebook %}active{% endif %}"
-               href="{{ course.get_absolute_url }}/gradebook/{% if seminar %}seminar/{{ seminar.id }}{% endif %}">{% trans "Общая ведомость" %}</a>
+               href="{{ course.get_absolute_url }}/gradebook/{% if seminar %}seminar/{{ seminar.id }}{% endif %}">{% trans "obshaja_vedomost" %}</a>
         </li>
         {% if not seminar %}
             {% if visible_queue %}
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ course.get_absolute_url }}/queue">{% trans "Очередь на проверку" %}</a>
+                    <a class="nav-link" href="{{ course.get_absolute_url }}/queue">{% trans "ochered_na_proverku" %}</a>
                 </li>
             {% endif %}
             {% if user_is_teacher %}
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url courses.views.course_settings course.id %}">{% trans "Настройки" %}</a>
+                    <a class="nav-link" href="{% url courses.views.course_settings course.id %}">{% trans "nastrojki" %}</a>
                 </li>
             {% endif %}
         {% endif %}
@@ -55,12 +55,12 @@
             <div class="col-md-12 col-xs-12">
                     <a class="btn btn-secondary btn-sm" id="status_btn" data-toggle="popover-status" data-placement="bottom" data-container="document"
                        data-content='<ul style="padding: 0; font-size: 1.25rem">
-                                        <li><span class="label label-default">{% trans "Новый" %}</span></li>
-                                        <li><span class="label label-info">{% trans "Требуется информация" %}</span></li>
+                                        <li><span class="label label-default">{% trans "novyj" %}</span></li>
+                                        <li><span class="label label-info">{% trans "trebuetsja_informacija" %}</span></li>
                                         {% for issue_status in course.issue_status_system.statuses.all %}
                                             <li><span class="label" style="background-color: {{ issue_status.color }}">{{ issue_status.name }}</span></li>
                                         {% endfor %}
-                                        <li><span class="label label-inverse">{% trans "Суммарный балл" %}</span></li>
+                                        <li><span class="label label-inverse">{% trans "summarnyj_ball" %}</span></li>
                                     </ul>'>
                       Статусы
                     </a>
@@ -69,23 +69,37 @@
                             <a class="btn btn-secondary btn-sm"
                                href="javascript:change_visibility_hidden_tasks({{ course.id }});" role="button">
                                 {% if show_hidden_tasks %}
-                                    {% trans "Не показывать скрытые задачи" %}
+                                    {% trans "ne_pokazyvat_skrytye_zadachi" %}
                                 {% else %}
-                                    {% trans "Показать скрытые задачи" %}
+                                    {% trans "pokazat_skrytye_zadachi" %}
                                 {% endif %}
                             </a>
                         {% endif %}
                         {% if visible_hide_button_users %}
                             <a class="btn btn-secondary btn-sm" id="hide_academ_student_btn">
                                 {% if show_academ_users %}
-                                    {% trans "Не показывать отчисленных студентов" %}
+                                    {% trans "ne_pokazyvat_otchislennyh" %}
                                 {% else %}
-                                    {% trans "Показать отчисленных студентов" %}
+                                    {% trans "pokazyvat_otchislennyh" %}
                                 {% endif %}
                             </a>
                         {% endif %}
                 {% endif %}
 
+                {#    <div class = "breadcrumb_button">#}
+                {#        {% if not user_is_teacher and course.can_be_chosen_by_extern%}#}
+                {#            {% if user_is_attended_special_course %}#}
+                {#                <button type="button" class="btn btn-danger" OnClick="javascript:set_spectial_course_attend({{ course.id }}, 'remove');">#}
+                {#                    Отписаться#}
+                {#                </button>#}
+                {#            {% else %}#}
+                {#                <button type="button" class="btn btn-success" OnClick="javascript:set_spectial_course_attend({{ course.id }},'add');">#}
+                {#                    Записаться#}
+                {#                </button>#}
+                {#            {% endif %}#}
+                {#            <br>#}
+                {#        {% endif %}#}
+                {#    </div>#}
             </div>
         </div>
     </div>
