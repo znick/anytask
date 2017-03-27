@@ -13,7 +13,7 @@ from crispy_forms.layout import HTML
 
 from courses.models import StudentCourseMark
 from courses.models import Course
-from users.models import UserProfile, IssueFilterStudent, UserProfileFilter, UserStatus
+from users.models import UserProfile, UserProfileFilter, UserStatus
 
 
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-21 10:28+0000\n"
+"POT-Creation-Date: 2017-03-24 13:50+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,6 +18,26 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
+
+#: admission/views.py:171 courses/templates/courses/course_forbidden.html:30
+msgid "oshibka"
+msgstr "Ошибка:"
+
+#: admission/views.py:181
+msgid "oshibka_registracii_v_contest"
+msgstr "Ошибка регистрации в Яндекс.Контесте."
+
+#: admission/views.py:183
+msgid "nevernyy_kod_aktivatsii"
+msgstr "Неверный код активации."
+
+#: admission/views.py:203
+msgid "spasibo"
+msgstr "Спасибо"
+
+#: admission/views.py:204
+msgid "informatsiya_o_vas_byla_udalena"
+msgstr "Информация о Вас была удалена."
 
 #: anycontest/models.py:171 anycontest/models.py:177 anycontest/models.py:182
 msgid "verdikt_jakontest"
@@ -59,9 +79,9 @@ msgstr "Ошибка отправки в Review Board"
 msgid "zadacha"
 msgstr "Задача"
 
-#: anyrb/common.py:84 issues/management/commands/send_notifications.py:63
-#: users/models.py:187 users/templates/my_tasks.html:137
-#: users/templates/user_courses.html:91
+#: anyrb/common.py:84 issues/model_issue_student_filter.py:20
+#: issues/management/commands/send_notifications.py:63
+#: users/templates/my_tasks.html:137 users/templates/user_courses.html:91
 msgid "kurs"
 msgstr "Курс"
 
@@ -113,7 +133,7 @@ msgstr "Мои задачи"
 msgid "nabludaemye_mnoj"
 msgstr "Наблюдаемые мной"
 
-#: courses/views.py:95 staff/views.py:44 users/views.py:457
+#: courses/views.py:95 staff/views.py:44 users/views.py:458
 msgid "primenit"
 msgstr "Применить"
 
@@ -173,7 +193,8 @@ msgstr "Настройки"
 
 #: courses/templates/courses/course.html:78
 #: courses/templates/courses/gradebook.html:70
-#: courses/templates/courses/settings.html:133 users/models.py:188
+#: courses/templates/courses/settings.html:133
+#: issues/model_issue_student_filter.py:21
 msgid "prepodavateli"
 msgstr "Преподаватели"
 
@@ -254,10 +275,6 @@ msgstr "Перейти"
 #: courses/templates/courses/course.html:351
 msgid "vedomost"
 msgstr "Ведомость"
-
-#: courses/templates/courses/course_forbidden.html:30
-msgid "oshibka"
-msgstr "Ошибка:"
 
 #: courses/templates/courses/course_forbidden.html:53
 msgid "ukazat_invajt"
@@ -724,9 +741,10 @@ msgstr "для"
 msgid "dejstvitelen_do"
 msgstr "Действителен до"
 
-#: issues/admin.py:23 issues/models.py:476 issues/views.py:58
+#: issues/admin.py:23 issues/model_issue_student_filter.py:22
+#: issues/models.py:476 issues/views.py:58
 #: issues/templates/issues/info.html:108 staff/templates/staff.html:59
-#: users/admin.py:20 users/models.py:189 users/templates/my_tasks.html:140
+#: users/admin.py:20 users/templates/my_tasks.html:140
 msgid "status"
 msgstr "Статус"
 
@@ -741,6 +759,37 @@ msgstr "Зачтено"
 #: issues/model_issue_status.py:29 issues/models.py:80
 msgid "na_avtomaticheskoj_proverke"
 msgstr "На автоматической проверке"
+
+#: issues/model_issue_student_filter.py:14
+msgid "tip_kursa"
+msgstr "Тип курса"
+
+#: issues/model_issue_student_filter.py:16
+msgid "god_kursa"
+msgstr "Год курса"
+
+#: issues/model_issue_student_filter.py:23 issues/models.py:477
+msgid "data_poslednego_izmenenija"
+msgstr "Дата последнего изменения"
+
+#: issues/model_issue_student_filter.py:45 issues/models.py:486
+#: users/models.py:223
+msgid "luboj"
+msgstr "Любой"
+
+#: issues/model_issue_student_filter.py:46
+msgid "aktivnyj"
+msgstr "Активный"
+
+#: issues/model_issue_student_filter.py:47
+#: schools/templates/archive_page.html:23
+#: schools/templates/archive_page.html:32
+#: schools/templates/school_page.html:22 search/templates/search.html:170
+#: templates/base.html:135 users/templates/user_courses.html:65
+#: users/templates/user_courses.html:72 users/templates/user_profile.html:210
+#: users/templates/user_profile.html:283 users/templates/user_profile.html:317
+msgid "arhiv"
+msgstr "Архив"
 
 #: issues/models.py:279 issues/views.py:100
 msgid "otpravleno_v_kontest"
@@ -770,17 +819,9 @@ msgstr "Оценка изменена на"
 msgid "zagruzhen_faij"
 msgstr "Загружен файл:"
 
-#: issues/models.py:477 users/models.py:190
-msgid "data_poslednego_izmenenija"
-msgstr "Дата последнего изменения"
-
 #: issues/models.py:479 issues/views.py:57
 msgid "nabludateli"
 msgstr "Наблюдатели"
-
-#: issues/models.py:486 users/models.py:173 users/models.py:212
-msgid "luboj"
-msgstr "Любой"
 
 #: issues/models.py:493
 msgid "lubaja"
@@ -808,12 +849,12 @@ msgstr "Номер отправки в контест"
 
 #: issues/management/commands/send_notifications.py:35
 #: mail/management/commands/send_mail_notifications.py:39
-#: tasks/management/commands/send_task_notifications.py:92
+#: tasks/management/commands/send_task_notifications.py:94
 msgid "zdravstvujte"
 msgstr "Здравствуйте"
 
 #: issues/management/commands/send_notifications.py:36
-#: tasks/management/commands/send_task_notifications.py:97
+#: tasks/management/commands/send_task_notifications.py:99
 #: tasks/templates/email_notification_task.html:23
 msgid "v_zadache"
 msgstr "В задаче"
@@ -828,14 +869,14 @@ msgstr "появились новые комментарии"
 
 #: issues/management/commands/send_notifications.py:59
 #: mail/management/commands/send_mail_notifications.py:44
-#: tasks/management/commands/send_task_notifications.py:102
+#: tasks/management/commands/send_task_notifications.py:104
 #: templates/registration/activation_email.txt:10
 msgid "s_uvazheniem"
 msgstr "С уважением"
 
 #: issues/management/commands/send_notifications.py:60
 #: mail/management/commands/send_mail_notifications.py:45
-#: tasks/management/commands/send_task_notifications.py:103
+#: tasks/management/commands/send_task_notifications.py:105
 #: templates/registration/activation_email.txt:11
 msgid "komanda_anytask"
 msgstr "команда Anytask"
@@ -1148,16 +1189,6 @@ msgstr "Необходимо указать тему"
 msgid "aktivnye_kursy"
 msgstr "Активные курсы"
 
-#: schools/templates/archive_page.html:23
-#: schools/templates/archive_page.html:32
-#: schools/templates/school_page.html:22 search/templates/search.html:170
-#: templates/base.html:135 users/models.py:214
-#: users/templates/user_courses.html:65 users/templates/user_courses.html:72
-#: users/templates/user_profile.html:210 users/templates/user_profile.html:283
-#: users/templates/user_profile.html:317
-msgid "arhiv"
-msgstr "Архив"
-
 #: search/templates/search.html:4 search/templates/search.html.py:58
 msgid "rezultaty_poiska"
 msgstr "Результаты поиска"
@@ -1268,25 +1299,30 @@ msgstr "Формулировка"
 msgid "max_ball"
 msgstr "Максимальный балл"
 
-#: tasks/management/commands/send_task_notifications.py:93
+#: tasks/management/commands/send_task_notifications.py:95
+#: tasks/templates/email_notification_task.html:10
+msgid "v_kurse"
+msgstr "В курсе"
+
+#: tasks/management/commands/send_task_notifications.py:95
 msgid "izmenilis_zadachi"
 msgstr "изменились следующие задачи"
 
-#: tasks/management/commands/send_task_notifications.py:95
+#: tasks/management/commands/send_task_notifications.py:97
 msgid "pereyti_v_kurs"
 msgstr "Перейти в курс"
 
-#: tasks/management/commands/send_task_notifications.py:97
+#: tasks/management/commands/send_task_notifications.py:99
 #: tasks/templates/email_notification_task.html:23
 msgid "izmenilis"
 msgstr "изменились"
 
-#: tasks/management/commands/send_task_notifications.py:98
+#: tasks/management/commands/send_task_notifications.py:100
 #: tasks/templates/email_notification_task.html:21
 msgid "dobavlena_zadacha"
 msgstr "добавлена задача"
 
-#: tasks/management/commands/send_task_notifications.py:107
+#: tasks/management/commands/send_task_notifications.py:109
 msgid "proizoshli_izmeneniya_v_kursah"
 msgstr "произошли изменения в Ваших курсах"
 
@@ -1336,10 +1372,6 @@ msgstr "Уведомить студентов о создании зада"
 #: tasks/templates/contest_import.html:175
 msgid "skryt_zadachi"
 msgstr "Скрыть задачи"
-
-#: tasks/templates/email_notification_task.html:10
-msgid "v_kurse"
-msgstr "В курсе"
 
 #: tasks/templates/email_notification_task.html:15
 msgid "proizoshli_izmeneniya"
@@ -1506,7 +1538,7 @@ msgstr "Есть новые сообщения"
 msgid "net_novyh_soobshenij"
 msgstr "Нет новых сообщений"
 
-#: templates/base.html:672 users/views.py:393 users/templates/my_tasks.html:93
+#: templates/base.html:672 users/views.py:394 users/templates/my_tasks.html:93
 #: users/templates/status_history.html:29 users/templates/user_courses.html:28
 #: users/templates/user_profile.html:17 users/templates/user_settings.html:43
 msgid "profil"
@@ -1532,11 +1564,11 @@ msgstr "Войдите"
 msgid "zaregistrirujtes"
 msgstr "Зарегистрируйтесь"
 
-#: templates/base.html:720
+#: templates/base.html:722
 msgid "blog"
 msgstr "Блог"
 
-#: templates/base.html:735
+#: templates/base.html:737
 msgid "pishite_nam"
 msgstr "Пишите нам на"
 
@@ -1681,40 +1713,36 @@ msgstr "Такого инвайта не существует."
 msgid "srok_dejstvija_invajta_istek"
 msgstr "Срок действия инвайта истек."
 
-#: users/models.py:53 users/models.py:167
+#: users/models.py:52 users/models.py:217
 msgid "status_studenta"
 msgstr "Статус студента"
 
-#: users/models.py:185
-msgid "tip_kursa"
-msgstr "Тип курса"
+#: users/models.py:53
+msgid "filial"
+msgstr "Филиал"
 
-#: users/models.py:186
-msgid "god_kursa"
-msgstr "Год курса"
+#: users/models.py:54
+msgid "status_postupleniya"
+msgstr "Статус поступления"
 
-#: users/models.py:213
-msgid "aktivnyj"
-msgstr "Активный"
-
-#: users/views.py:393
+#: users/views.py:394
 msgid "uzhe_privjazan"
 msgstr "уже привязан к аккаунту другого пользователя на Anytask!"
 
-#: users/views.py:396 users/views.py:410 users/templates/user_profile.html:126
+#: users/views.py:397 users/views.py:411 users/templates/user_profile.html:126
 #: users/templates/user_profile.html:138
 msgid "privjazat_profil_kontesta"
 msgstr "Привязать профиль Яндекс.Контеста"
 
-#: users/views.py:398
+#: users/views.py:399
 msgid "privjazat_profil_ja"
 msgstr "Привязать профиль Яндекса"
 
-#: users/views.py:411
+#: users/views.py:412
 msgid "pereprivjazat_tolko_svoj_profil"
 msgstr "Можно перепривязать только тот профиль, который был привязан ранее!"
 
-#: users/views.py:564
+#: users/views.py:565
 msgid "invajt_drugogo_kursa"
 msgstr "Инвайт относится к другому курсу."
 
