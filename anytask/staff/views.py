@@ -71,8 +71,7 @@ def staff_page(request):
             logger.error('Error in staff page file filter upload: %s', e)
             file_filter_err = str(e)
             is_error = True
-    else:
-        if not request.GET:
+    elif request.method == 'GET' and not request.GET:
             user_profiles = UserProfile.objects.none()
             empty_filter = True
 

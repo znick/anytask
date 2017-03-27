@@ -218,6 +218,7 @@ class UserProfileLog(models.Model):
     def __unicode__(self):
         return unicode(self.user)
 
+
 class CustomMethodFilter(django_filters.MethodFilter):
     def __init__(self, *args, **kwargs):
         self.field_class = kwargs.pop('field_class', forms.Field)
@@ -227,11 +228,11 @@ class CustomMethodFilter(django_filters.MethodFilter):
 
 class UserProfileFilter(django_filters.FilterSet):
     courses = CustomMethodFilter(label=u'<strong>{0}</strong>'.format(_(u'kurs')),
-                                 action='filter_course',
+                                 action='empty_filter',
                                  widget=forms.SelectMultiple,
                                  field_class=forms.MultipleChoiceField)
     groups = CustomMethodFilter(label=u'<strong>{0}</strong>'.format(_(u'gruppa')),
-                                action='filter_group',
+                                action='empty_filter',
                                 widget=forms.SelectMultiple,
                                 field_class=forms.MultipleChoiceField)
     user_status_activity = django_filters.MultipleChoiceFilter(
@@ -292,17 +293,20 @@ class UserProfileFilter(django_filters.FilterSet):
                 self.users_info = users_info
         return self._qs
 
-    def filter_course(self, qs, value):
-        # if not hasattr(self, '_qs'):
-        #     if value and qs:
-        #         return qs.filter(user__group__course__id__in=value).distinct()
+    def empty_filter(self, qs, value):
         return qs
 
-    def filter_group(self, qs, value):
-        # if not hasattr(self, '_qs'):
-        #     if value and qs:
-        #         return qs.filter(user__group__id__in=value).distinct()
-        return qs
+    # def filter_course(self, qs, value):
+    #     if not hasattr(self, '_qs'):
+    #         if value and qs:
+    #             return qs.filter(user__group__course__id__in=value).distinct()
+    #     return qs
+    #
+    # def filter_group(self, qs, value):
+    #     if not hasattr(self, '_qs'):
+    #         if value and qs:
+    #             return qs.filter(user__group__id__in=value).distinct()
+    #     return qs
 
     def set(self):
         self.courses_qs = Course.objects.filter(is_active=True)

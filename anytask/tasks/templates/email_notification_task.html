@@ -20,7 +20,7 @@
                                     {% if task_info.1 %}
                                         {% trans 'dobavlena_zadacha' %}&nbsp;"{{ task_info.0.title }}"
                                     {% else %}
-                                        {% trans 'v_zadache' %}&nbsp;"{{ task_info.0.title }}"&nbsp;{% trans 'izmenilis' %}&nbsp;{{ task_info|slice:"2:"|join:", " }}
+                                        {% filter lower %}{% trans 'v_zadache' %}{% endfilter %}&nbsp;"{{ task_info.0.title }}"&nbsp;{% trans 'izmenilis' %}:&nbsp;{{ task_info|slice:"2:"|join:", " }}
                                     {% endif %}
                                 </li>
                             {% endif %}

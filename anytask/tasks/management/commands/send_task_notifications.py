@@ -24,12 +24,7 @@ class Command(BaseCommand):
 
     def handle(self, **options):
         DIFF_FIELDS = [u'title', u'task_text', u'score_max', u'deadline_time']
-        DIFF_FIELDS_STR = [
-            _(u'nazvanie').lower(),
-            _(u'formulirovka').lower(),
-            _(u'max_ball').lower(),
-            _(u'data_sdachi').lower()
-        ]
+
         students_tasks_info = {}
         for task in Task.objects.filter(sended_notify=False):
             course = task.course
@@ -55,33 +50,43 @@ class Command(BaseCommand):
 
                 for i_field, field in enumerate(DIFF_FIELDS):
                     if version.field_dict[field] != version_list[i_version_next].field_dict[field]:
-                        task_info[i_field] = DIFF_FIELDS_STR[i_field]
+                        task_info[i_field] = field
                         task_changed = True
                 if not version.field_dict['is_hidden'] and version_list[i_version_next].field_dict['is_hidden']:
                     task_created = True
 
             if task_created or task_changed:
-                task_info = (task, task_created) + tuple(filter(lambda a: a != '', task_info))
-
                 for group in task.groups.all():
                     for student in group.students.all():
                         translation.activate(student.get_profile().language)
+                        diff_fields_str = {
+                            u'title': _(u'nazvanie').lower(),
+                            u'task_text': _(u'formulirovka').lower(),
+                            u'score_max': _(u'max_ball').lower(),
+                            u'deadline_time': _(u'data_sdachi').lower()
+                        }
+                        task_info_changed = (task, task_created) + tuple(map(
+                            lambda a: diff_fields_str[a],
+                            filter(lambda a: a != '', task_info)
+                        ))
+
                         if student.id in students_tasks_info:
                             if course.id in students_tasks_info[student.id]:
-                                students_tasks_info[student.id][course.id][task.id] = task_info
+                                students_tasks_info[student.id][course.id][task.id] = task_info_changed
                             else:
                                 students_tasks_info[student.id][course.id] = {
                                     'course': course,
-                                    task.id: task_info
+                                    task.id: task_info_changed
                                 }
                         else:
                             students_tasks_info[student.id] = {
                                 'user': student,
                                 course.id: {
                                     'course': course,
-                                    task.id: task_info
+                                    task.id: task_info_changed
                                 }
                             }
+
                         translation.deactivate()
 
             with reversion.create_revision():
@@ -96,7 +101,7 @@ class Command(BaseCommand):
                             u'{1}\n' + \
                             _(u'pereyti_v_kurs') + u':\n' \
                             u'{2}\n\n'
-        plain_body_task = _(u'v_zadache') + u' "{0}" ' + _(u'izmenilis') + u' {1}\n'
+        plain_body_task = _(u'v_zadache').lower() + u' "{0}" ' + _(u'izmenilis') + u': {1}\n'
         plain_body_task_new = u'  - ' + _(u'dobavlena_zadacha') + u' "{0}"\n'
 
         plain_footer = u'\n\n' + \
@@ -106,6 +111,8 @@ class Command(BaseCommand):
         notify_messages = []
         for key_user, courses_info in students_tasks_info.iteritems():
             user = courses_info['user']
+            translation.activate(user.get_profile().language)
+
             subject = u"{0}, ".format(user.first_name) + _(u'proizoshli_izmeneniya_v_kursah')
 
             plain_body = u''
@@ -133,6 +140,7 @@ class Command(BaseCommand):
             }
             html = render_to_string('email_notification_task.html', context)
             notify_messages.append((subject, plain_text, html, from_email, [user.email]))
+            translation.deactivate()
 
         if notify_messages:
             send_mass_mail_html(notify_messages)

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-27 08:03+0000\n"
+"POT-Creation-Date: 2017-03-27 12:54+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -80,7 +80,7 @@ msgid "zadacha"
 msgstr "Задача"
 
 #: anyrb/common.py:84 issues/model_issue_student_filter.py:20
-#: issues/management/commands/send_notifications.py:63 users/models.py:229
+#: issues/management/commands/send_notifications.py:63 users/models.py:230
 #: users/templates/my_tasks.html:137 users/templates/user_courses.html:91
 msgid "kurs"
 msgstr "Курс"
@@ -133,7 +133,7 @@ msgstr "Мои задачи"
 msgid "nabludaemye_mnoj"
 msgstr "Наблюдаемые мной"
 
-#: courses/views.py:95 staff/views.py:86 users/views.py:458
+#: courses/views.py:95 staff/views.py:85 users/views.py:458
 msgid "primenit"
 msgstr "Применить"
 
@@ -420,7 +420,7 @@ msgstr ""
 
 #: courses/templates/courses/course_js.html:779
 #: issues/templates/issues/info.html:131 issues/templates/issues/info.html:151
-#: tasks/management/commands/send_task_notifications.py:31
+#: tasks/management/commands/send_task_notifications.py:66
 #: tasks/templates/contest_import.html:129
 #: tasks/templates/task_create.html:130
 #: tasks/templates/task_create_or_edit_js.html:399
@@ -853,12 +853,12 @@ msgstr "Номер отправки в контест"
 
 #: issues/management/commands/send_notifications.py:35
 #: mail/management/commands/send_mail_notifications.py:39
-#: tasks/management/commands/send_task_notifications.py:94
+#: tasks/management/commands/send_task_notifications.py:99
 msgid "zdravstvujte"
 msgstr "Здравствуйте"
 
 #: issues/management/commands/send_notifications.py:36
-#: tasks/management/commands/send_task_notifications.py:99
+#: tasks/management/commands/send_task_notifications.py:104
 #: tasks/templates/email_notification_task.html:23
 msgid "v_zadache"
 msgstr "В задаче"
@@ -873,14 +873,14 @@ msgstr "появились новые комментарии"
 
 #: issues/management/commands/send_notifications.py:59
 #: mail/management/commands/send_mail_notifications.py:44
-#: tasks/management/commands/send_task_notifications.py:104
+#: tasks/management/commands/send_task_notifications.py:109
 #: templates/registration/activation_email.txt:10
 msgid "s_uvazheniem"
 msgstr "С уважением"
 
 #: issues/management/commands/send_notifications.py:60
 #: mail/management/commands/send_mail_notifications.py:45
-#: tasks/management/commands/send_task_notifications.py:105
+#: tasks/management/commands/send_task_notifications.py:110
 #: templates/registration/activation_email.txt:11
 msgid "komanda_anytask"
 msgstr "команда Anytask"
@@ -1353,49 +1353,49 @@ msgstr "материал"
 msgid "seminar"
 msgstr "семинар"
 
-#: tasks/management/commands/send_task_notifications.py:28
+#: tasks/management/commands/send_task_notifications.py:63
 #: tasks/templates/task_create.html:80 tasks/templates/task_edit.html:148
 #: tasks/templates/task_edit.html.py:360
 msgid "nazvanie"
 msgstr "Название"
 
-#: tasks/management/commands/send_task_notifications.py:29
+#: tasks/management/commands/send_task_notifications.py:64
 #: tasks/templates/task_create.html:153 tasks/templates/task_edit.html:302
 #: tasks/templates/task_edit.html.py:378 tasks/templates/task_import.html:157
 msgid "formulirovka"
 msgstr "Формулировка"
 
-#: tasks/management/commands/send_task_notifications.py:30
+#: tasks/management/commands/send_task_notifications.py:65
 #: tasks/templates/contest_import.html:91 tasks/templates/task_create.html:87
 #: tasks/templates/task_edit.html:156 tasks/templates/task_edit.html.py:366
 #: tasks/templates/task_import.html:74
 msgid "max_ball"
 msgstr "Максимальный балл"
 
-#: tasks/management/commands/send_task_notifications.py:95
+#: tasks/management/commands/send_task_notifications.py:100
 #: tasks/templates/email_notification_task.html:10
 msgid "v_kurse"
 msgstr "В курсе"
 
-#: tasks/management/commands/send_task_notifications.py:95
+#: tasks/management/commands/send_task_notifications.py:100
 msgid "izmenilis_zadachi"
 msgstr "изменились следующие задачи"
 
-#: tasks/management/commands/send_task_notifications.py:97
+#: tasks/management/commands/send_task_notifications.py:102
 msgid "pereyti_v_kurs"
 msgstr "Перейти в курс"
 
-#: tasks/management/commands/send_task_notifications.py:99
+#: tasks/management/commands/send_task_notifications.py:104
 #: tasks/templates/email_notification_task.html:23
 msgid "izmenilis"
 msgstr "изменились"
 
-#: tasks/management/commands/send_task_notifications.py:100
+#: tasks/management/commands/send_task_notifications.py:105
 #: tasks/templates/email_notification_task.html:21
 msgid "dobavlena_zadacha"
 msgstr "добавлена задача"
 
-#: tasks/management/commands/send_task_notifications.py:109
+#: tasks/management/commands/send_task_notifications.py:116
 msgid "proizoshli_izmeneniya_v_kursah"
 msgstr "произошли изменения в Ваших курсах"
 
@@ -1419,7 +1419,7 @@ msgstr "Брать из Я.Контеста"
 
 #: tasks/templates/contest_import.html:104 tasks/templates/task_create.html:94
 #: tasks/templates/task_edit.html:164 tasks/templates/task_import.html:84
-#: users/models.py:233
+#: users/models.py:234
 msgid "gruppa"
 msgstr "Группа"
 
@@ -1787,15 +1787,15 @@ msgstr "Такого инвайта не существует."
 msgid "srok_dejstvija_invajta_istek"
 msgstr "Срок действия инвайта истек."
 
-#: users/models.py:57 users/models.py:238
+#: users/models.py:57 users/models.py:239
 msgid "status_studenta"
 msgstr "Статус студента"
 
-#: users/models.py:58 users/models.py:242
+#: users/models.py:58 users/models.py:243
 msgid "filial"
 msgstr "Филиал"
 
-#: users/models.py:59 users/models.py:246
+#: users/models.py:59 users/models.py:247
 msgid "status_postupleniya"
 msgstr "Статус поступления"
 
