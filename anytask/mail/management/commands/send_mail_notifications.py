@@ -49,7 +49,7 @@ def send_only_notify(domain, from_email):
 
         user_profile.send_notify_messages.clear()
 
-        subject = u'{0}, ' + _(u'est_novye_soobshenija').format(user.first_name)
+        subject = u'{0}, '.format(user.first_name) + _(u'est_novye_soobshenija')
 
         unread_count_string = get_string(unread_count)
 

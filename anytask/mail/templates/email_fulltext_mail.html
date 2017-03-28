@@ -39,7 +39,9 @@
                         <tbody>
                         <tr>
                             <td style="text-align: justify" class=".text_info">
-                                {{ message_text }}
+                                {% autoescape off %}
+                                    {{ message_text }}
+                                {% endautoescape %}
                             </td>
                         </tr>
                         </tbody>
