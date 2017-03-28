@@ -6,7 +6,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template.context import RequestContext
 from django.utils.translation import ugettext as _
 from django.views.decorators.http import require_POST, require_GET
-from django.template import Template, Context
+from django.conf import settings
 
 from django.contrib.auth.models import User
 from mail.models import Message
@@ -14,7 +14,8 @@ from courses.models import Course
 from groups.models import Group
 from users.models import UserProfile
 
-from staff.views import get_statuses
+from users.common import get_statuses
+from mail.common import render_mail
 
 import json
 import datetime
@@ -61,6 +62,7 @@ def mail_page(request):
         "courses_teacher": courses_teacher,
         'user_statuses': get_statuses(),
         "users_from_staff_len": users_from_staff_len,
+        "snow_alert_message_fulltext": hasattr(settings, 'SEND_MESSAGE_FULLTEXT') and settings.SEND_MESSAGE_FULLTEXT,
     }
 
     return render_to_response('mail.html', context, context_instance=RequestContext(request))
@@ -204,13 +206,8 @@ def ajax_get_message(request):
                 "name": status.name
             })
 
-    if message.variable and (message.sender != user or request.GET["mailbox"] == 'inbox'):
-        t = Template(message.text.replace('%', '&#37;'))
-        c = Context({
-            "last_name": user.last_name,
-            "first_name": user.first_name,
-        })
-        text = t.render(c)
+    if message.sender != user or request.GET["mailbox"] == 'inbox':
+        text = render_mail(message, user)
     else:
         text = message.text
 

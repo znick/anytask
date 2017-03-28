@@ -97,6 +97,11 @@
                                 <span class='fa fa-circle-o-notch fa-spin'></span>
                             </div>
                             <div class="new-msg-form collapse">
+                                {% if snow_alert_message_fulltext %}
+                                    <div class="alert alert-warning" role="alert">
+                                        Текст сообщения будет целиком отправлен на email пользователя.
+                                    </div>
+                                {% endif %}
                                 <form method="post" id="new_msg_form">
                                     {% csrf_token %}
                                     <div class="form-group form-search row form-recipients">
