@@ -83,7 +83,7 @@ def staff_page(request):
                 if len(user_profiles) != len(search_values):
                     err_search_values = search_values - set(
                         user_profiles.values_list(SEARCH_FIELDS[fieldnames[0]], flat=True))
-                    file_filter_err = _(u'dannyye_polzovateli_ne_naydeny') + u', '.join(err_search_values)
+                    file_filter_err = u'<strong>{0}</strong><br/>'.format(_(u'dannyye_polzovateli_ne_naydeny')) + u', '.join(err_search_values)
             else:
                 file_filter_err = _(u'nevernyy_format_fayla')
                 is_error = True
@@ -91,8 +91,7 @@ def staff_page(request):
             logger.error('Error in staff page file filter upload: %s', e)
             file_filter_err = str(e)
             is_error = True
-    else:
-        if not request.GET:
+    elif request.method == 'GET' and not request.GET:
             user_profiles = UserProfile.objects.none()
             empty_filter = True
 

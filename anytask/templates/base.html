@@ -99,7 +99,7 @@
 
                                 while (status_counter < data.statuses.length) {
                                     if (status_counter == MAX_STATUSES) {
-                                        status_html += '<span class="label label-status-sgs label-default ">еще ' + '1' + '</span>';
+                                        status_html += '<span class="label label-status-sgs label-default ">{% trans 'yeshcho' %} ' + (data.statuses.length - MAX_STATUSES) + '</span>';
                                         break;
                                     }
 
@@ -152,7 +152,7 @@
 
                         if ($('#navbar_search').data('course_limited') || $('#navbar_search').data('up_limited')) {
                             if (!$('.search-show-more', menu).length)
-                                $(menu).append("<div class='search-show-more'><button type='submit'>Все результаты</button></div>");
+                                $(menu).append("<div class='search-show-more'><button type='submit'>{% trans 'vse_resultaty' %}</button></div>");
                         }
                         else
                             $('.search-show-more', menu).remove();
@@ -221,6 +221,10 @@
             {#                cursor: default;#}
             {#                background-color: #ffdb4d;#}
             {#            }#}
+
+            .hidden {
+                display: none !important;
+            }
 
             body {
                 padding-top: 75px;
@@ -598,6 +602,10 @@
             .tt-menu {
                 min-width: 18rem;
             }
+
+            .btn-square {
+                padding: .375rem .5rem;
+            }
         </style>
 
     {% endblock %}
@@ -646,7 +654,7 @@
                                         <a href="{% url mail.views.mail_page %}" class="nav-link" role="button" style="position: relative;"><span class="fa fa-envelope" aria-hidden="true" style="line-height: inherit;"></span>
                                             {% if user.get_profile.get_unread_count %}
                                                 <span id="top_notify_count" class="label label-pill label-danger top_notify_count">{{ user.get_profile.get_unread_count }}</span>
-                                                <span id="top_notify_count_string">{% trans "est_novye_soobshenija" %}</span>
+                                                <span id="top_notify_count_string">{% trans "base_est_novye_soobshenija" %}</span>
                                             {% else %}
                                                 <span id="top_notify_count" class="label label-pill label-danger top_notify_count"></span>
                                                 <span id="top_notify_count_string">{% trans "net_novyh_soobshenij" %}</span>

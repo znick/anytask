@@ -22,7 +22,7 @@ import datetime
 MONTH = {
     1: _(u"january"),
     2: _(u"february"),
-    3: _(u"may"),
+    3: _(u"march"),
     4: _(u"april"),
     5: _(u"may"),
     6: _(u"june"),

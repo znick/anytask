@@ -157,6 +157,15 @@
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item">
                             <div class="row">
+                                <p class="card-text">{% trans "izmenenie_v_zadache" %}</p>
+                                <div class="col-md-12">
+                                    <input type="checkbox" name="default_task_send_to_users" id="default_task_send_to_users" {% if course.default_task_send_to_users %}checked{% endif %}>
+                                    <label class="checkbox-block" for="default_task_send_to_users">{% trans "po_umolchaniu" %}</label>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="row">
                                 <p class="card-text">{% trans "otpravljat_tolko_odin_fajl" %}</p>
                                 <div class="col-md-12">
                                     <input type="checkbox" name="show_task_one_file_upload" id="show_task_one_file_upload" {% if course.show_task_one_file_upload %}checked{% endif %}>

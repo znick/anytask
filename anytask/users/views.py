@@ -392,7 +392,7 @@ def ya_oauth_disable(request, type_of_oauth):
 @login_required
 def ya_oauth_forbidden(request, type_of_oauth):
     oauth_error_text_header = ''
-    oauth_error_text = _(u"profil_uzhe_privjazan")\
+    oauth_error_text = _(u'profil') + u' {0} ' + _(u'uzhe_privjazan')\
         .format(request.session["ya_oauth_login"])
     if type_of_oauth == 'contest':
         oauth_error_text_header = _(u"privjazat_profil_kontesta")

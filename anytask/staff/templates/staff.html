@@ -57,7 +57,9 @@
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                     {% if file_filter_err %}
-                                        {{ file_filter_err }}
+                                        {% autoescape off %}
+                                            {{ file_filter_err }}
+                                        {% endautoescape %}
                                     {% else %}
                                         {% trans "naydeno_polzovateley" %}&nbsp;{{ filter.users_info|length }}
                                     {% endif %}
@@ -207,6 +209,14 @@
             </button>
             <button type="button" class="btn btn-sm btn-secondary table-send-mail" data-toggle="modal" data-target="#modal_send_mail" title="{% trans "otpravit_soobshcheniye_vsem_polzovatelyam" %}">
                 <span class="fa fa-envelope fa-fw" aria-hidden="true"></span>
+            </button>
+        </div>
+    </div>
+
+    <div class="table-buttons remove-after-init">
+        <div class="table-options" >
+            <button type="button" class="btn btn-secondary table-change-status" data-toggle="modal" data-target="#modal_change_status" title="{% trans "izmenit_status_dlya_vsekh_polzovateley" %}">
+                {% trans "izmenit_status_dlya_vsekh_polzovateley" %}
             </button>
         </div>
     </div>

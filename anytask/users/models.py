@@ -32,7 +32,7 @@ def get_upload_path(instance, filename):
 
 class UserProfile(models.Model):
     user = models.ForeignKey(User, db_index=True, null=False, blank=False, unique=True, related_name='profile')
-    second_name = models.CharField(max_length=128, db_index=True, null=True, blank=True)
+    middle_name = models.CharField(max_length=128, db_index=True, null=True, blank=True)
     user_status = models.ManyToManyField(UserStatus, db_index=True, null=True, blank=True,
                                          related_name='users_by_status')
 
@@ -43,6 +43,15 @@ class UserProfile(models.Model):
     info = models.TextField(default="", blank=True, null=True)
 
     phone = models.CharField(max_length=128, null=True, blank=True)
+    city_of_residence = models.CharField(max_length=191, null=True, blank=True)
+
+    university = models.CharField(max_length=191, null=True, blank=True)
+    university_in_process = models.BooleanField(null=False, blank=False, default=False)
+    university_class = models.CharField(max_length=50, null=True, blank=True)
+    university_department = models.CharField(max_length=191, null=True, blank=True)
+    university_year_end = models.CharField(max_length=20, null=True, blank=True)
+
+    additional_info = models.TextField(null=True, blank=True)
 
     unit = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
     position = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
@@ -110,7 +119,7 @@ class UserProfile(models.Model):
 
 class UserProfileLog(models.Model):
     user = models.ForeignKey(User, db_index=True, null=False, blank=False, related_name='profiles_logs_by_user')
-    second_name = models.CharField(max_length=128, db_index=True, null=True, blank=True)
+    middle_name = models.CharField(max_length=128, db_index=True, null=True, blank=True)
     user_status = models.ManyToManyField(UserStatus, db_index=True, null=True, blank=True)
 
     avatar = models.ImageField('profile picture', upload_to=get_upload_path, blank=True, null=True,
@@ -118,6 +127,17 @@ class UserProfileLog(models.Model):
     birth_date = models.DateField(blank=True, null=True)
 
     info = models.TextField(default="", blank=True, null=True)
+
+    phone = models.CharField(max_length=128, null=True, blank=True)
+    city_of_residence = models.CharField(max_length=191, null=True, blank=True)
+
+    university = models.CharField(max_length=191, null=True, blank=True)
+    university_in_process = models.BooleanField(null=False, blank=False, default=False)
+    university_class = models.CharField(max_length=50, null=True, blank=True)
+    university_department = models.CharField(max_length=191, null=True, blank=True)
+    university_year_end = models.CharField(max_length=20, null=True, blank=True)
+
+    additional_info = models.TextField(null=True, blank=True)
 
     unit = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
     position = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
@@ -127,13 +147,29 @@ class UserProfileLog(models.Model):
     show_email = models.BooleanField(db_index=False, null=False, blank=False, default=True)
     send_my_own_events = models.BooleanField(db_index=False, null=False, blank=False, default=False)
 
+    unread_messages = models.ManyToManyField(Message, null=True, blank=True, related_name='log_unread_messages')
+    deleted_messages = models.ManyToManyField(Message, null=True, blank=True, related_name='log_deleted_messages')
+    send_notify_messages = models.ManyToManyField(Message, null=True, blank=True,
+                                                  related_name='log_send_notify_messages')
+
     added_time = models.DateTimeField(auto_now_add=True, default=datetime.now)
     update_time = models.DateTimeField(auto_now=True, default=datetime.now)
 
+    login_via_yandex = models.BooleanField(db_index=False, null=False, blank=False, default=True)
+
     ya_uid = models.IntegerField(null=True, blank=True)
     ya_login = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
+
+    ya_contest_uid = models.IntegerField(null=True, blank=True)
     ya_contest_oauth = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
+    ya_contest_login = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
+
+    ya_passport_uid = models.IntegerField(null=True, blank=True)
     ya_passport_oauth = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
+    ya_passport_login = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
+    ya_passport_email = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
+
+    language = models.CharField(default="ru", max_length=128, unique=False, null=True, blank=True)
 
     updated_by = models.ForeignKey(User, db_index=False, null=True, blank=True)
 
@@ -150,13 +186,20 @@ class CustomMethodFilter(django_filters.MethodFilter):
         super(CustomMethodFilter, self).__init__(*args, **kwargs)
 
 
+class CustomMethodFilter(django_filters.MethodFilter):
+    def __init__(self, *args, **kwargs):
+        self.field_class = kwargs.pop('field_class', forms.Field)
+
+        super(CustomMethodFilter, self).__init__(*args, **kwargs)
+
+
 class UserProfileFilter(django_filters.FilterSet):
     courses = CustomMethodFilter(label=_(u'kurs'),
-                                 action='filter_course',
+                                 action='empty_filter',
                                  widget=forms.SelectMultiple,
                                  field_class=forms.MultipleChoiceField)
     groups = CustomMethodFilter(label=_(u'gruppa'),
-                                action='filter_group',
+                                action='empty_filter',
                                 widget=forms.SelectMultiple,
                                 field_class=forms.MultipleChoiceField)
     user_status_activity = django_filters.MultipleChoiceFilter(
@@ -217,17 +260,20 @@ class UserProfileFilter(django_filters.FilterSet):
                 self.users_info = users_info
         return self._qs
 
-    def filter_course(self, qs, value):
-        # if not hasattr(self, '_qs'):
-        #     if value and qs:
-        #         return qs.filter(user__group__course__id__in=value).distinct()
+    def empty_filter(self, qs, value):
         return qs
 
-    def filter_group(self, qs, value):
-        # if not hasattr(self, '_qs'):
-        #     if value and qs:
-        #         return qs.filter(user__group__id__in=value).distinct()
-        return qs
+    # def filter_course(self, qs, value):
+    #     if not hasattr(self, '_qs'):
+    #         if value and qs:
+    #             return qs.filter(user__group__course__id__in=value).distinct()
+    #     return qs
+    #
+    # def filter_group(self, qs, value):
+    #     if not hasattr(self, '_qs'):
+    #         if value and qs:
+    #             return qs.filter(user__group__id__in=value).distinct()
+    #     return qs
 
     def set(self):
         for field in self.filters:
@@ -273,6 +319,10 @@ def user_profile_log_save_to_log_post_save(sender, instance, created, **kwargs):
     user_profile_log.__dict__ = user_profile_log_dict
     user_profile_log.save()
     user_profile_log.user_status.add(*instance.user_status.all())
+    user_profile_log.unread_messages.add(*instance.unread_messages.all())
+    user_profile_log.deleted_messages.add(*instance.deleted_messages.all())
+    user_profile_log.send_notify_messages.add(*instance.send_notify_messages.all())
+
 
 
 post_save.connect(create_user_profile, sender=User)

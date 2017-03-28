@@ -1,0 +1,33 @@
+{% extends "base_email.html" %}
+{% load i18n %}
+{% load dict_func %}
+{% block main_width %}735px{% endblock %}
+{% block content %}
+    {% for key_course, tasks_info in courses_info.iteritems %}
+        {% if key_course != 'user' %}
+            {% with course=tasks_info|key:"course" %}
+                <div style="color:#373a3c;line-height:20px;margin:0 0 20px">
+                    {% trans "v_kurse" %}
+                    <a href="{{ domain }}{{ course.get_absolute_url }}"
+                       style="text-decoration:none;font-weight:bold;color: #0275d8;"
+                       target="_blank"
+                    >"{{ course.name }}"</a>
+                    {% trans "proizoshli_izmeneniya" %}:&nbsp;
+                    <ul>
+                        {% for key_task, task_info in tasks_info.iteritems %}
+                            {% if key_task != 'course' %}
+                                <li>
+                                    {% if task_info.1 %}
+                                        {% trans 'dobavlena_zadacha' %}&nbsp;"{{ task_info.0.title }}"
+                                    {% else %}
+                                        {% filter lower %}{% trans 'v_zadache' %}{% endfilter %}&nbsp;"{{ task_info.0.title }}"&nbsp;{% trans 'izmenilis' %}:&nbsp;{{ task_info|slice:"2:"|join:", " }}
+                                    {% endif %}
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endwith %}
+        {% endif %}
+    {% endfor %}
+{% endblock %}
