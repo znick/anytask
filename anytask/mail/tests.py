@@ -180,7 +180,8 @@ class ViewsTest(TestCase):
 
         get_data = {
             u'unread_count': 0,
-            u'msg_id': 1
+            u'msg_id': 1,
+            u'mailbox': 'inbox'
         }
 
         response_data = {
