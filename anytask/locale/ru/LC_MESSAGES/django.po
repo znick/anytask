@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-28 12:20+0000\n"
+"POT-Creation-Date: 2017-03-29 13:15+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -126,7 +126,7 @@ msgstr "Требуется информация"
 #: courses/forms.py:25 users/templates/my_tasks.html:96
 #: users/templates/my_tasks.html.py:131 users/templates/my_tasks.html:173
 #: users/templates/status_history.html:32 users/templates/user_courses.html:31
-#: users/templates/user_profile.html:20 users/templates/user_settings.html:46
+#: users/templates/user_profile.html:21 users/templates/user_settings.html:46
 msgid "moi_zadachi"
 msgstr "Мои задачи"
 
@@ -134,7 +134,7 @@ msgstr "Мои задачи"
 msgid "nabludaemye_mnoj"
 msgstr "Наблюдаемые мной"
 
-#: courses/views.py:95 staff/views.py:89 users/views.py:459
+#: courses/views.py:95 staff/views.py:88 users/views.py:473
 msgid "primenit"
 msgstr "Применить"
 
@@ -186,7 +186,7 @@ msgstr "Очередь на проверку"
 #: courses/templates/courses/settings.html:19
 #: courses/templates/courses/settings.html:44 templates/base.html:673
 #: users/templates/my_tasks.html:102 users/templates/status_history.html:38
-#: users/templates/user_courses.html:37 users/templates/user_profile.html:26
+#: users/templates/user_courses.html:37 users/templates/user_profile.html:28
 #: users/templates/user_settings.html:52
 #: users/templates/user_settings.html:129
 msgid "nastrojki"
@@ -311,7 +311,7 @@ msgstr "Сохранить изменения"
 #: courses/templates/courses/tasklist/shad_cpp.html:211
 #: issues/templates/issues/issue_js.html:159 staff/templates/staff.html:176
 #: staff/templates/staff.html.py:199 users/templates/status_history.html:160
-#: users/templates/user_profile.html:420 users/templates/user_profile.html:444
+#: users/templates/user_profile.html:592 users/templates/user_profile.html:621
 #: users/templates/user_profile_js.html:151
 msgid "sohranenie"
 msgstr "Сохранение"
@@ -620,8 +620,8 @@ msgstr "Произошла ошибка при получении данных."
 #: tasks/templates/task_create_or_edit_js.html:215
 #: tasks/templates/task_edit.html:74 tasks/templates/task_edit.html.py:83
 #: users/templates/status_history.html:158
-#: users/templates/user_profile.html:419 users/templates/user_profile.html:443
-#: users/templates/user_profile.html:468 users/templates/user_settings.html:13
+#: users/templates/user_profile.html:589 users/templates/user_profile.html:619
+#: users/templates/user_profile.html:646 users/templates/user_settings.html:13
 #: users/templates/user_settings.html:21
 msgid "zakryt"
 msgstr "Закрыть"
@@ -647,14 +647,14 @@ msgid "oshibka_pri_sohranenii"
 msgstr "Произошла ошибка при сохранении. Попробуйте снова."
 
 #: courses/templates/courses/task.html:30
-#: users/templates/user_profile.html:439
+#: users/templates/user_profile.html:614
 msgid "oshibka_poprobujte_eshe"
 msgstr "Произошла ошибка. Попробуйте еще раз."
 
 #: courses/templates/courses/task.html:35
 #: courses/templates/courses/tasklist/shad_cpp.html:211
 #: staff/templates/staff.html:176 users/templates/status_history.html:160
-#: users/templates/user_profile.html:420 users/templates/user_profile.html:444
+#: users/templates/user_profile.html:592 users/templates/user_profile.html:621
 #: users/templates/user_settings.html:145
 msgid "sohranit"
 msgstr "Сохранить"
@@ -725,8 +725,8 @@ msgid "gruppy_net_v_spiske"
 msgstr "Если необходимой группы нет в списке, обратитесь к"
 
 #: invites/templates/generate.html:91 users/templates/oauth_error.html:37
-#: users/templates/user_profile.html:128 users/templates/user_profile.html:140
-#: users/templates/user_profile.html:477
+#: users/templates/user_profile.html:98 users/templates/user_profile.html:112
+#: users/templates/user_profile.html:655
 msgid "administratoru"
 msgstr "администратору"
 
@@ -790,8 +790,8 @@ msgstr "Активный"
 #: schools/templates/archive_page.html:32
 #: schools/templates/school_page.html:22 search/templates/search.html:170
 #: templates/base.html:135 users/templates/user_courses.html:65
-#: users/templates/user_courses.html:72 users/templates/user_profile.html:210
-#: users/templates/user_profile.html:283 users/templates/user_profile.html:317
+#: users/templates/user_courses.html:72 users/templates/user_profile.html:345
+#: users/templates/user_profile.html:434 users/templates/user_profile.html:476
 msgid "arhiv"
 msgstr "Архив"
 
@@ -943,7 +943,7 @@ msgstr ""
 "красным цветом."
 
 #: issues/templates/issues/history.html:115
-#: users/templates/user_profile.html:194
+#: users/templates/user_profile.html:326
 msgid "zdes_nichego_net"
 msgstr "Пока здесь ничего нет :("
 
@@ -1279,11 +1279,11 @@ msgstr "Пользователи"
 msgid "kursy"
 msgstr "Курсы"
 
-#: staff/views.py:69
+#: staff/views.py:68
 msgid "dannyye_polzovateli_ne_naydeny"
 msgstr "Данные пользователи не найдены"
 
-#: staff/views.py:72
+#: staff/views.py:71
 msgid "nevernyy_format_fayla"
 msgstr "Неверный формат файла"
 
@@ -1347,7 +1347,7 @@ msgid "vyberite_znacheniya_dlya_filtratsii"
 msgstr "Выберите значения для фильтрации"
 
 #: staff/templates/staff.html:133 users/templates/status_history.html:48
-#: users/templates/user_courses.html:48 users/templates/user_profile.html:39
+#: users/templates/user_courses.html:48 users/templates/user_profile.html:43
 msgid "redaktirovanie_statusov"
 msgstr "Редактирование статусов"
 
@@ -1671,9 +1671,9 @@ msgstr "Есть новые сообщения"
 msgid "net_novyh_soobshenij"
 msgstr "Нет новых сообщений"
 
-#: templates/base.html:672 users/views.py:395 users/templates/my_tasks.html:93
+#: templates/base.html:672 users/views.py:409 users/templates/my_tasks.html:93
 #: users/templates/status_history.html:29 users/templates/user_courses.html:28
-#: users/templates/user_profile.html:17 users/templates/user_settings.html:43
+#: users/templates/user_profile.html:18 users/templates/user_settings.html:43
 msgid "profil"
 msgstr "Профиль"
 
@@ -1858,30 +1858,30 @@ msgstr "Филиал"
 msgid "status_postupleniya"
 msgstr "Статус поступления"
 
-#: users/views.py:395
+#: users/views.py:409
 msgid "uzhe_privjazan"
 msgstr "уже привязан к аккаунту другого пользователя на Anytask!"
 
-#: users/views.py:398 users/views.py:412 users/templates/user_profile.html:126
-#: users/templates/user_profile.html:138
+#: users/views.py:412 users/views.py:426 users/templates/user_profile.html:95
+#: users/templates/user_profile.html:109
 msgid "privjazat_profil_kontesta"
 msgstr "Привязать профиль Яндекс.Контеста"
 
-#: users/views.py:400
+#: users/views.py:414
 msgid "privjazat_profil_ja"
 msgstr "Привязать профиль Яндекса"
 
-#: users/views.py:413
+#: users/views.py:427
 msgid "pereprivjazat_tolko_svoj_profil"
 msgstr "Можно перепривязать только тот профиль, который был привязан ранее!"
 
-#: users/views.py:566
+#: users/views.py:580
 msgid "invajt_drugogo_kursa"
 msgstr "Инвайт относится к другому курсу."
 
 #: users/templates/my_tasks.html:99 users/templates/status_history.html:35
 #: users/templates/user_courses.html:34 users/templates/user_courses.html:71
-#: users/templates/user_courses.html:131 users/templates/user_profile.html:23
+#: users/templates/user_courses.html:131 users/templates/user_profile.html:25
 #: users/templates/user_settings.html:49
 msgid "moi_kursy"
 msgstr "Мои курсы"
@@ -1903,12 +1903,12 @@ msgid "chtoby_otvjazat_profil"
 msgstr "Для того, чтобы отвязать свой профиль от другого обратитесь к"
 
 #: users/templates/status_history.html:42 users/templates/user_courses.html:41
-#: users/templates/user_profile.html:30
+#: users/templates/user_profile.html:32
 msgid "profil_studenta"
 msgstr "Профиль студента"
 
 #: users/templates/status_history.html:45 users/templates/user_courses.html:44
-#: users/templates/user_profile.html:34
+#: users/templates/user_profile.html:37
 msgid "kursy_studenta"
 msgstr "Курсы студента"
 
@@ -1942,7 +1942,7 @@ msgstr "Статусы пользователя"
 msgid "dobavlenie_udalenie_statusov_polzovatelja"
 msgstr "Добавление и удаление статусов пользователя."
 
-#: users/templates/user_courses.html:65 users/templates/user_profile.html:244
+#: users/templates/user_courses.html:65 users/templates/user_profile.html:387
 msgid "aktivnye"
 msgstr "Активные"
 
@@ -1958,81 +1958,125 @@ msgstr "Всего задач"
 msgid "net_kursov"
 msgstr "Нет ни одного курса"
 
-#: users/templates/user_profile.html:103
+#: users/templates/user_profile.html:71
 msgid "japochta"
 msgstr "Яндекс.Почта"
 
-#: users/templates/user_profile.html:116
+#: users/templates/user_profile.html:85
 msgid "sgenerirovat_invajty"
 msgstr "Сгенерировать инвайты"
 
-#: users/templates/user_profile.html:128
+#: users/templates/user_profile.html:97
 msgid "privjazat_odin_profil"
 msgstr "Привязать можно только один профиль!"
 
-#: users/templates/user_profile.html:128
+#: users/templates/user_profile.html:97
 msgid "otvjazat_svoj_profil"
 msgstr "Для того, чтобы отвязать свой профиль обратитесь к"
 
-#: users/templates/user_profile.html:131
+#: users/templates/user_profile.html:102
 msgid "priviazat"
 msgstr "Привязать"
 
-#: users/templates/user_profile.html:140
+#: users/templates/user_profile.html:111
 msgid "privjazali_profil"
 msgstr "Вы привязали профиль"
 
-#: users/templates/user_profile.html:140
+#: users/templates/user_profile.html:111
 msgid "profil_kontesta_priviazan"
 msgstr ""
 "Теперь все посылки в соревнования будут отправляться от Вашего имени. Для "
 "того, чтобы отвязать свой профиль обратитесь к"
 
-#: users/templates/user_profile.html:143
+#: users/templates/user_profile.html:116
 msgid "obnovit_privjazku_profilja"
 msgstr "Обновить привязку текущего профиля"
 
-#: users/templates/user_profile.html:155
+#: users/templates/user_profile.html:128
 msgid "aktivacija_invajtov"
 msgstr "Активация инвайтов в курсы"
 
-#: users/templates/user_profile.html:156
+#: users/templates/user_profile.html:130
 msgid "vvesti_invajt"
 msgstr "Ввести инвайт"
 
-#: users/templates/user_profile.html:185 users/templates/user_profile.html:431
+#: users/templates/user_profile.html:168
+msgid "data_rozhdeniya"
+msgstr "Дата рождения"
+
+#: users/templates/user_profile.html:175
+msgid "vozrast"
+msgstr "Возраст"
+
+#: users/templates/user_profile.html:187
+msgid "telefon"
+msgstr "Телефон"
+
+#: users/templates/user_profile.html:203
+msgid "gorod_prozhivaniya"
+msgstr "Город проживания"
+
+#: users/templates/user_profile.html:223
+msgid "vuz"
+msgstr "ВУЗ"
+
+#: users/templates/user_profile.html:238
+msgid "uchitsya_seychas"
+msgstr "Учится сейчас"
+
+#: users/templates/user_profile.html:244
+msgid "da"
+msgstr "Да"
+
+#: users/templates/user_profile.html:246
+msgid "net"
+msgstr "Нет"
+
+#: users/templates/user_profile.html:257
+msgid "kurs_vuza"
+msgstr "Курс ВУЗа"
+
+#: users/templates/user_profile.html:273
+msgid "fakultet_kafedra"
+msgstr "Факультет / кафедра"
+
+#: users/templates/user_profile.html:289
+msgid "god_okonchaniya_vuza"
+msgstr "Год окончания ВУЗа"
+
+#: users/templates/user_profile.html:315 users/templates/user_profile.html:605
 msgid "o_sebe"
 msgstr "О себе"
 
-#: users/templates/user_profile.html:212
+#: users/templates/user_profile.html:348
 msgid "prepodavatel_v_kursah"
 msgstr "Преподаватель в курсах"
 
-#: users/templates/user_profile.html:246
+#: users/templates/user_profile.html:390
 msgid "prepodavatel_v_kursah_arhiv"
 msgstr "Преподаватель в курсах (Архив)"
 
-#: users/templates/user_profile.html:285
+#: users/templates/user_profile.html:437
 msgid "sostoit_v_kursah"
 msgstr "Состоит в курсах"
 
-#: users/templates/user_profile.html:319
+#: users/templates/user_profile.html:479
 msgid "sostoit_v_kursah_arhiv"
 msgstr "Состоит в курсах (Архив)"
 
-#: users/templates/user_profile.html:352
+#: users/templates/user_profile.html:517
 msgid "sostoit_v_gruppah"
 msgstr "Состоит в группах"
 
-#: users/templates/user_profile.html:385
+#: users/templates/user_profile.html:554
 msgid "vybor_avatara"
 msgstr "Выбор аватара"
 
-#: users/templates/user_profile.html:455
+#: users/templates/user_profile.html:634
 msgid "prosmotr_avatara"
 msgstr "Просмотр аватара"
 
-#: users/templates/user_profile.html:477
+#: users/templates/user_profile.html:655
 msgid "esli_dannye_neverny"
 msgstr "Если какие-либо данные неверны, обратитесь к"
 
@@ -2070,9 +2114,6 @@ msgstr "Для того, чтобы отвязать свой профиль о�
 #, fuzzy
 #~ msgid "pokazat__menu_"
 #~ msgstr "Показать"
-
-#~ msgid "kursa"
-#~ msgstr "курса"
 
 #~ msgid "novaja_data_sdachi"
 #~ msgstr "новая дата сдачи"
