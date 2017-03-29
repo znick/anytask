@@ -13,8 +13,8 @@ from mail.models import Message
 from courses.models import Course
 from groups.models import Group
 from users.models import UserProfile
+from users.model_user_status import get_statuses
 
-from users.common import get_statuses
 from mail.common import render_mail
 
 import json

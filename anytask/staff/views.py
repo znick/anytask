@@ -15,9 +15,8 @@ from crispy_forms.layout import HTML
 from courses.models import StudentCourseMark
 from users.models import UserProfile
 from users.model_user_profile_filter import UserProfileFilter
-from users.model_user_status import UserStatus
+from users.model_user_status import UserStatus, get_statuses
 
-from users.common import get_statuses
 
 import csv
 import logging
