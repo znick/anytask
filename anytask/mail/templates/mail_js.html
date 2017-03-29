@@ -89,6 +89,14 @@
             }
         });
 
+        $('[data-toggle="popover"]').popover({
+            trigger: 'hover',
+            template: '<div class="popover" role="tooltip">' +
+            '<div class="popover-arrow"></div>' +
+            '<div class="popover-content"></div>' +
+            '</div>'
+        });
+
         var current_table;
         var selected_rows = [];
         var selected_unread = [];
@@ -165,8 +173,8 @@
         }).on("click", 'tr[role="row"]', function (e) {
             var $row = $(this);
             $row.closest(".tab-pane").removeClass("in active");
-            $("#msg_info").data("mailbox", $row.closest(".tab-pane").prop("id"));
-            $("#msg_info").data("row_id", $row.prop("id"));
+            var $msg_info = $("#msg_info");
+            $msg_info.data("mailbox", $row.closest(".tab-pane").prop("id")).data("row_id", $row.prop("id"));
 
             var unread_count = 0;
             if ($("#inbox_count").html())
@@ -179,7 +187,7 @@
 
             open_check_fast($("#read"));
 
-            $.get('{% url mail.views.ajax_get_message %}', {'msg_id': $row.data("id"), 'unread_count': unread_count})
+            $.get('{% url mail.views.ajax_get_message %}', {'msg_id': $row.data("id"), 'unread_count': unread_count, 'mailbox': $msg_info.data("mailbox")})
                 .always(function () {
                     $("#loading_info").hide();
                 })
@@ -213,8 +221,16 @@
                         $("#sender_time").html(data.date);
 
                         $("#recipients_users_info").html("");
+                        for (var i = 0; i < data.recipients_status.length; ++i) {
+                            $("span.label", $recipients_html).removeClass("label-info label-success label-primary").addClass("label-warning").html(data.recipients_status[i].name);
+                            $("a", $recipients_html)
+                                .removeAttr("href")
+                                .attr("data-id", data.recipients_status[i].id)
+                                .attr("data-type", "status");
+                            $("#recipients_users_info").append($recipients_html[0].outerHTML);
+                        }
                         for (var i = 0; i < data.recipients_course.length; ++i) {
-                            $("span.label", $recipients_html).removeClass("label-info label-success").addClass("label-primary").html(data.recipients_course[i].name);
+                            $("span.label", $recipients_html).removeClass("label-info label-success label-warning").addClass("label-primary").html(data.recipients_course[i].name);
                             $("a", $recipients_html)
                                 .prop("href", data.recipients_course[i].url)
                                 .attr("data-id", data.recipients_course[i].id)
@@ -222,7 +238,7 @@
                             $("#recipients_users_info").append($recipients_html[0].outerHTML);
                         }
                         for (var i = 0; i < data.recipients_group.length; ++i) {
-                            $("span.label", $recipients_html).removeClass("label-primary label-success").addClass("label-info").html(data.recipients_group[i].name);
+                            $("span.label", $recipients_html).removeClass("label-primary label-success label-warning").addClass("label-info").html(data.recipients_group[i].name);
                             $("a", $recipients_html)
                                 .removeAttr("href")
                                 .attr("data-id", data.recipients_group[i].id)
@@ -230,7 +246,7 @@
                             $("#recipients_users_info").append($recipients_html[0].outerHTML);
                         }
                         for (var i = 0; i < data.recipients_user.length; ++i) {
-                            $("span.label", $recipients_html).removeClass("label-primary label-info").addClass("label-success").html(data.recipients_user[i].fullname);
+                            $("span.label", $recipients_html).removeClass("label-primary label-info label-warning").addClass("label-success").html(data.recipients_user[i].fullname);
                             $("a", $recipients_html)
                                 .prop("href", data.recipients_user[i].url)
                                 .attr("data-id", data.recipients_user[i].id)
@@ -422,10 +438,10 @@
             }
         });
 
-        var url_hash = window.location.hash ? window.location.hash : "#inbox";
-        $('li[href="' + url_hash + '"]', '.mailbox_menu ').click();
-
         $("#btn_new_msg").click(function () {
+            window.location.hash = $(this).attr("href");
+            $(document).prop('title', "{% filter capfirst %}{% trans "novoe_soobshenie" %}{% endfilter %}");
+
             if (msg_opened) {
                 close_msg();
                 msg_opened = false;
@@ -433,11 +449,14 @@
 
             var $new_recipients = $('#new_recipients');
 
-            $("input, textarea", "#new").removeClass('valid').val("");
+            $("input:not([type='checkbox']), textarea", "#new").removeClass('valid').val("");
+            $("input[type='checkbox']", "#new").prop("checked", false).removeAttr('checked');
             $new_recipients.tagsinput('removeAll');
             $new_recipients.data('user', []);
             $new_recipients.data('group', []);
             $new_recipients.data('course', []);
+            $new_recipients.data('status', []);
+            $new_recipients.data('preinit', []);
             $("#btn_new_msg").data("prev_mailbox", $('li.active', '.mailbox_menu').attr("href"));
             $('li', '.mailbox_menu').removeClass("active");
 
@@ -450,6 +469,7 @@
         }).on('shown.bs.tab', function (e) {
             $(this).removeClass("active");
             $("#new_recipients").tagsinput('focus');
+            $('.mce-i-template', '.mce-toolbar').closest('.mce-container').addClass('hidden');
         });
 
         var MAX_SEARCH_SGS = 6;
@@ -487,6 +507,10 @@
                         return 'label label-info';
                     case 'course':
                         return 'label label-primary';
+                    case 'status':
+                        return 'label label-warning';
+                    case 'preinit':
+                        return 'label label-default';
                 }
             },
             typeaheadjs: [
@@ -566,7 +590,7 @@
             new_msg_form_validator.element("#new_recipients");
         });
 
-        $('#modal_add_group_select').multiselect({
+        $('#modal_add_group_select, #modal_add_status_select').multiselect({
             templates: {
                 ul: '<ul class="multiselect-container dropdown-menu" style="left:inherit;top: inherit;"></ul>',
                 li: '<li><a tabindex="0" class="dropdown-item"><label></label></a></li>',
@@ -598,7 +622,7 @@
 
         $('#modal_add_group').on('hidden.bs.modal', function (e) {
             $("input.multiselect-search", this).val("");
-            $('#modal_add_group_select').multiselect('deselectAll', false);
+            $('#modal_add_group_select, #modal_add_status_select').multiselect('deselectAll', false);
         });
 
         $("#new_text").tinymce({
@@ -617,11 +641,16 @@
                     cmd: 'codesample'
                 });
             },
+            init_instance_callback: function (editor) {
+                $('#loading_new').hide();
+                $('.new-msg-form').collapse('show');
+                $('.mce-i-template', '.mce-toolbar').closest('.mce-container').addClass('hidden');
+            },
             plugins: [
                 'autoresize autolink codesample hr image link lists',
-                'table textpattern wordcount contextmenu paste nonbreaking'
+                'table textpattern wordcount contextmenu paste nonbreaking variable'
             ],
-            toolbar: 'undo redo | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | image link hr | blockquote codesample table | preview_text',
+            toolbar: 'undo redo | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | image link hr | blockquote codesample table | preview_text | {% if user.is_staff %}variable{% endif %}',
             autoresize_bottom_margin: 10,
             autoresize_overflow_padding: 10,
             autoresize_min_height: 300,
@@ -642,7 +671,23 @@
             paste_remove_styles: true,
             paste_remove_styles_if_webkit: true,
             paste_strip_class_attributes: true,
-            nonbreaking_force_tab: true
+            nonbreaking_force_tab: true,
+            variables: [
+                {
+                    title: '{% trans "familiya" %}',
+                    description: '{% trans "familiya_poluchatelya" %}',
+                    content: '\{\{ last_name \}\}'
+                },
+                {
+                    title: '{% trans "imya" %}',
+                    description: '{% trans "imya_poluchatelya" %}',
+                    content: '\{\{ first_name \}\}'
+                },
+            ],
+        });
+
+        $('#variable').change(function () {
+            $('.mce-i-template', '.mce-toolbar').closest('.mce-container').toggleClass('hidden');
         });
 
         var new_msg_form_validator = $('#new_msg_form').validate({
@@ -655,8 +700,12 @@
                     'new_recipients_user[]': $new_recipients.data('user'),
                     'new_recipients_group[]': $new_recipients.data('group'),
                     'new_recipients_course[]': $new_recipients.data('course'),
+                    'new_recipients_status[]': $new_recipients.data('status'),
+                    'new_recipients_preinit[]': $new_recipients.data('preinit'),
                     'new_title': $("#new_title").val(),
-                    'new_text': $("#new_text").val()
+                    'new_text': $("#new_text").val(),
+                    'hidden_copy': $("#hidden_copy").is(':checked') ? 'on' : '',
+                    'variable': $("#variable").is(':checked') ? 'on' : '',
                 })
                     .always(function () {
                         $("#blockDiv", "body").remove();
@@ -699,22 +748,25 @@
         });
 
         $("#modal_add_group_ok").click(function () {
-            $('optgroup', "#modal_add_group_select").each(function () {
-                if ($(this).data("count") == $("option:selected", this).length) {
+            $('optgroup', "#modal_add_group_select, #modal_add_status_select").each(function () {
+                var $optgroup = $(this);
+                if (!$optgroup.data("not_selectable") && $optgroup.data("count") == $("option:selected", this).length) {
                     $('#new_recipients').tagsinput('add', {
                         type: "course",
-                        id: "c_" + $(this).data("id"),
-                        id_post: $(this).data("id"),
-                        fullname: $(this).attr("label")
+                        id: "c_" + $optgroup.data("id"),
+                        id_post: $optgroup.data("id"),
+                        fullname: $optgroup.attr("label")
                     });
                 }
                 else {
                     $("option:selected", this).each(function () {
+                        var $option = $(this);
+
                         $('#new_recipients').tagsinput('add', {
-                            type: "group",
-                            id: "g_" + $(this).data("id"),
-                            id_post: $(this).data("id"),
-                            fullname: $(this).text()
+                            type: $option.data("type"),
+                            id: $option.data("type")[0] + "_" + $option.data("id"),
+                            id_post: $option.data("id"),
+                            fullname: $option.text()
                         });
                     });
                 }
@@ -784,6 +836,22 @@
         }).on('hidden.bs.collapse', function () {
             $(this).data("fast_click", false);
         });
+
+        var url_hash = window.location.hash ? window.location.hash : "#inbox";
+        $('[href="' + url_hash + '"]', '.mailbox_menu ').click();
+
+        {% if users_from_staff_len %}
+            if (url_hash === "#new") {
+                $('#new_recipients').tagsinput('add', {
+                    type: 'preinit',
+                    id: 'p' + "_" + {{ users_from_staff_len.index }},
+                    id_post: {{ users_from_staff_len.index }},
+                    fullname: "{% trans "vybrano_polzovateley" %} " + {{ users_from_staff_len.length }}
+                });
+                $("#hidden_copy").prop("checked", true);
+                $('#new_title').focus();
+            }
+        {% endif %}
     });
 
     function prepair_array(arr) {
