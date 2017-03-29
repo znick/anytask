@@ -2038,7 +2038,7 @@ msgstr "Курс ВУЗа"
 
 #: users/templates/user_profile.html:273
 msgid "fakultet_kafedra"
-msgstr "Факультет / кафедра"
+msgstr "Факультет/кафедра"
 
 #: users/templates/user_profile.html:289
 msgid "god_okonchaniya_vuza"
