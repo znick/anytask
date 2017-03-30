@@ -37,6 +37,11 @@
             <a class="nav-link"
                href="{{ course.get_absolute_url }}/gradebook/{% if seminar %}seminar/{{ seminar.id }}{% endif %}">{% trans "obshaja_vedomost" %}</a>
         </li>
+        {% if visible_attendance_log %}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ course.get_absolute_url }}/attendance">{% trans "zhurnal_poseshaemosti" %}</a>
+            </li>
+        {% endif %}
         {% if not seminar %}
             {% if user_is_teacher %}
                 <li class="nav-item">
@@ -147,6 +152,8 @@
                                 <div class="btn-group pull-xs-right">
                                     <a type="button" class="btn btn-secondary btn-sm"
                                        href="/task/create/{{ course.id }}">{% trans "dobavit_zadachu" %}</a>
+                                    <a type="button" class="btn btn-secondary btn-sm"
+                                       href="/lesson/create/{{ course.id }}">{% trans "dobavit_urok" %}</a>
                                     {% if course.contest_integrated %}
                                         <button type="button"
                                                 style="height: 1.95rem;"

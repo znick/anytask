@@ -133,6 +133,8 @@ class Course(models.Model):
 
     issue_status_system = models.ForeignKey(IssueStatusSystem, db_index=False, null=False, blank=False, default=1)
 
+    has_attendance_log = models.BooleanField(db_index=False, null=False, blank=False, default=False)
+
     def __unicode__(self):
         return unicode(self.name)
 
@@ -183,6 +185,13 @@ class Course(models.Model):
         if user.is_anonymous():
             return False
         if self.user_is_teacher(user):
+            return True
+        return False
+
+    def user_can_see_attendance_log(self, user):
+        if user.is_anonymous():
+            return False
+        if self.has_attendance_log and self.user_is_teacher(user):
             return True
         return False
 

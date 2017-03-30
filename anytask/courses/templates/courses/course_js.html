@@ -786,6 +786,21 @@
         $('#modal_task_description').modal('show');
     }
 
+    function get_lesson_modal(lesson_id, lesson_title, lesson_date, lesson_text_to_show) {
+        $('#modal_header_task_descr').html(lesson_title);
+        $('#modal_body_task_descr').html(lesson_text_to_show);
+
+        var codesample = $('pre[class*="language-"]', '#modal_body_task_descr')[0];
+        if (codesample)
+            Prism.highlightElement(codesample);
+
+        $('#modal_header_deadline_time').html('<strong>{% trans "data_uroka" %}: ' + lesson_date + ' MSK UTC+3</strong>');
+
+        $('#modal_task_desc_edit').hide();
+        $('#modal_task_descr_edit_button').attr("href", "/lesson/edit/" + lesson_id);
+        $('#modal_task_description').modal('show');
+    }
+
     function get_edit_course_modal(course_id, course_desc) {
         $('#course_info_edit').val(course_desc);
 

@@ -31,6 +31,11 @@
             <a class="nav-link {% if not group_gradebook %}active{% endif %}"
                href="{{ course.get_absolute_url }}/gradebook/{% if seminar %}seminar/{{ seminar.id }}{% endif %}">{% trans "obshaja_vedomost" %}</a>
         </li>
+        {% if visible_attendance_log %}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ course.get_absolute_url }}/attendance">{% trans "zhurnal_poseshaemosti" %}</a>
+            </li>
+        {% endif %}
         {% if not seminar %}
             {% if visible_queue %}
                 <li class="nav-item">
