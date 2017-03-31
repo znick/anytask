@@ -161,13 +161,10 @@ def profile(request, username=None, year=None):
     else:
         card_width = 'col-md-12'
 
-    try:
-        age = 0
-        if user.is_staff and user_to_show_profile.birth_date:
-            age = relativedelta(datetime.datetime.now(), user_to_show_profile.birth_date).years
-            age = age if age > 0 else 0
-    except Exception as e:
-        print e
+    age = 0
+    if user.is_staff and user_to_show_profile.birth_date:
+        age = relativedelta(datetime.datetime.now(), user_to_show_profile.birth_date).years
+        age = age if age > 0 else 0
 
     context = {
         'user_to_show'              : user_to_show,

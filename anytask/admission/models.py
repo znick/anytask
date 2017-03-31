@@ -57,12 +57,12 @@ class AdmissionRegistrationProfileManager(RegistrationManager):
             new_username = self.generate_username()
             user, registration_profile = self.create_inactive_user(new_username, email, password, send_email)
             logger.info("Admission: User with email %s was created with generated login %s", user.email, user.username)
-        elif len(user_by_email | user_by_uid) == 1:
-            user, registration_profile = self.update_user((user_by_email | user_by_uid)[0], send_email)
-            logger.info("Admission: User %s was updated", user.username)
+        # elif len(user_by_email | user_by_uid) == 1:
+        #     user, registration_profile = self.update_user((user_by_email | user_by_uid)[0], send_email)
+        #     logger.info("Admission: User %s was updated", user.username)
         else:
-            send_mail_admin(u'Ошибка поступления', request=request)
-            logger.error("Admission: User not created ", username, email, uid)
+            send_mail_admin(u'Ошибка поступления', message='User not created (already registered)', request=request)
+            logger.error("Admission: User not created (already registered) %s %s %s", username, email, uid)
 
         return user, registration_profile
 
