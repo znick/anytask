@@ -7,15 +7,13 @@ from django.utils.translation import ugettext_lazy as _
 from django import forms
 
 from datetime import datetime
+from collections import defaultdict
 
 from years.common import get_current_year
 from groups.models import Group
 from courses.models import Course
-from issues.models import Issue
-from issues.model_issue_status import IssueStatus
 from mail.models import Message
-
-from colorfield.fields import ColorField
+from users.model_user_status import UserStatus
 
 from anytask.storage import OverwriteStorage
 
@@ -23,55 +21,37 @@ import os
 import django_filters
 import copy
 
+import logging
+
+logger = logging.getLogger('django.request')
+
 
 def get_upload_path(instance, filename):
     return os.path.join('images', 'user_%d' % instance.user.id, filename)
 
 
-class UserStatus(models.Model):
-    COLOR_DEFAULT = '#818A91'
-
-    STATUS_ACTIVE = 'active'
-    STATUS_EXTRAMURAL = 'extramural'
-    STATUS_FULLTIME = 'fulltime'
-    STATUS_NOT_ACTIVE = 'not_active'
-    STATUS_ACADEMIC = 'academic'
-
-    USER_STATUSES = (
-        (STATUS_ACTIVE, _(STATUS_ACTIVE)),
-        (STATUS_EXTRAMURAL, _(STATUS_EXTRAMURAL)),
-        (STATUS_FULLTIME, _(STATUS_FULLTIME)),
-        (STATUS_NOT_ACTIVE, _(STATUS_NOT_ACTIVE)),
-        (STATUS_ACADEMIC, _(STATUS_ACADEMIC))
-    )
-
-    TYPE_ACTIVITY = 'activity'
-    TYPE_EDUCATION_FORM = 'education_form'
-
-
-    TYPE_STATUSES = (
-        (TYPE_ACTIVITY, _(u'status_studenta')),
-        # (TYPE_EDUCATION_FORM, _(u'Форма обучения')),
-    )
-
-    name = models.CharField(max_length=254, db_index=True, null=False, blank=False)
-    type = models.CharField(max_length=191, db_index=False, null=True, blank=True, choices=TYPE_STATUSES)
-    tag = models.CharField(max_length=254, db_index=False, null=True, blank=True, choices=USER_STATUSES)
-    color = ColorField(default=COLOR_DEFAULT)
-
-    def __unicode__(self):
-        return u'{0}'.format(self.name)
-
-
 class UserProfile(models.Model):
     user = models.ForeignKey(User, db_index=True, null=False, blank=False, unique=True, related_name='profile')
-    second_name = models.CharField(max_length=128, db_index=True, null=True, blank=True)
-    user_status = models.ManyToManyField(UserStatus, db_index=True, null=True, blank=True, related_name='users_by_status')
+    middle_name = models.CharField(max_length=128, db_index=True, null=True, blank=True)
+    user_status = models.ManyToManyField(UserStatus, db_index=True, null=True, blank=True,
+                                         related_name='users_by_status')
 
-    avatar = models.ImageField('profile picture', upload_to=get_upload_path, blank=True, null=True, storage=OverwriteStorage())
+    avatar = models.ImageField('profile picture', upload_to=get_upload_path, blank=True, null=True,
+                               storage=OverwriteStorage())
     birth_date = models.DateField(blank=True, null=True)
 
     info = models.TextField(default="", blank=True, null=True)
+
+    phone = models.CharField(max_length=128, null=True, blank=True)
+    city_of_residence = models.CharField(max_length=191, null=True, blank=True)
+
+    university = models.CharField(max_length=191, null=True, blank=True)
+    university_in_process = models.BooleanField(null=False, blank=False, default=False)
+    university_class = models.CharField(max_length=50, null=True, blank=True)
+    university_department = models.CharField(max_length=191, null=True, blank=True)
+    university_year_end = models.CharField(max_length=20, null=True, blank=True)
+
+    additional_info = models.TextField(null=True, blank=True)
 
     unit = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
     position = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
@@ -89,6 +69,8 @@ class UserProfile(models.Model):
     update_time = models.DateTimeField(auto_now=True, default=datetime.now)
 
     updated_by = models.ForeignKey(User, db_index=False, null=True, blank=True)
+
+    login_via_yandex = models.BooleanField(db_index=False, null=False, blank=False, default=True)
 
     ya_uid = models.IntegerField(null=True, blank=True)
     ya_login = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
@@ -116,6 +98,15 @@ class UserProfile(models.Model):
                 return False
         return True
 
+    def set_status(self, new_status):
+        if not isinstance(new_status, UserStatus):
+            new_status = UserStatus.objects.get(id=new_status)
+
+        if new_status.type:
+            self.user_status.remove(*self.user_status.filter(type=new_status.type))
+
+        self.user_status.add(new_status)
+
     def get_unread_count(self):
         return self.unread_messages.exclude(id__in=self.deleted_messages.all()).count()
 
@@ -128,7 +119,7 @@ class UserProfile(models.Model):
 
 class UserProfileLog(models.Model):
     user = models.ForeignKey(User, db_index=True, null=False, blank=False, related_name='profiles_logs_by_user')
-    second_name = models.CharField(max_length=128, db_index=True, null=True, blank=True)
+    middle_name = models.CharField(max_length=128, db_index=True, null=True, blank=True)
     user_status = models.ManyToManyField(UserStatus, db_index=True, null=True, blank=True)
 
     avatar = models.ImageField('profile picture', upload_to=get_upload_path, blank=True, null=True,
@@ -136,6 +127,17 @@ class UserProfileLog(models.Model):
     birth_date = models.DateField(blank=True, null=True)
 
     info = models.TextField(default="", blank=True, null=True)
+
+    phone = models.CharField(max_length=128, null=True, blank=True)
+    city_of_residence = models.CharField(max_length=191, null=True, blank=True)
+
+    university = models.CharField(max_length=191, null=True, blank=True)
+    university_in_process = models.BooleanField(null=False, blank=False, default=False)
+    university_class = models.CharField(max_length=50, null=True, blank=True)
+    university_department = models.CharField(max_length=191, null=True, blank=True)
+    university_year_end = models.CharField(max_length=20, null=True, blank=True)
+
+    additional_info = models.TextField(null=True, blank=True)
 
     unit = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
     position = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
@@ -145,13 +147,29 @@ class UserProfileLog(models.Model):
     show_email = models.BooleanField(db_index=False, null=False, blank=False, default=True)
     send_my_own_events = models.BooleanField(db_index=False, null=False, blank=False, default=False)
 
+    unread_messages = models.ManyToManyField(Message, null=True, blank=True, related_name='log_unread_messages')
+    deleted_messages = models.ManyToManyField(Message, null=True, blank=True, related_name='log_deleted_messages')
+    send_notify_messages = models.ManyToManyField(Message, null=True, blank=True,
+                                                  related_name='log_send_notify_messages')
+
     added_time = models.DateTimeField(auto_now_add=True, default=datetime.now)
     update_time = models.DateTimeField(auto_now=True, default=datetime.now)
 
+    login_via_yandex = models.BooleanField(db_index=False, null=False, blank=False, default=True)
+
     ya_uid = models.IntegerField(null=True, blank=True)
     ya_login = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
+
+    ya_contest_uid = models.IntegerField(null=True, blank=True)
     ya_contest_oauth = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
+    ya_contest_login = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
+
+    ya_passport_uid = models.IntegerField(null=True, blank=True)
     ya_passport_oauth = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
+    ya_passport_login = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
+    ya_passport_email = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
+
+    language = models.CharField(default="ru", max_length=128, unique=False, null=True, blank=True)
 
     updated_by = models.ForeignKey(User, db_index=False, null=True, blank=True)
 
@@ -162,73 +180,6 @@ class UserProfileLog(models.Model):
         return unicode(self.user)
 
 
-class UserProfileFilter(django_filters.FilterSet):
-    # user_status_education_form = django_filters.ChoiceFilter(label=_(u'<strong>Форма обучения</strong>'), name='user_status')
-    user_status = django_filters.ChoiceFilter(label=_('status_studenta'), name='user_status')
-
-    def set(self):
-        self.filters['user_status'].field.label = u'<strong>{0}</strong>'.format(
-            self.filters['user_status'].field.label)
-        activity_choices = [(status.id, status.name) for status in UserStatus.objects.filter(type='activity')]
-        activity_choices.insert(0, (u'', _(u'luboj')))
-        self.filters['user_status'].field.choices = tuple(activity_choices)
-
-        # education_form_choices = [(status.id, _(status.name)) for status in UserStatus.objects.filter(type='education_form')]
-        # education_form_choices.insert(0, (u'', _(u'luboj')))
-        # self.filters['user_status_education_form'].field.choices = tuple(education_form_choices)
-
-    class Meta:
-        model = UserProfile
-        fields = ['user_status']
-
-class IssueFilterStudent(django_filters.FilterSet):
-    is_active = django_filters.ChoiceFilter(label=_('tip_kursa'), name='task__course__is_active')
-    years = django_filters.MultipleChoiceFilter(label=_('god_kursa'), name='task__course__year', widget=forms.CheckboxSelectMultiple)
-    courses = django_filters.MultipleChoiceFilter(label=_('kurs'), name='task__course', widget=forms.SelectMultiple)
-    responsible = django_filters.MultipleChoiceFilter(label=_('prepodavateli'), widget=forms.SelectMultiple)
-    status_field = django_filters.MultipleChoiceFilter(label=_('status'), widget=forms.SelectMultiple)
-    update_time = django_filters.DateRangeFilter(label=_('data_poslednego_izmenenija'))
-
-    def set_user(self, user):
-        for field in self.filters:
-            self.filters[field].field.label = u'<strong>{0}</strong>'.format(self.filters[field].field.label)
-        groups = user.group_set.all()
-        courses = Course.objects.filter(groups__in=groups)
-
-        course_choices = set()
-        year_choices = set()
-        teacher_set = set()
-        status_set = set()
-        for course in courses:
-            course_choices.add((course.id, course.name))
-            year_choices.add((course.year.id, unicode(course.year)))
-
-            for teacher in course.get_teachers():
-                teacher_set.add(teacher)
-
-            for status in course.issue_status_system.statuses.all():
-                status_set.add(status)
-
-        self.filters['is_active'].field.choices = ((u'', _(u'luboj')),
-                                                   (1, _(u'aktivnyj')),
-                                                   (0, _(u'arhiv')))
-        self.filters['years'].field.choices = tuple(year_choices)
-        self.filters['courses'].field.choices = tuple(course_choices)
-
-        teacher_choices = [(teacher.id, teacher.get_full_name()) for teacher in teacher_set]
-        self.filters['responsible'].field.choices = tuple(teacher_choices)
-
-        status_choices = [(status.id, status.get_name()) for status in status_set]
-        for status_id in sorted(IssueStatus.HIDDEN_STATUSES.values(), reverse=True):
-            status_field = IssueStatus.objects.get(pk=status_id)
-            status_choices.insert(0, (status_field.id, status_field.get_name()))
-        self.filters['status_field'].field.choices = tuple(status_choices)
-
-    class Meta:
-        model = Issue
-        fields = ['is_active', 'years', 'courses', 'responsible', 'status_field', 'update_time']
-
-
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
         UserProfile.objects.create(user=instance)
@@ -236,11 +187,15 @@ def create_user_profile(sender, instance, created, **kwargs):
 
 def user_profile_log_save_to_log_post_save(sender, instance, created, **kwargs):
     user_profile_log = UserProfileLog()
-    user_profile_log_dict  = copy.deepcopy(instance.__dict__)
+    user_profile_log_dict = copy.deepcopy(instance.__dict__)
     user_profile_log_dict['id'] = None
     user_profile_log.__dict__ = user_profile_log_dict
     user_profile_log.save()
     user_profile_log.user_status.add(*instance.user_status.all())
+    user_profile_log.unread_messages.add(*instance.unread_messages.all())
+    user_profile_log.deleted_messages.add(*instance.deleted_messages.all())
+    user_profile_log.send_notify_messages.add(*instance.send_notify_messages.all())
+
 
 post_save.connect(create_user_profile, sender=User)
 post_save.connect(user_profile_log_save_to_log_post_save, sender=UserProfile)

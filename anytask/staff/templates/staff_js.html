@@ -1,55 +1,79 @@
 {% load i18n %}
+
+<link rel="stylesheet" href="{{ STATIC_URL }}kartik-v-bootstrap-fileinput/css/fileinput.min.css"/>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap4.min.css"/>
+<link rel="stylesheet" type="text/css"
+      href="https://cdn.datatables.net/fixedheader/3.1.2/css/fixedHeader.bootstrap4.min.css"/>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/select/1.2.0/css/select.bootstrap4.min.css"/>
+
+
+<script src="{{ STATIC_URL }}kartik-v-bootstrap-fileinput/js/fileinput.min.js"></script>
+<script src="{{ STATIC_URL }}kartik-v-bootstrap-fileinput/js/locales/ru.js"></script>
+<script src="{{ STATIC_URL }}kartik-v-bootstrap-fileinput/themes/fa/theme.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap4.min.js"></script>
 <script type="text/javascript"
-        src="https://cdn.datatables.net/colreorder/1.3.2/js/dataTables.colReorder.min.js"></script>
-<script type="text/javascript"
-        src="https://cdn.datatables.net/fixedcolumns/3.2.2/js/dataTables.fixedColumns.min.js"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.2.2/js/dataTables.buttons.min.js"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.html5.min.js"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.bootstrap4.min.js"></script>
-<script type="text/javascript" src="//cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/pdfmake.min.js"></script>
-<script type="text/javascript" src="//cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js"></script>
-
-
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap4.min.css"/>
-<link rel="stylesheet" type="text/css"
-      href="https://cdn.datatables.net/colreorder/1.3.2/css/colReorder.bootstrap4.min.css"/>
-<link rel="stylesheet" type="text/css"
-      href="https://cdn.datatables.net/fixedcolumns/3.2.2/css/fixedColumns.bootstrap4.min.css"/>
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.2.2/css/buttons.bootstrap4.min.css"/>
-
+        src="https://cdn.datatables.net/fixedheader/3.1.2/js/dataTables.fixedHeader.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/select/1.2.0/js/dataTables.select.min.js"></script>
 
 <script type="text/javascript">
-
-
     $(document).ready(function () {
-        var orderCount = 0;
+        $('span.nav-link', '#filters .card-header li.nav-item').click(function (e) {
+            var $this = $(this);
+            var $filters = $("#filters");
+            var hash = $this.attr("href");
+            if ($filters.data("chosen_filter") != hash) {
+                $filters.data("chosen_filter", hash);
+                window.location.hash = hash;
+            }
+            else {
+                e.preventDefault();
+            }
 
-        $("#edit_statuses").multiselect({
+        });
+
+        var url_hash = window.location.hash ? window.location.hash : "#simple_filter";
+        $('span[href="' + url_hash + '"]').trigger("click");
+
+        $('select[multiple]').multiselect({
             buttonClass: 'btn btn-secondary btn-block',
             templates: {
-                ul: '<ul class="multiselect-container dropdown-menu"></ul>',
+                ul: '<ul class="multiselect-container dropdown-menu" style="left:inherit;top: inherit;"></ul>',
                 li: '<li><a tabindex="0" class="dropdown-item"><label></label></a></li>',
-                filter: '<li class="multiselect-item filter"><div class="input-group"><span class="input-group-addon"><i class="fa fa-search"></i></span><input class="form-control multiselect-search" type="text"></div></li>',
+                filter: '<li class="multiselect-item filter"><div class="input-group"><input class="form-control multiselect-search" type="text"></div></li>',
                 filterClearBtn: '<span class="input-group-btn"><button class="btn btn-secondary btn-block multiselect-clear-filter" type="button"><i class="fa fa-times"></i></button></span>'
+
             },
-            selectAllJustVisible: false,
+            includeSelectAllOption: true,
             enableCaseInsensitiveFiltering: true,
-            selectAllText: '{% trans "vse_statusy" %}',
-            allSelectedText: '{% trans "vse_statusy" %}',
+            filterPlaceholder: "{% trans "najti" %}",
+            selectAllText: '{% trans "vybrat_vse" %}',
+            allSelectedText: '{% trans "vse_vybrano" %}',
             maxHeight: 200,
             buttonContainer: '<div style="width:100%;" class="multiselect-dropdown"/>',
             buttonWidth: '100%',
-            checkboxName: function(option) {
-                return 'children[]';
+            buttonTitle: function (options, select) {
+                var labels = [];
+
+                if (options.length === 0) {
+                    return '---';
+                }
+                else if (options.length === $('option', select).length) {
+                    return '{% trans "vse_vybrano" %}';
+                }
+                else {
+                    options.each(function () {
+                        labels.push($(this).text());
+                    });
+                }
+                return labels.join(', ');
             },
             buttonText: function (options, select) {
                 if (options.length === 0) {
-                    return '{% trans "ne_vybrano_statusov" %}';
+                    return '---';
                 }
                 else if (options.length === $('option', select).length) {
-                    return '{% trans "vse_statusy" %}';
+                    return '{% trans "vse_vybrano" %}';
                 }
                 else {
                     var labels = [];
@@ -63,95 +87,305 @@
                     });
                     return labels.join(', ') + '';
                 }
+            }
+        });
+
+        $('#file_input').fileinput({
+            language: '{{ user.get_profile.language }}',
+            theme: 'fa',
+            showPreview: false,
+            showCancel: false,
+            allowedFileExtensions: ['csv'],
+            maxFileSize: 2560,
+            layoutTemplates: {
+                main1: '{preview}' +
+                '<div class="kv-upload-progress hidden"></div>' +
+                '<div id="error_file_input"></div>' +
+                '<div class="input-group {class}">' +
+                '    {caption}' +
+                '    <div class="input-group-btn">' +
+                '        {remove}' +
+                '        {cancel}' +
+                '        {browse}' +
+                '        {upload}' +
+                '    </div>' +
+                '</div>',
             },
-            onChange: function(option, checked) {
-                if (checked) {
-                    orderCount++;
-                    $(option).data('order', orderCount);
-                }
-                else {
-                    $(option).data('order', '');
-                }
-            }
+            removeIcon: '<i class="fa fa-trash-o"></i>',
+            uploadClass: 'btn btn-primary',
+            removeClass: 'btn btn-secondary',
+            browseClass: 'btn btn-secondary',
+            elErrorContainer: '#error_file_input',
+            msgErrorClass: 'alert alert-danger alert-dismissible'
         });
 
-        $("#btn-generate").click(function() {
-            var selected = [];
-            $("#edit_statuses option:selected").each(function(){
-                selected.push([$(this).val(), $(this).data('order')]);
-            });
-
-            selected.sort(function(a, b) {
-                return a[1] - b[1];
-            });
-
-            var url = '';
-            for (var i = 0; i < selected.length; i++) {
-                url += selected[i][0] + '_';
-            }
-            url = url.substring(0, url.length - 1);
-            window.location.href = "gradebook/" + url;
+        $('#file_filter').on("click", '#error_file_input .close.kv-error-close', function (e) {
+            $('#file_input').fileinput('clear');
+        }).on("click", 'div.btn-file', function (e) {
+            $('#error_file_input_from_post').hide();
         });
 
-        var table_min_height = '50vh';
-        $(".table_users").each(function (i) {
-            var t = $(this).DataTable({
-                dom: 'Bfrtip',
-                scrollY: table_min_height,
-                scrollX: true,
-                scrollCollapse: true,
-                paging: false,
-                buttons: [
-                    {
-                        extend: 'copy',
-                        text: '{% trans "skopirovat" %}',
-                        exportOptions: {
-                            columns: function (idx, data, node) {
-                                return $.inArray('', data) === -1;
-                            }
-                        }
-                    },
-                    {
-                        extend: 'csv',
-                        exportOptions: {
-                            columns: function (idx, data, node) {
-                                return $.inArray('', data) === -1;
-                            }
-                        }
-                    }],
-                language: {
-                    "decimal": "",
-                    "emptyTable": "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{% trans 'pustaja_tablica' %}",
-                    "info": "_TOTAL_ {% trans '_total__studentov' %}",
-                    "infoEmpty": "0 {% trans 'studentov' %}",
-                    "infoFiltered": "({% trans 'iz' %} _MAX_)",
-                    "infoPostFix": "",
-                    "thousands": ",",
-                    "lengthMenu": "{% trans 'pokazat' %} _MENU_ {% trans 'studentov' %}",
-                    "loadingRecords": "{% trans 'zagruzka' %}",
-                    "processing": "{% trans 'vychislenie' %}",
-                    "search": "{% trans 'poisk' %}:",
-                    "zeroRecords": "{% trans 'nichego_ne_najdeno' %}",
-                    "paginate": {
-                        "first": "{% trans 'pervaja' %}",
-                        "last": "{% trans 'poslednjaja' %}",
-                        "next": "{% trans 'vpered' %}",
-                        "previous": "{% trans 'nazad' %}"
-                    },
-                    "aria": {
-                        "sortAscending": ": activate to sort column ascending",
-                        "sortDescending": ": activate to sort column descending"
-                    },
-                    buttons: {
-                        copyTitle: '{% trans "dannye_skopirovany" %}',
-                        copySuccess: {
-                            _: '%d {% trans "zapisej_iz_tablicy" %}',
-                            1: '{% trans "1_zapis_iz_tablicy" %}'
-                        }
+        var table_users = $('.table-users').DataTable({
+            searching: true,
+            ordering: true,
+            paging: false,
+            autoWidth: false,
+            deferRender: true,
+            order: [[1, 'asc']],
+            fixedHeader: {
+                headerOffset: $('nav.navbar').outerHeight()
+            },
+            dom: "<'row'<'table-options-group col-xs-5 col-sm-5 col-md-5 col-lg-7'><'table-search col-xs-7 col-sm-7 col-md-7 col-lg-5'f>>" +
+            "<'row'<'col-xs-12'tr>>" +
+            "<'row'<'col-xs-12 col-sm-12 col-md-4 col-lg-4'i><'col-xs-12 col-sm-12 col-md-8 col-lg-8'p>>",
+            columnDefs: [
+                {
+                    targets: "no-sort",
+                    orderable: false
+                }
+            ],
+            select: {
+                style: 'multi',
+                className: 'selected row-selected'
+            },
+            initComplete: function (settings, json) {
+                var $table = $(settings.nTable);
+                var $table_buttons = $(".table-buttons");
+                var api = new $.fn.dataTable.Api(settings);
+
+                $(".table-options-group", $table.closest(".main-table")).html($table_buttons.html());
+                $table_buttons.remove();
+                api.fixedHeader.adjust();
+                $('input', '.main-table .table-search').addClass('form-control-sm');
+                $table.closest(".main-table").collapse("show").siblings(".loading").hide();
+            },
+            language: {
+                "decimal": "",
+                "emptyTable": "{% trans 'nichego_ne_najdeno' %}",
+                "info": "_START_-_END_ {% trans 'iz' %} _TOTAL_",
+                "infoEmpty": "0",
+                "infoFiltered": "({% trans 'iz' %} _MAX_)",
+                "infoPostFix": "",
+                "thousands": ",",
+                "lengthMenu": "{% trans "pokazat" %} _MENU_",
+                "loadingRecords": "{% trans "zagruzka" %}",
+                "processing": "<span class='fa fa-circle-o-notch fa-spin'></span>&nbsp;{% trans "zagruzka" %}",
+                "search": "",
+                "searchPlaceholder": "{% trans "najti" %}",
+                "zeroRecords": "{% trans "nichego_ne_najdeno" %}",
+                "paginate": {
+                    "next": '<i class="fa fa-angle-right" aria-hidden="true"></i>',
+                    "previous": '<i class="fa fa-angle-left" aria-hidden="true"></i>'
+                },
+                "select": {
+                    "rows": {
+                        _: "{% trans "vybrano" %}: %d",
+                        0: ""
                     }
                 }
-            });
-            t.draw();
+            }
         });
-    })
+
+        table_users.on('select', function (e, dt, type, indexes) {
+            table_users.rows(indexes).nodes().to$().find('input.table-checkbox').prop("checked", true);
+            set_all_selected(table_users);
+        }).on('deselect', function (e, dt, type, indexes) {
+            table_users.rows(indexes).nodes().to$().find('input.table-checkbox').prop("checked", false);
+            set_all_selected(table_users);
+        }).on('draw.dt', function (e, settings) {
+            var api = new $.fn.dataTable.Api(settings);
+            set_all_selected(table_users);
+            $('input.table-checkbox-all', '.table-users tbody tr:selected').prop("checked", true);
+
+        });
+
+        $('input.table-checkbox-all').click(function () {
+            if ($(this).is(":checked")) {
+                table_users.rows({search: 'applied'}).select();
+            }
+            else {
+                table_users.rows({search: 'applied'}).deselect();
+            }
+            $(this).blur();
+        });
+
+        $('a', '.table-users tbody').click(function (e) {
+            e.stopPropagation();
+        });
+
+        $('.main-table').on('click', 'button.table-change-status', function () {
+            var profile_ids = get_selected_user_info(table_users, 'id_profile');
+
+            $(".selected_users_count", "#modal_change_status").text(profile_ids.length);
+            $("#form_change_status").data("profile_ids", {"profile_ids": profile_ids});
+        }).on('click', 'button.table-send-mail', function () {
+            var user_ids = get_selected_user_info(table_users, 'id_user');
+
+            $(".selected_users_count", "#modal_send_mail").text(user_ids.length);
+            $("#form_send_mail").data("user_ids", {"user_ids": user_ids});
+        });
+
+        $("input.no-change", "#modal_change_status").change(function () {
+            var $this = $(this);
+            if ($this.is(":checked"))
+                $this.closest(".form-group").find("input[type='checkbox']").prop("checked", false);
+        });
+
+        $("input[type='checkbox']", "#modal_change_status").change(function () {
+            var $this = $(this);
+
+            if ($this.is(":checked"))
+                $this.closest(".form-group").find("input.no-change").prop("checked", false);
+        });
+
+        $("#modal_change_status_ok").click(function () {
+            var modal_button_ok = $(this);
+            var $form_change_status = $("#form_change_status");
+            var statuses_id = [];
+            $("input[name='status_types[]']").each(function () {
+                var $this = $(this);
+                if ($("input[name='status_"+ $this.val() +"[]'].zero-input").is(":not(:checked)")) {
+                    statuses_id = statuses_id.concat(
+                        $("input[name='status_"+ $this.val() +"[]']:checked:not(.zero-input)").map(function(){
+                            return $(this).val();
+                        }).get()
+                    );
+                }
+            });
+            var post_data = $form_change_status.serialize() +
+                '&' +
+                $.param($form_change_status.data("profile_ids")) +
+                '&' +
+                $.param({"statuses_id": statuses_id});
+
+            var d = 'disabled';
+
+            modal_button_ok.data('resetText', modal_button_ok.html()).html(modal_button_ok.data('loadingText'));
+            $('button', '#modal_change_status .modal-footer').addClass(d).attr(d, d).prop(d, true);
+            $('input', '#modal_change_status').addClass(d).attr(d, d).prop(d, true);
+            $('#modal_change_status').data("is_form_submitting", true);
+
+            $.post('{% url staff.views.ajax_change_status %}', post_data)
+                .always(function () {
+                    var d = 'disabled';
+
+                    modal_button_ok.html(modal_button_ok.data('resetText'));
+                    $('button', '#modal_change_status .modal-footer').removeClass(d).removeAttr(d).prop(d, false);
+                    $('input', '#modal_change_status').removeClass(d).removeAttr(d).prop(d, false);
+                    $('#modal_change_status').data("is_form_submitting", false);
+                })
+                .done(function (data) {
+                    $('#modal_change_status_error_text').html('<div class="alert alert-success" role ="alert">' +
+                        '                                     <a class="close" data-dismiss="alert">&times;</a>' +
+                        '                                     <span>{% trans "sohraneno_uspeshno" %}</span>' +
+                        '                                   </div>');
+                    if ($("input[name='send_mail']", '#modal_change_status').is(":checked")) {
+                        var user_ids = get_selected_user_info(table_users, 'id_user');
+                        $.post('{% url staff.views.ajax_save_ids %}', {
+                            'csrfmiddlewaretoken': "{{ csrf_token }}",
+                            'user_ids': user_ids
+                        }).done(function (data) {
+                            window.location.href = '{% url mail.views.mail_page %}' + '?from_staff='+ data.index + '#new'
+                        });
+                    }
+                    else
+                        window.location.reload();
+                })
+                .fail(function (data) {
+                    $('#modal_change_status_error_text').html('<div class="alert alert-danger" role ="alert">' +
+                        '                                     <a class="close" data-dismiss="alert">&times;</a>' +
+                        '                                     <span>{% trans "oshibka_pri_sohranenii" %}</span>' +
+                        '                                   </div>');
+                });
+        });
+
+        $("#form_change_status").change(function () {
+            $('#modal_change_status_error_text').html("");
+        });
+
+        $('#modal_change_status').on('hide.bs.modal', function (e) {
+            if ($('#modal_change_status').data("is_form_submitting"))
+                e.preventDefault();
+        }).on('hidden.bs.modal', function (e) {
+            $("#form_change_status").trigger("reset");
+            $("input[name='send_mail']", '#modal_change_status').prop("checked", false);
+            $('#modal_change_status_error_text').html("");
+        });
+
+        $("#modal_send_mail_ok").click(function () {
+            var modal_button_ok = $(this);
+            var $form_send_mail = $("#form_send_mail");
+
+            var post_data = $form_send_mail.serialize() +
+                '&' +
+                $.param($form_send_mail.data("user_ids"));
+
+            var d = 'disabled';
+
+            modal_button_ok.data('resetText', modal_button_ok.html()).html(modal_button_ok.data('loadingText'));
+            $('button', '#modal_send_mail .modal-footer').addClass(d).attr(d, d).prop(d, true);
+            $('#modal_send_mail').data("is_form_submitting", true);
+
+            $.post('{% url staff.views.ajax_save_ids %}', post_data)
+                .always(function () {
+                    var d = 'disabled';
+
+                    modal_button_ok.html(modal_button_ok.data('resetText'));
+                    $('button', '#modal_send_mail .modal-footer').removeClass(d).removeAttr(d).prop(d, false);
+                    $('#modal_send_mail').data("is_form_submitting", false);
+                })
+                .done(function (data) {
+                    window.location.href = '{% url mail.views.mail_page %}' + '?from_staff='+ data.index + '#new'
+                })
+                .fail(function (data) {
+                    $('#modal_send_mail_error_text').html('<div class="alert alert-danger" role ="alert">' +
+                        '                                     <a class="close" data-dismiss="alert">&times;</a>' +
+                        '                                     <span>{% trans "oshibka_pri_sohranenii" %}</span>' +
+                        '                                   </div>');
+                });
+        });
+
+        $('#modal_send_mail').on('hide.bs.modal', function (e) {
+            if ($('#modal_send_mail').data("is_form_submitting"))
+                e.preventDefault();
+        }).on('hidden.bs.modal', function (e) {
+            $('#modal_send_mail_error_text').html("");
+        });
+    });
+
+    function set_all_selected(table_users) {
+        if ($('.table-users tbody tr').length == $('.table-users tbody tr.selected').length)
+            $('input.table-checkbox-all').prop("checked", true);
+        else
+            $('input.table-checkbox-all').prop("checked", false);
+
+        var btn_status_text = "";
+        var btn_send_text = "";
+        var selected_count = table_users.rows({selected: true}).data().length;
+        if (selected_count == 0 || selected_count == table_users.rows().data().length) {
+            btn_status_text = "{% trans "izmenit_status_dlya_vsekh_polzovateley" %}";
+            btn_send_text = "{% trans "otpravit_soobshcheniye_vsem_polzovatelyam" %}";
+        }
+        else {
+            btn_status_text = "{% trans "izmenit_status_dlya_vybrannykh_polzovateley" %}";
+            btn_send_text = "{% trans "otpravit_soobshcheniye_vybrannym_polzovatelyam" %}";
+        }
+
+        $('button.table-change-status').prop("title", btn_status_text);
+        $('button.table-send-mail').prop("title", btn_send_text);
+    }
+
+    function get_selected_user_info(table_users, info_type) {
+        var rows = table_users.rows({selected: true});
+        if (rows.data().length == 0)
+            rows = table_users.rows();
+
+        var info = [];
+
+        rows.every(function () {
+            info.push($(this.node()).data(info_type));
+        });
+
+        return info;
+    }
 </script>
