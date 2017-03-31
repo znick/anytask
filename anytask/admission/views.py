@@ -165,7 +165,7 @@ def contest_register(user):
                      error_message)
         return False
 
-    logger.error("Activate user - user %s was successfully registered to contest %s.", user.username, contest_id)
+    logger.info("Activate user - user %s was successfully registered to contest %s.", user.username, contest_id)
     return contest_id
 
 
@@ -180,7 +180,7 @@ def activate(request, activation_key):
 
         contest_id = contest_register(user)
         if contest_id:
-            return HttpResponsePermanentRedirect(settings.CONTEST_URL + contest_id)
+            return HttpResponsePermanentRedirect(settings.CONTEST_URL + str(contest_id))
         else:
             context['info_text'] = _(u'oshibka_registracii_v_contest')
     else:
