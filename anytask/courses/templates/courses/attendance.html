@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load django_bootstrap_breadcrumbs %}
+{% load sanitize_html icon %}
+{% load dict_func %}
+{% load task_taken_func %}
+
+{% block title %}{{ course.name }} | {{ course.year }}{% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    {% if school %}
+        {% breadcrumb school.name school.get_absolute_url %}
+    {% endif %}
+    {% breadcrumb course.name "" %}
+{% endblock breadcrumbs %}
+
+{% block navbar %}
+    <ul class="nav navbar-nav">
+        <li class="nav-item">
+            <a class="nav-link" href="{{ course.get_absolute_url }}"> {% trans "stranica_kursa" %}</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ course.get_absolute_url }}/gradebook/">{% trans "obshaja_vedomost" %}</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if not group_attendance %}active{% endif %}"
+               href="{{ course.get_absolute_url }}/attendance/">{% trans "zhurnal_poseshaemosti" %}</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ course.get_absolute_url }}/queue">{% trans "ochered_na_proverku" %}</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{% url courses.views.course_settings course.id %}">{% trans "nastrojki" %}</a>
+        </li>
+    </ul>
+{% endblock navbar %}
+
+{% block content %}
+    {{ block.super }}
+
+    <div class="row">
+        <div class="col-md-12 col-xs-12">
+            <div class="card card-block">
+                <h5 class="card-title">{{ course.name }}</h5>
+
+                {% if course.can_edit %}
+                    <div id="btn_group_edit_course"
+                         style="z-index: 1; padding: 6px;border:1px solid #e5e5e5;background-color: #e5e5e5">
+                        <div class="btn-group">
+                            <a type="button" class="btn btn-secondary btn-sm" href="/lesson/create/{{ course.id }}">{% trans "dobavit_urok" %}</a>
+                        </div>
+
+                    {% if visible_hide_button_users %}
+                        <a class="btn btn-secondary btn-sm" id="hide_academ_student_btn">
+                            {% if show_academ_users %}
+                                {% trans "ne_pokazyvat_otchislennyh" %}
+                            {% else %}
+                                {% trans "pokazyvat_otchislennyh" %}
+                            {% endif %}
+                        </a>
+                    {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    {% include "courses/task.html" %}
+    {% include tasklist_template %}
+{% endblock content %}

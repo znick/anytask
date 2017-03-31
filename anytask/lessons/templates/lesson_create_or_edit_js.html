@@ -1,0 +1,277 @@
+{% load i18n %}
+<script src="{{ STATIC_URL }}jquery.validate.min.js"></script>
+<script src="http://malsup.github.io/jquery.form.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('[data-toggle="popover"]').popover({
+            trigger: 'hover',
+            template: '<div class="popover" role="tooltip">' +
+            '<div class="popover-arrow"></div>' +
+            '<div class="popover-content"></div>' +
+            '</div>'
+        });
+
+        {#        $('select:not([multiple])').multiselect({#}
+        {#            buttonClass: 'btn btn-secondary btn-block',#}
+        {#            templates: {#}
+        {#                ul: '<ul class="multiselect-container dropdown-menu" style="left:inherit;top: inherit;"></ul>',#}
+        {#                li: '<li><a tabindex="0" class="dropdown-item"><label></label></a></li>'#}
+        {#            },#}
+        {#            maxHeight: 200,#}
+        {#            buttonContainer: '<div style="width:100%;" class="multiselect-dropdown" />',#}
+        {#            buttonWidth: '100%',#}
+        {#        });#}
+
+
+        $('.lesson_datetime').datetimepicker({
+            bootcssVer: 3,
+            format: 'dd-mm-yyyy hh:ii',
+            language: '{{ user.get_profile.language }}',
+            todayBtn: true,
+            autoclose: true,
+            todayHighlight: true,
+            pickerPosition: "bottom-left",
+            startDate: null,
+            minuteStep: 30
+        });
+
+{#        {% if is_create %}#}
+{#            $("#lesson_edit_hidden_lesson").change(function () {#}
+{#                var $lesson_edit_label_for_changed_lesson = $('#lesson_edit_label_for_changed_lesson');#}
+{##}
+{#                $lesson_edit_label_for_changed_lesson.toggle();#}
+{#                toggle_inputs($lesson_edit_label_for_changed_lesson);#}
+{#            });#}
+{#        {% endif %}#}
+
+{#        $('#lesson_edit_type').change(function () {#}
+{#                $("#date_body").collapse('show');#}
+{#        });#}
+
+        $('#lesson_edit_form').change(function () {
+            $('#lesson_submit_error_text').empty();
+            $('#lesson_edit_form').data('changed', true);
+        });
+
+        $.validator.addMethod("required_with_disabled", function(value, element) {
+            return !!value;
+        });
+
+        var form_validator = $('#lesson_edit_form').validate({
+            submitHandler: function (form) {
+                var $lesson_edit_form = $(form);
+                if ($lesson_edit_form.data('changed')) {
+                    $('#lesson_edit_form').ajaxSubmit({
+                        success: function (data) {
+                            $lesson_edit_form.data('changed', false);
+                            $('#lesson_submit_error_text').html('<div class="alert alert-success alert-dismissible" role ="alert" id="edit_lesson_err">' +
+                                    '                            <button type="button" class="close" data-dismiss="alert" aria-label="{% trans "zakryt" %}">' +
+                                    '                               <span aria-hidden="true">&times;</span>' +
+                                    '                            </button>' +
+                                    '                            <span>{% trans "urok_sohranen_uspeshno" %}</span>' +
+                                    '                          </div>');
+                            if ($lesson_edit_form.data('quit'))
+                                redirect();
+                            else if (data.redirect_page)
+                                window.location.replace(data.redirect_page);
+                            else
+                                $("#lesson_edit_changed_lesson").prop('checked', !!$("#lesson_edit_changed_lesson").data("default"));
+
+                            $(document).prop('title', data.page_title);
+                        },
+                        error: function (data) {
+                            $('#lesson_submit_error_text').html('<div  class="alert alert-danger alert-dismissible" role ="alert" id="edit_lesson_err">' +
+                                    '                            <button type="button" class="close" data-dismiss="alert" aria-label="{% trans "zakryt" %}">' +
+                                    '                               <span aria-hidden="true">&times;</span>' +
+                                    '                            </button>' +
+                                    '                            <span>{% trans "oshibka_pri_sohranenii" %}</span>' +
+                                    '                          </div>');
+                            remove_disabled();
+                        }
+                    });
+                }
+                else {
+                    $('#lesson_submit_error_text').html('<div class="alert alert-success alert-dismissible" role ="alert" id="edit_lesson_err">' +
+                            '                            <button type="button" class="close" data-dismiss="alert" aria-label="{% trans "zakryt" %}">' +
+                            '                               <span aria-hidden="true">&times;</span>' +
+                            '                            </button>' +
+                            '                            <span>{% trans "zadacha_sohranena_uspeshno" %}</span>' +
+                            '                          </div>');
+                    if ($('#lesson_edit_form').data('quit'))
+                        redirect();
+                    else
+                        $("#lesson_edit_changed_lesson").prop('checked', !!$("#lesson_edit_changed_lesson").data("default"));
+                }
+            },
+            ignore: ':hidden:not("#lesson_edit_group")',
+            rules: {
+                lesson_title: {
+                    required: true,
+                    maxlength: 100
+                },
+                'lesson_group_id[]': {
+                    required_with_disabled: true
+                }
+            },
+
+            highlight: function (input) {
+                $(input).removeClass('form-control-success').addClass('form-control-danger');
+                $(input).closest('.form-group').removeClass('has-success').addClass('has-danger');
+            },
+
+            success: function (label) {
+                label.addClass('valid');
+                label.closest('.text-help').siblings('.form-control').removeClass('form-control-danger').addClass('form-control-success');
+                label.closest('.form-group').removeClass('has-danger').addClass('has-success');
+            },
+
+            messages: {
+                lesson_title: {
+                    required: "{% trans 'nazvanie_neobhodimo' %}",
+                    maxlength: "{% trans 'ne_tak_mnogo' %}"
+                },
+                'lesson_group_id[]': {
+                    required_with_disabled: "{% trans 'neobhodimo_vybrat_gruppu' %}"
+                }
+            },
+
+            errorPlacement: function (error, element) {
+                $(element).closest("div.controls").find('small.text-help').empty().append(error);
+            }
+        });
+
+        $('#lesson_edit_group').multiselect({
+            buttonClass: 'btn btn-secondary btn-block',
+            templates: {
+                ul: '<ul class="multiselect-container dropdown-menu" style="left:inherit;top: inherit;"></ul>',
+                li: '<li><a tabindex="0" class="dropdown-item"><label></label></a></li>'
+            },
+            includeSelectAllOption: true,
+            selectAllText: '{% trans "dlja_vseh_grupp" %}',
+            allSelectedText: '{% trans "dlja_vseh_grupp" %}',
+            selectAllName: 'lesson_group_id_all',
+            selectAllValue: 'on',
+            maxHeight: 200,
+            buttonContainer: '<div style="width:100%;" class="multiselect-dropdown"/>',
+            buttonWidth: '100%',
+            buttonTitle: function(options, select) {
+                var labels = [];
+
+                if (options.length === 0) {
+                    return '{% trans "ne_vybrano_ni_odnoj_gruppy" %}';
+                }
+                else if (options.length === $('option', select).length) {
+                    return '{% trans "dlja_vseh_grupp" %}';
+                }
+                else {
+                    options.each(function () {
+                        labels.push($(this).text());
+                    });
+                }
+                return labels.join(', ');
+            },
+            buttonText: function(options, select) {
+                if (options.length === 0) {
+                    return '{% trans "ne_vybrano_ni_odnoj_gruppy" %}';
+                }
+                else if (options.length === $('option', select).length) {
+                    return '{% trans "dlja_vseh_grupp" %}';
+                }
+                else if (options.length > 1) {
+                    return '{% trans "vybrano_neskolko_grupp" %} - ' + options.length;
+                }
+                else {
+                    var labels = [];
+                    options.each(function() {
+                        var $this = $(this);
+                        if ($this.attr('label') !== undefined) {
+                            labels.push($this.attr('label'));
+                        }
+                        else {
+                            labels.push($this.text());
+                        }
+                    });
+                    return labels.join(', ') + '';
+                }
+            },
+            onInitialized: function(option, checked, select) {
+                $('#lesson_edit').closest('.row').collapse('show');
+                var input = $('#lesson_edit_group');
+                $('label.error', input).removeClass('valid');
+                input.removeClass('form-control-success');
+                input.closest('.form-group').removeClass('has-success');
+            },
+            onChange: function(option, checked, select) {
+                form_validator.element('#lesson_edit_group');
+            },
+            onSelectAll: function() {
+                form_validator.element('#lesson_edit_group');
+            },
+            onDeselectAll: function() {
+                form_validator.element('#lesson_edit_group');
+            }
+
+        });
+
+        $('#button_preview').click(function () {
+            description_preview();
+        });
+
+        $('#button_cancel_quit').click(function () {
+            redirect();
+        });
+
+        $('#button_save').click(function () {
+            set_disabled();
+            $('#lesson_edit_form').data('quit', false).submit();
+            remove_disabled();
+        });
+
+        $('#button_save_quit').click(function () {
+            set_disabled();
+            $('#lesson_edit_form').data('quit', true).submit();
+            remove_disabled();
+        });
+    });
+
+    function toggle_inputs($div) {
+        $("input, select, textarea", $div).each(function () {
+            var $this = $(this);
+            if ($this.is(':disabled'))
+                $this.prop('disabled', false);
+            else
+                $this.prop('disabled', true);
+        });
+    }
+
+    function description_preview() {
+        var description_html = $('#lesson_edit_body').val();
+        var lesson_date = $('#lesson_edit_datepicker').val();
+        var lesson_name = $('#lesson_edit_header').val();
+        $('#modal_lesson_header').show().text(lesson_name);
+        $('#modal_lesson_date').html('<strong>{% trans "data_uroka" %}: ' + lesson_date + ' MSK UTC+3</strong>');
+        $('#modal_lesson_body').html(description_html);
+
+        var codesample = $('pre[class*="language-"]', '#modal_lesson_body')[0];
+        if (codesample)
+            Prism.highlightElement(codesample);
+
+        $('#modal_lesson_preview').modal('show');
+    }
+
+    function set_disabled() {
+        $('#button_cancel_quit').attr('disabled', 'disabled');
+        $('#button_save').attr('disabled', 'disabled');
+        $('#button_save_quit').attr('disabled', 'disabled');
+    }
+
+    function remove_disabled() {
+        $('#button_cancel_quit').removeAttr('disabled');
+        $('#button_save').removeAttr('disabled');
+        $('#button_save_quit').removeAttr('disabled');
+    }
+
+    function redirect() {
+        window.location.href = document.referrer + '#lessons-tab';
+    }
+</script>

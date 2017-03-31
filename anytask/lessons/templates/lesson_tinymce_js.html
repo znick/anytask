@@ -1,0 +1,97 @@
+<script src="{{ STATIC_URL }}tinymce/tinymce.min.js"></script>
+<script src="{{ STATIC_URL }}tinymce/jquery.tinymce.min.js"></script>
+<script src="{{ STATIC_URL }}prism.js"></script>
+
+<link href="{{ STATIC_URL }}prism.css" rel='stylesheet' />
+<link href="{{ STATIC_URL }}tinymce-style-lesson.css" rel='stylesheet' />
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#lesson_edit_body").tinymce({
+            language: '{{ user.get_profile.language }}',
+            skin: 'bootstrap4',
+            resize: false,
+            content_css: [
+                'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css',
+                '{{ STATIC_URL }}tinymce-style-lesson.css',
+                '{{ STATIC_URL }}prism.css'
+            ],
+            setup: function(editor) {
+                editor.addMenuItem('codesample', {
+                    icon: 'codesample',
+                    text: 'Insert/Edit code sample',
+                    cmd: 'codesample'
+                });
+                {% if lesson %}
+                    editor.on('init', function() {
+                        var $lesson_edit_body = $("#lesson_edit_body");
+                        $lesson_edit_body.data("value",  $lesson_edit_body.val());
+                    });
+                {% endif %}
+                editor.on('change', function(e) {
+                    $('#lesson_edit_form').data('changed', true);
+                    {% if lesson %}
+                        check_changed($("#lesson_edit_body"));
+                    {% endif %}
+                });
+            },
+            plugins: [
+                'autoresize advlist autolink lists link image charmap hr',
+                'searchreplace wordcount visualblocks visualchars code',
+                'media nonbreaking table contextmenu directionality',
+                'textcolor colorpicker textpattern imagetools codesample'
+            ],
+            toolbar: 'undo redo | bold italic underline | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | image link hr codesample',
+            autoresize_bottom_margin: 10,
+            autoresize_overflow_padding: 10,
+            autoresize_min_height: 300,
+            image_description: false,
+            link_assume_external_targets: true,
+            default_link_target: "_blank",
+            table_default_attributes: {
+                "class": 'table table-bordered table-comment'
+            },
+            textpattern_patterns: [
+                {start: '1. ', cmd: 'InsertOrderedList'}
+            ],
+            contextmenu: "link image codesample",
+        });
+
+{#        {% if lesson %}#}
+{#            $("#lesson_edit_header, #lesson_edit_max_score, #lesson_edit_datepicker").change(function () {#}
+{#                check_changed($(this));#}
+{#            });#}
+{#            $("#lesson_edit_hidden_lesson").change(function () {#}
+{#                var $this = $(this);#}
+{#                if ($this.data("value") && !$this.is(':checked'))#}
+{#                    $this.data("changed", true);#}
+{#                else#}
+{#                    $this.data("changed", false);#}
+{#                show_notify();#}
+{#            });#}
+{#        {% endif %}#}
+    });
+
+    {% if lesson %}
+        function check_changed($elem) {
+            if ($elem.val() != $elem.data("value"))
+                $elem.data("changed", true);
+            else
+                $elem.data("changed", false);
+            show_notify();
+        }
+
+{#        function show_notify() {#}
+{#            var $lesson_edit_hidden_lesson = $("#lesson_edit_hidden_lesson");#}
+{##}
+{#            if (($("#lesson_edit_header").data("changed") ||#}
+{#                $("#lesson_edit_max_score").data("changed") ||#}
+{#                $("#lesson_edit_datepicker").data("changed") ||#}
+{#                $("#lesson_edit_body").data("changed") ||#}
+{#                $lesson_edit_hidden_lesson.data("changed")) && !$lesson_edit_hidden_lesson.is(':checked'))#}
+{##}
+{#                $("#lesson_edit_label_for_changed_lesson").show().find("input").prop('disabled', false);#}
+{#            else#}
+{#                $("#lesson_edit_label_for_changed_lesson").hide().find("input").prop('disabled', true);#}
+{#        }#}
+    {% endif %}
+</script>

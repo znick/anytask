@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load sanitize_html icon %}
+{% load dict_func %}
+{#{% load task_taken_func %}#}
+{% load django_bootstrap_breadcrumbs %}
+
+
+{% block title %}{% if is_create %}{% trans "sozdanie_uroka" %}{% else %}{{ lesson.title }}{% endif %} | {{ course.name }} | {{ course.year }}{% endblock %}
+
+{% block scripts %}
+    <link href="{{ STATIC_URL }}lesson.css" rel='stylesheet'/>
+
+    {% include "lesson_create_or_edit_js.html" %}
+    {% include "lesson_tinymce_js.html" %}
+{% endblock scripts %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    {% if school %}
+        {% breadcrumb school.name school.get_absolute_url %}
+    {% endif %}
+    {% breadcrumb course.name course.get_absolute_url %}
+    {% if is_create %}
+        {% breadcrumb_for "" %}{% trans "sozdanie_uroka" %}{% endbreadcrumb_for %}
+    {% else %}
+        {% breadcrumb_for "" %}{% trans "redaktirovanie_uroka" %}{% endbreadcrumb_for %}
+    {% endif %}
+{% endblock breadcrumbs %}
+
+{% block content %}
+    {{ block.super }}
+
+    <div class="row collapse">
+        <div class="col-md-12">
+            <div id="lesson_edit" class="card card-block">
+                <h5 class="card-title">{% trans "sozdanie_uroka" %}</h5>
+
+                <form method="post" id="lesson_edit_form" >
+                    {% csrf_token %}
+                    <div class="form-group row">
+                        <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="lesson_edit_header">{% trans "nazvanie" %}</label>
+                        <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7" >
+                            <input class="form-control" id='lesson_edit_header' name='lesson_title' type='text' size='20' value="{{lesson.title}}" />
+                            <small class="text-help" id="lesson_edit_header_error_text"></small>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="lesson_edit_group"> {% trans "gruppa" %}</label>
+                        <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
+                            <select class="form-control" id='lesson_edit_group' name="lesson_group_id[]" multiple="multiple">
+                                {% for group in course.groups.all %}
+                                    <option value="{{ group.id }}" selected>{{ group.name }}</option>
+                                {% endfor %}
+                            </select>
+                            <small class="text-help" id="lesson_group_id_error_text"></small>
+                        </div>
+                    </div>
+                    <div id='date_body' class="form-group row">
+                        <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="lesson_edit_datepicker">{% trans "data_uroka" %}</label>
+                        <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
+                            <div class="input-group date lesson_datetime">
+                                <input class="form-control" id='lesson_edit_datepicker' name='date' type='text'  readonly value="{{lesson.date|date:'d-m-Y H:i'}}">
+                                <span class="input-group-addon"><i class="fa fa-times fa-lg"></i></span>
+                                <span class="input-group-addon"><i class="fa fa-calendar fa-lg"></i></span>
+                            </div>
+                            <small class="text-help" id="lesson_edit_datepicker_error_text"></small>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="lesson_edit_body">{% trans "opisanie" %}</label>
+                        <br>
+                        <div class="controls col-xs-12">
+                            <textarea class='input-xlarge form-control' id='lesson_edit_body' name='lesson_text'>{{ lesson.description }}</textarea>
+                        </div>
+                    </div>
+                    <div class="form-group row footer-buttons">
+                        <div id="lesson_submit_error_text" class="col-xs-12"></div>
+                        <div class="col-sm-12 col-lg-2">
+                            <button type="button" id="button_preview" class="btn btn-secondary pull-xs-left">{% trans "predprosmotr" %}</button>
+                        </div>
+                        <div class="col-sm-12 col-lg-10">
+                            <div class="btn-group pull-xs-right" role="group">
+                                <button type="button" id="button_cancel_quit" class="btn btn-secondary">{% trans "otmenit_i_vyjti" %}</button>
+                                <button type="button" id="button_save" class="btn btn-secondary">{% trans "sohranit_i_prodolzhit" %}</button>
+                                <button type="button" id="button_save_quit" class="btn btn-primary">{% trans "sohranit_i_vyjti" %}</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal_lesson_preview" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modal_lesson_header" aria-hidden="true">
+        <div class="modal-dialog modal-lg"  role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">×</button>
+                    <h5 class="modal-title" id="modal_lesson_header"></h5>
+                    <div id="modal_lesson_date"></div>
+                </div>
+                <div class="modal-body">
+                    <div id="modal_lesson_body"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

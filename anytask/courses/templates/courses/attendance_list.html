@@ -1,0 +1,151 @@
+{% load sanitize_html icon %}
+{% load i18n %}
+{% load dict_func %}
+{% load task_taken_func %}
+
+{% block scripts %}
+    <link href="{{ STATIC_URL }}shad_cpp.css" rel='stylesheet'/>
+
+    {% include "courses/course_js.html" %}
+{% endblock scripts %}
+
+{% for group,student_information in group_information.items %}
+    <div class="card card-block">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card-title-block">
+                    {% ifnotequal group course.group_with_extern %}
+                        <h5 class="card-title">{% if group.name %}{{ group.name }}&nbsp;{% else %}&nbsp;{% endif %}
+                            {% if default_teacher|key:group %}
+                                (<a class="card-link table-link" href="{{ default_teacher|get_url:group }}">{{ default_teacher|get_name:group }}</a>)
+                            {% endif %}
+                        </h5>
+                    {% endifnotequal %}
+                    <button class="btn btn-secondary btn-table-fullscreen" type="button" for="#table_results_{{ group.id }}"><i class="fa fa-expand fa-lg"></i></button>
+                    {% if user_is_teacher %}
+                        <span class="card-title-teacher-buttons">
+                            <button class="btn btn-secondary btn-table-edit" type="button" data-toggle="modal" data-target="#modal_table_edit" for="#group_sort_{{ group.id }}" data-table="#table_results_{{ group.id }}"><i class="fa fa-pencil fa-lg"></i></button>
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="loading-table-img">
+            <span class="fa fa-circle-o-notch fa-spin fa-3x fa-fw loading"></span>
+        </div>
+        <div class="zui-wrapper collapse">
+            <table class="table table-striped table-bordered table-results order-column hover" cellspacing="0"  id="table_results_{{ group.id }}">
+                <thead>
+                <tr>
+                    <th class="no-font-weight text-center">#</th>
+                    <th class="no-font-weight"><b>{% trans "student" %}</b></th>
+                    {% for lssn in group_lessons|key:group %}
+                            <th align="center" class="{% if user_is_teacher %}dom-live-number{% else %}dom-number{% endif %} word-wrap">
+                                <a href="javascript:get_lesson_modal('{{lssn.id}}', '{{lssn.title|escapejs}}', '{{lssn.lesson_date|date:'d-m-Y H:i'}}', '{{lssn.description|safe|escapejs}}')">
+                                    {{lssn.lesson_date|date:'d-m-Y'}}
+                                </a>
+                            </th>
+                    {% empty %}
+                        <th></th>
+                    {% endfor %}
+                    <th align="center" class="no-font-weight dom-number">
+                        {% trans "poseshennye_uroki" %} <span class="label label-inverse">{{ group_lessons|key:group|length }}</span>
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for student, visited_lessons in student_information %}
+                    <tr class="{% if user.username == student.username %}table-info{% endif %}">
+                        <td class="sticky-col" align="center"></td>
+                        <td class="sticky-col">
+                            {% if not student.get_profile.is_active  %}<del>{% endif %}
+                            <a class="card-link table-link" href="{{ student.get_absolute_url }}">{{ student.last_name }}&nbsp;{{ student.first_name }}</a>
+                            {% if not student.get_profile.is_active  %}</del>{% endif %}
+                        </td>
+                        {% for lssn in group_lessons|key:group %}
+                                <td align="center" class="student_{{ student.id }}">
+                                    <div>
+                                                <div {% if user_is_teacher %}class="task-mark-value"{% endif %}>
+                                                <span class="label no-issue" style="{% if lssn in visited_lessons %}background-color: #5CB85C;{% else %}background-color: #818A91;{% endif %}">
+                                                    {% if lssn in visited_lessons %}1{% else %}0{% endif %}
+                                                </span>
+                                                </div>
+                                                {% if user_is_teacher %}
+                                                    <form method="post" class="task-mark-form lesson collapse">
+                                                        {% csrf_token %}
+                                                        <fieldset class="form-group">
+                                                            <input type="hidden" name="lesson" class="lesson"/>
+                                                            <input type="hidden" name="task_id" value="{{lssn.id}}"/>
+                                                            <input type="hidden" name="student_id" value="{{student.id}}"/>
+                                                            <input type="hidden" name="mark_max" class="mark_max" value="1">
+                                                            <input class="form-control" name="mark_value" type="text" maxlength="25" size="5" autocomplete="off" value="{% if lssn in  visited_lessons%}1{% else %}0{% endif %}">
+                                                            <span class="text-help"></span>
+                                                        </fieldset>
+                                                    </form>
+                                                {% endif %}
+
+{#                                        {% if user.username == student.username %}#}
+{#                                            <a class="{{ task_x_task_takens|get_task_taken:task|icon}}"></a>#}
+{#                                        {% elif task.can_score %}#}
+{#                                            <a class="{{ task_x_task_takens|get_task_taken:task|icon}}"></a>#}
+{#                                        {% endif %}#}
+                                    </div>
+                                </td>
+{#                            {% endif %}#}
+                        {% empty %}
+                            <td>&nbsp;</td>
+                        {% endfor %}
+                        <td align="center" class="sum-score">
+                            <div>
+                                {# <span class="label {% if student_summ_score %} {% if student_summ_score == group_x_max_score|key:group %} label-success {% else %} label-info {% endif %} {% else %} label-important {% endif %}"> #}
+                                <span class="label label-inverse">{{ visited_lessons|length }}</span>
+                            </div>
+                        </td>
+
+                            </td>
+{#                        {% endif %}#}
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endfor %}
+
+{% if user_is_teacher %}
+    <div class="modal fade" id="modal_table_edit" tabindex="-1" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="modal_table_edit_header">{% trans "itogovaja_tablica" %}</h4>
+                </div>
+{#                <div class="modal-body">#}
+{#                    <p>{% trans "izmenenie_udalenie_zadach" %}</p>#}
+{#                    {% for group, tasks in group_tasks.iteritems %}#}
+{#                        <div id="group_sort_{{ group.id }}" data-group="{{ group.id }}" data-table="#table_results_{{ group.id }}" data-marksystem="{% if course_mark_system_vals %}true{% endif %}" class="collapse">#}
+{#                            <p  class="modal-group-name">{{ group.name }}</p>#}
+{#                            <ul class="group-sortable" name="group_sort_{{ group.id }}">#}
+{#                                {% for task in tasks %}#}
+{#                                    <li class="ui-state-default" name="task_sort_{{ task.id }}" value="{{ task.id }}">#}
+{#                                        <span>{{ task.title }}</span>#}
+{#                                        <a class="task-delete pull-xs-right" data-name="task_delete_{{ task.id }}" {% autoescape off %}{{ task|group_info }}{% endautoescape %} tabindex="0" data-toggle="popover" type="button">#}
+{#                                            <i class="fa fa-trash-o" aria-hidden="true"></i>#}
+{#                                        </a>#}
+{#                                        <a class="task-seminar-notempty pull-xs-right" {% autoescape off %}{{ task|group_info }}{% endautoescape %} tabindex="0" data-toggle="popover-help" data-trigger="hover" data-content="{%  trans "snachala_udalit_podzadchi" %}" type="button">#}
+{#                                            <i class="fa fa-question-circle" aria-hidden="true"></i>#}
+{#                                        </a>#}
+{#                                    </li>#}
+{#                                {% endfor %}#}
+{#                            </ul>#}
+{#                        </div>#}
+{#                    {% endfor %}#}
+{#                </div>#}
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-dismiss="modal">{% trans "zakryt" %}</button>
+                    <button class="btn btn-primary" id="modal_table_edit_ok" data-dismiss="modal" data-loading-text="<span class='fa fa-circle-o-notch fa-spin'></span> {% trans "sohranenie" %}">{% trans "sohranit" %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}
