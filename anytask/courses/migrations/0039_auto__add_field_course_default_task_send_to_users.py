@@ -111,14 +111,18 @@ class Migration(SchemaMigration):
             'name_int': ('django.db.models.fields.IntegerField', [], {'default': '0'})
         },
         'courses.studentcoursemark': {
-            'Meta': {'unique_together': "(('student', 'course', 'group'),)", 'object_name': 'StudentCourseMark'},
-            'course': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['courses.Course']", 'db_index': 'False'}),
-            'group': ('django.db.models.fields.related.ForeignKey', [], {'db_index': 'False', 'to': "orm['groups.Group']", 'null': 'True', 'blank': 'True'}),
+            'Meta': {'unique_together': "(('student', 'course'),)", 'object_name': 'StudentCourseMark'},
+            'course': (
+            'django.db.models.fields.related.ForeignKey', [], {'to': "orm['courses.Course']", 'db_index': 'False'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'mark': ('django.db.models.fields.related.ForeignKey', [], {'db_index': 'False', 'to': "orm['courses.MarkField']", 'null': 'True', 'blank': 'True'}),
+            'mark': ('django.db.models.fields.related.ForeignKey', [],
+                     {'db_index': 'False', 'to': "orm['courses.MarkField']", 'null': 'True', 'blank': 'True'}),
             'student': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"}),
-            'teacher': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'teacher_change_mark'", 'null': 'True', 'db_index': 'False', 'to': "orm['auth.User']"}),
-            'update_time': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'auto_now': 'True', 'blank': 'True'})
+            'teacher': ('django.db.models.fields.related.ForeignKey', [],
+                        {'blank': 'True', 'related_name': "'teacher_change_mark'", 'null': 'True', 'db_index': 'False',
+                         'to': "orm['auth.User']"}),
+            'update_time': ('django.db.models.fields.DateTimeField', [],
+                            {'default': 'datetime.datetime.now', 'auto_now': 'True', 'blank': 'True'})
         },
         'groups.group': {
             'Meta': {'unique_together': "(('year', 'name'),)", 'object_name': 'Group'},
