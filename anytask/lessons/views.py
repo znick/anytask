@@ -45,6 +45,50 @@ def schedule_create_page(request, course_id):
     return render_to_response('lesson_create.html', context, context_instance=RequestContext(request))
 
 
+@login_required
+def schedule_edit_page(request, task_id):
+    task = get_object_or_404(Task, id=task_id)
+
+    if not task.course.user_is_teacher(request.user):
+        return HttpResponseForbidden()
+
+    if request.method == 'POST':
+        return lesson_create_ot_edit(request, task.course, task_id)
+
+    groups_required = []
+    groups = task.groups.all()
+    if task.type == task.TYPE_SEMINAR:
+        children_groups = reduce(lambda x, y: x+y, [list(child.groups.all()) for child in task.children.all()], [])
+        groups_required = set(children_groups).intersection(groups)
+    else:
+        for group in groups:
+            if Issue.objects.filter(task=task, student__in=group.students.all()).count():
+                groups_required.append(group)
+
+    schools = task.course.school_set.all()
+
+    seminar_tasks = Task.objects.filter(type=Task().TYPE_SEMINAR).filter(course=task.course)
+    not_seminar_tasks = Task.objects.filter(~Q(type=Task().TYPE_SEMINAR)).filter(course=task.course)
+
+    context = {
+        'is_create': False,
+        'course': task.course,
+        'task': task,
+        'task_types': task.TASK_TYPE_CHOICES[-1:] if task.type == task.TYPE_SEMINAR else task.TASK_TYPE_CHOICES[:-1],
+        'groups_required': groups_required,
+        'show_help_msg_task_group': True if groups_required else False,
+        'seminar_tasks': seminar_tasks,
+        'not_seminar_tasks': not_seminar_tasks,
+        'contest_integrated': task.contest_integrated,
+        'rb_integrated': task.rb_integrated,
+        'hide_contest_settings': True if not task.contest_integrated
+                                         or task.type in [task.TYPE_SIMPLE, task.TYPE_MATERIAL] else False,
+        'school': schools[0] if schools else '',
+    }
+
+    return render_to_response('task_edit.html', context, context_instance=RequestContext(request))
+
+
 def lesson_create_ot_edit(request, course, lesson_id=None):
     user = request.user
     lesson_title = request.POST['lesson_title'].strip()
