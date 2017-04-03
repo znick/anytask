@@ -316,37 +316,41 @@ msgstr "Имя получателя"
 msgid "import"
 msgstr "Импорт"
 
-#: courses/templates/courses/course.html:164
+#: courses/templates/courses/course.html:162
 #: courses/templates/courses/gradebook.html:93
-#: tasks/templates/contest_import.html:20
-#: tasks/templates/contest_import.html:37
+#: tasks/templates/contest_import.html:23
+#: tasks/templates/contest_import.html:58
 msgid "import_sorevnovanija"
 msgstr "Импорт соревнования из Я.Контеста"
 
-#: courses/templates/courses/course.html:162
+#: courses/templates/courses/course.html:160
 #: courses/templates/courses/gradebook.html:91
-#: tasks/templates/task_import.html:22 tasks/templates/task_import.html:39
+#: tasks/templates/task_import.html:25 tasks/templates/task_import.html:41
 msgid "import_zadachi_iz_kontesta"
 msgstr "Импорт задачи из Яндекс.Контеста"
 
-#: tasks/templates/task_edit.html:333
+#: tasks/templates/task_edit.html:350
 msgid "importirovat_polja_iz_kontesta"
-msgstr "Импортировать следующие поля из Яндекс.Контеста"
+msgstr "Импортировать из Яндекс.Контеста следующие поля"
 
-#: tasks/templates/task_edit.html:196
+#: admission/views.py:204
+msgid "informatsiya_o_vas_byla_udalena"
+msgstr "Информация о Вас была удалена."
+
+#: tasks/templates/task_edit.html:203
 msgid "integracija_s_kontestom"
 msgstr "Интеграция с Яндекс.Контестом"
 
-#: tasks/templates/contest_import.html:135 tasks/templates/task_create.html:61
-#: tasks/templates/task_edit.html:225 tasks/templates/task_import.html:125
+#: tasks/templates/contest_import.html:145 tasks/templates/task_create.html:62
+#: tasks/templates/task_edit.html:232 tasks/templates/task_import.html:121
 msgid "integracija_s_rb"
 msgstr "Интеграция с Review Board"
 
 #: invites/templates/generate.html:73
 msgid "invajt_dlia_gruppi"
-msgstr "Группа, для которой создаем инвайт"
+msgstr "Группа, для которой нужно создать инвайт"
 
-#: users/views.py:564
+#: users/views.py:580
 msgid "invajt_drugogo_kursa"
 msgstr "Инвайт относится к другому курсу."
 
@@ -360,50 +364,79 @@ msgstr "Такого инвайта не существует."
 
 #: invites/templates/generate.html:42
 msgid "invajtov_ot_0_do_50"
-msgstr "Число инвайтов должно быть больше 0 и меньше 50"
+msgstr "Количество инвайтов должно быть больше 0 и меньше 50."
 
 #: invites/templates/invites_list.html:5
 msgid "invajty"
 msgstr "Инвайты"
 
+#. статусов пользователя
 #: users/templates/status_history.html:92
 msgid "istorija_izmenenij"
 msgstr "История изменений"
 
-#: courses/templates/courses/tasklist/shad_cpp.html:172
+#: courses/templates/courses/tasklist/shad_cpp.html:63
 #: users/templates/user_courses.html:93
 msgid "itogovaja_ocenka"
 msgstr "Итоговая оценка"
 
-#: courses/templates/courses/tasklist/shad_cpp.html:294
+#: courses/templates/courses/tasklist/shad_cpp.html:186
 msgid "itogovaja_tablica"
 msgstr "Итоговая таблица"
+
+#. 4 из 6 записей в таблице
+#: courses/templates/courses/course_js.html:256 mail/templates/mail_js.html:67
+#: mail/templates/mail_js.html.py:69 staff/templates/gradebook_js.html:127
+#: staff/templates/staff_js.html:165 staff/templates/staff_js.html.py:167
+msgid "iz"
+msgstr "из"
 
 #: templates/registration/password_change_form.html:5
 #: templates/registration/password_change_form.html:14
 msgid "izmenenie_parolja"
 msgstr "Изменение пароля"
 
-#: tasks/templates/contest_import.html:129 tasks/templates/task_create.html:140
-#: tasks/templates/task_edit.html:178 tasks/templates/task_import.html:119
-msgid "izmenenie_sroka_sdachi"
-msgstr "Уведомить студентов об изменении срока сдачи"
-
-#: courses/templates/courses/tasklist/shad_cpp.html:297
+#: courses/templates/courses/tasklist/shad_cpp.html:189
 msgid "izmenenie_udalenie_zadach"
-msgstr "Изменение порядка столбцов в итоговой таблице курса, а также ихудаление(удалять можно только те задачи, в которых не было комментариев)."
+msgstr "Изменение порядка или удаление столбцов в итоговой таблице курса (удалить можно только задачи, в которых нет комментариев)."
 
+#: courses/templates/courses/settings.html:160
+msgid "izmenenie_v_zadache"
+msgstr "Уведомить студентов о создании/изменении в задаче"
+
+#. В задаче изменились поля
+#: tasks/management/commands/send_task_notifications.py:104
+#: tasks/templates/email_notification_task.html:23
+msgid "izmenilis"
+msgstr "изменились"
+
+#. В курсе {0} изменились следующие задачи:  {1}
+#. Перейти в курс: {2}
+#: tasks/management/commands/send_task_notifications.py:100
+msgid "izmenilis_zadachi"
+msgstr "изменились следующие задачи"
+
+#: staff/templates/staff.html:207 staff/templates/staff.html.py:218
+#: staff/templates/staff.html:219 staff/templates/staff_js.html:366
+msgid "izmenit_status_dlya_vsekh_polzovateley"
+msgstr "Изменить статус для всех пользователей"
+
+#: staff/templates/staff_js.html:370
+msgid "izmenit_status_dlya_vybrannykh_polzovateley"
+msgstr "Изменить статус для выбранных пользователей"
+
+#. Назначить себя проверяющим
 #: issues/templates/issues/info.html:102
 msgid "ja"
 msgstr "Я"
 
-#: mail/templates/mail_js.html:539 search/templates/search.html:146
+#: mail/templates/mail_js.html:563 search/templates/search.html:146
 #: templates/base.html:117
 msgid "ja.pochta"
 msgstr "Я.Почта"
 
-#: courses/templates/courses/settings.html:193
-#: issues/templates/issues/issue.html:41 mail/templates/mail_js.html:537
+#: courses/templates/courses/settings.html:202
+#: issues/templates/issues/issue.html:41 mail/templates/mail_js.html:561
 #: search/templates/search.html:138 templates/base.html:115
 #: users/templates/user_settings.html:181
 msgid "jakontest"
@@ -413,7 +446,7 @@ msgstr "Я.Контест"
 msgid "jandeks"
 msgstr "Яндекс"
 
-#: mail/views.py:18
+#: mail/views.py:24
 msgid "january"
 msgstr "янв."
 
@@ -421,25 +454,27 @@ msgstr "янв."
 msgid "japochta"
 msgstr "Яндекс.Почта"
 
-#: mail/views.py:24
+#: mail/views.py:30
 msgid "july"
 msgstr "июл."
 
-#: mail/views.py:23
+#: mail/views.py:29
 msgid "june"
 msgstr "июн."
 
-#: mail/templates/mail_js.html:157 mail/templates/mail_js.html.py:382
+#: mail/templates/mail_js.html:165 mail/templates/mail_js.html.py:398
 msgid "kak_neprochitannoe"
 msgstr "Отметить как непрочитанное"
 
+#. Пользователь был изменен кем/когда
 #: users/templates/status_history.html:98
 msgid "kem"
 msgstr "Кем"
 
+#. Пользователь был изменен кем/когда
 #: users/templates/status_history.html:97
 msgid "kogda_byl_izmenen"
-msgstr "Когда был изменен"
+msgstr "Когда был изменён"
 
 #: invites/templates/generate.html:66
 msgid "kolichestvo_invajtov"
@@ -548,13 +583,13 @@ msgstr "Максимальный балл должен быть больше и�
 msgid "maxball_naturalnoe_chislo"
 msgstr "Максимальный балл должен быть выражен натуральным числом."
 
-#: mail/views.py:20 mail/views.py:22
+#: mail/views.py:28
 msgid "may"
 msgstr "мая"
 
 #: search/templates/search.html:71
 msgid "min_dlina_zaprosa"
-msgstr "Минимальная длина запроса должна быть больше 3 символов."
+msgstr "Минимальная длина запроса должна быть больше трёх символов."
 
 #: users/templates/my_tasks.html:99 users/templates/status_history.html:35
 #: users/templates/user_courses.html:34 users/templates/user_courses.html:71
@@ -594,11 +629,7 @@ msgstr "На проверке"
 msgid "nabludaemye_mnoj"
 msgstr "Наблюдаемые мной"
 
-#: issues/models.py:437
-msgid "nabludaet_nikto"
-msgstr "За задачей никто не наблюдает"
-
-#: issues/models.py:437 issues/models.py:440
+#: issues/models.py:427
 msgid "nabludaiut"
 msgstr "За задачей наблюдают:"
 
@@ -607,26 +638,31 @@ msgstr "За задачей наблюдают:"
 msgid "nabludatelem"
 msgstr "наблюдателем"
 
-#: issues/models.py:491 issues/views.py:57
+#: issues/models.py:479 issues/views.py:57
 msgid "nabludateli"
 msgstr "Наблюдатели"
 
-#: mail/templates/mail.html:101
+#. В поле Кому при создании нового сообщения
+#: mail/templates/mail.html:110
 msgid "nachnite_vvodit_imja"
 msgstr "Начните вводить имя"
 
+#. Результат поиска. По запросу найтидено 2 пользователя и 3 курса
 #: search/templates/search.html:74
 msgid "najdeno"
 msgstr "найдено"
 
+#. Поле для поиска
 #: courses/templates/courses/queue_js.html:22
-#: issues/templates/issues/issue_js.html:41 mail/templates/mail_js.html:76
-#: mail/templates/mail_js.html.py:580 search/templates/search.html:62
-#: tasks/templates/task_create_or_edit_js.html:34 templates/base.html:634
+#: issues/templates/issues/issue_js.html:58 mail/templates/mail_js.html:76
+#: mail/templates/mail_js.html.py:604 search/templates/search.html:62
+#: staff/templates/staff_js.html:49 staff/templates/staff_js.html.py:174
+#: tasks/templates/task_create_or_edit_js.html:34 templates/base.html:642
 #: users/templates/my_tasks.html:42
 msgid "najti"
 msgstr "Найти..."
 
+#. Ошибка 500. Что-то пошло не так... Пожалуйста, сообщите нам
 #: templates/500.html:13
 msgid "nam"
 msgstr "нам"
@@ -694,134 +730,153 @@ msgstr "Удалены из наблюдателей:"
 msgid "ne_najdeno_kursov"
 msgstr "Курсы не найдены."
 
-#: staff/templates/gradebook.html:61 staff/templates/staff.html:79
+#: staff/templates/gradebook.html:61 staff/templates/staff.html:120
 msgid "ne_najdeno_polzovatelej"
-msgstr "Не найдено ни одного пользователя"
+msgstr "Пользователи не найдены."
 
 #: users/templates/my_tasks.html:164
 msgid "ne_najdeno_zadach"
-msgstr "Не найдено ни одной задачи"
+msgstr "Задачи не найдены."
 
 #: courses/templates/courses/gradebook.html:110
 msgid "ne_pokazyvat_otchislennyh"
 msgstr "Не показывать отчисленных студентов"
 
-#: courses/templates/courses/course.html:96
+#: courses/templates/courses/course.html:93
 #: courses/templates/courses/gradebook.html:101
 msgid "ne_pokazyvat_skrytye_zadachi"
 msgstr "Не показывать скрытые задачи"
 
 #: users/templates/my_tasks.html:174
 msgid "ne_sdaval_zadach"
-msgstr "Вы не сдавали ни одной задачи"
+msgstr "Вы не сдали ни одной задачи."
 
-#: tasks/templates/task_create_or_edit_js.html:246
+#. Ошибка, если название задачи слишком длинное
+#: tasks/templates/task_create_or_edit_js.html:270
 msgid "ne_tak_mnogo"
-msgstr "Не так много"
+msgstr "Слишком длинное название задачи."
 
-#: tasks/templates/task_create_or_edit_js.html:283
-#: tasks/templates/task_create_or_edit_js.html:297
-#: tasks/templates/task_import_js.html:290
-#: tasks/templates/task_import_js.html:304
+#. Прим. ред: предлагаю вернуться. Непонятен смысл этой фразы. Если просто констатация — то она пустая, и лучше ее убрать. Если мы хотим что-то сообщить пользователю, лучше прямо попросить его об этом.
+#: tasks/templates/task_create_or_edit_js.html:307
+#: tasks/templates/task_create_or_edit_js.html:321
+#: tasks/templates/task_import_js.html:289
+#: tasks/templates/task_import_js.html:303
 msgid "ne_vybrano_ni_odnoj_gruppy"
 msgstr "Не выбрано ни одной группы"
 
-#: staff/templates/staff_js.html:49
+#. Прим. ред: предлагаю вернуться. Непонятен смысл этой фразы. Если просто констатация — то она пустая, и лучше ее убрать. Если мы хотим что-то сообщить пользователю, лучше прямо попросить его об этом.
+#: staff/templates/gradebook_js.html:49
 msgid "ne_vybrano_statusov"
-msgstr "Не выбрано ни одного статуса"
+msgstr "Не выбрано ни одного статуса."
 
+#. Прим. ред: предлагаю вернуться. Непонятен смысл этой фразы. Если просто констатация — то она пустая, и лучше ее убрать. Если мы хотим что-то сообщить пользователю, лучше прямо попросить его об этом.
 #: courses/templates/courses/settings_js.html:92
 #: courses/templates/courses/settings_js.html:106
 #: tasks/templates/task_create_or_edit_js.html:47
 msgid "ne_vybrano_zadach"
 msgstr "Не выбрано ни одной задачи"
 
-#: issues/templates/issues/issue_js.html:182
+#: issues/templates/issues/issue_js.html:199
 msgid "neobhodimo_ukazat_ocenku"
-msgstr "Необходимо указать оценку"
+msgstr "Укажите оценку."
 
-#: mail/templates/mail_js.html:692
+#. при отправке сообщеия
+#: mail/templates/mail_js.html:741
 msgid "neobhodimo_ukazat_temu"
-msgstr "Необходимо указать тему"
+msgstr "Укажите тему."
 
 #: invites/templates/generate.html:46
-#: tasks/templates/task_create_or_edit_js.html:256
-#: tasks/templates/task_import_js.html:197
+#: tasks/templates/task_create_or_edit_js.html:280
+#: tasks/templates/task_import_js.html:196
 msgid "neobhodimo_vybrat_gruppu"
-msgstr "Необходимо выбрать группу"
+msgstr "Выберите группу."
 
-#: tasks/templates/task_import_js.html:194
+#: tasks/templates/task_import_js.html:193
 msgid "neobhodimo_vybrat_zadachu"
-msgstr "Необходимо выбрать хотя бы одну задачу"
+msgstr "Выберете задачу"
+
+#: users/templates/user_profile.html:246
+msgid "net"
+msgstr "Нет"
 
 #: users/templates/user_courses.html:132
 msgid "net_kursov"
-msgstr "Нет ни одного курса"
+msgstr "Нет ни одного курса."
 
-#: templates/base.html:652
+#: templates/base.html:660
 msgid "net_novyh_soobshenij"
-msgstr "Нет новых сообщений"
+msgstr "Новых сообщений нет."
 
+#. Прим. ред: Без интерфейса не уверена, что тут все ок. Пока оставляю так.
 #: staff/templates/staff.html:89
 msgid "net_polzovatelej"
-msgstr "Нет пользователей"
+msgstr "Нет пользователей."
 
-#: courses/views.py:762 tasks/views.py:308 tasks/views.py:435
+#: courses/views.py:778 tasks/views.py:321 tasks/views.py:448
 msgid "net_prav_na_kontest"
-msgstr "У anytask нет прав на данный контест"
+msgstr "У Anytask нет прав на данное соревнование"
 
+#. у студента. — Прим. ред: Без интерфейса не уверена, что тут все ок. Пока оставляю так.
 #: users/templates/status_history.html:79
 #: users/templates/user_profile_js.html:190
 msgid "net_statusov"
 msgstr "Нет статусов"
 
-#: courses/templates/courses/course_js.html:262 mail/templates/mail_js.html:77
-#: search/templates/search.html:76 staff/templates/staff_js.html:134
-msgid "nichego_ne_najdeno"
-msgstr "ничего не найдено"
+#: staff/views.py:71
+msgid "nevernyy_format_fayla"
+msgstr "Неверный формат файла"
 
-#: tasks/templates/task_create_or_edit_js.html:250
+#: admission/views.py:183
+msgid "nevernyy_kod_aktivatsii"
+msgstr "Неверный код активации."
+
+#. Результат поиска
+#: courses/templates/courses/course_js.html:263 mail/templates/mail_js.html:77
+#: search/templates/search.html:76 staff/templates/gradebook_js.html:134
+#: staff/templates/staff_js.html:164 staff/templates/staff_js.html.py:175
+msgid "nichego_ne_najdeno"
+msgstr "Нет результатов по вашему запросу."
+
+#: tasks/templates/task_create_or_edit_js.html:274
+#: tasks/templates/task_import_js.html:189
 #: tasks/templates/task_import_js.html:190
-#: tasks/templates/task_import_js.html:191
 msgid "nomer_kontesta_naturalnoe_chislo"
-msgstr "Номер контеста должен натуральным числом"
+msgstr "Номер соревнования должен быть выражен натуральным числом."
 
 #: issues/views.py:62
 msgid "nomer_posylki_kontest"
-msgstr "Номер отправки в контест"
+msgstr "Номер отправки в соревнование"
 
 #: issues/views.py:61
 msgid "nomer_revju"
 msgstr "Номер ревью"
 
-#: tasks/management/commands/send_deadline_notifications.py:30
-msgid "novaja_data_sdachi"
-msgstr "новая дата сдачи"
-
-#: mail/views.py:28
+#: mail/views.py:34
 msgid "november"
 msgstr "нояб."
 
-#: mail/management/commands/send_mail_notifications.py:64
-#: mail/templates/mail.html:95
+#: mail/management/commands/send_mail_notifications.py:107
+#: mail/templates/mail.html:95 mail/templates/mail_js.html:443
 msgid "novoe_soobshenie"
 msgstr "новое сообщение"
 
-#: mail/management/commands/send_mail_notifications.py:62
-#: mail/management/commands/send_mail_notifications.py:68
+#: mail/management/commands/send_mail_notifications.py:105
+#: mail/management/commands/send_mail_notifications.py:111
 msgid "novyh_soobshenij"
 msgstr "новых сообщений"
 
-#: mail/management/commands/send_mail_notifications.py:66
+#: mail/management/commands/send_mail_notifications.py:109
 msgid "novyh_soobshenija"
 msgstr "новых сообщения"
 
+#. Статус задачи
 #: courses/templates/courses/gradebook.html:138
 #: courses/templatetags/course_func.py:33 issues/model_issue_status.py:25
 #: issues/models.py:76
 msgid "novyj"
 msgstr "Новый"
 
+#. Добавлен новый комментарий в Review request
 #: anyrb/views.py:28
 msgid "novyj_kommentarij"
 msgstr "Добавлен новый комментарий в"
@@ -830,10 +885,12 @@ msgstr "Добавлен новый комментарий в"
 msgid "novyj_parol"
 msgstr "Новый пароль"
 
+#. Раздел информации о студенте
 #: users/templates/user_profile.html:185 users/templates/user_profile.html:431
 msgid "o_sebe"
 msgstr "О себе"
 
+#. Ошибка, если поле не заполнено при регистрации пользователя
 #: templates/registration/registration_form.html:70
 #: templates/registration/registration_form.html:75
 #: templates/registration/registration_form.html:79
@@ -843,31 +900,34 @@ msgstr "О себе"
 msgid "objazatelnoe_pole"
 msgstr "Обязательное поле"
 
-#: courses/templates/courses/settings.html:230
-#: tasks/templates/task_edit.html:369
+#. Обновить параметры задачи из контеста
+#: courses/templates/courses/settings.html:239
+#: tasks/templates/task_edit.html:384
 msgid "obnovit"
 msgstr "Обновить"
 
-#: courses/templates/courses/settings.html:216
+#: courses/templates/courses/settings.html:225
 msgid "obnovit_dannie_zadach"
-msgstr "Обновить название, максимальный балл, дату сдачи и формулировку для задач"
+msgstr "Обновить название, максимальный балл, дату сдачи и условия задач"
 
-#: tasks/templates/task_edit.html:218 tasks/templates/task_edit.html.py:219
+#: tasks/templates/task_edit.html:225 tasks/templates/task_edit.html.py:226
 msgid "obnovit_iz_kontesta"
-msgstr "Обновить из Я.Контеста"
+msgstr "Обновить данные из Я.Контеста"
 
 #: users/templates/user_profile.html:143
 msgid "obnovit_privjazku_profilja"
 msgstr "Обновить привязку текущего профиля"
 
+#. Дата обновления задачи
 #: courses/templates/courses/queue.html:75 users/templates/my_tasks.html:139
 msgid "obnovlena"
 msgstr "Обновлена"
 
-#: tasks/templates/task_edit.html:329
+#: tasks/templates/task_edit.html:346
 msgid "obnovlenie_dannyh_iz_kontesta"
 msgstr "Обновление данных из Яндекс.Контеста"
 
+#. Progress bar
 #: courses/templates/courses/settings_js.html:164
 msgid "obnovlenie_zadach"
 msgstr "Обновление задач..."
@@ -877,11 +937,11 @@ msgstr "Обновление задач..."
 #: courses/templates/courses/queue.html:29
 #: courses/templates/courses/settings.html:35
 #: staff/templates/get_gradebook.html:20 staff/templates/gradebook.html:21
-#: staff/templates/gradebook.html.py:38 staff/templates/staff.html:26
+#: staff/templates/gradebook.html.py:38 staff/templates/staff.html:23
 msgid "obshaja_vedomost"
 msgstr "Общая ведомость"
 
-#: anyrb/common.py:86
+#: anyrb/common.py:86 issues/templates/issues/history.html:38
 msgid "obsuzhdenie_zadachi"
 msgstr "Обсуждение задачи"
 
@@ -890,18 +950,20 @@ msgstr "Обсуждение задачи"
 msgid "ocenka"
 msgstr "Оценка"
 
-#: issues/templates/issues/issue_js.html:184
+#: issues/templates/issues/issue_js.html:201
 msgid "ocenka_bolshe_ili_ravna_0"
-msgstr "Оценка должна быть больше или равна 0"
+msgstr "Оценка должна быть больше или равна 0."
 
-#: issues/models.py:430
+#: issues/models.py:429
 msgid "ocenka_izmenena"
 msgstr "Оценка изменена на"
 
-#: issues/templates/issues/issue_js.html:185
+#. Оценка не должна быть больше {максимально значение}
+#: issues/templates/issues/issue_js.html:202
 msgid "ocenka_ne_bolshe"
 msgstr "Оценка не должна быть больше"
 
+#. Список задач для проверки
 #: courses/templates/courses/course.html:43
 #: courses/templates/courses/gradebook.html:37
 #: courses/templates/courses/queue.html:18
@@ -911,255 +973,311 @@ msgstr "Оценка не должна быть больше"
 msgid "ochered_na_proverku"
 msgstr "Очередь на проверку"
 
-#: mail/views.py:27
+#: mail/views.py:33
 msgid "october"
 msgstr "окт."
 
-#: courses/templates/courses/course.html:106
-#: courses/templates/courses/course.html:119
+#: courses/templates/courses/course.html:104
+#: courses/templates/courses/course.html:117
 #: courses/templates/courses/task.html:25
 msgid "opisanie_kursa"
 msgstr "Описание курса"
 
-#: courses/templates/courses/course.html:107
-#: courses/templates/courses/course.html:119
+#: courses/templates/courses/course.html:105
+#: courses/templates/courses/course.html:117
 msgid "opisanie_zanjatija"
 msgstr "Описание занятия"
 
-#: courses/templates/courses/course_forbidden.html:30
+#: admission/views.py:171 courses/templates/courses/course_forbidden.html:30
 msgid "oshibka"
-msgstr "Ошибка:"
+msgstr "Ошибка"
 
+#. Ошибка 403 доступ запрещен
 #: templates/403.html:11
 msgid "oshibka_403"
 msgstr "Простите, но вам сюда нельзя."
 
+#. Сообщение, когда страницы не существует
 #: templates/404.html:11
 msgid "oshibka_404"
-msgstr "Возможно, что вы ищете то, чего пока нет..."
+msgstr "Возможно, вы ищете то, чего ещё нет..."
 
+#. Ошибка 500. Что-то пошло не так... Пожалуйста, сообщите нам
 #: templates/500.html:13
 msgid "oshibka_500"
-msgstr "Что-то пошло не так... Пожалуйста, сообщите"
+msgstr "Что-то пошло не так... Пожалуйста, сообщите об этом "
 
-#: courses/views.py:754 courses/views.py:766 tasks/views.py:320
+#. Сообщение об ошибке от контеста
+#: courses/views.py:770 courses/views.py:782 tasks/views.py:333
 msgid "oshibka_kontesta"
 msgstr "Ошибка Я.Контеста:"
 
+#. Ошибка отправки решений в контест
 #: courses/templates/courses/settings_js.html:237
 msgid "oshibka_otpravki"
 msgstr "Ошибка отправки."
 
-#: issues/models.py:285 issues/views.py:105
+#: issues/models.py:283 issues/views.py:105
 msgid "oshibka_otpravki_v_kontest"
-msgstr "Ошибка отправки в Я.Контест"
+msgstr "Ошибка отправки в Я.Контест."
 
-#: anycontest/management/commands/check_contest.py:45 issues/models.py:300
+#: anycontest/management/commands/check_contest.py:45 issues/models.py:298
 #: issues/views.py:118
 msgid "oshibka_otpravki_v_rb"
 msgstr "Ошибка отправки в Review Board"
 
 #: courses/templates/courses/task.html:30 users/templates/user_profile.html:439
 msgid "oshibka_poprobujte_eshe"
-msgstr "Произошла ошибка. Попробуйте еще раз."
+msgstr "Произошла ошибка. Попробуйте выполнить действие ещё раз."
 
 #: courses/templates/courses/settings_js.html:186
-#: tasks/templates/task_edit.html:70 tasks/templates/task_edit.html.py:84
+#: tasks/templates/task_edit.html:72 tasks/templates/task_edit.html.py:86
 msgid "oshibka_pri_poluchenii"
-msgstr "Произошла ошибка при получении данных."
+msgstr "При получении данных произошла ошибка."
 
 #: courses/templates/courses/settings_js.html:272
-#: tasks/templates/task_create_or_edit_js.html:185
+#: staff/templates/staff_js.html:297 staff/templates/staff_js.html.py:343
+#: tasks/templates/task_create_or_edit_js.html:207
 #: users/templates/user_settings.html:24
 msgid "oshibka_pri_sohranenii"
-msgstr "Произошла ошибка при сохранении. Попробуйте снова."
+msgstr "Произошла ошибка. Попробуйте сохранить ещё раз."
 
-#: mail/templates/mail.html:124
+#: admission/views.py:181
+msgid "oshibka_registracii_v_contest"
+msgstr "Ошибка регистрации в Яндекс.Контесте."
+
+#: mail/templates/mail.html:159
 msgid "otmena"
 msgstr "Отмена"
 
-#: courses/templates/courses/settings.html:261
-#: tasks/templates/contest_import.html:167 tasks/templates/task_create.html:162
-#: tasks/templates/task_edit.html:299 tasks/templates/task_import.html:167
+#: courses/templates/courses/settings.html:270
+#: tasks/templates/contest_import.html:184 tasks/templates/task_create.html:166
+#: tasks/templates/task_edit.html:315 tasks/templates/task_import.html:170
 msgid "otmenit_i_vyjti"
 msgstr "Отменить и выйти"
 
-#: mail/templates/mail_js.html:159 mail/templates/mail_js.html.py:365
-#: mail/templates/mail_js.html:384
+#: mail/templates/mail_js.html:167 mail/templates/mail_js.html.py:381
+#: mail/templates/mail_js.html:400
 msgid "otmetit_kak_prochitannoe"
 msgstr "Отметить как прочитанное"
 
-#: mail/templates/mail.html:227 mail/templates/mail_js.html:152
-#: mail/templates/mail_js.html.py:324 mail/templates/mail_js.html:361
-#: mail/templates/mail_js.html.py:377
+#: mail/templates/mail.html:287 mail/templates/mail_js.html:160
+#: mail/templates/mail_js.html.py:340 mail/templates/mail_js.html:377
+#: mail/templates/mail_js.html.py:393
 msgid "otmetit_vse_kak_prochitannoe"
-msgstr "Отметить все как прочитанное"
+msgstr "Отметить всё как прочитанное"
 
-#: courses/templates/courses/settings.html:163
-#: courses/templates/courses/settings.html:176
+#: courses/templates/courses/settings.html:172
+#: courses/templates/courses/settings.html:185
 msgid "otobrazhat_nastrojku"
 msgstr "Отображать настройку"
 
+#. сообщение/комментарий/файл
 #: issues/templates/file_uploader.html:145
-#: issues/templates/issues/info.html:100 mail/templates/mail.html:123
+#: issues/templates/issues/info.html:100 mail/templates/mail.html:158
 msgid "otpravit"
 msgstr "Отправить"
 
-#: mail/templates/mail_js.html:650
+#: staff/templates/staff.html:210 staff/templates/staff_js.html:367
+msgid "otpravit_soobshcheniye_vsem_polzovatelyam"
+msgstr "Отправить сообщение всем пользователям"
+
+#: staff/templates/staff_js.html:371
+msgid "otpravit_soobshcheniye_vybrannym_polzovatelyam"
+msgstr "Отправить сообщение выбранным пользователям"
+
+#. сообщения
+#: mail/templates/mail_js.html:695
 msgid "otpravka"
 msgstr "Отправка..."
 
+#: staff/templates/staff.html:187
+msgid "otpravka_soobshcheniya"
+msgstr "Отправка сообщения"
+
+#. сообщения
 #: mail/templates/mail.html:25 mail/templates/mail.html.py:58
-#: mail/templates/mail_js.html:411
+#: mail/templates/mail_js.html:427
 msgid "otpravlennye"
 msgstr "Отправленные"
 
 #: courses/templates/courses/settings_js.html:229
 msgid "otpravleno_na_proverku"
-msgstr "Отправлено на проверку успешно."
+msgstr "Отправка кода в Я.Контест произошла успешно."
 
-#: issues/models.py:281 issues/views.py:100
+#: issues/models.py:279 issues/views.py:100
 msgid "otpravleno_v_kontest"
-msgstr "Отправлено на проверку в Я.Контест"
+msgstr "Отправлено на проверку в Я.Контест."
 
 #: issues/templates/issues/issue.html:40
 msgid "otpravljajte_ot_svoego_akkaunta"
-msgstr "Отправляйте в Я.Контест от своего Яндекс аккаунта!"
+msgstr "Отправляйте данные в Я.Контест со своего аккаунта на Яндексе."
 
 #: users/templates/user_settings.html:141
 msgid "otpravljat_mne_kommentarii"
-msgstr "Отправлять мне на e-mail мои комментарии"
+msgstr "Отправлять мои комментарии на мой электронный адрес. "
 
 #: issues/templates/file_uploader.html:104
 msgid "otpravljat_odin_fajl"
-msgstr "Имя файла было изменено. Можно отправлять только один файл."
+msgstr "Имя файла было изменено."
 
-#: courses/templates/courses/settings.html:160
-#: tasks/templates/contest_import.html:142 tasks/templates/task_create.html:69
-#: tasks/templates/task_edit.html:233 tasks/templates/task_import.html:132
+#: courses/templates/courses/settings.html:169
+#: tasks/templates/contest_import.html:152 tasks/templates/task_create.html:70
+#: tasks/templates/task_edit.html:240 tasks/templates/task_import.html:128
 msgid "otpravljat_tolko_odin_fajl"
 msgstr "Отправлять только один файл"
 
-#: mail/templates/mail.html:166
+#. на сообщение
+#: mail/templates/mail.html:226
 msgid "otvetit"
 msgstr "Ответить"
 
-#: mail/templates/mail.html:170
+#. на сообщение
+#: mail/templates/mail.html:230
 msgid "otvetit_vsem"
 msgstr "Ответить всем"
 
+#. Для того, чтобы отвязать свой профиль обратитесь к администратору
 #: users/templates/user_profile.html:128
 msgid "otvjazat_svoj_profil"
-msgstr "Для того, чтобы отвязать свой профиль обратитесь к"
+msgstr "Чтобы отвязать свой профиль, обратитесь к"
 
 #: templates/registration/password_change_done.html:4
 #: templates/registration/password_change_done.html:6
 msgid "parol_uspeshno_izmenen"
-msgstr "Пароль успешно изменен"
+msgstr "Пароль изменён."
 
 #: templates/registration/password_reset_complete.html:4
 #: templates/registration/password_reset_done.html:4
 #: templates/registration/password_reset_done.html:6
 msgid "parol_uspeshno_vosstanovlen"
-msgstr "Пароль успешно восстановлен"
+msgstr "Пароль восстановлен."
 
 #: templates/registration/registration_form.html:92
 msgid "paroli_ne_sovpadaut"
 msgstr "Пароли не совпадают"
 
-#: courses/templates/courses/course.html:208
-#: courses/templates/courses/course.html:272
-#: courses/templates/courses/course.html:371
+#. Перейти к описанию семинара
+#: courses/templates/courses/course.html:212
+#: courses/templates/courses/course.html:276
+#: courses/templates/courses/course.html:381 staff/templates/staff.html:199
 msgid "perejti"
 msgstr "Перейти"
 
-#: mail/templates/email_notification_mail.html:49
+#: mail/templates/email_notification_mail.html:16
 msgid "perejti_k_soobshenijam"
 msgstr "Перейти к сообщениям"
 
-#: users/views.py:411
-msgid "pereprivjazat_tolko_svoj_profil"
-msgstr "Можно перепривязать только тот профиль, который был привязан ранее!"
+#: mail/templates/mail.html:133
+msgid "peremennyye"
+msgstr "переменные"
 
-#: courses/templates/courses/settings.html:209
+#. Ошибка при привязке профиля Я.Контеста
+#: users/views.py:413
+msgid "pereprivjazat_tolko_svoj_profil"
+msgstr "Перепривязать можно только профиль, который сейчас привязан."
+
+#. Обновить результаты задач в Контесте с учетом новых данных. — Прим. ред: смущает термин "Пересудить", предлагаю вернуться при повторной вычитке.
+#: courses/templates/courses/settings.html:218
 #: issues/templates/issues/info.html:64
 msgid "peresudit"
 msgstr "Пересудить"
 
-#: courses/templates/courses/settings.html:195
+#. Обновить результаты задач в Контесте с учетом новых данных. — Прим. ред: смущает согласование "Пересудить решения", предлагаю вернуться при повторной вычитке.
+#: courses/templates/courses/settings.html:204
 msgid "peresudit_reshenija_studentov"
 msgstr "Пересудить решения студентов"
 
-#: courses/templates/courses/settings.html:173
-#: tasks/templates/contest_import.html:152 tasks/templates/task_edit.html:248
-#: tasks/templates/task_import.html:142
+#: courses/templates/courses/settings.html:182
+#: tasks/templates/contest_import.html:162 tasks/templates/task_edit.html:255
+#: tasks/templates/task_import.html:138
 msgid "perevodit_v_zachteno"
-msgstr "Переводить в статус Зачтено после положительного вердикта Я.Контеста"
+msgstr "Переводить в статус «Зачтено» после положительного вердикта Я.Контеста"
 
-#: courses/templates/courses/course_js.html:264
-#: staff/templates/staff_js.html:136
+#: staff/templates/staff.html:190
+msgid "pereyti_k_sozdaniyu_soobshcheniya_vopros"
+msgstr "Перейти к созданию сообщения?"
+
+#. В курсе {0} изменились следующие задачи:  {1}
+#. Перейти в курс: {2}
+#: tasks/management/commands/send_task_notifications.py:102
+msgid "pereyti_v_kurs"
+msgstr "Перейти в курс"
+
+#. Страница в таблице
+#: courses/templates/courses/course_js.html:265
+#: staff/templates/gradebook_js.html:136
 msgid "pervaja"
 msgstr "Первая"
 
-#: templates/base.html:727
+#. Пишите нам на e-mail
+#: templates/base.html:737
 msgid "pishite_nam"
 msgstr "Пишите нам на"
 
-#: courses/templates/courses/settings.html:167
-#: courses/templates/courses/settings.html:180
+#: courses/templates/courses/settings.html:163
+#: courses/templates/courses/settings.html:176
+#: courses/templates/courses/settings.html:189
 msgid "po_umolchaniu"
 msgstr "Значение по умолчанию"
 
+#. Результат поиска. По запросу найдено 2 пользователя и 3 курса
 #: search/templates/search.html:74 search/templates/search.html.py:76
 msgid "po_zaprosu"
 msgstr "По запросу"
 
-#: staff/templates/staff.html:58
+#. e-mail адрес
+#: staff/templates/staff.html:92
 msgid "pochta"
 msgstr "Почта"
 
-#: tasks/templates/task_create.html:118 tasks/templates/task_edit.html:272
+#: tasks/templates/task_create.html:119 tasks/templates/task_edit.html:279
 msgid "podzadachi"
 msgstr "Подзадачи"
 
-#: courses/templates/courses/course_js.html:261
+#. Поле для поиска
+#: courses/templates/courses/course_js.html:262
 #: courses/templates/courses/settings_js.html:16
 #: courses/templates/courses/settings_js.html:17
-#: staff/templates/staff_js.html:133
+#: staff/templates/gradebook_js.html:133
 msgid "poisk"
 msgstr "Поиск"
 
-#: issues/management/commands/send_notifications.py:31
+#. В задаче {1}, в которой вы являетесь студентом/наблюдателем/проверяющим, появились новые комментарии
+#: issues/management/commands/send_notifications.py:37
 msgid "pojavilis_novye_kommentarii"
-msgstr "появились новые комментарии:"
+msgstr "появились новые комментарии"
 
-#: mail/templates/mail_js.html:72
-msgid "pokazat__menu_"
-msgstr "Показать _MENU_"
+#. Показать 5 сообщений/студентов..
+#: courses/templates/courses/course_js.html:259 mail/templates/mail_js.html:72
+#: staff/templates/gradebook_js.html:130 staff/templates/staff_js.html:170
+msgid "pokazat"
+msgstr "Показать"
 
-#: courses/templates/courses/course_js.html:258
-#: staff/templates/staff_js.html:130
-msgid "pokazat__menu__studentov"
-msgstr "Показать _MENU_ студентов"
-
-#: mail/templates/mail_js.html:262 mail/templates/mail_js.html.py:275
+#. Показать цитату при ответе на сообщение
+#: mail/templates/mail_js.html:278 mail/templates/mail_js.html.py:291
 msgid "pokazat_citirovanie"
 msgstr "Показать цитирование"
 
-#: courses/templates/courses/course.html:98
+#: courses/templates/courses/course.html:95
 #: courses/templates/courses/gradebook.html:103
 msgid "pokazat_skrytye_zadachi"
 msgstr "Показать скрытые задачи"
 
 #: users/templates/user_settings.html:135
 msgid "pokazyvat_moj_e-mail"
-msgstr "Показывать мой e-mail всем пользователям"
+msgstr "Показывать мой электронный адрес всем пользователям"
 
 #: courses/templates/courses/gradebook.html:112
 msgid "pokazyvat_otchislennyh"
 msgstr "Показать отчисленных студентов"
 
-#: tasks/templates/contest_import.html:55 tasks/templates/task_import.html:57
+#: mail/templates/mail.html:125
+msgid "poluchateli_ne_budut_videt_drugikh"
+msgstr "Получатели не будут видеть других получателей этого сообщения"
+
+#. Кнопка при импорте задач/соревнования из Контеста
+#: tasks/templates/contest_import.html:76 tasks/templates/task_import.html:59
 msgid "poluchit_spisok_zadach"
 msgstr "Получить список задач"
 
@@ -1171,23 +1289,25 @@ msgstr "Пользователь с таким адресом уже сущес�
 msgid "polzovatel_s_imenem_sushestvuet"
 msgstr "Пользователь с таким именем уже существует"
 
+#. Результат поиска. По запросу найдено 2 пользователя и 3 курса
 #: search/templates/search.html:74
 msgid "polzovatelej"
 msgstr "пользователя(ей) и"
 
-#: search/templates/search.html:88 staff/templates/staff.html:52
-#: staff/templates/staff.html.py:88 templates/base.html:80
+#: search/templates/search.html:88 staff/templates/staff.html:81
+#: templates/base.html:80
 msgid "polzovateli"
 msgstr "Пользователи"
 
-#: courses/templates/courses/course_js.html:265
-#: staff/templates/staff_js.html:137
+#. Страница в таблице
+#: courses/templates/courses/course_js.html:266
+#: staff/templates/gradebook_js.html:137
 msgid "poslednjaja"
 msgstr "Последняя"
 
-#: mail/management/commands/send_mail_notifications.py:36
+#: mail/templates/email_notification_mail.txt:5
 msgid "posmotret_soobshenija"
-msgstr "Посмотреть сообщения:"
+msgstr "Посмотреть сообщения"
 
 #: anycontest/models.py:204
 msgid "pravilnyj_otvet"
@@ -1197,12 +1317,13 @@ msgstr "Правильный ответ"
 msgid "predmet"
 msgstr "Предмет"
 
-#: tasks/templates/task_create.html:160 tasks/templates/task_edit.html:297
-#: tasks/templates/task_import.html:164
+#. Предпросмотр описания задачи
+#: tasks/templates/task_create.html:162 tasks/templates/task_edit.html:311
+#: tasks/templates/task_import.html:166
 msgid "predprosmotr"
 msgstr "Предпросмотр"
 
-#: issues/templates/issues/history.html:31
+#: issues/templates/issues/history.html:43
 msgid "predydushie_soobshenija"
 msgstr "Предыдущие сообщения"
 
@@ -1212,47 +1333,52 @@ msgstr "Преподаватель"
 
 #: users/templates/user_profile.html:212
 msgid "prepodavatel_v_kursah"
-msgstr "Преподаватель в курсах"
+msgstr "Преподаватель курсов"
 
 #: users/templates/user_profile.html:246
 msgid "prepodavatel_v_kursah_arhiv"
-msgstr "Преподаватель в курсах (Архив)"
+msgstr "Преподаватель курсов (Архив)"
 
-#: courses/templates/courses/course.html:82
+#: courses/templates/courses/course.html:78
 #: courses/templates/courses/gradebook.html:70
-#: courses/templates/courses/settings.html:133 users/models.py:188
+#: courses/templates/courses/settings.html:133
+#: issues/model_issue_student_filter.py:21
 msgid "prepodavateli"
 msgstr "Преподаватели"
 
 #: courses/templates/courses/settings.html:134
 msgid "prepodavateli_po_umolchaniu"
-msgstr "Эти преподаватели будут назначаться проверяющими во время перехода задачи встатус 'на проверке' если другой преподаватель не был назначен ранее"
+msgstr "Эти преподаватели будут назначены проверяющими при переходе задачи в статус «На проверке» (если ранее не был назначен другой преподаватель)."
 
-#: courses/views.py:90 staff/views.py:44 users/views.py:457
+#: courses/views.py:95 staff/views.py:88 users/views.py:459
 msgid "primenit"
 msgstr "Применить"
 
+#. Привязать профиль
 #: users/templates/user_profile.html:131
 msgid "priviazat"
 msgstr "Привязать"
 
+#. Привязка профиля из Яндекс контеста
 #: users/templates/user_profile.html:140
 msgid "privjazali_profil"
-msgstr "Вы привязали профиль"
+msgstr "Вы привязали профиль."
 
+#. Чтобы сдавать данную задачу вам нужно привязать к своему профилю Я.Контест
 #: issues/templates/issues/issue.html:41
 msgid "privjazat_k_profilu_kontest"
-msgstr "Чтобы сдавать данную задачу вам нужно привязать к своему"
+msgstr "Чтобы сдать эту задачу, привяжите к своему"
 
+#. Привязать можно только один профиль яндекс контеста
 #: users/templates/user_profile.html:128
 msgid "privjazat_odin_profil"
-msgstr "Привязать можно только один профиль!"
+msgstr "Привязать можно только один профиль."
 
-#: users/views.py:398
+#: users/views.py:400
 msgid "privjazat_profil_ja"
 msgstr "Привязать профиль Яндекса"
 
-#: users/views.py:396 users/views.py:410 users/templates/user_profile.html:126
+#: users/views.py:398 users/views.py:412 users/templates/user_profile.html:126
 #: users/templates/user_profile.html:138
 msgid "privjazat_profil_kontesta"
 msgstr "Привязать профиль Яндекс.Контеста"
@@ -1261,66 +1387,78 @@ msgstr "Привязать профиль Яндекс.Контеста"
 msgid "privjazka_akkauntov"
 msgstr "Привязка аккаунтов"
 
-#: templates/base.html:664 users/templates/my_tasks.html:93
+#. студента
+#: templates/base.html:672 users/views.py:395 users/templates/my_tasks.html:93
 #: users/templates/status_history.html:29 users/templates/user_courses.html:28
 #: users/templates/user_profile.html:17 users/templates/user_settings.html:43
 msgid "profil"
 msgstr "Профиль"
 
+#. чтобы отвязать свой профиль обратитесь к администратору
 #: users/templates/user_profile.html:140
 msgid "profil_kontesta_priviazan"
-msgstr "Теперь все посылки в соревнования будут отправляться от Вашего имени. Для того, чтобы отвязать свой профиль обратитесь к"
+msgstr "Теперь все посылки в соревнования будут отправляться от вашего имени. Чтобы отвязать свой профиль, обратитесь к"
 
 #: users/templates/status_history.html:42 users/templates/user_courses.html:41
 #: users/templates/user_profile.html:30
 msgid "profil_studenta"
 msgstr "Профиль студента"
 
-#: users/views.py:393
-msgid "profil_uzhe_privjazan"
-msgstr "Профиль {0} уже привязан к аккаунту другого пользователя на Anytask!"
-
+#. привязать к профилю контеста
 #: issues/templates/issues/issue.html:41
 msgid "profilu"
 msgstr "профилю"
 
+#. В курсе {0} произошли изменения
+#: tasks/templates/email_notification_task.html:15
+msgid "proizoshli_izmeneniya"
+msgstr "произошли изменения"
+
+#. {0}, произошли изменения в ваших курсах
+#: tasks/management/commands/send_task_notifications.py:116
+msgid "proizoshli_izmeneniya_v_kursah"
+msgstr "произошли изменения в ваших курсах"
+
 #: users/templates/user_profile.html:455
 msgid "prosmotr_avatara"
-msgstr "Просмотр аватара"
+msgstr "Портрет пользователя"
 
-#: courses/templates/courses/queue.html:77 issues/models.py:490
+#: staff/templates/staff.html:36
+msgid "prostoy_filtr"
+msgstr "Простой фильтр"
+
+#: courses/templates/courses/queue.html:77 issues/models.py:478
 #: issues/views.py:56
 msgid "proverjaushij"
 msgstr "Проверяющий"
 
-#: issues/management/commands/send_notifications.py:89
+#. В задаче {1}, в которой вы являетесь студентом/наблюдателем/проверяющим, появились новые комментарии
+#: issues/management/commands/send_notifications.py:95
 msgid "proverjaushim"
 msgstr "проверяющим"
 
-#: courses/templates/courses/course_js.html:252
-#: staff/templates/staff_js.html:124
+#: courses/templates/courses/course_js.html:253
+#: staff/templates/gradebook_js.html:124
 msgid "pustaja_tablica"
 msgstr "Пустая таблица"
 
-#: courses/forms.py:18
-msgid "rasshirenia_fajla"
-msgstr "Файл должен иметь одно из расширений"
-
-#: courses/templates/courses/settings.html:247
+#: courses/templates/courses/settings.html:256
 msgid "rasshirenija_fajlov"
 msgstr "Расширения файлов"
 
-#: courses/templates/courses/course_js.html:62
+#. Таблицу с результатами
+#: courses/templates/courses/course_js.html:63
 msgid "razvernut"
 msgstr "Развернуть"
 
-#: users/templates/status_history.html:48 users/templates/user_courses.html:48
-#: users/templates/user_profile.html:39
+#. статусов студента
+#: staff/templates/staff.html:133 users/templates/status_history.html:48
+#: users/templates/user_courses.html:48 users/templates/user_profile.html:43
 msgid "redaktirovanie_statusov"
 msgstr "Редактирование статусов"
 
-#: tasks/templates/task_create.html:25 tasks/templates/task_edit.html:109
-#: tasks/templates/task_edit.html.py:130
+#: tasks/templates/task_create.html:27 tasks/templates/task_edit.html:111
+#: tasks/templates/task_edit.html.py:143
 msgid "redaktirovanie_zadachi"
 msgstr "Редактирование задачи"
 
@@ -1328,7 +1466,7 @@ msgstr "Редактирование задачи"
 msgid "redaktirovat"
 msgstr "Редактировать"
 
-#: courses/templates/courses/course.html:89
+#: courses/templates/courses/course.html:86
 msgid "redaktirovat_seminar"
 msgstr "Редактировать семинар"
 
@@ -1338,6 +1476,7 @@ msgstr "Редактировать семинар"
 msgid "registracija"
 msgstr "Регистрация"
 
+#. Ресурсы доступные для выполнения задачи (время/память)
 #: anycontest/models.py:189
 msgid "resursy"
 msgstr "Ресурсы"
@@ -1346,18 +1485,20 @@ msgstr "Ресурсы"
 msgid "rezultaty_poiska"
 msgstr "Результаты поиска"
 
-#: tasks/templates/contest_import.html:97 tasks/templates/task_create.html:105
-#: tasks/templates/task_edit.html:259 tasks/templates/task_import.html:95
+#: tasks/templates/contest_import.html:116 tasks/templates/task_create.html:106
+#: tasks/templates/task_edit.html:266 tasks/templates/task_import.html:97
 msgid "roditelskaja_zadacha"
 msgstr "Родительская задача"
 
-#: tasks/models.py:41 tasks/models.py:199
+#. Тип задачи: только оценка/с обсужденим/семинар
+#: tasks/models.py:42 tasks/models.py:202
 msgid "s_obsuzhdeniem"
 msgstr "с обсуждением"
 
-#: issues/management/commands/send_notifications.py:53
-#: mail/management/commands/send_mail_notifications.py:39
-#: tasks/management/commands/send_deadline_notifications.py:50
+#. С уваженим, команда Anytask
+#: issues/management/commands/send_notifications.py:59
+#: mail/templates/email_notification_mail.txt:10
+#: tasks/management/commands/send_task_notifications.py:109
 #: templates/registration/activation_email.txt:10
 msgid "s_uvazheniem"
 msgstr "С уважением"
@@ -1367,26 +1508,30 @@ msgstr "С уважением"
 msgid "sbros_parolja"
 msgstr "Сброс пароля"
 
-#: courses/templates/courses/course.html:202
-#: courses/templates/courses/course.html:310
+#. Кнопка, чтобы сдать задачу
+#: courses/templates/courses/course.html:206
+#: courses/templates/courses/course.html:320
 msgid "sdat"
 msgstr "Сдать"
 
-#: courses/templates/courses/course.html:194
-#: courses/templates/courses/course.html:262
-#: courses/templates/courses/course.html:302
-#: courses/templates/courses/course.html:361
+#. сдать задачу до
+#: courses/templates/courses/course.html:198
+#: courses/templates/courses/course.html:266
+#: courses/templates/courses/course.html:312
+#: courses/templates/courses/course.html:371
 msgid "sdat_do"
 msgstr "сдать до"
 
-#: tasks/models.py:43
+#. Тип задачи: только оценка/с обсужденим/семинар
+#: tasks/models.py:45
 msgid "seminar"
 msgstr "семинар"
 
-#: mail/views.py:26
+#: mail/views.py:32
 msgid "september"
 msgstr "сент."
 
+#. Кнопка, чтобы сгенерировать общую ведомость
 #: staff/templates/get_gradebook.html:49
 msgid "sgenerirovat"
 msgstr "Сгенерировать"
@@ -1399,27 +1544,32 @@ msgstr "Сгенерировать инвайты"
 msgid "sgenerirovat_obshuu_vedomost"
 msgstr "Сгенерировать общую ведомость"
 
-#: courses/templates/courses/course_js.html:235
-#: staff/templates/staff_js.html:107
+#: courses/templates/courses/course_js.html:236
+#: staff/templates/gradebook_js.html:107
 msgid "skopirovat"
 msgstr "Скопировать"
 
-#: mail/templates/mail_js.html:279
+#. Скрыть цитату при ответе на сообщение
+#: mail/templates/mail_js.html:295
 msgid "skryt_citirovanie"
 msgstr "Скрыть цитирование"
 
-#: tasks/templates/contest_import.html:159
+#: tasks/templates/contest_import.html:175
 msgid "skryt_zadachi"
 msgstr "Скрыть задачи"
 
-#: tasks/templates/task_create.html:146 tasks/templates/task_edit.html:283
-#: tasks/templates/task_import.html:149
+#: tasks/templates/task_create.html:147 tasks/templates/task_edit.html:296
+#: tasks/templates/task_import.html:151
 msgid "skryt_zadachu"
 msgstr "Скрыть задачу"
 
 #: courses/templates/courses/settings.html:156
 msgid "skrytie_polej_ustanovka_znachenij"
-msgstr "Скрытие полей и установка значений по умолчанию"
+msgstr "Отображение полей и установка значений по умолчанию"
+
+#: mail/templates/mail.html:122
+msgid "skrytyye_kopii"
+msgstr "скрытые копии"
 
 #: courses/templates/courses/tasklist/many_tasksets_many_groups.html:116
 msgid "slushateli_kursa"
@@ -1427,73 +1577,76 @@ msgstr "Слушатели курса"
 
 #: templates/registration/password_change_form.html:15
 msgid "smena_parolia"
-msgstr "В целях безопасности, пожалуйста, введите свой старый пароль, затем введитеновый пароль дважды, чтобы мы могли убедиться в правильности написания."
+msgstr "Укажите свой старый пароль и затем дважды введите новый."
 
-#: templates/base.html:671
+#: templates/base.html:679
 msgid "smenit_parol"
 msgstr "Сменить пароль"
 
-#: courses/templates/courses/tasklist/shad_cpp.html:308
+#: courses/templates/courses/tasklist/shad_cpp.html:200
 msgid "snachala_udalit_podzadchi"
-msgstr "Чтобы удалить семинар, нужно сначала удалить все подзадчи"
+msgstr "Перед удалением семинара необходимо удалить из него все подзадачи."
 
-#: courses/templates/courses/course_js.html:168
+#: courses/templates/courses/course_js.html:169
 #: courses/templates/courses/task.html:35
-#: courses/templates/courses/tasklist/shad_cpp.html:318
-#: issues/templates/issues/issue_js.html:142
-#: users/templates/status_history.html:160
+#: courses/templates/courses/tasklist/shad_cpp.html:211
+#: issues/templates/issues/issue_js.html:159 staff/templates/staff.html:176
+#: staff/templates/staff.html.py:199 users/templates/status_history.html:160
 #: users/templates/user_profile.html:420 users/templates/user_profile.html:444
 #: users/templates/user_profile_js.html:151
 msgid "sohranenie"
 msgstr "Сохранение"
 
 #: courses/templates/courses/settings_js.html:262
-#: users/templates/user_settings.html:16
+#: staff/templates/staff_js.html:280 users/templates/user_settings.html:16
 msgid "sohraneno_uspeshno"
-msgstr "Сохранено успешно."
+msgstr "Данные сохранены."
 
 #: courses/templates/courses/task.html:35
-#: courses/templates/courses/tasklist/shad_cpp.html:318
-#: users/templates/status_history.html:160
+#: courses/templates/courses/tasklist/shad_cpp.html:211
+#: staff/templates/staff.html:176 users/templates/status_history.html:160
 #: users/templates/user_profile.html:420 users/templates/user_profile.html:444
 #: users/templates/user_settings.html:145
 msgid "sohranit"
 msgstr "Сохранить"
 
-#: courses/templates/courses/settings.html:262
-#: tasks/templates/task_create.html:163 tasks/templates/task_edit.html:300
+#: courses/templates/courses/settings.html:271
+#: tasks/templates/task_create.html:167 tasks/templates/task_edit.html:316
 msgid "sohranit_i_prodolzhit"
 msgstr "Сохранить и продолжить редактирование"
 
-#: courses/templates/courses/settings.html:263
-#: tasks/templates/contest_import.html:168 tasks/templates/task_create.html:164
-#: tasks/templates/task_edit.html:301 tasks/templates/task_import.html:168
+#: courses/templates/courses/settings.html:272
+#: tasks/templates/contest_import.html:185 tasks/templates/task_create.html:168
+#: tasks/templates/task_edit.html:317 tasks/templates/task_import.html:171
 msgid "sohranit_i_vyjti"
 msgstr "Сохранить и выйти"
 
-#: courses/templates/courses/course_js.html:146
-#: courses/templates/courses/course_js.html:685
+#: courses/templates/courses/course_js.html:147
+#: courses/templates/courses/course_js.html:686
 #: users/templates/user_profile_js.html:129
 msgid "sohranit_izmenenija"
 msgstr "Сохранить изменения"
 
+#. в Контесте
 #: anycontest/models.py:218
 msgid "soobshenie_chekera"
 msgstr "Сообщение чекера"
 
 #: mail/templates/mail_js.html:66
 msgid "soobshenij_net"
-msgstr "Сообщений нет"
+msgstr "Сообщений нет."
 
-#: issues/templates/issues/history.html:37
-#: issues/templates/issues/history.html:47
+#: issues/templates/issues/history.html:49
+#: issues/templates/issues/history.html:59
 msgid "soobshenija_budut_vydeljatsja"
-msgstr "Все сообщения, отправленные студентом позже срока сдачи, будут выделяться красным цветом."
+msgstr "Сообщения, отправленные студентом после срока сдачи, будут выделены красным."
 
+#. пользователь
 #: users/templates/user_profile.html:352
 msgid "sostoit_v_gruppah"
 msgstr "Состоит в группах"
 
+#. пользователь
 #: users/templates/user_profile.html:285
 msgid "sostoit_v_kursah"
 msgstr "Состоит в курсах"
@@ -1506,9 +1659,9 @@ msgstr "Состоит в курсах (Архив)"
 msgid "sozdanie_invajtov"
 msgstr "Создание инвайтов"
 
-#: tasks/templates/task_create.html:9 tasks/templates/task_create.html.py:23
-#: tasks/templates/task_create.html:45 tasks/templates/task_edit.html:8
-#: tasks/templates/task_edit.html.py:105
+#: tasks/templates/task_create.html:9 tasks/templates/task_create.html.py:25
+#: tasks/templates/task_create.html:46 tasks/templates/task_edit.html:8
+#: tasks/templates/task_edit.html.py:107
 msgid "sozdanie_zadachi"
 msgstr "Создание задачи"
 
@@ -1516,14 +1669,22 @@ msgstr "Создание задачи"
 msgid "sozdat"
 msgstr "Создать"
 
-#: courses/templates/courses/course.html:110
-#: courses/templates/courses/course.html:147
+#: staff/templates/staff.html:172
+msgid "sozdat_soobshcheniye_vopros"
+msgstr "создать сообщение?"
+
+#: admission/views.py:203
+msgid "spasibo"
+msgstr "Спасибо"
+
+#: courses/templates/courses/course.html:108
+#: courses/templates/courses/course.html:145
 msgid "spisok_grupp_i_zadach"
 msgstr "Список групп и задач"
 
-#: issues/templates/issues/issue.html:26 tasks/templates/contest_import.html:26
-#: tasks/templates/task_create.html:32 tasks/templates/task_edit.html:117
-#: tasks/templates/task_import.html:28
+#: issues/templates/issues/issue.html:26 tasks/templates/contest_import.html:29
+#: tasks/templates/task_create.html:34 tasks/templates/task_edit.html:119
+#: tasks/templates/task_import.html:31
 msgid "spisok_zadach"
 msgstr "Список задач"
 
@@ -1531,30 +1692,37 @@ msgstr "Список задач"
 msgid "srok_dejstvija_invajta_istek"
 msgstr "Срок действия инвайта истек."
 
-#: issues/templates/issues/history.html:37
-#: issues/templates/issues/history.html:47
+#: issues/templates/issues/history.html:49
+#: issues/templates/issues/history.html:59
 msgid "srok_sdachi_istek"
-msgstr "Срок сдачи задания истек!"
+msgstr "Срок сдачи задания истек."
 
+#. Ссылка действительна в течение 5 дней
 #: templates/registration/activation_email.txt:7
 msgid "ssilka_dejstvitelna"
 msgstr "Ссылка действительна в течение"
 
-#: issues/admin.py:23 issues/models.py:488 issues/views.py:58
-#: issues/templates/issues/info.html:108 staff/templates/staff.html:59
-#: users/admin.py:20 users/models.py:189 users/templates/my_tasks.html:140
+#. Статус задачи/студента
+#: issues/admin.py:23 issues/model_issue_student_filter.py:22
+#: issues/models.py:476 issues/views.py:58
+#: issues/templates/issues/info.html:108 staff/templates/staff.html:93
+#: users/admin.py:21 users/templates/my_tasks.html:140
 msgid "status"
 msgstr "Статус"
 
-#: issues/models.py:429
+#: issues/models.py:428
 msgid "status_izmenen"
 msgstr "Статус изменен:"
 
-#: users/models.py:53 users/models.py:167
+#: users/model_user_profile_filter.py:44 users/model_user_status.py:38
+msgid "status_postupleniya"
+msgstr "Статус поступления"
+
+#: users/model_user_profile_filter.py:36 users/model_user_status.py:36
 msgid "status_studenta"
 msgstr "Статус студента"
 
-#: users/templates/status_history.html:70
+#: mail/templates/mail.html:177 users/templates/status_history.html:70
 msgid "statusy"
 msgstr "Статусы"
 
@@ -1577,28 +1745,41 @@ msgstr "Страница семинара"
 
 #: anyrb/common.py:85 courses/templates/courses/queue.html:73
 #: courses/templates/courses/tasklist/many_tasksets_many_groups.html:35
-#: courses/templates/courses/tasklist/shad_cpp.html:150 issues/views.py:55
+#: courses/templates/courses/tasklist/shad_cpp.html:41 issues/views.py:55
+#: issues/management/commands/send_notifications.py:63
 #: staff/templates/gradebook.html:43
 msgid "student"
 msgstr "Студент"
 
-#: issues/management/commands/send_notifications.py:76
+#. В задаче {1}, в которой вы являетесь студентом/наблюдателем/проверяющим, появились новые комментарии
+#: issues/management/commands/send_notifications.py:82
 msgid "studentom"
 msgstr "студентом"
+
+#. количество студентов в таблице
+#: courses/templates/courses/course_js.html:254
+#: courses/templates/courses/course_js.html:255
+#: courses/templates/courses/course_js.html:259
+#: staff/templates/gradebook_js.html:125 staff/templates/gradebook_js.html:126
+#: staff/templates/gradebook_js.html:130
+msgid "studentov"
+msgstr "студентов"
 
 #: courses/templates/courses/gradebook.html:143
 #: courses/templates/courses/tasklist/many_tasksets_many_groups.html:53
 #: courses/templates/courses/tasklist/many_tasksets_many_groups.html:146
-#: courses/templates/courses/tasklist/shad_cpp.html:168
+#: courses/templates/courses/tasklist/shad_cpp.html:59
 #: users/templates/user_courses.html:92
 msgid "summarnyj_ball"
 msgstr "Суммарный балл"
 
-#: courses/templates/courses/course_js.html:63
+#. Свернуть таблицу
+#: courses/templates/courses/course_js.html:64
 msgid "svernut"
 msgstr "Свернуть"
 
-#: mail/templates/mail.html:118
+#. сообщения
+#: mail/templates/mail.html:153
 msgid "tekst"
 msgstr "Текст"
 
@@ -1606,28 +1787,35 @@ msgstr "Текст"
 msgid "tekushaja_uspevaemost"
 msgstr "Текущая успеваемость"
 
-#: mail/templates/mail.html:111
+#: users/templates/user_profile.html:187
+msgid "telefon"
+msgstr "Телефон"
+
+#. сообщения
+#: mail/templates/mail.html:146
 msgid "tema"
 msgstr "Тема"
 
 #: templates/registration/password_reset_complete.html:7
 msgid "teper_novij_parol"
-msgstr "Ваш пароль был сохранён. Теперь вы можете войти."
+msgstr "Ваш пароль сохранён. Теперь вы можете войти."
 
+#. Тест при проверке задачи в контесте
 #: anycontest/models.py:224
 msgid "test"
 msgstr "Тест"
 
-#: users/models.py:185
+#: issues/model_issue_student_filter.py:14
 msgid "tip_kursa"
 msgstr "Тип курса"
 
-#: tasks/templates/task_create.html:50 tasks/templates/task_edit.html:185
+#: tasks/templates/task_create.html:51 tasks/templates/task_edit.html:192
 msgid "tip_zadachi"
 msgstr "Тип задачи"
 
+#: users/templates/user_settings.html:193
 msgid "title_otvjazat_svoj_profil"
-msgstr ""
+msgstr "Для того, чтобы отвязать свой профиль обратитесь к администратору."
 
 #: templates/registration/registration_form.html:76
 #: templates/registration/registration_form.html:80
@@ -1636,121 +1824,166 @@ msgstr "Только буквы"
 
 #: templates/registration/registration_form.html:72
 msgid "tolko_bukvy_cifry_punc"
-msgstr "Только латинские буквы, цифры и .-+_"
+msgstr "Только латинские буквы, цифры и символы ., -, +, _."
 
-#: tasks/models.py:42 tasks/models.py:200
+#. Тип задачи: только оценка/с обсужденим/семинар
+#: tasks/models.py:43 tasks/models.py:203
 msgid "tolko_ocenka"
 msgstr "только оценка"
 
+#. Статус задачи
 #: courses/forms.py:24 courses/templates/courses/gradebook.html:139
 #: issues/model_issue_status.py:30 issues/models.py:81
 msgid "trebuetsja_informacija"
 msgstr "Требуется информация"
 
-#: mail/templates/email_notification_mail.html:40
+#. У вас 3 новых сообщения
+#: mail/templates/email_notification_mail.html:6
 msgid "u_vas"
 msgstr "У вас"
 
 #: templates/registration/password_change_done.html:7
 msgid "u_vas_novyj_parol"
-msgstr "Теперь у Вас новый пароль =)"
+msgstr "Теперь у вас новый пароль =)"
 
-#: mail/management/commands/send_mail_notifications.py:35
+#. У вас 2 новых сообщения
+#: mail/templates/email_notification_mail.txt:4
 msgid "u_vas_soobshenij"
-msgstr "У вас {1} {2}."
+msgstr "У вас"
 
+#: users/templates/user_profile.html:238
+msgid "uchitsya_seychas"
+msgstr "Учится сейчас"
+
+#. сообщения
 #: mail/templates/mail.html:29 mail/templates/mail.html.py:76
-#: mail/templates/mail_js.html:414
+#: mail/templates/mail_js.html:430
 msgid "udalennye"
-msgstr "Удаленные"
+msgstr "Удалённые"
 
-#: courses/templates/courses/course_js.html:595
+#: courses/templates/courses/course_js.html:596
 msgid "udalit_zadachu_iz_grupp"
-msgstr "Удалить задачу из следующих групп?"
+msgstr "Удалить задачу из указанных групп?"
 
 #: invites/templates/generate.html:41
 msgid "ukazat_chislo_invajtov"
-msgstr "Необходимо указать, какое число инвайтов вы хотите сгенерировать"
+msgstr "Укажите, сколько инвайтов вы хотите сгенерировать."
 
 #: courses/templates/courses/course_forbidden.html:53
 msgid "ukazat_invajt"
-msgstr "Необходимо указать инвайт"
+msgstr "Укажите инвайт."
 
-#: tasks/templates/task_create_or_edit_js.html:253
+#: tasks/templates/task_create_or_edit_js.html:277
 msgid "ukazat_literu_zadachi"
-msgstr "Необходимо указать литеру задачи контеста"
+msgstr "Укажите литеру задачи."
 
-#: tasks/templates/task_create_or_edit_js.html:239
-#: tasks/templates/task_import_js.html:183
+#: tasks/templates/task_create_or_edit_js.html:263
+#: tasks/templates/task_import_js.html:182
 msgid "ukazat_maxball"
-msgstr "Необходимо указать максимальный балл"
+msgstr "Укажите максимальный балл."
 
-#: tasks/templates/task_create_or_edit_js.html:249
-#: tasks/templates/task_import_js.html:189
+#: tasks/templates/task_create_or_edit_js.html:273
+#: tasks/templates/task_import_js.html:188
 msgid "ukazat_nomer_kontesta"
-msgstr "Необходимо указать номер контеста"
+msgstr "Укажите номер задачи."
 
-#: mail/templates/mail_js.html:689
+#. при отправке сообщеия
+#: mail/templates/mail_js.html:738
 msgid "ukazat_poluchatelja"
-msgstr "Необходимо указать получателя"
+msgstr "Укажите получателя."
 
-#: courses/templates/courses/course_js.html:636
+#: tasks/templates/contest_import.html:169
+msgid "uvedomit_o_sozdanii_zadach"
+msgstr "Уведомить студентов о создании задач"
+
+#: tasks/templates/task_create.html:141 tasks/templates/task_import.html:145
+msgid "uvedomit_o_sozdanii_zadachi"
+msgstr "Уведомить студентов о создании задачи"
+
+#: tasks/templates/task_edit.html:290
+msgid "uvedomit_ob_izmenenii_v_zadache"
+msgstr "Уведомить студентов об изменении в задаче"
+
+#: courses/templates/courses/course_js.html:637
 msgid "uvereny_cho_hotite_udalit?"
-msgstr "Удаленную задачу невозможно восстановить. Вы уверены, что хотите удалить?"
+msgstr "Удалённую задачу нельзя восстановить. Вы точно хотите удалить её?"
 
-#: tasks/management/commands/send_deadline_notifications.py:29
-msgid "v_zadache_kursa"
-msgstr "В задаче {1}, курса {2}"
+#. Профиль контеста уже привязан к аккаунту другого пользователя на Anytask.
+#: users/views.py:395
+msgid "uzhe_privjazan"
+msgstr "уже привязан к аккаунту другого пользователя на Anytask."
 
-#: issues/management/commands/send_notifications.py:30
-msgid "v_zadache_vy_javljaetes"
-msgstr "В задаче {1}, в который вы являетесь"
+#. В курсе {0} изменились следующие задачи:  {1}
+#. Перейти в курс: {2}
+#: tasks/management/commands/send_task_notifications.py:100
+#: tasks/templates/email_notification_task.html:10
+msgid "v_kurse"
+msgstr "В курсе"
 
-#: courses/templates/courses/course.html:241
-#: courses/templates/courses/course.html:341
+#. В задаче Х, в который вы являетесь проверяющим/наблюдателем появились новые комментарии
+#: issues/management/commands/send_notifications.py:36
+#: tasks/management/commands/send_task_notifications.py:104
+#: tasks/templates/email_notification_task.html:23
+msgid "v_zadache"
+msgstr "В задаче"
+
+#: courses/templates/courses/course.html:245
+#: courses/templates/courses/course.html:351
 msgid "vedomost"
 msgstr "Ведомость"
 
+#. Результат посылки в контест
 #: anycontest/models.py:171 anycontest/models.py:177 anycontest/models.py:182
 msgid "verdikt_jakontest"
 msgstr "Вердикт Я.Контест"
 
+#. Кнопка входа на сайт
 #: templates/registration/login.html:5 templates/registration/login.html:18
 msgid "vhod"
 msgstr "Вход"
 
+#. сообщения
 #: mail/templates/mail.html:21 mail/templates/mail.html.py:40
-#: mail/templates/mail_js.html:196 mail/templates/mail_js.html.py:201
-#: mail/templates/mail_js.html:395 mail/templates/mail_js.html.py:404
+#: mail/templates/mail_js.html:204 mail/templates/mail_js.html.py:209
+#: mail/templates/mail_js.html:411 mail/templates/mail_js.html.py:420
 msgid "vhodjashie"
 msgstr "Входящие"
 
-#: templates/base.html:680 templates/registration/registration_form.html:85
+#. Войдите/Зарегестрируйтесь на сайте
+#: templates/base.html:688 templates/registration/registration_form.html:85
 msgid "vojdite"
 msgstr "Войдите"
 
+#. Войти на сайт
 #: templates/registration/activation_complete.html:8
 #: templates/registration/password_reset_complete.html:8
 msgid "vojti"
 msgstr "Войти"
 
-#: mail/templates/mail.html:178 mail/templates/mail.html.py:235
+#. Восстановить удаленное письмо
+#: mail/templates/mail.html:238 mail/templates/mail.html.py:295
 msgid "vosstanovit"
 msgstr "Восстановить"
 
 #: templates/registration/password_reset_done.html:7
 msgid "vosstanovlenie_parolja"
-msgstr "Мы отправили инструкцию по восстановлению пароля на адрес электронной почты,который вы указали. Вы должны ее вскоре получить."
+msgstr "Мы отправили инструкцию по восстановлению пароля на электронный адрес, который вы указали при регистрации."
 
 #: templates/registration/password_reset_complete.html:6
 msgid "vosstanovlenie_parolja_zaversheno"
-msgstr "Восстановление пароля завершено"
+msgstr "Восстановление пароля завершено."
 
-#: courses/templates/courses/course_js.html:266
-#: staff/templates/staff_js.html:138
+#: users/templates/user_profile.html:175
+msgid "vozrast"
+msgstr "Возраст"
+
+#. Навигация по страницам таблицы
+#: courses/templates/courses/course_js.html:267
+#: staff/templates/gradebook_js.html:138
 msgid "vpered"
-msgstr "Вперед"
+msgstr "Вперёд"
 
+#. Все преподаватели/статусы/задачи
 #: courses/templates/courses/queue_js.html:23
 #: courses/templates/courses/queue_js.html:24
 #: courses/templates/courses/queue_js.html:35
@@ -1758,15 +1991,21 @@ msgstr "Вперед"
 msgid "vse"
 msgstr "Все"
 
-#: staff/templates/staff_js.html:39 staff/templates/staff_js.html.py:40
-#: staff/templates/staff_js.html:52
+#: templates/base.html:155
+msgid "vse_resultaty"
+msgstr "Все результаты"
+
+#. Фильтр
+#: staff/templates/gradebook_js.html:39 staff/templates/gradebook_js.html:40
+#: staff/templates/gradebook_js.html:52
 msgid "vse_statusy"
 msgstr "Все статусы"
 
-#: users/templates/my_tasks.html:44 users/templates/my_tasks.html.py:55
-#: users/templates/my_tasks.html:69
+#: staff/templates/staff_js.html:51 staff/templates/staff_js.html.py:62
+#: staff/templates/staff_js.html:76 users/templates/my_tasks.html:44
+#: users/templates/my_tasks.html.py:55 users/templates/my_tasks.html:69
 msgid "vse_vybrano"
-msgstr "Все выбрано"
+msgstr "Выбрано всё"
 
 #: courses/templates/courses/settings_js.html:82
 #: courses/templates/courses/settings_js.html:83
@@ -1782,11 +2021,16 @@ msgstr "Все задачи"
 msgid "vsego_zadach"
 msgstr "Всего задач"
 
+#: users/templates/user_profile.html:223
+msgid "vuz"
+msgstr "ВУЗ"
+
 #: courses/templates/courses/course_forbidden.html:80
 #: courses/templates/courses/course_forbidden.html:88
 msgid "vvedite_invajt"
-msgstr "У Вас нет доступа к этому курсу. Если у Вас есть инвайт, то введите его вполе ниже."
+msgstr "У вас нет доступа к этому курсу. Если у Вас есть инвайт, то введите его в поле ниже."
 
+#. E-mail при регистрации
 #: templates/registration/registration_form.html:84
 msgid "vvedite_korrektnyj_adres"
 msgstr "Введите корректный адрес"
@@ -1797,87 +2041,125 @@ msgstr "Введите новый пароль"
 
 #: templates/registration/password_reset_confirm.html:15
 msgid "vvedite_parol_dvazhdy"
-msgstr "Пожалуйста, введите новый пароль дважды, чтобы мы могли убедиться вправильности написания."
+msgstr "Пожалуйста, введите новый пароль дважды"
 
 #: users/templates/user_profile.html:156
 msgid "vvesti_invajt"
 msgstr "Ввести инвайт"
 
+#. Входные данные программы. Input
 #: anycontest/models.py:192
 msgid "vvod"
 msgstr "Ввод"
 
+#. В задаче Х, в который вы являетесь проверяющим/наблюдателем появились новые комментарии
+#: issues/management/commands/send_notifications.py:36
+msgid "vy_javljaetes"
+msgstr "в который вы являетесь"
+
+#. Загрузка файлов
 #: issues/templates/file_uploader.html:113
 msgid "vyberite_fajl"
 msgstr "Выберите файл"
 
+#. Загрузка файлов
 #: issues/templates/file_uploader.html:113
 msgid "vyberite_fajly"
 msgstr "Выберите файлы"
 
 #: issues/templates/file_uploader.html:234
 msgid "vyberite_kompiljator"
-msgstr "Выберите компилятор для отправки в контест"
+msgstr "Выберите компилятор"
+
+#: staff/templates/staff.html:136
+msgid "vyberite_novyye_statusy"
+msgstr "Выберите новые статусы."
+
+#: staff/templates/staff.html:118
+msgid "vyberite_znacheniya_dlya_filtratsii"
+msgstr "Выберите значения для фильтрации"
 
 #: users/templates/user_profile.html:385
 msgid "vybor_avatara"
 msgstr "Выбор аватара"
 
-#: tasks/templates/task_edit.html:153
+#: tasks/templates/task_edit.html:166
 msgid "vybor_grupp_zavisit_ot_zadach"
-msgstr "Выбор групп зависит от того, сдавалась задача или нет"
+msgstr "Из группы можно убрать только задачи, которые еще никто не сдавал."
 
-#: tasks/templates/task_create_or_edit_js.html:303
-#: tasks/templates/task_import_js.html:310
+#: staff/templates/staff_js.html:182
+msgid "vybrano"
+msgstr "Выбрано"
+
+#. Прим. ред: непонятно, зачем нам просто констатация. Предлагаю либо убрать слова (если они пустые), либо прямо попросить пользователя о чем-то.
+#: tasks/templates/task_create_or_edit_js.html:327
+#: tasks/templates/task_import_js.html:309
 msgid "vybrano_neskolko_grupp"
 msgstr "Выбрано несколько групп"
 
+#. Прим. ред: непонятно, зачем нам просто констатация. Предлагаю либо убрать слова (если они пустые), либо прямо попросить пользователя о чем-то.
 #: courses/templates/courses/settings_js.html:112
 #: tasks/templates/task_create_or_edit_js.html:53
 msgid "vybrano_neskolko_zadach"
 msgstr "Выбрано несколько задач"
 
-#: users/templates/my_tasks.html:43
+#: mail/templates/mail_js.html:849 staff/templates/staff.html:137
+#: staff/templates/staff.html.py:191
+msgid "vybrano_polzovateley"
+msgstr "Выбрано пользователей:"
+
+#: staff/templates/staff_js.html:50 users/templates/my_tasks.html:43
 msgid "vybrat_vse"
 msgstr "Выбрать все"
 
-#: courses/templates/courses/course_js.html:260
-#: staff/templates/staff_js.html:132
+#. Загрузка. Loading
+#: courses/templates/courses/course_js.html:261
+#: staff/templates/gradebook_js.html:132
 msgid "vychislenie"
 msgstr "Вычисление..."
 
-#: mail/templates/mail_js.html:581
+#: mail/templates/mail_js.html:605
 msgid "vydelit_vse"
-msgstr "Выделить все"
+msgstr "Выделить всё."
 
-#: templates/base.html:673
+#. Разлогиниться
+#: templates/base.html:681
 msgid "vyjti"
 msgstr "Выйти"
 
 #: templates/registration/registration_complete.html:8
 msgid "vyslano_pismo"
-msgstr "На ваш e-mail выслано письмо с дальнейшими инструкциями"
+msgstr "На ваш электронный адрес выслано письмо с дальнейшими инструкциями."
 
 #: anycontest/models.py:198
 msgid "vyvod_programmy"
 msgstr "Вывод программы"
 
+#. Показать ещё статусы студента.  Сокращение в интерфейсе
+#: mail/templates/mail_js.html:548 templates/base.html:102
+msgid "yeshcho"
+msgstr "ещё"
+
+#. Статус задачи
 #: issues/model_issue_status.py:28 issues/models.py:79
 msgid "zachteno"
 msgstr "Зачтено"
 
 #: anyrb/common.py:83 courses/templates/courses/queue.html:74
-#: issues/models.py:492 issues/views.py:54 users/templates/my_tasks.html:136
+#: issues/models.py:480 issues/views.py:54
+#: issues/management/commands/send_notifications.py:63
+#: users/templates/my_tasks.html:136
 msgid "zadacha"
 msgstr "Задача"
 
-#: tasks/templates/task_create_or_edit_js.html:170
-#: tasks/templates/task_create_or_edit_js.html:196
+#: tasks/templates/task_create_or_edit_js.html:189
+#: tasks/templates/task_create_or_edit_js.html:218
 msgid "zadacha_sohranena_uspeshno"
-msgstr "Задача сохранена успешно."
+msgstr "Задача сохранена."
 
-#: courses/templates/courses/course.html:110
-#: courses/templates/courses/course.html:147
+#. Описание курса/Задачи
+#: courses/templates/courses/course.html:108
+#: courses/templates/courses/course.html:145
 msgid "zadachi"
 msgstr "Задачи"
 
@@ -1887,36 +2169,42 @@ msgstr "Задачи курса"
 
 #: courses/templates/courses/settings_js.html:177
 msgid "zadachi_obnovleny"
-msgstr "Задачи обновлены"
+msgstr "Задачи обновлены."
 
-#: issues/models.py:428
+#: issues/models.py:426
 msgid "zadachu_proveriaet"
 msgstr "Теперь задачу проверяет"
 
+#. Оставить комментарий к решению задачи
 #: issues/templates/file_uploader.html:141
 msgid "zadat_vopros"
 msgstr "Задать вопрос"
 
-#: issues/models.py:431
+#: issues/models.py:430
 msgid "zagruzhen_faij"
 msgstr "Загружен файл:"
 
-#: courses/templates/courses/course_js.html:259 mail/templates/mail.html:5
-#: mail/templates/mail.html.py:42 mail/templates/mail.html:60
-#: mail/templates/mail.html.py:78 mail/templates/mail.html:157
+#: staff/templates/staff.html:39
+msgid "zagruzit_spisok_studentov"
+msgstr "Загрузить список студентов"
+
+#: courses/templates/courses/course_js.html:260 mail/templates/mail.html:5
 #: mail/templates/mail_js.html:73 mail/templates/mail_js.html.py:74
-#: staff/templates/staff_js.html:131
+#: staff/templates/gradebook_js.html:131 staff/templates/staff_js.html:171
+#: staff/templates/staff_js.html.py:172
 msgid "zagruzka"
 msgstr "Загрузка..."
 
 #: courses/templates/courses/settings_js.html:226
 #: courses/templates/courses/settings_js.html:234
 #: courses/templates/courses/task.html:34
-#: courses/templates/courses/tasklist/shad_cpp.html:317
-#: mail/templates/mail.html:147 tasks/templates/task_create_or_edit_js.html:167
-#: tasks/templates/task_create_or_edit_js.html:182
-#: tasks/templates/task_create_or_edit_js.html:193
-#: tasks/templates/task_edit.html:72 tasks/templates/task_edit.html.py:81
+#: courses/templates/courses/tasklist/shad_cpp.html:210
+#: mail/templates/mail.html:207 staff/templates/staff.html:175
+#: staff/templates/staff.html.py:198
+#: tasks/templates/task_create_or_edit_js.html:186
+#: tasks/templates/task_create_or_edit_js.html:204
+#: tasks/templates/task_create_or_edit_js.html:215
+#: tasks/templates/task_edit.html:74 tasks/templates/task_edit.html.py:83
 #: users/templates/status_history.html:158
 #: users/templates/user_profile.html:419 users/templates/user_profile.html:443
 #: users/templates/user_profile.html:468 users/templates/user_settings.html:13
@@ -1924,30 +2212,30 @@ msgstr "Загрузка..."
 msgid "zakryt"
 msgstr "Закрыть"
 
-#: courses/templates/courses/course_js.html:276
-#: staff/templates/staff_js.html:148
+#. Скопировано в буфер обмена 6 записей из таблицы. Всплывающее окно
+#: courses/templates/courses/course_js.html:277
+#: staff/templates/gradebook_js.html:148
 msgid "zapisej_iz_tablicy"
 msgstr "записей из таблицы"
 
+#. в системе
 #: templates/registration/registration_form.html:165
 msgid "zaregistrirovatsja"
 msgstr "Зарегистрироваться"
 
-#: templates/base.html:683
+#. Войдите/Зарегестрируйтесь на сайте
+#: templates/base.html:691
 msgid "zaregistrirujtes"
 msgstr "Зарегистрируйтесь"
 
+#. Дефолтный текст, если студент не заполнил информацию о себе
+#: issues/templates/issues/history.html:115
 #: users/templates/user_profile.html:194
 msgid "zdes_nichego_net"
-msgstr "Пока здесь ничего нет :("
+msgstr "Пока здесь ничего нет =("
 
-#: issues/management/commands/send_notifications.py:29
-#: mail/management/commands/send_mail_notifications.py:34
-#: tasks/management/commands/send_deadline_notifications.py:28
+#: issues/management/commands/send_notifications.py:35
+#: mail/templates/email_notification_mail.txt:2
+#: tasks/management/commands/send_task_notifications.py:99
 msgid "zdravstvujte"
 msgstr "Здравствуйте"
-
-#~ msgid "nuzhno_privjazat_k_profilu_kontest"
-#~ msgstr "Чтобы сдавать данную задачу вам нужно привязать к своему"
-#~ msgid "sohranit_izmenenija?"
-#~ msgstr "Сохранить изменения?"
