@@ -125,7 +125,7 @@
                             <div class="card-block">
                                 <h5 class="card-title">{% trans "privjazat_profil_kontesta" %}</h5>
                                 <p class="card-text">
-                                    <strong>{%  trans "privjazat_odin_profil" %}</strong> {% trans "otvjazat_svoj_profil" %} <a href=mailto:anytask@yandex.ru>{% trans "administratoru" %}</a>.
+                                    <strong>{%  trans "privjazat_odin_profil" %}</strong> {% trans "otvjazat_svoj_profil" %} <a href="mailto:anytask@yandex.ru">{% trans "administratoru" %}</a>.
                                 </p>
                                 <a href="/user/ya_oauth_request/contest" type="button" class="btn btn-secondary">
                                     {%  trans "priviazat" %}
@@ -137,7 +137,7 @@
                             <div class="card-block">
                                 <h5 class="card-title">{% trans "privjazat_profil_kontesta" %}</h5>
                                 <p class="card-text">
-                                    <strong>{% trans "privjazali_profil" %} {{ user_to_show_profile.ya_contest_login }}.</strong> {% trans "profil_kontesta_priviazan" %} <a href=mailto:anytask@yandex.ru>{% trans "administratoru" %}</a>.
+                                    <strong>{% trans "privjazali_profil" %} {{ user_to_show_profile.ya_contest_login }}.</strong> {% trans "profil_kontesta_priviazan" %} <a href="mailto:anytask@yandex.ru">{% trans "administratoru" %}</a>.
                                 </p>
                                 <a href="/user/ya_oauth_request/contest" type="button" class="btn btn-secondary">
                                     {% trans "obnovit_privjazku_profilja" %}
@@ -474,7 +474,7 @@
 
     <footer>
         <small class="text-muted pull-xs-right">
-            {% trans "esli_dannye_neverny"%} <a href=mailto:anytask@yandex.ru>{% trans "administratoru" %}</a>.
+            {% trans "esli_dannye_neverny"%} <a href="mailto:anytask@yandex.ru">{% trans "administratoru" %}</a>.
         </small>
     </footer>
 
