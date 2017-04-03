@@ -59,6 +59,8 @@ class AdmissionRegistrationProfileManager(RegistrationManager):
             logger.info("Admission: User with email %s was created with generated login %s", user.email, user.username)
         else:
             self.send_mail_update_user(email)
+            logger.warning("Admission: User with email %s and uid %s already created", email, uid)
+
         # elif len(user_by_email | user_by_uid) == 1:
         #     user, registration_profile = self.update_user((user_by_email | user_by_uid)[0], send_email)
         #     logger.info("Admission: User %s was updated", user.username)
