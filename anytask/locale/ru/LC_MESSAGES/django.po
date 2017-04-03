@@ -629,7 +629,11 @@ msgstr "На проверке"
 msgid "nabludaemye_mnoj"
 msgstr "Наблюдаемые мной"
 
-#: issues/models.py:427
+#: issues/models.py:434
+msgid "nabludaet_nikto"
+msgstr "За задачей никто не наблюдает."
+
+#: issues/models.py:434 issues/models.py:437
 msgid "nabludaiut"
 msgstr "За задачей наблюдают:"
 
