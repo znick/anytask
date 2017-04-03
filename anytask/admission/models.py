@@ -57,12 +57,14 @@ class AdmissionRegistrationProfileManager(RegistrationManager):
             new_username = self.generate_username()
             user, registration_profile = self.create_inactive_user(new_username, email, password, send_email)
             logger.info("Admission: User with email %s was created with generated login %s", user.email, user.username)
+        else:
+            self.send_mail_update_user(email)
         # elif len(user_by_email | user_by_uid) == 1:
         #     user, registration_profile = self.update_user((user_by_email | user_by_uid)[0], send_email)
         #     logger.info("Admission: User %s was updated", user.username)
-        else:
-            send_mail_admin(u'Ошибка поступления', message='User not created (already registered)', request=request)
-            logger.error("Admission: User not created (already registered) %s %s %s", username, email, uid)
+        # else:
+        #     send_mail_admin(u'Ошибка поступления', message='User not created (already registered)', request=request)
+        #     logger.error("Admission: User not created (already registered) %s %s %s", username, email, uid)
 
         return user, registration_profile
 
@@ -77,6 +79,19 @@ class AdmissionRegistrationProfileManager(RegistrationManager):
             registration_profile.send_activation_email(Site.objects.get_current())
 
         return new_user, registration_profile
+
+    def send_mail_update_user(self, email):
+        site = Site.objects.get_current()
+
+        subject = render_to_string('email_update_subject.txt')
+        subject = ''.join(subject.splitlines())
+
+        context = {}
+
+        plain_text = render_to_string('email_update.txt', context)
+        html = render_to_string('email_update.html', context)
+
+        send_mass_mail_html([(subject, plain_text, html, settings.DEFAULT_FROM_EMAIL, [email])])
 
     def update_user(self, user, send_email=False):
         registration_profile = self.create_profile(user)
