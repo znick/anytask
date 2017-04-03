@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-24 16:49+0300\n"
+"POT-Creation-Date: 2017-03-29 13:15+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1449,7 +1449,7 @@ msgstr "Развернуть"
 
 #. статусов студента
 #: staff/templates/staff.html:133 users/templates/status_history.html:48
-#: users/templates/user_courses.html:48 users/templates/user_profile.html:39
+#: users/templates/user_courses.html:48 users/templates/user_profile.html:43
 msgid "redaktirovanie_statusov"
 msgstr "Редактирование статусов"
 
@@ -2235,4 +2235,3 @@ msgstr "Пока здесь ничего нет =("
 #: tasks/management/commands/send_task_notifications.py:99
 msgid "zdravstvujte"
 msgstr "Здравствуйте"
-

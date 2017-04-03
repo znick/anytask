@@ -69,7 +69,7 @@ def get_contest_mark(contest_id, problem_id, ya_login):
     user_id = None
     try:
         results_req = requests.get(
-            'https://contest.yandex.ru/action/api/download-log?contestId=' + str(contest_id) + '&snarkKey=spike')
+            settings.CONTEST_URL + 'action/api/download-log?contestId=' + str(contest_id) + '&snarkKey=spike')
         try:
             contest_dict = xmltodict.parse(results_req.content)
 

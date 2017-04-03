@@ -118,9 +118,11 @@ def register(request):
         user_info = {
             'username': username,
             'uid': uid,
-            'ya_email': request.META['HTTP_EMAIL'] if request.META['HTTP_EMAIL'] else "",
+            'ya_email': '',
             'is_updating': registration_profile.is_updating
         }
+        if request.META['HTTP_EMAIL'] and request.META['HTTP_EMAIL'] != 'None':
+            user_info['ya_email'] = request.META['HTTP_EMAIL']
 
         for key, post_data_key in settings.YA_FORMS_FIELDS.iteritems():
             user_info[key] = get_post_value(post_data, post_data_key)
@@ -162,6 +164,8 @@ def contest_register(user):
         logger.error("Activate user - Cant register user %s to contest %s. Error: %s", user.username, contest_id,
                      error_message)
         return False
+
+    logger.info("Activate user - user %s was successfully registered to contest %s.", user.username, contest_id)
     return contest_id
 
 
@@ -176,7 +180,7 @@ def activate(request, activation_key):
 
         contest_id = contest_register(user)
         if contest_id:
-            return HttpResponsePermanentRedirect(settings.CONTEST_URL + contest_id)
+            return HttpResponsePermanentRedirect(settings.CONTEST_URL + str(contest_id))
         else:
             context['info_text'] = _(u'oshibka_registracii_v_contest')
     else:

@@ -8,6 +8,7 @@
 
 {% block scripts %}
     {% include "user_profile_js.html" %}
+    <link href="{{ STATIC_URL }}user_profile.css" rel='stylesheet'/>
 {% endblock %}
 
 {% block navbar %}
@@ -20,7 +21,8 @@
                 <a class="nav-link" href="{% url users.views.my_tasks %}">{% trans "moi_zadachi" %}</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{% url users.views.user_courses username=user_to_show %}">{% trans "moi_kursy" %}</a>
+                <a class="nav-link"
+                   href="{% url users.views.user_courses username=user_to_show %}">{% trans "moi_kursy" %}</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="{% url users.views.profile_settings %}">{% trans "nastrojki" %}</a>
@@ -31,12 +33,14 @@
             </li>
             {% if user_above_user_to_show %}
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url users.views.user_courses username=user_to_show %}">{% trans "kursy_studenta" %}</a>
+                    <a class="nav-link"
+                       href="{% url users.views.user_courses username=user_to_show %}">{% trans "kursy_studenta" %}</a>
                 </li>
             {% endif %}
             {% if user.is_staff %}
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url users.views.profile_history user_to_show %}">{% trans "redaktirovanie_statusov" %}</a>
+                    <a class="nav-link"
+                       href="{% url users.views.profile_history user_to_show %}">{% trans "redaktirovanie_statusov" %}</a>
                 </li>
             {% endif %}
         {% endif %}
@@ -44,41 +48,6 @@
 {% endblock navbar %}
 
 {% block content %}
-
-    <style>
-        .card-deck-wrapper {
-            margin-bottom: 1rem;
-        }
-        .user_img {
-            position: relative;
-            display: inline-block;
-        }
-
-        .user_img:hover .edit-icon {
-            display: block;
-        }
-
-        .edit-icon {
-            text-align: center;
-            position: absolute;
-            right: 13%;
-            top: 0;
-            display: none;
-        }
-
-        .card .nav-pills{
-            font-size: 0.8em;
-        }
-
-        .switch-tab i{
-            font-size: 1.5rem
-        }
-
-        .card-header {
-            background-color: inherit;
-        }
-    </style>
-
     <div class="card-deck-wrapper">
         <div class="card-deck">
             <div class="card">
@@ -86,13 +55,12 @@
                     <h5 class="card-title">
                         <div class="user_img pull-xs-left">
                             {% if request.user == user_to_show %}
-                                <label class="edit-icon btn btn-secondary btn-sm" style="padding: 6px 8px;">
+                                <label class="edit-icon btn btn-secondary btn-sm">
                                     <i class="fa fa-pencil"></i>
                                 </label>
                             {% endif %}
-                            <img id="avatar" class="avatar" src="{% if not user_to_show.get_profile.avatar %}https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mm&f=y
-                                  {% else %}{{ user_to_show.get_profile.avatar.url }}{% endif %}"
-                                 style="width: 100px; height:100px; margin: 0 1rem 1rem 0;">
+                            <img id="avatar" class="avatar" src="{% if not user_to_show_profile.avatar %}https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mm&f=y
+                                  {% else %}{{ user_to_show_profile.avatar.url }}{% endif %}">
                         </div>
                         {{ user_to_show.get_full_name }}
                         <br>
@@ -106,14 +74,15 @@
                             </div>
                         {% endif %}
                     </h5>
-                    {% for user_status in user_to_show.get_profile.user_status.all %}
-                        <span class="label"
-                              style="font-size: 1rem; background-color: {{ user_status.color }}">{{ user_status.name }}</span>
+                    {% for user_status in user_to_show_profile.user_status.all %}
+                        <span class="label label-status"
+                              style="background-color: {{ user_status.color }}">{{ user_status.name }}</span>
                     {% endfor %}
                     {% if user == user_to_show and can_generate_invites %}
                         <br>
                         <br>
-                        <a type="button" class="btn btn-secondary" href="#" onclick="window.open('{% url invites.views.generate_invites %}','_blank','height=331,width=769,status=yes,toolbar=no,menubar=no,location=no');return false;">{% trans "sgenerirovat_invajty" %}</a>
+                        <a type="button" class="btn btn-secondary" href="#"
+                           onclick="window.open('{% url invites.views.generate_invites %}','_blank','height=331,width=769,status=yes,toolbar=no,menubar=no,location=no');return false;">{% trans "sgenerirovat_invajty" %}</a>
                     {% endif %}
                 </div>
             </div>
@@ -125,10 +94,12 @@
                             <div class="card-block">
                                 <h5 class="card-title">{% trans "privjazat_profil_kontesta" %}</h5>
                                 <p class="card-text">
-                                    <strong>{%  trans "privjazat_odin_profil" %}</strong> {% trans "otvjazat_svoj_profil" %} <a href="mailto:anytask@yandex.ru">{% trans "administratoru" %}</a>.
+                                    <strong>{% trans "privjazat_odin_profil" %}</strong> {% trans "otvjazat_svoj_profil" %}
+                                    <a href="mailto:anytask@yandex.ru">{% trans "administratoru" %}</a>.
                                 </p>
-                                <a href="/user/ya_oauth_request/contest" type="button" class="btn btn-secondary">
-                                    {%  trans "priviazat" %}
+                                <a href="{% url users.views.ya_oauth_request type_of_oauth='contest' %}" type="button"
+                                   class="btn btn-secondary">
+                                    {% trans "priviazat" %}
                                 </a>
                             </div>
                         </div>
@@ -137,9 +108,11 @@
                             <div class="card-block">
                                 <h5 class="card-title">{% trans "privjazat_profil_kontesta" %}</h5>
                                 <p class="card-text">
-                                    <strong>{% trans "privjazali_profil" %} {{ user_to_show_profile.ya_contest_login }}.</strong> {% trans "profil_kontesta_priviazan" %} <a href="mailto:anytask@yandex.ru">{% trans "administratoru" %}</a>.
+                                    <strong>{% trans "privjazali_profil" %} {{ user_to_show_profile.ya_contest_login }}.</strong> {% trans "profil_kontesta_priviazan" %}
+                                    <a href="mailto:anytask@yandex.ru">{% trans "administratoru" %}</a>.
                                 </p>
-                                <a href="/user/ya_oauth_request/contest" type="button" class="btn btn-secondary">
+                                <a href="{% url users.views.ya_oauth_request type_of_oauth='contest' %}" type="button"
+                                   class="btn btn-secondary">
                                     {% trans "obnovit_privjazku_profilja" %}
                                 </a>
                             </div>
@@ -153,10 +126,12 @@
                 <div class="card">
                     <div class="card-block">
                         <h5 class="card-title">{% trans "aktivacija_invajtov" %}</h5>
-                        <button id="invites_form_button" type="button" class="btn btn-secondary {% if invite_form.errors %}collapse{% else %}in collapse{% endif %}"  style="margin-bottom: 1rem;">{% trans "vvesti_invajt" %}</button>
+                        <button id="invites_form_button" type="button"
+                                class="btn btn-secondary {% if invite_form.errors %}collapse{% else %}in collapse{% endif %}">{% trans "vvesti_invajt" %}</button>
                         <div class="row">
                             <div class="col-md-12">
-                                <form action="{% url users.views.profile %}" method="post" id="invites_form" class="{% if invite_form.errors %}in collapse{% else %}collapse{% endif %}">
+                                <form action="{% url users.views.profile %}" method="post" id="invites_form"
+                                      class="{% if invite_form.errors %}in collapse{% else %}collapse{% endif %}">
                                     {% csrf_token %}
 
                                     <div class="col-md-9">
@@ -177,26 +152,189 @@
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-xs-12">
-            <div class="card">
-                <div class="card-block">
-                    <h5 class="card-title">
-                        {% trans "o_sebe" %}
-                        {% if user == user_to_show %}
-                            <a type="button" class="btn btn-secondary btn-sm" id="user_info_edit_btn" style="padding: 6px 8px;" >
-                                <i class="fa fa-pencil"></i>
-                            </a>
-                        {% endif %}
-                    </h5>
-                    <div class="card-text" id="user_info_body">
-                        {% if user_to_show.get_profile.info %}{{ user_to_show.get_profile.info|sanitize|safe }}
-                        {% else %}{% trans "zdes_nichego_net" %} {% endif %}
+    {% if user.is_staff %}
+        {% if user_to_show_profile.birth_date or user_to_show_profile.phone or user_to_show_profile.city_of_residence or user_to_show_profile.university %}
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="card">
+                        <div class="card-block">
+                            {% if user_to_show_profile.birth_date or user_to_show_profile.phone or user_to_show_profile.city_of_residence %}
+                                <div class="personal-info-part">
+                                    <div class="row">
+                                        {% if user_to_show_profile.birth_date %}
+                                            <div class="col-xs-12 personal-info-block">
+                                                <div class="row">
+                                                    <div class="col-xs-4 col-lg-3 col-xl-2 personal-info-name">
+                                                        <div class="card-text">
+                                                            {% trans "data_rozhdeniya" %}
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xs-8 col-lg-9 col-xl-10 text-left">
+                                                        <div class="card-text">
+                                                            {{ user_to_show_profile.birth_date|date:"d.m.Y" }}
+                                                            {% if age %}
+                                                                <span title="{% trans "vozrast" %}">({{ age }})</span>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                        {% if user_to_show_profile.phone %}
+                                            <div class="col-xs-12 personal-info-block">
+                                                <div class="row">
+                                                    <div class="col-xs-4 col-lg-3 col-xl-2 personal-info-name">
+                                                        <div class="card-text">
+                                                            {% trans "telefon" %}
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xs-8 col-lg-9 col-xl-10 text-left">
+                                                        <div class="cardtext">
+                                                            {{ user_to_show_profile.phone }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                        {% if user_to_show_profile.city_of_residence %}
+                                            <div class="col-xs-12 personal-info-block">
+                                                <div class="row">
+                                                    <div class="col-xs-4 col-lg-3 col-xl-2 personal-info-name">
+                                                        <div class="card-text">
+                                                            {% trans "gorod_prozhivaniya" %}
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xs-8 col-lg-9 col-xl-10 text-left">
+                                                        <div class="card-text">
+                                                            {{ user_to_show_profile.city_of_residence }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endif %}
+                            {% if user_to_show_profile.university %}
+                                <div class="personal-info-part">
+                                    <div class="row">
+                                        {% if user_to_show_profile.university %}
+                                            <div class="col-xs-12 personal-info-block">
+                                                <div class="row">
+                                                    <div class="col-xs-4 col-lg-3 col-xl-2 personal-info-name">
+                                                        <div class="card-text">
+                                                            {% trans "vuz" %}
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xs-8 col-lg-9 col-xl-10 text-left">
+                                                        <div class="card-text">
+                                                            {{ user_to_show_profile.university }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                        <div class="col-xs-12 personal-info-block">
+                                            <div class="row">
+                                                <div class="col-xs-4 col-lg-3 col-xl-2 personal-info-name">
+                                                    <div class="card-text">
+                                                        {% trans "uchitsya_seychas" %}
+                                                    </div>
+                                                </div>
+                                                <div class="col-xs-8 col-lg-9 col-xl-10 text-left">
+                                                    <div class="card-text">
+                                                        {% if user_to_show_profile.university_in_process %}
+                                                            {% trans "da" %}
+                                                        {% else %}
+                                                            {% trans "net" %}
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% if user_to_show_profile.university_class %}
+                                            <div class="col-xs-12 personal-info-block">
+                                                <div class="row">
+                                                    <div class="col-xs-4 col-lg-3 col-xl-2 personal-info-name">
+                                                        <div class="card-text">
+                                                            {% trans "kurs_vuza" %}
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xs-8 col-lg-9 col-xl-10 text-left">
+                                                        <div class="card-text">
+                                                            {{ user_to_show_profile.university_class }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                        {% if user_to_show_profile.university_department %}
+                                            <div class="col-xs-12 personal-info-block">
+                                                <div class="row">
+                                                    <div class="col-xs-4 col-lg-3 col-xl-2 personal-info-name">
+                                                        <div class="card-text">
+                                                            {% trans "fakultet_kafedra" %}
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xs-8 col-lg-9 col-xl-10 text-left">
+                                                        <div class="card-text">
+                                                            {{ user_to_show_profile.university_department }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                        {% if user_to_show_profile.university_year_end %}
+                                            <div class="col-xs-12 personal-info-block">
+                                                <div class="row">
+                                                    <div class="col-xs-4 col-lg-3 col-xl-2 personal-info-name">
+                                                        <div class="card-text">
+                                                            {% trans "god_okonchaniya_vuza" %}
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xs-8 col-lg-9 col-xl-10 text-left">
+                                                        <div class="card-text">
+                                                            {{ user_to_show_profile.university_year_end }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    {% endif %}
+
+    {% if user == user_to_show or user_to_show_profile.info %}
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="card">
+                    <div class="card-block">
+                        <h5 class="card-title">
+                            {% trans "o_sebe" %}
+                            {% if user == user_to_show %}
+                                <a type="button" class="btn btn-secondary btn-sm" id="user_info_edit_btn">
+                                    <i class="fa fa-pencil"></i>
+                                </a>
+                            {% endif %}
+                        </h5>
+                        <div class="card-text" id="user_info_body">
+                            {% if user_to_show_profile.info %}
+                                {{ user_to_show_profile.info|sanitize|safe }}
+                            {% else %}
+                                {% trans "zdes_nichego_net" %}
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    {% endif %}
 
     <div class="row">
         {% if teacher_in_courses or teacher_in_courses_archive %}
@@ -205,26 +343,33 @@
                     <div class="tab-pane fade in active" id="teacher_course" role="tabpanel">
                         <div class="{{ card_width }} col-xs-12 ">
                             <div class="card">
-                                <div class="card-header" >
+                                <div class="card-header">
                                     {% if teacher_in_courses_archive %}
-                                        <a class="close switch-tab" href="#teacher_course_archive" role="tab" title='{% trans "arhiv" %}' ><i class="fa fa-file-archive-o" aria-hidden="true"></i></a>
+                                        <a class="close switch-tab" href="#teacher_course_archive" role="tab"
+                                           title='{% trans "arhiv" %}'><i class="fa fa-file-archive-o"
+                                                                          aria-hidden="true"></i></a>
                                     {% endif %}
                                     <h5 class="card-title">{% trans "prepodavatel_v_kursah" %}</h5>
                                     <ul class="nav nav-pills" role="tablist">
                                         {% for year, _ in teacher_in_courses %}
                                             <li class="nav-item">
-                                                <a class="nav-link {% if year == current_year or forloop.last and not teacher_in_courses|has_item:current_year %}active{% endif %}" data-toggle="pill" href="#teacher_course_{{ forloop.counter }}" role="tab">{{ year }}</a>
+                                                <a class="nav-link {% if year == current_year or forloop.last and not teacher_in_courses|has_item:current_year %}active{% endif %}"
+                                                   data-toggle="pill" href="#teacher_course_{{ forloop.counter }}"
+                                                   role="tab">{{ year }}</a>
                                             </li>
                                         {% endfor %}
                                     </ul>
                                 </div>
                                 <div class="tab-content">
                                     {% for year, courses in teacher_in_courses %}
-                                        <div class="tab-pane fade {% if year == current_year or forloop.last and not teacher_in_courses|has_item:current_year %}in active{% endif %}" id="teacher_course_{{ forloop.counter }}" role="tabpanel">
+                                        <div class="tab-pane fade {% if year == current_year or forloop.last and not teacher_in_courses|has_item:current_year %}in active{% endif %}"
+                                             id="teacher_course_{{ forloop.counter }}" role="tabpanel">
                                             <div class="card-block">
                                                 <ul class="list-group list-group-flush">
                                                     {% for course in courses %}
-                                                        <li class="list-group-item"><a href="{{ course.get_absolute_url }}">{{ course }}</a></li>
+                                                        <li class="list-group-item"><a
+                                                                href="{{ course.get_absolute_url }}">{{ course }}</a>
+                                                        </li>
                                                     {% endfor %}
                                                 </ul>
                                             </div>
@@ -236,29 +381,38 @@
                     </div>
                 {% endif %}
                 {% if teacher_in_courses_archive %}
-                    <div class="tab-pane fade {% if not teacher_in_courses %}in active{% endif %}" id="teacher_course_archive" role="tabpanel">
+                    <div class="tab-pane fade {% if not teacher_in_courses %}in active{% endif %}"
+                         id="teacher_course_archive" role="tabpanel">
                         <div class="{{ card_width }} col-xs-12 ">
                             <div class="card">
-                                <div class="card-header" >
+                                <div class="card-header">
                                     {% if teacher_in_courses %}
-                                        <a class="close switch-tab" href="#teacher_course" role="tab" title='{% trans "aktivnye" %}'><i class="fa fa-file-text-o" aria-hidden="true"></i></a>
+                                        <a class="close switch-tab" href="#teacher_course" role="tab"
+                                           title='{% trans "aktivnye" %}'><i class="fa fa-file-text-o"
+                                                                             aria-hidden="true"></i></a>
                                     {% endif %}
                                     <h5 class="card-title">{% trans "prepodavatel_v_kursah_arhiv" %}</h5>
                                     <ul class="nav nav-pills" role="tablist">
                                         {% for year, _ in teacher_in_courses_archive %}
                                             <li class="nav-item">
-                                                <a class="nav-link {% if year == current_year or forloop.last and not teacher_in_courses_archive|has_item:current_year %}active{% endif %}" data-toggle="pill" href="#teacher_course_archive_{{ forloop.counter }}" role="tab">{{ year }}</a>
+                                                <a class="nav-link {% if year == current_year or forloop.last and not teacher_in_courses_archive|has_item:current_year %}active{% endif %}"
+                                                   data-toggle="pill"
+                                                   href="#teacher_course_archive_{{ forloop.counter }}"
+                                                   role="tab">{{ year }}</a>
                                             </li>
                                         {% endfor %}
                                     </ul>
                                 </div>
                                 <div class="tab-content">
                                     {% for year, courses in teacher_in_courses_archive %}
-                                        <div class="tab-pane fade {% if year == current_year or forloop.last and not teacher_in_courses_archive|has_item:current_year %}in active{% endif %}" id="teacher_course_archive_{{ forloop.counter }}" role="tabpanel">
+                                        <div class="tab-pane fade {% if year == current_year or forloop.last and not teacher_in_courses_archive|has_item:current_year %}in active{% endif %}"
+                                             id="teacher_course_archive_{{ forloop.counter }}" role="tabpanel">
                                             <div class="card-block">
                                                 <ul class="list-group list-group-flush">
                                                     {% for course in courses %}
-                                                        <li class="list-group-item"><a href="{{ course.get_absolute_url }}">{{ course }}</a></li>
+                                                        <li class="list-group-item"><a
+                                                                href="{{ course.get_absolute_url }}">{{ course }}</a>
+                                                        </li>
                                                     {% endfor %}
                                                 </ul>
                                             </div>
@@ -278,26 +432,33 @@
                     <div class="tab-pane fade in active" id="course_list" role="tabpanel">
                         <div class="{{ card_width }} col-xs-12 ">
                             <div class="card">
-                                <div class="card-header" >
+                                <div class="card-header">
                                     {% if courses_archive %}
-                                        <a class="close switch-tab" href="#course_list_archive" role="tab" title='{%  trans  "arhiv" %}'><i class="fa fa-file-archive-o" aria-hidden="true"></i></a>
+                                        <a class="close switch-tab" href="#course_list_archive" role="tab"
+                                           title='{% trans "arhiv" %}'><i class="fa fa-file-archive-o"
+                                                                          aria-hidden="true"></i></a>
                                     {% endif %}
                                     <h5 class="card-title">{% trans "sostoit_v_kursah" %}</h5>
                                     <ul class="nav nav-pills" role="tablist">
                                         {% for year, _ in courses %}
                                             <li class="nav-item">
-                                                <a class="nav-link {% if year == current_year or forloop.last and not courses|has_item:current_year %}active{% endif %}" data-toggle="pill" href="#courses_{{ forloop.counter }}" role="tab">{{ year }}</a>
+                                                <a class="nav-link {% if year == current_year or forloop.last and not courses|has_item:current_year %}active{% endif %}"
+                                                   data-toggle="pill" href="#courses_{{ forloop.counter }}"
+                                                   role="tab">{{ year }}</a>
                                             </li>
                                         {% endfor %}
                                     </ul>
                                 </div>
                                 <div class="tab-content">
                                     {% for year, courses_in_year in courses %}
-                                        <div class="tab-pane fade {% if year == current_year or forloop.last and not courses|has_item:current_year %}in active{% endif %}" id="courses_{{ forloop.counter }}" role="tabpanel">
+                                        <div class="tab-pane fade {% if year == current_year or forloop.last and not courses|has_item:current_year %}in active{% endif %}"
+                                             id="courses_{{ forloop.counter }}" role="tabpanel">
                                             <div class="card-block">
                                                 <ul class="list-group list-group-flush">
                                                     {% for course in courses_in_year %}
-                                                        <li class="list-group-item"><a href="{{ course.get_absolute_url }}">{{ course }}</a></li>
+                                                        <li class="list-group-item"><a
+                                                                href="{{ course.get_absolute_url }}">{{ course }}</a>
+                                                        </li>
                                                     {% endfor %}
                                                 </ul>
                                             </div>
@@ -309,29 +470,37 @@
                     </div>
                 {% endif %}
                 {% if courses_archive %}
-                    <div class="tab-pane fade {% if not courses %}in active{% endif %}" id="course_list_archive" role="tabpanel">
+                    <div class="tab-pane fade {% if not courses %}in active{% endif %}" id="course_list_archive"
+                         role="tabpanel">
                         <div class="{{ card_width }} col-xs-12 ">
                             <div class="card">
-                                <div class="card-header" >
+                                <div class="card-header">
                                     {% if courses %}
-                                        <a class="close switch-tab" href="#course_list" role="tab" title='{% trans "arhiv" %}'><i class="fa fa-file-text-o" aria-hidden="true"></i></a>
+                                        <a class="close switch-tab" href="#course_list" role="tab"
+                                           title='{% trans "arhiv" %}'><i class="fa fa-file-text-o"
+                                                                          aria-hidden="true"></i></a>
                                     {% endif %}
                                     <h5 class="card-title">{% trans "sostoit_v_kursah_arhiv" %}</h5>
                                     <ul class="nav nav-pills" role="tablist">
                                         {% for year, _ in courses_archive %}
                                             <li class="nav-item">
-                                                <a class="nav-link {% if year == current_year or forloop.last and not courses_archive|has_item:current_year %}active{% endif %}" data-toggle="pill" href="#courses_archive_{{ forloop.counter }}" role="tab">{{ year }}</a>
+                                                <a class="nav-link {% if year == current_year or forloop.last and not courses_archive|has_item:current_year %}active{% endif %}"
+                                                   data-toggle="pill" href="#courses_archive_{{ forloop.counter }}"
+                                                   role="tab">{{ year }}</a>
                                             </li>
                                         {% endfor %}
                                     </ul>
                                 </div>
                                 <div class="tab-content">
                                     {% for year, courses_in_year in courses_archive %}
-                                        <div class="tab-pane fade {% if year == current_year or forloop.last and not courses_archive|has_item:current_year %}in active{% endif %}" id="courses_archive_{{ forloop.counter }}" role="tabpanel">
+                                        <div class="tab-pane fade {% if year == current_year or forloop.last and not courses_archive|has_item:current_year %}in active{% endif %}"
+                                             id="courses_archive_{{ forloop.counter }}" role="tabpanel">
                                             <div class="card-block">
                                                 <ul class="list-group list-group-flush">
                                                     {% for course in courses_in_year %}
-                                                        <li class="list-group-item"><a href="{{ course.get_absolute_url }}">{{ course }}</a></li>
+                                                        <li class="list-group-item"><a
+                                                                href="{{ course.get_absolute_url }}">{{ course }}</a>
+                                                        </li>
                                                     {% endfor %}
                                                 </ul>
                                             </div>
@@ -348,19 +517,21 @@
         {% if groups %}
             <div class="{{ card_width }} col-xs-12 ">
                 <div class="card">
-                    <div class="card-header" >
+                    <div class="card-header">
                         <h5 class="card-title">{% trans "sostoit_v_gruppah" %}</h5>
                         <ul class="nav nav-pills" role="tablist">
                             {% for year, _ in groups %}
                                 <li class="nav-item">
-                                    <a class="nav-link {% if year == current_year or forloop.last and not groups|has_item:current_year %}active{% endif %}" data-toggle="pill" href="#groups_{{ forloop.counter }}" role="tab">{{ year }}</a>
+                                    <a class="nav-link {% if year == current_year or forloop.last and not groups|has_item:current_year %}active{% endif %}"
+                                       data-toggle="pill" href="#groups_{{ forloop.counter }}" role="tab">{{ year }}</a>
                                 </li>
                             {% endfor %}
                         </ul>
                     </div>
                     <div class="tab-content">
                         {% for year, groups_in_year in groups %}
-                            <div class="tab-pane fade {% if year == current_year or forloop.last and not groups|has_item:current_year %}in active{% endif %}" id="groups_{{ forloop.counter }}" role="tabpanel">
+                            <div class="tab-pane fade {% if year == current_year or forloop.last and not groups|has_item:current_year %}in active{% endif %}"
+                                 id="groups_{{ forloop.counter }}" role="tabpanel">
                                 <div class="card-block">
                                     <ul class="list-group list-group-flush">
                                         {% for group in groups_in_year %}
@@ -377,37 +548,40 @@
     </div>
 
     {% if user == user_to_show %}
-        <div class="modal fade" id="modal_avatar_edit" tabindex="-1" role="dialog" aria-labelledby="modal_avatar_edit_header" aria-hidden="true">
+        <div class="modal fade" id="modal_avatar_edit" tabindex="-1" role="dialog"
+             aria-labelledby="modal_avatar_edit_header" aria-hidden="true">
             <div class="modal-dialog modal-sm" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
                         <h5 class="modal-title" id="modal_avatar_edit_header">{% trans "vybor_avatara" %}</h5>
                     </div>
-                    <div class="modal-body" style="max-height: none;">
-                        <div class="row" style="text-align: center;">
+                    <div class="modal-body">
+                        <div class="row text-center">
 
                             <form method="post" id="avatar-form" enctype="multipart/form-data">
                                 {% csrf_token %}
-                                <div class="col-sm-12" >
-                                    <img class="avatar" id="edit-avatar" src="{% if not user_to_show.get_profile.avatar %}https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mm&f=y
-                                        {% else %}{{ user_to_show.get_profile.avatar.url }}{% endif %}"
-                                         style="width: 200px; height: 200px; ">
+                                <div class="col-sm-12">
+                                    <img class="avatar" id="edit-avatar"
+                                         src="{% if not user_to_show_profile.avatar %}https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mm&f=y
+                                        {% else %}{{ user_to_show_profile.avatar.url }}{% endif %}">
                                 </div>
                                 <div class="col-sm-12">
                                     <br>
-                                    <label class="btn btn-secondary" >
-                                        <i class="fa fa-upload" ></i>
-                                        <input name="input-avatar" id="input-avatar" onchange="readURL(this);" type="file" style="display: none;" accept="image/*">
-                                        <input name="gravatar-link" id="gravatar-link" type="text" style="display: none;" value="">
+                                    <label class="btn btn-secondary">
+                                        <i class="fa fa-upload"></i>
+                                        <input name="input-avatar" id="input-avatar" onchange="readURL(this);"
+                                               type="file" accept="image/*">
+                                        <input name="gravatar-link" id="gravatar-link" type="text" value="">
                                     </label>
-{#                                    <label class="btn btn-secondary" id="get-gravatar" >#}
-{#                                        <img src="https://www.gravatar.com/avatar/00000000000000000000000000000000?d=retro&amp;f=y"#}
-{#                                             style="width: 16px; height: 16px; ">#}
-{#                                        <input type="hidden" value="" />#}
-{#                                    </label>#}
-                                    <label class="btn btn-secondary" id="dismiss-avatar" >
-                                        <input name="delete-avatar" id="delete-avatar" type="text" style="display: none;" value="">
+                                    {#                                    <label class="btn btn-secondary" id="get-gravatar" >#}
+                                    {#                                        <img src="https://www.gravatar.com/avatar/00000000000000000000000000000000?d=retro&amp;f=y"#}
+                                    {#                                             style="width: 16px; height: 16px; ">#}
+                                    {#                                        <input type="hidden" value="" />#}
+                                    {#                                    </label>#}
+                                    <label class="btn btn-secondary" id="dismiss-avatar">
+                                        <input name="delete-avatar" id="delete-avatar" type="text" value="">
                                         <i class="fa fa-times"></i>
                                     </label>
                                 </div>
@@ -417,50 +591,58 @@
                     </div>
                     <div class="modal-footer">
                         <a href="#" class="btn btn-secondary btn-sm" data-dismiss="modal">{% trans "zakryt" %}</a>
-                        <button type="submit" name="update-avatar" form="avatar-form" class="btn btn-primary btn-sm" id="modal_course_info_ok" data-loading-text="{% trans "sohranenie" %}">{% trans "sohranit" %}</button>
+                        <button type="submit" name="update-avatar" form="avatar-form" class="btn btn-primary btn-sm"
+                                id="modal_course_info_ok"
+                                data-loading-text="{% trans "sohranenie" %}">{% trans "sohranit" %}</button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="modal fade" id="modal_user_info_edit" tabindex="-1" role="dialog" aria-labelledby="modal_user_info_header" aria-hidden="true">
+        <div class="modal fade" id="modal_user_info_edit" tabindex="-1" role="dialog"
+             aria-labelledby="modal_user_info_header" aria-hidden="true">
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
                         <h5 class="modal-title" id="modal_user_info_header">{% trans "o_sebe" %}</h5>
                     </div>
-                    <div class="modal-body" style="max-height: none;">
+                    <div class="modal-body">
                         <form method="post" id="user-info-form" enctype="multipart/form-data">
                             {% csrf_token %}
-                            <textarea class='input-xlarge form-control' style="width: 100%;resize: none;" id='user_info' rows='13' name='user-info'></textarea>
+                            <textarea class='input-xlarge form-control' id='user_info' rows='13'
+                                      name='user-info'></textarea>
                         </form>
-                        <div class="alert alert-danger" role ="alert" id="update_user_info_error_text" style="margin: 1rem 0 0 0;">
+                        <div class="alert alert-danger" role="alert" id="update_user_info_error_text">
                             <span>{% trans "oshibka_poprobujte_eshe" %}</span>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">{% trans "zakryt" %}</button>
-                        <button type="button" form="user-info-form" class="btn btn-primary" id="modal_user_info_ok" data-loading-text='{% trans "sohranenie" %}'>{% trans "sohranit" %}</button>
+                        <button type="button" class="btn btn-secondary"
+                                data-dismiss="modal">{% trans "zakryt" %}</button>
+                        <button type="button" form="user-info-form" class="btn btn-primary" id="modal_user_info_ok"
+                                data-loading-text='{% trans "sohranenie" %}'>{% trans "sohranit" %}</button>
                     </div>
                 </div>
             </div>
         </div>
     {% endif %}
-    <div class="modal fade" id="modal_avatar_view" tabindex="-1" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
+    <div class="modal fade" id="modal_avatar_view" tabindex="-1" role="dialog" aria-labelledby="modal-title"
+         aria-hidden="true">
         <div class="modal-dialog modal-sm" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
                     <h5 class="modal-title" id="modal_avatar_edit_header">{% trans "prosmotr_avatara" %}</h5>
                 </div>
-                <div class="modal-body" style="max-height: none;">
-                    <div class="row" style="text-align: center;">
-                        <div class="col-sm-12" >
-                            <img class="avatar" id="edit-avatar" src="{% if not user_to_show.get_profile.avatar %}
+                <div class="modal-body">
+                    <div class="row text-center">
+                        <div class="col-sm-12">
+                            <img class="avatar" id="show-avatar" src="{% if not user_to_show_profile.avatar %}
                             https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mm&f=y{% else %}
-                            {{ user_to_show.get_profile.avatar.url }}{% endif %}"
-                                 style="object-fit: contain; border-radius: 0; width: 100%; height: auto">
+                            {{ user_to_show_profile.avatar.url }}{% endif %}">
                         </div>
                     </div>
                 </div>
@@ -474,7 +656,7 @@
 
     <footer>
         <small class="text-muted pull-xs-right">
-            {% trans "esli_dannye_neverny"%} <a href="mailto:anytask@yandex.ru">{% trans "administratoru" %}</a>.
+            {% trans "esli_dannye_neverny" %} <a href="mailto:anytask@yandex.ru">{% trans "administratoru" %}</a>.
         </small>
     </footer>
 
