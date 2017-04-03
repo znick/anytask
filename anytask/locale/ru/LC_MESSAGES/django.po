@@ -82,7 +82,7 @@ msgstr "Архив"
 msgid "august"
 msgstr "авг."
 
-#. Сообщение в интерфейсе, если есть непрочитанные.
+#. Сообщение в интерфейсе, если есть непрочитанные. 
 #: templates/base.html:657
 msgid "base_est_novye_soobshenija"
 msgstr "Есть новые сообщения"
@@ -1016,7 +1016,7 @@ msgstr "Что-то пошло не так... Пожалуйста, сообщи
 msgid "oshibka_kontesta"
 msgstr "Ошибка Я.Контеста:"
 
-#. Ошибка отправки решений в контест
+#. Ошибка отправки решений в контест 
 #: courses/templates/courses/settings_js.html:237
 msgid "oshibka_otpravki"
 msgstr "Ошибка отправки."
@@ -1252,7 +1252,7 @@ msgstr "Поиск"
 msgid "pojavilis_novye_kommentarii"
 msgstr "появились новые комментарии"
 
-#. Показать 5 сообщений/студентов..
+#. Показать 5 сообщений/студентов.. 
 #: courses/templates/courses/course_js.html:259 mail/templates/mail_js.html:72
 #: staff/templates/gradebook_js.html:130 staff/templates/staff_js.html:170
 msgid "pokazat"

@@ -1,0 +1,157 @@
+{% load i18n %}
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap4.min.js"></script>
+<script type="text/javascript"
+        src="https://cdn.datatables.net/colreorder/1.3.2/js/dataTables.colReorder.min.js"></script>
+<script type="text/javascript"
+        src="https://cdn.datatables.net/fixedcolumns/3.2.2/js/dataTables.fixedColumns.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.2.2/js/dataTables.buttons.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.html5.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.bootstrap4.min.js"></script>
+<script type="text/javascript" src="//cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/pdfmake.min.js"></script>
+<script type="text/javascript" src="//cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js"></script>
+
+
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap4.min.css"/>
+<link rel="stylesheet" type="text/css"
+      href="https://cdn.datatables.net/colreorder/1.3.2/css/colReorder.bootstrap4.min.css"/>
+<link rel="stylesheet" type="text/css"
+      href="https://cdn.datatables.net/fixedcolumns/3.2.2/css/fixedColumns.bootstrap4.min.css"/>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.2.2/css/buttons.bootstrap4.min.css"/>
+
+
+<script type="text/javascript">
+
+
+    $(document).ready(function () {
+        var orderCount = 0;
+
+        $("#edit_statuses").multiselect({
+            buttonClass: 'btn btn-secondary btn-block',
+            templates: {
+                ul: '<ul class="multiselect-container dropdown-menu"></ul>',
+                li: '<li><a tabindex="0" class="dropdown-item"><label></label></a></li>',
+                filter: '<li class="multiselect-item filter"><div class="input-group"><span class="input-group-addon"><i class="fa fa-search"></i></span><input class="form-control multiselect-search" type="text"></div></li>',
+                filterClearBtn: '<span class="input-group-btn"><button class="btn btn-secondary btn-block multiselect-clear-filter" type="button"><i class="fa fa-times"></i></button></span>'
+            },
+            selectAllJustVisible: false,
+            enableCaseInsensitiveFiltering: true,
+            selectAllText: '{% trans "vse_statusy" %}',
+            allSelectedText: '{% trans "vse_statusy" %}',
+            maxHeight: 200,
+            buttonContainer: '<div style="width:100%;" class="multiselect-dropdown"/>',
+            buttonWidth: '100%',
+            checkboxName: function(option) {
+                return 'children[]';
+            },
+            buttonText: function (options, select) {
+                if (options.length === 0) {
+                    return '{% trans "ne_vybrano_statusov" %}';
+                }
+                else if (options.length === $('option', select).length) {
+                    return '{% trans "vse_statusy" %}';
+                }
+                else {
+                    var labels = [];
+                    options.each(function () {
+                        if ($(this).attr('label') !== undefined) {
+                            labels.push($(this).attr('label'));
+                        }
+                        else {
+                            labels.push($(this).text());
+                        }
+                    });
+                    return labels.join(', ') + '';
+                }
+            },
+            onChange: function(option, checked) {
+                if (checked) {
+                    orderCount++;
+                    $(option).data('order', orderCount);
+                }
+                else {
+                    $(option).data('order', '');
+                }
+            }
+        });
+
+        $("#btn-generate").click(function() {
+            var selected = [];
+            $("#edit_statuses option:selected").each(function(){
+                selected.push([$(this).val(), $(this).data('order')]);
+            });
+
+            selected.sort(function(a, b) {
+                return a[1] - b[1];
+            });
+
+            var url = '';
+            for (var i = 0; i < selected.length; i++) {
+                url += selected[i][0] + '_';
+            }
+            url = url.substring(0, url.length - 1);
+            window.location.href = "gradebook/" + url;
+        });
+
+        var table_min_height = '50vh';
+        $(".table_users").each(function (i) {
+            var t = $(this).DataTable({
+                dom: 'Bfrtip',
+                scrollY: table_min_height,
+                scrollX: true,
+                scrollCollapse: true,
+                paging: false,
+                buttons: [
+                    {
+                        extend: 'copy',
+                        text: '{% trans "skopirovat" %}',
+                        exportOptions: {
+                            columns: function (idx, data, node) {
+                                return $.inArray('', data) === -1;
+                            }
+                        }
+                    },
+                    {
+                        extend: 'csv',
+                        exportOptions: {
+                            columns: function (idx, data, node) {
+                                return $.inArray('', data) === -1;
+                            }
+                        }
+                    }],
+                language: {
+                    "decimal": "",
+                    "emptyTable": "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{% trans 'pustaja_tablica' %}",
+                    "info": "_TOTAL_ {% trans 'studentov' %}",
+                    "infoEmpty": "0 {% trans 'studentov' %}",
+                    "infoFiltered": "({% trans 'iz' %} _MAX_)",
+                    "infoPostFix": "",
+                    "thousands": ",",
+                    "lengthMenu": "{% trans 'pokazat' %} _MENU_ {% trans 'studentov' %}",
+                    "loadingRecords": "{% trans 'zagruzka' %}",
+                    "processing": "{% trans 'vychislenie' %}",
+                    "search": "{% trans 'poisk' %}:",
+                    "zeroRecords": "{% trans 'nichego_ne_najdeno' %}",
+                    "paginate": {
+                        "first": "{% trans 'pervaja' %}",
+                        "last": "{% trans 'poslednjaja' %}",
+                        "next": "{% trans 'vpered' %}",
+                        "previous": "{% trans 'nazad' %}"
+                    },
+                    "aria": {
+                        "sortAscending": ": activate to sort column ascending",
+                        "sortDescending": ": activate to sort column descending"
+                    },
+                    buttons: {
+                        copyTitle: '{% trans "dannye_skopirovany" %}',
+                        copySuccess: {
+                            _: '%d {% trans "zapisej_iz_tablicy" %}',
+                            1: '{% trans "1_zapis_iz_tablicy" %}'
+                        }
+                    }
+                }
+            });
+            t.draw();
+        });
+    })
+</script>
