@@ -4,6 +4,7 @@ from django.db import models
 from datetime import datetime
 from django.utils.translation import ugettext_lazy as _
 from django.db.models.signals import post_save, pre_delete
+from django.conf import settings
 
 from courses.models import Course
 from groups.models import Group
@@ -76,12 +77,12 @@ class Task(models.Model):
         if not self.course.groups.filter(students=user).count():
             return (False, u'')
 
-        if course.max_users_per_task:
-            if TaskTaken.objects.filter(task=self).filter(Q( Q(status=TaskTaken.STATUS_TAKEN) | Q(status=TaskTaken.STATUS_SCORED))).count() >= course.max_users_per_task:
-                return (False, u'Задача не может быть взята более чем %d студентами' % course.max_users_per_task)
+        if settings.PYTHONTASK_MAX_USERS_PER_TASK:
+            if TaskTaken.objects.filter(task=self).filter(Q( Q(status=TaskTaken.STATUS_TAKEN) | Q(status=TaskTaken.STATUS_SCORED))).count() >= settings.PYTHONTASK_MAX_USERS_PER_TASK:
+                return (False, u'Задача не может быть взята более чем %d студентами' % settings.PYTHONTASK_MAX_USERS_PER_TASK)
 
-        if course.max_tasks_without_score_per_student:
-            if TaskTaken.objects.filter(user=user).filter(status=TaskTaken.STATUS_TAKEN).count() >= course.max_tasks_without_score_per_student:
+        if settings.PYTHONTASK_MAX_TASKS_WITHOUT_SCORE_PER_STUDENT:
+            if TaskTaken.objects.filter(user=user).filter(status=TaskTaken.STATUS_TAKEN).count() >= settings.PYTHONTASK_MAX_TASKS_WITHOUT_SCORE_PER_STUDENT:
                 return (False, u'')
 
         if Task.objects.filter(parent_task=self).count() > 0:
@@ -97,7 +98,7 @@ class Task(models.Model):
 
         try:
             task_taken = TaskTaken.objects.filter(task=self).filter(user=user).get(status=TaskTaken.STATUS_BLACKLISTED)
-            black_list_expired_date = task_taken.update_time + timedelta(days=course.days_drop_from_blacklist)
+            black_list_expired_date = task_taken.update_time + timedelta(days=settings.PYTHONTASK_DAYS_DROP_FROM_BLACKLIST)
             return (False, u'Вы сможете взять эту задачу с %s' % black_list_expired_date.strftime("%d.%m.%Y"))
         except TaskTaken.DoesNotExist:
             pass

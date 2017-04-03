@@ -41,6 +41,7 @@ from issues.model_issue_status import IssueStatus
 from issues.views import contest_rejudge
 from users.forms import InviteActivationForm
 from users.models import UserProfile
+from courses import pythontask
 
 from common.ordered_dict import OrderedDict
 
@@ -163,6 +164,9 @@ def course_page(request, course_id):
         raise PermissionDenied
 
     course = get_object_or_404(Course, id=course_id)
+    if course.is_python_task:
+        return pythontask.tasks_list(request, course)
+
     schools = course.school_set.all()
 
     if course.private and not course.user_is_attended(request.user):

@@ -14,8 +14,8 @@
 
 <div class="subnav">
     <ul class="nav nav-pills">
-      <li class="active"><a href="{% url courses.views.tasks_list course.id %}">Задачи</a></li>
-      <li><a href="{% url courses.views.course_statistics course_id=course.id %}">Статистика</a></li>
+{#      <li class="active"><a href="{% url courses.views.tasks_list course.id %}">Задачи</a></li>#}
+{#      <li><a href="{% url courses.views.course_statistics course_id=course.id %}">Статистика</a></li>#}
     </ul>
 </div>
 
@@ -27,7 +27,7 @@
 					{% if course.information %}Редактировать информацию о курсе{% else %}Добавить информацию о курсе{% endif %}
 				</a>
 				|
-				<a class="btn-small" href="javascript:get_add_task_modal({{ course.id }}, null, null, '{{course.can_edit}}');">
+				<a class="btn-small" href="/task/create/{{ course.id }}">
 					Добавить задачу
 				</a>
 			</dd>
@@ -88,12 +88,12 @@
 								</a>
 							{% endif %}
 							{% if task.can_take.0  %}
-								<a href="{% url courses.views.get_task course_id=course.id task_id=task.id %}">Записаться на задачу</a>
+								<a href="{% url courses.pythontask.get_task course_id=course.id task_id=task.id %}">! Записаться на задачу</a>
 							{% else %}
 								{{ task.can_take.1 }}
 							{% endif %}
 							{% if task.can_cancel  %}
-								<a href="{% url courses.views.cancel_task course_id=course.id task_id=task.id %}">Отказаться от задачи</a>
+								<a href="{% url courses.pythontask.cancel_task course_id=course.id task_id=task.id %}">Отказаться от задачи</a>
 							{% endif %}
 							{% if task.can_pass  %}
 								<a href="{% url submit_review task.id %}">Сдать задачу}</a>
@@ -114,12 +114,12 @@
 										</a>
 									{% endif %}
 									{% if subtask.can_take.0  %}
-										<a href="{% url courses.views.get_task course_id=course.id task_id=subtask.id %}">Записаться на задачу</a>
+										<a href="{% url courses.pythontask.get_task course_id=course.id task_id=subtask.id %}">Записаться на задачу</a>
 									{% else %}
 										{{ subtask.can_take.1 }}
 									{% endif %}
 									{% if subtask.can_cancel  %}
-										<a href="{% url courses.views.cancel_task course_id=course.id task_id=subtask.id %}">Отказаться от задачи</a>
+										<a href="{% url courses.pythontask.cancel_task course_id=course.id task_id=subtask.id %}">Отказаться от задачи</a>
 									{% endif %}
 									{% if subtask.can_pass  %}
 										<a href="{% url submit_review subtask.id %}">Сдать задачу</a>
