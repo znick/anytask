@@ -32,11 +32,7 @@ class AnytaskLoginForm(AuthenticationForm):
         self.helper.form_action = '/accounts/login/'
         self.helper.label_class = 'col-md-4'
         self.helper.field_class = 'col-md-8'
-        self.helper.layout.append(HTML(u"""<div class="form-group row" style="margin-bottom: 16px;margin-top: -16px;">
-                                             <div class="col-md-offset-4 col-md-8">
-                                               <a href="{% url django.contrib.auth.views.password_reset %}"><small class="text-muted">""" + _(u'Забыли пароль?') + """</small></a>
-                                             </div>
-                                           </div>
+        self.helper.layout.append(HTML(u"""
                                            <div class="form-group row">
                                              <div class="col-md-offset-4 col-md-8">
                                                <button type="submit" class="btn btn-secondary">""" + _(u'Войти') + """</button>
