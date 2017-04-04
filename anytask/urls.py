@@ -3,7 +3,7 @@ from django.conf import settings
 from django.views.generic.base import RedirectView
 from django.views.generic.simple import direct_to_template
 # from django.contrib.auth.views import password_change
-
+from django.http import HttpResponse
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
