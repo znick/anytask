@@ -5,64 +5,59 @@
 {% block title %}{{ course.name }} | {{ course.year }}{% endblock %}
 
 {% block scripts %}
-
-	{% include "course_tasks_base_js.html" %}
-
+    {% include "courses/course_js.html" %}
 {% endblock %}
 
 {% block content %}
 
-<div class="subnav">
-    <ul class="nav nav-pills">
-{#      <li class="active"><a href="{% url courses.views.tasks_list course.id %}">Задачи</a></li>#}
-{#      <li><a href="{% url courses.views.course_statistics course_id=course.id %}">Статистика</a></li>#}
-    </ul>
-</div>
+    {{ block.super }}
+
+    <style>
+        #btn_group_edit_course .btn {
+            margin: 2px auto;
+        }
+
+        .tasks-list {
+            display: flex;
+            padding: .75rem 0 .75rem 0;
+            line-height: 1.5;
+            border-top: 1px solid #eceeef;
+        }
+    </style>
+
 
 <dl>
-	<dt><h3>{{ course.name }} <small>{{ course.year }}</small></h3></dt>
-		{% if course.can_edit %}
-			<dd>
-				<a class="btn-small" href="javascript:get_edit_course_modal({{ course.id }}, {% if course.information %} '{{course.information|escapejs}}' {% else %} '' {% endif %});">
-					{% if course.information %}Редактировать информацию о курсе{% else %}Добавить информацию о курсе{% endif %}
-				</a>
-				|
-				<a class="btn-small" href="/task/create/{{ course.id }}">
-					Добавить задачу
-				</a>
-			</dd>
-			<br>
-		{% endif%}
+	<dt><h3>{{ course.name }} <small>{{ course.year }}</small>
+    {% if course.can_edit %}
+        <a class="btn btn-secondary btn-sm btn-square" id="edit_course_info_btn">
+        <span class="fa fa-pencil"></span></a></h3>
+    {% endif%}
+</dt>
+
+
 	<dd>Преподаватели:
 		{% for teacher in course.teachers.all %}
 			<a href="{% url users.views.profile teacher.username %}">{{ teacher.last_name }} {{ teacher.first_name }}</a>{% if not forloop.last %},{% endif %}
 		{% endfor %}
 	</dd>
-    {% if course.is_special_course %}
-        <!--
-        <dd>
-            {{ course.name }} &#151; спец-курс. Вы можете сами решать ходить на него или нет.
-        </dd>
-    -->
-    {% endif %}
 
-	<dd>{% if course.take_policy == 0 %} Студент берет задачу самостоятельно. {% endif %}</dd>
-	{% if course.max_users_per_task %} <dd>Максимальное число студентов на задачу: {{ course.max_users_per_task }}</dd> {% endif %}
-
-	{% if course.max_days_without_score %}
-		<dd>Если задача не будет оценена в течении {{ course.max_days_without_score }} дней, то заявка отменяется автоматически.</dd>
-	{% endif %}
-
-	{% if course.days_drop_from_blacklist %}
-		<dd>После автоматической отмены заявки задачу можно будет взять через {{ course.days_drop_from_blacklist }} дней.</dd>
-	{% endif %}
-
-	{% if course.max_tasks_without_score_per_student %}
-		<dd>У каждого студента может быть не более {{ course.max_tasks_without_score_per_student }} неоцененных задач.</dd>
-	{% endif %}
+{#	<dd>{% if course.take_policy == 0 %} Студент берет задачу самостоятельно. {% endif %}</dd>#}
+{#	{% if course.max_users_per_task %} <dd>Максимальное число студентов на задачу: {{ course.max_users_per_task }}</dd> {% endif %}#}
+{##}
+{#	{% if course.max_days_without_score %}#}
+{#		<dd>Если задача не будет оценена в течении {{ course.max_days_without_score }} дней, то заявка отменяется автоматически.</dd>#}
+{#	{% endif %}#}
+{##}
+{#	{% if course.days_drop_from_blacklist %}#}
+{#		<dd>После автоматической отмены заявки задачу можно будет взять через {{ course.days_drop_from_blacklist }} дней.</dd>#}
+{#	{% endif %}#}
+{##}
+{#	{% if course.max_tasks_without_score_per_student %}#}
+{#		<dd>У каждого студента может быть не более {{ course.max_tasks_without_score_per_student }} неоцененных задач.</dd>#}
+{#	{% endif %}#}
 	<dd>
 		{% if course.information %}<br>{% endif %}
-		{{ course.information|sanitize|safe }}
+        <div id="course-information">{{ course.information|sanitize|safe }}</div>
 	</dd>
 
 </dl>
@@ -88,7 +83,7 @@
 								</a>
 							{% endif %}
 							{% if task.can_take.0  %}
-								<a href="{% url courses.pythontask.get_task course_id=course.id task_id=task.id %}">! Записаться на задачу</a>
+								<a href="{% url courses.pythontask.get_task course_id=course.id task_id=task.id %}">Записаться на задачу</a>
 							{% else %}
 								{{ task.can_take.1 }}
 							{% endif %}
@@ -186,35 +181,27 @@
 												<small>{{ task_taken.added_time|date:"d.m.Y" }}</small>
 											</td>
 
-
 											{% if task_taken.status == STATUS_TAKEN %}
 												<td style="width:10%;">
 													{{ task_taken.cancel_date|date:"d.m.Y" }}
 												</td>
 												<td style="width:20%;"></td>
-												<td style="width:20%;">
-													{% if task.can_score %}
-														<a class="btn-small" href="javascript:get_modal({{ task.id }}, '{{ task.title|escapejs }}', '{{ task_taken.user.get_full_name|escapejs }}', {{ task_taken.user.id }}, 0, {{ task.score_max }}, '{{ task_taken.teacher_comments|sanitize|escapejs }}')">Оценить</a>
-													{% endif %}
-												</td>
 											{% endif %}
 
 											{% if task_taken.status == STATUS_SCORED %}
 												<td style="width:10%;">
 													<span class="label {% if task_taken.score == task.score_max %} label-success{% endif %}">{{ task_taken.score|floatformat }}</span>
-													{% if task_taken.teacher_comments %}
-														<a class="icon-comment" href="javascript:get_modal_comment('{{ task_taken.teacher_comments|sanitize|escapejs }}')"></a>
-													{% endif %}
 												</td>
 												<td style="width:20%;">
 													{{ task_taken.update_time|date:"d.m.Y" }}
 												</td>
-												<td style="width:20%;">
-													{% if task.can_score %}
-														<a class="btn-small" href="javascript:get_modal({{ task.id }}, '{{ task.title|escapejs }}', '{{ task_taken.user.get_full_name|escapejs }}', {{ task_taken.user.id }}, '{{ task_taken.score }}', {{ task.score_max }}, '{{ task_taken.teacher_comments|sanitize|escapejs }}')">Оценить</a>
-													{% endif %}
-												</td>
 											{% endif %}
+                                            {% if task.can_score or task.can_pass %}
+                                                <td style="width:20%;">
+													<a href="{% url issues.views.get_or_create task_id=task.id student_id=task_taken.user.id %}">{% trans "sdat" %}</a>
+												</td>
+                                            {% endif %}
+
 										</tr>
 									{% endfor %}
 									</tbody>
@@ -229,6 +216,6 @@
 	</div>
 </div>
 
-{% include "course_tasks_base.html" %}
+{% include "courses/task.html" %}
 
 {% endblock %}

@@ -1,9 +1,12 @@
 
 from tasks.models import Task, TaskTaken
+from issues.models import Issue
 
 from django.conf import settings
 from django.db.models import Q
+from django.db import transaction
 from django.shortcuts import render_to_response, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 
 import datetime
@@ -54,7 +57,8 @@ def tasks_list(request, course):
 
     return render_to_response('course_tasks_potok.html', context, context_instance=RequestContext(request))
 
-
+@login_required
+@transaction.commit_on_success
 def get_task(request, course_id, task_id):
     user = request.user
 
@@ -63,11 +67,16 @@ def get_task(request, course_id, task_id):
     if user_can_take_task:
         task_taken, _ = TaskTaken.objects.get_or_create(user=user, task=task)
         task_taken.status = TaskTaken.STATUS_TAKEN
+
+        if not task_taken.issue:
+            issue, created = Issue.objects.get_or_create(task=task, student=user)
+            task_taken.issue = issue
+
         task_taken.save()
 
     return redirect('courses.views.course_page', course_id=course_id)
 
-
+@login_required
 def cancel_task(request, course_id, task_id):
     user = request.user
 
@@ -78,4 +87,4 @@ def cancel_task(request, course_id, task_id):
         task_taken.status = TaskTaken.STATUS_CANCELLED
         task_taken.save()
 
-    return redirect(tasks_list, course_id=course_id)
+        return redirect('courses.views.course_page', course_id=course_id)

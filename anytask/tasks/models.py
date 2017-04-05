@@ -77,6 +77,9 @@ class Task(models.Model):
         if not self.course.groups.filter(students=user).count():
             return (False, u'')
 
+        for task_taken in TaskTaken.objects.filter(task=self):
+            task_taken.update_status()
+
         if settings.PYTHONTASK_MAX_USERS_PER_TASK:
             if TaskTaken.objects.filter(task=self).filter(Q( Q(status=TaskTaken.STATUS_TAKEN) | Q(status=TaskTaken.STATUS_SCORED))).count() >= settings.PYTHONTASK_MAX_USERS_PER_TASK:
                 return (False, u'Задача не может быть взята более чем %d студентами' % settings.PYTHONTASK_MAX_USERS_PER_TASK)
@@ -218,6 +221,7 @@ class TaskLog(models.Model):
         return unicode(self.title)
 
 class TaskTaken(models.Model):
+    from issues.models import Issue
 
     STATUS_TAKEN = 0
     STATUS_CANCELLED = 1
@@ -227,6 +231,7 @@ class TaskTaken(models.Model):
 
     user = models.ForeignKey(User, db_index=True, null=False, blank=False)
     task = models.ForeignKey(Task, db_index=True, null=False, blank=False)
+    issue = models.ForeignKey(Issue, db_index=True, null=True, blank=False)
 
     TASK_TAKEN_STATUSES = (
         (STATUS_TAKEN,          u'Task taken'),
@@ -247,47 +252,25 @@ class TaskTaken(models.Model):
     )
     status_check = models.CharField(db_index=True, max_length=5, choices=STATUS_CHECK_CHOICES, default=EDIT)
 
-    teacher = models.ForeignKey(User, db_index=True, null=True, blank=False, default=None, related_name='teacher')
-
-    score = models.FloatField(db_index=False, null=False, blank=False, default=0)
-    scored_by = models.ForeignKey(User, db_index=True, null=True, blank=True, related_name='task_taken_scored_by_set')
-
-    teacher_comments = models.TextField(db_index=False, null=True, blank=True, default='')
-
-    id_issue_gr_review = models.IntegerField(db_index=True, null=True, blank=False, default=None)
-    pdf = models.FileField(upload_to="pdf_review", db_index=True, null=True, blank=False, default=None)
-
-    pdf_update_time = models.DateTimeField(default=datetime.now)
-    gr_review_update_time = models.DateTimeField(default=datetime.now)
-
     added_time = models.DateTimeField(auto_now_add=True, default=datetime.now)
     update_time = models.DateTimeField(auto_now=True, default=datetime.now)
+
+    @property
+    def score(self):
+        if not self.issue:
+            return 0
+        return self.issue.mark
+
+    def update_status(self):
+        if self.issue and self.issue != 0 and self.status != self.STATUS_SCORED:
+            self.status = self.STATUS_SCORED
+            self.save()
 
     class Meta:
         unique_together = (("user", "task"),)
 
     def __unicode__(self):
         return unicode(self.task) + " (" + unicode(self.user) + ")"
-
-    def user_can_change_status(self, user, status):
-        if user.is_anonymous():
-            return False
-        if self.task.course.user_is_teacher(user):
-            return True
-        if user.id != self.user.id:
-            return False
-        if status == self.OK:
-            return  self.status_check == self.OK
-        else:
-            return  self.status_check != self.OK
-
-    def user_can_change_teacher(self, user):
-        if user.is_anonymous():
-            return False
-        if self.task.course.user_is_teacher(user):
-            return True
-        return False
-
 
 class TaskGroupRelations(models.Model):
     task = models.ForeignKey(Task, db_index=False, null=False, blank=False)

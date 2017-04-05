@@ -28,7 +28,7 @@ import reversion
 from courses.models import Course, DefaultTeacher, StudentCourseMark, MarkField, FilenameExtension
 from groups.models import Group
 from tasks.models import TaskTaken, Task, TaskGroupRelations
-from tasks.views import update_status_check, prettify_contest_task_text
+from tasks.views import prettify_contest_task_text
 from years.models import Year
 from years.common import get_current_year
 from course_statistics import CourseStatistics

@@ -24,7 +24,7 @@ class TaskLogAdmin(admin.ModelAdmin):
     get_groups.short_description = 'Groups'
 
 class TaskTakenAdmin(admin.ModelAdmin):
-    list_display = ('task', 'user', 'status', 'score', 'scored_by', 'added_time', 'update_time')
+    list_display = ('task', 'user', 'status', 'added_time', 'update_time')
     list_filter = ('task__course', 'task__course__year__start_year')
 
 class TaskGroupRelationsAdmin(admin.ModelAdmin):
