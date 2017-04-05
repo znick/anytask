@@ -51,7 +51,11 @@ class AdmissionRegistrationProfileManager(RegistrationManager):
         user = registration_profile = None
 
         if not (user_by_username | user_by_email | user_by_uid):
-            user, registration_profile = self.create_inactive_user(username, email, password, send_email)
+            if len(username) > User._meta.get_field("username").max_length:
+                new_username = self.generate_username()
+            else:
+                new_username = username
+            user, registration_profile = self.create_inactive_user(new_username, email, password, send_email)
             logger.info("Admission: User %s was created", user.username)
         elif user_by_username and not (user_by_email | user_by_uid):
             new_username = self.generate_username()
