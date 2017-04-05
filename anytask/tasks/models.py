@@ -289,24 +289,6 @@ class TaskTaken(models.Model):
         return False
 
 
-class TaskTakenLog(models.Model):
-    user = models.ForeignKey(User, db_index=False, null=False, blank=False)
-    task = models.ForeignKey(Task, db_index=False, null=False, blank=False)
-
-    status = models.IntegerField(max_length=1, choices=TaskTaken.TASK_TAKEN_STATUSES, db_index=True, null=False, blank=False, default=0)
-
-    score = models.IntegerField(db_index=False, null=False, blank=False, default=0)
-    scored_by = models.ForeignKey(User, db_index=False, null=True, blank=True, related_name='task_taken_log_scored_by_set')
-
-    teacher_comments = models.TextField(db_index=False, null=True, blank=True, default='')
-
-    added_time = models.DateTimeField(auto_now_add=True, default=datetime.now)
-    update_time = models.DateTimeField(auto_now=True, default=datetime.now)
-
-    def __unicode__(self):
-        return unicode(self.task) + " (" + unicode(self.user) + ")"
-
-
 class TaskGroupRelations(models.Model):
     task = models.ForeignKey(Task, db_index=False, null=False, blank=False)
     group = models.ForeignKey(Group, db_index=False, null=False, blank=False)
@@ -331,23 +313,4 @@ def task_save_to_log_post_save(sender, instance, created, **kwargs):
     task_log.save()
     task_log.groups.add(*instance.groups.all())
 
-def task_taken_save_to_log_post_save(sender, instance, created, **kwargs):
-    task_taken_log = TaskTakenLog()
-    task_taken_log_dict  = copy.deepcopy(instance.__dict__)
-    task_taken_log_dict['id'] = None
-    task_taken_log.__dict__ = task_taken_log_dict
-    task_taken_log.save()
-
-def task_taken_save_to_log_pre_delete(sender, instance, **kwargs):
-    task_taken_log = TaskTakenLog()
-    task_taken_log_dict  = copy.deepcopy(instance.__dict__)
-    task_taken_log_dict['id'] = None
-    task_taken_log.__dict__ = task_taken_log_dict
-    task_taken_log.scored_by = None
-    task_taken_log.status = TaskTaken.STATUS_DELETED
-    task_taken_log.save()
-
-
 # post_save.connect(task_save_to_log_post_save, sender=Task)
-post_save.connect(task_taken_save_to_log_post_save, sender=TaskTaken)
-pre_delete.connect(task_taken_save_to_log_pre_delete, sender=TaskTaken)
