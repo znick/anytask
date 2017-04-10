@@ -183,9 +183,14 @@ def course_page(request, course_id):
                      'group', 'position')]
     else:
         groups = Group.objects.filter(students=user, course__in=[course])
-        tasks = set([tgr.task for tgr in
-                     TaskGroupRelations.objects.filter(task__course=course, group__in=groups, deleted=False).order_by(
-                         'group', 'position')])
+        tasks = TaskGroupRelations.objects.filter(
+                    task__course=course, group__in=groups, deleted=False
+                ).order_by(
+                    'group', 'position'
+                ).values_list(
+                    'task__id', flat=True
+                ).distinct()
+        tasks = Task.objects.filter(id__in=tasks)
 
     if StudentCourseMark.objects.filter(student=user, course=course):
         mark = StudentCourseMark.objects.get(student=user, course=course).mark
@@ -239,9 +244,14 @@ def seminar_page(request, course_id, task_id):
                      'position')]
     else:
         groups = Group.objects.filter(students=user, course__in=[course])
-        tasks = set([tgr.task for tgr in
-                     TaskGroupRelations.objects.filter(task__parent_task=task, group__in=groups,
-                                                       deleted=False).order_by('group', 'position')])
+        tasks = TaskGroupRelations.objects.filter(
+                    task__course=course, group__in=groups, deleted=False
+                ).order_by(
+                    'group', 'position'
+                ).values_list(
+                    'task__id', flat=True
+                ).distinct()
+        tasks = Task.objects.filter(id__in=tasks)
     if Issue.objects.filter(task=task, student=user):
         mark = Issue.objects.get(task=task, student=user).mark
     else:
