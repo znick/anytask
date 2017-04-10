@@ -10,6 +10,8 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 
 from admission.models import AdmissionRegistrationProfile
+from django.contrib.auth.models import User
+
 
 import json
 import requests
@@ -104,12 +106,17 @@ def register(request):
     if not ('HTTP_OAUTH' in request.META and request.META['HTTP_OAUTH'] == settings.YA_FORMS_OAUTH):
         return HttpResponseForbidden()
 
+    uid = request.META['HTTP_UID']
+
+    if User.objects.filter(profile__ya_contest_uid=uid).count():
+        logger.warning("Admission: user with uid %s already created. Skipped!")
+        return HttpResponse("OK")
+
     post_data = request.POST.dict()
 
     username = request.META['HTTP_LOGIN']
     email = get_post_value(post_data, settings.YA_FORMS_FIELDS['email'])
     password = None
-    uid = request.META['HTTP_UID']
     new_user, registration_profile = AdmissionRegistrationProfile.objects.create_or_update_user(username, email,
                                                                                                 password, uid,
                                                                                                 send_email=False,
