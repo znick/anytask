@@ -406,6 +406,15 @@ class Issue(models.Model):
     def get_absolute_url(self):
         return reverse('issues.views.issue_page', args=[str(self.id)])
 
+    def add_comment(self, comment):
+        author = User.objects.get(username="anytask")
+        field, field_get = IssueField.objects.get_or_create(name='comment')
+        event = self.create_event(field, author=author)
+        event.value = u'<div class="contest-response-comment not-sanitize">' + comment + u'</div>'
+        event.save()
+        return event
+
+
 class Event(models.Model):
     issue = models.ForeignKey(Issue, null=False, blank=False)
     author = models.ForeignKey(User, db_index=True, null=True, blank=True)

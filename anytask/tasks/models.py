@@ -128,9 +128,6 @@ class Task(models.Model):
         if user.is_anonymous():
             return False
 
-        if not self.rb_integrated:
-            return False
-
         if self.user_can_take_task(user):
             return True
 
@@ -262,7 +259,7 @@ class TaskTaken(models.Model):
         return self.issue.mark
 
     def update_status(self):
-        if self.issue and self.issue != 0 and self.status != self.STATUS_SCORED:
+        if self.issue and int(self.issue.mark) != 0 and self.status != self.STATUS_SCORED:
             self.status = self.STATUS_SCORED
             self.save()
 

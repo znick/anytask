@@ -8,6 +8,7 @@ from django.db import transaction
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
+from django.utils.translation import ugettext_lazy as _
 
 import datetime
 
@@ -27,6 +28,7 @@ def tasks_list(request, course):
 
         task_taken_list = []
         for task_taken in TaskTaken.objects.filter(task=task).exclude(task__is_hidden=True).filter(Q( Q(status=TaskTaken.STATUS_TAKEN) | Q(status=TaskTaken.STATUS_SCORED))):
+
             if settings.PYTHONTASK_MAX_DAYS_WITHOUT_SCORES and task_taken.status == TaskTaken.STATUS_TAKEN:
                 task_taken.cancel_date = task_taken.added_time + delta
             task_taken_list.append(task_taken)
@@ -51,6 +53,7 @@ def tasks_list(request, course):
     context = {
         'course'        : course,
         'tasks_taken'   : task_and_task_taken,
+        'user_is_teacher' : course.user_is_teacher(user),
         'STATUS_TAKEN'  : TaskTaken.STATUS_TAKEN,
         'STATUS_SCORED' : TaskTaken.STATUS_SCORED,
     }
@@ -65,7 +68,7 @@ def get_task(request, course_id, task_id):
     task = get_object_or_404(Task, id=task_id)
     user_can_take_task, reason = task.user_can_take_task(user)
     if user_can_take_task:
-        task_taken, _ = TaskTaken.objects.get_or_create(user=user, task=task)
+        task_taken, created = TaskTaken.objects.get_or_create(user=user, task=task)
         task_taken.status = TaskTaken.STATUS_TAKEN
 
         if not task_taken.issue:
@@ -73,6 +76,7 @@ def get_task(request, course_id, task_id):
             task_taken.issue = issue
 
         task_taken.save()
+        task_taken.issue.add_comment(u"{} {} {}".format(user.first_name, user.last_name, _("zapisalsya_na_task")))
 
     return redirect('courses.views.course_page', course_id=course_id)
 
@@ -86,5 +90,11 @@ def cancel_task(request, course_id, task_id):
         task_taken = get_object_or_404(TaskTaken, user=user, task=task)
         task_taken.status = TaskTaken.STATUS_CANCELLED
         task_taken.save()
+
+        if not task_taken.issue:
+            issue, created = Issue.objects.get_or_create(task=task, student=user)
+            task_taken.issue = issue
+
+        task_taken.issue.add_comment(u"{} {} {}".format(user.first_name, user.last_name, _("otkazalsya_ot_taska")))
 
         return redirect('courses.views.course_page', course_id=course_id)
