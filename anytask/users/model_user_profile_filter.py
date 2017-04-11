@@ -32,63 +32,31 @@ class UserProfileFilter(django_filters.FilterSet):
                                 action='empty_filter',
                                 widget=forms.SelectMultiple,
                                 field_class=forms.MultipleChoiceField)
-    user_status_activity = django_filters.MultipleChoiceFilter(
-        label=_(u'status_studenta'),
-        name='user_status',
-        widget=forms.SelectMultiple)
-    user_status_filial = django_filters.MultipleChoiceFilter(
-        label=_(u'filial'),
-        name='user_status',
-        widget=forms.SelectMultiple)
-    user_status_admission = django_filters.MultipleChoiceFilter(
-        label=_(u'status_postupleniya'),
-        name='user_status',
-        widget=forms.SelectMultiple)
+    user_status_activity = CustomMethodFilter(label=_(u'status_studenta'),
+                                              action='empty_filter',
+                                              widget=forms.SelectMultiple,
+                                              field_class=forms.MultipleChoiceField)
+    user_status_filial = CustomMethodFilter(label=_(u'filial'),
+                                            action='empty_filter',
+                                            widget=forms.SelectMultiple,
+                                            field_class=forms.MultipleChoiceField)
+    user_status_admission = CustomMethodFilter(label=_(u'status_postupleniya'),
+                                               action='empty_filter',
+                                               widget=forms.SelectMultiple,
+                                               field_class=forms.MultipleChoiceField)
 
-    @property
-    def qs(self):
-        if not hasattr(self, '_qs'):
-            qs = super(UserProfileFilter, self).qs
-            if not hasattr(self, '_users_info'):
-                qs_filter = {}
-
-                if u'courses' in self.data:
-                    qs_filter['user__group__course__id__in'] = self.data.getlist(u'courses')
-                if u'groups' in self.data:
-                    qs_filter['user__group__id__in'] = self.data.getlist(u'groups')
-
-                users_info = {}
-                for info in qs.filter(**qs_filter).values(
-                        'id',
-                        'user__id',
-                        'user__username',
-                        'user__email',
-                        'user__last_name',
-                        'user__first_name',
-                        'user_status__id',
-                        'user_status__name',
-                        'user_status__color',
-                        # 'user__group__course__id',
-                        # 'user__group__course__name',
-                        # 'user__group__course__is_active'
-                ):
-                    if info['user__id'] not in users_info:
-                        users_info[info['user__id']] = defaultdict(dict)
-                        users_info[info['user__id']]['id_profile'] = info['id']
-                        users_info[info['user__id']]['username'] = info['user__username']
-                        users_info[info['user__id']]['email'] = info['user__email']
-                        users_info[info['user__id']]['last_name'] = info['user__last_name']
-                        users_info[info['user__id']]['first_name'] = info['user__first_name']
-                    if info['user_status__id']:
-                        users_info[info['user__id']]['statuses'][info['user_status__id']] = {
-                            'name': info['user_status__name'],
-                            'color': info['user_status__color'],
-                        }
-                        # users_info[info['user__id']]['courses'][info['user__group__course__id']] = {
-                        #     'name': info['user__group__course__name']
-                        # }
-                self.users_info = users_info
-        return self._qs
+    STATUS_SQL_JOIN = 'LEFT OUTER JOIN users_userprofile_user_status {0} ' \
+                      'ON (users_userprofile.id = {0}.userprofile_id)'
+    STATUS_SQL_PREFIX = 'UUUS'
+    STATUS_SQL_EXTRA = '''
+        users_userprofile.id IN (
+          SELECT DISTINCT
+            users_userprofile.id
+          FROM users_userprofile
+          {0}
+          WHERE {1}
+        )
+    '''
 
     def empty_filter(self, qs, value):
         return qs
@@ -131,6 +99,71 @@ class UserProfileFilter(django_filters.FilterSet):
         self.filters['user_status_activity'].field.choices = tuple(activity_choices)
         self.filters['user_status_filial'].field.choices = tuple(filial_choices)
         self.filters['user_status_admission'].field.choices = tuple(admission_choices)
+
+    def get_extra_sql_statuses(self):
+        status_join = []
+        status_where = []
+        status_type_counter = 0
+        for filter_name in [u'user_status_activity', u'user_status_filial', u'user_status_admission']:
+            if filter_name in self.data:
+                status_type_counter += 1
+                table_name = self.STATUS_SQL_PREFIX + str(status_type_counter)
+
+                status_join.append(self.STATUS_SQL_JOIN.format(table_name))
+                status_where.append(
+                    '({0}.userstatus_id = {1})'
+                        .format(table_name,
+                                ' OR {0}.userstatus_id = '.join(self.data.getlist(filter_name)).format(table_name))
+                )
+
+        if status_type_counter:
+            return self.STATUS_SQL_EXTRA.format(' '.join(status_join), ' AND '.join(status_where))
+        return ''
+
+    @property
+    def qs(self):
+        if not hasattr(self, '_qs'):
+            qs = super(UserProfileFilter, self).qs
+            if not hasattr(self, '_users_info'):
+                qs_filter = {}
+
+                if u'courses' in self.data:
+                    qs_filter['user__group__course__id__in'] = self.data.getlist(u'courses')
+                if u'groups' in self.data:
+                    qs_filter['user__group__id__in'] = self.data.getlist(u'groups')
+
+                profiles_info = qs.filter(**qs_filter).values(
+                    'id',
+                    'user__id',
+                    'user__username',
+                    'user__email',
+                    'user__last_name',
+                    'user__first_name',
+                    'user_status__id',
+                    'user_status__name',
+                    'user_status__color'
+                )
+
+                extra_sql = self.get_extra_sql_statuses()
+                if extra_sql:
+                    profiles_info = profiles_info.extra(where=[extra_sql])
+
+                users_info = {}
+                for info in profiles_info:
+                    if info['user__id'] not in users_info:
+                        users_info[info['user__id']] = defaultdict(dict)
+                        users_info[info['user__id']]['id_profile'] = info['id']
+                        users_info[info['user__id']]['username'] = info['user__username']
+                        users_info[info['user__id']]['email'] = info['user__email']
+                        users_info[info['user__id']]['last_name'] = info['user__last_name']
+                        users_info[info['user__id']]['first_name'] = info['user__first_name']
+                    if info['user_status__id']:
+                        users_info[info['user__id']]['statuses'][info['user_status__id']] = {
+                            'name': info['user_status__name'],
+                            'color': info['user_status__color'],
+                        }
+                self.users_info = users_info
+        return self._qs
 
     class Meta:
         model = UserProfile
