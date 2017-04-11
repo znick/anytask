@@ -5,7 +5,7 @@ from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 
 from django.contrib.auth.models import User
-from anycontest.common import FakeResponse, escape
+from anycontest.common import FakeResponse, escape, user_register_to_contest
 from issues.models import Issue, File
 
 from datetime import datetime
@@ -72,14 +72,11 @@ class ContestSubmission(models.Model):
                     return False
 
                 if not reg_req.json()['result']['isRegistered']:
-                    reg_req = requests.get(
-                        settings.CONTEST_API_URL + 'register-user?uidToRegister=' + str(student_profile.ya_contest_uid) +
-                        '&contestId=' + str(contest_id),
-                        headers={'Authorization': 'OAuth ' + settings.CONTEST_OAUTH})
-                if 'error' in reg_req.json():
-                    self.send_error = reg_req.json()["error"]["message"]
-                    self.save()
-                    return False
+                    got_info, response_text = user_register_to_contest(contest_id, student_profile.ya_contest_uid)
+                    if not got_info:
+                        self.send_error = response_text
+                        self.save()
+                        return False
             else:
                 OAUTH = settings.CONTEST_OAUTH
 
