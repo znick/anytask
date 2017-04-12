@@ -183,7 +183,7 @@
 													{% endif %}
 													{% if task_taken.status == STATUS_SCORED %}
 														<td style="width:10%;">
-															<span class="label {% if task_taken.score == subtask.score_max %} label-success{% endif %}">{{ task_taken.score }}</span>
+															<span class="label {% if task_taken.score == subtask.score_max %} label-success {% else %} label-warning {% endif %}">{{ task_taken.score }}</span>
 															{% if task_taken.teacher_comments %}
 																<a class="icon-comment" href="javascript:get_modal_comment('{{ task_taken.teacher_comments|sanitize|escapejs }}')"></a>
 															{% endif %}
@@ -227,7 +227,7 @@
 
 											{% if task_taken.status == STATUS_SCORED %}
 												<td style="width:10%;">
-													<span class="label {% if task_taken.score == task.score_max %} label-success{% endif %}">{{ task_taken.score|floatformat }}</span>
+													<span class="label {% if task_taken.score == task.score_max %} label-success {% else %} label-warning {% endif %}">{{ task_taken.score|floatformat }}</span>
 												</td>
 												<td style="width:20%;">
 													{{ task_taken.update_time|date:"d.m.Y" }}
