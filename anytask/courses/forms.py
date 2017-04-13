@@ -15,7 +15,7 @@ class PdfForm(forms.Form):
         if file:
             name, extension = os.path.splitext(file.name)
             if extension not in self.extensions:
-                raise forms.ValidationError(_(u'rasshirenia_fajla') + ": " + ",".join(self.extensions))
+                raise forms.ValidationError(u'rasshirenia_fajla' + ": " + ",".join(self.extensions))
 
 
 class QueueForm(forms.Form):

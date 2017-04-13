@@ -1,0 +1,11 @@
+{% load i18n %}
+{% trans "zdravstvujte" %}, {{ user.first_name }}.
+
+{% trans "u_vas_soobshenij" %} {{ unread_count }} {{ unread_count_string }}.
+{% trans "posmotret_soobshenija" %}:
+{{ domain }}{% url mail.views.mail_page %}
+
+
+--
+{% trans "s_uvazheniem" %},
+{% trans "komanda_anytask" %}.
