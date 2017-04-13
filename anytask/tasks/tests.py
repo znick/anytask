@@ -294,10 +294,10 @@ class ViewsTest(TestCase):
 
         form_inputs = div_task_id.form('input', 'form-control')
         self.assertEqual(form_inputs[0]['value'], 'task_title', "form input id='{}' wrong".format(form_inputs[0]['id']))
-        self.assertEqual(form_inputs[1]['value'], '10', "form input id='{}' wrong".format(form_inputs[1]['id']))
-        self.assertEqual(form_inputs[2]['value'], '01-08-2016 00:30', "form input id='{}' wrong".format(form_inputs[2]['id']))
-        self.assertEqual(form_inputs[3]['value'], '1234', "form input id='{}' wrong".format(form_inputs[4]['id']))
-        self.assertEqual(form_inputs[4]['value'], 'A', "form input id='{}' wrong".format(form_inputs[4]['id']))
+        self.assertEqual(form_inputs[2]['value'], '10', "form input id='{}' wrong".format(form_inputs[2]['id']))
+        self.assertEqual(form_inputs[3]['value'], '01-08-2016 00:30', "form input id='{}' wrong".format(form_inputs[3]['id']))
+        self.assertEqual(form_inputs[4]['value'], '1234', "form input id='{}' wrong".format(form_inputs[4]['id']))
+        self.assertEqual(form_inputs[5]['value'], 'A', "form input id='{}' wrong".format(form_inputs[5]['id']))
 
         form_checkbox = div_task_id.form('input', {'type': 'checkbox'})
 
