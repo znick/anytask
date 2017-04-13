@@ -23,18 +23,64 @@
         {#        });#}
 
 
-        $('.lesson_datetime').datetimepicker({
-            bootcssVer: 3,
-            format: 'dd-mm-yyyy hh:ii',
-            language: '{{ user.get_profile.language }}',
-            todayBtn: true,
-            autoclose: true,
-            todayHighlight: true,
-            pickerPosition: "bottom-left",
-            startDate: null,
-            minuteStep: 30
-        });
+{#        $('.lesson_datetime').datetimepicker({#}
+{#            bootcssVer: 3,#}
+{#            format: 'dd-mm-yyyy hh:ii',#}
+{#            language: '{{ user.get_profile.language }}',#}
+{#            todayBtn: true,#}
+{#            autoclose: true,#}
+{#            todayHighlight: true,#}
+{#            pickerPosition: "bottom-left",#}
+{#            startDate: null,#}
+{#            minuteStep: 30#}
+{#        });#}
+        $(function(){
+            var date = new Date();
+            date.setDate(date.getDate());
+            $('#start_date1').datetimepicker({
+                bootcssVer: 3,
+                format: 'dd-mm-yyyy hh:ii',
+                language: '{{ user.get_profile.language }}',
+                todayBtn: true,
+                autoclose: true,
+                todayHighlight: true,
+                pickerPosition: "bottom-left",
+                startDate: date,
+                minuteStep: 30
+            });
 
+            $('#start_date2').datetimepicker({
+                bootcssVer: 3,
+                format: 'dd-mm-yyyy hh:ii',
+                language: '{{ user.get_profile.language }}',
+                todayBtn: true,
+                autoclose: true,
+                todayHighlight: true,
+                pickerPosition: "bottom-left",
+                startDate: date,
+                minuteStep: 30
+            });
+
+            $('#end_date').datetimepicker({
+                bootcssVer: 3,
+                format: 'dd-mm-yyyy hh:ii',
+                language: '{{ user.get_profile.language }}',
+                todayBtn: true,
+                autoclose: true,
+                todayHighlight: true,
+                pickerPosition: "bottom-left",
+                startDate: null,
+                minuteStep: 30,
+                useCurrent: false
+            });
+
+            $("#start_date").on("dp.change", function (e) {
+                $('#end_date').data("DateTimePicker").minDate(e.date);
+            });
+            $("#end_date").on("dp.change", function (e) {
+                $('#start_date').data("DateTimePicker").maxDate(e.date);
+            });
+        });
 {#        {% if is_create %}#}
 {#            $("#lesson_edit_hidden_lesson").change(function () {#}
 {#                var $lesson_edit_label_for_changed_lesson = $('#lesson_edit_label_for_changed_lesson');#}
@@ -138,6 +184,96 @@
             errorPlacement: function (error, element) {
                 $(element).closest("div.controls").find('small.text-help').empty().append(error);
             }
+        });
+
+        $('#lesson_edit_type').change(function () {
+            var $lesson_edit_type = $('#lesson_edit_type');
+
+            if ($lesson_edit_type.val() === 'Once') {
+                $("#date_end_body").collapse('hide');
+                $("#week_body").collapse('hide');
+            }
+            else if ($lesson_edit_type.val() === 'Weekly') {
+                $("#date_end_body").collapse('show');
+                $("#week_body").collapse('show');
+            }
+{#            else if ($lesson_edit_type.val() === 'Monthly') {#}
+{#                $("#date_end_body").show();#}
+{#                $("#month_body").show();#}
+{#            }#}
+        });
+
+        $('#lesson_edit_weekday').multiselect({
+            buttonClass: 'btn btn-secondary btn-block',
+            templates: {
+                ul: '<ul class="multiselect-container dropdown-menu" style="left:inherit;top: inherit;"></ul>',
+                li: '<li><a tabindex="0" class="dropdown-item"><label></label></a></li>'
+            },
+            includeSelectAllOption: true,
+            selectAllText: '{% trans "vse_dni" %}',
+            allSelectedText: '{% trans "vse_dni" %}',
+            selectAllName: 'day_id_all',
+            selectAllValue: 'on',
+            maxHeight: 200,
+            buttonContainer: '<div style="width:100%;" class="multiselect-dropdown"/>',
+            buttonWidth: '100%',
+            buttonTitle: function(options, select) {
+                var labels = [];
+
+                if (options.length === 0) {
+                    return '{% trans "ne_vybrano_ni_odnogo_dnia" %}';
+                }
+                else if (options.length === $('option', select).length) {
+                    return '{% trans "vse_dni" %}';
+                }
+                else {
+                    options.each(function () {
+                        labels.push($(this).text());
+                    });
+                }
+                return labels.join(', ');
+            },
+            buttonText: function(options, select) {
+                if (options.length === 0) {
+                    return '{% trans "ne_vybrano_ni_odnogo_dnia" %}';
+                }
+                else if (options.length === $('option', select).length) {
+                    return '{% trans "vse_dni" %}';
+                }
+                else if (options.length > 1) {
+                    return '{% trans "vybrano_neskolko_dnej" %} - ' + options.length;
+                }
+                else {
+                    var labels = [];
+                    options.each(function() {
+                        var $this = $(this);
+                        if ($this.attr('label') !== undefined) {
+                            labels.push($this.attr('label'));
+                        }
+                        else {
+                            labels.push($this.text());
+                        }
+                    });
+                    return labels.join(', ') + '';
+                }
+            },
+            onInitialized: function(option, checked, select) {
+                $('#lesson_edit').closest('.row').collapse('show');
+                var input = $('#lesson_edit_weekday');
+                $('label.error', input).removeClass('valid');
+                input.removeClass('form-control-success');
+                input.closest('.form-group').removeClass('has-success');
+            },
+            onChange: function(option, checked, select) {
+                form_validator.element('#lesson_edit_group');
+            },
+            onSelectAll: function() {
+                form_validator.element('#lesson_edit_group');
+            },
+            onDeselectAll: function() {
+                form_validator.element('#lesson_edit_group');
+            }
+
         });
 
         $('#lesson_edit_group').multiselect({

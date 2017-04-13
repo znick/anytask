@@ -6,7 +6,7 @@
 {% load django_bootstrap_breadcrumbs %}
 
 
-{% block title %}{% if is_create %}{% trans "sozdanie_uroka" %}{% else %}{{ lesson.title }}{% endif %} | {{ course.name }} | {{ course.year }}{% endblock %}
+{% block title %}{% if is_create %}{% trans "sozdanie_raspisania" %}{% else %}{{ lesson.schedule_id }}{% endif %} | {{ course.name }} | {{ course.year }}{% endblock %}
 
 {% block scripts %}
     <link href="{{ STATIC_URL }}lesson.css" rel='stylesheet'/>
@@ -22,9 +22,9 @@
     {% endif %}
     {% breadcrumb course.name course.get_absolute_url %}
     {% if is_create %}
-        {% breadcrumb_for "" %}{% trans "sozdanie_uroka" %}{% endbreadcrumb_for %}
+        {% breadcrumb_for "" %}{% trans "sozdanie_raspisania" %}{% endbreadcrumb_for %}
     {% else %}
-        {% breadcrumb_for "" %}{% trans "redaktirovanie_uroka" %}{% endbreadcrumb_for %}
+        {% breadcrumb_for "" %}{% trans "redaktirovanie_raspisania" %}{% endbreadcrumb_for %}
     {% endif %}
 {% endblock breadcrumbs %}
 
@@ -34,15 +34,34 @@
     <div class="row collapse">
         <div class="col-md-12">
             <div id="lesson_edit" class="card card-block">
-                <h5 class="card-title">{% trans "sozdanie_uroka" %}</h5>
-
+                <h5 class="card-title">{% trans "sozdanie_raspisania" %}</h5>
                 <form method="post" id="lesson_edit_form" >
                     {% csrf_token %}
                     <div class="form-group row">
                         <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="lesson_edit_header">{% trans "nazvanie" %}</label>
-                        <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7" >
-                            <input class="form-control" id='lesson_edit_header' name='lesson_title' type='text' size='20' value="{{lesson.title}}" />
+                        <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
+                            <input class="form-control" id='lesson_edit_header' name='lesson_title' type='text' size='20' data-value="{{lesson.title}}" value="{% if lesson.title %}{{ lesson.title }}{% endif %}" />
                             <small class="text-help" id="lesson_edit_header_error_text"></small>
+                        </div>
+                    </div>
+
+                    <div id='date_start_body' class="form-group row">
+                        <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="lesson_edit_datepicker">{% trans "data_zanatia" %}</label>
+                        <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
+                            <div class="input-group date lesson_datetime" id="start_date1">
+                                <input class="form-control" id='lesson_edit_datepicker' name='date_start1' type='text' readonly value="{{lesson.date_start|date:'d-m-Y H:i'}}">
+                                <span class="input-group-addon"><i class="fa fa-times fa-lg"></i></span>
+                                <span class="input-group-addon"><i class="fa fa-calendar fa-lg"></i></span>
+                            </div>
+                            <small class="text-help" id="lesson_edit_datepicker_error_text"></small>
+                        </div>
+                        <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
+                            <div class="input-group date lesson_datetime" id="start_date2">
+                                <input class="form-control" id='lesson_edit_datepicker' name='date_start2' type='text' readonly value="{{lesson.date_start|date:'d-m-Y H:i'}}">
+                                <span class="input-group-addon"><i class="fa fa-times fa-lg"></i></span>
+                                <span class="input-group-addon"><i class="fa fa-calendar fa-lg"></i></span>
+                            </div>
+                            <small class="text-help" id="lesson_edit_datepicker_error_text"></small>
                         </div>
                     </div>
                     <div class="form-group row">
@@ -50,23 +69,61 @@
                         <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
                             <select class="form-control" id='lesson_edit_group' name="lesson_group_id[]" multiple="multiple">
                                 {% for group in course.groups.all %}
-                                    <option value="{{ group.id }}" selected>{{ group.name }}</option>
+                                    <option value="{{ group.id }}" {% ifequal group.id lesson.group %}selected{% endifequal %}>{{ group.name }}</option>
                                 {% endfor %}
                             </select>
                             <small class="text-help" id="lesson_group_id_error_text"></small>
                         </div>
                     </div>
-                    <div id='date_body' class="form-group row">
-                        <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="lesson_edit_datepicker">{% trans "data_uroka" %}</label>
+                    <div class="form-group row">
+                        <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5  form-control-label" for="lesson_edit_type"> {% trans "povtoriat" %}</label>
                         <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
-                            <div class="input-group date lesson_datetime">
-                                <input class="form-control" id='lesson_edit_datepicker' name='date' type='text'  readonly value="{{lesson.date|date:'d-m-Y H:i'}}">
+                            <select class="form-control" id='lesson_edit_type' name="period_type">
+                                {% for type_id, type in period_types %}
+                                    <option value="{{ type_id }}" {% ifequal type_id lesson.period %}selected{% endifequal %}>{{ type }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div id='week_body' class="{% if lesson.period != lesson.PERIOD_WEEK %}in{% endif %} collapse">
+                        <div class="form-group row">
+                            <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="lesson_edit_weekday">{% trans "dni_nedeli" %}</label>
+                            <div class="controls no-validate col-lg-4 col-md-6 col-sm-7 col-xs-7">
+                                <select class="form-control" name="days[]" id="lesson_edit_weekday" multiple="multiple">
+                                    <option value="0">{% trans "mon" %}</option>
+                                    <option value="1">{% trans "tue" %}</option>
+                                    <option value="2">{% trans "wed" %}</option>
+                                    <option value="3">{% trans "thu" %}</option>
+                                    <option value="4">{% trans "fri" %}</option>
+                                    <option value="5">{% trans "sat" %}</option>
+                                    <option value="6">{% trans "sun" %}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div id='date_end_body' class="{% if lesson.period != lesson.PERIOD_SIMPLE %}in{% endif %} collapse form-group row">
+                        <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="lesson_edit_datepicker">{% trans "data_okonchania" %}</label>
+                        <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
+                            <div class="input-group date lesson_datetime" id="end_date">
+                                <input class="form-control" id='lesson_edit_datepicker' name='date_end' type='text' readonly value="{{lesson.date_end|date:'d-m-Y H:i'}}">
                                 <span class="input-group-addon"><i class="fa fa-times fa-lg"></i></span>
                                 <span class="input-group-addon"><i class="fa fa-calendar fa-lg"></i></span>
                             </div>
                             <small class="text-help" id="lesson_edit_datepicker_error_text"></small>
                         </div>
                     </div>
+{#                    <div id='date_body' class="form-group row">#}
+{#                        <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="lesson_edit_datepicker">{% trans "data_uroka" %}</label>#}
+{#                        <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">#}
+{#                            <div class="input-group date lesson_datetime">#}
+{#                                <input class="form-control" id='lesson_edit_datepicker' name='date' type='text'  readonly value="{{lesson.date|date:'d-m-Y H:i'}}">#}
+{#                                <span class="input-group-addon"><i class="fa fa-times fa-lg"></i></span>#}
+{#                                <span class="input-group-addon"><i class="fa fa-calendar fa-lg"></i></span>#}
+{#                            </div>#}
+{#                            <small class="text-help" id="lesson_edit_datepicker_error_text"></small>#}
+{#                        </div>#}
+{#                    </div>#}
+
                     <div class="form-group row">
                         <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="lesson_edit_body">{% trans "opisanie" %}</label>
                         <br>
