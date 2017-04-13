@@ -25,7 +25,7 @@ class Command(BaseCommand):
         domain = Site.objects.get_current().domain
 
         for issue in issues:
-            user_profile = UserProfile.objects.get(id=issue.student.id)
+            user_profile = issue.student.get_profile()
             lang = user_profile.language
             translation.activate(lang)
 
