@@ -218,8 +218,6 @@ class TaskLog(models.Model):
         return unicode(self.title)
 
 class TaskTaken(models.Model):
-    from issues.models import Issue
-
     STATUS_TAKEN = 0
     STATUS_CANCELLED = 1
     STATUS_BLACKLISTED = 2
@@ -228,7 +226,7 @@ class TaskTaken(models.Model):
 
     user = models.ForeignKey(User, db_index=True, null=False, blank=False)
     task = models.ForeignKey(Task, db_index=True, null=False, blank=False)
-    issue = models.ForeignKey(Issue, db_index=True, null=True, blank=False)
+    issue = models.ForeignKey('issues.Issue', db_index=True, null=True, blank=False)
 
     TASK_TAKEN_STATUSES = (
         (STATUS_TAKEN,          u'Task taken'),
