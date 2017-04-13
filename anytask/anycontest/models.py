@@ -6,7 +6,6 @@ from django.utils.translation import ugettext_lazy as _
 
 from django.contrib.auth.models import User
 from anycontest.common import FakeResponse, escape, user_register_to_contest
-from issues.models import Issue, File
 
 from datetime import datetime
 
@@ -19,9 +18,9 @@ logger = logging.getLogger('django.request')
 
 
 class ContestSubmission(models.Model):
-    issue = models.ForeignKey(Issue, db_index=True, null=False, blank=False)
+    issue = models.ForeignKey('issues.Issue', db_index=True, null=False, blank=False)
     author = models.ForeignKey(User, null=False, blank=False)
-    file = models.ForeignKey(File, null=False, blank=False)
+    file = models.ForeignKey('issues.File', null=False, blank=False)
 
     run_id = models.CharField(max_length=191, blank=True)
     compiler_id = models.CharField(max_length=191, blank=True)
