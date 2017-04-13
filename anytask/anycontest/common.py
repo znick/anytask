@@ -75,11 +75,7 @@ def escape(text):
 
 
 def comment_verdict(issue, verdict, comment):
-    author = User.objects.get(username="anytask")
-    field, field_get = IssueField.objects.get_or_create(name='comment')
-    event = issue.create_event(field, author=author)
-    event.value = u'<div class="contest-response-comment not-sanitize">' + comment + u'</div>'
-    event.save()
+    issue.add_comment(comment)
     if issue.status_field.tag != issue.status_field.STATUS_ACCEPTED:
         if verdict:
             issue.set_status_by_tag(issue.status_field.STATUS_VERIFICATION)
