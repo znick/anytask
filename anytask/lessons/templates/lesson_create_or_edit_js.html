@@ -23,64 +23,42 @@
         {#        });#}
 
 
-{#        $('.lesson_datetime').datetimepicker({#}
-{#            bootcssVer: 3,#}
-{#            format: 'dd-mm-yyyy hh:ii',#}
-{#            language: '{{ user.get_profile.language }}',#}
-{#            todayBtn: true,#}
-{#            autoclose: true,#}
-{#            todayHighlight: true,#}
-{#            pickerPosition: "bottom-left",#}
+        $('.lesson_datetime').datetimepicker({
+            bootcssVer: 3,
+            format: 'dd-mm-yyyy hh:ii',
+            language: '{{ user.get_profile.language }}',
+            todayBtn: true,
+            autoclose: true,
+            todayHighlight: true,
+            pickerPosition: "bottom-left",
 {#            startDate: null,#}
-{#            minuteStep: 30#}
-{#        });#}
-        $(function(){
+            minuteStep: 30
+        });
+{#        $(function(){#}
             var date = new Date();
             date.setDate(date.getDate());
             $('#start_date1').datetimepicker({
-                bootcssVer: 3,
-                format: 'dd-mm-yyyy hh:ii',
-                language: '{{ user.get_profile.language }}',
-                todayBtn: true,
-                autoclose: true,
-                todayHighlight: true,
-                pickerPosition: "bottom-left",
-                startDate: date,
-                minuteStep: 30
+                startDate: date
+            }).on("dp.change", function (e) {
+                console.log(e);
+                $('#end_date').data("DateTimePicker").minDate(e.date);
             });
 
             $('#start_date2').datetimepicker({
-                bootcssVer: 3,
-                format: 'dd-mm-yyyy hh:ii',
-                language: '{{ user.get_profile.language }}',
-                todayBtn: true,
-                autoclose: true,
-                todayHighlight: true,
-                pickerPosition: "bottom-left",
-                startDate: date,
-                minuteStep: 30
+                startDate: date
             });
 
             $('#end_date').datetimepicker({
-                bootcssVer: 3,
-                format: 'dd-mm-yyyy hh:ii',
-                language: '{{ user.get_profile.language }}',
-                todayBtn: true,
-                autoclose: true,
-                todayHighlight: true,
-                pickerPosition: "bottom-left",
-                startDate: null,
-                minuteStep: 30,
-                useCurrent: false
             });
 
-            $("#start_date").on("dp.change", function (e) {
-                $('#end_date').data("DateTimePicker").minDate(e.date);
-            });
-            $("#end_date").on("dp.change", function (e) {
-                $('#start_date').data("DateTimePicker").maxDate(e.date);
-            });
-        });
+{#            $("#start_date1").on("dp.change", function (e) {#}
+{#                console.log(e.date);#}
+{#                $('#end_date').data("DateTimePicker").minDate(e.date);#}
+{#            });#}
+{#            $("#end_date").on("dp.change", function (e) {#}
+{#                $('#start_date').data("DateTimePicker").maxDate(e.date);#}
+{#            });#}
+{#        });#}
 {#        {% if is_create %}#}
 {#            $("#lesson_edit_hidden_lesson").change(function () {#}
 {#                var $lesson_edit_label_for_changed_lesson = $('#lesson_edit_label_for_changed_lesson');#}
