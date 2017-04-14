@@ -13,6 +13,10 @@
     color: #373a3c;
 }
 
+.card-link+.card-link {
+    margin-left: 0rem;
+}
+
 .btn-table-fullscreen,
 .btn-table-edit {
     display: none;

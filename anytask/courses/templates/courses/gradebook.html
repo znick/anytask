@@ -40,7 +40,8 @@
             {% endif %}
             {% if user_is_teacher %}
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url courses.views.course_settings course.id %}">{% trans "nastrojki" %}</a>
+                    <a class="nav-link"
+                       href="{% url courses.views.course_settings course.id %}">{% trans "nastrojki" %}</a>
                 </li>
             {% endif %}
         {% endif %}
@@ -49,11 +50,12 @@
 
 {% block content %}
     {{ block.super }}
-<div id="legend">
-    <div class="card card-block">
-        <div class="row">
-            <div class="col-md-12 col-xs-12">
-                    <a class="btn btn-secondary btn-sm" id="status_btn" data-toggle="popover-status" data-placement="bottom" data-container="document"
+    <div id="legend">
+        <div class="card card-block">
+            <div class="row">
+                <div class="col-md-12 col-xs-12">
+                    <a class="btn btn-secondary btn-sm" id="status_btn" tabindex="-1" data-toggle="popover-status"
+                       data-placement="bottom" data-container="document"
                        data-content='<ul style="padding: 0; font-size: 1.25rem">
                                         <li><span class="label label-default">{% trans "novyj" %}</span></li>
                                         <li><span class="label label-info">{% trans "trebuetsja_informacija" %}</span></li>
@@ -83,26 +85,26 @@
                                 {% endif %}
                             </a>
                         {% endif %}
-                {% endif %}
+                    {% endif %}
 
-                {#    <div class = "breadcrumb_button">#}
-                {#        {% if not user_is_teacher and course.can_be_chosen_by_extern%}#}
-                {#            {% if user_is_attended_special_course %}#}
-                {#                <button type="button" class="btn btn-danger" OnClick="javascript:set_spectial_course_attend({{ course.id }}, 'remove');">#}
-                {#                    Отписаться#}
-                {#                </button>#}
-                {#            {% else %}#}
-                {#                <button type="button" class="btn btn-success" OnClick="javascript:set_spectial_course_attend({{ course.id }},'add');">#}
-                {#                    Записаться#}
-                {#                </button>#}
-                {#            {% endif %}#}
-                {#            <br>#}
-                {#        {% endif %}#}
-                {#    </div>#}
+                    {#    <div class = "breadcrumb_button">#}
+                    {#        {% if not user_is_teacher and course.can_be_chosen_by_extern%}#}
+                    {#            {% if user_is_attended_special_course %}#}
+                    {#                <button type="button" class="btn btn-danger" OnClick="javascript:set_spectial_course_attend({{ course.id }}, 'remove');">#}
+                    {#                    Отписаться#}
+                    {#                </button>#}
+                    {#            {% else %}#}
+                    {#                <button type="button" class="btn btn-success" OnClick="javascript:set_spectial_course_attend({{ course.id }},'add');">#}
+                    {#                    Записаться#}
+                    {#                </button>#}
+                    {#            {% endif %}#}
+                    {#            <br>#}
+                    {#        {% endif %}#}
+                    {#    </div>#}
+                </div>
             </div>
         </div>
     </div>
-</div>
 
     {% include "courses/task.html" %}
     {% include tasklist_template %}

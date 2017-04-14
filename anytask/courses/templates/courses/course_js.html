@@ -27,7 +27,6 @@
 <link href="{{ STATIC_URL }}prism.css" rel='stylesheet'/>
 <link href="{{ STATIC_URL }}tinymce-style-course.css" rel='stylesheet'/>
 <link href="{{ STATIC_URL }}tinymce-style-task.css" rel='stylesheet'/>
-<link href="{{ STATIC_URL }}shad_cpp.css" rel='stylesheet'/>
 
 <script type="text/javascript">
     $.fn.dataTable.ext.order['dom-text-numeric'] = function (settings, col) {
@@ -208,7 +207,7 @@
         }
 
         $('[data-toggle="popover-status"]').popover({
-            trigger: 'click',
+            trigger: 'focus',
             html: true,
             template: '<div class="popover legend" role="tooltip">' +
                       '<div class="popover-arrow legend"></div>' +
@@ -227,7 +226,7 @@
             $(".card", "#legend").css('padding-bottom', '.5rem').css('padding-top', '.5rem');
             $('.popover.legend').removeClass('static').addClass('sticky');
         }).on('sticky-end', function () {
-            $("#legend .card").css('padding', '.1rem');
+            $(".card", "#legend").css('padding', '.1rem').css('padding-left', '0rem');
             $('.popover.legend').removeClass('sticky').addClass('static');
         });
 
@@ -630,6 +629,10 @@
         $(document).click(function () {
             $('[data-toggle="popover"]').popover('hide');
         });
+
+{#        $('#status_btn').click(function (e) {#}
+{#            e.stopPropagation();#}
+{#        });#}
 
         $('body').on("click", '.task-delete', function (e) {
             e.stopPropagation();
