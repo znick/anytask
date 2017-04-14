@@ -192,6 +192,7 @@
 
 .popover.legend.static {
     transform: translateX(15px) translateY(140px) translateZ(0px) !important;
+    position: absolute !important;
 }
 .popover.legend.sticky {
     transform: translateX(15px) translateY(94px) translateZ(0px) !important;
