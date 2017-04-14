@@ -27,7 +27,7 @@
                         error: function (data) {
                             $('#id_invite').removeClass('form-control-success').addClass('form-control-danger')
                                     .closest('.form-group').removeClass('has-success').addClass('has-danger');
-                            $('#id_invite').siblings('small.text-help').empty().append('{% trans "oshibka" %} '+ data.status);
+                            $('#id_invite').siblings('small.text-help').empty().append('{% trans "oshibka" %}: '+ data.status);
                         }
                     });
                 },

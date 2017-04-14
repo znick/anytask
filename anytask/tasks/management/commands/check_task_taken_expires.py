@@ -1,7 +1,11 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 from django.core.management.base import BaseCommand, CommandError
 import datetime
 from django.db.models import Q
+from django.conf import settings
+from django.db import transaction
 
 from courses.models import Course
 from tasks.models import TaskTaken
@@ -15,11 +19,9 @@ class Command(BaseCommand):
         self.out_lines = []
         self.need_print = False
 
+    @transaction.commit_on_success()
     def check_course_task_taken_expires(self, course):
-        if not course.max_days_without_score:
-            return
-
-        task_expired_date = datetime.datetime.now() - datetime.timedelta(days=course.max_days_without_score)
+        task_expired_date = datetime.datetime.now() - datetime.timedelta(days=settings.PYTHONTASK_MAX_DAYS_WITHOUT_SCORES)
         for task in course.task_set.all():
             task_taken_query = TaskTaken.objects.filter(task=task)
             task_taken_query = task_taken_query.filter(Q(Q(status=TaskTaken.STATUS_TAKEN) | Q(status=TaskTaken.STATUS_CANCELLED)))
@@ -40,11 +42,14 @@ class Command(BaseCommand):
 
             for task_taken in task_taken_to_blacklist:
                 task_taken.status = TaskTaken.STATUS_BLACKLISTED
+                task_taken.issue.add_comment(u"Запись на задачу отменена автоматически в связи с истечением времени сдачи")
                 task_taken.save()
 
             for task_taken in task_taken_to_delete:
-                task_taken.delete()
+                task_taken.status = TaskTaken.STATUS_DELETED
+                task_taken.save()
 
+    @transaction.commit_on_success()
     def check_blacklist_expires(self, course):
         blacklist_expired_date = datetime.datetime.now() - datetime.timedelta(days=course.days_drop_from_blacklist)
 
@@ -60,10 +65,12 @@ class Command(BaseCommand):
                 task_taken_to_delete.append(task_taken)
 
             for task_taken in task_taken_to_delete:
-                task_taken.delete()
+                task_taken.status = TaskTaken.STATUS_DELETED
+                task_taken.issue.add_comment(u"На задачу снова можно записаться")
+                task_taken.save()
 
     def handle(self, *args, **options):
-        for course in Course.objects.filter(type=Course.TAKE_POLICY_SELF_TAKEN).filter(max_days_without_score__gt=0):
+        for course in Course.objects.filter(is_pythontask=True):
             self.out_lines.append("Course '{0}'".format(course))
             self.check_course_task_taken_expires(course)
             self.check_blacklist_expires(course)

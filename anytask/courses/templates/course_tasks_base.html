@@ -9,61 +9,61 @@
             value="Взять себе" style="display: inline;"/>
         </div>
     </div>
-    <form action="{% url courses.views.score_task %}" method="post" id="modal-score-form" class="form-horizontal" style="margin-bottom: 0px;">
-        {% csrf_token %}
-        <div class="modal-body" id="modal_score_body">
-            <div id="review_data" class="row-fluid">
-                <div class="row-fluid">
-                    <span name="pdf" class="span9"> </span>
-                    <span name="pdf_update_time" class="span3"> </span>
-                </div>
-                <div class="row-fluid">
-                    <span name="gr_review" class="span9"> </span>
-                    <span name="gr_review_update_time" class="span3"> </span>
-                </div>
-            </div>
-            <hr />
-            
-            <div id="modal_scored_task_other_text"></div>
-            <div id="modal_scored_comments" class="hide well"></div>
-
-            <input type="hidden" id="modal_max_score" />
-            <input type="hidden" id="modal_score_task_id" name="task_id" />
-            <input type="hidden" id="modal_score_student_id" name="student_id" />
-
-
-            <div class="control-group" id="modal_control_group" >
-                <label class="control-label" for="modal_score_score" id="modal_scores_range"></label>
-                <div class="controls">
-                    <input id='modal_score_score' name='score' type='text' size='20'>
-                    <span class="help-inline" id="modal_error_text"></span>
-                    <div class="btn-toolbar" role="toolbar">
-                        <div class="btn-group" id="score_buttons">
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div name="status_body">
-                <div>
-                    <label class="help-inline" for="modal_current_status"> Текущий статус:} </label>
-                    <span type="" id="modal_current_status"> </span> 
-                </div>
-                <div class="radio">
-                </div>
-            </div>
-
-            <br>
-
-            Комментарий (необязательно):
-            <br>
-            <textarea class='input-xlarge' style="width: 98%" id='score_comment' rows='10' cols='800' name='comment'></textarea>
-        </div>
-        <div class="modal-footer">
-            <a href="#" class="btn" data-dismiss="modal">Close</a>
-            <button type="submit" id="modal_score_ok" class="btn btn-primary" data-loading-text="Updating ...">OK</button>
-        </div>
-    </form>
+{#    <form action="{% url courses.views.score_task %}" method="post" id="modal-score-form" class="form-horizontal" style="margin-bottom: 0px;">#}
+{#        {% csrf_token %}#}
+{#        <div class="modal-body" id="modal_score_body">#}
+{#            <div id="review_data" class="row-fluid">#}
+{#                <div class="row-fluid">#}
+{#                    <span name="pdf" class="span9"> </span>#}
+{#                    <span name="pdf_update_time" class="span3"> </span>#}
+{#                </div>#}
+{#                <div class="row-fluid">#}
+{#                    <span name="gr_review" class="span9"> </span>#}
+{#                    <span name="gr_review_update_time" class="span3"> </span>#}
+{#                </div>#}
+{#            </div>#}
+{#            <hr />#}
+{#            #}
+{#            <div id="modal_scored_task_other_text"></div>#}
+{#            <div id="modal_scored_comments" class="hide well"></div>#}
+{##}
+{#            <input type="hidden" id="modal_max_score" />#}
+{#            <input type="hidden" id="modal_score_task_id" name="task_id" />#}
+{#            <input type="hidden" id="modal_score_student_id" name="student_id" />#}
+{##}
+{##}
+{#            <div class="control-group" id="modal_control_group" >#}
+{#                <label class="control-label" for="modal_score_score" id="modal_scores_range"></label>#}
+{#                <div class="controls">#}
+{#                    <input id='modal_score_score' name='score' type='text' size='20'>#}
+{#                    <span class="help-inline" id="modal_error_text"></span>#}
+{#                    <div class="btn-toolbar" role="toolbar">#}
+{#                        <div class="btn-group" id="score_buttons">#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{##}
+{#            <div name="status_body">#}
+{#                <div>#}
+{#                    <label class="help-inline" for="modal_current_status"> Текущий статус:} </label>#}
+{#                    <span type="" id="modal_current_status"> </span> #}
+{#                </div>#}
+{#                <div class="radio">#}
+{#                </div>#}
+{#            </div>#}
+{##}
+{#            <br>#}
+{##}
+{#            Комментарий (необязательно):#}
+{#            <br>#}
+{#            <textarea class='input-xlarge' style="width: 98%" id='score_comment' rows='10' cols='800' name='comment'></textarea>#}
+{#        </div>#}
+{#        <div class="modal-footer">#}
+{#            <a href="#" class="btn" data-dismiss="modal">Close</a>#}
+{#            <button type="submit" id="modal_score_ok" class="btn btn-primary" data-loading-text="Updating ...">OK</button>#}
+{#        </div>#}
+{#    </form>#}
 </div>
 
 <div class="modal hide" id="modal_comment">

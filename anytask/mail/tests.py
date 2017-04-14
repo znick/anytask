@@ -126,7 +126,7 @@ class ViewsTest(TestCase):
 
         # get page
         response = client.get(reverse('mail.views.ajax_send_message'))
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 405)
 
     def test_mail_page_with_user(self):
         client = self.client
@@ -180,7 +180,8 @@ class ViewsTest(TestCase):
 
         get_data = {
             u'unread_count': 0,
-            u'msg_id': 1
+            u'msg_id': 1,
+            u'mailbox': 'inbox'
         }
 
         response_data = {
@@ -206,8 +207,10 @@ class ViewsTest(TestCase):
                 'url': self.recipients_user[0].get_absolute_url(),
                 'fullname': u'%s %s' % (self.recipients_user[0].last_name, self.recipients_user[0].first_name),
                 'id': self.recipients_user[0].id
-            }]
+            }],
+            'recipients_status': []
         }
+
 
         # login
         self.assertTrue(client.login(username=self.sender.username, password=self.sender_password))
@@ -215,6 +218,7 @@ class ViewsTest(TestCase):
         # get page
         response = client.get(reverse('mail.views.ajax_get_message'), get_data)
         self.assertEqual(response.status_code, 200)
+
         self.assertEqual(json.loads(response.content), response_data)
 
     def check_empty_mailboxes(self, mailboxes, unread_count=0):

@@ -159,6 +159,7 @@ INSTALLED_APPS = (
     'blog',
     'mail',
     'reversion',
+    'admission',
 )
 
 AUTH_PROFILE_MODULE = "users.UserProfile"
@@ -181,6 +182,7 @@ RB_SYMLINK_DIR = '/var/lib/anytask/repos/'
 RB_EXTENSIONS = ['.py', '.py2', '.py3', '.cpp', '.sage', '.m', '.java', '.h', '.cs', '.sh', '.c', '.txt', '.fs', '.hpp', '.cc', '.rkt', '.sql']
 
 CONTEST_API_URL = 'https://api.contest.yandex.net/anytask/'
+CONTEST_URL = "https://contest.yandex.ru/"
 CONTEST_OAUTH = 'OAUTH'
 CONTEST_OAUTH_ID = 'OAUTH_ID'
 CONTEST_OAUTH_PASSWORD = 'OAUTH_PASSWORD'
@@ -222,3 +224,9 @@ TEST_RUNNER = 'runner.ExcludeAppsTestSuiteRunner'
 TEST_EXCLUDE = (
     'reversion',
 )
+
+PYTHONTASK_MAX_DAYS_WITHOUT_SCORES = 30
+PYTHONTASK_MAX_USERS_PER_TASK = 8
+PYTHONTASK_MAX_TASKS_WITHOUT_SCORE_PER_STUDENT = 2
+PYTHONTASK_DAYS_DROP_FROM_BLACKLIST = 14
+
