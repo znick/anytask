@@ -22,11 +22,6 @@
                         </h5>
                     {% endifnotequal %}
                     <button class="btn btn-secondary btn-table-fullscreen" type="button" for="#table_results_{{ group.id }}"><i class="fa fa-expand fa-lg"></i></button>
-                    {% if user_is_teacher %}
-                        <span class="card-title-teacher-buttons">
-                            <button class="btn btn-secondary btn-table-edit" type="button" data-toggle="modal" data-target="#modal_table_edit" for="#group_sort_{{ group.id }}" data-table="#table_results_{{ group.id }}"><i class="fa fa-pencil fa-lg"></i></button>
-                        </span>
-                    {% endif %}
                 </div>
             </div>
         </div>
@@ -41,8 +36,8 @@
                     <th class="no-font-weight"><b>{% trans "student" %}</b></th>
                     {% for lssn in group_lessons|key:group %}
                             <th align="center" class="{% if user_is_teacher %}dom-live-number{% else %}dom-number{% endif %} word-wrap">
-                                <a href="javascript:get_lesson_modal('{{lssn.id}}', '{{lssn.title|escapejs}}', '{{lssn.lesson_date|date:'d-m-Y H:i'}}', '{{lssn.description|safe|escapejs}}')">
-                                    {{lssn.lesson_date|date:'d-m-Y'}}
+                                <a href="javascript:get_lesson_modal('{{lssn.id}}', '{{lssn.title|escapejs}}', '{{lssn.date_starttime|date:'d-m-Y H:i'}}', '{{lssn.date_endtime|date:'d-m-Y H:i'}}', '{{lssn.description|safe|escapejs}}')">
+                                    {{lssn.date_starttime|date:'d-m-Y'}}
                                 </a>
                             </th>
                     {% empty %}
@@ -111,41 +106,3 @@
         </div>
     </div>
 {% endfor %}
-
-{% if user_is_teacher %}
-    <div class="modal fade" id="modal_table_edit" tabindex="-1" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
-        <div class="modal-dialog modal-sm" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="modal_table_edit_header">{% trans "itogovaja_tablica" %}</h4>
-                </div>
-{#                <div class="modal-body">#}
-{#                    <p>{% trans "izmenenie_udalenie_zadach" %}</p>#}
-{#                    {% for group, tasks in group_tasks.iteritems %}#}
-{#                        <div id="group_sort_{{ group.id }}" data-group="{{ group.id }}" data-table="#table_results_{{ group.id }}" data-marksystem="{% if course_mark_system_vals %}true{% endif %}" class="collapse">#}
-{#                            <p  class="modal-group-name">{{ group.name }}</p>#}
-{#                            <ul class="group-sortable" name="group_sort_{{ group.id }}">#}
-{#                                {% for task in tasks %}#}
-{#                                    <li class="ui-state-default" name="task_sort_{{ task.id }}" value="{{ task.id }}">#}
-{#                                        <span>{{ task.title }}</span>#}
-{#                                        <a class="task-delete pull-xs-right" data-name="task_delete_{{ task.id }}" {% autoescape off %}{{ task|group_info }}{% endautoescape %} tabindex="0" data-toggle="popover" type="button">#}
-{#                                            <i class="fa fa-trash-o" aria-hidden="true"></i>#}
-{#                                        </a>#}
-{#                                        <a class="task-seminar-notempty pull-xs-right" {% autoescape off %}{{ task|group_info }}{% endautoescape %} tabindex="0" data-toggle="popover-help" data-trigger="hover" data-content="{%  trans "snachala_udalit_podzadchi" %}" type="button">#}
-{#                                            <i class="fa fa-question-circle" aria-hidden="true"></i>#}
-{#                                        </a>#}
-{#                                    </li>#}
-{#                                {% endfor %}#}
-{#                            </ul>#}
-{#                        </div>#}
-{#                    {% endfor %}#}
-{#                </div>#}
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" data-dismiss="modal">{% trans "zakryt" %}</button>
-                    <button class="btn btn-primary" id="modal_table_edit_ok" data-dismiss="modal" data-loading-text="<span class='fa fa-circle-o-notch fa-spin'></span> {% trans "sohranenie" %}">{% trans "sohranit" %}</button>
-                </div>
-            </div>
-        </div>
-    </div>
-{% endif %}

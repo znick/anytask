@@ -39,7 +39,8 @@ class Schedule(models.Model):
 class Lesson(models.Model):
     title = models.CharField(max_length=100, null=True, blank=True)
     description = models.TextField(null=True, blank=True, default=None)
-    lesson_date = models.DateTimeField(auto_now=False, null=True, default=None)
+    date_starttime = models.DateTimeField(auto_now=False, null=True, default=None)
+    date_endtime = models.DateTimeField(auto_now=False, null=True, default=None)
     course = models.ForeignKey(Course, db_index=True, null=False, blank=False)
     groups = models.ManyToManyField(Group, null=False, blank=False)
     visited_students = models.ManyToManyField(User, null=True, blank=True)
@@ -78,9 +79,7 @@ class Lesson(models.Model):
             lssn_related, created = LessonGroupRelations.objects.get_or_create(lesson=self, group=group)
 
             if created:
-                max_position = LessonGroupRelations.objects.filter(group=group).exclude(id=lssn_related.id)\
-                    .aggregate(Max('position'))['position__max']
-                lssn_related.position = max_position + 1 if max_position is not None else 0
+                lssn_related.position = int(self.date_starttime.strftime('%Y%m%d%H%M'))
             else:
                 lssn_related.deleted = False
             lssn_related.save()

@@ -1,24 +1,16 @@
 # -*- coding: utf-8 -*-
 
-from django.shortcuts import render_to_response, get_object_or_404, redirect
-from tasks.models import Task
-from courses.models import Course
-from groups.models import Group
-from issues.model_issue_status import IssueStatus
-from lessons.models import Lesson, Schedule
-from django.template import RequestContext
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
-from django.core.exceptions import ObjectDoesNotExist
-from django.core.urlresolvers import reverse
-from django.contrib.auth.models import User
-from django.contrib.auth.decorators import login_required
-from django.db.models import Q
-from django.conf import settings
-
 import datetime
-import reversion
-import requests
 import json
+
+import reversion
+from courses.models import Course
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse, HttpResponseForbidden
+from django.shortcuts import render_to_response, get_object_or_404
+from django.template import RequestContext
+from groups.models import Group
+from lessons.models import Lesson
 
 
 @login_required
@@ -29,7 +21,7 @@ def schedule_create_page(request, course_id):
         return HttpResponseForbidden()
 
     if request.method == 'POST':
-        return lesson_create(request, course)
+        return lesson_create_or_edit(request, course)
 
     schools = course.school_set.all()
 
@@ -46,13 +38,12 @@ def schedule_create_page(request, course_id):
 @login_required
 def schedule_edit_page(request, lesson_id):
     lssn = get_object_or_404(Lesson, id=lesson_id)
-    schedule_id = lssn.schedule_id
 
     if not lssn.course.user_is_teacher(request.user):
         return HttpResponseForbidden()
 
     if request.method == 'POST':
-        return lesson_edit(request, lssn.course, lesson_id, schedule_id)
+        return lesson_create_or_edit(request, lssn.course, lesson_id)
     students = set(lssn.visited_students.all())
     groups_required = []
     groups = lssn.groups.all()
@@ -66,6 +57,7 @@ def schedule_edit_page(request, lesson_id):
         'is_create': False,
         'course': lssn.course,
         'lesson': lssn,
+        'period_types': lssn.PERIOD_CHOICES,
         'groups_required': groups_required,
         'school': schools[0] if schools else '',
     }
@@ -73,41 +65,55 @@ def schedule_edit_page(request, lesson_id):
     return render_to_response('lesson_edit.html', context, context_instance=RequestContext(request))
 
 
-def get_lesson_dates(date_start, date_end, week_days):
+def get_lesson_dates(date_startime, date_endtime, date_end, week_days):
     lesson_dates = []
-    delta_days = (date_end - date_start).days
+    delta_days = (date_end - date_startime).days
     for i in xrange(delta_days + 1):
-        curr_date = date_start + datetime.timedelta(days=i)
-        if curr_date.weekday() in week_days:
-            lesson_dates.append(curr_date)
+        curr_date_start = date_startime + datetime.timedelta(days=i)
+        curr_date_end = date_endtime + datetime.timedelta(days=i)
+        if curr_date_start.weekday() in week_days:
+            lesson_dates.append((curr_date_start, curr_date_end))
     return lesson_dates
 
 
-def lesson_create(request, course):
+def lesson_create_or_edit(request, course, lesson_id=None):
     user = request.user
+    lesson_title = request.POST['lesson_title'].strip()
     lesson_groups = Group.objects.filter(id__in=dict(request.POST)['lesson_group_id[]'])
-
     period = request.POST['period_type'].strip()
-    date_start = datetime.datetime.strptime(request.POST['date_start'], '%d-%m-%Y %H:%M')
+    date_starttime = datetime.datetime.strptime(request.POST['lesson_date_start'], '%d-%m-%Y %H:%M')
+    date_endtime = datetime.datetime.strptime(request.POST['lesson_date_finish'], '%d-%m-%Y %H:%M')
     if period != 'Once':
         date_end = datetime.datetime.strptime(request.POST['date_end'], '%d-%m-%Y %H:%M')
         week_days = list(map(int, (dict(request.POST)['days[]'])))
-        lesson_dates = get_lesson_dates(date_start, date_end, week_days)
+        lesson_dates = get_lesson_dates(date_starttime, date_endtime, date_end, week_days)
         lesson_days = ','.join(dict(request.POST)['days[]'])
     else:
-        date_end = date_start
-        lesson_dates = [date_start]
+        date_end = date_endtime
+        lesson_dates = [(date_starttime, date_endtime)]
         lesson_days = ''
 
     lesson_description = request.POST['lesson_text'].strip()
 
-    schedule_id = int(datetime.datetime.now().strftime('%d%m%Y%H%M'))
+    create_new = True
+    if lesson_id:
+        lssn = get_object_or_404(Lesson, id=lesson_id)
+        schedule_id = lssn.schedule_id
+        if 'change_all' not in request.POST:
+            lesson_dates = [(date_starttime, date_endtime)]
+            create_new = False
+        else:
+            Lesson.objects.filter(schedule_id=schedule_id, date_starttime__gte=date_starttime.date()).delete()
+    else:
+        schedule_id = int(datetime.datetime.now().strftime('%d%m%Y%H%M%S'))
 
     for lssn_date in lesson_dates:
-        lssn = Lesson()
+        lssn = Lesson() if create_new else lssn
+        lssn.title = lesson_title
         lssn.course = course
         lssn.schedule_id = schedule_id
-        lssn.lesson_date = lssn_date
+        lssn.date_starttime = lssn_date[0]
+        lssn.date_endtime = lssn_date[1]
         lssn.period = period
         lssn.date_end = date_end
         lssn.days = lesson_days
@@ -126,46 +132,46 @@ def lesson_create(request, course):
                         content_type="application/json")
 
 
-def schedule_create_ot_edit(request, course, subject_id=None):
-    user = request.user
-    subject_groups = Group.objects.filter(id__in=dict(request.POST)['lesson_group_id[]'])
-    subject_period = request.POST['period_type'].strip()
-    subject_date_start = datetime.datetime.strptime(request.POST['date_start'], '%d-%m-%Y %H:%M')
-    if subject_period != 'Once':
-        subject_date_end = datetime.datetime.strptime(request.POST['date_end'], '%d-%m-%Y %H:%M')
-        subject_days = ','.join(dict(request.POST)['days[]'])
-    else:
-        subject_date_end = subject_date_start
-        subject_days = ''
-    subject_description = request.POST['subject_text'].strip()
-
-    for group in subject_groups:
-        if subject_id:
-            subject = get_object_or_404(Schedule, id=subject_id)
-        else:
-            subject = Schedule()
-            subject.course = course
-
-        subject.date_start = subject_date_start
-        subject.date_end = subject_date_end
-        subject.days = subject_days
-        subject.description = subject_description
-        subject.group = group
-        subject.updated_by = user
-
-        if subject_period in dict(subject.PERIOD_CHOICES):
-            subject.period = subject_period
-        else:
-            subject.period = subject.PERIOD_SIMPLE
-
-        subject.save()
-
-    reversion.set_user(user)
-    if subject_id:
-        reversion.set_comment("Edit schedule")
-    else:
-        reversion.set_comment("Create schedule")
-
-    return HttpResponse(json.dumps({'page_title': subject.subject + ' | ' + course.name + ' | ' + str(course.year),
-                                    'redirect_page': '/lesson/edit/' + str(subject.id) if not subject_id else None}),
-                        content_type="application/json")
+# def schedule_create_ot_edit(request, course, subject_id=None):
+#     user = request.user
+#     subject_groups = Group.objects.filter(id__in=dict(request.POST)['lesson_group_id[]'])
+#     subject_period = request.POST['period_type'].strip()
+#     subject_date_start = datetime.datetime.strptime(request.POST['date_start'], '%d-%m-%Y %H:%M')
+#     if subject_period != 'Once':
+#         subject_date_end = datetime.datetime.strptime(request.POST['date_end'], '%d-%m-%Y %H:%M')
+#         subject_days = ','.join(dict(request.POST)['days[]'])
+#     else:
+#         subject_date_end = subject_date_start
+#         subject_days = ''
+#     subject_description = request.POST['subject_text'].strip()
+#
+#     for group in subject_groups:
+#         if subject_id:
+#             subject = get_object_or_404(Schedule, id=subject_id)
+#         else:
+#             subject = Schedule()
+#             subject.course = course
+#
+#         subject.date_start = subject_date_start
+#         subject.date_end = subject_date_end
+#         subject.days = subject_days
+#         subject.description = subject_description
+#         subject.group = group
+#         subject.updated_by = user
+#
+#         if subject_period in dict(subject.PERIOD_CHOICES):
+#             subject.period = subject_period
+#         else:
+#             subject.period = subject.PERIOD_SIMPLE
+#
+#         subject.save()
+#
+#     reversion.set_user(user)
+#     if subject_id:
+#         reversion.set_comment("Edit schedule")
+#     else:
+#         reversion.set_comment("Create schedule")
+#
+#     return HttpResponse(json.dumps({'page_title': subject.subject + ' | ' + course.name + ' | ' + str(course.year),
+#                                     'redirect_page': '/lesson/edit/' + str(subject.id) if not subject_id else None}),
+#                         content_type="application/json")

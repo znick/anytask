@@ -11,9 +11,9 @@ class ScheduleAdmin(admin.ModelAdmin):
 
 
 class LessonAdmin(admin.ModelAdmin):
-    list_display = ('title', 'course', 'get_groups', 'lesson_date')
+    list_display = ('title', 'course', 'get_groups', 'date_starttime', 'date_endtime')
     list_filter = ('groups', 'course', 'course__year__start_year')
-    search_fields = ('title', 'course__name', 'lesson_text')
+    search_fields = ('title', 'course__name', 'description')
 
     def get_groups(self, obj):
         return "; ".join([group.name for group in obj.groups.all()])
