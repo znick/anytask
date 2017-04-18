@@ -41,7 +41,8 @@
 
     $.fn.dataTable.ext.order['dom-select'] = function (settings, col) {
         return this.api().column(col, {order: 'index'}).nodes().map(function (td, i) {
-            return $('select option:selected', td).text();
+            var $mark_int = parseInt($('span', td).data('mark-int'));
+            return $mark_int != -1 ? $mark_int: $('select option:selected', td).text();
         });
     };
 
@@ -223,7 +224,7 @@
 {#        $("#tasks-table").DataTable();#}
 
         var table_min_height = '30vh';
-        $(".table_results").each(function (i) {
+        $(".table-results").each(function (i) {
             var t = $(this).DataTable({
                 scrollY: table_min_height,
                 scrollX: true,
@@ -250,12 +251,12 @@
                 language: {
                     "decimal": "",
                     "emptyTable": "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{% trans 'pustaja_tablica' %}",
-                    "info": "{% trans '_total__studentov' %}",
-                    "infoEmpty": "{% trans '0_studentov' %}",
-                    "infoFiltered": "{% trans '(iz__max_)' %}",
+                    "info": "_TOTAL_ {% trans 'studentov' %}",
+                    "infoEmpty": "0 {% trans 'studentov' %}",
+                    "infoFiltered": "({% trans 'iz' %} _MAX_)",
                     "infoPostFix": "",
                     "thousands": ",",
-                    "lengthMenu": "{% trans 'pokazat__menu__studentov' %}",
+                    "lengthMenu": "{% trans 'pokazat' %} _MENU_ {% trans 'studentov' %}",
                     "loadingRecords": "{% trans 'zagruzka' %}",
                     "processing": "{% trans 'vychislenie' %}",
                     "search": "{% trans 'poisk' %}:",
@@ -311,7 +312,7 @@
                     $(".zui-wrapper").show();
                     $(".btn-table-fullscreen").css('display', 'table-cell');
                     $(".btn-table-edit").css('display', 'table-cell');
-                    $(".loading_table_img").hide();
+                    $(".loading-table-img").hide();
                 },
                 autoWidth: false,
                 colReorder: {
@@ -377,7 +378,7 @@
                     'height': '100%'
                 });
                 $('.dataTables_scrollBody', card).css('max-height',
-                        card.height() - $('.table_results thead', card).height() - 90 + 'px');
+                        card.height() - $('.table-results thead', card).height() - 90 + 'px');
                 $($(this).attr('for')).DataTable().draw();
             }
             else {
@@ -393,7 +394,7 @@
             }
         });
 
-        $('.table_results th a').click(function (e) {
+        $('.table-results th a').click(function (e) {
             e.stopPropagation();
         });
 
@@ -495,15 +496,15 @@
 
         $('.mark-form').change(function () {
             var $form = $(this);
-            var student_id = $form.closest('td').prop('class');
-            var $mark_cell = $('td.' + student_id);
+            var student_id = $form.closest('td').attr('data-class');
+            var $mark_cell = $('td[data-class="' + student_id + '"]');
 
             $form.collapse('hide');
             $form.closest('td').find('.mark-value').collapse('show');
 
             $.post('{% url courses.views.set_course_mark %}', $form.serialize(), function (data) {
-                $mark_cell.find('.mark-value').find('span').text(data.mark);
-                $mark_cell.find('.mark-form').find('select').val(data.mark_id);
+                $mark_cell.find('.mark-form select').val(data.mark_id);
+                $mark_cell.find('.mark-value span').text(data.mark).data('mark-int', data.mark_int);
             });
         });
 

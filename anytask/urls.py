@@ -42,4 +42,8 @@ urlpatterns = patterns('',
     url(r'^staff', include('staff.urls')),
     url(r'^blog/', include('blog.urls')),
     url(r'^mail/', include('mail.urls')),
+    url(r'^admission/', include('admission.urls')),
+    url(r'^shad2017/register', 'admission.views.register'),
+    url(r'^shad2017/activate/(?P<activation_key>\w+)/', 'admission.views.activate'),
+    url(r'^shad2017/decline/(?P<activation_key>\w+)/', 'admission.views.decline'),
 )
