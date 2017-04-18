@@ -31,6 +31,10 @@ def get_user_fullname(user):
     return u"%s %s" % (user.last_name, user.first_name)
 
 
+def get_user_link(user):
+    return u'<a class="user" href="{0}">{1}</a>'.format(user.get_absolute_url(), get_user_fullname(user))
+
+
 def normalize_decimal(number):
     new_number = Decimal(str(number))
     new_number = new_number.normalize()
@@ -110,9 +114,6 @@ class Issue(models.Model):
 
     def get_field_repr(self, field):
         name = field.name
-
-        def get_user_link(user):
-            return u'<a class="user" href="{0}">{1}</a>'.format(user.get_absolute_url(), get_user_fullname(user))
 
         if name == 'student_name':
             return get_user_link(self.student)
