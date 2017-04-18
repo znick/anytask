@@ -360,7 +360,7 @@ class Issue(models.Model):
             value = normalize_decimal(value)
             if self.mark != float(value):
                 if self.task.parent_task is not None:
-                    parent_task_issue = Issue.objects.get(student=self.student, task=self.task.parent_task)
+                    parent_task_issue, created = Issue.objects.get_or_create(student=self.student, task=self.task.parent_task)
                     parent_task_issue.mark -= self.mark
                     parent_task_issue.mark += float(value)
                     parent_task_issue.save()
@@ -409,6 +409,14 @@ class Issue(models.Model):
 
     def get_absolute_url(self):
         return reverse('issues.views.issue_page', args=[str(self.id)])
+
+    def add_comment(self, comment):
+        author = User.objects.get(username="anytask")
+        field, field_get = IssueField.objects.get_or_create(name='comment')
+        event = self.create_event(field, author=author)
+        event.value = u'<div class="contest-response-comment not-sanitize">' + comment + u'</div>'
+        event.save()
+        return event
 
 
 class Event(models.Model):

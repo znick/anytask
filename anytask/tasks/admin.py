@@ -1,4 +1,4 @@
-from tasks.models import Task, TaskTaken, TaskTakenLog, TaskLog, TaskGroupRelations
+from tasks.models import Task, TaskTaken, TaskLog, TaskGroupRelations
 from django.contrib import admin
 import reversion
 
@@ -24,11 +24,7 @@ class TaskLogAdmin(admin.ModelAdmin):
     get_groups.short_description = 'Groups'
 
 class TaskTakenAdmin(admin.ModelAdmin):
-    list_display = ('task', 'user', 'status', 'score', 'scored_by', 'added_time', 'update_time')
-    list_filter = ('task__course', 'task__course__year__start_year')
-
-class TaskTakenLogAdmin(admin.ModelAdmin):
-    list_display = ('task', 'user', 'status', 'score', 'scored_by', 'added_time', 'update_time')
+    list_display = ('task', 'user', 'status', 'added_time', 'update_time')
     list_filter = ('task__course', 'task__course__year__start_year')
 
 class TaskGroupRelationsAdmin(admin.ModelAdmin):
@@ -39,5 +35,4 @@ class TaskGroupRelationsAdmin(admin.ModelAdmin):
 admin.site.register(Task, TaskAdmin)
 admin.site.register(TaskLog, TaskLogAdmin)
 admin.site.register(TaskTaken, TaskTakenAdmin)
-admin.site.register(TaskTakenLog, TaskTakenLogAdmin)
 admin.site.register(TaskGroupRelations, TaskGroupRelationsAdmin)

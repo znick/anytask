@@ -5,8 +5,7 @@ from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 
 from django.contrib.auth.models import User
-from anycontest.common import FakeResponse, escape
-from issues.models import Issue, File
+from anycontest.common import FakeResponse, escape, user_register_to_contest
 
 from datetime import datetime
 
@@ -19,9 +18,9 @@ logger = logging.getLogger('django.request')
 
 
 class ContestSubmission(models.Model):
-    issue = models.ForeignKey(Issue, db_index=True, null=False, blank=False)
+    issue = models.ForeignKey('issues.Issue', db_index=True, null=False, blank=False)
     author = models.ForeignKey(User, null=False, blank=False)
-    file = models.ForeignKey(File, null=False, blank=False)
+    file = models.ForeignKey('issues.File', null=False, blank=False)
 
     run_id = models.CharField(max_length=191, blank=True)
     compiler_id = models.CharField(max_length=191, blank=True)
@@ -72,14 +71,11 @@ class ContestSubmission(models.Model):
                     return False
 
                 if not reg_req.json()['result']['isRegistered']:
-                    reg_req = requests.get(
-                        settings.CONTEST_API_URL + 'register-user?uidToRegister=' + str(student_profile.ya_contest_uid) +
-                        '&contestId=' + str(contest_id),
-                        headers={'Authorization': 'OAuth ' + settings.CONTEST_OAUTH})
-                if 'error' in reg_req.json():
-                    self.send_error = reg_req.json()["error"]["message"]
-                    self.save()
-                    return False
+                    got_info, response_text = user_register_to_contest(contest_id, student_profile.ya_contest_uid)
+                    if not got_info:
+                        self.send_error = response_text
+                        self.save()
+                        return False
             else:
                 OAUTH = settings.CONTEST_OAUTH
 
