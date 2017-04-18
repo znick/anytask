@@ -1,27 +1,24 @@
 # -*- coding: utf-8 -*-
 
-from django.db import models
-from django.contrib.auth.models import User
-from django.db.models.signals import post_save
-from django.utils.translation import ugettext_lazy as _
-from django import forms
-
+import copy
+import os
 from datetime import datetime
 
-from years.common import get_current_year
-from groups.models import Group
-from courses.models import Course
-from issues.models import Issue
-from issues.model_issue_status import IssueStatus
-from mail.models import Message
-
+import django_filters
 from colorfield.fields import ColorField
+from courses.models import Course
+from django import forms
+from django.contrib.auth.models import User
+from django.db import models
+from django.db.models.signals import post_save
+from django.utils.translation import ugettext_lazy as _
+from groups.models import Group
+from issues.model_issue_status import IssueStatus
+from issues.models import Issue
+from mail.models import Message
+from years.common import get_current_year
 
 from anytask.storage import OverwriteStorage
-
-import os
-import django_filters
-import copy
 
 
 def get_upload_path(instance, filename):
@@ -180,6 +177,7 @@ class UserProfileFilter(django_filters.FilterSet):
     class Meta:
         model = UserProfile
         fields = ['user_status']
+
 
 class IssueFilterStudent(django_filters.FilterSet):
     is_active = django_filters.ChoiceFilter(label=_('tip_kursa'), name='task__course__is_active')
