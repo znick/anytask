@@ -684,46 +684,26 @@ def set_task_mark(request):
         return HttpResponseForbidden()
 
     task_id = request.POST['task_id']
+    task = get_object_or_404(Task, id=task_id)
+    if not task.course.user_is_teacher(request.user):
+        return HttpResponseForbidden()
 
-    if 'lesson' not in request.POST:
-        task = get_object_or_404(Task, id=task_id)
-        if not task.course.user_is_teacher(request.user):
-            return HttpResponseForbidden()
+    issue, created = Issue.objects.get_or_create(task_id=task_id, student_id=request.POST['student_id'])
 
-        issue, created = Issue.objects.get_or_create(task_id=task_id, student_id=request.POST['student_id'])
-
-        mark = 0
-        if request.POST['mark_value'] == '-':
-            issue.set_status_by_tag(IssueStatus.STATUS_NEW)
-        else:
-            mark = float(request.POST['mark_value'])
-            if mark <= 0:
-                issue.set_status_by_tag(IssueStatus.STATUS_REWORK)
-            else:
-                issue.set_status_by_tag(IssueStatus.STATUS_ACCEPTED)
-
-        issue.set_byname('mark', mark)
-        color = issue.status_field.color
+    mark = 0
+    if request.POST['mark_value'] == '-':
+        issue.set_status_by_tag(IssueStatus.STATUS_NEW)
     else:
-        student = User.objects.get(id=request.POST['student_id'])
-        lesson = get_object_or_404(Lesson, id=task_id)
-        if not lesson.course.user_is_teacher(request.user):
-            return HttpResponseForbidden()
-
-        mark = request.POST['mark_value']
-        if mark == '1':
-            if student not in lesson.visited_students.all():
-                lesson.visited_students.add(student)
-            color = IssueStatus.objects.filter(tag=IssueStatus.STATUS_ACCEPTED)[0].color
+        mark = float(request.POST['mark_value'])
+        if mark <= 0:
+            issue.set_status_by_tag(IssueStatus.STATUS_REWORK)
         else:
-            mark = 0
-            if student in lesson.visited_students.all():
-                lesson.visited_students.remove(student)
-            color = IssueStatus.objects.get(tag=IssueStatus.STATUS_NEW).color
-        lesson.save()
+            issue.set_status_by_tag(IssueStatus.STATUS_ACCEPTED)
+
+    issue.set_byname('mark', mark)
 
     return HttpResponse(json.dumps({'mark': mark,
-                                    'color': color}),
+                                    'color': issue.status_field.color}),
                         content_type="application/json")
 
 
@@ -992,3 +972,25 @@ def attendance_log(request, course_id, group_id=None):
 
     return render_to_response('courses/attendance.html', context, context_instance=RequestContext(request))
 
+
+@login_required
+def lesson_visited(request):
+    if request.method != 'POST':
+        return HttpResponseForbidden()
+
+    lesson_id = request.POST['lssn_id']
+    lesson = get_object_or_404(Lesson, id=lesson_id)
+    if not lesson.course.user_is_teacher(request.user):
+        return HttpResponseForbidden()
+
+    student = User.objects.get(id=request.POST['student_id'])
+    if 'lesson_visited' in request.POST:
+        value = 1
+        lesson.visited_students.add(student)
+    else:
+        value = -1
+        lesson.visited_students.remove(student)
+    lesson.save()
+
+    return HttpResponse(json.dumps({'visited': value}),
+                        content_type="application/json")

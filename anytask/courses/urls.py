@@ -23,4 +23,5 @@ urlpatterns = patterns('courses.views',
     url(r'^pythontask/get_task/(?P<course_id>\d+)/(?P<task_id>\d+)$', get_task),
     url(r'^pythontask/cancel_task/(?P<course_id>\d+)/(?P<task_id>\d+)$', cancel_task),
     url(r'^(?P<course_id>\d+)/attendance$', 'attendance_log'),
+    url(r'^lesson_visited$', 'lesson_visited'),
 )

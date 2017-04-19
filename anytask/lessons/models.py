@@ -1,7 +1,6 @@
 # coding: utf-8
 
 from django.db import models
-from django.db.models import Max
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext as _
 
@@ -9,31 +8,30 @@ from courses.models import Course
 from groups.models import Group
 
 
-class Schedule(models.Model):
-    subject = models.CharField(max_length=100, db_index=True, null=True, blank=True)
-
-    PERIOD_SIMPLE = 'Once'
-    PERIOD_WEEK = 'Weekly'
-    PERIOD_MONTH = 'Monthly'
-
-    PERIOD_CHOICES = (
-        (PERIOD_SIMPLE, _('odin_raz')),
-        (PERIOD_WEEK, _('ezhenedelno')),
-        (PERIOD_MONTH, _('ezhemesiachno'))
-    )
-    period = models.CharField(db_index=False, max_length=128, choices=PERIOD_CHOICES, default=PERIOD_SIMPLE)
-    date_start = models.DateTimeField(auto_now=False, null=True, default=None)
-    date_end = models.DateTimeField(auto_now=False, null=True, default=None)
-    days = models.CharField(max_length=100, db_index=True, null=True, blank=True)
-    
-    description = models.TextField(null=True, blank=True, default=None)
-    course = models.ForeignKey(Course, null=False, blank=False)
-    group = models.ForeignKey(Group, null=False, blank=False)
-
-    unique_together = (('subject', 'group'),)
-
-    def __unicode__(self):
-        return unicode(self.subject)
+# class Schedule(models.Model):
+#     subject = models.CharField(max_length=100, db_index=True, null=True, blank=True)
+#
+#     PERIOD_SIMPLE = 'Once'
+#     PERIOD_WEEK = 'Weekly'
+#     PERIOD_MONTH = 'Monthly'
+#
+#     PERIOD_CHOICES = (
+#         (PERIOD_SIMPLE, _('odin_raz')),
+#         (PERIOD_WEEK, _('ezhenedelno'))
+#     )
+#     period = models.CharField(db_index=False, max_length=128, choices=PERIOD_CHOICES, default=PERIOD_SIMPLE)
+#     date_start = models.DateTimeField(auto_now=False, null=True, default=None)
+#     date_end = models.DateTimeField(auto_now=False, null=True, default=None)
+#     days = models.CharField(max_length=100, db_index=True, null=True, blank=True)
+#
+#     description = models.TextField(null=True, blank=True, default=None)
+#     course = models.ForeignKey(Course, null=False, blank=False)
+#     group = models.ForeignKey(Group, null=False, blank=False)
+#
+#     unique_together = (('subject', 'group'),)
+#
+#     def __unicode__(self):
+#         return unicode(self.subject)
 
 
 class Lesson(models.Model):
@@ -53,8 +51,7 @@ class Lesson(models.Model):
 
     PERIOD_CHOICES = (
         (PERIOD_SIMPLE, _('odin_raz')),
-        (PERIOD_WEEK, _('ezhenedelno')),
-        # (PERIOD_MONTH, _('ezhemesiachno'))
+        (PERIOD_WEEK, _('ezhenedelno'))
     )
 
     period = models.CharField(db_index=False, max_length=128, choices=PERIOD_CHOICES, default=PERIOD_SIMPLE)
@@ -63,9 +60,6 @@ class Lesson(models.Model):
 
     def __unicode__(self):
         return unicode(self.title)
-
-    def has_issue_access(self):
-        return False
 
     def set_position_in_new_group(self, groups=None):
         if not groups:
@@ -88,9 +82,7 @@ class Lesson(models.Model):
 class LessonGroupRelations(models.Model):
     lesson = models.ForeignKey(Lesson, db_index=False, null=False, blank=False)
     group = models.ForeignKey(Group, db_index=False, null=False, blank=False)
-
     position = models.IntegerField(db_index=False, null=False, blank=False, default=0)
-
     deleted = models.BooleanField(db_index=False, null=False, blank=False, default=False)
 
     class Meta:
