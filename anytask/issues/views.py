@@ -153,7 +153,7 @@ def issue_page(request, issue_id):
                             value = request.user
                         else:
                             if request.user not in value:
-                                value.append(request.user)
+                                value.append(str(request.user.id))
                     if 'Accepted' in request.POST:
                         if request.POST['Accepted']:
                             issue.set_byname('status',
