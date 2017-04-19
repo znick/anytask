@@ -22,6 +22,31 @@ class FakeResponse(object):
         return None
 
 
+def user_register_to_contest(contest_id, ya_contest_uid):
+    req = FakeResponse()
+    got_info = False
+    response_text = ''
+    try:
+        req = requests.get(
+            settings.CONTEST_API_URL + 'register-user?uidToRegister=' + str(ya_contest_uid) +
+            '&contestId=' + str(contest_id),
+            headers={'Authorization': 'OAuth ' + settings.CONTEST_OAUTH})
+        req_json = req.json()
+        if 'error' in req_json:
+            got_info = False
+            response_text = req_json["error"]["message"]
+        elif 'result' in req_json:
+            got_info = True
+            response_text = req_json["result"]
+    except Exception as e:
+        logger.exception("Exception while request registration to Contest: '%s' : '%s', Exception: '%s'",
+                         req.url, req.json(), e)
+        got_info = False
+        response_text = req.json()
+
+    return got_info, response_text
+
+
 def get_problem_compilers(problem_id, contest_id):
     contest_req = FakeResponse()
     problem_compilers = []
@@ -50,11 +75,7 @@ def escape(text):
 
 
 def comment_verdict(issue, verdict, comment):
-    author = User.objects.get(username="anytask")
-    field, field_get = IssueField.objects.get_or_create(name='comment')
-    event = issue.create_event(field, author=author)
-    event.value = u'<div class="contest-response-comment not-sanitize">' + comment + u'</div>'
-    event.save()
+    issue.add_comment(comment)
     if issue.status_field.tag != issue.status_field.STATUS_ACCEPTED:
         if verdict:
             issue.set_status_by_tag(issue.status_field.STATUS_VERIFICATION)

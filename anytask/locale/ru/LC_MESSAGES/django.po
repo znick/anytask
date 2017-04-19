@@ -2238,6 +2238,17 @@ msgstr "Зарегистрируйтесь"
 msgid "zdes_nichego_net"
 msgstr "Пока здесь ничего нет =("
 
+#~ msgid "izmenenie_sroka_sdachi"
+#~ msgstr "Уведомить студентов об изменении срока сдачи"
+
+#: courses/pythontask.py:79
+msgid "zapisalsya_na_task"
+msgstr "записался на задачу"
+
+#: courses/pythontask.py:98
+msgid "otkazalsya_ot_taska"
+msgstr "отказался от задачи"
+
 #: issues/management/commands/send_notifications.py:35
 #: mail/templates/email_notification_mail.txt:2
 #: tasks/management/commands/send_task_notifications.py:99
