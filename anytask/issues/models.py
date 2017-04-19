@@ -16,6 +16,7 @@ from decimal import Decimal
 from anyrb.common import AnyRB
 from anyrb.common import update_status_review_request
 from tasks.models import Task
+from users.common import get_user_fullname, get_user_link
 
 from unidecode import unidecode
 
@@ -25,14 +26,6 @@ import django_filters
 
 def get_file_path(instance, filename):
     return '/'.join(['files', str(uuid.uuid4()), filename])
-
-
-def get_user_fullname(user):
-    return u"%s %s" % (user.last_name, user.first_name)
-
-
-def get_user_link(user):
-    return u'<a class="user" href="{0}">{1}</a>'.format(user.get_absolute_url(), get_user_fullname(user))
 
 
 def normalize_decimal(number):
