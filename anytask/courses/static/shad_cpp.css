@@ -230,9 +230,13 @@
 }
 
 #legend .card.card-block {
-    padding: .1rem;
+    padding: .5rem;
     background-color: #f5f8fa;
     border-color: #f5f8fa;
     margin-bottom: 0rem;
     padding-left: 0rem;
+}
+
+.breadcrumb {
+    margin-bottom: -.1rem;
 }

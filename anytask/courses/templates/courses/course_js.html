@@ -235,14 +235,12 @@
                 }
             }
         });
-
+        
         $("#legend").sticky({
             topSpacing: $("nav.navbar").outerHeight()
         }).on('sticky-start', function () {
-            $(".card", "#legend").css('padding-bottom', '.5rem').css('padding-top', '.5rem');
             $('.popover.legend').removeClass('static').addClass('sticky');
         }).on('sticky-end', function () {
-            $(".card", "#legend").css('padding', '.1rem').css('padding-left', '0rem');
             $('.popover.legend').removeClass('sticky').addClass('static');
         });
 
