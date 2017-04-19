@@ -206,11 +206,42 @@
             });
         }
 
-        $("#btn_group_edit_course").on('sticky-start', function () {
-            $("#btn_group_edit_course").css('background-color', '#fff');
+        $('[data-toggle="popover-status"]').popover({
+            trigger: 'manual',
+            html: true,
+            template: '<div class="popover legend" role="tooltip">' +
+                      '<div class="popover-arrow legend"></div>' +
+                      '<div class="popover-content"></div></div>'
+        })
+        .on('click', function() {
+            $(this).popover('toggle');
+        })
+        .on('shown.bs.popover', function () {
+            var self = this;
+
+            if ($('#legend-sticky-wrapper').hasClass('is-sticky')) {
+                $('.popover.legend').removeClass('static').addClass('sticky');
+            } else {
+                $('.popover.legend').removeClass('sticky').addClass('static');
+            }
+
+            $(document).one('click', oneClickHandler);
+
+            function oneClickHandler(event) {
+                if ($(event.target).data('toggle') !== 'popover-status') {
+                    $(self).popover('hide');
+                } else {
+                    $(document).one('click', oneClickHandler);
+                }
+            }
         });
-        $("#btn_group_edit_course").on('sticky-end', function () {
-            $("#btn_group_edit_course").css('background-color', '#e5e5e5');
+        
+        $("#legend").sticky({
+            topSpacing: $("nav.navbar").outerHeight()
+        }).on('sticky-start', function () {
+            $('.popover.legend').removeClass('static').addClass('sticky');
+        }).on('sticky-end', function () {
+            $('.popover.legend').removeClass('sticky').addClass('static');
         });
 
         $('#hide_academ_student_btn').click(function () {
@@ -223,7 +254,7 @@
 
 {#        $("#tasks-table").DataTable();#}
 
-        var table_min_height = '30vh';
+        var table_min_height = {% if group_gradebook %}''{% else %}'30vh'{% endif %};
         $(".table-results").each(function (i) {
             var t = $(this).DataTable({
                 scrollY: table_min_height,

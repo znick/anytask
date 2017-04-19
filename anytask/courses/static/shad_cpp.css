@@ -13,6 +13,10 @@
     color: #373a3c;
 }
 
+.card-link+.card-link {
+    margin-left: 0rem;
+}
+
 .btn-table-fullscreen,
 .btn-table-edit {
     display: none;
@@ -190,6 +194,18 @@
     margin-left: 5px;
 }
 
+.popover.legend.static {
+    transform: translateX(15px) translateY(140px) translateZ(0px) !important;
+    position: absolute !important;
+}
+.popover.legend.sticky {
+    transform: translateX(15px) translateY(94px) translateZ(0px) !important;
+    position: fixed !important;
+}
+.popover-arrow.legend {
+    left: 20% !important;
+}
+
 .buttons-html5 {
     margin: 2px;
     padding: 6px;
@@ -206,4 +222,21 @@
 .ui-state-default .task-seminar-notempty:hover .fa {
     opacity: 0.7;
     filter: alpha(opacity=70);
+}
+
+#legend {
+    height: 45px;
+    z-index: 5;
+}
+
+#legend .card.card-block {
+    padding: .5rem;
+    background-color: #f5f8fa;
+    border-color: #f5f8fa;
+    margin-bottom: 0rem;
+    padding-left: 0rem;
+}
+
+.breadcrumb {
+    margin-bottom: -.1rem;
 }
