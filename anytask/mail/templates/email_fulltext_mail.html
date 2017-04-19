@@ -1,0 +1,61 @@
+<style>
+    .text_info p {
+        margin-bottom: 0 !important;
+    }
+
+    .text_info blockquote:not(.replay-quote) {
+        margin: 0 0 0 1rem !important;
+        font-style: italic;
+        color: #555;
+    }
+
+    .mce-content-body li,
+    #text_info li {
+        padding: 0;
+    }
+
+    .text_info ul li {
+        list-style-type: disc;
+    }
+
+    .text_info img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    .text_info .table-comment td {
+        border-color: #373a3c
+    }
+</style>
+
+<div style="margin: 0;padding:30px;background-color: #f6f6f6;">
+    <table cellpadding="0" cellspacing="0" width="608"
+           style="border-collapse:collapse;color:#373a3c;font-family:Arial,sans-serif;font-size:15px;margin:0 auto;padding:30px">
+        <tbody>
+        <tr>
+            <table cellpadding="0" cellspacing="0"
+                   style="border-collapse:collapse;color:#373a3c;font-family:Arial,sans-serif;font-size:15px;margin:0 auto;padding:0;">
+                <tbody>
+                <tr>
+                    <td style="border-collapse:collapse;">
+                        <div style="background:#fff;padding:20px 30px 20px 30px;">
+                            <table cellpadding="0" cellspacing="0" style="border-collapse: separate;width: 100%">
+                                <tbody>
+                                <tr>
+                                    <td style="text-align: justify" class=".text_info">
+                                        {% autoescape off %}
+                                            {{ message_text }}
+                                        {% endautoescape %}
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </tr>
+        </tbody>
+    </table>
+</div>

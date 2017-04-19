@@ -13,8 +13,7 @@ from years.common import get_current_year
 from groups.models import Group
 from courses.models import Course
 from mail.models import Message
-
-from colorfield.fields import ColorField
+from users.model_user_status import UserStatus
 
 from anytask.storage import OverwriteStorage
 
@@ -29,44 +28,6 @@ logger = logging.getLogger('django.request')
 
 def get_upload_path(instance, filename):
     return os.path.join('images', 'user_%d' % instance.user.id, filename)
-
-
-class UserStatus(models.Model):
-    COLOR_DEFAULT = '#818A91'
-
-    STATUS_ACTIVE = 'active'
-    STATUS_EXTRAMURAL = 'extramural'
-    STATUS_FULLTIME = 'fulltime'
-    STATUS_NOT_ACTIVE = 'not_active'
-    STATUS_ACADEMIC = 'academic'
-
-    USER_STATUSES = (
-        (STATUS_ACTIVE, _(STATUS_ACTIVE)),
-        (STATUS_EXTRAMURAL, _(STATUS_EXTRAMURAL)),
-        (STATUS_FULLTIME, _(STATUS_FULLTIME)),
-        (STATUS_NOT_ACTIVE, _(STATUS_NOT_ACTIVE)),
-        (STATUS_ACADEMIC, _(STATUS_ACADEMIC))
-    )
-
-    TYPE_ACTIVITY = 'activity'
-    TYPE_FILIAL = 'filial'
-    TYPE_ADMISSION = 'admission'
-    TYPE_EDUCATION_FORM = 'education_form'
-
-    TYPE_STATUSES = (
-        (TYPE_ACTIVITY, _(u'status_studenta')),
-        (TYPE_FILIAL, _(u'filial')),
-        (TYPE_ADMISSION, _(u'status_postupleniya')),
-        # (TYPE_EDUCATION_FORM, _(u'Форма обучения')),
-    )
-
-    name = models.CharField(max_length=254, db_index=True, null=False, blank=False)
-    type = models.CharField(max_length=191, db_index=False, null=True, blank=True, choices=TYPE_STATUSES)
-    tag = models.CharField(max_length=254, db_index=False, null=True, blank=True, choices=USER_STATUSES)
-    color = ColorField(default=COLOR_DEFAULT)
-
-    def __unicode__(self):
-        return u'{0}'.format(self.name)
 
 
 class UserProfile(models.Model):
@@ -217,124 +178,6 @@ class UserProfileLog(models.Model):
 
     def __unicode__(self):
         return unicode(self.user)
-
-
-class CustomMethodFilter(django_filters.MethodFilter):
-    def __init__(self, *args, **kwargs):
-        self.field_class = kwargs.pop('field_class', forms.Field)
-
-        super(CustomMethodFilter, self).__init__(*args, **kwargs)
-
-
-class UserProfileFilter(django_filters.FilterSet):
-    courses = CustomMethodFilter(label=u'<strong>{0}</strong>'.format(_(u'kurs')),
-                                 action='empty_filter',
-                                 widget=forms.SelectMultiple,
-                                 field_class=forms.MultipleChoiceField)
-    groups = CustomMethodFilter(label=u'<strong>{0}</strong>'.format(_(u'gruppa')),
-                                action='empty_filter',
-                                widget=forms.SelectMultiple,
-                                field_class=forms.MultipleChoiceField)
-    user_status_activity = django_filters.MultipleChoiceFilter(
-        label=u'<strong>{0}</strong>'.format(_(u'status_studenta')),
-        name='user_status',
-        widget=forms.SelectMultiple)
-    user_status_filial = django_filters.MultipleChoiceFilter(
-        label=u'<strong>{0}</strong>'.format(_(u'filial')),
-        name='user_status',
-        widget=forms.SelectMultiple)
-    user_status_admission = django_filters.MultipleChoiceFilter(
-        label=u'<strong>{0}</strong>'.format(_(u'status_postupleniya')),
-        name='user_status',
-        widget=forms.SelectMultiple)
-
-    @property
-    def qs(self):
-        if not hasattr(self, '_qs'):
-            qs = super(UserProfileFilter, self).qs
-            if not hasattr(self, '_users_info'):
-                qs_filter = {}
-
-                if u'courses' in self.data:
-                    qs_filter['user__group__course__id__in'] = self.data.getlist(u'courses')
-                if u'groups' in self.data:
-                    qs_filter['user__group__id__in'] = self.data.getlist(u'groups')
-
-                users_info = {}
-                for info in qs.filter(**qs_filter).values(
-                        'id',
-                        'user__id',
-                        'user__username',
-                        'user__email',
-                        'user__last_name',
-                        'user__first_name',
-                        'user_status__id',
-                        'user_status__name',
-                        'user_status__color',
-                        # 'user__group__course__id',
-                        # 'user__group__course__name',
-                        # 'user__group__course__is_active'
-                ):
-                    if info['user__id'] not in users_info:
-                        users_info[info['user__id']] = defaultdict(dict)
-                        users_info[info['user__id']]['id_profile'] = info['id']
-                        users_info[info['user__id']]['username'] = info['user__username']
-                        users_info[info['user__id']]['email'] = info['user__email']
-                        users_info[info['user__id']]['last_name'] = info['user__last_name']
-                        users_info[info['user__id']]['first_name'] = info['user__first_name']
-                    if info['user_status__id']:
-                        users_info[info['user__id']]['statuses'][info['user_status__id']] = {
-                            'name': info['user_status__name'],
-                            'color': info['user_status__color'],
-                        }
-                        # users_info[info['user__id']]['courses'][info['user__group__course__id']] = {
-                        #     'name': info['user__group__course__name']
-                        # }
-                self.users_info = users_info
-        return self._qs
-
-    def empty_filter(self, qs, value):
-        return qs
-
-    # def filter_course(self, qs, value):
-    #     if not hasattr(self, '_qs'):
-    #         if value and qs:
-    #             return qs.filter(user__group__course__id__in=value).distinct()
-    #     return qs
-    #
-    # def filter_group(self, qs, value):
-    #     if not hasattr(self, '_qs'):
-    #         if value and qs:
-    #             return qs.filter(user__group__id__in=value).distinct()
-    #     return qs
-
-    def set(self):
-        self.courses_qs = Course.objects.filter(is_active=True)
-        courses_choices = [(course.id, unicode(course)) for course in self.courses_qs]
-        self.filters['courses'].field.choices = tuple(courses_choices)
-
-        self.groups_qs = Group.objects.all()
-        groups = [(group.id, unicode(group)) for group in self.groups_qs]
-        self.filters['groups'].field.choices = tuple(groups)
-
-        activity_choices = []
-        filial_choices = []
-        admission_choices = []
-        for status in UserStatus.objects.exclude(type__isnull=True):
-            if status.type == 'activity':
-                activity_choices.append((status.id, status.name))
-            elif status.type == 'filial':
-                filial_choices.append((status.id, status.name))
-            elif status.type == 'admission':
-                admission_choices.append((status.id, status.name))
-
-        self.filters['user_status_activity'].field.choices = tuple(activity_choices)
-        self.filters['user_status_filial'].field.choices = tuple(filial_choices)
-        self.filters['user_status_admission'].field.choices = tuple(admission_choices)
-
-    class Meta:
-        model = UserProfile
-        fields = ['courses', 'groups', 'user_status_filial', 'user_status_activity', 'user_status_admission']
 
 
 def create_user_profile(sender, instance, created, **kwargs):

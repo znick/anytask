@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from users.models import UserProfile, UserStatus, UserProfileLog
+from users.models import UserProfile, UserProfileLog
+from users.model_user_status import UserStatus
 from django.contrib import admin
 from django.utils.translation import ugettext as _
 

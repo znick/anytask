@@ -28,7 +28,7 @@ import reversion
 from courses.models import Course, DefaultTeacher, StudentCourseMark, MarkField, FilenameExtension
 from groups.models import Group
 from tasks.models import TaskTaken, Task, TaskGroupRelations
-from tasks.views import update_status_check, prettify_contest_task_text
+from tasks.views import prettify_contest_task_text
 from years.models import Year
 from years.common import get_current_year
 from course_statistics import CourseStatistics
@@ -41,6 +41,7 @@ from issues.model_issue_status import IssueStatus
 from issues.views import contest_rejudge
 from users.forms import InviteActivationForm
 from users.models import UserProfile
+from courses import pythontask
 from lessons.models import Lesson, LessonGroupRelations
 
 from common.ordered_dict import OrderedDict
@@ -165,6 +166,9 @@ def course_page(request, course_id):
         raise PermissionDenied
 
     course = get_object_or_404(Course, id=course_id)
+    if course.is_python_task:
+        return pythontask.tasks_list(request, course)
+
     schools = course.school_set.all()
 
     if course.private and not course.user_is_attended(request.user):
@@ -181,9 +185,14 @@ def course_page(request, course_id):
                      'group', 'position')]
     else:
         groups = Group.objects.filter(students=user, course__in=[course])
-        tasks = set([tgr.task for tgr in
-                     TaskGroupRelations.objects.filter(task__course=course, group__in=groups, deleted=False).order_by(
-                         'group', 'position')])
+        tasks = TaskGroupRelations.objects.filter(
+                    task__course=course, group__in=groups, deleted=False
+                ).order_by(
+                    'group', 'position'
+                ).values_list(
+                    'task__id', flat=True
+                ).distinct()
+        tasks = Task.objects.filter(id__in=tasks)
 
     if StudentCourseMark.objects.filter(student=user, course=course):
         mark = StudentCourseMark.objects.get(student=user, course=course).mark
@@ -238,9 +247,14 @@ def seminar_page(request, course_id, task_id):
                      'position')]
     else:
         groups = Group.objects.filter(students=user, course__in=[course])
-        tasks = set([tgr.task for tgr in
-                     TaskGroupRelations.objects.filter(task__parent_task=task, group__in=groups,
-                                                       deleted=False).order_by('group', 'position')])
+        tasks = TaskGroupRelations.objects.filter(
+                    task__course=course, group__in=groups, deleted=False
+                ).order_by(
+                    'group', 'position'
+                ).values_list(
+                    'task__id', flat=True
+                ).distinct()
+        tasks = Task.objects.filter(id__in=tasks)
     if Issue.objects.filter(task=task, student=user):
         mark = Issue.objects.get(task=task, student=user).mark
     else:
@@ -397,7 +411,7 @@ def tasklist_shad_cpp(request, course, seminar=None, group=None):
         'visible_hide_button': Task.objects.filter(Q(course=course) & Q(is_hidden=True)).count(),
         'show_hidden_tasks': show_hidden_tasks,
         'visible_hide_button_users': len(academ_students),
-        'show_academ_students': show_academ_users
+        'show_academ_users': show_academ_users
 
     }
 

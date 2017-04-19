@@ -133,6 +133,8 @@ class Course(models.Model):
 
     issue_status_system = models.ForeignKey(IssueStatusSystem, db_index=False, null=False, blank=False, default=1)
 
+    is_python_task = models.BooleanField(db_index=False, null=False, blank=False, default=False)
+
     has_attendance_log = models.BooleanField(db_index=False, null=False, blank=False, default=False)
 
     def __unicode__(self):

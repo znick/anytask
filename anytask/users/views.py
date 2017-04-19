@@ -14,7 +14,8 @@ from django.utils.translation import ugettext as _
 from django.utils.translation import check_for_language
 
 
-from users.models import UserProfile, UserProfileLog, UserStatus
+from users.models import UserProfile, UserProfileLog
+from users.model_user_status import UserStatus
 from issues.model_issue_student_filter import IssueFilterStudent
 from django.contrib.auth.models import User
 from tasks.models import TaskTaken
@@ -31,10 +32,13 @@ from years.common import get_current_year
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, HTML
+from dateutil.relativedelta import relativedelta
+
 
 import yandex_oauth
 import requests
 import json
+import datetime
 
 
 @login_required
@@ -49,6 +53,8 @@ def profile(request, username=None, year=None):
     user_to_show = user
     if username:
         user_to_show = get_object_or_404(User, username=username)
+
+    user_to_show_profile = user_to_show.get_profile()
 
     show_email = True
     user_above_user_to_show = True
@@ -90,7 +96,7 @@ def profile(request, username=None, year=None):
                     raise PermissionDenied
 
         show_email = user.is_staff or \
-                     user_to_show.get_profile().show_email or \
+                     user_to_show_profile.show_email or \
                      user_teach_user_to_show or \
                      user_to_show_teach_user
         user_above_user_to_show = user.is_staff or \
@@ -155,6 +161,11 @@ def profile(request, username=None, year=None):
     else:
         card_width = 'col-md-12'
 
+    age = 0
+    if user.is_staff and user_to_show_profile.birth_date:
+        age = relativedelta(datetime.datetime.now(), user_to_show_profile.birth_date).years
+        age = age if age > 0 else 0
+
     context = {
         'user_to_show'              : user_to_show,
         'courses'                   : group_by_year(courses),
@@ -166,10 +177,11 @@ def profile(request, username=None, year=None):
         'current_year'              : unicode(current_year) if current_year is not None else '',
         'can_generate_invites'      : can_generate_invites,
         'invite_form'               : invite_form,
-        'user_to_show_profile'      : user_to_show.get_profile(),
+        'user_to_show_profile'      : user_to_show_profile,
         'card_width'                : card_width,
         'show_email'                : show_email,
         'user_above_user_to_show'   : user_above_user_to_show,
+        'age'                       : age,
     }
 
     return render_to_response('user_profile.html', context, context_instance=RequestContext(request))

@@ -9,16 +9,18 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 from django.utils.translation import ugettext as _
 
-from collections import defaultdict
-
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML
 
 from courses.models import StudentCourseMark
-from courses.models import Course
-from users.models import UserProfile, UserStatus, UserProfileFilter
+from users.models import UserProfile
+from users.model_user_profile_filter import UserProfileFilter
+from users.model_user_status import UserStatus, get_statuses
 
-import csv, logging
+
+import csv
+import logging
+import json
 
 logger = logging.getLogger('django.request')
 
@@ -63,7 +65,8 @@ def staff_page(request):
                 if len(user_profiles) != len(search_values):
                     err_search_values = search_values - set(
                         user_profiles.values_list(SEARCH_FIELDS[fieldnames[0]], flat=True))
-                    file_filter_err = u'<strong>{0}</strong><br/>'.format(_(u'dannyye_polzovateli_ne_naydeny')) + u', '.join(err_search_values)
+                    file_filter_err = u'<strong>{0}</strong><br/>'.format(_(u'dannyye_polzovateli_ne_naydeny')) + \
+                                      u', '.join(err_search_values)
             else:
                 file_filter_err = _(u'nevernyy_format_fayla')
                 is_error = True
@@ -72,8 +75,8 @@ def staff_page(request):
             file_filter_err = str(e)
             is_error = True
     elif request.method == 'GET' and not request.GET:
-            user_profiles = UserProfile.objects.none()
-            empty_filter = True
+        user_profiles = UserProfile.objects.none()
+        empty_filter = True
 
     f = UserProfileFilter(request.GET if request.method == 'GET' else {}, queryset=user_profiles)
     f.set()
@@ -84,25 +87,11 @@ def staff_page(request):
         <button id="button_filter" class="btn btn-secondary pull-xs-right" type="submit">{0}</button>
 </div>""".format(_(u'primenit'))))
 
-    statuses = {}
-    for status in UserStatus.objects.all():
-        status_info = {
-            'id': status.id,
-            'name': status.name,
-        }
-        if status.type in statuses:
-            statuses[status.type]['values'].append(status_info)
-        else:
-            statuses[status.type] = {
-                'type_name': status.get_type_display(),
-                'values': [status_info],
-            }
-
     context = {
         'filter': f,
         'file_filter_err': file_filter_err,
         'is_error': is_error,
-        'statuses': statuses,
+        'statuses': get_statuses(),
         'show_file_alert': show_file_alert,
         'empty_filter': empty_filter,
     }
@@ -124,6 +113,29 @@ def ajax_change_status(request):
                 profile.set_status(status)
 
     return HttpResponse("OK")
+
+
+@require_http_methods(['POST'])
+@login_required
+def ajax_save_ids(request):
+    if not request.is_ajax():
+        return HttpResponseForbidden()
+
+    post_dict = dict(request.POST)
+    if 'user_ids[]' in post_dict:
+        index = save_to_session(request, post_dict['user_ids[]'])
+    else:
+        return HttpResponseForbidden()
+
+    return HttpResponse(json.dumps({'index': index}), content_type="application/json")
+
+
+def save_to_session(request, user_ids):
+    index = request.session.get('user_ids_send_mail_counter', -1) + 1
+    request.session['user_ids_send_mail_counter'] = index
+    request.session['user_ids_send_mail_' + str(index)] = user_ids
+
+    return index
 
 
 @require_http_methods(['GET'])

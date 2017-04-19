@@ -1,5 +1,5 @@
 from django.conf.urls import patterns, url
-
+from courses.pythontask import get_task, cancel_task
 
 urlpatterns = patterns('courses.views',
     url(r'^(?P<course_id>\d+)$', 'course_page'),
@@ -20,5 +20,7 @@ urlpatterns = patterns('courses.views',
     url(r'^change_table_tasks_pos', 'change_table_tasks_pos'),
     url(r'^ajax_update_contest_tasks/$', 'ajax_update_contest_tasks'),
     url(r'^ajax_rejudge_contest_tasks/$', 'ajax_rejudge_contest_tasks'),
+    url(r'^pythontask/get_task/(?P<course_id>\d+)/(?P<task_id>\d+)$', get_task),
+    url(r'^pythontask/cancel_task/(?P<course_id>\d+)/(?P<task_id>\d+)$', cancel_task),
     url(r'^(?P<course_id>\d+)/attendance$', 'attendance_log'),
 )
