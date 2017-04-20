@@ -201,6 +201,15 @@
                         <div class="card card-block" id="card_contest">
                             <h5 class="card-title">{% trans "jakontest" %}</h5>
                             <div class="card-block-part">
+                                <p class="card-text">{% trans "nomer_posylki_kontest" %}</p>
+                                <div class="form-group row">
+                                    <div class="col-md-12">
+                                        <input type="checkbox" name="show_contest_run_id" id="show_contest_run_id" {% if course.show_contest_run_id %}checked{% endif %}>
+                                        <label class="checkbox-block" for="show_contest_run_id">{% trans "student_vidit_nomer" %}</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-block-part">
                                 <p class="card-text">{% trans "peresudit_reshenija_studentov" %}</p>
                                 <div class="form-group row" style="display: none;" >
                                     <div class="controls col-lg-8 col-md-12">
