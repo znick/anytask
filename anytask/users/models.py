@@ -1,27 +1,20 @@
 # -*- coding: utf-8 -*-
 
-from django.db import models
-from django.contrib.auth.models import User
-from django.db.models.signals import post_save
-from django.utils.translation import ugettext_lazy as _
-from django import forms
-
+import copy
+import logging
+import os
 from datetime import datetime
-from collections import defaultdict
 
-from years.common import get_current_year
-from groups.models import Group
 from courses.models import Course
+from django.contrib.auth.models import User
+from django.db import models
+from django.db.models.signals import post_save
+from groups.models import Group
 from mail.models import Message
 from users.model_user_status import UserStatus
+from years.common import get_current_year
 
 from anytask.storage import OverwriteStorage
-
-import os
-import django_filters
-import copy
-
-import logging
 
 logger = logging.getLogger('django.request')
 
