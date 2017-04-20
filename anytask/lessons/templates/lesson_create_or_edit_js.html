@@ -11,18 +11,6 @@
             '</div>'
         });
 
-        {#        $('select:not([multiple])').multiselect({#}
-        {#            buttonClass: 'btn btn-secondary btn-block',#}
-        {#            templates: {#}
-        {#                ul: '<ul class="multiselect-container dropdown-menu" style="left:inherit;top: inherit;"></ul>',#}
-        {#                li: '<li><a tabindex="0" class="dropdown-item"><label></label></a></li>'#}
-        {#            },#}
-        {#            maxHeight: 200,#}
-        {#            buttonContainer: '<div style="width:100%;" class="multiselect-dropdown" />',#}
-        {#            buttonWidth: '100%',#}
-        {#        });#}
-
-
         $('.lesson_datetime').datetimepicker({
             bootcssVer: 3,
             format: 'dd-mm-yyyy hh:ii',
@@ -31,26 +19,28 @@
             autoclose: true,
             todayHighlight: true,
             pickerPosition: "bottom-left",
-            useCurrent: true,
             minuteStep: 30
         });
 
         var now = new Date();
-        console.log(now);
         function addMinutes(date, minutes) {
             return new Date(date.getTime() + minutes*60000);
-        };
+        }
 
-        $('#lesson_edit_date_start').datetimepicker('update', now).on('changeDate', function(val){
+        if (!($("#lesson_edit_date_start").find('input').val())) {
+            $('#lesson_edit_date_start').datetimepicker('update', now);
+            $('#lesson_edit_date_finish').datetimepicker('update', addMinutes(now, 90));
+        }
+
+        $('#lesson_edit_date_start').on('changeDate', function(val){
                 $('#lesson_edit_date_finish').datetimepicker('update', addMinutes(val.date, 90))
                                              .datetimepicker('setStartDate', val.date)
                                              .datetimepicker('setEndDate', addMinutes(val.date, 240));
                 $('#lesson_end_date').datetimepicker('setStartDate', val.date)
                                      .datetimepicker('setEndDate', addMinutes(val.date, 262800));
-
         });
-        $('#lesson_edit_date_finish').datetimepicker('update', addMinutes(now, 90))
-                .datetimepicker('setEndDate', addMinutes(now, 240));
+
+        $('#lesson_edit_date_finish').datetimepicker('setEndDate', addMinutes(now, 240));
 
         $('#lesson_end_date').datetimepicker('setStartDate', now).datetimepicker('setEndDate', addMinutes(now, 262800));
 
@@ -70,43 +60,47 @@
                     $('#lesson_edit_form').ajaxSubmit({
                         success: function (data) {
                             $lesson_edit_form.data('changed', false);
-                            $('#lesson_submit_error_text').html('<div class="alert alert-success alert-dismissible" role ="alert" id="edit_lesson_err">' +
-                                    '                            <button type="button" class="close" data-dismiss="alert" aria-label="{% trans "zakryt" %}">' +
-                                    '                               <span aria-hidden="true">&times;</span>' +
-                                    '                            </button>' +
-                                    '                            <span>{% trans "raspisanie_sohraneno_uspeshno" %}</span>' +
-                                    '                          </div>');
+                            $('#lesson_submit_error_text').html(
+                                '<div class="alert alert-success alert-dismissible" role ="alert" id="edit_lesson_err">'
+                                + '<button type="button" class="close" data-dismiss="alert" '
+                                + 'aria-label="{% trans "zakryt" %}"><span aria-hidden="true">&times;</span></button>'
+                                + '<span>{% trans "raspisanie_sohraneno_uspeshno" %}</span></div>'
+                            );
                             if ($lesson_edit_form.data('quit'))
                                 redirect();
                             else if (data.redirect_page)
                                 window.location.replace(data.redirect_page);
                             else
-                                $("#lesson_edit_changed_lesson").prop('checked', !!$("#lesson_edit_changed_lesson").data("default"));
+                                $("#lesson_edit_changed_lesson").prop(
+                                    'checked', !!$("#lesson_edit_changed_lesson"
+                                    ).data("default"));
 
                             $(document).prop('title', data.page_title);
                         },
                         error: function (data) {
-                            $('#lesson_submit_error_text').html('<div  class="alert alert-danger alert-dismissible" role ="alert" id="edit_lesson_err">' +
-                                    '                            <button type="button" class="close" data-dismiss="alert" aria-label="{% trans "zakryt" %}">' +
-                                    '                               <span aria-hidden="true">&times;</span>' +
-                                    '                            </button>' +
-                                    '                            <span>{% trans "oshibka_pri_sohranenii" %}</span>' +
-                                    '                          </div>');
+                            $('#lesson_submit_error_text').html(
+                                '<div  class="alert alert-danger alert-dismissible" role ="alert" id="edit_lesson_err">'
+                                + '<button type="button" class="close" data-dismiss="alert" '
+                                + 'aria-label="{% trans "zakryt" %}"><span aria-hidden="true">&times;</span></button>'
+                                + '<span>{% trans "oshibka_pri_sohranenii" %}</span></div>'
+                            );
                             remove_disabled();
                         }
                     });
                 }
                 else {
-                    $('#lesson_submit_error_text').html('<div class="alert alert-success alert-dismissible" role ="alert" id="edit_lesson_err">' +
-                            '                            <button type="button" class="close" data-dismiss="alert" aria-label="{% trans "zakryt" %}">' +
-                            '                               <span aria-hidden="true">&times;</span>' +
-                            '                            </button>' +
-                            '                            <span>{% trans "raspisanie_sohraneno_uspeshno" %}</span>' +
-                            '                          </div>');
+                    $('#lesson_submit_error_text').html(
+                        '<div class="alert alert-success alert-dismissible" role ="alert" id="edit_lesson_err">' +
+                        + '<button type="button" class="close" data-dismiss="alert" aria-label="{% trans "zakryt" %}">'
+                        + '<span aria-hidden="true">&times;</span></button>'
+                        + '<span>{% trans "raspisanie_sohraneno_uspeshno" %}</span></div>'
+                    );
                     if ($('#lesson_edit_form').data('quit'))
                         redirect();
                     else
-                        $("#lesson_edit_changed_lesson").prop('checked', !!$("#lesson_edit_changed_lesson").data("default"));
+                        $("#lesson_edit_changed_lesson").prop(
+                            'checked', !!$("#lesson_edit_changed_lesson"
+                            ).data("default"));
                 }
             },
             ignore: ':hidden:not("#lesson_edit_group")',
@@ -139,7 +133,11 @@
 
             success: function (label) {
                 label.addClass('valid');
-                label.closest('.text-help').siblings('.form-control').removeClass('form-control-danger').addClass('form-control-success');
+                label.closest('.text-help').siblings('.form-control').removeClass(
+                    'form-control-danger'
+                ).addClass(
+                    'form-control-success'
+                );
                 label.closest('.form-group').removeClass('has-danger').addClass('has-success');
             },
 
@@ -180,10 +178,6 @@
                 $("#date_end_body").collapse('show');
                 $("#week_body").collapse('show');
             }
-{#            else if ($lesson_edit_type.val() === 'Monthly') {#}
-{#                $("#date_end_body").show();#}
-{#                $("#month_body").show();#}
-{#            }#}
         });
 
         $('#lesson_edit_weekday').multiselect({
@@ -248,13 +242,13 @@
                 input.closest('.form-group').removeClass('has-success');
             },
             onChange: function(option, checked, select) {
-                form_validator.element('#lesson_edit_group');
+                form_validator.element('#lesson_edit_weekday');
             },
             onSelectAll: function() {
-                form_validator.element('#lesson_edit_group');
+                form_validator.element('#lesson_edit_weekday');
             },
             onDeselectAll: function() {
-                form_validator.element('#lesson_edit_group');
+                form_validator.element('#lesson_edit_weekday');
             }
 
         });
@@ -365,10 +359,14 @@
 
     function description_preview() {
         var description_html = $('#lesson_edit_body').val();
-        var lesson_date = $('#lesson_edit_date_start').val();
+        var lesson_date_start = $("#lesson_edit_date_start").find('input').val();
+        var lesson_date_end = $("#lesson_edit_date_finish").find('input').val();
         var lesson_name = $('#lesson_edit_header').val();
         $('#modal_lesson_header').show().text(lesson_name);
-        $('#modal_lesson_date').html('<strong>{% trans "data_uroka" %}: ' + lesson_date + ' MSK UTC+3</strong>');
+        $('#modal_lesson_date').html(
+            '<strong>{% trans "data_zaniatia" %}: '
+            + lesson_date_start + ' - ' + lesson_date_end + ' MSK UTC+3</strong>'
+        );
         $('#modal_lesson_body').html(description_html);
 
         var codesample = $('pre[class*="language-"]', '#modal_lesson_body')[0];

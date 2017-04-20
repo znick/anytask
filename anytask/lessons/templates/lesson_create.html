@@ -6,7 +6,7 @@
 {% load django_bootstrap_breadcrumbs %}
 
 
-{% block title %}{% if is_create %}{% trans "sozdanie_raspisania" %}{% else %}{{ lesson.schedule_id }}{% endif %} | {{ course.name }} | {{ course.year }}{% endblock %}
+{% block title %}{% if is_create %}{% trans "sozdanie_zaniatia" %}{% else %}{{ lesson.schedule_id }}{% endif %} | {{ course.name }} | {{ course.year }}{% endblock %}
 
 {% block scripts %}
     <link href="{{ STATIC_URL }}lesson.css" rel='stylesheet'/>
@@ -22,9 +22,9 @@
     {% endif %}
     {% breadcrumb course.name course.get_absolute_url %}
     {% if is_create %}
-        {% breadcrumb_for "" %}{% trans "sozdanie_raspisania" %}{% endbreadcrumb_for %}
+        {% breadcrumb_for "" %}{% trans "sozdanie_zaniatia" %}{% endbreadcrumb_for %}
     {% else %}
-        {% breadcrumb_for "" %}{% trans "redaktirovanie_raspisania" %}{% endbreadcrumb_for %}
+        {% breadcrumb_for "" %}{% trans "redaktirovanie_zaniatia" %}{% endbreadcrumb_for %}
     {% endif %}
 {% endblock breadcrumbs %}
 
@@ -48,7 +48,7 @@
                         <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="lesson_edit_date_start">{% trans "data_zanatia" %}</label>
                         <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
                             <div class="input-group date lesson_datetime" id='lesson_edit_date_start'>
-                                <input class="form-control" name='lesson_date_start' type='text'>
+                                <input class="form-control datetime" name='lesson_date_start' type='text'>
                                 <span class="input-group-addon"><i class="fa fa-times fa-lg"></i></span>
                                 <span class="input-group-addon"><i class="fa fa-calendar fa-lg"></i></span>
                             </div>
@@ -56,7 +56,7 @@
                         </div>
                         <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
                             <div class="input-group date lesson_datetime" id='lesson_edit_date_finish'>
-                                <input class="form-control" name='lesson_date_finish' type='text'>
+                                <input class="form-control datetime" name='lesson_date_finish' type='text'>
                                 <span class="input-group-addon"><i class="fa fa-times fa-lg"></i></span>
                                 <span class="input-group-addon"><i class="fa fa-calendar fa-lg"></i></span>
                             </div>
@@ -105,25 +105,13 @@
                         <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="lesson_end_date">{% trans "data_okonchania" %}</label>
                         <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
                             <div class="input-group date lesson_datetime" id="lesson_end_date">
-                                <input class="form-control" name='date_end' type='text'>
+                                <input class="form-control datetime" name='date_end' type='text'>
                                 <span class="input-group-addon"><i class="fa fa-times fa-lg"></i></span>
                                 <span class="input-group-addon"><i class="fa fa-calendar fa-lg"></i></span>
                             </div>
                             <small class="text-help" id="date_end_error_text"></small>
                         </div>
                     </div>
-{#                    <div id='date_body' class="form-group row">#}
-{#                        <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="lesson_edit_datepicker">{% trans "data_uroka" %}</label>#}
-{#                        <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">#}
-{#                            <div class="input-group date lesson_datetime">#}
-{#                                <input class="form-control" id='lesson_edit_datepicker' name='date' type='text'  readonly value="{{lesson.date|date:'d-m-Y H:i'}}">#}
-{#                                <span class="input-group-addon"><i class="fa fa-times fa-lg"></i></span>#}
-{#                                <span class="input-group-addon"><i class="fa fa-calendar fa-lg"></i></span>#}
-{#                            </div>#}
-{#                            <small class="text-help" id="lesson_edit_datepicker_error_text"></small>#}
-{#                        </div>#}
-{#                    </div>#}
-
                     <div class="form-group row">
                         <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="lesson_edit_body">{% trans "opisanie" %}</label>
                         <br>

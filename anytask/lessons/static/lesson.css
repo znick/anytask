@@ -10,12 +10,12 @@ span.input-group-addon {
     cursor: pointer;
 }
 
-#lesson_edit_datepicker {
+.form-control.datetime {
     background-color: #fff;
     cursor: pointer
 }
 
-#lesson_edit_datepicker:disabled {
+.form-control.datetime:disabled {
     background-color: #eceeef;
 }
 

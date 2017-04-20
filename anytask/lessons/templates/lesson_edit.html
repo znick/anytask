@@ -80,7 +80,7 @@
                         <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="lesson_edit_date_start">{% trans "data_zanatia" %}</label>
                         <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
                             <div class="input-group date lesson_datetime" id="lesson_edit_date_start">
-                                <input class="form-control" name='lesson_date_start' type='text' readonly value="{{lesson.date_starttime|date:'d-m-Y H:i'}}">
+                                <input class="form-control datetime" name='lesson_date_start' type='text' readonly value="{{lesson.date_starttime|date:'d-m-Y H:i'}}">
                                 <span class="input-group-addon"><i class="fa fa-times fa-lg"></i></span>
                                 <span class="input-group-addon"><i class="fa fa-calendar fa-lg"></i></span>
                             </div>
@@ -88,7 +88,7 @@
                         </div>
                         <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
                             <div class="input-group date lesson_datetime" id='lesson_edit_date_finish'>
-                                <input class="form-control" name='lesson_date_finish' type='text' readonly value="{{lesson.date_endtime|date:'d-m-Y H:i'}}">
+                                <input class="form-control datetime" name='lesson_date_finish' type='text' readonly value="{{lesson.date_endtime|date:'d-m-Y H:i'}}">
                                 <span class="input-group-addon"><i class="fa fa-times fa-lg"></i></span>
                                 <span class="input-group-addon"><i class="fa fa-calendar fa-lg"></i></span>
                             </div>
@@ -98,7 +98,7 @@
                     <div class="form-group row">
                         <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="lesson_edit_group">{% trans "gruppa" %}
                             {% if show_help_msg_task_group %}
-                                <a tabindex="0" data-toggle="popover" data-trigger="hover" data-content="{% trans "vybor_grupp_zavisit_ot_zadach" %}" type="button"><i class="fa fa-question-circle help-button" aria-hidden="true"></i></a>
+                                <a tabindex="0" data-toggle="popover" data-trigger="hover" data-content="{% trans "vybor_grupp_zavisit_ot_urokov" %}" type="button"><i class="fa fa-question-circle help-button" aria-hidden="true"></i></a>
                             {% endif %}
                         </label>
                         <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
@@ -140,7 +140,7 @@
                         <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="lesson_end_date">{% trans "data_okonchania" %}</label>
                         <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
                             <div class="input-group date lesson_datetime" id="lesson_end_date">
-                                <input class="form-control" name='date_end' type='text' readonly value="{{lesson.date_end|date:'d-m-Y H:i'}}">
+                                <input class="form-control datetime" name='date_end' type='text' readonly value="{{lesson.date_end|date:'d-m-Y H:i'}}">
                                 <span class="input-group-addon"><i class="fa fa-times fa-lg"></i></span>
                                 <span class="input-group-addon"><i class="fa fa-calendar fa-lg"></i></span>
                             </div>
