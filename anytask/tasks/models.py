@@ -1,20 +1,17 @@
 # coding: utf-8
 
-from django.db import models
+import copy
 from datetime import datetime
-from django.utils.translation import ugettext_lazy as _
-from django.db.models.signals import post_save, pre_delete
-from django.conf import settings
+from datetime import timedelta
 
 from courses.models import Course
+from django.conf import settings
+from django.contrib.auth.models import User
+from django.db import models
+from django.db.models import Q, Max
+from django.utils.translation import ugettext_lazy as _
 from groups.models import Group
 
-from django.db.models import Q, Max
-
-from django.contrib.auth.models import User
-
-from datetime import timedelta
-import copy
 
 class Task(models.Model):
     title = models.CharField(max_length=191, db_index=True, null=True, blank=True)

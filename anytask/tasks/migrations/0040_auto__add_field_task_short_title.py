@@ -71,6 +71,7 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'information': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'db_index': 'True'}),
+            'is_python_task': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'issue_fields': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'to': "orm['issues.IssueField']", 'null': 'True', 'blank': 'True'}),
             'issue_status_system': ('django.db.models.fields.related.ForeignKey', [], {'default': '1', 'to': "orm['issues.IssueStatusSystem']", 'db_index': 'False'}),
             'mark_system': ('django.db.models.fields.related.ForeignKey', [], {'db_index': 'False', 'to': "orm['courses.CourseMarkSystem']", 'null': 'True', 'blank': 'True'}),
@@ -111,6 +112,19 @@ class Migration(SchemaMigration):
             'students': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'to': "orm['auth.User']", 'null': 'True', 'blank': 'True'}),
             'update_time': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'auto_now': 'True', 'blank': 'True'}),
             'year': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['years.Year']", 'blank': 'True'})
+        },
+        'issues.issue': {
+            'Meta': {'object_name': 'Issue'},
+            'create_time': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'auto_now_add': 'True', 'blank': 'True'}),
+            'followers': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'to': "orm['auth.User']", 'null': 'True', 'blank': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'mark': ('django.db.models.fields.FloatField', [], {'default': '0'}),
+            'responsible': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'responsible'", 'null': 'True', 'to': "orm['auth.User']"}),
+            'status': ('django.db.models.fields.CharField', [], {'default': "'new'", 'max_length': '20'}),
+            'status_field': ('django.db.models.fields.related.ForeignKey', [], {'default': '1', 'to': "orm['issues.IssueStatus']"}),
+            'student': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'student'", 'to': "orm['auth.User']"}),
+            'task': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['tasks.Task']", 'null': 'True'}),
+            'update_time': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'})
         },
         'issues.issuefield': {
             'Meta': {'object_name': 'IssueField'},
@@ -194,32 +208,13 @@ class Migration(SchemaMigration):
         'tasks.tasktaken': {
             'Meta': {'unique_together': "(('user', 'task'),)", 'object_name': 'TaskTaken'},
             'added_time': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'auto_now_add': 'True', 'blank': 'True'}),
-            'gr_review_update_time': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'id_issue_gr_review': ('django.db.models.fields.IntegerField', [], {'default': 'None', 'null': 'True', 'db_index': 'True'}),
-            'pdf': ('django.db.models.fields.files.FileField', [], {'default': 'None', 'max_length': '100', 'null': 'True', 'db_index': 'True'}),
-            'pdf_update_time': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
-            'score': ('django.db.models.fields.FloatField', [], {'default': '0'}),
-            'scored_by': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'task_taken_scored_by_set'", 'null': 'True', 'to': "orm['auth.User']"}),
+            'issue': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['issues.Issue']", 'null': 'True'}),
             'status': ('django.db.models.fields.IntegerField', [], {'default': '0', 'max_length': '1', 'db_index': 'True'}),
             'status_check': ('django.db.models.fields.CharField', [], {'default': "'EDIT'", 'max_length': '5', 'db_index': 'True'}),
             'task': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['tasks.Task']"}),
-            'teacher': ('django.db.models.fields.related.ForeignKey', [], {'default': 'None', 'related_name': "'teacher'", 'null': 'True', 'to': "orm['auth.User']"}),
-            'teacher_comments': ('django.db.models.fields.TextField', [], {'default': "''", 'null': 'True', 'blank': 'True'}),
             'update_time': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'auto_now': 'True', 'blank': 'True'}),
             'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"})
-        },
-        'tasks.tasktakenlog': {
-            'Meta': {'object_name': 'TaskTakenLog'},
-            'added_time': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'auto_now_add': 'True', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'score': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
-            'scored_by': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'task_taken_log_scored_by_set'", 'null': 'True', 'db_index': 'False', 'to': "orm['auth.User']"}),
-            'status': ('django.db.models.fields.IntegerField', [], {'default': '0', 'max_length': '1', 'db_index': 'True'}),
-            'task': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['tasks.Task']", 'db_index': 'False'}),
-            'teacher_comments': ('django.db.models.fields.TextField', [], {'default': "''", 'null': 'True', 'blank': 'True'}),
-            'update_time': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'auto_now': 'True', 'blank': 'True'}),
-            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']", 'db_index': 'False'})
         },
         'years.year': {
             'Meta': {'object_name': 'Year'},
