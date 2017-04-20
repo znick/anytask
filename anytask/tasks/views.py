@@ -362,7 +362,9 @@ def contest_task_import(request):
 
     contest_id = int(request.POST['contest_id_for_task'])
 
-    task_short_title = request.POST['task_short_title'].strip() if 'task_short_title' in request.POST else ''
+    task_short_title = ''
+    if 'task_short_title' in request.POST:
+        task_short_title = request.POST['task_short_title'].strip()
 
     if 'max_score' in request.POST:
         max_score = int(request.POST['max_score'])
