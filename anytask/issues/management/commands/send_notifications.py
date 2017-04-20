@@ -56,8 +56,8 @@ class Command(BaseCommand):
 
             message_footer = '<div>' + \
                              u'-- <br>' + \
-                             u'{0}<br>,'.format(_(u's_uvazheniem')) + \
-                             u'{0}<br>.'.format(_(u'komanda_anytask')) + \
+                             u'{0},<br>'.format(_(u's_uvazheniem')) + \
+                             u'{0}.<br>'.format(_(u'komanda_anytask')) + \
                              '</div>'
 
             subject = (_(u'kurs') + u': {0} | ' + _(u'zadacha') + u': {1} | ' + _(u'student') + u' {2} {3}'). \
