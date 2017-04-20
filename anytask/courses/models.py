@@ -195,9 +195,7 @@ class Course(models.Model):
     def user_can_see_contest_run_id(self, user):
         if user.is_anonymous():
             return False
-        if self.user_is_teacher(user):
-            return True
-        if self.show_contest_run_id:
+        if self.send_to_contest_from_users and (self.user_is_teacher(user) or self.show_contest_run_id):
             return True
         return False
 

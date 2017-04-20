@@ -70,7 +70,7 @@ def prepare_info_fields(info_fields, request, issue):
 
         field.value = issue.get_field_value_for_form(field)
 
-        data = { field.name : field.value }
+        data = {field.name: field.value}
         field.form = field.get_form(request, issue, data)
         field.title = title_map[field.name] if field.name in title_map else field.title
 
@@ -226,6 +226,7 @@ def issue_page(request, issue_id):
         'statuses_accepted': statuses_accepted,
         'show_contest_rejudge': show_contest_rejudge,
         'show_contest_rejudge_loading': show_contest_rejudge_loading,
+        'show_contest_run_id': issue.task.course.user_can_see_contest_run_id(request.user)
     }
 
     return render_to_response('issues/issue.html', context, context_instance=RequestContext(request))
