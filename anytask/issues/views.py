@@ -58,7 +58,7 @@ def prepare_info_fields(info_fields, request, issue):
                  'status': _('status'),
                  'mark': _('ocenka'),
                  'file': _('fajl'),
-                 'rewiev_id': _('nomer_revju'),
+                 'review_id': _('nomer_revju'),
                  'run_id': _('nomer_posylki_kontest')
                  }
 

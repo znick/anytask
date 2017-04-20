@@ -8,6 +8,7 @@ from datetime import datetime
 from django.contrib.auth.models import User
 from courses.models import Course
 from groups.models import Group
+from users.model_user_status import UserStatus
 
 
 class Message(models.Model):
@@ -17,9 +18,13 @@ class Message(models.Model):
                                              related_name='recipients_user+')
     recipients_group = models.ManyToManyField(Group, db_index=False, null=True, blank=True)
     recipients_course = models.ManyToManyField(Course, db_index=False, null=True, blank=True)
+    recipients_status = models.ManyToManyField(UserStatus, db_index=False, null=True, blank=True)
 
     title = models.CharField(max_length=191, db_index=False, null=True, blank=True)
     text = models.TextField(db_index=False, null=True, blank=True)
+
+    hidden_copy = models.BooleanField(default=False)
+    variable = models.BooleanField(default=False)
 
     create_time = models.DateTimeField(auto_now_add=True, default=datetime.now)
 
