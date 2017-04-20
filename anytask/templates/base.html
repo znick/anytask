@@ -227,7 +227,7 @@
             }
 
             body {
-                padding-top: 75px;
+                padding-top: 4.75rem;
                 padding-bottom: 40px;
                 background-color: #f5f8fa;
                 margin-bottom: 60px;
@@ -247,9 +247,11 @@
             }
 
             .breadcrumb {
-                background-color: white;
-                border: 1px solid #e5e5e5;
-                border-radius: .25rem;
+                margin-bottom: .4rem;
+                margin-top: -.75rem;
+                padding: .4rem .4rem .4rem .2rem;
+                background-color: #f5f8fa;
+                border-color: #f5f8fa;
             }
 
             .breadcrumb_button {
@@ -617,7 +619,7 @@
 <body data-spy="scroll" style="">
 {% block navbar_all %}
     <nav class="navbar navbar-fixed-top navbar-dark navbar-blue">
-        <div class="container">
+        <div class="{% if full_width_page %}container-fluid{% else %}container{% endif %}">
             <a class="navbar-brand" href="/">Anytask</a>
             <!--
             <ul class="nav">
@@ -700,7 +702,7 @@
     </nav>
 {% endblock %}
 
-<div class="container">
+<div class="{% if full_width_page %}container-fluid{% else %}container{% endif %}">
     {% load django_bootstrap_breadcrumbs %}
     {% load index_messages %}
     {% block breadcrumbs %}
@@ -717,7 +719,7 @@
 
 {% block footer_all %}
 <footer class="footer">
-    <div class="container">
+    <div class="{% if full_width_page %}container-fluid{% else %}container{% endif %}">
         {% block footer %} {% endblock footer %}
         <div style="display: inline-block; width: 100%">
             <small class="text-muted" ><a href="{% url blog.views.blog_page %}">{% trans "blog" %}</a></small>

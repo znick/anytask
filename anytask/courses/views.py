@@ -150,6 +150,7 @@ def gradebook(request, course_id, task_id=None, group_id=None):
     context['show_academ_users'] = request.session.get(
         str(request.user.id) + '_' + str(course.id) + '_show_academ_users', True)
     context['school'] = schools[0] if schools else ''
+    context['full_width_page'] = True
 
     return render_to_response('courses/gradebook.html', context, context_instance=RequestContext(request))
 
