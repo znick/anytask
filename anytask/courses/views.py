@@ -948,7 +948,7 @@ def attendance_list(request, course, group=None):
 
 
 @login_required
-def attendance_log(request, course_id, group_id=None):
+def attendance_page(request, course_id, group_id=None):
     user = request.user
     if not user.get_profile().is_active():
         raise PermissionDenied
@@ -970,6 +970,7 @@ def attendance_log(request, course_id, group_id=None):
     context['school'] = schools[0] if schools else ''
     context['show_academ_users'] = request.session.get(
         str(request.user.id) + '_' + str(course.id) + '_show_academ_users', True)
+    context['full_width_page'] = True
 
     return render_to_response('courses/attendance.html', context, context_instance=RequestContext(request))
 
