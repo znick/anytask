@@ -406,7 +406,7 @@ class ViewsTest(TestCase):
         results = info('div', 'accordion2-result')
         forms = info('form')
         self.assertEqual(results[4].a.string.strip().strip('\n'),
-                         'teacher_name teacher_last_name',
+                         'teacher_last_name teacher_name',
                          '5th issue field text wrong')
         self.assertEqual(results[4].a['href'],
                          '/users/teacher/',
@@ -454,7 +454,7 @@ class ViewsTest(TestCase):
         results = info('div', 'accordion2-result')
         forms = info('form')
         self.assertEqual(results[4].a.string.strip().strip('\n'),
-                         'teacher_name teacher_last_name',
+                         'teacher_last_name teacher_name',
                          '5th issue field text wrong')
         self.assertEqual(results[4].a['href'],
                          '/users/teacher/',

@@ -9,6 +9,8 @@ from django.conf import settings
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 
+from anycontest.common import user_register_to_contest
+
 from admission.models import AdmissionRegistrationProfile
 
 import json
@@ -150,19 +152,15 @@ def register(request):
 def contest_register(user):
     contest_id = settings.ADMISSION_CONTESTS[user.email.__hash__() % len(settings.ADMISSION_CONTESTS)]
 
-    req = requests.get(
-        settings.CONTEST_API_URL + 'register-user?uidToRegister=' + str(user.get_profile().ya_contest_uid) +
-        '&contestId=' + str(contest_id),
-        headers={'Authorization': 'OAuth ' + settings.CONTEST_OAUTH})
+    got_info, response_text = user_register_to_contest(contest_id, user.get_profile().ya_contest_uid)
 
-    if 'error' in req.json():
-        error_message = req.json()["error"]["message"]
-        if error_message == 'User already registered for contest':
-            logger.info("Activate user - %s %s", user.username, error_message)
+    if not got_info:
+        if response_text == 'User already registered for contest':
+            logger.info("Activate user - %s %s", user.username, response_text)
             return contest_id
 
         logger.error("Activate user - Cant register user %s to contest %s. Error: %s", user.username, contest_id,
-                     error_message)
+                     response_text)
         return False
 
     logger.info("Activate user - user %s was successfully registered to contest %s.", user.username, contest_id)

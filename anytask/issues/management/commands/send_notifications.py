@@ -25,7 +25,7 @@ class Command(BaseCommand):
         domain = Site.objects.get_current().domain
 
         for issue in issues:
-            user_profile = UserProfile.objects.get(id=issue.student.id)
+            user_profile = issue.student.get_profile()
             lang = user_profile.language
             translation.activate(lang)
 
@@ -56,11 +56,11 @@ class Command(BaseCommand):
 
             message_footer = '<div>' + \
                              u'-- <br>' + \
-                             u'{0}<br>,'.format(_(u's_uvazheniem')) + \
-                             u'{0}<br>.'.format(_(u'komanda_anytask')) + \
+                             u'{0},<br>'.format(_(u's_uvazheniem')) + \
+                             u'{0}.<br>'.format(_(u'komanda_anytask')) + \
                              '</div>'
 
-            subject = _(u'kurs') + u': {0} | ' + _(u'zadacha') + u': {1} | ' + _(u'student') + u' {2} {3}'.\
+            subject = (_(u'kurs') + u': {0} | ' + _(u'zadacha') + u': {1} | ' + _(u'student') + u' {2} {3}'). \
                 format(issue.task.course, issue.task.title, issue.student.last_name, issue.student.first_name)
 
             from_email = settings.DEFAULT_FROM_EMAIL

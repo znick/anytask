@@ -28,26 +28,33 @@
     }
 </style>
 
-<div style="font-family:Helvetica Neue,Helvetica,Arial,sans-serif;color: #373a3c;margin: 0;padding:40px 10px;background-color: #f5f8fa;">
-    <table cellpadding="0" cellspacing="0"
-           style="border-collapse:collapse;color:#373a3c;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;font-size:16px;margin:0 auto;padding:0;table-layout:fixed;width:768px;">
+<div style="margin: 0;padding:30px;background-color: #f6f6f6;">
+    <table cellpadding="0" cellspacing="0" width="608"
+           style="border-collapse:collapse;color:#373a3c;font-family:Arial,sans-serif;font-size:15px;margin:0 auto;padding:30px">
         <tbody>
         <tr>
-            <td style="border-collapse:collapse;">
-                <div style="background:#fff;padding:20px 30px 20px 30px;border: 1px solid rgba(0,0,0,.125);">
-                    <table cellpadding="0" cellspacing="0" style="border-collapse: separate;width: 100%">
-                        <tbody>
-                        <tr>
-                            <td style="text-align: justify" class=".text_info">
-                                {% autoescape off %}
-                                    {{ message_text }}
-                                {% endautoescape %}
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </td>
+            <table cellpadding="0" cellspacing="0"
+                   style="border-collapse:collapse;color:#373a3c;font-family:Arial,sans-serif;font-size:15px;margin:0 auto;padding:0;">
+                <tbody>
+                <tr>
+                    <td style="border-collapse:collapse;">
+                        <div style="background:#fff;padding:20px 30px 20px 30px;">
+                            <table cellpadding="0" cellspacing="0" style="border-collapse: separate;width: 100%">
+                                <tbody>
+                                <tr>
+                                    <td style="text-align: justify" class=".text_info">
+                                        {% autoescape off %}
+                                            {{ message_text }}
+                                        {% endautoescape %}
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
         </tr>
         </tbody>
     </table>
