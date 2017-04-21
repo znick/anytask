@@ -254,7 +254,7 @@
 
 {#        $("#tasks-table").DataTable();#}
 
-        var table_min_height = {% if group_gradebook %}''{% else %}'30vh'{% endif %};
+        var table_min_height = '30vh';
         $(".table-results").each(function (i) {
             var t = $(this).DataTable({
                 scrollY: table_min_height,
@@ -395,6 +395,17 @@
             t.draw();
 
         });
+
+        {% if group_gradebook %}
+            var table_card = $('.card.card-block.group-table');
+            $('html, body').css({
+                'overflow': 'hidden',
+                'height': '100%'
+            });
+            $('.dataTables_scrollBody', table_card).css('max-height',
+                table_card.height() - $('.table-results thead', table_card).height() - 90 + 'px');
+            $($(table_card).attr('for')).DataTable().draw();
+        {% endif %}
 
         $('.btn-table-fullscreen').click(function () {
             $(this).blur();
