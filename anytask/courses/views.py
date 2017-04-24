@@ -587,7 +587,7 @@ def course_settings(request, course_id):
     course.default_task_send_to_users = 'default_task_send_to_users' in request.POST
     course.default_task_one_file_upload = 'default_task_one_file_upload' in request.POST
     course.show_accepted_after_contest_ok = 'show_accepted_after_contest_ok' in request.POST
-    course.default_accepted_after_contest_ok = 'default_task_one_file_upload' in request.POST
+    course.default_accepted_after_contest_ok = 'default_accepted_after_contest_ok' in request.POST
     course.show_contest_run_id = 'show_contest_run_id' in request.POST
 
     course.save()

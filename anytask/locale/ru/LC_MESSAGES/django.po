@@ -2059,10 +2059,6 @@ msgstr "Загрузка..."
 msgid "zakryt"
 msgstr "Закрыть"
 
-#: courses/pythontask.py:79
-msgid "zapisalsya_na_task"
-msgstr "записался на задачу"
-
 #: courses/templates/courses/course_js.html:308
 #: staff/templates/gradebook_js.html:148
 msgid "zapisej_iz_tablicy"
@@ -2080,14 +2076,6 @@ msgstr "Зарегистрируйтесь"
 #: users/templates/user_profile.html:330
 msgid "zdes_nichego_net"
 msgstr "Пока здесь ничего нет =("
-
-#: courses/pythontask.py:79
-msgid "zapisalsya_na_task"
-msgstr "записался на задачу"
-
-#: courses/pythontask.py:98
-msgid "otkazalsya_ot_taska"
-msgstr "отказался от задачи"
 
 #: issues/management/commands/send_notifications.py:35
 #: mail/templates/email_notification_mail.txt:2
