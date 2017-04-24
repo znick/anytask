@@ -60,6 +60,7 @@ def schedule_edit_page(request, lesson_id):
         'period_types': lssn.PERIOD_CHOICES,
         'groups_required': groups_required,
         'school': schools[0] if schools else '',
+        'show_help_msg_lssn_group': True if groups_required else False
     }
 
     return render_to_response('lesson_edit.html', context, context_instance=RequestContext(request))

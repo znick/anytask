@@ -212,6 +212,7 @@ def course_page(request, course_id):
     context['show_hidden_tasks'] = request.session.get(
         str(request.user.id) + '_' + str(course.id) + '_show_hidden_tasks', False)
     context['school'] = schools[0] if schools else ''
+    context['visible_attendance_log'] = course.user_can_see_attendance_log(request.user)
 
     return render_to_response('courses/course.html', context, context_instance=RequestContext(request))
 
@@ -273,6 +274,7 @@ def seminar_page(request, course_id, task_id):
     context['show_hidden_tasks'] = request.session.get(
         str(request.user.id) + '_' + str(course.id) + '_show_hidden_tasks', False)
     context['school'] = schools[0] if schools else ''
+    context['visible_attendance_log'] = course.user_can_see_attendance_log(request.user)
 
     return render_to_response('courses/course.html', context, context_instance=RequestContext(request))
 
@@ -965,7 +967,7 @@ def attendance_page(request, course_id, group_id=None):
     attendance_context = attendance_list(request, course, group)
 
     context = attendance_context
-    context['tasklist_template'] = 'courses/attendance_list.html'
+    context['lssnlist_template'] = 'courses/attendance_list.html'
     context['group_attendance_list'] = True if group else False
     context['school'] = schools[0] if schools else ''
     context['show_academ_users'] = request.session.get(
