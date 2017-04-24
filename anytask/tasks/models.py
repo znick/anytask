@@ -4,12 +4,13 @@ import copy
 from datetime import datetime
 from datetime import timedelta
 
-from courses.models import Course
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import Q, Max
 from django.utils.translation import ugettext_lazy as _
+
+from courses.models import Course
 from groups.models import Group
 
 
