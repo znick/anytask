@@ -767,12 +767,11 @@
                             'group_id': group_id,
                             'delete_all': delete_all === 'delete_all'
                         }).done(function (data) {
-                            var table = $($('#table_results_' + group_id).data('table')).DataTable();
+                            var table = $('#table_results_' + group_id).DataTable();
                             var deleted_ids = data.deleted;
                             for (var i = 0; i < deleted_ids.length; ++i) {
-                                var table_col =  table.column($('#column_'+ deleted_ids[i]).attr('tabindex'));
+                                var table_col =  table.column($('#column_'+ deleted_ids[i]).index());
                                 table_col.visible(false);
-                                console.log(deleted_ids[i], $('#column_'+ deleted_ids[i]).attr('tabindex'), table_col);
                             }
                             table.draw();
             });
