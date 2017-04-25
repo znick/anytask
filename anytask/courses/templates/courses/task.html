@@ -1,5 +1,5 @@
-<div class="modal fade" id="modal_task_description" tabindex="-1" role="dialog" aria-labelledby="modal_header_task_descr" aria-hidden="true">
 {% load i18n %}
+<div class="modal fade" id="modal_task_description" tabindex="-1" role="dialog" aria-labelledby="modal_header_task_descr" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -7,7 +7,7 @@
                 <h5  class="modal-title" id="modal_header_task_descr" style="display: inline-block; "></h5>
                 {% if user_is_teacher %}
                     <a id="modal_task_descr_edit_button" type="button" style="opacity:0.2;filter: alpha(opacity=20);color:#000000;display: inline-block;vertical-align: super;margin-left: 5px;"><i class="fa fa-edit fa-lg"></i></a>
-                    {% if lssnlist_template %}<a id="modal_task_del_button" type="button" style="opacity:0.2;filter: alpha(opacity=20);color:#000000;display: inline-block;vertical-align: super;margin-left: 5px;"><i class="fa fa-trash-o"></i></a>{% endif %}
+                    {% if lssnlist_template %}<a id="lssn_del_button" data-toggle="popover" type="button" style="opacity:0.2;filter: alpha(opacity=20);color:#000000;display: inline-block;vertical-align: super;margin-left: 5px;cursor: pointer;"><i class="fa fa-trash-o"></i></a>{% endif %}
                 {% endif %}
                 <div id="modal_header_deadline_time"></div>
             </div>

@@ -1,8 +1,9 @@
-from BeautifulSoup import BeautifulSoup, Comment
+from datetime import datetime
+
 from django import template
-from django.utils.translation import ugettext as _
 from issues.models import Issue
 from issues.model_issue_status import IssueStatus
+from lessons.models import Lesson
 from tasks.models import Task
 
 register = template.Library()
@@ -80,3 +81,19 @@ def task_group_info(task):
                     ', '.join(data_task_disabled_groups),
                     ', '.join(data_task_empty_children_groups))
     return ''
+
+
+@register.filter(name='disabled')
+def lesson_disabled(lesson):
+    if isinstance(lesson, Lesson):
+        if lesson.date_starttime.date() > datetime.today().date():
+            return True
+    return False
+
+
+@register.filter(name='lssn_can_be_deleted')
+def lesson_can_be_deleted(lesson, group):
+    if isinstance(lesson, Lesson):
+        if not set(lesson.visited_students.all()).intersection(set(group.students.all())):
+            return True
+    return False

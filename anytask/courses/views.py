@@ -878,8 +878,6 @@ def attendance_list(request, course, group=None):
     academ_students = []
 
     for group in groups:
-        # student_x_task_x_task_takens = {}
-
         lesson_for_group = LessonGroupRelations.objects.filter(lesson__course=course, group=group, deleted=False)\
                                                        .order_by('position')\
                                                        .select_related('lesson')
@@ -910,7 +908,6 @@ def attendance_list(request, course, group=None):
                 if student in lssn.visited_students.all():
                     visited_lessons.append(lssn)
             students_x_lessons[student] = visited_lessons
-            # student_x_task_x_task_takens[student] = (task_x_task_taken, student_summ_scores)
 
         group_x_student_x_lessons[group] = students_x_lessons
 
@@ -997,4 +994,42 @@ def lesson_visited(request):
     lesson.save()
 
     return HttpResponse(json.dumps({'visited': value}),
+                        content_type="application/json")
+
+
+@login_required
+def lesson_delete(request):
+    if request.method != 'POST':
+        return HttpResponseForbidden()
+
+    lesson_id = request.POST['lesson_id']
+    group_id = request.POST['group_id']
+    delete_all = request.POST['delete_all'] == 'true'
+
+    lesson = get_object_or_404(Lesson, id=lesson_id)
+    group = get_object_or_404(Group, id=group_id)
+    one_group = len(lesson.groups.all()) == 1
+    deleted_ids = [lesson_id]
+    if not delete_all:
+        if one_group:
+            lesson.delete()
+        else:
+            lesson.groups.remove(group)
+            lesson.save()
+    else:
+        schedule_id = lesson.schedule_id
+        lessons = Lesson.objects.filter(
+            schedule_id=schedule_id,
+            date_starttime__gt=lesson.date_starttime.date(),
+            visited_students__isnull=True
+        )
+        lesson.delete()
+        for lssn in lessons:
+            deleted_ids.append(lssn.id)
+            if one_group:
+                lssn.delete()
+            else:
+                lssn.groups.remove(group)
+                lssn.save()
+    return HttpResponse(json.dumps({'deleted': deleted_ids}),
                         content_type="application/json")

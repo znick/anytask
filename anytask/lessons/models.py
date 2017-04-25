@@ -8,32 +8,6 @@ from courses.models import Course
 from groups.models import Group
 
 
-# class Schedule(models.Model):
-#     subject = models.CharField(max_length=100, db_index=True, null=True, blank=True)
-#
-#     PERIOD_SIMPLE = 'Once'
-#     PERIOD_WEEK = 'Weekly'
-#     PERIOD_MONTH = 'Monthly'
-#
-#     PERIOD_CHOICES = (
-#         (PERIOD_SIMPLE, _('odin_raz')),
-#         (PERIOD_WEEK, _('ezhenedelno'))
-#     )
-#     period = models.CharField(db_index=False, max_length=128, choices=PERIOD_CHOICES, default=PERIOD_SIMPLE)
-#     date_start = models.DateTimeField(auto_now=False, null=True, default=None)
-#     date_end = models.DateTimeField(auto_now=False, null=True, default=None)
-#     days = models.CharField(max_length=100, db_index=True, null=True, blank=True)
-#
-#     description = models.TextField(null=True, blank=True, default=None)
-#     course = models.ForeignKey(Course, null=False, blank=False)
-#     group = models.ForeignKey(Group, null=False, blank=False)
-#
-#     unique_together = (('subject', 'group'),)
-#
-#     def __unicode__(self):
-#         return unicode(self.subject)
-
-
 class Lesson(models.Model):
     title = models.CharField(max_length=100, null=True, blank=True)
     description = models.TextField(null=True, blank=True, default=None)

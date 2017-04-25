@@ -36,8 +36,9 @@
                     <th class="no-font-weight text-center">#</th>
                     <th class="no-font-weight"><b>{% trans "student" %}</b></th>
                     {% for lssn in group_lessons|key:group %}
-                            <th align="center" class="{% if user_is_teacher %}dom-live-number{% else %}dom-number{% endif %} word-wrap">
-                                <a href="javascript:get_lesson_modal('{{lssn.id}}', '{{lssn.title|escapejs}}', '{{lssn.date_starttime|date:'d-m-Y H:i'}}', '{{lssn.date_endtime|date:'d-m-Y H:i'}}', '{{lssn.description|safe|escapejs}}')">
+                            <th align="center" class="{% if user_is_teacher %}dom-live-number{% else %}dom-number{% endif %} word-wrap" id="column_{{lssn.id}}">
+                                <a href="javascript:get_lesson_modal('{{group.id}}', '{{lssn.id}}', '{{lssn.title|escapejs}}', '{{lssn.date_starttime|date:'d-m-Y H:i'}}',
+                                '{{lssn.date_endtime|date:'d-m-Y H:i'}}', '{{lssn.description|safe|escapejs}}', '{{ lssn|lssn_can_be_deleted:group }}')">
                                     {{lssn.date_starttime|date:'d-m-Y'}}
                                 </a>
                             </th>
@@ -63,7 +64,7 @@
                                     {% csrf_token %}
                                     <input type="hidden" name="lssn_id" value="{{lssn.id}}"/>
                                     <input type="hidden" name="student_id" value="{{student.id}}"/>
-                                    <input type="checkbox" id="lssn_visited" name="lesson_visited" {% if lssn in visited_lessons%}checked{% endif %}>
+                                    <input type="checkbox" id="lssn_visited" name="lesson_visited" {% if lssn in visited_lessons%}checked{% endif %} {% if lssn|disabled %}disabled{% endif %}>
                                 </form>
                             </td>
                             {% empty %}
