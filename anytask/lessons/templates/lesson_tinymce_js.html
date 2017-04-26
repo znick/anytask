@@ -55,43 +55,5 @@
             ],
             contextmenu: "link image codesample",
         });
-
-{#        {% if lesson %}#}
-{#            $("#lesson_edit_header, #lesson_edit_max_score, #lesson_edit_datepicker").change(function () {#}
-{#                check_changed($(this));#}
-{#            });#}
-{#            $("#lesson_edit_hidden_lesson").change(function () {#}
-{#                var $this = $(this);#}
-{#                if ($this.data("value") && !$this.is(':checked'))#}
-{#                    $this.data("changed", true);#}
-{#                else#}
-{#                    $this.data("changed", false);#}
-{#                show_notify();#}
-{#            });#}
-{#        {% endif %}#}
     });
-
-    {% if lesson %}
-        function check_changed($elem) {
-            if ($elem.val() != $elem.data("value"))
-                $elem.data("changed", true);
-            else
-                $elem.data("changed", false);
-            show_notify();
-        }
-
-{#        function show_notify() {#}
-{#            var $lesson_edit_hidden_lesson = $("#lesson_edit_hidden_lesson");#}
-{##}
-{#            if (($("#lesson_edit_header").data("changed") ||#}
-{#                $("#lesson_edit_max_score").data("changed") ||#}
-{#                $("#lesson_edit_datepicker").data("changed") ||#}
-{#                $("#lesson_edit_body").data("changed") ||#}
-{#                $lesson_edit_hidden_lesson.data("changed")) && !$lesson_edit_hidden_lesson.is(':checked'))#}
-{##}
-{#                $("#lesson_edit_label_for_changed_lesson").show().find("input").prop('disabled', false);#}
-{#            else#}
-{#                $("#lesson_edit_label_for_changed_lesson").hide().find("input").prop('disabled', true);#}
-{#        }#}
-    {% endif %}
 </script>

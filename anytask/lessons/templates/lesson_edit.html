@@ -54,9 +54,6 @@
         #update_contest_block button.btn div {
             overflow: hidden;
         }
-        #task_edit_label_for_changed_task {
-            display: none;
-        }
         #modal_lesson_update .modal-body p {
             margin-bottom: 0;
         }
@@ -114,7 +111,7 @@
                     <div class="form-group row">
                         <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5  form-control-label" for="lesson_edit_type"> {% trans "povtoriat" %}</label>
                         <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
-                            <select class="form-control" id='lesson_edit_type' name="period_type">
+                            <select class="form-control" id='lesson_edit_type' name="period_type" {% if lesson.period != 'Once' %}disabled{% endif %}>
                                 {% for type_id, type in period_types %}
                                     <option value="{{ type_id }}" {% ifequal type_id lesson.period %}selected{% endifequal %}>{{ type }}</option>
                                 {% endfor %}
@@ -180,22 +177,7 @@
         </div>
     </div>
 
-    <div id="modal_task_preview" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modal_task_header" aria-hidden="true">
-        <div class="modal-dialog modal-lg"  role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">×</button>
-                    <h5 class="modal-title" id="modal_task_header"></h5>
-                    <div id="modal_task_deadline"></div>
-                </div>
-                <div class="modal-body">
-                    <div id="modal_task_body"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="modal_lesson_update" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modal_lesson_update_header" aria-hidden="true">
+    <div id="modal_lesson_preview" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modal_lesson_header" aria-hidden="true">
         <div class="modal-dialog modal-lg"  role="document">
             <div class="modal-content">
                 <div class="modal-header">

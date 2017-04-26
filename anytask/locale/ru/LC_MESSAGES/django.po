@@ -1434,7 +1434,7 @@ msgstr "Пустая таблица"
 #: lessons/templates/lesson_create_or_edit_js.html:67
 #: lessons/templates/lesson_create_or_edit_js.html:96
 msgid "raspisanie_sohraneno_uspeshno"
-msgstr "Расписание сохранено успешно"
+msgstr "Занятие сохранено успешно"
 
 #: courses/templates/courses/settings.html:273
 msgid "rasshirenija_fajlov"
