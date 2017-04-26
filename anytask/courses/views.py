@@ -985,6 +985,7 @@ def lesson_visited(request):
         return HttpResponseForbidden()
 
     student = User.objects.get(id=request.POST['student_id'])
+    group = Group.objects.get(id=request.POST['group_id'])
     if 'lesson_visited' in request.POST:
         value = 1
         lesson.visited_students.add(student)
@@ -993,7 +994,9 @@ def lesson_visited(request):
         lesson.visited_students.remove(student)
     lesson.save()
 
-    return HttpResponse(json.dumps({'visited': value}),
+    can_be_deleted = len(set(lesson.visited_students.all()).intersection(set(group.students.all())))
+    return HttpResponse(json.dumps({'visited': value, 'lesson_id': lesson_id,
+                                    'deleted': can_be_deleted}),
                         content_type="application/json")
 
 

@@ -94,6 +94,5 @@ def lesson_disabled(lesson):
 @register.filter(name='lssn_can_be_deleted')
 def lesson_can_be_deleted(lesson, group):
     if isinstance(lesson, Lesson):
-        if not set(lesson.visited_students.all()).intersection(set(group.students.all())):
-            return True
+        return len(set(lesson.visited_students.all()).intersection(set(group.students.all())))
     return False

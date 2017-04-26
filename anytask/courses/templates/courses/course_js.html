@@ -543,9 +543,11 @@
             var $form = $(this);
             $.post('{% url courses.views.lesson_visited %}', $form.serialize(), function (data) {
                 var val = parseInt(data.visited);
+                var lesson_id = data.lesson_id;
                 var visited_lssns_span = $form.closest('td').siblings('.total-lessons').find('span');
                 var sum_lssns = parseInt(visited_lssns_span.text()) + val;
                 $(visited_lssns_span).text(parseInt(sum_lssns));
+                $form.closest('table').find('#column_' + lesson_id).find('a').attr('data-deleted', data.deleted);
             });
         });
 
@@ -744,7 +746,7 @@
         $('body').on("click", '#lssn_del_button', function (e) {
             e.stopPropagation();
             var del_button = $(this);
-            if (del_button.attr('data_delete') === 'True') {
+            if (parseInt(del_button.attr('data_deleted')) === 0) {
                 del_button.popover(popover_opts_lssn_del).popover('show');
             }
             else {
@@ -891,7 +893,7 @@
     }
 
     function get_lesson_modal(group_id, lesson_id, lesson_title, lesson_date_start, lesson_date_end,
-                              lesson_text_to_show, lesson_can_be_delted) {
+                              lesson_text_to_show) {
         $('#modal_header_task_descr').html(lesson_title);
         $('#modal_body_task_descr').html(lesson_text_to_show);
 
@@ -904,7 +906,9 @@
 
         $('#modal_task_desc_edit').hide();
         $('#modal_task_descr_edit_button').attr("href", "/lesson/edit/" + lesson_id);
-        $('#lssn_del_button').attr("data_lssn", lesson_id).attr("data_group", group_id).attr("data_delete", lesson_can_be_delted);
+
+        var lesson_can_be_deleted = $('#table_results_' + group_id).find('#column_' + lesson_id).find('a').attr('data-deleted');
+        $('#lssn_del_button').attr("data_lssn", lesson_id).attr("data_group", group_id).attr("data_deleted", lesson_can_be_deleted);
         $('#modal_task_description').modal('show');
     }
 

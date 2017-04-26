@@ -29,11 +29,11 @@
     {% breadcrumb course.name course.get_absolute_url %}
     {% if is_create %}
         {% breadcrumb_for "" %}
-            {% trans "sozdanie_raspisania" %}
+            {% trans "sozdanie_zaniatia" %}
         {% endbreadcrumb_for  %}
     {% else %}
         {% breadcrumb_for "" %}
-            {% trans "redaktirovanie_raspisania" %}
+            {% trans "redaktirovanie_zaniatia" %}
         {% endbreadcrumb_for %}
     {% endif %}
 {% endblock breadcrumbs %}
@@ -65,7 +65,7 @@
     <div class="row collapse">
         <div class="col-md-12">
             <div id="lesson_edit" class="card card-block">
-                <h5 class="card-title">{% trans "redaktirovanie_raspisania" %}</h5>
+                <h5 class="card-title">{% trans "redaktirovanie_zaniatia" %}</h5>
 
                 <form method="post" id="lesson_edit_form" >
                     {% csrf_token %}
@@ -77,7 +77,7 @@
                         </div>
                     </div>
                     <div id='date_lesson_body' class="form-group row">
-                        <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="lesson_edit_date_start">{% trans "data_zanatia" %}
+                        <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="lesson_edit_date_start">{% trans "data_zaniatia" %}
                             <a tabindex="0" data-toggle="popover" data-trigger="hover" data-content="{% trans "vremia_msk" %}" type="button"><i class="fa fa-question-circle help-button" aria-hidden="true"></i></a></label>
                         <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
                             <div class="input-group date lesson_datetime" id="lesson_edit_date_start">
