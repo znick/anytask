@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-04-27 16:11+0300\n"
+"POT-Creation-Date: 2017-04-27 17:02+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -139,7 +139,7 @@ msgstr "Дата сдачи"
 
 #: courses/templates/courses/course_js.html:903
 #: lessons/templates/lesson_create.html:48
-#: lessons/templates/lesson_create_or_edit_js.html:400
+#: lessons/templates/lesson_create_or_edit_js.html:426
 #: lessons/templates/lesson_edit.html:77
 msgid "data_zaniatia"
 msgstr "Дата занятия"
@@ -1223,6 +1223,10 @@ msgstr "По запросу"
 #: staff/templates/staff.html:92
 msgid "pochta"
 msgstr "Почта"
+
+#: lessons/templates/lesson_create_or_edit_js.html:415
+msgid "podtverdit_izmenenia"
+msgstr "Изменение даты приведет к удалению последующих занятий. Уверены, что хотите изменить дату занятий?"
 
 #: tasks/templates/task_create.html:119 tasks/templates/task_edit.html:279
 msgid "podzadachi"

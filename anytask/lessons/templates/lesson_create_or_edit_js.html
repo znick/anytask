@@ -342,9 +342,10 @@
                 });
 
                 $('#button_save_all').click(function () {
-                    $('#lesson_edit_form').append('<input type="hidden" name="change_all"/>').data('quit', false).submit();
-                    remove_disabled();
+                    if (show_alert())
+                        $('#lesson_edit_form').append('<input type="hidden" name="change_all"/>').data('quit', false).submit();
                     $('#modal_lesson_save').modal('hide');
+                    remove_disabled();
                 });
             }
         });
@@ -353,7 +354,6 @@
             set_disabled();
             if ($('#lesson_edit_type').val() === 'Once') {
                 $('#lesson_edit_form').data('quit', true).submit();
-                console.log(1111);
                 remove_disabled();
             }
             else {
@@ -365,7 +365,10 @@
                 });
 
                 $('#button_save_all').click(function () {
-                    $('#lesson_edit_form').append('<input type="hidden" name="change_all"/>').data('quit', true).submit();
+                    if (show_alert())
+                        $('#lesson_edit_form').append('<input type="hidden" name="change_all"/>').data('quit', true).submit();
+                    else
+                        $('#modal_lesson_save').modal('hide');
                     remove_disabled();
                 });
             }
@@ -401,6 +404,16 @@
             else
                 $this.prop('disabled', true);
         });
+    }
+
+    function show_alert() {
+        var $date_start = $('#lesson_edit_date_start');
+        var $date_end = $('#lesson_end_date');
+        var $weekdays = $('#lesson_edit_weekday');
+        if (($date_start.val() != $date_start.data('value')) || ($date_end.val() != $date_end.data('value'))
+            || ($weekdays.val() != $weekdays.data('value')))
+                return confirm('{% trans "podtverdit_izmenenia" %}');
+        return true;
     }
 
     function description_preview() {

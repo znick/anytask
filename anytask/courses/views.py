@@ -1008,15 +1008,9 @@ def lesson_delete(request):
     delete_all = request.POST['delete_all'] == 'true'
 
     lesson = get_object_or_404(Lesson, id=lesson_id)
-    group = get_object_or_404(Group, id=group_id)
-    one_group = len(lesson.groups.all()) == 1
     deleted_ids = [lesson_id]
     if not delete_all:
-        if one_group:
-            lesson.delete()
-        else:
-            lesson.groups.remove(group)
-            lesson.save()
+        lesson.delete()
     else:
         schedule_id = lesson.schedule_id
         lessons = Lesson.objects.filter(
@@ -1027,10 +1021,7 @@ def lesson_delete(request):
         lesson.delete()
         for lssn in lessons:
             deleted_ids.append(lssn.id)
-            if one_group:
-                lssn.delete()
-            else:
-                lssn.groups.remove(group)
-                lssn.save()
+            lssn.delete()
+
     return HttpResponse(json.dumps({'deleted': deleted_ids}),
                         content_type="application/json")
