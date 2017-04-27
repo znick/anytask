@@ -93,10 +93,6 @@
                     );
                     if ($('#lesson_edit_form').data('quit'))
                         redirect();
-{#                    else#}
-{#                        $("#lesson_edit_changed_lesson").prop(#}
-{#                            'checked', !!$("#lesson_edit_changed_lesson"#}
-{#                            ).data("default"));#}
                 }
             },
             ignore: ':hidden:not("#lesson_edit_group")',
@@ -332,34 +328,47 @@
 
         $('#edit_button_save').click(function () {
             set_disabled();
-            $('#modal_lesson_save').modal('show');
-
-            $('#button_save_one').click(function () {
+            if ($('#lesson_edit_type').val() === 'Once') {
                 $('#lesson_edit_form').data('quit', false).submit();
                 remove_disabled();
-                $('#modal_lesson_save').modal('hide');
-            });
+            }
+            else {
+                $('#modal_lesson_save').modal('show');
 
-            $('#button_save_all').click(function () {
-                $('#lesson_edit_form').append('<input type="hidden" name="change_all"/>').data('quit', false).submit();
-                remove_disabled();
-                $('#modal_lesson_save').modal('hide');
-            });
+                $('#button_save_one').click(function () {
+                    $('#lesson_edit_form').data('quit', false).submit();
+                    remove_disabled();
+                    $('#modal_lesson_save').modal('hide');
+                });
+
+                $('#button_save_all').click(function () {
+                    $('#lesson_edit_form').append('<input type="hidden" name="change_all"/>').data('quit', false).submit();
+                    remove_disabled();
+                    $('#modal_lesson_save').modal('hide');
+                });
+            }
         });
 
         $('#edit_button_save_quit').click(function () {
             set_disabled();
-            $('#modal_lesson_save').modal('show');
-
-            $('#button_save_one').click(function () {
+            if ($('#lesson_edit_type').val() === 'Once') {
                 $('#lesson_edit_form').data('quit', true).submit();
+                console.log(1111);
                 remove_disabled();
-            });
+            }
+            else {
+                $('#modal_lesson_save').modal('show');
 
-            $('#button_save_all').click(function () {
-                $('#lesson_edit_form').append('<input type="hidden" name="change_all"/>').data('quit', true).submit();
-                remove_disabled();
-            });
+                $('#button_save_one').click(function () {
+                    $('#lesson_edit_form').data('quit', true).submit();
+                    remove_disabled();
+                });
+
+                $('#button_save_all').click(function () {
+                    $('#lesson_edit_form').append('<input type="hidden" name="change_all"/>').data('quit', true).submit();
+                    remove_disabled();
+                });
+            }
         });
 
         $('#button_cancel').click(function () {
