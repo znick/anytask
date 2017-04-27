@@ -1004,7 +1004,6 @@ def lesson_delete(request):
         return HttpResponseForbidden()
 
     lesson_id = request.POST['lesson_id']
-    group_id = request.POST['group_id']
     delete_all = request.POST['delete_all'] == 'true'
 
     lesson = get_object_or_404(Lesson, id=lesson_id)

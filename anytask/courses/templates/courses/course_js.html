@@ -775,7 +775,9 @@
                                 var table_col =  table.column($('#column_'+ deleted_ids[i]).index());
                                 table_col.visible(false);
                             }
-                            table.draw();
+                            var old_total = parseInt($('#total_lessons').text());
+                            $('#total_lessons').text(old_total - deleted_ids.length);
+{#                            table.draw();#}
             });
 
             $('[data-toggle="popover"]').popover('hide');
