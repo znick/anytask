@@ -29,9 +29,6 @@
                 {% endif %}
                 editor.on('change', function(e) {
                     $('#lesson_edit_form').data('changed', true);
-                    {% if lesson %}
-                        check_changed($("#lesson_edit_body"));
-                    {% endif %}
                 });
             },
             plugins: [

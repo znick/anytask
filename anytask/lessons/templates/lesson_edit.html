@@ -95,14 +95,14 @@
                     </div>
                     <div class="form-group row">
                         <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="lesson_edit_group">{% trans "gruppa" %}
-                            {% if show_help_msg_lssn_group %}
-                                <a tabindex="0" data-toggle="popover" data-trigger="hover" data-content="{% trans "vybor_grupp_zavisit_ot_urokov" %}" type="button"><i class="fa fa-question-circle help-button" aria-hidden="true"></i></a>
-                            {% endif %}
+{#                            {% if show_help_msg_lssn_group %}#}
+{#                                <a tabindex="0" data-toggle="popover" data-trigger="hover" data-content="{% trans "vybor_grupp_zavisit_ot_urokov" %}" type="button"><i class="fa fa-question-circle help-button" aria-hidden="true"></i></a>#}
+{#                            {% endif %}#}
                         </label>
                         <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
-                            <select class="form-control" id='lesson_edit_group' name="lesson_group_id[]" multiple="multiple">
+                            <select class="form-control" id='lesson_edit_group' name="lesson_group_id[]" multiple="multiple" disabled>
                                 {% for group in course.groups.all %}
-                                    <option value="{{ group.id }}" {% if group in lesson.groups.all %}selected {% if group in groups_required %}disabled{% endif %}{% endif %} >{{ group.name }}</option>
+                                    <option value="{{ group.id }}" {% if group == lesson.group %}selected{% endif %} >{{ group.name }}</option>
                                 {% endfor %}
                             </select>
                             <small class="text-help" id="lesson_group_id_error_text"></small>
@@ -116,6 +116,7 @@
                                     <option value="{{ type_id }}" {% ifequal type_id lesson.period %}selected{% endifequal %}>{{ type }}</option>
                                 {% endfor %}
                             </select>
+                        {% if lesson.period != 'Once' %}<input type="hidden" name="period_type" value="{{ lesson.period }}"/>{% endif %}
                         </div>
                     </div>
                     <div id='week_body' class="{% if lesson.period == lesson.PERIOD_WEEK %}in{% endif %} collapse">
@@ -145,13 +146,6 @@
                             <small class="text-help" id="lesson_edit_datepicker_error_text"></small>
                         </div>
                     </div>
-
-                    <div class="form-group row">
-                        <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="primenit_ko_vsem">{% trans "preminit_ko_vsem" %}</label>
-                        <div class="controls no-validate col-lg-4 col-md-6 col-sm-7 col-xs-7">
-                            <input type="checkbox" name="change_all" id="lesson_change_all">
-                        </div>
-                    </div>
                     <div class="form-group row">
                         <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="lesson_edit_body">{% trans "opisanie" %}</label>
                         <br>
@@ -167,8 +161,8 @@
                         <div class="col-sm-12 col-lg-10">
                             <div class="btn-group pull-xs-right" role="group">
                                 <button type="button" id="button_cancel_quit" class="btn btn-secondary">{% trans "otmenit_i_vyjti" %}</button>
-                                <button type="button" id="button_save" class="btn btn-secondary">{% trans "sohranit_i_prodolzhit" %}</button>
-                                <button type="button" id="button_save_quit" class="btn btn-primary">{% trans "sohranit_i_vyjti" %}</button>
+                                <button type="button" id="edit_button_save" class="btn btn-secondary">{% trans "sohranit_i_prodolzhit" %}</button>
+                                <button type="button" id="edit_button_save_quit" class="btn btn-primary">{% trans "sohranit_i_vyjti" %}</button>
                             </div>
                         </div>
                     </div>
@@ -187,6 +181,18 @@
                 </div>
                 <div class="modal-body">
                     <div id="modal_lesson_body"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal_lesson_save" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modal_lesson_header" aria-hidden="true">
+        <div class="modal-dialog modal-lg"  role="document" style="width: 31rem;">
+            <div class="modal-content" style="padding: 2rem; text-align: center;">
+                <div class="btn-group btn-sx" role="group">
+                    <button type="button" id="button_cancel" class="btn btn-secondary">{% trans "otmena" %}</button>
+                    <button type="button" id="button_save_all" class="btn btn-secondary">{% trans "primenit_ko_vsem" %}</button>
+                    <button type="button" id="button_save_one" class="btn btn-primary">{% trans "primenit_k_sobitiu" %}</button>
                 </div>
             </div>
         </div>

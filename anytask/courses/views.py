@@ -42,7 +42,7 @@ from issues.views import contest_rejudge
 from users.forms import InviteActivationForm
 from users.models import UserProfile
 from courses import pythontask
-from lessons.models import Lesson, LessonGroupRelations
+from lessons.models import Lesson
 
 from common.ordered_dict import OrderedDict
 
@@ -878,10 +878,8 @@ def attendance_list(request, course, group=None):
     academ_students = []
 
     for group in groups:
-        lesson_for_group = LessonGroupRelations.objects.filter(lesson__course=course, group=group, deleted=False)\
-                                                       .order_by('position')\
-                                                       .select_related('lesson')
-        group_x_lesson_list[group] = [x.lesson for x in lesson_for_group]
+        group_x_lesson_list[group] = Lesson.objects.filter(course=course, group=group).order_by('position')
+        # group_x_lesson_list[group] = [x.lesson for x in lesson_for_group]
 
         for lssn in group_x_lesson_list[group]:
             if lssn.description is None:

@@ -61,19 +61,15 @@
                         success: function (data) {
                             $lesson_edit_form.data('changed', false);
                             $('#lesson_submit_error_text').html(
-                                '<div class="alert alert-success alert-dismissible" role ="alert" id="edit_lesson_err">'
-                                + '<button type="button" class="close" data-dismiss="alert" '
-                                + 'aria-label="{% trans "zakryt" %}"><span aria-hidden="true">&times;</span></button>'
-                                + '<span>{% trans "raspisanie_sohraneno_uspeshno" %}</span></div>'
+                                '<div  class="alert alert-success alert-dismissible" role ="alert" id="edit_lesson_err">' +
+                                '<button type="button" class="close" data-dismiss="alert" aria-label="{% trans "zakryt" %}">' +
+                                '<span aria-hidden="true">&times;</span></button>' +
+                                '<span>{% trans "raspisanie_sohraneno_uspeshno" %}</span></div>'
                             );
                             if ($lesson_edit_form.data('quit'))
                                 redirect();
                             else if (data.redirect_page)
                                 window.location.replace(data.redirect_page);
-                            else
-                                $("#lesson_edit_changed_lesson").prop(
-                                    'checked', !!$("#lesson_edit_changed_lesson"
-                                    ).data("default"));
 
                             $(document).prop('title', data.page_title);
                         },
@@ -97,10 +93,10 @@
                     );
                     if ($('#lesson_edit_form').data('quit'))
                         redirect();
-                    else
-                        $("#lesson_edit_changed_lesson").prop(
-                            'checked', !!$("#lesson_edit_changed_lesson"
-                            ).data("default"));
+{#                    else#}
+{#                        $("#lesson_edit_changed_lesson").prop(#}
+{#                            'checked', !!$("#lesson_edit_changed_lesson"#}
+{#                            ).data("default"));#}
                 }
             },
             ignore: ':hidden:not("#lesson_edit_group")',
@@ -332,6 +328,47 @@
 
         $('#button_cancel_quit').click(function () {
             redirect();
+        });
+
+        $('#edit_button_save').click(function () {
+            set_disabled();
+            $('#modal_lesson_save').modal('show');
+
+            $('#button_save_one').click(function () {
+                $('#lesson_edit_form').data('quit', false).submit();
+                remove_disabled();
+                $('#modal_lesson_save').modal('hide');
+            });
+
+            $('#button_save_all').click(function () {
+                $('#lesson_edit_form').append('<input type="hidden" name="change_all"/>').data('quit', false).submit();
+                remove_disabled();
+                $('#modal_lesson_save').modal('hide');
+            });
+        });
+
+        $('#edit_button_save_quit').click(function () {
+            set_disabled();
+            $('#modal_lesson_save').modal('show');
+
+            $('#button_save_one').click(function () {
+                $('#lesson_edit_form').data('quit', true).submit();
+                remove_disabled();
+            });
+
+            $('#button_save_all').click(function () {
+                $('#lesson_edit_form').append('<input type="hidden" name="change_all"/>').data('quit', true).submit();
+                remove_disabled();
+            });
+        });
+
+        $('#button_cancel').click(function () {
+            $('#modal_lesson_save').modal('hide');
+            remove_disabled();
+        });
+
+        $('#modal_lesson_save').on('hidden.bs.modal', function (e) {
+            remove_disabled();
         });
 
         $('#button_save').click(function () {
