@@ -2,6 +2,7 @@
 
 import datetime
 import json
+import uuid
 
 import reversion
 from courses.models import Course
@@ -113,7 +114,7 @@ def lesson_create(request, course):
     user = request.user
     params = get_params(request.POST)
     for group in params['lesson_groups']:
-        schedule_id = int(datetime.datetime.now().strftime('%d%m%y%H%M%S') + str(group.id))
+        schedule_id = uuid.uuid1().hex
         for lssn_date in params['lesson_dates']:
             lssn_id = set_params(params, course, group, user, schedule_id, lssn_date)
 

@@ -17,7 +17,7 @@ class Lesson(models.Model):
     group = models.ForeignKey(Group, null=False, blank=False)
     visited_students = models.ManyToManyField(User, null=True, blank=True)
     updated_by = models.ForeignKey(User, db_index=False, null=True, blank=True, related_name='authors')
-    schedule_id = models.IntegerField(db_index=True, null=True, blank=True)
+    schedule_id = models.CharField(max_length=100, db_index=True, null=True, blank=True)
     position = models.IntegerField(db_index=True, null=True, blank=True)
 
     PERIOD_SIMPLE = 'Once'
@@ -37,5 +37,5 @@ class Lesson(models.Model):
         return unicode(self.title)
 
     def set_position(self):
-        self.position = int(self.date_starttime.strftime('%Y%m%d%H%M'))
+        self.position = int(self.date_starttime.strftime('%y%m%d%H%M'))
         self.save()

@@ -879,7 +879,6 @@ def attendance_list(request, course, group=None):
 
     for group in groups:
         group_x_lesson_list[group] = Lesson.objects.filter(course=course, group=group).order_by('position')
-        # group_x_lesson_list[group] = [x.lesson for x in lesson_for_group]
 
         for lssn in group_x_lesson_list[group]:
             if lssn.description is None:
@@ -923,8 +922,6 @@ def attendance_list(request, course, group=None):
                 user_is_attended = True
             elif not course.user_can_see_transcript(user, student):
                 continue
-
-            # mark_id, course_mark, course_mark_int = get_course_mark(course, student)
 
             group_x_student_information[group].append((student,
                                                        students_x_lessons[student]))
