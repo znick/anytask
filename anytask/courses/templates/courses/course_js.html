@@ -772,12 +772,11 @@
                             var table = $('#table_results_' + group_id).DataTable();
                             var deleted_ids = data.deleted;
                             for (var i = 0; i < deleted_ids.length; ++i) {
-                                var table_col =  table.column($('#column_'+ deleted_ids[i]).index());
+                                var table_col =  table.column($('#column_'+ deleted_ids[i]).index() + ':visIdx');
                                 table_col.visible(false);
                             }
                             var old_total = parseInt($('#total_lessons').text());
                             $('#total_lessons').text(old_total - deleted_ids.length);
-{#                            table.draw();#}
             });
 
             $('[data-toggle="popover"]').popover('hide');
