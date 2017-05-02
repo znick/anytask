@@ -46,7 +46,7 @@ class Command(BaseCommand):
                             comment += '\n' + _(u'oshibka_otpravki_v_rb')
                     if contest_submission.verdict == 'ok' and \
                             task.accepted_after_contest_ok and \
-                            issue.status_field.tag != IssueStatus.STATUS_ACCEPTED:
+                            not issue.is_accepted():
                         deadline_status = task.course.issue_status_system.statuses.filter(
                             name=u'Зачтено после дедлайна')
                         if issue.task.deadline_time and \

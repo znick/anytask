@@ -20,6 +20,7 @@ class IssueStatus(models.Model):
     STATUS_VERIFICATION = 'verification'
     STATUS_ACCEPTED = 'accepted'
     STATUS_SEMINAR = 'seminar'
+    STATUS_ACCEPTED_DEADLINE = 'accepted_deadline'
 
     RU_NAME_KEY = {
         u'Новый': _('novyj'),
@@ -35,7 +36,8 @@ class IssueStatus(models.Model):
         (STATUS_REWORK, _(STATUS_REWORK)),
         (STATUS_VERIFICATION, _(STATUS_VERIFICATION)),
         (STATUS_ACCEPTED, _(STATUS_ACCEPTED)),
-        (STATUS_SEMINAR, _(STATUS_SEMINAR))
+        (STATUS_SEMINAR, _(STATUS_SEMINAR)),
+        (STATUS_ACCEPTED_DEADLINE, _(STATUS_ACCEPTED_DEADLINE))
     )
 
     name = models.CharField(max_length=191, db_index=True, null=False, blank=False)

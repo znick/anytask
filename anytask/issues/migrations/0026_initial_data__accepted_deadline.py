@@ -9,12 +9,12 @@ class Migration(DataMigration):
 
     def forwards(self, orm):
         orm.IssueStatus(**{'name': u'Зачтено после дедлайна',
-                           'tag': 'accepted',
+                           'tag': 'accepted_deadline',
                            'color': '#ACCD8C',
                            'hidden': False}).save()
 
     def backwards(self, orm):
-        orm.IssueStatus.objects.get(name=u'Зачтено после дедлайна').delete()
+        orm.IssueStatus.objects.get(tag='accepted_deadline').delete()
 
     models = {
         'auth.group': {

@@ -103,7 +103,7 @@
             <table style="margin-bottom: 0px;" role="presentation" class="table table-striped">
                <tbody class="files" data-toggle="modal-gallery" data-target="#modal-gallery"></tbody>
             </table>
-            {% if teacher_or_staff or issue.status_field.tag != issue.status_field.STATUS_ACCEPTED and issue.status_field.tag != issue.status_field.STATUS_NEED_INFO %}
+            {% if teacher_or_staff or not issue.is_accepted and issue.status_field.tag != issue.status_field.STATUS_NEED_INFO %}
                 <div class="drop-zone" id="drop-zone" ondragenter="this.style.background='#E0E0E0';" ondragleave="this.style.background='';" ondrop="this.style.background='';">
 
                 <span class="btn btn-secondary drop-btn fileinput-button" id="drop-btn">
@@ -132,7 +132,7 @@
             {% endblock %}
 
             {% block UPLOAD_FORM_BUTTON_BAR_CONTROL %}
-            {% if issue.status_field.tag == issue.status_field.STATUS_ACCEPTED and not teacher_or_staff or issue.status_field.tag == issue.status_field.STATUS_NEED_INFO and not teacher_or_staff %}
+            {% if issue.is_accepted and not teacher_or_staff or issue.status_field.tag == issue.status_field.STATUS_NEED_INFO and not teacher_or_staff %}
                 <input type="hidden" name="need_info" value="" />
                 <button class="btn btn-info pull-xs-right" formaction="#" style="margin-top: 10px; margin-left: 10px;" type="submit">{% trans "zadat_vopros" %}</button>
             {% else %}

@@ -84,6 +84,12 @@ class Issue(models.Model):
     status = models.CharField(max_length=20, choices=ISSUE_STATUSES, default=STATUS_NEW)
     status_field = models.ForeignKey(IssueStatus, db_index=True, null=False, blank=False, default=1)
 
+    def is_accepted(self):
+        return self.status_field.tag in [IssueStatus.STATUS_ACCEPTED, IssueStatus.STATUS_ACCEPTED_DEADLINE]
+
+    def is_accepted_deadline(self):
+        return self.status_field.tag == IssueStatus.STATUS_ACCEPTED_DEADLINE
+
     def score(self):
         field = IssueField.objects.get(id=8)
 
@@ -277,7 +283,7 @@ class Issue(models.Model):
                                 sent = contest_submission.upload_contest(ext, compiler_id=value['compilers'][file_id])
                                 if sent:
                                     value['comment'] += u"<p>{0}</p>".format(_(u'otpravleno_v_kontest'))
-                                    if self.status_field.tag != IssueStatus.STATUS_ACCEPTED:
+                                    if not self.is_accepted():
                                         self.set_status_by_tag(IssueStatus.STATUS_AUTO_VERIFICATION)
                                 else:
                                     value['comment'] += u"<p>{0}('{1}')</p>".format(_(u'oshibka_otpravki_v_kontest'),
@@ -307,7 +313,7 @@ class Issue(models.Model):
                     value = u'<div class="issue-page-comment not-sanitize">' + value['comment'] + u'</div>'
 
                 if self.status_field.tag != IssueStatus.STATUS_AUTO_VERIFICATION \
-                        and self.status_field.tag != IssueStatus.STATUS_ACCEPTED:
+                        and not self.is_accepted():
                     if author == self.student and self.status_field.tag != IssueStatus.STATUS_NEED_INFO and sent:
                         self.set_status_by_tag(IssueStatus.STATUS_VERIFICATION)
                     if author == self.responsible:
@@ -334,7 +340,7 @@ class Issue(models.Model):
                 if review_id != '':
                     if value.tag == IssueStatus.STATUS_ACCEPTED:
                         update_status_review_request(review_id, 'submitted')
-                    elif self.status_field.tag == IssueStatus.STATUS_ACCEPTED:
+                    elif self.is_accepted():
                         update_status_review_request(review_id, 'pending')
             except:
                 pass
@@ -365,7 +371,7 @@ class Issue(models.Model):
 
 
             value = str(value)
-            if self.status_field.tag != IssueStatus.STATUS_ACCEPTED and self.status_field.tag != IssueStatus.STATUS_NEW:
+            if not self.is_accepted() and self.status_field.tag != IssueStatus.STATUS_NEW:
                 self.set_status_by_tag(IssueStatus.STATUS_REWORK)
 
         self.save()
