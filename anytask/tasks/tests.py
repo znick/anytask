@@ -198,7 +198,7 @@ class ViewsTest(TestCase):
                          'form select group 2nd option text wrong')
 
         form_select_type = div_task_id.form.find('select', {'id': 'task_edit_type'})('option')
-        self.assertEqual(len(form_select_type), 2, "form select type len not 2")
+        self.assertEqual(len(form_select_type), 3, "form select type len not 3")
         self.assertEqual(form_select_type[0]['value'], 'All', 'form select type 1st option value wrong')
         self.assertEqual(form_select_type[0].string.strip().strip('\n'),
                          u's_obsuzhdeniem',
@@ -300,11 +300,14 @@ class ViewsTest(TestCase):
         self.assertEqual(form_inputs[4]['value'], 'A', "form input id='{}' wrong".format(form_inputs[4]['id']))
 
         form_checkbox = div_task_id.form('input', {'type': 'checkbox'})
-        self.assertFalse(form_checkbox[0].has_key('checked'),
-                         "form checkbox id='{}' checked".format(form_checkbox[0]['id']))
-        for i in range(1, len(form_checkbox)):
-            self.assertTrue(form_checkbox[i].has_key('checked'),
-                            "form checkbox id='{}' not checked".format(form_checkbox[i]['id']))
+
+        for i in range(len(form_checkbox)):
+            if form_checkbox[i]['id'] == "task_edit_changed_task":
+                self.assertFalse(form_checkbox[i].has_key('checked'),
+                                "form checkbox id='{}' checked".format(form_checkbox[i]['id']))
+            else:
+                self.assertTrue(form_checkbox[i].has_key('checked'),
+                                "form checkbox id='{}' not checked".format(form_checkbox[i]['id']))
 
         form_select_group = div_task_id.form.find('select', {'id': 'task_edit_group'})('option')
         self.assertEqual(len(form_select_group), 1, "form select group len not 2")
@@ -315,7 +318,7 @@ class ViewsTest(TestCase):
                          'form select group 2nd option text wrong')
 
         form_select_type = div_task_id.form.find('select', {'id': 'task_edit_type'})('option')
-        self.assertEqual(len(form_select_type), 2, "form select type len not 2")
+        self.assertEqual(len(form_select_type), 3, "form select type len not 3")
         self.assertEqual(form_select_type[0]['value'], 'All', 'form select type 1st option value wrong')
         self.assertTrue(form_select_type[0].has_key('selected'), 'form select type 1nd option not selected')
         self.assertEqual(form_select_type[0].string.strip().strip('\n'),
@@ -339,10 +342,10 @@ class ViewsTest(TestCase):
         self.assertEqual(response.status_code, 200, "Can't get course_page via teacher")
 
         html = BeautifulSoup(response.content)
-        container = html.body.find('div', 'container', recursive=False)
+        container = html.body.find('div', 'container-fluid', recursive=False)
 
         # table results
-        table = container.find('table', 'table_results')
+        table = container.find('table', 'table-results')
 
         table_head = table.thead('th')[2]
         self.assertEqual(table_head.a.string.strip().strip('\n'), 'task_title_0', 'Wrong title 1st task')

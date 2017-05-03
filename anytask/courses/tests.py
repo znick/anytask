@@ -10,7 +10,7 @@ Replace this with more appropriate tests for your application.
 from django.test import TestCase
 from django.contrib.auth.models import User
 from schools.models import School
-from courses.models import Course, IssueField, FilenameExtension, CourseMarkSystem, MarkField
+from courses.models import Course, IssueField, FilenameExtension, CourseMarkSystem, MarkField, IssueStatusSystem
 from issues.models import IssueStatus
 from groups.models import Group
 from years.models import Year
@@ -210,7 +210,7 @@ class ViewsTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
         html = BeautifulSoup(response.content)
-        container = html.body.find('div', 'container', recursive=False)
+        container = html.body.find('div', 'container-fluid', recursive=False)
 
         # title
         self.assertEqual(html.find('title').string.strip().strip('\n'), u'course_name | 2016-2017')
@@ -245,20 +245,20 @@ class ViewsTest(TestCase):
         self.assertIsNone(container.find('span', 'course-information'))
 
         # teachers
-        teachers = container.find('p', 'course_teachers')('a')
-        self.assertEqual(len(teachers), 1)
-        self.assertEqual(teachers[0]['href'], u'/accounts/profile/teacher')
-        self.assertEqual(teachers[0].string.strip().strip('\n'), u'teacher_last_name teacher_name')
+        # teachers = container.find('p', 'course_teachers')('a')
+        # self.assertEqual(len(teachers), 1)
+        # self.assertEqual(teachers[0]['href'], u'/accounts/profile/teacher')
+        # self.assertEqual(teachers[0].string.strip().strip('\n'), u'teacher_last_name teacher_name')
 
         # edit course button
-        btn_group = container.find('div', {'id': 'btn_group_edit_course'})
-        self.assertIsNotNone(btn_group)
-        btn_group = btn_group('a')
-        self.assertEqual(len(btn_group), 1)
-        self.assertEqual(btn_group[0]['href'], u'/task/create/1')
+        # btn_group = container.find('div', {'id': 'btn_group_edit_course'})
+        # self.assertIsNotNone(btn_group)
+        # btn_group = btn_group('a')
+        # self.assertEqual(len(btn_group), 1)
+        # self.assertEqual(btn_group[0]['href'], u'/task/create/1')
 
         # table results
-        table = container('table', 'table_results')
+        table = container('table', 'table-results')
         self.assertEqual(len(table), 1)
 
         table_body_rows = table[0].tbody('tr')
@@ -444,19 +444,19 @@ class ViewsTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
         html = BeautifulSoup(response.content)
-        container = html.body.find('div', 'container', recursive=False)
+        container = html.body.find('div', 'container-fluid', recursive=False)
 
         # edit course button
-        btn_group = container.find('div', {'id': 'btn_group_edit_course'})
+        btn_group = container.find('div', {'id': 'legend'})
         self.assertIsNotNone(btn_group)
         btn_group = btn_group('a')
         self.assertEqual(len(btn_group), 2)
-        self.assertEqual(btn_group[0]['href'], u'/task/create/1')
+        self.assertEqual(btn_group[0]['id'], u'status_btn')
         self.assertEqual(btn_group[1]['href'], u'javascript:change_visibility_hidden_tasks(1);')
         self.assertEqual(btn_group[1].string.strip().strip('\n'), u'pokazat_skrytye_zadachi')
 
         # table results
-        table = container.find('table', 'table_results')
+        table = container.find('table', 'table-results')
 
         table_head = table.thead('th')[2]
         self.assertIsNone(table_head.string)
@@ -475,19 +475,19 @@ class ViewsTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
         html = BeautifulSoup(response.content)
-        container = html.body.find('div', 'container', recursive=False)
+        container = html.body.find('div', 'container-fluid', recursive=False)
 
         # edit course button
-        btn_group = container.find('div', {'id': 'btn_group_edit_course'})
+        btn_group = container.find('div', {'id': 'legend'})
         self.assertIsNotNone(btn_group)
         btn_group = btn_group('a')
         self.assertEqual(len(btn_group), 2)
-        self.assertEqual(btn_group[0]['href'], u'/task/create/1')
+        self.assertEqual(btn_group[0]['id'], u'status_btn')
         self.assertEqual(btn_group[1]['href'], u'javascript:change_visibility_hidden_tasks(1);')
         self.assertEqual(btn_group[1].string.strip().strip('\n'), u'ne_pokazyvat_skrytye_zadachi')
 
         # table results
-        table = container.find('table', 'table_results')
+        table = container.find('table', 'table-results')
 
         table_head = table.thead('th')[2]
         self.assertEqual(table_head.a.string.strip().strip('\n'), 'task_title')
@@ -518,10 +518,10 @@ class ViewsTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
         html = BeautifulSoup(response.content)
-        container = html.body.find('div', 'container', recursive=False)
+        container = html.body.find('div', 'container-fluid', recursive=False)
 
         # table results
-        table = container.find('table', 'table_results')
+        table = container.find('table', 'table-results')
 
         table_body_rows_cells = table.tbody('td')
         table_course_mark_inputs = table_body_rows_cells[4]('input')
@@ -553,17 +553,17 @@ class ViewsTest(TestCase):
                                 'student_id': self.student.id,
                                 'mark_id': mark_fields[0].id})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content, '{"mark_id": 1, "mark": "mark1"}')
+        self.assertEqual(response.content, '{"mark_int": -1, "mark_id": 1, "mark": "mark1"}')
 
         # get course page
         response = client.get(reverse('courses.views.gradebook', kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 200)
 
         html = BeautifulSoup(response.content)
-        container = html.body.find('div', 'container', recursive=False)
+        container = html.body.find('div', 'container-fluid', recursive=False)
 
         # table results
-        table = container.find('table', 'table_results')
+        table = container.find('table', 'table-results')
 
         table_body_rows_cells = table.tbody('td')
         table_course_mark_inputs = table_body_rows_cells[4]('input')
@@ -610,10 +610,10 @@ class ViewsTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
         html = BeautifulSoup(response.content)
-        container = html.body.find('div', 'container', recursive=False)
+        container = html.body.find('div', 'container-fluid', recursive=False)
 
         # table results
-        table = container.find('table', 'table_results')
+        table = container.find('table', 'table-results')
 
         table_head = table.thead('th')[2]
         self.assertEqual(table_head.a.string.strip().strip('\n'), 'task_title')
@@ -652,10 +652,10 @@ class ViewsTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
         html = BeautifulSoup(response.content)
-        container = html.body.find('div', 'container', recursive=False)
+        container = html.body.find('div', 'container-fluid', recursive=False)
 
         # table results
-        table = container.find('table', 'table_results')
+        table = container.find('table', 'table-results')
 
         table_head = table.thead('th')[2]
         self.assertEqual(table_head.a.string.strip().strip('\n'), 'task_title')
@@ -691,7 +691,7 @@ class ViewsTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
         html = BeautifulSoup(response.content)
-        container = html.body.find('div', 'container', recursive=False)
+        container = html.body.find('div', 'container-fluid', recursive=False)
 
         # title
         self.assertEqual(html.find('title').string.strip().strip('\n'), u'course_name | 2016-2017')
@@ -723,18 +723,18 @@ class ViewsTest(TestCase):
         # course information
         self.assertIsNone(container.find('span', 'course-information'))
 
-        # teachers
-        teachers = container.find('p', 'course_teachers')('a')
-        self.assertEqual(len(teachers), 1)
-        self.assertEqual(teachers[0]['href'], u'/accounts/profile/teacher')
-        self.assertEqual(teachers[0].string.strip().strip('\n'), u'teacher_last_name teacher_name')
+        # # teachers
+        # teachers = container.find('p', 'course_teachers')('a')
+        # self.assertEqual(len(teachers), 1)
+        # self.assertEqual(teachers[0]['href'], u'/accounts/profile/teacher')
+        # self.assertEqual(teachers[0].string.strip().strip('\n'), u'teacher_last_name teacher_name')
 
         # edit course button
         btn_group = container.find('div', 'btn-group')
         self.assertIsNone(btn_group)
 
         # table results
-        table = container('table', 'table_results')
+        table = container('table', 'table-results')
         self.assertEqual(len(table), 1)
 
         table_body_rows = table[0].tbody('tr')
@@ -825,10 +825,10 @@ class ViewsTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
         html = BeautifulSoup(response.content)
-        container = html.body.find('div', 'container', recursive=False)
+        container = html.body.find('div', 'container-fluid', recursive=False)
 
         # table results
-        table = container.find('table', 'table_results')
+        table = container.find('table', 'table-results')
 
         table_body_rows_cells = table.tbody('td')
         table_course_mark_form = table_body_rows_cells[4].form
@@ -854,7 +854,7 @@ class ViewsTest(TestCase):
                                 'student_id': self.student.id,
                                 'mark_id': mark_fields[0].id})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content, '{"mark_id": 1, "mark": "mark1"}')
+        self.assertEqual(response.content, '{"mark_int": -1, "mark_id": 1, "mark": "mark1"}')
 
         # get course page
         self.assertTrue(client.login(username=self.student.username, password=self.student_password))
@@ -862,10 +862,10 @@ class ViewsTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
         html = BeautifulSoup(response.content)
-        container = html.body.find('div', 'container', recursive=False)
+        container = html.body.find('div', 'container-fluid', recursive=False)
 
         # table results
-        table = container.find('table', 'table_results')
+        table = container.find('table', 'table-results')
 
         table_body_rows_cells = table.tbody('td')
         table_course_mark_form = table_body_rows_cells[4].form
@@ -894,10 +894,10 @@ class ViewsTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
         html = BeautifulSoup(response.content)
-        container = html.body.find('div', 'container', recursive=False)
+        container = html.body.find('div', 'container-fluid', recursive=False)
 
         # table results
-        table = container.find('table', 'table_results')
+        table = container.find('table', 'table-results')
 
         table_head = table.thead('th')[2]
         self.assertEqual(table_head.a.string.strip().strip('\n'), 'task_title')
@@ -938,10 +938,10 @@ class ViewsTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
         html = BeautifulSoup(response.content)
-        container = html.body.find('div', 'container', recursive=False)
+        container = html.body.find('div', 'container-fluid', recursive=False)
 
         # table results
-        table = container.find('table', 'table_results')
+        table = container.find('table', 'table-results')
 
         table_head = table.thead('th')[2]
         self.assertEqual(table_head.a.string.strip().strip('\n'), 'task_title')
@@ -954,3 +954,130 @@ class ViewsTest(TestCase):
 
         table_body_sum = table.tbody('td')[3]
         self.assertEqual(table_body_sum.span.string.strip().strip('\n'), '3.0')
+
+class PythonTaskTest(TestCase):
+    def setUp(self):
+        User.objects.create_user (username="anytask")
+        self.year = Year.objects.create(start_year=2016)
+        self.group = Group(name="test_group", year=self.year)
+        self.group.save()
+        self.users = []
+        for i in range(0, 10):
+            user = User.objects.create_user(username='test_user{}'.format(i), password="password{}".format(i))
+            user.first_name = "test_firstname{}".format(i)
+            user.last_name = "test_lastname{}".format(i)
+            user.save()
+            self.users.append(user)
+            self.group.students.add(user)
+
+        self.teacher = User.objects.create_user(username='test_teacher', password='teacher')
+
+        seminar_status = IssueStatus(name="seminar", tag=IssueStatus.STATUS_SEMINAR)
+        seminar_status.save()
+        issue_status_system = IssueStatusSystem()
+        issue_status_system.name = "seminar"
+        issue_status_system.save()
+        issue_status_system.statuses.add(seminar_status)
+
+        self.course = Course()
+        self.course.name = 'python.task'
+        self.course.is_active = True
+        self.course.year = self.year
+        self.course.save()
+        self.course.teachers.add(self.teacher)
+        self.course.groups.add(self.group)
+        # course.mark_system = mark_system
+        self.issue_status_system = issue_status_system
+        self.course.is_python_task = True
+        self.course.save()
+
+        self.task = Task.objects.create(title='task_title', course=self.course)
+        self.seminar = Task.objects.create(title='seminar_title', course=self.course, type=Task.TYPE_SEMINAR)
+        self.subtask1 = Task.objects.create(title='subtask1_title', course=self.course, parent_task=self.seminar)
+        self.subtask2 = Task.objects.create(title='subtask2_title', course=self.course, parent_task=self.seminar)
+
+    def test_list(self):
+        client = self.client
+        self.assertTrue(client.login(username=self.teacher.username, password="teacher"))
+        response = client.get(reverse('courses.views.course_page', kwargs={'course_id': self.course.id}))
+        content = str(response.content)
+        self.assertIn("task_title", content)
+        self.assertIn("seminar_title", content)
+        self.assertIn("subtask1_title", content)
+        self.assertIn("subtask2_title", content)
+
+    def test_take_and_cancel_task(self):
+        client = self.client
+        user = self.users[0]
+        self.assertTrue(client.login(username=user.username, password="password0"))
+        response = client.get(reverse('courses.views.course_page', kwargs={'course_id': self.course.id}))
+        self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
+
+        response = client.get(reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id, 'task_id': self.task.id}), follow=True)
+        self.assertContains(response, "{} {}".format(user.last_name, user.first_name))
+
+        response = client.get(reverse('courses.pythontask.cancel_task', kwargs={'course_id': self.course.id, 'task_id': self.task.id}), follow=True)
+        self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
+
+    def test_take_and_cancel_subtask(self):
+        client = self.client
+        user = self.users[0]
+        self.assertTrue(client.login(username=user.username, password="password0"))
+        response = client.get(reverse('courses.views.course_page', kwargs={'course_id': self.course.id}))
+        self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
+
+        response = client.get(reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id, 'task_id': self.subtask1.id}), follow=True)
+        self.assertContains(response, "{} {}".format(user.last_name, user.first_name))
+
+        response = client.get(reverse('courses.pythontask.cancel_task', kwargs={'course_id': self.course.id, 'task_id': self.subtask1.id}), follow=True)
+        self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
+
+    def test_take_tasks_limit(self):
+        client = self.client
+
+        for i, user in enumerate(self.users[:8]):
+            self.assertTrue(client.login(username=user, password="password{}".format(i)))
+            response = client.get(reverse('courses.views.course_page', kwargs={'course_id': self.course.id}))
+            self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
+
+            response = client.get(reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id, 'task_id': self.task.id}), follow=True)
+            self.assertContains(response, "{} {}".format(user.last_name, user.first_name))
+
+        user = self.users[9]
+        self.assertTrue(client.login(username=user, password="password9"))
+        response = client.get(reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id, 'task_id': self.task.id}), follow=True)
+        self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
+
+    def test_take_subtasks_limit(self):
+        client = self.client
+
+        for i, user in enumerate(self.users[:8]):
+            self.assertTrue(client.login(username=user, password="password{}".format(i)))
+            response = client.get(reverse('courses.views.course_page', kwargs={'course_id': self.course.id}))
+            self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
+
+            response = client.get(reverse('courses.pythontask.get_task',
+                                          kwargs={'course_id': self.course.id, 'task_id': self.subtask1.id}),
+                                  follow=True)
+            self.assertContains(response, "{} {}".format(user.last_name, user.first_name))
+
+        user = self.users[9]
+        self.assertTrue(client.login(username=user, password="password9"))
+        response = client.get(
+            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id, 'task_id': self.subtask1.id}),
+            follow=True)
+        self.assertNotIn("{} {}".format(user.last_name, user.first_name), response.content)
+
+    def test_take_cant_take_tasks_from_one_subtask(self):
+        client = self.client
+        user = self.users[0]
+
+        self.assertTrue(client.login(username=user.username, password="password0"))
+        response = client.get(reverse('courses.views.course_page', kwargs={'course_id': self.course.id}))
+        self.assertNotIn("{} {}".format(user.last_name, user.first_name), response.content)
+
+        response = client.get(reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id, 'task_id': self.subtask1.id}), follow=True)
+        self.assertContains(response, "{} {}".format(user.last_name, user.first_name), count=1)
+
+        response = client.get(reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id, 'task_id': self.subtask2.id}), follow=True)
+        self.assertContains(response, "{} {}".format(user.last_name, user.first_name), count=1)

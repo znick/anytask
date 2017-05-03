@@ -4,6 +4,7 @@
 {% load sanitize_html icon %}
 {% load dict_func %}
 {% load task_taken_func %}
+<link href="{{ STATIC_URL }}shad_cpp.css" rel='stylesheet'/>
 
 {% block title %}{% if seminar %}{{ seminar.title }} | {% endif %}{{ course.name }} | {{ course.year }}{% endblock %}
 
@@ -39,7 +40,8 @@
             {% endif %}
             {% if user_is_teacher %}
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url courses.views.course_settings course.id %}">{% trans "nastrojki" %}</a>
+                    <a class="nav-link"
+                       href="{% url courses.views.course_settings course.id %}">{% trans "nastrojki" %}</a>
                 </li>
             {% endif %}
         {% endif %}
@@ -48,52 +50,22 @@
 
 {% block content %}
     {{ block.super }}
-
-    <style>
-        .sticky-wrapper {
-            margin-left: -1.25rem;
-            margin-right: -1.25rem;
-        }
-
-        #btn_group_edit_course .btn {
-            margin: 2px auto;
-        }
-    </style>
-
-    <div class="row">
-        <div class="col-md-12 col-xs-12">
-            <div class="card card-block">
-                <h5 class="card-title">{% if not seminar %} {{ course.name }} {% else %}
-                    {{ seminar.title }} {% endif %}</h5>
-
-                <p class="card-text course_teachers" style="border-bottom: 1px solid #e5e5e5;">
-                    {% trans "prepodavateli" %}:
-                    {% for teacher in course.get_teachers %}
-                        <a href="{% url users.views.profile teacher.username %}">{{ teacher.last_name }} {{ teacher.first_name }}</a>{% if not forloop.last %},{% endif %}
-                    {% endfor %}
-                </p>
-
-                {% if course.can_edit %}
-                    <div id="btn_group_edit_course"
-                         style="z-index: 1; padding: 6px;border:1px solid #e5e5e5;background-color: #e5e5e5">
-                        <div class="btn-group">
-                            <a type="button" class="btn btn-secondary btn-sm" href="/task/create/{{ course.id }}">{% trans "dobavit_zadachu" %}</a>
-                            {% if course.contest_integrated %}
-                                <button type="button"
-                                        style="height: 1.95rem;"
-                                        class="btn btn-secondary dropdown-toggle dropdown-toggle-split"
-                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <span class="sr-only">Toggle Dropdown</span>
-                                </button>
-                                <div style="font-size: .875rem;" class="dropdown-menu"
-                                     aria-labelledby="dropdownMenuButton">
-                                    <a class="dropdown-item" href="/task/import/{{ course.id }}" role="button">
-                                        {% trans "import_zadachi_iz_kontesta" %}
-                                    </a>
-                                    <a class="dropdown-item" href="/task/contest_import/{{ course.id }}">{% trans "import_sorevnovanija" %}</a>
-                                </div>
-                            {% endif %}
-                        </div>
+    <div id="legend">
+        <div class="card card-block">
+            <div class="row">
+                <div class="col-md-12 col-xs-12">
+                    <a class="btn btn-secondary btn-sm" id="status_btn" tabindex="-1" data-toggle="popover-status"
+                       data-placement="bottom" data-container="document"
+                       data-content='<ul style="padding: 0; font-size: 1.25rem">
+                                        <li><span class="label label-default">{% trans "novyj" %}</span></li>
+                                        <li><span class="label label-info">{% trans "trebuetsja_informacija" %}</span></li>
+                                        {% for issue_status in course.issue_status_system.statuses.all %}
+                                            <li><span class="label" style="background-color: {{ issue_status.color }}">{{ issue_status.name }}</span></li>
+                                        {% endfor %}
+                                        <li><span class="label label-inverse">{% trans "summarnyj_ball" %}</span></li>
+                                    </ul>'>{% trans "statusy" %}
+                    </a>
+                    {% if user_is_teacher %}
                         {% if visible_hide_button %}
                             <a class="btn btn-secondary btn-sm"
                                href="javascript:change_visibility_hidden_tasks({{ course.id }});" role="button">
@@ -113,35 +85,26 @@
                                 {% endif %}
                             </a>
                         {% endif %}
-                    </div>
-                {% endif %}
+                    {% endif %}
 
-                {#    <div class = "breadcrumb_button">#}
-                {#        {% if not user_is_teacher and course.can_be_chosen_by_extern%}#}
-                {#            {% if user_is_attended_special_course %}#}
-                {#                <button type="button" class="btn btn-danger" OnClick="javascript:set_spectial_course_attend({{ course.id }}, 'remove');">#}
-                {#                    Отписаться#}
-                {#                </button>#}
-                {#            {% else %}#}
-                {#                <button type="button" class="btn btn-success" OnClick="javascript:set_spectial_course_attend({{ course.id }},'add');">#}
-                {#                    Записаться#}
-                {#                </button>#}
-                {#            {% endif %}#}
-                {#            <br>#}
-                {#        {% endif %}#}
-                {#    </div>#}
+                    {#    <div class = "breadcrumb_button">#}
+                    {#        {% if not user_is_teacher and course.can_be_chosen_by_extern%}#}
+                    {#            {% if user_is_attended_special_course %}#}
+                    {#                <button type="button" class="btn btn-danger" OnClick="javascript:set_spectial_course_attend({{ course.id }}, 'remove');">#}
+                    {#                    Отписаться#}
+                    {#                </button>#}
+                    {#            {% else %}#}
+                    {#                <button type="button" class="btn btn-success" OnClick="javascript:set_spectial_course_attend({{ course.id }},'add');">#}
+                    {#                    Записаться#}
+                    {#                </button>#}
+                    {#            {% endif %}#}
+                    {#            <br>#}
+                    {#        {% endif %}#}
+                    {#    </div>#}
+                </div>
             </div>
         </div>
     </div>
-
-    <h5 style="padding-left: 1px;">
-        <span class="label label-default">{% trans "novyj" %}</span>
-        <span class="label label-info">{% trans "trebuetsja_informacija" %}</span>
-        {% for issue_status in course.issue_status_system.statuses.all %}
-            <span class="label" style="background-color: {{ issue_status.color }}">{{ issue_status.get_name }}</span>
-        {% endfor %}
-        <span class="label label-inverse">{% trans "summarnyj_ball" %}</span>
-    </h5>
 
     {% include "courses/task.html" %}
     {% include tasklist_template %}

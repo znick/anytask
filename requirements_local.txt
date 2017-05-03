@@ -1,3 +1,4 @@
+ipykernel==4.5.2
 django==1.4.14
 south
 pillow
@@ -6,7 +7,7 @@ python-gettext
 beautifulsoup
 Werkzeug
 django-extensions==1.6.7
-ipython[notebook]
+ipython[notebook]==5.3.0
 ipdb
 django-debug-toolbar==1.3.2
 django-bootstrap-breadcrumbs
@@ -25,3 +26,5 @@ mock
 django-colorfield
 django-haystack==2.4.1
 Whoosh
+django-reversion==1.6.6
+dateutils

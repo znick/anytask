@@ -4,6 +4,7 @@ from django.db import models
 from datetime import datetime
 from django.utils.translation import ugettext_lazy as _
 from django.db.models.signals import post_save, pre_delete
+from django.conf import settings
 
 from courses.models import Course
 from groups.models import Group
@@ -37,10 +38,12 @@ class Task(models.Model):
     TYPE_FULL = 'All'
     TYPE_SIMPLE = 'Only mark'
     TYPE_SEMINAR = 'Seminar'
+    TYPE_MATERIAL = 'Material'
     TASK_TYPE_CHOICES = (
-        (TYPE_FULL, _(u's_obsuzhdeniem')),
-        (TYPE_SIMPLE, _(u'tolko_ocenka')),
-        (TYPE_SEMINAR, _(u'seminar')),
+        (TYPE_FULL, _('s_obsuzhdeniem')),
+        (TYPE_SIMPLE, _('tolko_ocenka')),
+        (TYPE_MATERIAL, _('material')),
+        (TYPE_SEMINAR, _('seminar')),
     )
     type = models.CharField(db_index=False, max_length=128, choices=TASK_TYPE_CHOICES, default=TYPE_FULL)
 
@@ -53,6 +56,7 @@ class Task(models.Model):
     contest_id = models.IntegerField(db_index=True, null=False, blank=False, default=0)
     problem_id = models.CharField(max_length=128, db_index=True, null=True, blank=True)
 
+    send_to_users = models.BooleanField(db_index=False, null=False, blank=False, default=False)
     sended_notify = models.BooleanField(db_index=True, null=False, blank=False, default=True)
 
     one_file_upload = models.BooleanField(db_index=False, null=False, blank=False, default=False)
@@ -75,12 +79,15 @@ class Task(models.Model):
         if not self.course.groups.filter(students=user).count():
             return (False, u'')
 
-        if course.max_users_per_task:
-            if TaskTaken.objects.filter(task=self).filter(Q( Q(status=TaskTaken.STATUS_TAKEN) | Q(status=TaskTaken.STATUS_SCORED))).count() >= course.max_users_per_task:
-                return (False, u'Задача не может быть взята более чем %d студентами' % course.max_users_per_task)
+        for task_taken in TaskTaken.objects.filter(task=self):
+            task_taken.update_status()
 
-        if course.max_tasks_without_score_per_student:
-            if TaskTaken.objects.filter(user=user).filter(status=TaskTaken.STATUS_TAKEN).count() >= course.max_tasks_without_score_per_student:
+        if settings.PYTHONTASK_MAX_USERS_PER_TASK:
+            if TaskTaken.objects.filter(task=self).filter(Q( Q(status=TaskTaken.STATUS_TAKEN) | Q(status=TaskTaken.STATUS_SCORED))).count() >= settings.PYTHONTASK_MAX_USERS_PER_TASK:
+                return (False, u'Задача не может быть взята более чем %d студентами' % settings.PYTHONTASK_MAX_USERS_PER_TASK)
+
+        if settings.PYTHONTASK_MAX_TASKS_WITHOUT_SCORE_PER_STUDENT:
+            if TaskTaken.objects.filter(user=user).filter(status=TaskTaken.STATUS_TAKEN).count() >= settings.PYTHONTASK_MAX_TASKS_WITHOUT_SCORE_PER_STUDENT:
                 return (False, u'')
 
         if Task.objects.filter(parent_task=self).count() > 0:
@@ -96,7 +103,7 @@ class Task(models.Model):
 
         try:
             task_taken = TaskTaken.objects.filter(task=self).filter(user=user).get(status=TaskTaken.STATUS_BLACKLISTED)
-            black_list_expired_date = task_taken.update_time + timedelta(days=course.days_drop_from_blacklist)
+            black_list_expired_date = task_taken.update_time + timedelta(days=settings.PYTHONTASK_DAYS_DROP_FROM_BLACKLIST)
             return (False, u'Вы сможете взять эту задачу с %s' % black_list_expired_date.strftime("%d.%m.%Y"))
         except TaskTaken.DoesNotExist:
             pass
@@ -121,9 +128,6 @@ class Task(models.Model):
 
     def user_can_pass_task(self, user):
         if user.is_anonymous():
-            return False
-
-        if not self.rb_integrated:
             return False
 
         if self.user_can_take_task(user):
@@ -156,7 +160,7 @@ class Task(models.Model):
         self.is_shown = not self.is_hidden or self.course.user_is_teacher(user)
 
     def has_issue_access(self):
-        return self.type != self.TYPE_SIMPLE
+        return self.type not in [self.TYPE_SIMPLE, self.TYPE_MATERIAL]
 
     def set_position_in_new_group(self, groups=None):
         if not groups:
@@ -216,7 +220,6 @@ class TaskLog(models.Model):
         return unicode(self.title)
 
 class TaskTaken(models.Model):
-
     STATUS_TAKEN = 0
     STATUS_CANCELLED = 1
     STATUS_BLACKLISTED = 2
@@ -225,6 +228,7 @@ class TaskTaken(models.Model):
 
     user = models.ForeignKey(User, db_index=True, null=False, blank=False)
     task = models.ForeignKey(Task, db_index=True, null=False, blank=False)
+    issue = models.ForeignKey('issues.Issue', db_index=True, null=True, blank=False)
 
     TASK_TAKEN_STATUSES = (
         (STATUS_TAKEN,          u'Task taken'),
@@ -245,65 +249,25 @@ class TaskTaken(models.Model):
     )
     status_check = models.CharField(db_index=True, max_length=5, choices=STATUS_CHECK_CHOICES, default=EDIT)
 
-    teacher = models.ForeignKey(User, db_index=True, null=True, blank=False, default=None, related_name='teacher')
-
-    score = models.FloatField(db_index=False, null=False, blank=False, default=0)
-    scored_by = models.ForeignKey(User, db_index=True, null=True, blank=True, related_name='task_taken_scored_by_set')
-
-    teacher_comments = models.TextField(db_index=False, null=True, blank=True, default='')
-
-    id_issue_gr_review = models.IntegerField(db_index=True, null=True, blank=False, default=None)
-    pdf = models.FileField(upload_to="pdf_review", db_index=True, null=True, blank=False, default=None)
-
-    pdf_update_time = models.DateTimeField(default=datetime.now)
-    gr_review_update_time = models.DateTimeField(default=datetime.now)
-
     added_time = models.DateTimeField(auto_now_add=True, default=datetime.now)
     update_time = models.DateTimeField(auto_now=True, default=datetime.now)
+
+    @property
+    def score(self):
+        if not self.issue:
+            return 0
+        return self.issue.mark
+
+    def update_status(self):
+        if self.issue and int(self.issue.mark) != 0 and self.status != self.STATUS_SCORED:
+            self.status = self.STATUS_SCORED
+            self.save()
 
     class Meta:
         unique_together = (("user", "task"),)
 
     def __unicode__(self):
         return unicode(self.task) + " (" + unicode(self.user) + ")"
-
-    def user_can_change_status(self, user, status):
-        if user.is_anonymous():
-            return False
-        if self.task.course.user_is_teacher(user):
-            return True
-        if user.id != self.user.id:
-            return False
-        if status == self.OK:
-            return  self.status_check == self.OK
-        else:
-            return  self.status_check != self.OK
-
-    def user_can_change_teacher(self, user):
-        if user.is_anonymous():
-            return False
-        if self.task.course.user_is_teacher(user):
-            return True
-        return False
-
-
-class TaskTakenLog(models.Model):
-    user = models.ForeignKey(User, db_index=False, null=False, blank=False)
-    task = models.ForeignKey(Task, db_index=False, null=False, blank=False)
-
-    status = models.IntegerField(max_length=1, choices=TaskTaken.TASK_TAKEN_STATUSES, db_index=True, null=False, blank=False, default=0)
-
-    score = models.IntegerField(db_index=False, null=False, blank=False, default=0)
-    scored_by = models.ForeignKey(User, db_index=False, null=True, blank=True, related_name='task_taken_log_scored_by_set')
-
-    teacher_comments = models.TextField(db_index=False, null=True, blank=True, default='')
-
-    added_time = models.DateTimeField(auto_now_add=True, default=datetime.now)
-    update_time = models.DateTimeField(auto_now=True, default=datetime.now)
-
-    def __unicode__(self):
-        return unicode(self.task) + " (" + unicode(self.user) + ")"
-
 
 class TaskGroupRelations(models.Model):
     task = models.ForeignKey(Task, db_index=False, null=False, blank=False)
@@ -329,24 +293,4 @@ def task_save_to_log_post_save(sender, instance, created, **kwargs):
     task_log.save()
     task_log.groups.add(*instance.groups.all())
 
-def task_taken_save_to_log_post_save(sender, instance, created, **kwargs):
-    task_taken_log = TaskTakenLog()
-    task_taken_log_dict  = copy.deepcopy(instance.__dict__)
-    task_taken_log_dict['id'] = None
-    task_taken_log.__dict__ = task_taken_log_dict
-    task_taken_log.save()
-
-def task_taken_save_to_log_pre_delete(sender, instance, **kwargs):
-    task_taken_log = TaskTakenLog()
-    task_taken_log_dict  = copy.deepcopy(instance.__dict__)
-    task_taken_log_dict['id'] = None
-    task_taken_log.__dict__ = task_taken_log_dict
-    task_taken_log.scored_by = None
-    task_taken_log.status = TaskTaken.STATUS_DELETED
-    task_taken_log.save()
-
-
-post_save.connect(task_save_to_log_post_save, sender=Task)
-post_save.connect(task_taken_save_to_log_post_save, sender=TaskTaken)
-pre_delete.connect(task_taken_save_to_log_pre_delete, sender=TaskTaken)
-
+# post_save.connect(task_save_to_log_post_save, sender=Task)

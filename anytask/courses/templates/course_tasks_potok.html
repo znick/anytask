@@ -1,68 +1,112 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load sanitize_html %}
+{% load django_bootstrap_breadcrumbs %}
 
 {% block title %}{{ course.name }} | {{ course.year }}{% endblock %}
 
 {% block scripts %}
-
-	{% include "course_tasks_base_js.html" %}
-
+    {% include "courses/course_js.html" %}
+    <style type="text/css">
+      body {
+        background: white;
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+      .table .no-font-weight {
+        font-weight: normal;
+        white-space: nowrap;
+        background-color: white;
+      }
+      .header_sortable {
+        cursor: pointer;
+      }
+      .sidebar-nav {
+        padding: 9px 0;
+      }
+      table {
+        //table-layout: fixed;
+      }
+      .fixedsticky { top: 120px; }
+    </style>
 {% endblock %}
+
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    {% if school %}
+        {% breadcrumb school.name school.get_absolute_url %}
+    {% endif %}
+    {% if not seminar %}
+        {% breadcrumb course.name "" %}
+    {% else %}
+        {% breadcrumb course.name course.get_absolute_url %}
+        {% breadcrumb seminar.title "" %}
+    {% endif %}
+{% endblock breadcrumbs %}
+
+{% block navbar %}
+    <ul class="nav navbar-nav">
+        <li class="nav-item active">
+            <a class="nav-link" href="{{ course.get_absolute_url }}"> {% if not seminar %}{% trans "stranica_kursa" %}{% else %}
+                {% trans "stranica_seminara" %}{% endif %}</a>
+        </li>
+{#        <li class="nav-item">#}
+{#            <a class="nav-link"#}
+{#               href="{{ course.get_absolute_url }}/gradebook/{% if seminar %}seminar/{{ seminar.id }}{% endif %}">{% trans "obshaja_vedomost" %}</a>#}
+{#        </li>#}
+        {% if not seminar %}
+            {% if user_is_teacher %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ course.get_absolute_url }}/queue">{% trans "ochered_na_proverku" %}</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url courses.views.course_settings course.id %}">{% trans "nastrojki" %}</a>
+                </li>
+            {% endif %}
+        {% endif %}
+    </ul>
+{% endblock navbar %}
+
+
 
 {% block content %}
 
-<div class="subnav">
-    <ul class="nav nav-pills">
-      <li class="active"><a href="{% url courses.views.tasks_list course.id %}">Задачи</a></li>
-      <li><a href="{% url courses.views.course_statistics course_id=course.id %}">Статистика</a></li>
-    </ul>
-</div>
+    {{ block.super }}
+
 
 <dl>
-	<dt><h3>{{ course.name }} <small>{{ course.year }}</small></h3></dt>
-		{% if course.can_edit %}
-			<dd>
-				<a class="btn-small" href="javascript:get_edit_course_modal({{ course.id }}, {% if course.information %} '{{course.information|escapejs}}' {% else %} '' {% endif %});">
-					{% if course.information %}Редактировать информацию о курсе{% else %}Добавить информацию о курсе{% endif %}
-				</a>
-				|
-				<a class="btn-small" href="javascript:get_add_task_modal({{ course.id }}, null, null, '{{course.can_edit}}');">
-					Добавить задачу
-				</a>
-			</dd>
-			<br>
-		{% endif%}
+	<dt><h3>{{ course.name }} <small>{{ course.year }}</small>
+    {% if course.can_edit %}
+        <a class="btn btn-secondary btn-sm btn-square" id="edit_course_info_btn">
+        <span class="fa fa-pencil"></span></a></h3>
+    {% endif%}
+</dt>
+
+
 	<dd>Преподаватели:
 		{% for teacher in course.teachers.all %}
 			<a href="{% url users.views.profile teacher.username %}">{{ teacher.last_name }} {{ teacher.first_name }}</a>{% if not forloop.last %},{% endif %}
 		{% endfor %}
 	</dd>
-    {% if course.is_special_course %}
-        <!--
-        <dd>
-            {{ course.name }} &#151; спец-курс. Вы можете сами решать ходить на него или нет.
-        </dd>
-    -->
-    {% endif %}
 
-	<dd>{% if course.take_policy == 0 %} Студент берет задачу самостоятельно. {% endif %}</dd>
-	{% if course.max_users_per_task %} <dd>Максимальное число студентов на задачу: {{ course.max_users_per_task }}</dd> {% endif %}
-
-	{% if course.max_days_without_score %}
-		<dd>Если задача не будет оценена в течении {{ course.max_days_without_score }} дней, то заявка отменяется автоматически.</dd>
-	{% endif %}
-
-	{% if course.days_drop_from_blacklist %}
-		<dd>После автоматической отмены заявки задачу можно будет взять через {{ course.days_drop_from_blacklist }} дней.</dd>
-	{% endif %}
-
-	{% if course.max_tasks_without_score_per_student %}
-		<dd>У каждого студента может быть не более {{ course.max_tasks_without_score_per_student }} неоцененных задач.</dd>
-	{% endif %}
+{#	<dd>{% if course.take_policy == 0 %} Студент берет задачу самостоятельно. {% endif %}</dd>#}
+{#	{% if course.max_users_per_task %} <dd>Максимальное число студентов на задачу: {{ course.max_users_per_task }}</dd> {% endif %}#}
+{##}
+{#	{% if course.max_days_without_score %}#}
+{#		<dd>Если задача не будет оценена в течении {{ course.max_days_without_score }} дней, то заявка отменяется автоматически.</dd>#}
+{#	{% endif %}#}
+{##}
+{#	{% if course.days_drop_from_blacklist %}#}
+{#		<dd>После автоматической отмены заявки задачу можно будет взять через {{ course.days_drop_from_blacklist }} дней.</dd>#}
+{#	{% endif %}#}
+{##}
+{#	{% if course.max_tasks_without_score_per_student %}#}
+{#		<dd>У каждого студента может быть не более {{ course.max_tasks_without_score_per_student }} неоцененных задач.</dd>#}
+{#	{% endif %}#}
 	<dd>
 		{% if course.information %}<br>{% endif %}
-		{{ course.information|sanitize|safe }}
+        <div id="course-information">{{ course.information|sanitize|safe }}</div>
 	</dd>
 
 </dl>
@@ -80,23 +124,15 @@
 								<span class="label label-success">{{ task.score_max }}</span>
 							{% endif %}
 							{% if task.can_score %}
-								<a class="btn-small" href="javascript:get_task_modal({{task.id}}, '{{task.title|escapejs}}', '{{task.is_hidden}}', '{{task.task_text|sanitize|escapejs}}', '{{task.task_text|escapejs}}', {{task.score_max}}, '{{task.can_score}}', 'edit')">
-									Редактировать задачу
-								</a>
-								<a class="btn-small" href="javascript:get_add_task_modal({{ course.id }}, null, {{ task.id }}, '{{course.can_edit}}');">
-									Добавить подзадачу
-								</a>
-							{% endif %}
+                                <a href="{% url tasks.views.task_edit_page task.id %}"><span class="fa fa-pencil"></span></a>
+                            {% endif %}
 							{% if task.can_take.0  %}
-								<a href="{% url courses.views.get_task course_id=course.id task_id=task.id %}">Записаться на задачу</a>
+								<a href="{% url courses.pythontask.get_task course_id=course.id task_id=task.id %}">Записаться на задачу</a>
 							{% else %}
 								{{ task.can_take.1 }}
 							{% endif %}
 							{% if task.can_cancel  %}
-								<a href="{% url courses.views.cancel_task course_id=course.id task_id=task.id %}">Отказаться от задачи</a>
-							{% endif %}
-							{% if task.can_pass  %}
-								<a href="{% url submit_review task.id %}">Сдать задачу}</a>
+								<a href="{% url courses.pythontask.cancel_task course_id=course.id task_id=task.id %}">Отказаться от задачи</a>
 							{% endif %}
 							<br>
 							{% if task.task_text %}
@@ -109,22 +145,16 @@
 									<div id="{{subtask.id}}"></div><font {% if subtask.is_hidden %} color="gray" {% endif %}>{{ subtask.title }}</font>
 									<span class="label label-success">{{ subtask.score_max }}</span>
 									{% if subtask.can_score %}
-										<a class="btn-small" href="javascript:get_task_modal({{subtask.id}}, '{{subtask.title|escapejs}}', '{{subtask.is_hidden}}', '{{subtask.task_text|sanitize|escapejs}}', '{{subtask.task_text|escapejs}}', {{subtask.score_max}}, '{{subtask.can_score}}', 'edit')">
-											Редактировать подзадачу
-										</a>
-									{% endif %}
+                                        <a href="{% url tasks.views.task_edit_page subtask.id %}"><span class="fa fa-pencil"></span></a>
+                                    {% endif %}
 									{% if subtask.can_take.0  %}
-										<a href="{% url courses.views.get_task course_id=course.id task_id=subtask.id %}">Записаться на задачу</a>
+										<a href="{% url courses.pythontask.get_task course_id=course.id task_id=subtask.id %}">Записаться на задачу</a>
 									{% else %}
 										{{ subtask.can_take.1 }}
 									{% endif %}
 									{% if subtask.can_cancel  %}
-										<a href="{% url courses.views.cancel_task course_id=course.id task_id=subtask.id %}">Отказаться от задачи</a>
+										<a href="{% url courses.pythontask.cancel_task course_id=course.id task_id=subtask.id %}">Отказаться от задачи</a>
 									{% endif %}
-									{% if subtask.can_pass  %}
-										<a href="{% url submit_review subtask.id %}">Сдать задачу</a>
-									{% endif %}
-
 									<br>
 									{% if subtask.task_text %}
 										<font {% if subtask.is_hidden %} color="gray" {% endif %}>{{ subtask.task_text|sanitize|safe }}</font>
@@ -145,15 +175,15 @@
 															{{ task_taken.cancel_date|date:"d.m.Y" }}
 														</td>
 														<td style="width:20%;"></td>
-														<td style="width:20%;">
-															{% if subtask.can_score %}
-																<a class="btn-small" href="javascript:get_modal({{ subtask.id }}, '{{ subtask.title|escapejs }}', '{{ task_taken.user.get_full_name|escapejs }}', {{ task_taken.user.id }}, 0, {{ subtask.score_max }}, '{{ task_taken.teacher_comments|sanitize|escapejs }}')">Оценить</a>
-															{% endif %}
-														</td>
+                                                            {% if task.can_score or task.can_pass %}
+                                                                <td style="width:20%;">
+                                                                    <a href="{% url issues.views.get_or_create task_id=subtask.id student_id=task_taken.user.id %}">{% trans "sdat" %}</a>
+                                                                </td>
+                                                            {% endif %}
 													{% endif %}
 													{% if task_taken.status == STATUS_SCORED %}
 														<td style="width:10%;">
-															<span class="label {% if task_taken.score == subtask.score_max %} label-success{% endif %}">{{ task_taken.score }}</span>
+															<span class="label {% if task_taken.score == subtask.score_max %} label-success {% else %} label-warning {% endif %}">{{ task_taken.score }}</span>
 															{% if task_taken.teacher_comments %}
 																<a class="icon-comment" href="javascript:get_modal_comment('{{ task_taken.teacher_comments|sanitize|escapejs }}')"></a>
 															{% endif %}
@@ -162,9 +192,11 @@
 															{{ task_taken.update_time|date:"d.m.Y" }}
 														</td>
 														<td style="width:20%;">
-															{% if subtask.can_score %}
-																<a class="btn-small" href="javascript:get_modal({{ subtask.id }}, '{{ subtask.title|escapejs }}', '{{ task_taken.user.get_full_name|escapejs }}', {{ task_taken.user.id }}, '{{ task_taken.score }}', {{ subtask.score_max }}, '{{ task_taken.teacher_comments|sanitize|escapejs }}')">Оценить</a>
-															{% endif %}
+                                                            {% if subtask.can_score or subtask.can_pass %}
+                                                                <td style="width:20%;">
+                                                                    <a href="{% url issues.views.get_or_create task_id=subtask.id student_id=task_taken.user.id %}">{% trans "sdat" %}</a>
+                                                                </td>
+                                                            {% endif %}
 														</td>
 													{% endif %}
 												</tr>
@@ -186,35 +218,27 @@
 												<small>{{ task_taken.added_time|date:"d.m.Y" }}</small>
 											</td>
 
-
 											{% if task_taken.status == STATUS_TAKEN %}
 												<td style="width:10%;">
 													{{ task_taken.cancel_date|date:"d.m.Y" }}
 												</td>
 												<td style="width:20%;"></td>
-												<td style="width:20%;">
-													{% if task.can_score %}
-														<a class="btn-small" href="javascript:get_modal({{ task.id }}, '{{ task.title|escapejs }}', '{{ task_taken.user.get_full_name|escapejs }}', {{ task_taken.user.id }}, 0, {{ task.score_max }}, '{{ task_taken.teacher_comments|sanitize|escapejs }}')">Оценить</a>
-													{% endif %}
-												</td>
 											{% endif %}
 
 											{% if task_taken.status == STATUS_SCORED %}
 												<td style="width:10%;">
-													<span class="label {% if task_taken.score == task.score_max %} label-success{% endif %}">{{ task_taken.score|floatformat }}</span>
-													{% if task_taken.teacher_comments %}
-														<a class="icon-comment" href="javascript:get_modal_comment('{{ task_taken.teacher_comments|sanitize|escapejs }}')"></a>
-													{% endif %}
+													<span class="label {% if task_taken.score == task.score_max %} label-success {% else %} label-warning {% endif %}">{{ task_taken.score|floatformat }}</span>
 												</td>
 												<td style="width:20%;">
 													{{ task_taken.update_time|date:"d.m.Y" }}
 												</td>
-												<td style="width:20%;">
-													{% if task.can_score %}
-														<a class="btn-small" href="javascript:get_modal({{ task.id }}, '{{ task.title|escapejs }}', '{{ task_taken.user.get_full_name|escapejs }}', {{ task_taken.user.id }}, '{{ task_taken.score }}', {{ task.score_max }}, '{{ task_taken.teacher_comments|sanitize|escapejs }}')">Оценить</a>
-													{% endif %}
-												</td>
 											{% endif %}
+                                            {% if task.can_score or task.can_pass %}
+                                                <td style="width:20%;">
+													<a href="{% url issues.views.get_or_create task_id=task.id student_id=task_taken.user.id %}">{% trans "sdat" %}</a>
+												</td>
+                                            {% endif %}
+
 										</tr>
 									{% endfor %}
 									</tbody>
@@ -228,7 +252,6 @@
 		</table>
 	</div>
 </div>
-
-{% include "course_tasks_base.html" %}
+{% include "courses/task.html" %}
 
 {% endblock %}

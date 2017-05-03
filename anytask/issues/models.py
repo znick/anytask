@@ -7,7 +7,6 @@ from django.core.urlresolvers import reverse
 from django.db import models
 from django.dispatch import receiver
 from django.db.models import Q
-from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 from django import forms
@@ -17,12 +16,13 @@ from decimal import Decimal
 from anyrb.common import AnyRB
 from anyrb.common import update_status_review_request
 from tasks.models import Task
+from users.common import get_user_fullname, get_user_link
 
 from unidecode import unidecode
 
 import uuid
-import requests
 import django_filters
+
 
 def get_file_path(instance, filename):
     return '/'.join(['files', str(uuid.uuid4()), filename])
@@ -114,12 +114,6 @@ class Issue(models.Model):
     def get_field_repr(self, field):
         name = field.name
 
-        def get_user_link(user):
-            return u'<a class="user" href="{0}">{1} {2}</a>'.format(
-                user.get_absolute_url(),
-                user.last_name,
-                user.first_name)
-
         if name == 'student_name':
             return get_user_link(self.student)
         if name == 'responsible_name':
@@ -127,8 +121,12 @@ class Issue(models.Model):
                 return get_user_link(self.responsible)
             return None
         if name == 'followers_names':
-            followers = map(lambda x: u'<a class="user" href="{0}">{1} {2}</a>'.format(x.get_absolute_url(), x.first_name, x.last_name),
-                            self.followers.all())
+            followers = map(
+                lambda x: u'<a class="user" href="{0}">{1}</a>'.format(
+                    x.get_absolute_url(), get_user_fullname(x)
+                ),
+                self.followers.all()
+            )
             return ', '.join(followers)
         if name == 'course_name':
             course = self.task.course
@@ -192,7 +190,7 @@ class Issue(models.Model):
                     return field.get_default_value()
                 return ''
             else:
-               raise AttributeError('field_name = {0}'.format(name))
+                raise AttributeError('field_name = {0}'.format(name))
 
         return events[0].value
 
@@ -251,22 +249,21 @@ class Issue(models.Model):
             else:
                 delete_event = True
 
-            value = value.last_name + ' ' + value.first_name
+            value = get_user_fullname(value)
 
         elif name == 'followers_names':
             if self.responsible and str(self.responsible.id) in value:
                 value.remove(str(self.responsible.id))
-            prev_followers = self.followers
-            self.followers = list(value)
+            new_followers = User.objects.filter(id__in=value)
 
-            if prev_followers == self.followers:
+            if list(new_followers) == list(self.followers.all()):
                 delete_event = True
-
-            value = []
-            for follower in self.followers.all():
-                value.append(follower.last_name + ' ' + follower.first_name)
-
-            value = ', '.join(value)
+            else:
+                deleted_followers = [get_user_fullname(follower)
+                                    for follower in set(self.followers.all()).difference(set(new_followers))]
+                add_followers = [get_user_fullname(follower) for follower in new_followers.all()]
+                self.followers = value
+                value = ', '.join(add_followers) + '\n' + ', '.join(deleted_followers)
 
         elif name == 'comment':
             if value:
@@ -279,7 +276,9 @@ class Issue(models.Model):
                         for ext in settings.CONTEST_EXTENSIONS:
                             filename, extension = os.path.splitext(file.name)
                             if ext == extension:
-                                contest_submission = self.contestsubmission_set.create(issue=self, author=author, file=uploaded_file)
+                                contest_submission = self.contestsubmission_set.create(
+                                    issue=self, author=author, file=uploaded_file
+                                )
                                 sent = contest_submission.upload_contest(ext, compiler_id=value['compilers'][file_id])
                                 if sent:
                                     value['comment'] += u"<p>{0}</p>".format(_(u'otpravleno_v_kontest'))
@@ -291,7 +290,10 @@ class Issue(models.Model):
                                     self.followers.add(User.objects.get(username='anytask.monitoring'))
                                 break
 
-                    if self.task.rb_integrated and (course.send_rb_and_contest_together or not self.task.contest_integrated):
+                    if self.task.rb_integrated and (
+                                course.send_rb_and_contest_together or
+                                not self.task.contest_integrated
+                    ):
                         for ext in settings.RB_EXTENSIONS + [str(ext.name) for ext in course.filename_extensions.all()]:
                             filename, extension = os.path.splitext(file.name)
                             if ext == extension or ext == '.*':
@@ -358,7 +360,7 @@ class Issue(models.Model):
             value = normalize_decimal(value)
             if self.mark != float(value):
                 if self.task.parent_task is not None:
-                    parent_task_issue = Issue.objects.get(student=self.student, task=self.task.parent_task)
+                    parent_task_issue, created = Issue.objects.get_or_create(student=self.student, task=self.task.parent_task)
                     parent_task_issue.mark -= self.mark
                     parent_task_issue.mark += float(value)
                     parent_task_issue.save()
@@ -366,9 +368,6 @@ class Issue(models.Model):
                 self.mark = float(value)
             else:
                 delete_event = True
-
-
-
 
             value = str(value)
             if not self.is_accepted() and self.status_field.tag != IssueStatus.STATUS_NEW:
@@ -397,7 +396,6 @@ class Issue(models.Model):
         else:
             self.set_byname('responsible_name', teacher, author)
 
-
     def get_history(self):
         """
         :returns event objects
@@ -411,6 +409,15 @@ class Issue(models.Model):
 
     def get_absolute_url(self):
         return reverse('issues.views.issue_page', args=[str(self.id)])
+
+    def add_comment(self, comment):
+        author = User.objects.get(username="anytask")
+        field, field_get = IssueField.objects.get_or_create(name='comment')
+        event = self.create_event(field, author=author)
+        event.value = u'<div class="contest-response-comment not-sanitize">' + comment + u'</div>'
+        event.save()
+        return event
+
 
 class Event(models.Model):
     issue = models.ForeignKey(Issue, null=False, blank=False)
@@ -430,24 +437,34 @@ class Event(models.Model):
     def get_message(self):
         msg_map = {
             'responsible_name': _('zadachu_proveriaet'),
-            'followers_names': _('nabludaiut'),
             'status': _('status_izmenen'),
             'mark': _('ocenka_izmenena'),
             'file': _('zagruzhen_faij')
         }
         message = ''
-        if self.field.history_message:
-            if self.field.name in msg_map:
-                self.field.history_message = msg_map[self.field.name]
-            message += self.field.history_message + ' '
-        message += self.value
+        if self.field.name == 'followers_names':
+            value = self.value.split('\n')
+            if len(value) == 1:
+                return _('nabludaiut') + ' ' + self.value if self.value else _('nabludaet_nikto')
+            new_users, deleted_users = value
+            if new_users:
+                message += u'{0} {1}'.format(_('nabludaiut'), new_users)
+            if deleted_users:
+                message += u'\n{0} {1}'.format(_('ne_nabludaiut'), deleted_users)
+        else:
+            if self.field.history_message:
+                if self.field.name in msg_map:
+                    message += msg_map[self.field.name] + ' '
+                else:
+                    message += self.field.history_message + ' '
+            message += self.value
         return message
 
     def get_notify_message(self):
         message = list()
         timestamp = self.timestamp.strftime('%d %b %H:%M')
         message.append(timestamp.decode('utf-8'))
-        message.append(u'{0} {1}:'.format(self.author.last_name, self.author.first_name))
+        message.append(u'{0}:'.format(get_user_fullname(self.author)))
         message.append(self.get_message())
         if self.file_set.all():
             file_list = list()

@@ -1,0 +1,17 @@
+#task_contest_id_readonly {
+    margin-bottom: 0;
+}
+
+#task_contest_id_readonly input.form-control {
+    cursor: default;
+}
+
+.loading-img {
+    margin-top: 0.6rem;
+}
+
+.loading-img span.fa.fa-circle-o-notch.fa-spin {
+    opacity: 0.2;
+    filter: alpha(opacity=20);
+    color: #000;
+}

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{{ info_title }}{% endblock %}
+
+{% block navbar_all %}{% endblock %}
+
+{% block content %}
+    <style>
+        div.card {
+            max-width: 40rem;
+            margin: 0 auto;
+        }
+    </style>
+    <div class="card text-center">
+        <div class="card-block">
+            <h4 class="card-title">{{ info_title }}</h4>
+            <p class="card-text">{{ info_text }}</p>
+        </div>
+    </div>
+{% endblock %}
+
+{% block footer_all %}{% endblock %}
+

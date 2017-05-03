@@ -1,7 +1,8 @@
-from tasks.models import Task, TaskTaken, TaskTakenLog, TaskLog, TaskGroupRelations
+from tasks.models import Task, TaskTaken, TaskLog, TaskGroupRelations
 from django.contrib import admin
+import reversion
 
-class TaskAdmin(admin.ModelAdmin):
+class TaskBaseAdmin(admin.ModelAdmin):
     list_display = ('title', 'course', 'get_groups', 'weight', 'parent_task', 'score_max')
     list_filter = ('groups', 'course', 'course__year__start_year')
     search_fields = ('title', 'course__name', 'task_text')
@@ -9,6 +10,9 @@ class TaskAdmin(admin.ModelAdmin):
     def get_groups(self, obj):
         return "; ".join([group.name for group in obj.groups.all()])
     get_groups.short_description = 'Groups'
+
+class TaskAdmin(reversion.VersionAdmin, TaskBaseAdmin):
+    pass
 
 class TaskLogAdmin(admin.ModelAdmin):
     list_display = ('title', 'course', 'get_groups', 'weight', 'parent_task', 'score_max', 'added_time', 'update_time')
@@ -20,11 +24,7 @@ class TaskLogAdmin(admin.ModelAdmin):
     get_groups.short_description = 'Groups'
 
 class TaskTakenAdmin(admin.ModelAdmin):
-    list_display = ('task', 'user', 'status', 'score', 'scored_by', 'added_time', 'update_time')
-    list_filter = ('task__course', 'task__course__year__start_year')
-
-class TaskTakenLogAdmin(admin.ModelAdmin):
-    list_display = ('task', 'user', 'status', 'score', 'scored_by', 'added_time', 'update_time')
+    list_display = ('task', 'user', 'status', 'added_time', 'update_time')
     list_filter = ('task__course', 'task__course__year__start_year')
 
 class TaskGroupRelationsAdmin(admin.ModelAdmin):
@@ -35,5 +35,4 @@ class TaskGroupRelationsAdmin(admin.ModelAdmin):
 admin.site.register(Task, TaskAdmin)
 admin.site.register(TaskLog, TaskLogAdmin)
 admin.site.register(TaskTaken, TaskTakenAdmin)
-admin.site.register(TaskTakenLog, TaskTakenLogAdmin)
 admin.site.register(TaskGroupRelations, TaskGroupRelationsAdmin)

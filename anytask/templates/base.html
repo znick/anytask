@@ -99,7 +99,7 @@
 
                                 while (status_counter < data.statuses.length) {
                                     if (status_counter == MAX_STATUSES) {
-                                        status_html += '<span class="label label-status-sgs label-default ">еще ' + '1' + '</span>';
+                                        status_html += '<span class="label label-status-sgs label-default ">{% trans 'yeshcho' %} ' + (data.statuses.length - MAX_STATUSES) + '</span>';
                                         break;
                                     }
 
@@ -152,7 +152,7 @@
 
                         if ($('#navbar_search').data('course_limited') || $('#navbar_search').data('up_limited')) {
                             if (!$('.search-show-more', menu).length)
-                                $(menu).append("<div class='search-show-more'><button type='submit'>Все результаты</button></div>");
+                                $(menu).append("<div class='search-show-more'><button type='submit'>{% trans 'vse_resultaty' %}</button></div>");
                         }
                         else
                             $('.search-show-more', menu).remove();
@@ -194,36 +194,40 @@
 
         <style type="text/css">
 
-{#        Оформлением в цветах Яндекса#}
+            {#        Оформлением в цветах Яндекса#}
 
-{#            .navbar-yandex {#}
-{#                background-color: #ffdb4d;#}
-{#                border-color: #ffdb4d;#}
-{#            }#}
-{##}
-{#            .list-group-item.active,#}
-{#            .list-group-item.active:focus,#}
-{#            .list-group-item.active:hover {#}
-{#                color: black;#}
-{#                background-color: #ffdb4d;#}
-{#                border-color: #ffdb4d;#}
-{#            }#}
-{##}
-{#            .btn-primary,#}
-{#            .btn-primary:hover {#}
-{#                color: black;#}
-{#                background-color: #ffdb4d;#}
-{#                border-color: #ffdb4d;#}
-{#            }#}
-{##}
-{#            .nav-pills .nav-item.open .nav-link, .nav-pills .nav-item.open .nav-link:focus, .nav-pills .nav-item.open .nav-link:hover, .nav-pills .nav-link.active, .nav-pills .nav-link.active:focus, .nav-pills .nav-link.active:hover {#}
-{#                color: black;#}
-{#                cursor: default;#}
-{#                background-color: #ffdb4d;#}
-{#            }#}
+            {#            .navbar-yandex {#}
+            {#                background-color: #ffdb4d;#}
+            {#                border-color: #ffdb4d;#}
+            {#            }#}
+            {##}
+            {#            .list-group-item.active,#}
+            {#            .list-group-item.active:focus,#}
+            {#            .list-group-item.active:hover {#}
+            {#                color: black;#}
+            {#                background-color: #ffdb4d;#}
+            {#                border-color: #ffdb4d;#}
+            {#            }#}
+            {##}
+            {#            .btn-primary,#}
+            {#            .btn-primary:hover {#}
+            {#                color: black;#}
+            {#                background-color: #ffdb4d;#}
+            {#                border-color: #ffdb4d;#}
+            {#            }#}
+            {##}
+            {#            .nav-pills .nav-item.open .nav-link, .nav-pills .nav-item.open .nav-link:focus, .nav-pills .nav-item.open .nav-link:hover, .nav-pills .nav-link.active, .nav-pills .nav-link.active:focus, .nav-pills .nav-link.active:hover {#}
+            {#                color: black;#}
+            {#                cursor: default;#}
+            {#                background-color: #ffdb4d;#}
+            {#            }#}
+
+            .hidden {
+                display: none !important;
+            }
 
             body {
-                padding-top: 75px;
+                padding-top: 4.75rem;
                 padding-bottom: 40px;
                 background-color: #f5f8fa;
                 margin-bottom: 60px;
@@ -243,9 +247,11 @@
             }
 
             .breadcrumb {
-                background-color: white;
-                border: 1px solid #e5e5e5;
-                border-radius: .25rem;
+                margin-bottom: .4rem;
+                margin-top: -.75rem;
+                padding: .4rem .4rem .4rem .2rem;
+                background-color: #f5f8fa;
+                border-color: #f5f8fa;
             }
 
             .breadcrumb_button {
@@ -329,6 +335,14 @@
                 top: 2.8rem;
                 right: 0;
                 z-index:100;
+            }
+
+            .group-table {
+                position: absolute;
+                height: -moz-calc(100% - 220px);
+                height: -webkit-calc(100% - 220px);
+                height: calc(100% - 220px);
+                width: calc(100% - 29px);
             }
 
             .card-block.card-centered {
@@ -598,6 +612,10 @@
             .tt-menu {
                 min-width: 18rem;
             }
+
+            .btn-square {
+                padding: .375rem .5rem;
+            }
         </style>
 
     {% endblock %}
@@ -606,91 +624,92 @@
 </head>
 
 <body data-spy="scroll" style="">
-
-<nav class="navbar navbar-fixed-top navbar-dark navbar-blue">
-    <div class="container">
-        <a class="navbar-brand" href="/">Anytask</a>
-        <!--
-        <ul class="nav">
-            <li><a href="/about">About</a></li>
-        </ul>
-        -->
-        <button class="navbar-toggler hidden-lg-up pull-xs-right" type="button" data-toggle="collapse" data-target="#exCollapsingNavbar2">
-            &#9776;
-        </button>
-        <div class="collapse navbar-toggleable-md" id="exCollapsingNavbar2">
-            {% block navbar %} {% endblock navbar %}
-            {% block user %}
-                <div class="nav-right">
-                    {% if user.is_authenticated %}
-                        <ul class="nav navbar-nav">
-                            {% block main_search %}
-                                <li class="nav-item">
-                                    <div class="nav-form-search">
-                                        <form class="navbar-form" role="search" method="get"
-                                              action="{% url search.views.search_page %}">
-                                            <div class="input-group">
-                                                <div class="input-group-input">
-                                                    <input class="typeahead form-control" id="navbar_search" name="q" type="text" placeholder="{% trans 'najti' %}">
+{% block navbar_all %}
+    <nav class="navbar navbar-fixed-top navbar-dark navbar-blue">
+        <div class="{% if full_width_page %}container-fluid{% else %}container{% endif %}">
+            <a class="navbar-brand" href="/">Anytask</a>
+            <!--
+            <ul class="nav">
+                <li><a href="/about">About</a></li>
+            </ul>
+            -->
+            <button class="navbar-toggler hidden-lg-up pull-xs-right" type="button" data-toggle="collapse" data-target="#exCollapsingNavbar2">
+                &#9776;
+            </button>
+            <div class="collapse navbar-toggleable-md" id="exCollapsingNavbar2">
+                {% block navbar %} {% endblock navbar %}
+                {% block user %}
+                    <div class="nav-right">
+                        {% if user.is_authenticated %}
+                            <ul class="nav navbar-nav">
+                                {% block main_search %}
+                                    <li class="nav-item">
+                                        <div class="nav-form-search">
+                                            <form class="navbar-form" role="search" method="get"
+                                                  action="{% url search.views.search_page %}">
+                                                <div class="input-group">
+                                                    <div class="input-group-input">
+                                                        <input class="typeahead form-control" id="navbar_search" name="q" type="text" placeholder="{% trans 'najti' %}">
+                                                    </div>
+                                                    <div class="input-group-btn">
+                                                        <button class="btn" type="submit"><span class="fa fa-search" style="line-height: 1.5"></span></button>
+                                                    </div>
                                                 </div>
-                                                <div class="input-group-btn">
-                                                    <button class="btn" type="submit"><span class="fa fa-search" style="line-height: 1.5"></span></button>
-                                                </div>
-                                            </div>
-                                        </form>
+                                            </form>
+                                        </div>
+                                    </li>
+                                {% endblock %}
+                                {% block navbar_mail %}
+                                    <li class="nav-item">
+                                        <a href="{% url mail.views.mail_page %}" class="nav-link" role="button" style="position: relative;"><span class="fa fa-envelope" aria-hidden="true" style="line-height: inherit;"></span>
+                                            {% if user.get_profile.get_unread_count %}
+                                                <span id="top_notify_count" class="label label-pill label-danger top_notify_count">{{ user.get_profile.get_unread_count }}</span>
+                                                <span id="top_notify_count_string">{% trans "base_est_novye_soobshenija" %}</span>
+                                            {% else %}
+                                                <span id="top_notify_count" class="label label-pill label-danger top_notify_count"></span>
+                                                <span id="top_notify_count_string">{% trans "net_novyh_soobshenij" %}</span>
+                                            {% endif %}
+                                        </a>
+                                    </li>
+                                {% endblock %}
+                                <li class="nav-item dropdown">
+                                    <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                        <span class="fa fa-user"></span>
+                                        <span id="navbar_user_name">{% if user.get_full_name %}{{ user.get_full_name }} {% else %} {{ user }} {% endif %}</span>
+                                    </a>
+                                    <div class="dropdown-menu dropdown-menu-right dropdown-username" aria-labelledby="dropdownMenu1">
+                                        <h6 class="dropdown-header">{% if user.get_full_name %}{{ user.get_full_name }}{% else %}{{ user }}{% endif %}</h6>
+                                        <a class="dropdown-item" href="{% url users.views.profile %}">{% trans "profil" %}</a>
+                                        <a class="dropdown-item" href="{% url users.views.profile_settings %}">{% trans "nastrojki" %}</a>
+                                        {% if user.is_staff %}
+                                            <a class="dropdown-item" href="{% url staff.views.staff_page %}">Staff</a>
+                                            <a class="dropdown-item" href="{% url admin:index %}">{% trans "adminka" %}</a>
+                                        {% endif %}
+                                        <div class="dropdown-divider"></div>
+                                        <a class="dropdown-item" href="{% url django.contrib.auth.views.password_change %}">{% trans "smenit_parol" %}</a>
+                                        <div class="dropdown-divider"></div>
+                                        <a class="dropdown-item" href="{% url django.contrib.auth.views.logout %}">{% trans "vyjti" %}</a>
                                     </div>
                                 </li>
-                            {% endblock %}
-                {% block navbar_mail %}
-                            <li class="nav-item">
-                                <a href="{% url mail.views.mail_page %}" class="nav-link" role="button" style="position: relative;"><span class="fa fa-envelope" aria-hidden="true" style="line-height: inherit;"></span>
-                                    {% if user.get_profile.get_unread_count %}
-                                        <span id="top_notify_count" class="label label-pill label-danger top_notify_count">{{ user.get_profile.get_unread_count }}</span>
-                                        <span id="top_notify_count_string">{% trans "est_novye_soobshenija" %}</span>
-                                    {% else %}
-                                        <span id="top_notify_count" class="label label-pill label-danger top_notify_count"></span>
-                                        <span id="top_notify_count_string">{% trans "net_novyh_soobshenij" %}</span>
-                                    {% endif %}
-                                </a>
-                            </li>
-                        {% endblock %}
-                            <li class="nav-item dropdown">
-                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                                    <span class="fa fa-user"></span>
-                                    <span id="navbar_user_name">{% if user.get_full_name %}{{ user.get_full_name }} {% else %} {{ user }} {% endif %}</span>
-                                </a>
-                                <div class="dropdown-menu dropdown-menu-right dropdown-username" aria-labelledby="dropdownMenu1">
-                                    <h6 class="dropdown-header">{% if user.get_full_name %}{{ user.get_full_name }}{% else %}{{ user }}{% endif %}</h6>
-                                    <a class="dropdown-item" href="{% url users.views.profile %}">{% trans "profil" %}</a>
-                                    <a class="dropdown-item" href="{% url users.views.profile_settings %}">{% trans "nastrojki" %}</a>
-                                    {% if user.is_staff %}
-                                        <a class="dropdown-item" href="{% url staff.views.staff_page %}">Staff</a>
-                                        <a class="dropdown-item" href="{% url admin:index %}">{% trans "adminka" %}</a>
-                                    {% endif %}
-                                    <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="{% url django.contrib.auth.views.password_change %}">{% trans "smenit_parol" %}</a>
-                                    <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="{% url django.contrib.auth.views.logout %}">{% trans "vyjti" %}</a>
-                                </div>
-                            </li>
-                        </ul>
-                    {% else %}
-                        <ul class="nav navbar-nav">
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url django.contrib.auth.views.login %}">{% trans "vojdite" %}</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="/accounts/register/">{% trans "zaregistrirujtes" %}</a>
-                            </li>
-                        </ul>
-                    {% endif %}
-                </div>
-            {% endblock %}
+                            </ul>
+                        {% else %}
+                            <ul class="nav navbar-nav">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{% url django.contrib.auth.views.login %}">{% trans "vojdite" %}</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/accounts/register/">{% trans "zaregistrirujtes" %}</a>
+                                </li>
+                            </ul>
+                        {% endif %}
+                    </div>
+                {% endblock %}
+            </div>
         </div>
-    </div>
-</nav>
+    </nav>
+{% endblock %}
 
-<div class="container">
+<div class="{% if full_width_page %}container-fluid{% else %}container{% endif %}">
     {% load django_bootstrap_breadcrumbs %}
     {% load index_messages %}
     {% block breadcrumbs %}
@@ -705,8 +724,9 @@
 
 </div>
 
+{% block footer_all %}
 <footer class="footer">
-    <div class="container">
+    <div class="{% if full_width_page %}container-fluid{% else %}container{% endif %}">
         {% block footer %} {% endblock footer %}
         <div style="display: inline-block; width: 100%">
             <small class="text-muted" ><a href="{% url blog.views.blog_page %}">{% trans "blog" %}</a></small>
@@ -728,6 +748,7 @@
         </div>
     </div>
 </footer>
+{% endblock %}
 
 {#<script src="{{ STATIC_URL }}/bootbox.min.js"></script>#}
 

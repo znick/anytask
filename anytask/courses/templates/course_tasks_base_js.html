@@ -24,14 +24,14 @@
                 $("#modal_score_ok").button('loading');
                 $(form).ajaxSubmit({
                     success: function() {
-                        if (location.pathname != "{% url courses.views.queue_tasks_to_check course_id=course.id %}")
-                        {
-                            window.location.reload();
-                        }
-                        else
-                        {
-                            $("#modal_score").modal("hide");
-                        }
+{#                        if (location.pathname != "{% url courses.views.queue_tasks_to_check course_id=course.id %}")#}
+{#                        {#}
+{#                            window.location.reload();#}
+{#                        }#}
+{#                        else#}
+{#                        {#}
+{#                            $("#modal_score").modal("hide");#}
+{#                        }#}
                     },
                 });
 
@@ -342,7 +342,8 @@
                     $('#hidden_task').attr('checked', true);
                 }
 
-                $('#modal-edite-task-form').attr('action', '{% url courses.views.edit_task %}');
+{#                $('#modal-edite-task-form').attr('action', '{% url courses.views.edit_task %}');#}
+
 
                 $('#edit_task_descr').show();
             }
@@ -367,7 +368,7 @@
                     $('#hidden_task').attr('checked', true);
                 }
 
-                $('#modal-edite-task-form').attr('action', '{% url courses.views.edit_task %}');
+{#                $('#modal-edite-task-form').attr('action', '{% url courses.views.edit_task %}');#}
 
                 $('#modal_task_desc_edit').show();
 
@@ -384,7 +385,7 @@
         {
             $('#modal_task_desc_text').hide();
 
-            $('#modal-edite-task-form').attr('action', '{% url courses.views.add_task %}');
+{#            $('#modal-edite-task-form').attr('action', '{% url courses.views.add_task %}');#}
 
             $('#modal_edit_task_course_id').val(course_id);
             if (group_id) {
