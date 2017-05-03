@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
 
-from django.core.management.base import BaseCommand
+import logging
+from datetime import datetime
+
 from django.conf import settings
+from django.core.management.base import BaseCommand
 from django.utils import translation
 from django.utils.translation import ugettext as _
-from anycontest.common import comment_verdict, get_contest_mark
-from anyrb.common import AnyRB
-from anycontest.models import ContestSubmission
-from issues.model_issue_status import IssueStatus
-from users.models import UserProfile
 
-from datetime import datetime
-import logging
+from anycontest.common import comment_verdict, get_contest_mark
+from anycontest.models import ContestSubmission
+from anyrb.common import AnyRB
+from users.models import UserProfile
 
 logger = logging.getLogger('django.request')
 
