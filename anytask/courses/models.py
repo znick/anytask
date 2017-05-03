@@ -193,9 +193,7 @@ class Course(models.Model):
     def user_can_see_attendance_log(self, user):
         if user.is_anonymous():
             return False
-        if self.has_attendance_log and self.user_is_teacher(user):
-            return True
-        return False
+        return self.has_attendance_log and self.user_is_teacher(user)
 
     def save(self, *args, **kwargs):
         super(Course, self).save(*args, **kwargs)

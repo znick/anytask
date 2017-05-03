@@ -204,7 +204,7 @@ def course_page(request, course_id):
 
     context['course'] = course
     context['tasks'] = tasks
-    context['mark'] = mark if mark else '--'
+    context['mark'] = mark or '--'
     context['visible_queue'] = course.user_can_see_queue(user),
     context['visible_attendance_log'] = course.user_can_see_attendance_log(user),
     context['user_is_teacher'] = course.user_is_teacher(user)
@@ -616,10 +616,7 @@ def course_settings(request, course_id):
     else:
         course.default_accepted_after_contest_ok = False
 
-    if 'has_attendance_log' in request.POST:
-        course.has_attendance_log = True
-    else:
-        course.has_attendance_log = False
+    course.has_attendance_log = 'has_attendance_log' in request.POST
 
     course.save()
 
@@ -860,7 +857,7 @@ def attendance_list(request, course, group=None):
     user = request.user
     user_is_attended = False
     user_is_attended_special_course = False
-    show_academ_users = request.session.get(str(request.user.id) + '_' + str(course.id) + '_show_academ_users', True)
+    show_academ_users = request.session.get("%s_%s_show_academ_users" % (request.user.id, course.id), True)
 
     course.can_edit = course.user_can_edit_course(user)
     if course.can_be_chosen_by_extern:
@@ -960,7 +957,7 @@ def attendance_page(request, course_id, group_id=None):
 
     context = attendance_context
     context['lssnlist_template'] = 'courses/attendance_list.html'
-    context['group_attendance_list'] = True if group else False
+    context['group_attendance_list'] = bool(group)
     context['school'] = schools[0] if schools else ''
     context['show_academ_users'] = request.session.get(
         str(request.user.id) + '_' + str(course.id) + '_show_academ_users', True)

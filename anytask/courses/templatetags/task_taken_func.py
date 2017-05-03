@@ -86,13 +86,10 @@ def task_group_info(task):
 @register.filter(name='disabled')
 def lesson_disabled(lesson):
     if isinstance(lesson, Lesson):
-        if lesson.date_starttime.date() > datetime.today().date():
-            return True
-    return False
+        return lesson.date_starttime.date() > datetime.today().date()
 
 
 @register.filter(name='lssn_can_be_deleted')
-def lesson_can_be_deleted(lesson, group):
+def lesson_can_be_deleted(lesson):
     if isinstance(lesson, Lesson):
-        return len(lesson.visited_students.all())
-    return False
+        return lesson.visited_students.count()
