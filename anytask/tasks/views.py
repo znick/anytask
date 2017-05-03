@@ -290,7 +290,7 @@ def task_create_ot_edit(request, course, task_id=None):
         students = User.objects.filter(group__in=task_groups).all()
         for student in students:
             issue, created = Issue.objects.get_or_create(task_id=task.id, student_id=student.id)
-            issue.set_status_by_tag('seminar')
+            issue.set_status_seminar()
             issue.mark = sum([x.mark for x in Issue.objects.filter(task__parent_task=task, student_id=student.id).all()])
             issue.save()
 

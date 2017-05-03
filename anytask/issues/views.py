@@ -98,8 +98,8 @@ def contest_rejudge(issue):
     sent = contest_submission.upload_contest(compiler_id=old_contest_submission.compiler_id)
     if sent:
         event.value = u"<p>{0}</p>".format(_(u'otpravleno_v_kontest'))
-        if issue.status_field.tag != IssueStatus.STATUS_ACCEPTED:
-            issue.set_status_by_tag(IssueStatus.STATUS_AUTO_VERIFICATION)
+        if not issue.is_accepted():
+            issue.set_status_auto_verification()
     else:
         event.value = u"<p>{1}('{0}').</p>".format(
             contest_submission.send_error, _(u'oshibka_otpravki_v_kontest'))
@@ -160,7 +160,7 @@ def issue_page(request, issue_id):
                                              IssueStatus.objects.get(pk=request.POST['Accepted']),
                                              request.user)
                         else:
-                            issue.set_status_by_tag(Issue.STATUS_ACCEPTED, request.user)
+                            issue.set_status_accepted(request.user)
 
                     if field.name == 'comment':
                         value = {
@@ -168,7 +168,7 @@ def issue_page(request, issue_id):
                             'files': request.FILES.getlist('files')
                         }
                         if 'need_info' in request.POST:
-                            issue.set_status_by_tag(IssueStatus.STATUS_NEED_INFO)
+                            issue.set_status_need_info()
 
                     issue.set_field(field, value, request.user)
 

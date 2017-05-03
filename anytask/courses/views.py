@@ -358,8 +358,7 @@ def tasklist_shad_cpp(request, course, seminar=None, group=None):
             for task_taken in student_task_takens:
                 task_x_task_taken[task_taken.task.id] = task_taken
                 if not task_taken.task.is_hidden and \
-                        not (task_taken.task.not_score_deadline and
-                                     task_taken.status_field.name == u'Зачтено после дедлайна'):
+                        not (task_taken.task.not_score_deadline and task_taken.is_accepted_deadline()):
                     student_summ_scores += task_taken.mark
 
             student_x_task_x_task_takens[student] = (task_x_task_taken, student_summ_scores)
@@ -684,13 +683,13 @@ def set_task_mark(request):
 
     mark = 0
     if request.POST['mark_value'] == '-':
-        issue.set_status_by_tag(IssueStatus.STATUS_NEW)
+        issue.set_status_new()
     else:
         mark = float(request.POST['mark_value'])
         if mark <= 0:
-            issue.set_status_by_tag(IssueStatus.STATUS_REWORK)
+            issue.set_status_rework()
         else:
-            issue.set_status_by_tag(IssueStatus.STATUS_ACCEPTED)
+            issue.set_status_accepted()
 
     issue.set_byname('mark', mark)
 

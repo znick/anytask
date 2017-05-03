@@ -76,11 +76,11 @@ def escape(text):
 
 def comment_verdict(issue, verdict, comment):
     issue.add_comment(comment)
-    if issue.status_field.tag != issue.status_field.STATUS_ACCEPTED:
+    if not issue.is_accepted():
         if verdict:
-            issue.set_status_by_tag(issue.status_field.STATUS_VERIFICATION)
+            issue.set_status_verification()
         else:
-            issue.set_status_by_tag(issue.status_field.STATUS_REWORK)
+            issue.set_status_rework()
     issue.save()
 
 
