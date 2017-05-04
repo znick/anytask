@@ -1,31 +1,26 @@
 # -*- coding: utf-8 -*-
-import pprint
-from django.contrib.auth.decorators import user_passes_test, login_required
+import os
+from copy import deepcopy
+
+from django.conf import settings
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
-import json
-import os
-from django.conf import settings
-from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpResponse
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect, HttpResponsePermanentRedirect
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template.context import RequestContext
 from django.utils.translation import ugettext as _
-from issues.forms import FileForm
-from issues.models import Issue, Event, File
-from issues.model_issue_field import IssueField
-from issues.model_issue_status import IssueStatus
-from anyrb.common import AnyRB
-
-
-from django.core.urlresolvers import reverse
-from django.views import generic
 from django.views.decorators.http import require_POST
 from jfu.http import upload_receive, UploadResponse, JFUResponse
-from copy import deepcopy
+from unidecode import unidecode
 
 from anycontest.common import get_problem_compilers
+from anyrb.common import AnyRB
+from issues.model_issue_field import IssueField
+from issues.model_issue_status import IssueStatus
+from issues.models import Issue, Event, File
 
-from unidecode import unidecode
 
 def user_is_teacher_or_staff(user, issue):
     if user.is_staff:
@@ -212,7 +207,6 @@ def issue_page(request, issue_id):
         show_contest_rejudge = True
 
 
-
     context = {
         'issue': issue,
         'issue_fields': issue_fields,
@@ -242,7 +236,7 @@ def get_or_create(request, task_id, student_id):
         'issue_url': issue.get_absolute_url(),
     }
 
-    return HttpResponseRedirect("/issue/"+str(issue.id))#(json.dumps(data), content_type='application/json')
+    return HttpResponsePermanentRedirect("/issue/"+str(issue.id))#(json.dumps(data), content_type='application/json')
 
 
 @login_required
