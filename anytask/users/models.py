@@ -15,8 +15,10 @@ from users.model_user_status import UserStatus
 from years.common import get_current_year
 
 from anytask.storage import OverwriteStorage
+from geobase5 import Lookup
 
 logger = logging.getLogger('django.request')
+DB = Lookup('/var/cache/geobase/geodata5.bin')
 
 
 def get_upload_path(instance, filename):
@@ -78,6 +80,7 @@ class UserProfile(models.Model):
     ya_passport_email = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
 
     language = models.CharField(default="ru", max_length=128, unique=False, null=True, blank=True)
+    region_geo_id = models.IntegerField(null=False, blank=False, default=213)
 
     def is_current_year_student(self):
         return Group.objects.filter(year=get_current_year()).filter(students=self.user).count() > 0
@@ -108,6 +111,9 @@ class UserProfile(models.Model):
             if course.get_user_group(self.user) and course.send_to_contest_from_users:
                 return True
         return False
+
+    def get_user_tz(self):
+        return DB.regionById(self.region_geo_id).as_dict['tzname']
 
 
 class UserProfileLog(models.Model):

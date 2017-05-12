@@ -136,6 +136,14 @@
                             </div>
                             <small class="text-help" id="task_edit_datepicker_error_text"></small>
                         </div>
+                        <label class="col-lg-2 col-md-2 col-sm-1 col-xs-1 form-control-label" for="task_tz">{% trans "time_zone" %}</label>
+                            <div class="controls col-lg-3 col-md-2 col-sm-2 col-xs-2" style="padding: .375rem .75rem;">
+                                <select class="form-control" id='task_tz' name="task_tz">
+                                {% for tz in time_zones %}
+                                    <option value="{{ tz }}" {% ifequal tz user_tz %}selected{% endifequal %}>{{ tz }}</option>
+                                {% endfor %}
+                                </select>
+                            </div>
                     </div>
                     <div class="form-group row" id="task_edit_label_for_changed_task">
                         <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_changed_task">{% trans "uvedomit_o_sozdanii_zadachi" %}</label>

@@ -15,6 +15,7 @@ from issues.models import Issue, Event, File
 from issues.model_issue_field import IssueField
 from issues.model_issue_status import IssueStatus
 from anyrb.common import AnyRB
+from django.utils import timezone
 
 
 from django.core.urlresolvers import reverse

@@ -1,6 +1,8 @@
 {% load crispy_forms_tags %}
 {% load i18n %}
+{% load tz %}
 
+{% get_current_timezone as TIME_ZONE %}
 <style>
     .card-header {
         background-color: #FFFFFF;
@@ -130,7 +132,7 @@
             <div class="row col-wrap">
                 <div class="col-md-5 accordion2-label">{%  trans "data_sdachi" %}:</div>
                 <div class="col-md-7 accordion2-result">
-                    {{ issue.task.deadline_time|date:'d-m-Y H:i' }} {% if issue.task.deadline_time %} MSK UTC+3 {% endif %}
+                    {% localtime on %}{{ issue.task.deadline_time|date:'d-m-Y H:i' }}{% endlocaltime%} {% if issue.task.deadline_time %} {{ TIME_ZONE }} {% endif %}
                 </div>
             </div>
         </div>
@@ -148,7 +150,7 @@
                 {% if teacher_or_staff %}
                     <a id="modal_task_descr_edit_button" href="{% url tasks.views.task_edit_page task_id=issue.task.id %}" type="button" style="opacity:0.2;filter: alpha(opacity=20);color:#000000;display: inline-block;vertical-align: super;margin-left: 5px;"><i class="fa fa-edit fa-lg"></i></a>
                 {% endif %}
-                <div id="modal_header_deadline_time">{% if issue.task.deadline_time %}<strong>{%  trans "data_sdachi" %}: {{ issue.task.deadline_time|date:'d-m-Y H:i' }} MSK UTC+3 {% endif %}</strong></div>
+                <div id="modal_header_deadline_time">{% if issue.task.deadline_time %}<strong>{%  trans "data_sdachi" %}:{% localtime on %} {{ issue.task.deadline_time|date:'d-m-Y H:i' }}{% endlocaltime %} {{ TIME_ZONE }} {% endif %}</strong></div>
             </div>
             <div class="modal-body">
                 <div id="modal_body_task_descr">{{ issue.task.task_text|safe }}</div>

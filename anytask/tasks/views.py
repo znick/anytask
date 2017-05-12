@@ -6,6 +6,7 @@ from courses.models import Course
 from groups.models import Group
 from issues.models import Issue
 from issues.model_issue_status import IssueStatus
+from users.models import UserProfile
 from django.template import RequestContext
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.core.exceptions import ObjectDoesNotExist
@@ -23,12 +24,20 @@ import requests
 import reversion
 
 import json
+import pytz
+from pytz import timezone
 
 
 def merge_two_dicts(x, y):
     z = x.copy()
     z.update(y)
     return z
+
+
+def convert_datetime(date_time, from_time_zone, to_time_zone='Europe/Moscow'):
+    return timezone(from_time_zone).localize(date_time).\
+        astimezone(timezone(to_time_zone)).replace(tzinfo=None)
+
 
 @login_required
 def task_create_page(request, course_id):
@@ -55,6 +64,8 @@ def task_create_page(request, course_id):
         'rb_integrated': course.rb_integrated,
         'hide_contest_settings': True if not course.contest_integrated else False,
         'school': schools[0] if schools else '',
+        'user_tz': request.user.get_profile().get_user_tz,
+        'time_zones': pytz.common_timezones,
     }
 
     return render_to_response('task_create.html', context, context_instance=RequestContext(request))
@@ -142,6 +153,8 @@ def task_edit_page(request, task_id):
         'hide_contest_settings': True if not task.contest_integrated
                                          or task.type in [task.TYPE_SIMPLE, task.TYPE_MATERIAL] else False,
         'school': schools[0] if schools else '',
+        'user_tz': request.user.get_profile().get_user_tz,
+        'time_zones': pytz.common_timezones
     }
 
     return render_to_response('task_edit.html', context, context_instance=RequestContext(request))
@@ -183,6 +196,8 @@ def task_create_ot_edit(request, course, task_id=None):
         task_deadline = request.POST['deadline']
         if task_deadline:
             task_deadline = datetime.datetime.strptime(task_deadline, '%d-%m-%Y %H:%M')
+            tz = request.POST['task_tz']
+            task_deadline = convert_datetime(task_deadline, tz)
         else:
             task_deadline = None
     else:

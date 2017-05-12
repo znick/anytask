@@ -5,6 +5,8 @@
 {% load dict_func %}
 {% load task_taken_func %}
 {% load course_func %}
+{% load tz %}
+{% get_current_timezone as TIME_ZONE %}
 
 {% block title %}{% if seminar %}{{ seminar.title }} | {% endif %}{{ course.name }} | {{ course.year }}{% endblock %}
 
@@ -196,7 +198,7 @@
                                                     </div>
                                                     <div style="width: 20%">
                                                         {% if task.deadline_time %}{% trans "sdat_do" %}
-                                                            {{ task.deadline_time|date:"H:i d-m-Y" }}
+                                                            {% localtime on %}{{ task.deadline_time|date:"H:i d-m-Y" }}{% endlocaltime %} {{ TIME_ZONE }}
                                                         {% endif %}
                                                     </div>
                                                     <div style="width: 15%">
@@ -264,7 +266,7 @@
                                                             </div>
                                                             <div style="width: 25%">
                                                                 {% if task.task.deadline_time %}{% trans "sdat_do" %}
-                                                                    {{ task.task.deadline_time|date:"H:i d-m-Y"}}
+                                                                    {% localtime on %}{{ task.task.deadline_time|date:"H:i d-m-Y" }}{% endlocaltime %} {{ TIME_ZONE }}
                                                                 {% endif %}
                                                             </div>
                                                             <div style="width: 20%">
@@ -310,7 +312,7 @@
                                                 </div>
                                                 <div style="width: 20%">
                                                     {% if task.deadline_time %}{% trans "sdat_do" %}
-                                                        {{ task.deadline_time|date:"H:i d-m-Y" }}
+                                                        {% localtime on %}{{ task.deadline_time|date:"H:i d-m-Y" }}{% endlocaltime %} {{ TIME_ZONE }}
                                                     {% endif %}
                                                 </div>
                                                 <div style="width: 15%">
@@ -369,7 +371,7 @@
                                                         </div>
                                                         <div style="width: 25%">
                                                             {% if task.task.deadline_time %}{% trans "sdat_do" %}
-                                                                {{ task.task.deadline_time|date:"H:i d-m-Y"}}
+                                                                {% localtime on %}{{ task.task.deadline_time|date:"H:i d-m-Y" }}{% endlocaltime %} {{ TIME_ZONE }}
                                                             {% endif %}
                                                         </div>
                                                         <div style="width: 20%">

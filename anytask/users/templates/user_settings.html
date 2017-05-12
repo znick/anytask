@@ -141,6 +141,11 @@
                                 {% trans "otpravljat_mne_kommentarii" %}
                             </label>
                         </div>
+                        <div class="form-check">
+                            <label class="form-check-label">{% trans "moe_mestopozhenie" %}
+                                <input type="text" class="form-check-input" id="region_id" name="region_id" value="{{ user_profile.region_geo_id }}">
+                            </label>
+                        </div>
                         <div id="submit_error_text"></div>
                         <button type="button" class="btn btn-primary" id="submit_btn" style="margin-top: 0.5rem">{% trans "sohranit" %}</button>
                     </form>

@@ -12,6 +12,7 @@ from django.core.exceptions import PermissionDenied
 from django.core.files.base import ContentFile
 from django.utils.translation import ugettext as _
 from django.utils.translation import check_for_language
+from django.utils import timezone
 
 
 from users.models import UserProfile, UserProfileLog
@@ -39,6 +40,7 @@ import yandex_oauth
 import requests
 import json
 import datetime
+import pytz
 
 
 @login_required
@@ -205,9 +207,12 @@ def profile_settings(request):
     user_profile = user.get_profile()
 
     if request.method == 'POST':
-        user_profile.show_email = True if 'show_email' in request.POST else False
-        user_profile.send_my_own_events = True if 'send_my_own_events' in request.POST else False
+        user_profile.show_email = 'show_email' in request.POST
+        user_profile.send_my_own_events = 'send_my_own_events' in request.POST
+        user_profile.region_geo_id = int(request.POST['region_id'])
         user_profile.save()
+        request.session['django_timezone'] = str(pytz.timezone(user_profile.get_user_tz()))
+        timezone.activate(pytz.timezone(user_profile.get_user_tz()))
 
         return HttpResponse("OK")
 
