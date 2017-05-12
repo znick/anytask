@@ -26,6 +26,7 @@ def render_mail(message, user):
         c = Context({
             "last_name": user.last_name,
             "first_name": user.first_name,
+            "username": user.username,
         })
         return t.render(c)
     return message.text

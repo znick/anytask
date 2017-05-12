@@ -9,6 +9,7 @@ from django.conf import settings
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 
+from django.contrib.auth.models import User
 from admission.models import AdmissionRegistrationProfile
 
 import json
@@ -206,6 +207,26 @@ def decline(request, activation_key):
     context = {
         'info_title': _(u'spasibo'),
         'info_text': _(u'informatsiya_o_vas_byla_udalena'),
+    }
+
+    return render_to_response('info_page.html', context, context_instance=RequestContext(request))
+
+
+@never_cache
+@require_GET
+def contest_results_redirect(request, username):
+    try:
+        user = User.objects.get(username=username)
+        contest_id = settings.ADMISSION_CONTESTS[user.email.__hash__() % len(settings.ADMISSION_CONTESTS)]
+
+        logger.info("Admission view results - user %s redirected to contest %s", user, contest_id)
+        return HttpResponsePermanentRedirect(settings.CONTEST_URL + str(contest_id))
+    except Exception as e:
+        logger.error("Admission view results - %s", e)
+
+    context = {
+        'info_title': _(u'oshibka'),
+        'info_text': _(u'nevernyy_adres')
     }
 
     return render_to_response('info_page.html', context, context_instance=RequestContext(request))
