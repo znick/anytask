@@ -85,10 +85,10 @@ class Issue(models.Model):
     status_field = models.ForeignKey(IssueStatus, db_index=True, null=False, blank=False, default=1)
 
     def is_status_accepted(self):
-        return self.status_field.tag in [IssueStatus.STATUS_ACCEPTED, IssueStatus.STATUS_ACCEPTED_DEADLINE]
+        return self.status_field.tag in [IssueStatus.STATUS_ACCEPTED, IssueStatus.STATUS_ACCEPTED_AFTER_DEADLINE]
 
-    def is_status_accepted_deadline(self):
-        return self.status_field.tag == IssueStatus.STATUS_ACCEPTED_DEADLINE
+    def is_status_accepted_after_deadline(self):
+        return self.status_field.tag == IssueStatus.STATUS_ACCEPTED_AFTER_DEADLINE
 
     def is_status_auto_verification(self):
         return self.status_field.tag == IssueStatus.STATUS_AUTO_VERIFICATION
@@ -244,8 +244,8 @@ class Issue(models.Model):
     def set_status_accepted(self, author=None):
         self.set_status_by_tag(IssueStatus.STATUS_ACCEPTED, author)
 
-    def set_status_accepted_deadline(self, author=None):
-        self.set_status_by_tag(IssueStatus.STATUS_ACCEPTED_DEADLINE, author)
+    def set_status_accepted_after_deadline(self, author=None):
+        self.set_status_by_tag(IssueStatus.STATUS_ACCEPTED_AFTER_DEADLINE, author)
 
     def set_status_need_info(self, author=None):
         self.set_status_by_tag(IssueStatus.STATUS_NEED_INFO, author)
