@@ -4,6 +4,7 @@ python:
 install:
   - pip install pip==6.1.1
   - pip install -r requirements_local.txt
+  - sudo apt-get install p7zip-full tar xz-utils bzip2 gzip
 script:
   - sudo mkdir -m 777 /var/lib/anytask/
   - cd /var/lib/anytask/
