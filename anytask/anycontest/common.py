@@ -76,7 +76,7 @@ def escape(text):
 
 def comment_verdict(issue, verdict, comment):
     issue.add_comment(comment)
-    if not issue.is_accepted():
+    if not issue.is_status_accepted():
         if verdict:
             issue.set_status_verification()
         else:

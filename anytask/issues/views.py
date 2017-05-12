@@ -93,7 +93,7 @@ def contest_rejudge(issue):
     sent = contest_submission.upload_contest(compiler_id=old_contest_submission.compiler_id)
     if sent:
         event.value = u"<p>{0}</p>".format(_(u'otpravleno_v_kontest'))
-        if not issue.is_accepted():
+        if not issue.is_status_accepted():
             issue.set_status_auto_verification()
     else:
         event.value = u"<p>{1}('{0}').</p>".format(
