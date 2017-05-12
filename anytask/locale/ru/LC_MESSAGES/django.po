@@ -34,7 +34,7 @@ msgstr "Для активации аккаунта на Anytask перейдит
 msgid "administratoru"
 msgstr "администратору"
 
-#: templates/base.html:686
+#: templates/base.html:678
 msgid "adminka"
 msgstr "Админка"
 
@@ -80,7 +80,7 @@ msgstr "авг."
 msgid "bally_ne_uchityvautsia"
 msgstr "Баллы за задачу, зачтенную после дедлайна, не учитываются"
 
-#: templates/base.html:667
+#: templates/base.html:659
 msgid "base_est_novye_soobshenija"
 msgstr "Есть новые сообщения"
 
@@ -88,7 +88,7 @@ msgstr "Есть новые сообщения"
 msgid "bez_tipa"
 msgstr "Без типа"
 
-#: templates/base.html:732
+#: templates/base.html:724
 msgid "blog"
 msgstr "Блог"
 
@@ -839,7 +839,7 @@ msgstr "Обязательное поле"
 msgid "obnovit"
 msgstr "Обновить"
 
-#: courses/templates/courses/settings.html:225
+#: courses/templates/courses/settings.html:234
 msgid "obnovit_dannie_zadach"
 msgstr "Обновить название, максимальный балл, дату сдачи и условия задач"
 
@@ -1098,12 +1098,12 @@ msgstr "переменные"
 msgid "pereprivjazat_tolko_svoj_profil"
 msgstr "Перепривязать можно только профиль, который сейчас привязан."
 
-#: courses/templates/courses/settings.html:218
+#: courses/templates/courses/settings.html:227
 #: issues/templates/issues/info.html:64
 msgid "peresudit"
 msgstr "Пересудить"
 
-#: courses/templates/courses/settings.html:204
+#: courses/templates/courses/settings.html:213
 msgid "peresudit_reshenija_studentov"
 msgstr "Пересудить решения студентов"
 
@@ -1126,7 +1126,7 @@ msgstr "Перейти в курс"
 msgid "pervaja"
 msgstr "Первая"
 
-#: templates/base.html:747
+#: templates/base.html:739
 msgid "pishite_nam"
 msgstr "Пишите нам на"
 
@@ -1287,7 +1287,7 @@ msgstr "Привязать профиль Яндекс.Контеста"
 msgid "privjazka_akkauntov"
 msgstr "Привязка аккаунтов"
 
-#: templates/base.html:682 users/views.py:406 users/templates/my_tasks.html:93
+#: templates/base.html:674 users/views.py:406 users/templates/my_tasks.html:93
 #: users/templates/status_history.html:29 users/templates/user_courses.html:28
 #: users/templates/user_profile.html:18 users/templates/user_settings.html:43
 msgid "profil"
@@ -1336,7 +1336,7 @@ msgstr "проверяющим"
 msgid "pustaja_tablica"
 msgstr "Пустая таблица"
 
-#: courses/templates/courses/settings.html:256
+#: courses/templates/courses/settings.html:265
 msgid "rasshirenija_fajlov"
 msgstr "Расширения файлов"
 
@@ -1636,6 +1636,10 @@ msgstr "Страница семинара"
 msgid "student"
 msgstr "Студент"
 
+#: courses/templates/courses/settings.html:208
+msgid "student_vidit_nomer"
+msgstr "Студент может видеть номер отправки в соревнование"
+
 #: issues/management/commands/send_notifications.py:82
 msgid "studentom"
 msgstr "студентом"
@@ -1692,9 +1696,8 @@ msgstr "Тип курса"
 msgid "tip_zadachi"
 msgstr "Тип задачи"
 
-#: users/templates/user_settings.html:193
 msgid "title_otvjazat_svoj_profil"
-msgstr "Для того, чтобы отвязать свой профиль обратитесь к администратору."
+msgstr ""
 
 #: templates/registration/registration_form.html:76
 #: templates/registration/registration_form.html:80
@@ -1980,7 +1983,7 @@ msgstr "Вычисление..."
 msgid "vydelit_vse"
 msgstr "Выделить всё."
 
-#: templates/base.html:691
+#: templates/base.html:683
 msgid "vyjti"
 msgstr "Выйти"
 
@@ -2082,7 +2085,7 @@ msgstr "записей из таблицы"
 msgid "zaregistrirovatsja"
 msgstr "Зарегистрироваться"
 
-#: templates/base.html:701
+#: templates/base.html:693
 msgid "zaregistrirujtes"
 msgstr "Зарегистрируйтесь"
 
