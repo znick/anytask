@@ -214,16 +214,15 @@ def task_create_ot_edit(request, course, task_id=None):
     if 'accepted_after_contest_ok' in request.POST and contest_integrated:
         accepted_after_contest_ok = True
 
-    not_score_deadline = False
-    if 'not_score_deadline' in request.POST and contest_integrated:
-        not_score_deadline = True
+    score_after_deadline = True
+    if 'score_after_deadline' in request.POST and contest_integrated:
+        score_after_deadline = False
 
     hidden_task = False
     if 'hidden_task' in request.POST:
         hidden_task = True
 
     task_text = request.POST['task_text'].strip()
-
 
     if task_id:
         task = get_object_or_404(Task, id=task_id)
@@ -259,7 +258,7 @@ def task_create_ot_edit(request, course, task_id=None):
 
     task.accepted_after_contest_ok = accepted_after_contest_ok
 
-    task.not_score_deadline = not_score_deadline
+    task.score_after_deadline = score_after_deadline
 
     task.is_hidden = hidden_task
 
@@ -398,9 +397,9 @@ def contest_task_import(request):
     if 'accepted_after_contest_ok' in request.POST:
         accepted_after_contest_ok = True
 
-    not_score_deadline = False
-    if 'not_score_deadline' in request.POST:
-        not_score_deadline = True
+    score_after_deadline = True
+    if 'score_after_deadline' in request.POST:
+        score_after_deadline = False
 
     hidden_task = False
     if 'hidden_task' in request.POST:
@@ -507,7 +506,7 @@ def contest_task_import(request):
 
         real_task.accepted_after_contest_ok = accepted_after_contest_ok
 
-        real_task.not_score_deadline = not_score_deadline
+        real_task.score_after_deadline = score_after_deadline
 
         real_task.is_hidden = hidden_task
         real_task.updated_by = request.user

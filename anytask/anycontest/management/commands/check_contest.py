@@ -50,7 +50,7 @@ class Command(BaseCommand):
                         deadline_status = task.course.issue_status_system.statuses.filter(tag='accepted_deadline')
                         if issue.task.deadline_time and issue.task.deadline_time < datetime.now() and deadline_status:
                             issue.set_status_accepted_deadline()
-                            if issue.task.not_score_deadline:
+                            if not issue.task.score_after_deadline:
                                 comment += '\n' + _(u'bally_ne_uchityvautsia')
                         else:
                             issue.set_status_accepted()

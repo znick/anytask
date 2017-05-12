@@ -165,12 +165,12 @@
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_not_score_deadline">
+                        <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_score_after_deadline">
                             {% trans "uchityvat_bally_dedlajn" %}</label>
                         <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7" style="padding-top: 5px">
-                            <input type="checkbox" name="not_score_deadline"
-                                   id="task_edit_not_score_deadline"
-                                   {% if task.not_score_deadline%}checked{% endif %}>
+                            <input type="checkbox" name="score_after_deadline"
+                                   id="task_edit_score_after_deadline"
+                                   {% if task.score_after_deadline %}checked{% endif %}>
                         </div>
                     </div>
                 {% endif %}
