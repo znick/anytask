@@ -5,7 +5,7 @@ import shutil
 
 from contextlib import contextmanager
 
-DEVNULL = open("/dev/null")
+DEVNULL = open(os.devnull, "w")
 
 TAR = ["tar", "xf"]
 _7Z = ["7z", "x"]
