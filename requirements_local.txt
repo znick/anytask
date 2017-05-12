@@ -15,6 +15,7 @@ pycrypto
 python-magic
 django-filemanager
 requests==2.10.0
+flake8
 flup
 unidecode
 django-jfu==1.0.7

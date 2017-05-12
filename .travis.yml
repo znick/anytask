@@ -12,3 +12,4 @@ script:
   - git clone https://github.com/gebetix/repos
   - cd ~/build/znick/anytask/anytask
   - python manage.py test --settings=settings_testing
+  - flake8
