@@ -178,7 +178,7 @@ def activate(request, activation_key):
 
         contest_id = contest_register(user)
         if contest_id:
-            return HttpResponsePermanentRedirect(settings.CONTEST_URL + str(contest_id))
+            return HttpResponsePermanentRedirect(settings.CONTEST_URL + 'contest/' + str(contest_id))
         else:
             context['info_text'] = _(u'oshibka_registracii_v_contest')
     else:

@@ -28,7 +28,6 @@ class ViewsTest(TestCase):
 
         self.contest_id = '1'
 
-
     @patch('admission.views.contest_register')
     def test_register_activate(self, mock_contest_register):
         client = self.client
@@ -124,7 +123,6 @@ class ViewsTest(TestCase):
         self.assertEqual(user.first_name, test_data['first_name'])
 
 
-
         user_profile = user.get_profile()
         self.assertEqual(user_profile.middle_name, test_data['middle_name'])
         self.assertEqual(user_profile.birth_date, test_birth_date)
@@ -172,7 +170,7 @@ class ViewsTest(TestCase):
         response = client.get(reverse('admission.views.activate',
                                       kwargs={'activation_key': activation_key}))
         self.assertEqual(response.status_code, 301)
-        self.assertEqual(response['Location'], settings.CONTEST_URL + self.contest_id)
+        self.assertEqual(response['Location'], settings.CONTEST_URL + 'contest/' + self.contest_id)
 
         user = User.objects.get(id=user.id)
         self.assertTrue(user.is_active)
