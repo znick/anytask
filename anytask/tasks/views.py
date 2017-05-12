@@ -72,6 +72,7 @@ def task_import_page(request, course_id):
     seminar_tasks = Task.objects.filter(type=Task().TYPE_SEMINAR).filter(course=course)
 
     context = {
+        'is_create': True,
         'course': course,
         'rb_integrated': course.rb_integrated,
         'school': schools[0] if schools else '',
@@ -93,6 +94,7 @@ def contest_import_page(request, course_id):
     seminar_tasks = Task.objects.filter(type=Task().TYPE_SEMINAR).filter(course=course)
 
     context = {
+        'is_create': True,
         'course': course,
         'rb_integrated': course.rb_integrated,
         'seminar_tasks': seminar_tasks,
@@ -215,7 +217,7 @@ def task_create_ot_edit(request, course, task_id=None):
         accepted_after_contest_ok = True
 
     score_after_deadline = True
-    if 'score_after_deadline' in request.POST and contest_integrated:
+    if 'score_after_deadline' not in request.POST and contest_integrated:
         score_after_deadline = False
 
     hidden_task = False
@@ -398,7 +400,7 @@ def contest_task_import(request):
         accepted_after_contest_ok = True
 
     score_after_deadline = True
-    if 'score_after_deadline' in request.POST:
+    if 'score_after_deadline' not in request.POST:
         score_after_deadline = False
 
     hidden_task = False
