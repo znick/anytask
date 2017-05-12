@@ -350,8 +350,8 @@ class Issue(models.Model):
                     self.update_time = datetime.now()
                     value = u'<div class="issue-page-comment not-sanitize">' + value['comment'] + u'</div>'
 
-                if not self.is_status_verification() and not self.is_status_accepted():
-                    if author == self.student and self.is_status_need_info() and sent:
+                if not self.is_status_auto_verification() and not self.is_status_accepted():
+                    if author == self.student and not self.is_status_need_info() and sent:
                         self.set_status_verification()
                     if author == self.responsible:
                         if self.is_status_need_info():
