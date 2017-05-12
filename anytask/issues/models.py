@@ -244,26 +244,23 @@ class Issue(models.Model):
     def set_status_accepted(self, author=None):
         self.set_status_by_tag(IssueStatus.STATUS_ACCEPTED, author)
 
-    def set_status_accepted_deadline(self):
-        self.set_status_by_tag(IssueStatus.STATUS_ACCEPTED_DEADLINE)
+    def set_status_accepted_deadline(self, author=None):
+        self.set_status_by_tag(IssueStatus.STATUS_ACCEPTED_DEADLINE, author)
 
-    def set_status_need_info(self):
-        self.set_status_by_tag(IssueStatus.STATUS_NEED_INFO)
+    def set_status_need_info(self, author=None):
+        self.set_status_by_tag(IssueStatus.STATUS_NEED_INFO, author)
 
-    def set_status_rework(self):
-        self.set_status_by_tag(IssueStatus.STATUS_REWORK)
+    def set_status_rework(self, author=None):
+        self.set_status_by_tag(IssueStatus.STATUS_REWORK, author)
 
-    def set_status_auto_verification(self):
-        self.set_status_by_tag(IssueStatus.STATUS_AUTO_VERIFICATION)
+    def set_status_auto_verification(self, author=None):
+        self.set_status_by_tag(IssueStatus.STATUS_AUTO_VERIFICATION, author)
 
-    def set_status_new(self):
-        self.set_status_by_tag(IssueStatus.STATUS_NEW)
+    def set_status_verification(self, author=None):
+        self.set_status_by_tag(IssueStatus.STATUS_VERIFICATION, author)
 
-    def set_status_verification(self):
-        self.set_status_by_tag(IssueStatus.STATUS_VERIFICATION)
-
-    def set_status_seminar(self):
-        self.set_status_by_tag(IssueStatus.STATUS_SEMINAR)
+    def set_status_seminar(self, author=None):
+        self.set_status_by_tag(IssueStatus.STATUS_SEMINAR, author)
 
     def set_byname(self, name, value, author=None):
         field = IssueField.objects.get(name=name)
