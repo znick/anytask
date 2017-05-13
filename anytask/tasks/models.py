@@ -252,6 +252,7 @@ class TaskTaken(models.Model):
 
     @property
     def score(self):
+        self.update_status()
         if not self.issue:
             return 0
         return self.issue.mark
