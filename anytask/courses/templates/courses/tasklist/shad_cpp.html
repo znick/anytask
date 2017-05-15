@@ -44,7 +44,7 @@
                             <th align="center" class="{% if task.type == task.TYPE_SIMPLE and user_is_teacher %}dom-live-number{% else %}dom-number{% endif %} word-wrap">
                                 <a class="{% if task.is_hidden %}hidden-task-title{% endif %}" href="javascript:get_task_modal({{task.id}}, '{{task.title|escapejs}}',
                     '{{task.task_text|safe|escapejs}}',
-                     {% if task.deadline_time %} '{{task.deadline_time|date:'d-m-Y H:i'}}' {% else %}''{% endif %})" data-toggle="popover-help" data-trigger="hover" data-placement="bottom" data-content="{{task.title}}">
+                     {% if task.deadline_time %} '{{task.deadline_time|date:'d-m-Y H:i'}}' {% else %}''{% endif %})" data-toggle="popover-help" data-trigger="hover" data-placement="bottom" data-content="{{task.title}} ">
                                     {% if task.short_title %}{{ task.short_title }}{% else %}{{ task.title }}{% endif %}
                                 </a>
                                 {% if task.type != task.TYPE_SEMINAR and task.type != task.TYPE_MATERIAL %}

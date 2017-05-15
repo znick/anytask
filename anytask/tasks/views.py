@@ -1,28 +1,26 @@
 # -*- coding: utf-8 -*-
 
-from django.shortcuts import render_to_response, get_object_or_404, redirect
-from tasks.models import Task
-from courses.models import Course
-from groups.models import Group
-from issues.models import Issue
-from issues.model_issue_status import IssueStatus
-from django.template import RequestContext
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
-from django.core.exceptions import ObjectDoesNotExist
-from django.core.urlresolvers import reverse
-from django.contrib.auth.models import User
-from tasks.models import TaskTaken, TaskGroupRelations
-from django.contrib.auth.decorators import login_required
-from django.db.models import Q
-from anycontest.common import get_contest_info, FakeResponse
-from django.conf import settings
-from django.utils.translation import ugettext as _
-
 import datetime
+import json
+
 import requests
 import reversion
 
-import json
+from django.conf import settings
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from django.db.models import Q
+from django.http import HttpResponse, HttpResponseForbidden
+from django.shortcuts import render_to_response, get_object_or_404
+from django.template import RequestContext
+from django.utils.translation import ugettext as _
+
+from anycontest.common import get_contest_info, FakeResponse
+from courses.models import Course
+from groups.models import Group
+from issues.model_issue_status import IssueStatus
+from issues.models import Issue
+from tasks.models import Task
 
 
 def merge_two_dicts(x, y):
@@ -147,7 +145,7 @@ def task_edit_page(request, task_id):
     return render_to_response('task_edit.html', context, context_instance=RequestContext(request))
 
 
-def get_task_attrs(request):
+def get_task_params(request):
     user = request.user
     task_title = request.POST.get('task_title', '').strip()
     task_short_title = request.POST.get('task_short_title', task_title).strip()
@@ -168,9 +166,7 @@ def get_task_attrs(request):
         task_deadline = datetime.datetime.strptime(task_deadline, '%d-%m-%Y %H:%M')
 
     changed_task = 'changed_task' in request.POST
-    task_type = request.POST['task_type'].strip()
-    if task_type not in dict(Task().TASK_TYPE_CHOICES):
-        task_type = Task().TYPE_FULL
+    task_type = request.POST.get('task_type', Task().TYPE_FULL).strip()
 
     contest_integrated = False
     contest_id = 0
@@ -187,7 +183,7 @@ def get_task_attrs(request):
 
     hidden_task = 'hidden_task' in request.POST
 
-    task_text = request.POST['task_text'].strip()
+    task_text = request.POST.get('task_text', '').strip()
 
     return {'attrs': {
         'updated_by': user,
@@ -215,119 +211,27 @@ def get_task_attrs(request):
 
 
 def task_create_ot_edit(request, course, task_id=None):
-    user = request.user
-    task_title = request.POST['task_title'].strip()
-    task_short_title = task_title
-    if 'task_short_title' in request.POST:
-        task_short_title = request.POST['task_short_title'].strip()
-
-    if 'max_score' in request.POST:
-        max_score = request.POST['max_score']
-        if max_score:
-            max_score = int(max_score)
-        else:
-            max_score = 0
-    else:
-        max_score = 0
-
-    task_groups = Group.objects.filter(id__in=dict(request.POST)['task_group_id[]'])
-
-    parent_id = request.POST['parent_id']
-    if not parent_id or parent_id == 'null':
-        parent_id = None
-    else:
-        parent_id = int(parent_id)
-    parent = None
-    if parent_id is not None:
-        parent = get_object_or_404(Task, id = parent_id)
-
-    children = None
-    if 'children[]' in request.POST:
-        children = request.POST.getlist('children[]')
-        if not children or children == 'null':
-            children = None
-        else:
-            children = children
-
-    if 'deadline' in request.POST:
-        task_deadline = request.POST['deadline']
-        if task_deadline:
-            task_deadline = datetime.datetime.strptime(task_deadline, '%d-%m-%Y %H:%M')
-        else:
-            task_deadline = None
-    else:
-        task_deadline = None
-    changed_task = False
-    if 'changed_task' in request.POST:
-        changed_task = True
-
-    task_type = request.POST['task_type'].strip()
-
-    contest_integrated = False
-    contest_id = 0
-    problem_id = None
-    simple_task_types = [Task().TYPE_SIMPLE, Task().TYPE_MATERIAL]
-    if 'contest_integrated' in request.POST and task_type not in simple_task_types:
-        contest_integrated = True
-        contest_id = int(request.POST['contest_id'])
-        problem_id = request.POST['problem_id'].strip()
-
-    rb_integrated = False
-    if 'rb_integrated' in request.POST and task_type not in simple_task_types:
-        rb_integrated = True
-
-    one_file_upload = False
-    if 'one_file_upload' in request.POST and rb_integrated:
-        one_file_upload = True
-
-    accepted_after_contest_ok = False
-    if 'accepted_after_contest_ok' in request.POST and contest_integrated:
-        accepted_after_contest_ok = True
-
-    hidden_task = False
-    if 'hidden_task' in request.POST:
-        hidden_task = True
-
-    task_text = request.POST['task_text'].strip()
-
-
     if task_id:
         task = get_object_or_404(Task, id=task_id)
     else:
         task = Task()
         task.course = course
 
-    task.title = task_title
-    task.short_title = task_short_title
-    task.score_max = max_score
+    params = get_task_params(request)
 
-    task.parent_task = parent
+    for attr_name, attr_value in params['attrs'].items():
+        setattr(task, attr_name, attr_value)
 
-    task.deadline_time = task_deadline
-    if changed_task:
-        task.send_to_users = True
-        task.sended_notify = False
-    else:
-        task.send_to_users = False
+    if task.parent_task:
+        if task.parent_task.is_hidden:
+            task.is_hidden = True
+    for subtask in Task.objects.filter(parent_task=task):
+        subtask.is_hidden = params['attrs']['is_hidden']
+        subtask.save()
 
-    if task_type in dict(task.TASK_TYPE_CHOICES):
-        task.type = task_type
-    else:
-        task.type = task.TYPE_FULL
+    task.save()
 
-    task.contest_integrated = contest_integrated
-    if contest_integrated:
-        task.contest_id = contest_id
-        task.problem_id = problem_id
-
-    task.rb_integrated = rb_integrated
-
-    task.one_file_upload = one_file_upload
-
-    task.accepted_after_contest_ok = accepted_after_contest_ok
-
-    task.is_hidden = hidden_task
-
+    children = params['children']
     for course_task in Task.objects.filter(course=course):
         if children and course_task.id in map(int, children):
             course_task.parent_task = task
@@ -336,18 +240,7 @@ def task_create_ot_edit(request, course, task_id=None):
             course_task.parent_task = None
             course_task.save()
 
-    if task.parent_task:
-        if task.parent_task.is_hidden:
-            task.is_hidden = True
-    for subtask in Task.objects.filter(parent_task=task):
-        subtask.is_hidden = hidden_task
-        subtask.save()
-
-    task.task_text = task_text
-
-    task.updated_by = user
-    task.save()
-
+    task_groups = params['groups']
     task.groups = task_groups
     task.set_position_in_new_group(task_groups)
 
@@ -359,7 +252,7 @@ def task_create_ot_edit(request, course, task_id=None):
             issue.mark = sum([x.mark for x in Issue.objects.filter(task__parent_task=task, student_id=student.id).all()])
             issue.save()
 
-    reversion.set_user(user)
+    reversion.set_user(request.user)
     if task_id:
         reversion.set_comment("Edit task")
     else:
@@ -431,61 +324,8 @@ def contest_task_import(request):
 
     contest_id = int(request.POST['contest_id_for_task'])
 
-    task_short_title = ''
-    if 'task_short_title' in request.POST:
-        task_short_title = request.POST['task_short_title'].strip()
-
-    if 'max_score' in request.POST:
-        max_score = int(request.POST['max_score'])
-    else:
-        max_score = None
-
-    task_groups = Group.objects.filter(id__in=dict(request.POST)['task_group_id[]'])
-
-    if 'deadline' in request.POST:
-        task_deadline = request.POST['deadline']
-        if task_deadline:
-            task_deadline = datetime.datetime.strptime(task_deadline, '%d-%m-%Y %H:%M')
-        else:
-            task_deadline = None
-    else:
-        task_deadline = None
-
-    changed_task = False
-    if 'changed_task' in request.POST:
-        changed_task = True
-
-    rb_integrated = False
-    if 'rb_integrated' in request.POST:
-        rb_integrated = True
-
-    one_file_upload = False
-    if 'one_file_upload' in request.POST and rb_integrated:
-        one_file_upload = True
-
-    accepted_after_contest_ok = False
-    if 'accepted_after_contest_ok' in request.POST:
-        accepted_after_contest_ok = True
-
-    hidden_task = False
-    if 'hidden_task' in request.POST:
-        hidden_task = True
-
-    parent_id = request.POST['parent_id']
-    if not parent_id or parent_id == 'null':
-        parent_id = None
-    else:
-        parent_id = int(parent_id)
-    parent = None
-    if parent_id is not None:
-        parent = get_object_or_404(Task, id = parent_id)
-
-    if 'task_text' in request.POST:
-        task_text = request.POST['task_text'].strip()
-    else:
-        task_text = ''
-
     tasks = []
+    common_params = get_task_params(request)
 
     got_info, contest_info = get_contest_info(contest_id)
     problem_req = FakeResponse()
@@ -505,18 +345,24 @@ def contest_task_import(request):
         contest_problems = dict(request.POST)['contest_problems[]']
         for problem in contest_info['problems']:
             if problem['problemId'] in contest_problems:
-                tasks.append({})
-                tasks[-1]['task_title'] = problem['problemTitle']
-                tasks[-1]['task_text'] = problem['statement']
-                tasks[-1]['problem_id'] = problem['alias']
-                if problems_with_score:
-                    tasks[-1]['max_score'] = problems_with_score[problem['problemId']]
-                else:
-                    tasks[-1]['max_score'] = None
-                if problems_with_end:
-                    tasks[-1]['deadline_time'] = problems_with_end[problem['problemId']]
-                else:
-                    tasks[-1]['deadline_time'] = None
+                current_params = common_params['attrs'].copy()
+                current_params['title'] = problem['problemTitle']
+                current_params['task_text'] = current_params['task_text'] or \
+                                              prettify_contest_task_text(problem['statement'])
+                current_params['short_title'] = current_params['short_title'] or problem['alias']
+
+                if not current_params['score_max'] and problems_with_score:
+                    current_params['score_max'] = problems_with_score[problem['problemId']] or 0
+
+                if not current_params['deadline_time'] and problems_with_end:
+                    deadline = problems_with_end[problem['problemId']]
+                    if deadline:
+                        current_params['deadline_time'] = datetime.datetime.strptime(deadline, '%Y-%m-%dT%H:%M')
+
+                current_params['contest_integrated'] = True
+                current_params['contest_id'] = contest_id
+                current_params['problem_id'] = problem['alias']
+                tasks.append(current_params)
 
     elif "You're not allowed to view this contest." in contest_info:
         return HttpResponse(json.dumps({'is_error': True,
@@ -531,52 +377,11 @@ def contest_task_import(request):
     for task in tasks:
         real_task = Task()
         real_task.course = course
-        real_task.parent_task = parent
-
-        if changed_task:
-            real_task.send_to_users = True
-            real_task.sended_notify = False
-        else:
-            real_task.send_to_users = False
-
-        if task_deadline:
-            real_task.deadline_time = task_deadline
-        elif task['deadline_time']:
-            real_task.deadline_time = datetime.datetime.strptime(task['deadline_time'], '%Y-%m-%dT%H:%M')
-        else:
-            real_task.deadline_time = None
-
-        real_task.title = task['task_title']
-        real_task.short_title = task_short_title or task['problem_id']
-
-        if task_text:
-            real_task.task_text = task_text
-        elif task['task_text']:
-            real_task.task_text = prettify_contest_task_text(task['task_text'])
-        else:
-            real_task.task_text = ''
-
-        if max_score:
-            real_task.score_max = max_score
-        elif task['max_score']:
-            real_task.score_max = task['max_score']
-        else:
-            real_task.score_max = 0
-
-        real_task.contest_integrated = True
-        real_task.contest_id = contest_id
-        real_task.problem_id = task['problem_id']
-
-        real_task.rb_integrated = rb_integrated
-
-        real_task.one_file_upload = one_file_upload
-
-        real_task.accepted_after_contest_ok = accepted_after_contest_ok
-
-        real_task.is_hidden = hidden_task
-        real_task.updated_by = request.user
+        for attr_name, attr_value in task.items():
+            setattr(real_task, attr_name, attr_value)
         real_task.save()
 
+        task_groups = common_params['groups']
         real_task.groups = task_groups
         real_task.set_position_in_new_group(task_groups)
 
