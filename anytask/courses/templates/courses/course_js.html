@@ -809,7 +809,7 @@
         $('#modal_comment').modal('show');
     }
 
-    function get_task_modal(task_id, task_title, task_text_to_show, deadline) {
+    function get_task_modal(task_id, task_title, task_text_to_show, deadline, is_editable) {
         $('#modal_header_task_descr').html(task_title);
         $('#modal_body_task_descr').html(task_text_to_show);
 
@@ -824,7 +824,11 @@
             $('#modal_header_deadline_time').empty();
         }
         $('#modal_task_desc_edit').hide();
-        $('#modal_task_descr_edit_button').attr("href", "/task/edit/" + task_id);
+
+        if (is_editable)
+            $('#modal_task_descr_edit_button').attr("href", "/task/edit/" + task_id).show();
+        else
+            $('#modal_task_descr_edit_button').attr("href", "").hide();
         $('#modal_task_description').modal('show');
     }
 

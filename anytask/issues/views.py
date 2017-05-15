@@ -124,8 +124,9 @@ def contest_rejudge(issue):
 
 @login_required
 def issue_page(request, issue_id):
+    user = request.user
     issue = get_object_or_404(Issue, id=issue_id)
-    if not user_can_read(request.user, issue):
+    if not user_can_read(user, issue):
         raise PermissionDenied
 
     issue_fields = issue.task.course.issue_fields.all()
@@ -145,22 +146,22 @@ def issue_page(request, issue_id):
                     value = form.cleaned_data[field.name]
 
                     if field.name in ['mark','status', 'responsible_name', 'followers_names']:
-                        if not user_is_teacher_or_staff(request.user, issue):
+                        if not user_is_teacher_or_staff(user, issue):
                             raise PermissionDenied
 
                     if 'Me' in request.POST:
                         if field.name == 'responsible_name':
-                            value = request.user
+                            value = user
                         else:
-                            if request.user not in value:
-                                value.append(str(request.user.id))
+                            if user not in value:
+                                value.append(str(user.id))
                     if 'Accepted' in request.POST:
                         if request.POST['Accepted']:
                             issue.set_byname('status',
                                              IssueStatus.objects.get(pk=request.POST['Accepted']),
-                                             request.user)
+                                             user)
                         else:
-                            issue.set_status_by_tag(Issue.STATUS_ACCEPTED, request.user)
+                            issue.set_status_by_tag(Issue.STATUS_ACCEPTED, user)
 
                     if field.name == 'comment':
                         value = {
@@ -170,12 +171,12 @@ def issue_page(request, issue_id):
                         if 'need_info' in request.POST:
                             issue.set_status_by_tag(IssueStatus.STATUS_NEED_INFO)
 
-                    issue.set_field(field, value, request.user)
+                    issue.set_field(field, value, user)
 
                     if 'comment_verdict' in request.POST:
                         issue.set_byname('comment',
                                          {'files': [], 'comment': request.POST['comment_verdict']},
-                                         request.user)
+                                         user)
 
                     return HttpResponseRedirect('')
 
@@ -220,12 +221,13 @@ def issue_page(request, issue_id):
         'events_to_show': events_to_show,
         'first_event_after_deadline': first_event_after_deadline,
         'show_top_alert': show_top_alert,
-        'teacher_or_staff': user_is_teacher_or_staff(request.user, issue),
+        'teacher_or_staff': user_is_teacher_or_staff(user, issue),
         'school': schools[0] if schools else '',
-        'visible_queue': issue.task.course.user_can_see_queue(request.user),
+        'visible_queue': issue.task.course.user_can_see_queue(user),
         'statuses_accepted': statuses_accepted,
         'show_contest_rejudge': show_contest_rejudge,
         'show_contest_rejudge_loading': show_contest_rejudge_loading,
+        'can_edit_task': issue.task.user_has_perm(user, 'view_task_settings')
     }
 
     return render_to_response('issues/issue.html', context, context_instance=RequestContext(request))

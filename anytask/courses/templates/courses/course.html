@@ -5,6 +5,7 @@
 {% load dict_func %}
 {% load task_taken_func %}
 {% load course_func %}
+{% load guardian_tags %}
 
 {% block title %}{% if seminar %}{{ seminar.title }} | {% endif %}{{ course.name }} | {{ course.year }}{% endblock %}
 
@@ -28,23 +29,29 @@
 {% endblock breadcrumbs %}
 
 {% block navbar %}
+    {% get_obj_perms user for course as "course_perms" %}
+
     <ul class="nav navbar-nav">
         <li class="nav-item active">
             <a class="nav-link" href="{{ course.get_absolute_url }}"> {% if not seminar %}{% trans "stranica_kursa" %}{% else %}
                 {% trans "stranica_seminara" %}{% endif %}</a>
         </li>
-        <li class="nav-item">
-            <a class="nav-link"
-               href="{{ course.get_absolute_url }}/gradebook/{% if seminar %}seminar/{{ seminar.id }}{% endif %}">{% trans "obshaja_vedomost" %}</a>
-        </li>
+        {% if groups_with_gradebook %}
+            <li class="nav-item">
+                <a class="nav-link"
+                   href="{{ course.get_absolute_url }}/gradebook/{% if seminar %}seminar/{{ seminar.id }}{% endif %}">{% trans "obshaja_vedomost" %}</a>
+            </li>
+        {% endif %}
         {% if not seminar %}
             {% if user_is_teacher %}
                 <li class="nav-item">
                     <a class="nav-link" href="{{ course.get_absolute_url }}/queue">{% trans "ochered_na_proverku" %}</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url courses.views.course_settings course.id %}">{% trans "nastrojki" %}</a>
-                </li>
+                {% if "change_course_settings" in course_perms %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url courses.views.course_settings course.id %}">{% trans "nastrojki" %}</a>
+                    </li>
+                {% endif %}
             {% endif %}
         {% endif %}
     </ul>
@@ -81,7 +88,7 @@
                         {% endfor %}
                     </p>
                     {% if course.can_edit %}
-                        {% if seminar %}
+                        {% if seminar and seminar in tasks_editable %}
                             <a class="btn btn-secondary btn-sm" href="{% url tasks.views.task_edit_page seminar.id %}">
                                 {% trans "redaktirovat_seminar" %}
                             </a>
@@ -116,8 +123,7 @@
                     <div class="tab-pane fade in" id="course-information-tab" role="tabpanel">
                         <h5 class="card-title">{% if not seminar %}{% trans "opisanie_kursa" %}{% else %}{% trans "opisanie_zanjatija" %}{% endif %}
                             {% if course.can_edit %}
-
-                                {% if seminar %}
+                                {% if seminar and seminar in tasks_editable%}
                                     <a class="btn btn-secondary btn-sm btn-square"
                                        href="{% url tasks.views.task_edit_page seminar.id %}">
                                         <span class="fa fa-pencil"></span>
@@ -143,7 +149,7 @@
                     </div>
                     <div class="tab-pane fade" id="tasks-tab" role="tabpanel">
                         <h5>{% if not user_is_teacher %}{% trans "zadachi" %}{% else %}{% trans "spisok_grupp_i_zadach" %}{% endif %}
-                            {% if course.can_edit %}
+                            {% if can_add_task %}
                                 <div class="btn-group pull-xs-right">
                                     <a type="button" class="btn btn-secondary btn-sm"
                                        href="/task/create/{{ course.id }}">{% trans "dobavit_zadachu" %}</a>
@@ -240,9 +246,13 @@
                                                     {% endif %}
                                                 </h6>
                                             </div>
-                                            <div style="width: 20%"><a style="width: 100%"
-                                                                       class="btn btn-secondary btn-sm"
-                                                                       href="{{ course.get_absolute_url }}/gradebook/group/{{ task_item.grouper.id }}">{% trans "vedomost" %}</a>
+                                            <div style="width: 20%">
+                                                {% if task_item.grouper in groups_with_gradebook %}
+                                                    <a style="width: 100%"
+                                                       class="btn btn-secondary btn-sm"
+                                                       href="{{ course.get_absolute_url }}/gradebook/group/{{ task_item.grouper.id }}">{% trans "vedomost" %}</a>
+                                                {% endif %}
+
                                             </div>
                                         </div>
                                         <div id="collapse_group_{{ task_item.grouper.id }}" class="collapse">
@@ -254,10 +264,12 @@
                                                                 {{ task.task.title }}
                                                             </div>
                                                             <div style="width: 10%;">
-                                                                <a class="btn btn-secondary btn-sm btn-square"
-                                                                   href="{% url tasks.views.task_edit_page task.task.id %}">
-                                                                    <span class="fa fa-pencil"></span>
-                                                                </a>
+                                                                {% if task.task in tasks_editable %}
+                                                                    <a class="btn btn-secondary btn-sm btn-square"
+                                                                       href="{% url tasks.views.task_edit_page task.task.id %}">
+                                                                        <span class="fa fa-pencil"></span>
+                                                                    </a>
+                                                                {% endif %}
                                                             </div>
                                                             <div style="width: 10%"><span
                                                                     class="label label-inverse">{{ task.task.score_max }}</span>
@@ -346,9 +358,12 @@
                                                         {{ task_item.grouper|get_default_teacher:course }}) {% endif %}
                                                 </h6>
                                             </div>
-                                            <div style="width: 20%"><a style="width: 100%"
-                                                                       class="btn btn-secondary btn-sm"
-                                                                       href="{{ course.get_absolute_url }}/gradebook/{{ seminar.id }}/{{ task_item.grouper.id }}">{% trans "vedomost" %}</a>
+                                            <div style="width: 20%">
+                                                {% if task_item.grouper in groups_with_gradebook %}
+                                                    <a style="width: 100%"
+                                                       class="btn btn-secondary btn-sm"
+                                                       href="{{ course.get_absolute_url }}/gradebook/{{ seminar.id }}/{{ task_item.grouper.id }}">{% trans "vedomost" %}</a>
+                                                {% endif %}
                                             </div>
                                         </div>
                                         <div id="collapse_group_{{ task_item.grouper.id }}" class="collapse">
@@ -359,10 +374,12 @@
                                                             {{ task.task.title }}
                                                         </div>
                                                         <div style="width: 10%;">
-                                                            <a class="btn btn-secondary btn-sm btn-square"
-                                                               href="{% url tasks.views.task_edit_page task.task.id %}">
-                                                                <span class="fa fa-pencil"></span>
-                                                            </a>
+                                                            {% if task.task in tasks_editable %}
+                                                                <a class="btn btn-secondary btn-sm btn-square"
+                                                                   href="{% url tasks.views.task_edit_page task.task.id %}">
+                                                                    <span class="fa fa-pencil"></span>
+                                                                </a>
+                                                            {% endif %}
                                                         </div>
                                                         <div style="width: 10%"><span
                                                                 class="label label-inverse">{{ task.task.score_max }}</span>

@@ -1,0 +1,76 @@
+#nav_schools li.nav-item {
+    cursor: pointer;
+}
+
+.card-header {
+    background-color: inherit;
+}
+
+.btns-managment {
+    padding-bottom: 1rem;
+}
+
+.smooth {
+    transition: all .2s ease-in-out;
+}
+
+.loading-table-img {
+    text-align: center
+}
+
+.loading-table-img span.fa {
+    opacity: 0.2;
+    filter: alpha(opacity=20);
+    color: #000;
+}
+
+.table-container {
+    display: none;
+}
+
+.table-roles {
+    width: 100%
+}
+
+.table-roles th {
+    white-space: nowrap;
+}
+
+.table-roles td,
+.table-roles th {
+    vertical-align: middle;
+}
+
+.table-roles td.centered,
+.table-roles th.centered {
+    text-align: center;
+}
+
+.btn-delete-role,
+.btn-edit-role {
+    color: #777;
+    line-height: inherit;
+    cursor: pointer;
+}
+
+.btn-edit-role:hover {
+    color: #333;
+}
+
+.btn-delete-role:hover {
+    color: #d9534f;
+}
+
+div.controls input,
+div.controls .input-group,
+div.controls .multiselect-dropdown {
+    margin-bottom: 1.2rem;
+}
+
+small.text-help .error {
+    margin: -1.2rem 0 0 0;
+}
+
+#modal_role_edit_form .form-group.last-child {
+    margin-bottom: 0;
+}

@@ -1,0 +1,156 @@
+#nav_schools li.nav-item {
+    cursor: pointer;
+}
+
+.card-header {
+    background-color: inherit;
+}
+
+.loading-table-img {
+    text-align: center
+}
+
+.loading-table-img span.fa {
+    opacity: 0.2;
+    filter: alpha(opacity=20);
+    color: #000;
+}
+
+.table-container {
+    display: none;
+}
+
+.table-users {
+    width: 100%
+}
+
+.table-users th {
+    white-space: nowrap;
+}
+
+.table-users td,
+.table-users th,
+.table-roles td,
+.table-roles th {
+    vertical-align: middle;
+}
+
+.table-users td.centered,
+.table-users th.centered,
+.table-roles td.centered,
+.table-roles th.centered {
+    text-align: center;
+}
+
+.table-link {
+    color: #373a3c;
+    cursor: pointer;
+}
+
+.table-link:hover {
+    color: #014c8c;
+}
+
+.table-users th select,
+.table-users th input {
+    font-weight: normal;
+}
+
+.table-users .search {
+    margin-top: .375rem;
+}
+
+.table-link.dropdown-toggle {
+    padding: 0;
+    border: none;
+}
+
+.table-link.dropdown-toggle .fa {
+    line-height: 1;
+}
+
+.table-link.dropdown-toggle::after {
+    margin: 0;
+}
+
+.table-users .dropdown-item {
+    width: auto;
+}
+
+#modal_nav_role {
+    padding-bottom: 1.25rem;
+}
+
+.loading {
+    text-align: center;
+}
+
+#modal_new_role .multiselect-container label {
+    width: 100%;
+}
+
+.btn-table {
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.table-roles td.has-danger button {
+    color: #d9534f;
+    border-color: #d9534f;
+}
+
+.table-roles td label.error {
+    display: none !important;
+}
+
+#modal_roles_accordion div.card-header a.card-link:focus {
+    text-decoration: none;
+}
+
+#modal_roles_accordion div.card-header a.card-link:focus {
+    text-decoration: none;
+}
+
+#modal_roles_accordion div.card-header:focus,
+#modal_roles_accordion div.card-header:hover {
+    cursor: pointer;
+}
+
+#modal_roles_accordion div.card-header:focus a,
+#modal_roles_accordion div.card-header:hover a {
+    color: #014c8c;
+}
+
+#modal_roles_accordion .btn-delete-role {
+    color: #777;
+    line-height: inherit;
+    cursor: pointer;
+}
+
+#modal_roles_accordion .btn-delete-role:focus {
+    outline: none;
+    color: #d9534f;
+}
+
+#modal_roles_accordion .btn-delete-role:hover {
+    color: #d9534f;
+}
+
+.popover {
+    top: 20px !important;
+}
+
+.popover-arrow {
+    top: 20px !important;
+}
+
+.popover-footer {
+    padding: 5px;
+    text-align: right;
+    border-top: 1px solid #e5e5e5;
+}
+
+.popover-footer .btn + .btn {
+    margin-bottom: 0;
+    margin-left: 5px;
+}

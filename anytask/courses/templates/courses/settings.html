@@ -5,6 +5,7 @@
 {% load sanitize_html icon %}
 {% load dict_func %}
 {% load task_taken_func %}
+{% load guardian_tags %}
 
 
 {% block title %}{{ course.name }} | {{ course.year }}{% endblock %}
@@ -26,20 +27,24 @@
 {% endblock scripts %}
 
 {% block navbar %}
+    {% get_obj_perms user for course as "course_perms" %}
+
     <ul class="nav navbar-nav">
         <li class="nav-item">
             <a class="nav-link" href="{{ course.get_absolute_url }}">{% trans "stranica_kursa" %}</a>
         </li>
-        <li class="nav-item">
-            <a class="nav-link"
-               href="{{ course.get_absolute_url }}/gradebook">{% trans "obshaja_vedomost" %}</a>
-        </li>
+        {% if user_can_view_gradebook %}
+            <li class="nav-item">
+                <a class="nav-link"
+                   href="{{ course.get_absolute_url }}/gradebook">{% trans "obshaja_vedomost" %}</a>
+            </li>
+        {% endif %}
         {% if visible_queue %}
             <li class="nav-item">
                 <a class="nav-link" href="{{ course.get_absolute_url }}/queue">{% trans "ochered_na_proverku" %}</a>
             </li>
         {% endif %}
-        {% if user_is_teacher %}
+        {% if "change_course_settings" in course_perms %}
             <li class="nav-item active">
                 <a class="nav-link" href="">{% trans "nastrojki" %}</a>
             </li>

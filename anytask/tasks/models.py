@@ -179,6 +179,9 @@ class Task(models.Model):
                 task_related.deleted = False
             task_related.save()
 
+    def user_has_perm(self, user, perm_codename):
+        return self.groups.filter(id__in=self.course.get_user_groups_by_perm(user, perm_codename)).exists()
+
 
 class TaskLog(models.Model):
     title = models.CharField(max_length=191, db_index=True, null=True, blank=True)

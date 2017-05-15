@@ -84,7 +84,7 @@
                     <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_group">{% trans "gruppa" %}</label>
                     <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
                         <select class="form-control" id='task_group' name="task_group_id[]" multiple="multiple">
-                            {% for group in course.groups.all %}
+                            {% for group in groups %}
                                 <option value="{{ group.id }}" selected>{{ group.name }}</option>
                             {% endfor %}
                         </select>

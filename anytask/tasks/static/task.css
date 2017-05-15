@@ -19,6 +19,11 @@ span.input-group-addon {
     background-color: #eceeef;
 }
 
+.task_datetime[disabled="disabled"] input,
+.task_datetime[disabled="disabled"] span {
+    cursor: not-allowed !important;
+}
+
 .help-button {
     opacity: 0.2;
     filter: alpha(opacity=20);

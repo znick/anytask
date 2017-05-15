@@ -145,7 +145,7 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 <h5  class="modal-title" id="modal_header_task_descr" style="display: inline-block; ">{{ issue.task.title }}</h5>
-                {% if teacher_or_staff %}
+                {% if can_edit_task %}
                     <a id="modal_task_descr_edit_button" href="{% url tasks.views.task_edit_page task_id=issue.task.id %}" type="button" style="opacity:0.2;filter: alpha(opacity=20);color:#000000;display: inline-block;vertical-align: super;margin-left: 5px;"><i class="fa fa-edit fa-lg"></i></a>
                 {% endif %}
                 <div id="modal_header_deadline_time">{% if issue.task.deadline_time %}<strong>{%  trans "data_sdachi" %}: {{ issue.task.deadline_time|date:'d-m-Y H:i' }} MSK UTC+3 {% endif %}</strong></div>

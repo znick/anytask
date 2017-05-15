@@ -39,7 +39,7 @@
             maxHeight: 200,
             buttonContainer: '<div style="width:100%;" class="multiselect-dropdown"/>',
             buttonWidth: '100%',
-            checkboxName: function(option) {
+            checkboxName: function (option) {
                 return 'children[]';
             },
             buttonText: function (options, select) {
@@ -55,7 +55,7 @@
                 else {
                     var labels = [];
                     options.each(function () {
-                        var $this =$(this);
+                        var $this = $(this);
                         if ($this.attr('label') !== undefined) {
                             labels.push($this.attr('label'));
                         }
@@ -78,6 +78,9 @@
             pickerPosition: "bottom-left",
             startDate: null,
             minuteStep: 30
+        }).on('show', function (e) {
+            if ($("#task_edit_datepicker").prop("disabled"))
+                $(this).datetimepicker('hide');
         });
 
         {% if is_create %}
@@ -171,7 +174,7 @@
             $('#task_edit_form').data('changed', true);
         });
 
-        $.validator.addMethod("required_with_disabled", function(value, element) {
+        $.validator.addMethod("required_with_disabled", function (value, element) {
             return !!value;
         });
 
@@ -183,11 +186,11 @@
                         success: function (data) {
                             $task_edit_form.data('changed', false);
                             $('#task_submit_error_text').html('<div class="alert alert-success alert-dismissible" role ="alert" id="edit_task_err">' +
-                                    '                            <button type="button" class="close" data-dismiss="alert" aria-label="{% trans "zakryt" %}">' +
-                                    '                               <span aria-hidden="true">&times;</span>' +
-                                    '                            </button>' +
-                                    '                            <span>{% trans "zadacha_sohranena_uspeshno" %}</span>' +
-                                    '                          </div>');
+                                '                            <button type="button" class="close" data-dismiss="alert" aria-label="{% trans "zakryt" %}">' +
+                                '                               <span aria-hidden="true">&times;</span>' +
+                                '                            </button>' +
+                                '                            <span>{% trans "zadacha_sohranena_uspeshno" %}</span>' +
+                                '                          </div>');
                             if ($task_edit_form.data('quit'))
                                 redirect();
                             else if (data.redirect_page)
@@ -196,27 +199,29 @@
                                 $("#task_edit_changed_task").prop('checked', !!$("#task_edit_changed_task").data("default"));
 
                             $(document).prop('title', data.page_title);
-                            if ($('#task_edit_contest_integrated').is(':checked'))
+
+                            var $contest_body = $('#task_edit_contest_integrated');
+                            if ($contest_body.is(':checked') && !$contest_body.is(':disabled'))
                                 $('#update_contest_block').show();
                         },
                         error: function (data) {
                             $('#task_submit_error_text').html('<div  class="alert alert-danger alert-dismissible" role ="alert" id="edit_task_err">' +
-                                    '                            <button type="button" class="close" data-dismiss="alert" aria-label="{% trans "zakryt" %}">' +
-                                    '                               <span aria-hidden="true">&times;</span>' +
-                                    '                            </button>' +
-                                    '                            <span>{% trans "oshibka_pri_sohranenii" %}</span>' +
-                                    '                          </div>');
+                                '                            <button type="button" class="close" data-dismiss="alert" aria-label="{% trans "zakryt" %}">' +
+                                '                               <span aria-hidden="true">&times;</span>' +
+                                '                            </button>' +
+                                '                            <span>{% trans "oshibka_pri_sohranenii" %}</span>' +
+                                '                          </div>');
                             remove_disabled();
                         }
                     });
                 }
                 else {
                     $('#task_submit_error_text').html('<div class="alert alert-success alert-dismissible" role ="alert" id="edit_task_err">' +
-                            '                            <button type="button" class="close" data-dismiss="alert" aria-label="{% trans "zakryt" %}">' +
-                            '                               <span aria-hidden="true">&times;</span>' +
-                            '                            </button>' +
-                            '                            <span>{% trans "zadacha_sohranena_uspeshno" %}</span>' +
-                            '                          </div>');
+                        '                            <button type="button" class="close" data-dismiss="alert" aria-label="{% trans "zakryt" %}">' +
+                        '                               <span aria-hidden="true">&times;</span>' +
+                        '                            </button>' +
+                        '                            <span>{% trans "zadacha_sohranena_uspeshno" %}</span>' +
+                        '                          </div>');
                     if ($('#task_edit_form').data('quit'))
                         redirect();
                     else
@@ -300,7 +305,7 @@
             maxHeight: 200,
             buttonContainer: '<div style="width:100%;" class="multiselect-dropdown"/>',
             buttonWidth: '100%',
-            buttonTitle: function(options, select) {
+            buttonTitle: function (options, select) {
                 var labels = [];
 
                 if (options.length === 0) {
@@ -316,7 +321,7 @@
                 }
                 return labels.join(', ');
             },
-            buttonText: function(options, select) {
+            buttonText: function (options, select) {
                 if (options.length === 0) {
                     return '{% trans "ne_vybrano_ni_odnoj_gruppy" %}';
                 }
@@ -328,7 +333,7 @@
                 }
                 else {
                     var labels = [];
-                    options.each(function() {
+                    options.each(function () {
                         var $this = $(this);
                         if ($this.attr('label') !== undefined) {
                             labels.push($this.attr('label'));
@@ -340,20 +345,20 @@
                     return labels.join(', ') + '';
                 }
             },
-            onInitialized: function(option, checked, select) {
+            onInitialized: function (option, checked, select) {
                 $('#task_edit').closest('.row').collapse('show');
                 var input = $('#task_edit_group');
                 $('label.error', input).removeClass('valid');
                 input.removeClass('form-control-success');
                 input.closest('.form-group').removeClass('has-success');
             },
-            onChange: function(option, checked, select) {
+            onChange: function (option, checked, select) {
                 form_validator.element('#task_edit_group');
             },
-            onSelectAll: function() {
+            onSelectAll: function () {
                 form_validator.element('#task_edit_group');
             },
-            onDeselectAll: function() {
+            onDeselectAll: function () {
                 form_validator.element('#task_edit_group');
             }
 

@@ -623,7 +623,7 @@
     {% block scripts %}{% endblock %}
 </head>
 
-<body data-spy="scroll" style="">
+<body>
 {% block navbar_all %}
     <nav class="navbar navbar-fixed-top navbar-dark navbar-blue">
         <div class="{% if full_width_page %}container-fluid{% else %}container{% endif %}">
@@ -681,8 +681,10 @@
                                         <h6 class="dropdown-header">{% if user.get_full_name %}{{ user.get_full_name }}{% else %}{{ user }}{% endif %}</h6>
                                         <a class="dropdown-item" href="{% url users.views.profile %}">{% trans "profil" %}</a>
                                         <a class="dropdown-item" href="{% url users.views.profile_settings %}">{% trans "nastrojki" %}</a>
-                                        {% if user.is_staff %}
+                                        {% if perms.users.view_backoffice_page %}
                                             <a class="dropdown-item" href="{% url staff.views.staff_page %}">Staff</a>
+                                        {% endif %}
+                                        {% if user.is_staff %}
                                             <a class="dropdown-item" href="{% url admin:index %}">{% trans "adminka" %}</a>
                                         {% endif %}
                                         <div class="dropdown-divider"></div>

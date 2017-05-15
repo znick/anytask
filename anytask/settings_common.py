@@ -107,6 +107,11 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.locale.LocaleMiddleware'
 )
 
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'guardian.backends.ObjectPermissionBackend',
+)
+
 ROOT_URLCONF = 'anytask.urls'
 
 TEMPLATE_DIRS = (
@@ -160,6 +165,8 @@ INSTALLED_APPS = (
     'mail',
     'reversion',
     'admission',
+    'guardian',
+    'permissions',
 )
 
 AUTH_PROFILE_MODULE = "users.UserProfile"
@@ -230,3 +237,5 @@ PYTHONTASK_MAX_USERS_PER_TASK = 8
 PYTHONTASK_MAX_TASKS_WITHOUT_SCORE_PER_STUDENT = 2
 PYTHONTASK_DAYS_DROP_FROM_BLACKLIST = 14
 
+ANONYMOUS_USER_ID = -1
+GUARDIAN_RAISE_403 = True

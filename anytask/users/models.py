@@ -1,20 +1,35 @@
 # -*- coding: utf-8 -*-
 
-import copy
-import logging
-import os
-from datetime import datetime
-
-from courses.models import Course
-from django.contrib.auth.models import User
 from django.db import models
+from django.contrib.auth.models import User, Permission
 from django.db.models.signals import post_save
+from django.utils.translation import ugettext_lazy as _
+from django import forms
+from django.core.exceptions import PermissionDenied
+from django.db.models import Q
+from django.db.models.loading import get_model
+
+from datetime import datetime
+from collections import defaultdict
+
+from years.common import get_current_year
 from groups.models import Group
+from courses.models import Course
 from mail.models import Message
 from users.model_user_status import UserStatus
-from years.common import get_current_year
 
 from anytask.storage import OverwriteStorage
+
+from permissions.common import _get_perm_local_name, get_perm_local_name, PERMS_CLASSES
+from permissions.models import PermissionBase, PermissionsVisible
+from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
+from guardian.shortcuts import assign_perm
+
+import os
+import django_filters
+import copy
+
+import logging
 
 logger = logging.getLogger('django.request')
 
@@ -108,6 +123,85 @@ class UserProfile(models.Model):
             if course.get_user_group(self.user) and course.send_to_contest_from_users:
                 return True
         return False
+
+    def add_role(self, role, perms=None, school=None):
+        for perm in role.permissions.all():
+            perm_objs = perms.get(perm.id, [])
+            if not perm_objs:
+                perm_objs = perms.get(str(perm.id), [])
+            if perm_objs:
+                for obj_id in perm_objs:
+                    model = perm.content_type.model_class()
+                    try:
+                        obj = model.objects.get(id=obj_id)
+                    except model.DoesNotExist:
+                        raise PermissionDenied
+
+                    model_perm = assign_perm(perm.codename, self.user, obj)
+                    model_perm.role_from = role
+                    model_perm.save()
+            else:
+                self.user.user_permissions.add(perm)
+
+        user_roles, created = self.user.userroles_set.get_or_create(school=school)
+        user_roles.roles.add(role)
+
+    def remove_role(self, role, school=None):
+        deleted_perms = []
+        for model_app_label, model_names in PERMS_CLASSES.iteritems():
+            for model_name in model_names:
+                model_perm = get_model(model_app_label, model_name).objects.filter(user=self.user, role_from=role)
+                deleted_perms += model_perm.values_list("permission__id", flat=True)
+                model_perm.delete()
+
+        global_perms = role.permissions.exclude(id__in=deleted_perms)
+        if global_perms:
+            self.user.user_permissions.remove(*global_perms)
+
+        self.user.userroles_set.get(school=school).roles.remove(role)
+
+    def get_perms_by_role(self, role):
+        qs_values_list = ["id", "content_type__app_label", "codename", "name"]
+
+        qs_filter = Q()
+        for perm_classes in PERMS_CLASSES.itervalues():
+            for perm_class in perm_classes:
+                filter_class = {
+                    perm_class + "__user": self.user,
+                    perm_class + "__role_from": role,
+                }
+                qs_filter |= Q(**filter_class)
+                qs_values_list += [perm_class + "__content_object"]
+        perms = {}
+        for perm_info in Permission.objects.filter(qs_filter).distinct().values_list(*qs_values_list):
+            if perm_info[0] not in perms:
+                group_local_name, perm_local_name = _get_perm_local_name(perm_info[1], perm_info[2], perm_info[3])
+                perms[perm_info[0]] = {
+                    "model": perm_info[1],
+                    "codename": perm_info[1],
+                    'name': perm_local_name,
+                    'model_name': group_local_name,
+                    'objects': []
+                }
+            for obj_id in perm_info[4:]:
+                if obj_id:
+                    perms[perm_info[0]]["objects"].append(obj_id)
+                    break
+
+        return perms
+
+    class Meta:
+        permissions = (
+            ('view_backoffice_page', 'View backoffice page'),
+        )
+
+
+class UserProfileUserObjectPermission(UserObjectPermissionBase, PermissionBase):
+    content_object = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+
+
+class UserProfileGroupObjectPermission(GroupObjectPermissionBase):
+    content_object = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
 
 
 class UserProfileLog(models.Model):

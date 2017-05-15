@@ -28,3 +28,4 @@ django-haystack==2.4.1
 Whoosh
 django-reversion==1.6.6
 dateutils
+django-guardian==1.3.1

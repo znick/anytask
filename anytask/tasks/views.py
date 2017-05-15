@@ -3,7 +3,7 @@
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from tasks.models import Task
 from courses.models import Course
-from groups.models import Group
+from groups.models import Group, GroupUserObjectPermission
 from issues.models import Issue
 from issues.model_issue_status import IssueStatus
 from django.template import RequestContext
@@ -18,6 +18,9 @@ from anycontest.common import get_contest_info, FakeResponse
 from django.conf import settings
 from django.utils.translation import ugettext as _
 
+from guardian.shortcuts import get_objects_for_user, get_perms_for_model
+from django.core.exceptions import PermissionDenied
+
 import datetime
 import requests
 import reversion
@@ -30,12 +33,16 @@ def merge_two_dicts(x, y):
     z.update(y)
     return z
 
+
 @login_required
 def task_create_page(request, course_id):
+    user = request.user
     course = get_object_or_404(Course, id=course_id)
 
-    if not course.user_is_teacher(request.user):
-        return HttpResponseForbidden()
+    groups = course.get_user_groups_by_perm(user, 'create_task')
+
+    if not groups:
+        raise PermissionDenied
 
     if request.method == 'POST':
         return task_create_ot_edit(request, course)
@@ -48,7 +55,8 @@ def task_create_page(request, course_id):
     context = {
         'is_create': True,
         'course': course,
-        'task_types':  Task().TASK_TYPE_CHOICES if has_seminar else Task().TASK_TYPE_CHOICES[:-1],
+        'groups': groups,
+        'task_types': Task().TASK_TYPE_CHOICES if has_seminar else Task().TASK_TYPE_CHOICES[:-1],
         'seminar_tasks': seminar_tasks,
         'not_seminar_tasks': not_seminar_tasks,
         'contest_integrated': course.contest_integrated,
@@ -62,10 +70,13 @@ def task_create_page(request, course_id):
 
 @login_required
 def task_import_page(request, course_id):
+    user = request.user
     course = get_object_or_404(Course, id=course_id)
 
-    if not course.user_is_teacher(request.user):
-        return HttpResponseForbidden()
+    groups = course.get_user_groups_by_perm(user, 'create_task')
+
+    if not groups:
+        raise PermissionDenied
 
     schools = course.school_set.all()
 
@@ -73,6 +84,7 @@ def task_import_page(request, course_id):
 
     context = {
         'course': course,
+        'groups': groups,
         'rb_integrated': course.rb_integrated,
         'school': schools[0] if schools else '',
         'seminar_tasks': seminar_tasks,
@@ -83,10 +95,13 @@ def task_import_page(request, course_id):
 
 @login_required
 def contest_import_page(request, course_id):
+    user = request.user
     course = get_object_or_404(Course, id=course_id)
 
-    if not course.user_is_teacher(request.user):
-        return HttpResponseForbidden()
+    groups = course.get_user_groups_by_perm(user, 'create_task')
+
+    if not groups:
+        raise PermissionDenied
 
     schools = course.school_set.all()
 
@@ -94,6 +109,7 @@ def contest_import_page(request, course_id):
 
     context = {
         'course': course,
+        'groups': groups,
         'rb_integrated': course.rb_integrated,
         'seminar_tasks': seminar_tasks,
         'school': schools[0] if schools else '',
@@ -103,53 +119,76 @@ def contest_import_page(request, course_id):
     return render_to_response('contest_import.html', context, context_instance=RequestContext(request))
 
 
+def get_user_perms_for_task_edit(user, task):
+    if user.is_superuser:
+        return dict(get_perms_for_model(Group).values_list("codename", "id"))
+    return dict(
+        GroupUserObjectPermission.objects
+            .filter(user=user, content_object__in=task.groups.all())
+            .distinct()
+            .values_list("permission__codename", "permission__id")
+    )
+
+
 @login_required
 def task_edit_page(request, task_id):
+    user = request.user
     task = get_object_or_404(Task, id=task_id)
-
-    if not task.course.user_is_teacher(request.user):
-        return HttpResponseForbidden()
+    course = task.course
 
     if request.method == 'POST':
-        return task_create_ot_edit(request, task.course, task_id)
+        return task_create_ot_edit(request, course, task_id)
+
+    task_groups = task.groups.all()
+    if not (task_groups & get_objects_for_user(user, 'groups.view_task_settings')).exists():
+        raise PermissionDenied
 
     groups_required = []
-    groups = task.groups.all()
     if task.type == task.TYPE_SEMINAR:
-        children_groups = reduce(lambda x, y: x+y, [list(child.groups.all()) for child in task.children.all()], [])
-        groups_required = set(children_groups).intersection(groups)
+        children_groups = reduce(lambda x, y: x + y, [list(child.groups.all()) for child in task.children.all()], [])
+        groups_required = set(children_groups).intersection(task_groups)
     else:
-        for group in groups:
+        for group in task_groups:
             if Issue.objects.filter(task=task, student__in=group.students.all()).count():
                 groups_required.append(group)
 
-    schools = task.course.school_set.all()
+    schools = course.school_set.all()
 
-    seminar_tasks = Task.objects.filter(type=Task().TYPE_SEMINAR).filter(course=task.course)
-    not_seminar_tasks = Task.objects.filter(~Q(type=Task().TYPE_SEMINAR)).filter(course=task.course)
+    seminar_tasks = Task.objects.filter(type=Task().TYPE_SEMINAR).filter(course=course)
+    not_seminar_tasks = Task.objects.filter(~Q(type=Task().TYPE_SEMINAR)).filter(course=course)
+    edit_field_perms = get_user_perms_for_task_edit(user, task)
 
     context = {
         'is_create': False,
-        'course': task.course,
+        'course': course,
         'task': task,
         'task_types': task.TASK_TYPE_CHOICES[-1:] if task.type == task.TYPE_SEMINAR else task.TASK_TYPE_CHOICES[:-1],
         'groups_required': groups_required,
+        'task_groups_editable': course.get_user_groups_by_perm(user, 'create_task'),
+        'edit_field_perms': edit_field_perms,
         'show_help_msg_task_group': True if groups_required else False,
         'seminar_tasks': seminar_tasks,
         'not_seminar_tasks': not_seminar_tasks,
         'contest_integrated': task.contest_integrated,
         'rb_integrated': task.rb_integrated,
-        'hide_contest_settings': True if not task.contest_integrated
-                                         or task.type in [task.TYPE_SIMPLE, task.TYPE_MATERIAL] else False,
+        'hide_contest_settings': not task.contest_integrated or
+                                 task.type in [task.TYPE_SIMPLE, task.TYPE_MATERIAL, task.TYPE_SEMINAR]
+        ,
         'school': schools[0] if schools else '',
     }
 
     return render_to_response('task_edit.html', context, context_instance=RequestContext(request))
 
 
+def can_edit_field(edit_field_perms, perm, is_edit):
+    if is_edit and perm in edit_field_perms or not is_edit:
+        return True
+    return False
+
+
 def task_create_ot_edit(request, course, task_id=None):
     user = request.user
-    task_title = request.POST['task_title'].strip()
+    task_title = request.POST.get('task_title', '').strip()
 
     if 'max_score' in request.POST:
         max_score = request.POST['max_score']
@@ -160,16 +199,17 @@ def task_create_ot_edit(request, course, task_id=None):
     else:
         max_score = 0
 
-    task_groups = Group.objects.filter(id__in=dict(request.POST)['task_group_id[]'])
 
-    parent_id = request.POST['parent_id']
-    if not parent_id or parent_id == 'null':
-        parent_id = None
-    else:
-        parent_id = int(parent_id)
+    parent_id = None
+    if 'parent_id' in request.POST:
+        parent_id = request.POST['parent_id']
+        if not parent_id or parent_id == 'null':
+            parent_id = None
+        else:
+            parent_id = int(parent_id)
     parent = None
-    if parent_id is not None:
-        parent = get_object_or_404(Task, id = parent_id)
+    if parent_id:
+        parent = get_object_or_404(Task, id=parent_id)
 
     children = None
     if 'children[]' in request.POST:
@@ -187,11 +227,12 @@ def task_create_ot_edit(request, course, task_id=None):
             task_deadline = None
     else:
         task_deadline = None
+
     changed_task = False
     if 'changed_task' in request.POST:
         changed_task = True
 
-    task_type = request.POST['task_type'].strip()
+    task_type = request.POST.get('task_type', '').strip()
 
     contest_integrated = False
     contest_id = 0
@@ -218,74 +259,101 @@ def task_create_ot_edit(request, course, task_id=None):
     if 'hidden_task' in request.POST:
         hidden_task = True
 
-    task_text = request.POST['task_text'].strip()
+    task_text = request.POST.get('task_text', '').strip()
 
-
+    edit_field_perms = {}
+    is_edit = False
     if task_id:
         task = get_object_or_404(Task, id=task_id)
+        edit_field_perms = get_user_perms_for_task_edit(user, task)
+        is_edit = True
     else:
         task = Task()
         task.course = course
 
-    task.title = task_title
-    task.score_max = max_score
+    if can_edit_field(edit_field_perms, 'change_task_title', is_edit):
+        task.title = task_title
+        if not task.title:
+            raise PermissionDenied
 
-    task.parent_task = parent
+    if can_edit_field(edit_field_perms, 'change_task_score_max', is_edit):
+        task.score_max = max_score
 
-    task.deadline_time = task_deadline
+    if can_edit_field(edit_field_perms, 'change_task_deadline_time', is_edit):
+        task.deadline_time = task_deadline
+
     if changed_task:
         task.send_to_users = True
         task.sended_notify = False
     else:
         task.send_to_users = False
 
-    if task_type in dict(task.TASK_TYPE_CHOICES):
-        task.type = task_type
-    else:
-        task.type = task.TYPE_FULL
+    if can_edit_field(edit_field_perms, 'change_task_type', is_edit):
+        if task_type in dict(task.TASK_TYPE_CHOICES):
+            task.type = task_type
+        else:
+            task.type = task.TYPE_FULL
 
-    task.contest_integrated = contest_integrated
-    if contest_integrated:
-        task.contest_id = contest_id
-        task.problem_id = problem_id
+    if can_edit_field(edit_field_perms, 'change_task_contest', is_edit):
+        task.contest_integrated = contest_integrated
+        if contest_integrated:
+            task.contest_id = contest_id
+            task.problem_id = problem_id
+        task.accepted_after_contest_ok = accepted_after_contest_ok
 
-    task.rb_integrated = rb_integrated
+    if can_edit_field(edit_field_perms, 'change_task_rb', is_edit):
+        task.rb_integrated = rb_integrated
 
-    task.one_file_upload = one_file_upload
+    if can_edit_field(edit_field_perms, 'change_task_one_file_upload', is_edit):
+        task.one_file_upload = one_file_upload
 
-    task.accepted_after_contest_ok = accepted_after_contest_ok
+    if can_edit_field(edit_field_perms, 'change_task_is_hidden', is_edit):
+        task.is_hidden = hidden_task
 
-    task.is_hidden = hidden_task
+    if can_edit_field(edit_field_perms, 'change_task_parent_task', is_edit):
+        for course_task in Task.objects.filter(course=course):
+            if children and course_task.id in map(int, children):
+                course_task.parent_task = task
+                course_task.save()
+            elif course_task.parent_task == task:
+                course_task.parent_task = None
+                course_task.save()
 
-    for course_task in Task.objects.filter(course=course):
-        if children and course_task.id in map(int, children):
-            course_task.parent_task = task
-            course_task.save()
-        elif course_task.parent_task == task:
-            course_task.parent_task = None
-            course_task.save()
+        task.parent_task = parent
 
-    if task.parent_task:
-        if task.parent_task.is_hidden:
-            task.is_hidden = True
-    for subtask in Task.objects.filter(parent_task=task):
-        subtask.is_hidden = hidden_task
-        subtask.save()
+        if task.parent_task:
+            if task.parent_task.is_hidden:
+                task.is_hidden = True
+        for subtask in Task.objects.filter(parent_task=task):
+            subtask.is_hidden = hidden_task
+            subtask.save()
 
-    task.task_text = task_text
+    if can_edit_field(edit_field_perms, 'change_task_task_text', is_edit):
+        task.task_text = task_text
 
     task.updated_by = user
     task.save()
 
-    task.groups = task_groups
-    task.set_position_in_new_group(task_groups)
+    if can_edit_field(edit_field_perms, 'change_task_groups', is_edit):
+        task_groups = set(map(lambda a: int(a), request.POST.getlist('task_group_id[]')))
+        if not task_groups:
+            raise PermissionDenied
+        groups_available = set(course.get_user_groups_by_perm(user, 'create_task').values_list("id", flat=True))
+
+        if (task_groups ^ set(task.groups.values_list("id", flat=True))) - groups_available:
+            raise PermissionDenied
+
+        task.groups = task_groups
+        task.set_position_in_new_group(task.groups.all())
+
 
     if task.type == task.TYPE_SEMINAR:
         students = User.objects.filter(group__in=task_groups).all()
         for student in students:
             issue, created = Issue.objects.get_or_create(task_id=task.id, student_id=student.id)
             issue.set_status_by_tag('seminar')
-            issue.mark = sum([x.mark for x in Issue.objects.filter(task__parent_task=task, student_id=student.id).all()])
+            issue.mark = sum(
+                [x.mark for x in Issue.objects.filter(task__parent_task=task, student_id=student.id).all()])
             issue.save()
 
     reversion.set_user(user)
@@ -302,12 +370,12 @@ def task_create_ot_edit(request, course, task_id=None):
 @login_required
 def get_contest_problems(request):
     if request.method != 'POST':
-        return HttpResponseForbidden()
+        raise PermissionDenied
 
     course = get_object_or_404(Course, id=request.POST['course_id'])
 
     if not course.user_can_edit_course(request.user):
-        return HttpResponseForbidden()
+        raise PermissionDenied
 
     contest_id = request.POST['contest_id']
     is_error = False
@@ -353,10 +421,16 @@ def prettify_contest_task_text(task_text):
 @login_required
 def contest_task_import(request):
     if not request.method == 'POST':
-        return HttpResponseForbidden()
+        raise PermissionDenied
+    
+    user = request.user
 
     course_id = int(request.POST['course_id'])
     course = get_object_or_404(Course, id=course_id)
+    
+    groups_available = set(course.get_user_groups_by_perm(user, 'create_task').values_list("id", flat=True))
+    if not groups_available:
+        raise PermissionDenied
 
     contest_id = int(request.POST['contest_id_for_task'])
 
@@ -364,8 +438,6 @@ def contest_task_import(request):
         max_score = int(request.POST['max_score'])
     else:
         max_score = None
-
-    task_groups = Group.objects.filter(id__in=dict(request.POST)['task_group_id[]'])
 
     if 'deadline' in request.POST:
         task_deadline = request.POST['deadline']
@@ -403,7 +475,7 @@ def contest_task_import(request):
         parent_id = int(parent_id)
     parent = None
     if parent_id is not None:
-        parent = get_object_or_404(Task, id = parent_id)
+        parent = get_object_or_404(Task, id=parent_id)
 
     if 'task_text' in request.POST:
         task_text = request.POST['task_text'].strip()
@@ -420,8 +492,8 @@ def contest_task_import(request):
     if 'result' in problem_req.json():
         problems = problem_req.json()['result']['problems']
 
-    problems_with_score = {problem['id']:problem['score'] if 'score' in problem else None for problem in problems}
-    problems_with_end = {problem['id']:problem['end'] if 'end' in problem else None for problem in problems}
+    problems_with_score = {problem['id']: problem['score'] if 'score' in problem else None for problem in problems}
+    problems_with_end = {problem['id']: problem['end'] if 'end' in problem else None for problem in problems}
 
     if got_info:
         if problems:
@@ -448,10 +520,10 @@ def contest_task_import(request):
                                         'error': _(u"net_prav_na_kontest")}),
                             content_type="application/json")
     else:
-        return HttpResponseForbidden()
+        raise PermissionDenied
 
-    if not course.user_can_edit_course(request.user):
-        return HttpResponseForbidden()
+    if not course.user_can_edit_course(user):
+        raise PermissionDenied
 
     for task in tasks:
         real_task = Task()
@@ -498,13 +570,20 @@ def contest_task_import(request):
         real_task.accepted_after_contest_ok = accepted_after_contest_ok
 
         real_task.is_hidden = hidden_task
-        real_task.updated_by = request.user
+        real_task.updated_by = user
         real_task.save()
+        
+        task_groups = set(map(lambda a: int(a), request.POST.getlist('task_group_id[]')))
+        if not task_groups:
+            raise PermissionDenied
 
+        if task_groups - groups_available:
+            raise PermissionDenied
+        
         real_task.groups = task_groups
-        real_task.set_position_in_new_group(task_groups)
+        real_task.set_position_in_new_group(real_task.groups.all())
 
-        reversion.set_user(request.user)
+        reversion.set_user(user)
         reversion.set_comment("Import task")
 
     return HttpResponse("OK")
@@ -514,7 +593,7 @@ def get_task_text_popup(request, task_id):
     task = get_object_or_404(Task, id=task_id)
 
     context = {
-        'task' : task,
+        'task': task,
     }
 
     return render_to_response('task_text_popup.html', context, context_instance=RequestContext(request))

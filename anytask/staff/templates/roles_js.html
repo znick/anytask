@@ -1,0 +1,473 @@
+{% load i18n %}
+
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap4.min.css"/>
+<link rel="stylesheet" type="text/css"
+      href="https://cdn.datatables.net/rowgroup/1.0.0/css/rowGroup.bootstrap4.min.css"/>
+
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap4.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/rowgroup/1.0.0/js/dataTables.rowGroup.min.js"></script>
+<script src="{{ STATIC_URL }}jquery.validate.min.js"></script>
+
+
+<script type="text/javascript">
+    $.extend($.fn.dataTable.defaults, {
+        scrollY: '65vh',
+        scrollX: true,
+        scrollCollapse: true,
+        info: false,
+        paging: false,
+        searching: false,
+        rowGroup: {
+            dataSrc: 1
+        },
+        columnDefs: [
+            {
+                "targets": 1,
+                "visible": false
+            },
+            {
+                "targets": "deleted",
+                "visible": false
+            },
+            {
+                "targets": "disable-ordering",
+                "orderable": false
+            }
+        ],
+        order: [[1, 'desc']],
+        autoWidth: false,
+        language: {
+            "decimal": "",
+            "emptyTable": "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{% trans 'pustaja_tablica' %}",
+            "thousands": ",",
+            "loadingRecords": "{% trans 'zagruzka' %}",
+            "processing": "{% trans 'vychislenie' %}"
+        },
+        initComplete: function (settings, json) {
+            var $table = $(this);
+            var $container = $table.closest(".table-container");
+            $container.siblings('.loading-table-img').hide();
+            $container.show();
+            $table.DataTable().draw();
+        }
+    });
+
+    $(document).ready(function () {
+        $('span.nav-link', '#nav_schools').click(function (e) {
+            var $btn_save = $("#btn_save");
+
+            if ($btn_save.data("saving")) {
+                e.preventDefault();
+                e.stopPropagation();
+                return;
+            }
+
+            var $span = $(this);
+            window.location.hash = $span.attr("href");
+            $($span.data("table")).DataTable();
+
+
+            $btn_save.data('table', $span.data("table"));
+            $btn_save.data('school_id', $span.data("school_id"));
+
+            var changes = $btn_save.data('changes');
+            if (!changes)
+                changes = {};
+            if (!changes.hasOwnProperty($span.data("school_id")))
+                changes[$span.data("school_id")] = {};
+            $btn_save.data('changes', changes);
+        });
+
+        $('span.nav-link', '#nav_schools').on('hide.bs.tab', function () {
+            var d = 'disabled';
+            $('button', 'div.btns-managment').addClass(d).attr(d, d).prop(d, true);
+        });
+
+        $('span.nav-link', '#nav_schools').on('shown.bs.tab', function () {
+            var $span = $(this);
+            var d = 'disabled';
+            $($span.data("table")).DataTable().draw();
+            $('button', 'div.btns-managment').removeClass(d).removeAttr(d).prop(d, false);
+        });
+
+        var url_hash = window.location.hash ? window.location.hash : $('span.nav-link:first-child', '#nav_schools').attr("href");
+        $('span.nav-link[href="' + url_hash + '"]', '#nav_schools').click();
+
+        $(window).resize(function () {
+            $.fn.dataTable.tables({visible: true, api: true}).draw();
+        });
+
+        $("#btn_add_role").click(function () {
+            $('#modal_role_edit_form').data('is_create', true);
+            $('#modal_role_edit_header').text('{% trans "dobavit_novuyu_rol" %}');
+            $('#modal_role_edit_ok').text('{% trans "dobavit" %}');
+
+            var $btn_save = $('#btn_save');
+            var $select_inherit = $('#modal_role_edit_inherit');
+            $select_inherit.closest('.form-group').removeClass('hidden');
+            $select_inherit.html('<option value="-1">---</option>');
+            $('th.role-header', $btn_save.data('table')).each(function () {
+                var $th = $(this);
+                $select_inherit.append('<option value="' + $th.data('role_id') + '">' + $('.role-header-name', $th).text() + '</option>');
+            });
+
+            $('#modal_role_edit_name').val('');
+
+            open_modal();
+        });
+
+        $("div.tab-content").on("click", '.btn-edit-role', function (e) {
+            var $btn_save = $("#btn_save");
+            if ($btn_save.data("saving")) {
+                e.preventDefault();
+                e.stopPropagation();
+                return;
+            }
+
+            var $btn = $(this);
+
+            $('#modal_role_edit_form').data('is_create', false);
+            $('#modal_role_edit_header').text('{% trans "izmenit_rol" %}');
+            $('#modal_role_edit_ok').text('{% trans "izmenit" %}').data('id', $btn.closest('th').data('role_id'));
+
+            $('#modal_role_edit_inherit').closest('.form-group').addClass('hidden');
+
+            $('#modal_role_edit_name').val($btn.siblings('.role-header-name').text());
+            open_modal();
+        }).on("click", '.btn-delete-role', function (e) {
+            var $btn_save = $("#btn_save");
+            if ($btn_save.data("saving")) {
+                e.preventDefault();
+                e.stopPropagation();
+                return;
+            }
+
+            var $btn = $(this);
+            var $th = $btn.closest('th');
+            $('span', '#modal_role_delete_header').text($btn.siblings('.role-header-name').text());
+            $('#modal_role_delete_ok').data('role_id', $th.data('role_id'))
+                .data('visible_index', $th.index());
+            $('#modal_role_delete').modal('show');
+        }).on("click", 'td.cell-perm-checkbox', function (e) {
+            $('input', this).trigger("click");
+        }).on("click", 'input.perm-checkbox', function (e) {
+            e.stopPropagation();
+
+            var $input = $(this);
+            var c = "checked";
+            if ($input.is(':checked')) {
+                $input.attr(c, c)
+            }
+            else {
+                $input.removeAttr(c);
+            }
+
+            var changes = get_changes();
+            changes = make_changes_checkbox(changes['changes'], changes['school_id'], $input);
+            save_changes(changes);
+        });
+
+        $('#modal_role_edit_form').validate({
+            rules: {
+                modal_role_edit_name: {
+                    required: true
+                }
+            },
+
+            highlight: function (input) {
+                $(input).removeClass('form-control-success').addClass('form-control-danger');
+                $(input).closest('.form-group').removeClass('has-success').addClass('has-danger');
+            },
+
+            success: function (label) {
+                label.addClass('valid');
+                label.closest('.text-help').siblings('.form-control').removeClass('form-control-danger').addClass('form-control-success');
+                label.closest('.form-group').removeClass('has-danger').addClass('has-success');
+            },
+
+            messages: {
+                modal_role_edit_name: {
+                    required: "{% trans 'ukazhite_nazvaniye_roli' %}"
+                }
+            },
+
+            errorPlacement: function (error, element) {
+                $(element).closest("div.controls").find('small.text-help').empty().append(error);
+            }
+        });
+
+        $("#modal_role_edit_ok").click(function () {
+            var $btn_ok = $(this);
+            var $form = $('#modal_role_edit_form');
+            if ($form.valid()) {
+                var $btn_save = $("#btn_save");
+                var $table = $($btn_save.data('table'));
+                var $container = $table.closest(".table-container");
+                var data_table = $table.DataTable();
+                var new_name = $('#modal_role_edit_name').val();
+                var changes = get_changes();
+                var school_id = changes['school_id'];
+                changes = changes['changes'];
+
+                if ($form.data('is_create')) {
+                    $container.siblings('.loading-table-img').show();
+                    $container.hide();
+
+                    var new_role_id = $btn_save.data('new_counter');
+                    $btn_save.data('new_counter', new_role_id + 1);
+                    new_role_id = 'new_' + new_role_id;
+
+                    var role_base_id = $('#modal_role_edit_inherit').val();
+                    var $table_rows = data_table.rows('tr.perm-row').nodes().to$();
+                    var $role_inherit = [];
+                    if (role_base_id !== "-1")
+                        $role_inherit = data_table.column('th.role-header[data-role_id="' + role_base_id + '"]').nodes().to$();
+
+                    data_table.destroy();
+
+                    $('th:last-child', $table).after(
+                        '<th class="disable-ordering centered role-header" data-role_id="' + new_role_id + '">' +
+                        '  <span class="role-header-name">' + new_name + '</span>' +
+                        '  <span class="fa fa-pencil btn-edit-role" aria-hidden="true"></span>' +
+                        '  <span class="fa fa-trash-o btn-delete-role" aria-hidden="true"></span>' +
+                        '</th>'
+                    );
+                    make_changes_name(changes, school_id, $('th:last-child', $table), new_name);
+
+                    if ($role_inherit.length) {
+                        $table_rows.each(function (i) {
+                            var $tr = $(this);
+                            var $td_base = $($($role_inherit[i])[0].outerHTML);
+                            var $input = $('input', $td_base);
+
+                            $td_base.attr('data-role_id', new_role_id);
+
+                            if ($input.is("[disabled]"))
+                                $input.removeAttr("checked");
+
+                            if ($input.is("[checked]"))
+                                make_changes_checkbox(changes, school_id, $input);
+                            $('td:last-child', $tr).after($td_base);
+                        });
+                    }
+                    else {
+                        $table_rows.each(function () {
+                            var $tr = $(this);
+                            var $td_base = $('td:last-child', $tr);
+                            var $td_new = $($td_base[0].outerHTML).html('<input type="checkbox" class="perm-checkbox">');
+                            if ($td_base.hasClass('cell-perm-checkbox') && $td_base.hasClass('disabled')) {
+                                $('input', $td_new).attr('disabled', 'disabled').attr('data-disabled', 'true');
+                            }
+                            else {
+                                $td_new.addClass('cell-perm-checkbox centered');
+                            }
+                            $td_new.attr('data-role_id', new_role_id);
+                            $('td:last-child', $tr).after($td_new);
+                        });
+                    }
+                    $table.DataTable();
+                }
+                else {
+                    var $th = $('th[data-role_id=' + $btn_ok.data('id') + ']', $container);
+                    $('span.role-header-name', $th).text(new_name);
+                    make_changes_name(changes, school_id, $th, new_name);
+                    data_table.draw();
+                }
+
+                save_changes(changes);
+                $('#modal_role_edit').modal('hide');
+            }
+        });
+
+        $("#modal_role_delete_ok").click(function () {
+            var $btn_ok = $(this);
+            var $btn_save = $("#btn_save");
+            var $column = $($btn_save.data('table')).DataTable().column($btn_ok.data('visible_index') + ':visIdx');
+            $($column.header()).addClass("deleted");
+            $column.visible(false);
+
+            var changes = get_changes();
+            changes = make_changes_delete(changes['changes'], changes['school_id'], $btn_ok.data("role_id"));
+            save_changes(changes);
+
+            $('#modal_role_delete').modal('hide');
+        });
+
+        $('#btn_save').click(function () {
+            var $btn = $(this);
+            var d = "disabled";
+
+            clearTimeout($btn.data("timer_id"));
+
+            $btn.data('saving', true);
+            $btn.removeClass("btn-success btn-danger").addClass("btn-primary");
+            $btn.html($btn.data('loading_text'));
+            $('button', 'div.btns-managment').addClass(d).attr(d, d).prop(d, true);
+            $('input.perm-checkbox:not([data-disabled="true"])', $btn.data('table')).addClass(d).attr(d, d).prop(d, true);
+            $('button', $btn.data('table')).addClass(d).attr(d, d).prop(d, true);
+
+            var changes = $btn.data("changes");
+            var changes_converted = {};
+            for (var school_id in changes) {
+                changes_converted[school_id] = {};
+                for (var role_id in changes[school_id]) {
+                    if (changes[school_id][role_id].hasOwnProperty("delete")) {
+                        changes_converted[school_id][role_id] = {"delete": true};
+                    }
+                    else {
+                        changes_converted[school_id][role_id] = {"add": [], "remove": []};
+                        for (var perm_id in changes[school_id][role_id]) {
+                            if (perm_id === "name") {
+                                changes_converted[school_id][role_id]["name"] = changes[school_id][role_id]["name"]
+                            }
+                            else {
+                                if (changes[school_id][role_id][perm_id])
+                                    changes_converted[school_id][role_id]["add"].push(perm_id);
+                                else
+                                    changes_converted[school_id][role_id]["remove"].push(perm_id);
+                            }
+                        }
+                    }
+                }
+            }
+
+            var post_data = {
+                "csrfmiddlewaretoken": $btn.data("csrf_token"),
+                "changes": JSON.stringify(changes_converted)
+            };
+
+            $.post('{% url staff.views.ajax_change_roles %}', post_data)
+                .always(function (data) {
+                    $btn.data('saving', false);
+
+                    $('button', '.btns-managment').removeClass(d).removeAttr(d).prop(d, false);
+                    $('input.perm-checkbox:not([data-disabled="true"])', $btn.data('table')).removeClass(d).removeAttr(d).prop(d, false);
+                })
+                .done(function (data) {
+                    set_response_type($btn, true);
+                    var changes = {};
+                    changes[$btn.data("school_id")] = {};
+                    $btn.data('changes', changes);
+                })
+                .fail(function (data) {
+                    set_response_type($btn, false);
+                });
+        });
+
+        $(window).bind('beforeunload', function () {
+            if ($("#btn_save").data("saving"))
+                return 'show';
+        });
+    });
+
+    function open_modal() {
+        $('input', '#modal_role_edit_form').removeClass('form-control-success form-control-danger')
+            .siblings('small.text-help').html('')
+            .closest('.form-group').removeClass('has-success has-danger');
+        $('.form-group', '#modal_role_edit_form ').removeClass('last-child');
+        $('.form-group:not(.hidden):last', '#modal_role_edit_form ').addClass('last-child');
+        $('#modal_role_edit').modal('show');
+    }
+
+    function get_changes() {
+        var $btn_save = $("#btn_save");
+
+        return {
+            'changes': $btn_save.data('changes'),
+            'school_id': $btn_save.data('school_id')
+        };
+    }
+
+    function make_changes_checkbox(changes, school_id, $input) {
+        var $td = $input.closest('td');
+        var role_id = $td.data('role_id');
+        var perm_id = $td.data('perm_id');
+
+        if (!changes[school_id].hasOwnProperty(role_id))
+            changes[school_id][role_id] = {};
+        if (changes[school_id][role_id].hasOwnProperty(perm_id)) {
+            delete changes[school_id][role_id][perm_id];
+            if (!Object.keys(changes[school_id][role_id]).length) {
+                delete changes[school_id][role_id];
+            }
+        }
+        else {
+            changes[school_id][role_id][perm_id] = $input.is(':checked');
+        }
+
+        return changes;
+    }
+
+    function make_changes_name(changes, school_id, $th, new_name) {
+        var role_id = $th.data('role_id');
+
+        if ($th.data('name') === new_name) {
+            if (changes[school_id].hasOwnProperty(role_id)) {
+                delete changes[school_id][role_id]['name'];
+                if (!Object.keys(changes[school_id][role_id]).length) {
+                    delete changes[school_id][role_id];
+                }
+            }
+        }
+        else {
+            if (!changes[school_id].hasOwnProperty(role_id))
+                changes[school_id][role_id] = {};
+            changes[school_id][role_id]['name'] = new_name;
+        }
+
+        return changes;
+    }
+
+    function make_changes_delete(changes, school_id, role_id) {
+        if (role_id.toString().match(/^new_/)) {
+            delete changes[school_id][role_id]
+        }
+        else {
+            changes[school_id][role_id] = {"delete": true}
+        }
+
+        return changes;
+    }
+
+    function check_empty_changes(changes) {
+        var $btn_save = $("#btn_save");
+        var show_button = false;
+
+        for (var school_id in changes) {
+            if (changes.hasOwnProperty(school_id))
+                if (Object.keys(changes[school_id]).length) {
+                    show_button = true;
+                    break;
+                }
+        }
+
+        if (show_button)
+            $btn_save.removeClass("hidden");
+        else
+            $btn_save.addClass("hidden");
+    }
+
+    function save_changes(changes) {
+        var $btn_save = $("#btn_save");
+
+        check_empty_changes(changes);
+        $btn_save.data('changes', changes);
+    }
+
+    function set_response_type($btn, is_success) {
+        var class_name = is_success ? "btn-success" : "btn-danger";
+        var btn_text = is_success ? "{% trans "uspeshno" %}" : "{% trans "oshibka" %}";
+
+        $btn.removeClass("btn-primary").addClass(class_name);
+        $btn.html(btn_text);
+        var timer_id = setTimeout(function () {
+            $btn.removeClass(class_name).addClass("btn-primary");
+            $btn.html($btn.data('reset_text'));
+            check_empty_changes($btn.data('changes'));
+        }, 2000);
+
+        $btn.data("timer_id", timer_id);
+    }
+
+</script>

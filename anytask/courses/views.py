@@ -47,25 +47,26 @@ from common.ordered_dict import OrderedDict
 
 from courses.forms import PdfForm, QueueForm, default_teacher_forms_factory, DefaultTeacherForm
 from django.utils.html import strip_tags
-from filemanager import FileManager
 from settings import UPLOAD_ROOT
 import os.path
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, HTML
 
+from guardian.shortcuts import get_objects_for_user
+
 import json
 
 logger = logging.getLogger('django.request')
 
 
-
 @login_required
 def queue_page(request, course_id):
+    user = request.user
     course = get_object_or_404(Course, id=course_id)
     course_id_as_str = str(course_id)
 
-    if not course.user_can_see_queue(request.user):
+    if not course.user_can_see_queue(user):
         return HttpResponseForbidden()
 
     active_profiles = UserProfile.objects.filter(Q(user_status__tag='active') | Q(user_status__tag=None))
@@ -99,9 +100,10 @@ def queue_page(request, course_id):
 
     context = {
         'course': course,
-        'user_is_teacher': course.user_is_teacher(request.user),
+        'user_is_teacher': course.user_is_teacher(user),
         'filter': f,
         'school': schools[0] if schools else '',
+        'user_can_view_gradebook': course.user_can_view_gradebook(user),
     }
     return render_to_response('courses/queue.html', context, context_instance=RequestContext(request))
 
@@ -114,6 +116,7 @@ def gradebook(request, course_id, task_id=None, group_id=None):
         - tasks_description
     """
     user = request.user
+
     if not user.get_profile().is_active():
         raise PermissionDenied
 
@@ -125,12 +128,14 @@ def gradebook(request, course_id, task_id=None, group_id=None):
 
     if group_id:
         group = get_object_or_404(Group, id=group_id)
+        if not course.user_can_view_gradebook(user, group):
+            raise PermissionDenied
     else:
         group = None
 
     schools = course.school_set.all()
 
-    if course.private and not course.user_is_attended(request.user):
+    if course.private and not (course.user_is_attended(request.user) or user.has_perm('view_course', course)):
         return render_to_response('courses/course_forbidden.html',
                                   {"course": course,
                                    'school': schools[0] if schools else '',
@@ -170,7 +175,7 @@ def course_page(request, course_id):
 
     schools = course.school_set.all()
 
-    if course.private and not course.user_is_attended(request.user):
+    if course.private and not (course.user_is_attended(request.user) or user.has_perm('view_course', course)):
         return render_to_response('courses/course_forbidden.html',
                                   {"course": course,
                                    'school': schools[0] if schools else '',
@@ -185,12 +190,12 @@ def course_page(request, course_id):
     else:
         groups = Group.objects.filter(students=user, course__in=[course])
         tasks = TaskGroupRelations.objects.filter(
-                    task__course=course, group__in=groups, deleted=False
-                ).order_by(
-                    'group', 'position'
-                ).values_list(
-                    'task__id', flat=True
-                ).distinct()
+            task__course=course, group__in=groups, deleted=False
+        ).order_by(
+            'group', 'position'
+        ).values_list(
+            'task__id', flat=True
+        ).distinct()
         tasks = Task.objects.filter(id__in=tasks)
 
     if StudentCourseMark.objects.filter(student=user, course=course):
@@ -199,7 +204,6 @@ def course_page(request, course_id):
         mark = None
 
     context = {}
-
     context['course'] = course
     context['tasks'] = tasks
     context['mark'] = mark if mark else '--'
@@ -209,6 +213,9 @@ def course_page(request, course_id):
     context['show_hidden_tasks'] = request.session.get(
         str(request.user.id) + '_' + str(course.id) + '_show_hidden_tasks', False)
     context['school'] = schools[0] if schools else ''
+    context['groups_with_gradebook'] = course.get_user_groups_by_perm(user, 'view_gradebook')
+    context['can_add_task'] = course.get_user_groups_by_perm(user, 'create_task').exists()
+    context['tasks_editable'] = course.get_user_tasks_by_perm(user, 'view_task_settings')
 
     return render_to_response('courses/course.html', context, context_instance=RequestContext(request))
 
@@ -229,7 +236,7 @@ def seminar_page(request, course_id, task_id):
     task = get_object_or_404(Task, id=task_id)
     schools = course.school_set.all()
 
-    if course.private and not course.user_is_attended(request.user):
+    if course.private and not (course.user_is_attended(request.user) or user.has_perm('view_course', course)):
         return render_to_response('courses/course_forbidden.html',
                                   {"course": course,
                                    'school': schools[0] if schools else '',
@@ -246,12 +253,12 @@ def seminar_page(request, course_id, task_id):
     else:
         groups = Group.objects.filter(students=user, course__in=[course])
         tasks = TaskGroupRelations.objects.filter(
-                    task__course=course, group__in=groups, deleted=False
-                ).order_by(
-                    'group', 'position'
-                ).values_list(
-                    'task__id', flat=True
-                ).distinct()
+            task__course=course, group__in=groups, deleted=False
+        ).order_by(
+            'group', 'position'
+        ).values_list(
+            'task__id', flat=True
+        ).distinct()
         tasks = Task.objects.filter(id__in=tasks)
     if Issue.objects.filter(task=task, student=user):
         mark = Issue.objects.get(task=task, student=user).mark
@@ -269,6 +276,8 @@ def seminar_page(request, course_id, task_id):
     context['show_hidden_tasks'] = request.session.get(
         str(request.user.id) + '_' + str(course.id) + '_show_hidden_tasks', False)
     context['school'] = schools[0] if schools else ''
+    context['groups_with_gradebook'] = course.get_user_groups_by_perm(user, 'view_gradebook')
+    context['tasks_editable'] = course.get_user_tasks_by_perm(user, 'view_task_settings')
 
     return render_to_response('courses/course.html', context, context_instance=RequestContext(request))
 
@@ -290,7 +299,13 @@ def tasklist_shad_cpp(request, course, seminar=None, group=None):
         course.groups.add(course.group_with_extern)
 
     if group:
-        groups = [group]
+        if user.has_perm('view_gradebook', group):
+            groups = [group]
+    else:
+        groups &= get_objects_for_user(user, 'groups.view_gradebook')
+
+    if not groups:
+        raise PermissionDenied
 
     group_x_student_x_task_takens = OrderedDict()
     group_x_task_list = {}
@@ -341,7 +356,8 @@ def tasklist_shad_cpp(request, course, seminar=None, group=None):
 
         students = group.students.filter(is_active=True)
         not_active_students = UserProfile.objects.filter(Q(user__in=group.students.filter(is_active=True)) &
-                                                  (Q(user_status__tag='not_active') | Q(user_status__tag='academic')))
+                                                         (Q(user_status__tag='not_active') | Q(
+                                                             user_status__tag='academic')))
         academ_students += [x.user for x in not_active_students]
         if not show_academ_users:
             students = set(students) - set(academ_students)
@@ -396,6 +412,7 @@ def tasklist_shad_cpp(request, course, seminar=None, group=None):
         'group_tasks': group_x_task_list,
         'group_x_max_score': group_x_max_score,
         'default_teacher': default_teacher,
+        'task_editable': course.get_user_tasks_by_perm(user, 'view_task_settings'),
 
         'user': user,
         'user_is_attended': user_is_attended,
@@ -533,9 +550,11 @@ def get_filename_extensions(course):
 
 @login_required
 def course_settings(request, course_id):
+    user = request.user
     course = get_object_or_404(Course, id=course_id)
-    if not course.user_is_teacher(request.user):
-        return HttpResponseForbidden()
+
+    if not user.has_perm('change_course_settings', course):
+        raise PermissionDenied
 
     schools = course.school_set.all()
 
@@ -544,12 +563,14 @@ def course_settings(request, course_id):
         for task in course.task_set.filter(contest_integrated=True, is_hidden=False):
             tasks_with_contest[task.contest_id] = tasks_with_contest.get(task.contest_id, list()) + [task]
 
-    context = {'course': course,
-               'visible_queue': course.user_can_see_queue(request.user),
-               'user_is_teacher': course.user_is_teacher(request.user),
-               'school': schools[0] if schools else '',
-               'tasks_with_contest': tasks_with_contest,
-               }
+    context = {
+        'course': course,
+        'visible_queue': course.user_can_see_queue(user),
+        'user_is_teacher': course.user_is_teacher(user),
+        'school': schools[0] if schools else '',
+        'tasks_with_contest': tasks_with_contest,
+        'user_can_view_gradebook': course.user_can_view_gradebook(user)
+    }
 
     if request.method != "POST":
         form = DefaultTeacherForm(course)

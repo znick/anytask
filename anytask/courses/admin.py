@@ -1,8 +1,10 @@
 from courses.models import Course, FilenameExtension, DefaultTeacher, MarkField, CourseMarkSystem, StudentCourseMark
 from django.contrib import admin
 
+from guardian.admin import GuardedModelAdmin
 
-class CourseAdmin(admin.ModelAdmin):
+
+class CourseAdmin(GuardedModelAdmin):
     filter_horizontal = ('teachers', 'groups', 'filename_extensions', 'issue_fields')
     list_display = ('name', 'year', )
     list_filter = ('name', 'year__start_year', 'is_active')

@@ -45,7 +45,8 @@
                             <th align="center" class="{% if task.type == task.TYPE_SIMPLE and user_is_teacher %}dom-live-number{% else %}dom-number{% endif %} word-wrap">
                                 <a class="{% if task.is_hidden %}hidden-task-title{% endif %}" href="javascript:get_task_modal({{task.id}}, '{{task.title|escapejs}}',
                     '{{task.task_text|safe|escapejs}}',
-                     {% if task.deadline_time %} '{{task.deadline_time|date:'d-m-Y H:i'}}' {% else %}''{% endif %})">
+                     {% if task.deadline_time %} '{{task.deadline_time|date:'d-m-Y H:i'}}' {% else %}''{% endif %},
+                     {% if task in task_editable %}true{% else %}false{% endif %})">
                                     {{ task.title }}
                                 </a>
                                 {% if task.type != task.TYPE_SEMINAR and task.type != task.TYPE_MATERIAL %}

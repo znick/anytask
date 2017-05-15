@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "izmeneniye_dostupov_polzovateley" %}{% endblock %}
+
+{% block scripts %}
+    {% include "roles_assign_js.html" %}
+
+    <link href="{{ STATIC_URL }}roles_assign.css" rel='stylesheet' />
+{% endblock %}
+
+{% block navbar %}
+    <ul class="nav navbar-nav">
+        <li class="nav-item">
+            <a class="nav-link" href="{% url staff.views.staff_page %}">Staff</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{% url staff.views.roles_page %}">{% trans "nastroyki_roley" %}</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link active" href="">{% trans "izmeneniye_dostupov_polzovateley" %}</a>
+        </li>
+    </ul>
+{% endblock navbar %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">{% trans "izmeneniye_dostupov_polzovateley" %}</h5>
+                    <ul class="nav nav-pills" id="nav_schools">
+                        {% for users_table in users_tables %}
+                            <li class="nav-item">
+                                <span
+                                        class="nav-link"
+                                        data-toggle="pill"
+                                        data-table="#table_users_{{ users_table.school_info.id }}"
+                                        data-school_id="{{ users_table.school_info.id }}"
+                                        href="#school_{{ users_table.school_info.id }}"
+                                        role="tab"
+                                        aria-controls="school_{{ users_table.school_info.id }}"
+                                >{{ users_table.school_info.name }}</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="card-block">
+                    <div class="tab-content">
+                        {% for users_table in users_tables %}
+                            <div class="tab-pane fade" id="school_{{ users_table.school_info.id }}" role="tabpanel">
+                                <div class="row">
+                                    <div class="loading-table-img">
+                                        <div class="col-xs-12">
+                                            <span class="fa fa-circle-o-notch fa-spin fa-3x fa-fw loading"></span>
+                                        </div>
+                                    </div>
+                                    <div class="table-container">
+                                        <div class="col-xs-12">
+                                            <table class="table table-striped table-bordered table-users" id="table_users_{{ users_table.school_info.id }}" data-school_id="{{ users_table.school_info.id }}">
+                                                <thead>
+                                                <tr>
+                                                    <th class="searchable-input">{% trans 'polzovateli' %}</th>
+                                                    <th class="searchable-select">{% trans 'uchitel_v_kursakh' %}</th>
+                                                    <th class="searchable-select">{% trans 'student_v_kursakh' %}</th>
+                                                    <th class="searchable-select">{% trans 'student_v_gruppakh' %}</th>
+                                                    <th class="searchable-select">{% trans 'roli' %}</th>
+                                                    <th class="no-sort th-settings "></th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for user_id, user_info in users_table.users_info.iteritems %}
+                                                    <tr data-user_id="{{ user_id }}" data-school_id="{{ users_table.school_info.id }}">
+                                                        <td>
+                                                            <a href="{{ user_info.url }}" class="card-link table-link">
+                                                                <span class="search-value" id="u_{{ user_id }}">{{ user_info.last_name }}&nbsp;{{ user_info.first_name }}</span>
+                                                            </a>
+                                                        </td>
+                                                        <td data-type="courses">
+                                                            {% for course_id, course_info in user_info.courses_teacher.iteritems %}
+                                                                <div>
+                                                                    <a href="{{ course_info.url }}" class="card-link table-link">
+                                                                        <span class="search-value" id="c_t_{{ course_id }}" data-id="{{ course_id }}">{{ course_info.name }}</span>
+                                                                    </a>
+                                                                </div>
+                                                            {% endfor %}
+                                                        </td>
+                                                        <td data-type="courses">
+                                                            {% for course_id, course_info  in user_info.courses.iteritems %}
+                                                                <div>
+                                                                    <a href="{{ course_info.url }}" class="card-link table-link">
+                                                                        <span class="search-value" id="c_{{ course_id }}" data-id="{{ course_id }}">{{ course_info.name }}</span>
+                                                                    </a>
+                                                                </div>
+                                                            {% endfor %}
+                                                        </td>
+                                                        <td data-type="groups">
+                                                            {% for group_id, group_info in user_info.groups.iteritems %}
+                                                                <div>
+                                                                    <span class="search-value" id="g_{{ group_id }}" data-id="{{ group_id }}">{{ group_info.name }}</span>
+                                                                </div>
+                                                            {% endfor %}
+                                                        </td>
+                                                        <td data-type="roles">
+                                                            {% for role_id, role_info in user_info.roles.iteritems %}
+                                                                <div>
+                                                                    <span class="search-value" id="r_{{ role_id }}" data-id="{{ role_id }}">{{ role_info.name }}</span>
+                                                                </div>
+                                                            {% endfor %}
+                                                        </td>
+                                                        <td class="centered">
+                                                            <a class="table-link change-roles" >
+                                                                <span class="fa fa-cog fa-lg fa-fw" aria-hidden="true"></span>
+                                                            </a>
+                                                            {#                                                            <div class="dropdown dropdown-table">#}
+                                                            {#                                                                <a class="btn table-link dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">#}
+                                                            {#                                                                    <span class="fa fa-cog fa-lg" aria-hidden="true"></span>#}
+                                                            {#                                                                </a>#}
+                                                            {#                                                                <div class="dropdown-menu  dropdown-menu-right">#}
+                                                            {#                                                                    <a class="dropdown-item" href="#">Action</a>#}
+                                                            {#                                                                </div>#}
+                                                            {#                                                            </div>#}
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal_role" tabindex="-1" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="modal_role_header">{% trans 'redactirovat_roli' %}</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="loading">
+                        <span class='fa fa-circle-o-notch fa-spin'></span>
+                    </div>
+                    <div id="modal_role_body" class="collapse">
+                        <ul class="nav nav-pills" id="modal_nav_role">
+                            <li class="nav-item" id="modal_nav_role_user_roles">
+                                <span
+                                        class="nav-link active"
+                                        data-toggle="pill"
+                                        href="#modal_user_roles"
+                                        role="tab"
+                                        aria-controls="modal_user_roles"
+                                >{% trans 'redactirovat_roli' %}</span>
+                            </li>
+                            <li class="nav-item" id="modal_nav_role_new_role">
+                                <span
+                                        class="nav-link"
+                                        data-toggle="pill"
+                                        href="#modal_new_role"
+                                        role="tab"
+                                        aria-controls="modal_new_role"
+                                >{% trans 'dobavit_rol' %}</span>
+                            </li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane fade active in" id="modal_user_roles" role="tabpanel">
+                                <div id="modal_roles_accordion" role="tablist" aria-multiselectable="true">
+
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="modal_new_role" role="tabpanel">
+                                <div id="modal_new_role_collapse">
+                                    <div id="modal_new_role_select_block">
+                                        <select id="modal_new_role_select" class="form-control"></select>
+                                    </div>
+                                    <div id="modal_new_role_table" class="collapse table-collapse">
+                                        <form id="modal_new_role_form">
+                                            <table class="table table-striped table-bordered table-roles">
+                                                <thead><tr></tr></thead>
+                                                <tbody></tbody>
+                                            </table>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-dismiss="modal">{% trans "zakryt" %}</button>
+                    <button class="btn btn-primary" id="modal_role_ok" data-csrf_token="{{ csrf_token }}" data-loading_text="<span class='fa fa-circle-o-notch fa-spin'></span> {% trans "sohranenie" %}">{% trans "sohranit_izmenenija" %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

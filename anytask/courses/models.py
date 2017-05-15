@@ -11,12 +11,17 @@ from django.conf import settings
 from django.db.models.signals import post_save
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
+from django.db.models.loading import get_model
 
 from groups.models import Group
 from issues.model_issue_status import IssueStatusSystem
 from issues.model_issue_field import IssueField
 from years.models import Year
 from anyrb.common import RbReviewGroup
+
+from permissions.models import PermissionBase
+from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
+from guardian.shortcuts import get_objects_for_user
 
 
 def add_group_with_extern(sender, instance, **kwargs):
@@ -90,7 +95,6 @@ class CourseMarkSystem(models.Model):
 
 
 class Course(models.Model):
-
     name = models.CharField(max_length=191, db_index=True, null=False, blank=False)
     name_id = models.CharField(max_length=191, db_index=True, null=True, blank=True)
 
@@ -111,7 +115,8 @@ class Course(models.Model):
 
     send_to_contest_from_users = models.BooleanField(db_index=False, null=False, blank=False, default=False)
 
-    filename_extensions = models.ManyToManyField(FilenameExtension, related_name='filename_extensions_set', null=True, blank=True)
+    filename_extensions = models.ManyToManyField(FilenameExtension, related_name='filename_extensions_set', null=True,
+                                                 blank=True)
 
     full_transcript = models.BooleanField(db_index=False, null=False, blank=False, default=True)
 
@@ -121,10 +126,10 @@ class Course(models.Model):
     update_time = models.DateTimeField(auto_now=True, default=datetime.now)
 
     can_be_chosen_by_extern = models.BooleanField(db_index=False, null=False, blank=False, default=False)
-    group_with_extern = models.ForeignKey(Group, related_name="course_with_extern", db_index=False, null=True, blank=True)
+    group_with_extern = models.ForeignKey(Group, related_name="course_with_extern", db_index=False, null=True,
+                                          blank=True)
 
     mark_system = models.ForeignKey(CourseMarkSystem, db_index=False, null=True, blank=True)
-
 
     show_accepted_after_contest_ok = models.BooleanField(db_index=False, null=False, blank=False, default=False)
     default_accepted_after_contest_ok = models.BooleanField(db_index=False, null=False, blank=False, default=False)
@@ -191,25 +196,44 @@ class Course(models.Model):
             return True
         return False
 
+    def get_user_tasks_by_perm(self, user, perm_codename):
+        return get_model('tasks', 'Task').objects.filter(groups__in=self.get_user_groups_by_perm(user, perm_codename))
+
+
+    def get_user_groups_by_perm(self, user, perm_codename):
+        return self.groups.filter(
+            id__in=get_objects_for_user(user, 'groups.' + perm_codename).values_list("id", flat=True)
+        )
+
+    def user_can_view_gradebook(self, user, group=None):
+        if group:
+            if user.has_perm('view_gradebook', group):
+                return True
+        else:
+            return self.get_user_groups_by_perm(user, 'view_gradebook').exists()
+        return False
+
+
+
     def save(self, *args, **kwargs):
         super(Course, self).save(*args, **kwargs)
         self.add_group_with_extern()
 
     def add_group_with_extern(self):
         if self.group_with_extern is None and self.can_be_chosen_by_extern:
-            group, ok = Group.objects.get_or_create(year=self.year,name=u'%s - слушатели' % self.name)
+            group, ok = Group.objects.get_or_create(year=self.year, name=u'%s - слушатели' % self.name)
             group.save()
             self.group_with_extern = group
             self.groups.add(group)
             self.save()
 
-    def add_user_to_group_with_extern(self,user):
+    def add_user_to_group_with_extern(self, user):
         self.add_group_with_extern()
         self.group_with_extern.students.add(user)
 
-    def remove_user_from_group_with_extern(self,user):
-         if self.group_with_extern is not None:
-             self.group_with_extern.students.remove(user)
+    def remove_user_from_group_with_extern(self, user):
+        if self.group_with_extern is not None:
+            self.group_with_extern.students.remove(user)
 
     def get_teachers(self):
         return self.teachers.order_by('last_name', 'first_name')
@@ -225,6 +249,20 @@ class Course(models.Model):
 
     def is_contest_integrated(self):
         return self.contest_integrated or self.task_set.filter(contest_integrated=True).count()
+
+    class Meta:
+        permissions = (
+            ('view_course', 'View course'),
+            ('change_course_settings', 'Change course settings'),
+        )
+
+
+class CourseUserObjectPermission(UserObjectPermissionBase, PermissionBase):
+    content_object = models.ForeignKey(Course, on_delete=models.CASCADE)
+
+
+class CourseGroupObjectPermission(GroupObjectPermissionBase):
+    content_object = models.ForeignKey(Course, on_delete=models.CASCADE)
 
 
 class DefaultTeacher(models.Model):
@@ -276,6 +314,7 @@ def add_default_issue_fields(sender, instance, action, **kwargs):
         instance.issue_fields.remove(*default_issue_fields.get_deleted_issue_fields())
         return
 
+
 def update_rb_review_group(sender, instance, created, **kwargs):
     course = instance
 
@@ -295,6 +334,7 @@ def update_rb_review_group(sender, instance, created, **kwargs):
     for teacher in teachers:
         if teacher not in rg_users:
             rg.user_add(teacher)
+
 
 m2m_changed.connect(add_default_issue_fields, sender=Course.issue_fields.through)
 post_save.connect(update_rb_review_group, sender=Course)

@@ -1,0 +1,528 @@
+{% load i18n %}
+
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap4.min.css"/>
+<link rel="stylesheet" type="text/css"
+      href="https://cdn.datatables.net/rowgroup/1.0.0/css/rowGroup.bootstrap4.min.css"/>
+
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap4.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/rowgroup/1.0.0/js/dataTables.rowGroup.min.js"></script>
+<script src="{{ STATIC_URL }}jquery.validate.min.js"></script>
+
+
+<script type="text/javascript">
+    $.fn.dataTable.ext.type.search.searchInput = function (data) {
+        return $('span.search-value', data).text();
+    };
+
+    $.fn.dataTable.ext.type.search.searchSelect = function (data) {
+        var res = [];
+        if (data)
+            $('span.search-value', $(data)).each(function () {
+                res.push($(this).prop("id"));
+            });
+
+        return JSON.stringify(res);
+    };
+
+    $.fn.dataTable.ext.search.push(
+        function (settings, data, dataIndex) {
+            var api = new $.fn.dataTable.Api(settings);
+            var res = true;
+
+            api.columns().header().to$().each(function (i) {
+                var $select = $("select", this);
+                if ($select.length) {
+                    var col_data = JSON.parse(data[i]);
+                    if ($select.val() && col_data.indexOf($select.val()) === -1)
+                        res = false
+                }
+                else {
+                    var $input = $("input", this);
+                    if ($input.val() && data[i].toLowerCase().indexOf($input.val().toLowerCase()) === -1)
+                        res = false
+                }
+            });
+
+            return res;
+        }
+    );
+
+
+    $(document).ready(function () {
+        $('span.nav-link', '#nav_schools').click(function (e) {
+            var $span = $(this);
+            window.location.hash = $span.attr("href");
+            init_main_table($($span.data("table")));
+        });
+
+        $('span.nav-link', '#nav_schools').on('shown.bs.tab', function () {
+            var $span = $(this);
+            init_main_table($($span.data("table"))).draw();
+        });
+
+        var url_hash = window.location.hash ? window.location.hash : $('span.nav-link:first-child', '#nav_schools').attr("href");
+        $('span.nav-link[href="' + url_hash + '"]', '#nav_schools').click();
+
+        $(window).resize(function () {
+            $.fn.dataTable.tables({visible: true, api: true}).draw();
+        });
+
+        $("select, input", ".table-users div.search").click(function (e) {
+            e.stopPropagation();
+        });
+
+        $(".change-roles", ".table-users").click(function () {
+            var d = "disabled";
+            var $btn = $(this);
+            var $tr_main = $btn.closest("tr");
+            var $modal = $("#modal_role");
+            $("#modal_new_role_table").removeClass("in");
+            $("#modal_new_role_collapse").removeClass("in");
+
+            $modal.modal("show");
+
+            var user_info = {
+                "schools": {}
+            };
+            user_info["schools"][$tr_main.closest("table").data("school_id")] = 1;
+            $('td', $tr_main).each(function () {
+                var $td = $(this);
+                var type = $td.data("type");
+                if (type) {
+                    if (!user_info.hasOwnProperty(type))
+                        user_info[type] = {};
+                    $('span.search-value', $td).each(function () {
+                        user_info[type][$(this).data("id")] = 1;
+                    });
+                }
+            });
+            $modal.data("user_info", user_info);
+            $modal.data("user_id", $tr_main.data("user_id"));
+            $modal.data("school_id", $tr_main.data("school_id"));
+            $modal.data("deleted_roles", []);
+
+            $(".loading", "#modal_role").show();
+            $("#modal_role_body").removeClass("in");
+            $('button', "#modal_role").addClass(d).attr(d, d).prop(d, true);
+            $modal.data("loading", true);
+
+            var get_data = {
+                "user_id": $tr_main.data("user_id"),
+                "school_id": $tr_main.data("school_id")
+            };
+
+            $.get('{% url staff.views.ajax_get_user_roles_info %}', get_data)
+                .always(function (data) {
+                    $('button', "#modal_role").removeClass(d).removeAttr(d).prop(d, false);
+                    $(".loading", "#modal_role").hide();
+                    $("#modal_new_role_collapse").removeClass("in");
+                    $("#modal_role_body").collapse("show");
+                    $modal.data("loading", false)
+                })
+                .done(function (data) {
+                    create_modal_body(data);
+                    $modal.data("roles_info", data);
+                })
+                .fail(function (data) {
+                    $modal.modal("hide");
+                });
+        });
+
+        $("#modal_role").on("hide.bs.modal", function (e) {
+            if ($(this).data("loading"))
+                e.preventDefault();
+        });
+
+        $("#modal_new_role").on("change", "#modal_new_role_select", function () {
+            var $select = $(this);
+            var $modal_new_role_table = $("#modal_new_role_table");
+            $modal_new_role_table.removeClass("in");
+            var role_id = $select.val();
+            if (!role_id) {
+                return;
+            }
+            var $modal = $("#modal_role");
+            var data = $modal.data("roles_info");
+            var user_info = $modal.data("user_info");
+            var $table = $("table", $modal_new_role_table);
+            $modal.data("role_id", role_id);
+            create_modal_table($table, role_id, user_info, data, "roles")
+        });
+
+        $("#modal_role_ok").click(function () {
+            var $form = $('#modal_new_role_form');
+
+            if ($form.valid()) {
+                var $btn = $(this);
+                var $modal = $("#modal_role");
+                var d = "disabled";
+
+                $btn.data('saving', true);
+                $btn.data('reset_text', $btn.html());
+                $btn.html($btn.data('loading_text'));
+                $('button', $modal).addClass(d).attr(d, d).prop(d, true);
+
+                var new_role_perms = {};
+
+                $("select", $form).each(function () {
+                    var $select = $(this);
+                    new_role_perms[$select.data("perm_id")] = $select.val();
+                });
+
+                var post_data = {
+                    "csrfmiddlewaretoken": $btn.data("csrf_token"),
+                    "user_id": $modal.data("user_id"),
+                    "role_id": $modal.data("role_id"),
+                    "school_id": $modal.data("school_id"),
+                    "deleted_roles": $modal.data("deleted_roles"),
+                    "new_role_perms": JSON.stringify(new_role_perms),
+                };
+
+                $.post('{% url staff.views.ajax_save_user_roles %}', post_data)
+                    .always(function (data) {
+
+                    })
+                    .done(function (data) {
+                        $btn.addClass("btn-success").text("{% trans "uspeshno" %}");
+                        window.location.reload();
+                    })
+                    .fail(function (data) {
+                        $btn.data('saving', false);
+
+                        $('button', $modal).removeClass(d).removeAttr(d).prop(d, false);
+                        $btn.html($btn.data('reset_text'));
+                    });
+            }
+        });
+    });
+
+    function init_main_table($table) {
+        var data_table;
+        if ($.fn.DataTable.isDataTable($table)) {
+            data_table = $table.DataTable();
+        }
+        else {
+            data_table = $table.DataTable({
+                scrollY: "65vh",
+                scrollX: true,
+                scrollCollapse: true,
+                paging: false,
+                order: [[0, 'asc']],
+                autoWidth: false,
+                dom: "<'row'<'col-xs-12'tr>>" +
+                "<'row'<'col-xs-12 col-sm-12 col-md-4 col-lg-4'i><'col-xs-12 col-sm-12 col-md-8 col-lg-8'p>>",
+                columnDefs: [
+                    {
+                        "targets": "searchable-select",
+                        "type": "searchSelect"
+                    },
+                    {
+                        "targets": "searchable-input",
+                        "type": "searchInput"
+                    },
+                    {
+                        "targets": "no-sort",
+                        "orderable": false
+                    },
+                    {
+                        "targets": "th-settings",
+                        "orderable": false,
+                        "width": "1%"
+                    }
+                ],
+                language: {
+                    "decimal": "",
+                    "emptyTable": "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{% trans 'pustaja_tablica' %}",
+                    "thousands": ",",
+                    "loadingRecords": "{% trans 'zagruzka' %}",
+                    "processing": "{% trans 'vychislenie' %}",
+                    "info": "_TOTAL_",
+                    "infoEmpty": "0",
+                    "infoFiltered": "({% trans 'iz' %} _MAX_)",
+                    "infoPostFix": "",
+                    "zeroRecords": "{% trans 'nichego_ne_najdeno' %}"
+                },
+                initComplete: function (settings, json) {
+                    var $table = $(this);
+                    var $container = $table.closest(".table-container");
+                    $container.siblings('.loading-table-img').hide();
+                    $container.show();
+
+                    this.api().columns(".searchable-input").every(function () {
+                        var column = this;
+                        var input = $('<div class="search search-input"><input class="form-control form-control-sm" type="text" placeholder="{% trans "najti" %}" /></div>')
+                            .appendTo($(column.header()))
+                            .on('keyup change', function () {
+                                var val = $(this).val();
+
+                                column.search(val).draw();
+                            });
+                    });
+
+                    this.api().columns(".searchable-select").every(function () {
+                        var column = this;
+                        var select = $('<div class="search search-select"><select class="form-control form-control-sm"><option value=""></option></select></div>')
+                            .appendTo($(column.header()))
+                            .on('change', function () {
+                                var val = $(this).val();
+
+                                column.search(val).draw();
+                            });
+
+                        var select_dict = {};
+                        column.data().unique().sort().each(function (d) {
+                            $(d).find(".search-value").each(function () {
+                                var $span = $(this);
+                                if (!select_dict.hasOwnProperty($span.prop("id"))) {
+                                    $('select', select).append('<option value="' + $span.prop("id") + '">' + $span.text() + '</option>');
+                                    select_dict[$span.prop("id")] = $span.text();
+                                }
+                            });
+                        });
+                    });
+                    $table.DataTable().draw();
+                },
+            });
+        }
+        return data_table;
+    }
+
+    function create_modal_body(data) {
+        var $modal_roles_accordion = $("#modal_roles_accordion");
+        $modal_roles_accordion.html('');
+        var show_edit_button = false;
+        if (data.hasOwnProperty("user_roles")) {
+            for (var user_role_id in data["user_roles"]) {
+                show_edit_button = true;
+                var $card = $('' +
+                    '<div class="card" id="user_role_card_' + user_role_id + '">' +
+                    '  <div class="card-header" role="tab" id="user_role_header_' + user_role_id + '" data-toggle="collapse" data-parent="#modal_roles_accordion" href="#user_role_collapse_' + user_role_id + '" aria-expanded="true" aria-controls="user_role_collapse_' + user_role_id + '">' +
+                    '    <a class="card-link" >' +
+                    '    </a>' +
+                    '    <span class="fa fa-trash-o btn-delete-role" data-toggle="popover-delete-role" tabindex="0" data-role_id="' + user_role_id + '" aria-hidden="true"></span>' +
+                    '  </div>' +
+                    '  <div id="user_role_collapse_' + user_role_id + '" class="collapse user_role_collapse" role="tabpanel" aria-labelledby="user_role_header_' + user_role_id + '">' +
+                    '    <div class="card-block table-collapse collapse">' +
+                    '      <form>' +
+                    '        <table class="table table-striped table-bordered table-roles">' +
+                    '          <thead><tr></tr></thead>' +
+                    '          <tbody></tbody>' +
+                    '        </table>' +
+                    '      </form>' +
+                    '    </div>' +
+                    '  </div>' +
+                    '</div>'
+                ).appendTo($modal_roles_accordion);
+                $("div.card-header", $card).find("a").text(data["user_roles"][user_role_id]["name"]);
+
+                var $table = $("table", $card);
+                create_modal_table($table, user_role_id, {}, data, "user_roles");
+
+            }
+        }
+
+        $('span.btn-delete-role', "#modal_roles_accordion").popover({
+            trigger: 'manual',
+            html: true,
+            template: '<div class="popover" role="tooltip">' +
+            '<div class="popover-arrow"></div>' +
+            '<div class="popover-content"></div>' +
+            '<div class="popover-footer">' +
+            '<button class="btn btn-sm btn-secondary" type="button" data-dismiss="popover"><i class="fa fa-times"></i></button>' +
+            '<button class="btn btn-sm btn-danger btn-delete-role-ok" type="button"><i class="fa fa-trash-o"></i></button>' +
+            '</div>' +
+            '</div>',
+            content: function () {
+                var $span = $('<span class="popover-data"></span>')
+                    .attr("data-role_card_id", "#" + $(this).closest("div.card").attr("id"))
+                    .attr("data-role_id", $(this).data("role_id"))
+                    .text("{% trans "udalit_rol_vopros" %}");
+
+                return $span[0].outerHTML;
+            }
+        })
+            .on('click', function(e) {
+                e.stopPropagation();
+                $('span.btn-delete-role', "#modal_roles_accordion").not(this).popover('hide');
+                $(this).popover('toggle');
+            })
+            .on('shown.bs.popover', function () {
+                var $popover = $(this);
+
+                $(document).one('click', oneClickHandler);
+
+                function oneClickHandler(event) {
+                    if ($(event.target).data('toggle') !== 'popover-delete-role') {
+                        $popover.popover('hide');
+                    } else {
+                        $(document).one('click', oneClickHandler);
+                    }
+                }
+            });
+
+        $('body').on("click", "button.btn-delete-role-ok", function () {
+            var $span_data = $(this).closest("div.popover").find("span.popover-data");
+            $("#modal_role").data("deleted_roles").push($span_data.data("role_id"));
+            $($span_data.data("role_card_id") ,"#modal_role").hide();
+        });
+
+        $('.user_role_collapse').on('show.bs.collapse', function () {
+            var $table = $("table", this);
+            $("tr.group.group-start", $table).find("td").attr("colspan", 2);
+        });
+
+        var $select = $("#modal_new_role_select").html('');
+        $select.append('<option value=""></option>');
+        if (data.hasOwnProperty("roles")) {
+            for (var role_id in data["roles"]) {
+                $select.append('<option value="' + role_id + '">' + data["roles"][role_id]["name"] + '</option>');
+            }
+        }
+        if (show_edit_button)
+            $("#modal_nav_role_user_roles").removeClass("hidden");
+        else
+            $("#modal_nav_role_user_roles").addClass("hidden");
+
+        $('li:not(".hidden"):first span', "#modal_nav_role").click();
+    }
+
+    function create_modal_table($table, role_id, user_info, data, data_key) {
+        if ($.fn.DataTable.isDataTable($table)) {
+            $table.DataTable().destroy();
+        }
+
+        var $thead = $('thead', $table).show().find("tr").html('');
+        var $tbody = $('tbody', $table).html('');
+        $thead.append('<th class="disable-ordering">{% trans 'dostupy' %}</th>');
+        $thead.append('<th></th>');
+        if (data.hasOwnProperty(data_key) && data[data_key].hasOwnProperty(role_id)) {
+            $thead.append('<th class="disable-ordering" data-perm_id="' + data[data_key][role_id] + '">' + data[data_key][role_id]["name"] + '</th>');
+            if (data[data_key][role_id].hasOwnProperty("perms"))
+                for (var perm_id in data[data_key][role_id]["perms"]) {
+                    var $tr = $('<tr></tr>').appendTo($tbody);
+                    $tr.append('<td>' + data[data_key][role_id]["perms"][perm_id]["name"] + '</td>');
+                    $tr.append('<td>' + data[data_key][role_id]["perms"][perm_id]["model_name"] + '</td>');
+                    var $td = $('<td class="centered"></td>').appendTo($tr);
+                    var type = data[data_key][role_id]["perms"][perm_id]["model"];
+                    if (data.hasOwnProperty(type)) {
+                        var $select_type = $('<select multiple="multiple" name="select_' + perm_id + '" data-perm_id="' + perm_id + '"></select>').appendTo($td);
+                        var user_type_info = {};
+                        if (user_info.hasOwnProperty(type))
+                            user_type_info = user_info[type];
+
+                        for (var type_id in data[type]) {
+                            var selected = '';
+                            if (
+                                user_type_info.hasOwnProperty(type_id) ||
+                                (
+                                    data[data_key][role_id]["perms"][perm_id].hasOwnProperty("objects") &&
+                                    data[data_key][role_id]["perms"][perm_id]["objects"].indexOf(parseInt(type_id, 10)) !== -1
+                                )
+                            )
+                                selected = 'selected="selected"';
+
+                            $select_type.append('<option value="' + type_id + '"' + selected + '>' + data[type][type_id] + '</option>');
+                        }
+                    }
+                    else {
+                        $td.append('<input type="checkbox" checked="checked" disabled="disabled">');
+                    }
+                }
+        }
+
+        init_modal_table($table);
+    }
+
+    function init_modal_table($table) {
+        var form_validator = $($table).closest("form").validate({
+            ignore: ':hidden:not("select")',
+            highlight: function (input) {
+                $(input).closest("td").removeClass('has-success').addClass('has-danger');
+            },
+
+            success: function (label) {
+                label.closest('td').removeClass('has-danger');
+            },
+
+            errorPlacement: function (error, element) {
+                $(element).closest("td").append(error);
+            }
+        });
+
+        $("select[multiple]", $table).multiselect({
+            buttonContainer: '<div style="width:100%;" class="multiselect-dropdown dropdown"/>',
+            buttonClass: 'btn btn-secondary btn-table',
+            templates: {
+                ul: '<ul class="multiselect-container dropdown-menu dropdown-menu-right"></ul>',
+                li: '<li><a tabindex="0" class="dropdown-item"><label></label></a></li>',
+            },
+            maxHeight: 200,
+            buttonTitle: function (options, select) {
+                var labels = [];
+
+                if (options.length === 0) {
+                    return '---';
+                }
+                else {
+                    options.each(function () {
+                        labels.push($(this).text());
+                    });
+                }
+                return labels.join(', ');
+            },
+            buttonText: function (options, select) {
+                if (options.length === 0) {
+                    return '---';
+                }
+
+                return '{% trans "vybrano" %}: ' + options.length;
+            },
+            onChange: function (option, checked) {
+                form_validator.element($(option).closest("select"));
+            },
+        }).each(function () {
+            $(this).rules('add', {
+                required: true,
+                messages: {
+                    required: "required",
+                }
+            });
+        });
+
+        $table.DataTable({
+            info: false,
+            paging: false,
+            searching: false,
+            order: [[1, 'desc']],
+            autoWidth: false,
+            rowGroup: {
+                dataSrc: 1
+            },
+            columnDefs: [
+                {
+                    "targets": 1,
+                    "visible": false
+                },
+                {
+                    "targets": "disable-ordering",
+                    "orderable": false
+                }
+            ],
+            language: {
+                "decimal": "",
+                "emptyTable": "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{% trans 'pustaja_tablica' %}",
+                "thousands": ",",
+                "loadingRecords": "{% trans 'zagruzka' %}",
+                "processing": "{% trans 'vychislenie' %}"
+            },
+            initComplete: function (settings, json) {
+                var $table = $(this);
+                $table.closest("div.table-collapse").collapse("show");
+                $table.DataTable().draw();
+                $table.find("thead").hide();
+            }
+        });
+    }
+
+</script>
