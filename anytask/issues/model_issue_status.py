@@ -62,3 +62,6 @@ class IssueStatusSystem(models.Model):
 
     def __unicode__(self):
         return u'{0}'.format(self.name)
+
+    def has_accepted_after_deadline(self):
+        return self.statuses.filter(tag='accepted_after_deadline').exists()
