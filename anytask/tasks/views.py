@@ -335,8 +335,8 @@ def contest_task_import(request):
     if 'result' in problem_req.json():
         problems = problem_req.json()['result']['problems']
 
-    problems_with_score = {problem['id']:problem['score'] if 'score' in problem else None for problem in problems}
-    problems_with_end = {problem['id']:problem['end'] if 'end' in problem else None for problem in problems}
+    problems_with_score = {problem['id']: problem['score'] if 'score' in problem else None for problem in problems}
+    problems_with_end = {problem['id']: problem['end'] if 'end' in problem else None for problem in problems}
 
     if got_info:
         if problems:
@@ -346,10 +346,14 @@ def contest_task_import(request):
         for problem in contest_info['problems']:
             if problem['problemId'] in contest_problems:
                 current_params = common_params['attrs'].copy()
-                current_params['title'] = problem['problemTitle']
-                current_params['task_text'] = current_params['task_text'] or \
-                                              prettify_contest_task_text(problem['statement'])
-                current_params['short_title'] = current_params['short_title'] or problem['alias']
+                current_params.update({
+                    'title': problem['problemTitle'],
+                    'task_text': current_params['task_text'] or prettify_contest_task_text(problem['statement']),
+                    'short_title': current_params['short_title'] or problem['alias'],
+                    'contest_integrated': True,
+                    'contest_id': contest_id,
+                    'problem_id': problem['alias']
+                })
 
                 if not current_params['score_max'] and problems_with_score:
                     current_params['score_max'] = problems_with_score[problem['problemId']] or 0
@@ -359,9 +363,6 @@ def contest_task_import(request):
                     if deadline:
                         current_params['deadline_time'] = datetime.datetime.strptime(deadline, '%Y-%m-%dT%H:%M')
 
-                current_params['contest_integrated'] = True
-                current_params['contest_id'] = contest_id
-                current_params['problem_id'] = problem['alias']
                 tasks.append(current_params)
 
     elif "You're not allowed to view this contest." in contest_info:
@@ -395,7 +396,7 @@ def get_task_text_popup(request, task_id):
     task = get_object_or_404(Task, id=task_id)
 
     context = {
-        'task' : task,
+        'task': task,
     }
 
     return render_to_response('task_text_popup.html', context, context_instance=RequestContext(request))
