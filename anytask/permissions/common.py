@@ -34,7 +34,7 @@ LOCALE_PERMS_NAMES = {
     },
     'groups': {
         'view_gradebook': _(u'prosmotr_obshchey_vedomosti'),
-        'create_task': _(u'sozdaniye_zadachi'),
+        'create_task': _(u'sozdanie_zadachi'),
         'view_task_settings': _(u'prosmotr_nastroyek_zadach'),
         'change_task_title': _(u'izmeneniye_nazvaniya_zadachi'),
         'change_task_groups': _(u'izmeneniye_grupp_zadachi'),
