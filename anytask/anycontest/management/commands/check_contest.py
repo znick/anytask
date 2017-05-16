@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
 
-from django.core.management.base import BaseCommand
+import logging
+from datetime import datetime
+
 from django.conf import settings
+from django.core.management.base import BaseCommand
 from django.utils import translation
 from django.utils.translation import ugettext as _
-from anycontest.common import comment_verdict, get_contest_mark
-from anyrb.common import AnyRB
-from anycontest.models import ContestSubmission
-from issues.model_issue_status import IssueStatus
-from users.models import UserProfile
 
-import logging
+from anycontest.common import comment_verdict, get_contest_mark
+from anycontest.models import ContestSubmission
+from anyrb.common import AnyRB
+from users.models import UserProfile
 
 logger = logging.getLogger('django.request')
 
@@ -43,8 +44,16 @@ class Command(BaseCommand):
                                            format(review_request_id, settings.RB_API_URL)
                         else:
                             comment += '\n' + _(u'oshibka_otpravki_v_rb')
-                    if contest_submission.verdict == 'ok' and task.accepted_after_contest_ok:
-                        issue.set_status_by_tag(IssueStatus.STATUS_ACCEPTED)
+                    if contest_submission.verdict == 'ok' and \
+                            task.accepted_after_contest_ok and \
+                            not issue.is_status_accepted():
+                        if task.deadline_time and task.deadline_time < datetime.now() and \
+                                task.course.issue_status_system.has_accepted_after_deadline():
+                            issue.set_status_accepted_after_deadline()
+                            if not issue.task.score_after_deadline:
+                                comment += '\n' + _(u'bally_ne_uchityvautsia')
+                        else:
+                            issue.set_status_accepted()
                     if issue.task.course.id in settings.COURSES_WITH_CONTEST_MARKS:
                         student_profile = issue.student.get_profile()
                         if student_profile.ya_contest_login:

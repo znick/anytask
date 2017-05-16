@@ -84,6 +84,27 @@ class Issue(models.Model):
     status = models.CharField(max_length=20, choices=ISSUE_STATUSES, default=STATUS_NEW)
     status_field = models.ForeignKey(IssueStatus, db_index=True, null=False, blank=False, default=1)
 
+    def is_status_accepted(self):
+        return self.status_field.tag in [IssueStatus.STATUS_ACCEPTED, IssueStatus.STATUS_ACCEPTED_AFTER_DEADLINE]
+
+    def is_status_accepted_after_deadline(self):
+        return self.status_field.tag == IssueStatus.STATUS_ACCEPTED_AFTER_DEADLINE
+
+    def is_status_auto_verification(self):
+        return self.status_field.tag == IssueStatus.STATUS_AUTO_VERIFICATION
+
+    def is_status_new(self):
+        return self.status_field.tag == IssueStatus.STATUS_NEW
+
+    def is_status_rework(self):
+        return self.status_field.tag == IssueStatus.STATUS_REWORK
+
+    def is_status_need_info(self):
+        return self.status_field.tag == IssueStatus.STATUS_NEED_INFO
+
+    def is_status_verification(self):
+        return self.status_field.tag == IssueStatus.STATUS_VERIFICATION
+
     def score(self):
         field = IssueField.objects.get(id=8)
 
@@ -220,6 +241,27 @@ class Issue(models.Model):
                 return self.set_byname('status', status[0], author)
         return
 
+    def set_status_accepted(self, author=None):
+        self.set_status_by_tag(IssueStatus.STATUS_ACCEPTED, author)
+
+    def set_status_accepted_after_deadline(self, author=None):
+        self.set_status_by_tag(IssueStatus.STATUS_ACCEPTED_AFTER_DEADLINE, author)
+
+    def set_status_need_info(self, author=None):
+        self.set_status_by_tag(IssueStatus.STATUS_NEED_INFO, author)
+
+    def set_status_rework(self, author=None):
+        self.set_status_by_tag(IssueStatus.STATUS_REWORK, author)
+
+    def set_status_auto_verification(self, author=None):
+        self.set_status_by_tag(IssueStatus.STATUS_AUTO_VERIFICATION, author)
+
+    def set_status_verification(self, author=None):
+        self.set_status_by_tag(IssueStatus.STATUS_VERIFICATION, author)
+
+    def set_status_seminar(self, author=None):
+        self.set_status_by_tag(IssueStatus.STATUS_SEMINAR, author)
+
     def set_byname(self, name, value, author=None):
         field = IssueField.objects.get(name=name)
         return self.set_field(field, value, author)
@@ -276,8 +318,8 @@ class Issue(models.Model):
                                 sent = contest_submission.upload_contest(ext, compiler_id=value['compilers'][file_id])
                                 if sent:
                                     value['comment'] += u"<p>{0}</p>".format(_(u'otpravleno_v_kontest'))
-                                    if self.status_field.tag != IssueStatus.STATUS_ACCEPTED:
-                                        self.set_status_by_tag(IssueStatus.STATUS_AUTO_VERIFICATION)
+                                    if not self.is_status_accepted():
+                                        self.set_status_auto_verification()
                                 else:
                                     value['comment'] += u"<p>{0}('{1}')</p>".format(_(u'oshibka_otpravki_v_kontest'),
                                                                                      contest_submission.send_error)
@@ -308,12 +350,11 @@ class Issue(models.Model):
                     self.update_time = datetime.now()
                     value = u'<div class="issue-page-comment not-sanitize">' + value['comment'] + u'</div>'
 
-                if self.status_field.tag != IssueStatus.STATUS_AUTO_VERIFICATION \
-                        and self.status_field.tag != IssueStatus.STATUS_ACCEPTED:
-                    if author == self.student and self.status_field.tag != IssueStatus.STATUS_NEED_INFO and sent:
-                        self.set_status_by_tag(IssueStatus.STATUS_VERIFICATION)
+                if not self.is_status_auto_verification() and not self.is_status_accepted():
+                    if author == self.student and not self.is_status_need_info() and sent:
+                        self.set_status_verification()
                     if author == self.responsible:
-                        if self.status_field.tag == IssueStatus.STATUS_NEED_INFO:
+                        if self.is_status_need_info():
                             status_field = IssueField.objects.get(name='status')
                             status_events = Event.objects\
                                 .filter(issue_id=self.id, field=status_field)\
@@ -326,9 +367,9 @@ class Issue(models.Model):
                                 if status_prev:
                                     self.set_field(status_field, status_prev[0])
                                 else:
-                                    self.set_status_by_tag(IssueStatus.STATUS_REWORK)
+                                    self.set_status_rework()
                         else:
-                            self.set_status_by_tag(IssueStatus.STATUS_REWORK)
+                            self.set_status_rework()
 
         elif name == 'status':
             try:
@@ -336,7 +377,7 @@ class Issue(models.Model):
                 if review_id != '':
                     if value.tag == IssueStatus.STATUS_ACCEPTED:
                         update_status_review_request(review_id, 'submitted')
-                    elif self.status_field.tag == IssueStatus.STATUS_ACCEPTED:
+                    elif self.is_status_accepted():
                         update_status_review_request(review_id, 'pending')
             except:
                 pass
@@ -353,8 +394,12 @@ class Issue(models.Model):
                 value = 0
             value = normalize_decimal(value)
             if self.mark != float(value):
-                if self.task.parent_task is not None:
-                    parent_task_issue, created = Issue.objects.get_or_create(student=self.student, task=self.task.parent_task)
+                if self.task.parent_task is not None and \
+                        (self.task.score_after_deadline or not self.is_status_accepted_after_deadline()):
+                    parent_task_issue, created = Issue.objects.get_or_create(
+                        student=self.student,
+                        task=self.task.parent_task
+                    )
                     parent_task_issue.mark -= self.mark
                     parent_task_issue.mark += float(value)
                     parent_task_issue.save()
@@ -364,8 +409,8 @@ class Issue(models.Model):
                 delete_event = True
 
             value = str(value)
-            if self.status_field.tag != IssueStatus.STATUS_ACCEPTED and self.status_field.tag != IssueStatus.STATUS_NEW:
-                self.set_status_by_tag(IssueStatus.STATUS_REWORK)
+            if not self.is_status_accepted() and not self.is_status_new():
+                self.set_status_rework()
 
         self.save()
 
