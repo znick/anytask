@@ -7,6 +7,65 @@
     <script src="{{ STATIC_URL }}jquery.validate.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
+            var maps_suggest_api = 'https://suggest-maps.yandex.ru/suggest-geo?search_type=addr&v=5&bases=locality&n=4&fullpath=0';
+            var location_bloodhound = new Bloodhound({
+                datumTokenizer: function(datum) {
+{#                    console.log(datum);#}
+                    return Bloodhound.tokenizers.whitespace(datum.fullname);
+                },
+                queryTokenizer: Bloodhound.tokenizers.whitespace,
+                remote: {
+                    prepare: function(query, settings) {
+                        settings.dataType = "jsonp";
+                        settings.url = settings.url.replace('%QUERY', query);
+                        return settings;
+                    },
+                    url: maps_suggest_api + '&part=%QUERY',
+                    transform: function(response) {
+{#                        console.log(response);#}
+                        console.log(response[1]);
+{#                        $('#location_search').data('up_limited', response.is_limited);#}
+                        return response;
+                    }
+                }
+            });
+
+{#            $.ajax(maps_suggest_api + '&part=%QUERY', type="GET", )#}
+
+            $('#location_search').typeahead({
+                    highlight: true,
+                    hint: false,
+                    minLength: 3
+                },
+                {
+                    name: 'locations',
+                    displayKey: 'name',
+                    source: location_bloodhound.ttAdapter(),
+                    templates: {
+                        suggestion: function(data) {
+                            var table_html = '<div class="sgs-result-up" data-url="{0}"><table>' +
+                                '<tr><td style="padding-right: 10px;"><img class="avatar" src="{1}" style="width: 30px; height: 30px;"></td>' +
+                                '<td><div><strong>{2}</strong></div>{3}</td></tr>' +
+                                '<tr><td></td><td>{4}</td></tr>' +
+                                '<tr><td></td><td><strong>{% trans "loginy" %}</strong></td></tr>' +
+                                '<tr><td></td><td>{5}@ <small class="text-muted">Anytask</small></td></tr>' +
+                                '{6}' +
+                                '{7}' +
+                                '</table></div>';
+                            console.log(data);
+                            return data
+                        }
+                    }
+                }
+            ).on('typeahead:select', function(ev, suggestion) {
+                window.location = suggestion.url;
+            }).on('typeahead:render', function (event, items, isAsync, datasetName) {
+                if (items) {
+                    var menu = $(this).siblings('.tt-menu');
+                    $('.search-show-more', menu).remove();
+                }
+            });
+
             $('#submit_btn').click(function () {
                 $.post('{% url users.views.profile_settings %}', $('#user_settings').serialize(), function(data){
                     $('#submit_error_text').html('<div class="alert alert-success alert-dismissible fade in" role ="alert" id="user_settings_err">' +
@@ -143,7 +202,7 @@
                         </div>
                         <div class="form-check">
                             <label class="form-check-label">{% trans "moe_mestopozhenie" %}
-                                <input type="text" class="form-check-input" id="region_id" name="region_id" value="{{ user_profile.region_geo_id }}">
+                                <input type="text" class="typeahead form-control" id="location_search" name="region_id" value="{{ user_profile.region_geo_id }}">
                             </label>
                         </div>
                         <div id="submit_error_text"></div>
