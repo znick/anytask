@@ -82,6 +82,7 @@ class Migration(SchemaMigration):
             'send_rb_and_contest_together': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'send_to_contest_from_users': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'show_accepted_after_contest_ok': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'show_contest_run_id': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'show_task_one_file_upload': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'teachers': ('django.db.models.fields.related.ManyToManyField', [], {'blank': 'True', 'related_name': "'course_teachers_set'", 'null': 'True', 'symmetrical': 'False', 'to': "orm['auth.User']"}),
             'update_time': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'auto_now': 'True', 'blank': 'True'}),
@@ -99,7 +100,7 @@ class Migration(SchemaMigration):
             'name': ('django.db.models.fields.CharField', [], {'max_length': '10'})
         },
         'courses.markfield': {
-            'Meta': {'object_name': 'MarkField'},
+            'Meta': {'ordering': "['-name_int']", 'object_name': 'MarkField'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '191', 'db_index': 'True'}),
             'name_int': ('django.db.models.fields.IntegerField', [], {'default': '-1'})
@@ -165,6 +166,7 @@ class Migration(SchemaMigration):
             'parent_task': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'children'", 'null': 'True', 'to': "orm['tasks.Task']"}),
             'problem_id': ('django.db.models.fields.CharField', [], {'db_index': 'True', 'max_length': '128', 'null': 'True', 'blank': 'True'}),
             'rb_integrated': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'score_after_deadline': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'score_max': ('django.db.models.fields.IntegerField', [], {'default': '0', 'db_index': 'True'}),
             'send_to_users': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'sended_notify': ('django.db.models.fields.BooleanField', [], {'default': 'True', 'db_index': 'True'}),

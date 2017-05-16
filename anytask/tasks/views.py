@@ -210,7 +210,6 @@ def get_task_params(request):
         },
         'children': children,
         'groups': task_groups
-
     }
 
 
@@ -361,8 +360,8 @@ def contest_task_import(request):
     if 'result' in problem_req.json():
         problems = problem_req.json()['result']['problems']
 
-    problems_with_score = {problem['id']: problem['score'] if 'score' in problem else None for problem in problems}
-    problems_with_end = {problem['id']: problem['end'] if 'end' in problem else None for problem in problems}
+    problems_with_score = {problem['id']: problem.get('score') for problem in problems}
+    problems_with_end = {problem['id']: problem.get('end') for problem in problems}
 
     if got_info:
         if problems:
