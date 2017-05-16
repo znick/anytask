@@ -216,9 +216,7 @@ def task_create_ot_edit(request, course, task_id=None):
     if 'accepted_after_contest_ok' in request.POST and contest_integrated:
         accepted_after_contest_ok = True
 
-    score_after_deadline = True
-    if 'score_after_deadline' not in request.POST:
-        score_after_deadline = False
+    score_after_deadline = 'score_after_deadline' in request.POST
 
     hidden_task = False
     if 'hidden_task' in request.POST:
@@ -278,14 +276,14 @@ def task_create_ot_edit(request, course, task_id=None):
         if task.parent_task.is_hidden:
             task.is_hidden = True
         if changed_score_after_deadline:
-            students = User.objects.filter(group__in=task_groups).all()
-            for student in students:
-                parent_issue, created = Issue.objects.get_or_create(task_id=parent.id, student_id=student.id)
-                total_mark = sum([x.mark for x in Issue.objects.filter(
+            student_ids = User.objects.filter(group__in=task_groups).values_list('id', flat=True)
+            for student_id in student_ids:
+                parent_issue, created = Issue.objects.get_or_create(task_id=parent.id, student_id=student_id)
+                total_mark = sum(Issue.objects.filter(
                     task=task,
-                    student_id=student.id,
+                    student_id=student_id,
                     status_field__tag=IssueStatus.STATUS_ACCEPTED_AFTER_DEADLINE
-                ).all()])
+                ).values_list('mark', flat=True))
                 if score_after_deadline:
                     parent_issue.mark += total_mark
                 else:
@@ -305,16 +303,16 @@ def task_create_ot_edit(request, course, task_id=None):
     task.set_position_in_new_group(task_groups)
 
     if task.type == task.TYPE_SEMINAR:
-        students = User.objects.filter(group__in=task_groups).all()
-        for student in students:
-            issue, created = Issue.objects.get_or_create(task_id=task.id, student_id=student.id)
+        student_ids = User.objects.filter(group__in=task_groups).values_list('id', flat=True)
+        for student_id in student_ids:
+            issue, created = Issue.objects.get_or_create(task_id=task.id, student_id=student_id)
             issue.set_status_seminar()
-            issue.mark = sum([x.mark for x in Issue.objects.filter(
+            issue.mark = sum(Issue.objects.filter(
                 task__parent_task=task,
-                student_id=student.id).filter(
+                student_id=student_id).filter(
                 Q(status_field__tag=IssueStatus.STATUS_ACCEPTED) |
                 Q(task__score_after_deadline=True, status_field__tag=IssueStatus.STATUS_ACCEPTED_AFTER_DEADLINE)
-            ).all()])
+            ).values_list('mark', flat=True))
             issue.save()
 
     reversion.set_user(user)
