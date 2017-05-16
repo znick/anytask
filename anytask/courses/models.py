@@ -77,6 +77,9 @@ class MarkField(models.Model):
     def __unicode__(self):
         return self.name if self.name else '--'
 
+    class Meta:
+        ordering = ['-name_int']
+
 
 class CourseMarkSystem(models.Model):
     name = models.CharField(max_length=191, db_index=False, null=False, blank=False)
@@ -122,7 +125,6 @@ class Course(models.Model):
 
     mark_system = models.ForeignKey(CourseMarkSystem, db_index=False, null=True, blank=True)
 
-
     show_accepted_after_contest_ok = models.BooleanField(db_index=False, null=False, blank=False, default=False)
     default_accepted_after_contest_ok = models.BooleanField(db_index=False, null=False, blank=False, default=False)
 
@@ -134,6 +136,8 @@ class Course(models.Model):
     issue_status_system = models.ForeignKey(IssueStatusSystem, db_index=False, null=False, blank=False, default=1)
 
     is_python_task = models.BooleanField(db_index=False, null=False, blank=False, default=False)
+
+    show_contest_run_id = models.BooleanField(db_index=False, null=False, blank=False, default=True)
 
     def __unicode__(self):
         return unicode(self.name)
@@ -185,6 +189,13 @@ class Course(models.Model):
         if user.is_anonymous():
             return False
         if self.user_is_teacher(user):
+            return True
+        return False
+
+    def user_can_see_contest_run_id(self, user):
+        if user.is_anonymous():
+            return False
+        if self.send_to_contest_from_users and (self.user_is_teacher(user) or self.show_contest_run_id):
             return True
         return False
 
@@ -272,6 +283,7 @@ def add_default_issue_fields(sender, instance, action, **kwargs):
 
         instance.issue_fields.remove(*default_issue_fields.get_deleted_issue_fields())
         return
+
 
 def update_rb_review_group(sender, instance, created, **kwargs):
     course = instance

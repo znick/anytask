@@ -23,9 +23,13 @@ class StudentCourseMarkAdmin(admin.ModelAdmin):
     list_filter = ('student', 'course', 'mark')
     readonly_fields = ('update_time',)
 
+
+class MarkFieldAdmin(admin.ModelAdmin):
+    list_display = ('name', 'name_int')
+
 admin.site.register(Course, CourseAdmin)
 admin.site.register(FilenameExtension)
 admin.site.register(DefaultTeacher, DefaultTeacherAdmin)
 admin.site.register(CourseMarkSystem, CourseMarkSystemAdmin)
-admin.site.register(MarkField)
+admin.site.register(MarkField, MarkFieldAdmin)
 admin.site.register(StudentCourseMark, StudentCourseMarkAdmin)

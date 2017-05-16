@@ -61,11 +61,16 @@ class Task(models.Model):
     one_file_upload = models.BooleanField(db_index=False, null=False, blank=False, default=False)
     accepted_after_contest_ok = models.BooleanField(db_index=False, null=False, blank=False, default=False)
 
+    score_after_deadline = models.BooleanField(db_index=False, null=False, blank=False, default=True)
+
     def __unicode__(self):
         return unicode(self.title)
 
     def user_can_take_task(self, user):
         course = self.course
+
+        for task_taken in TaskTaken.objects.filter(task=self):
+            task_taken.update_status()
 
         if user.is_anonymous():
             return (False, '')
@@ -75,9 +80,6 @@ class Task(models.Model):
 
         if not self.course.groups.filter(students=user).count():
             return (False, u'')
-
-        for task_taken in TaskTaken.objects.filter(task=self):
-            task_taken.update_status()
 
         if settings.PYTHONTASK_MAX_USERS_PER_TASK:
             if TaskTaken.objects.filter(task=self).filter(Q( Q(status=TaskTaken.STATUS_TAKEN) | Q(status=TaskTaken.STATUS_SCORED))).count() >= settings.PYTHONTASK_MAX_USERS_PER_TASK:
@@ -251,6 +253,7 @@ class TaskTaken(models.Model):
 
     @property
     def score(self):
+        self.update_status()
         if not self.issue:
             return 0
         return self.issue.mark

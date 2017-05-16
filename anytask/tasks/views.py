@@ -70,6 +70,7 @@ def task_import_page(request, course_id):
     seminar_tasks = Task.objects.filter(type=Task().TYPE_SEMINAR).filter(course=course)
 
     context = {
+        'is_create': True,
         'course': course,
         'rb_integrated': course.rb_integrated,
         'school': schools[0] if schools else '',
@@ -91,6 +92,7 @@ def contest_import_page(request, course_id):
     seminar_tasks = Task.objects.filter(type=Task().TYPE_SEMINAR).filter(course=course)
 
     context = {
+        'is_create': True,
         'course': course,
         'rb_integrated': course.rb_integrated,
         'seminar_tasks': seminar_tasks,
@@ -165,6 +167,7 @@ def get_task_params(request):
     if task_deadline:
         task_deadline = datetime.datetime.strptime(task_deadline, '%d-%m-%Y %H:%M')
 
+    score_after_deadline = 'score_after_deadline' in request.POST
     changed_task = 'changed_task' in request.POST
     task_type = request.POST.get('task_type', Task().TYPE_FULL).strip()
 
@@ -201,6 +204,7 @@ def get_task_params(request):
         'rb_integrated': rb_integrated,
         'one_file_upload': one_file_upload,
         'accepted_after_contest_ok': accepted_after_contest_ok,
+        'score_after_deadline': score_after_deadline,
         'is_hidden': hidden_task,
         'task_text': task_text
         },
@@ -211,13 +215,15 @@ def get_task_params(request):
 
 
 def task_create_ot_edit(request, course, task_id=None):
+    params = get_task_params(request)
+
+    changed_score_after_deadline = False
     if task_id:
         task = get_object_or_404(Task, id=task_id)
+        changed_score_after_deadline = task.score_after_deadline != params['attrs']['score_after_deadline']
     else:
         task = Task()
         task.course = course
-
-    params = get_task_params(request)
 
     for attr_name, attr_value in params['attrs'].items():
         setattr(task, attr_name, attr_value)
@@ -225,11 +231,11 @@ def task_create_ot_edit(request, course, task_id=None):
     if task.parent_task:
         if task.parent_task.is_hidden:
             task.is_hidden = True
-    for subtask in Task.objects.filter(parent_task=task):
-        subtask.is_hidden = params['attrs']['is_hidden']
-        subtask.save()
-
     task.save()
+
+    for subtask in Task.objects.filter(parent_task=task):
+        subtask.is_hidden = task.is_hidden
+        subtask.save()
 
     children = params['children']
     for course_task in Task.objects.filter(course=course):
@@ -244,12 +250,32 @@ def task_create_ot_edit(request, course, task_id=None):
     task.groups = task_groups
     task.set_position_in_new_group(task_groups)
 
+    if task_id and changed_score_after_deadline:
+        student_ids = User.objects.filter(group__in=task_groups).values_list('id', flat=True)
+        for student_id in student_ids:
+            parent_issue, created = Issue.objects.get_or_create(task_id=task.parent.id, student_id=student_id)
+            total_mark = sum(Issue.objects.filter(
+                task=task,
+                student_id=student_id,
+                status_field__tag=IssueStatus.STATUS_ACCEPTED_AFTER_DEADLINE
+            ).values_list('mark', flat=True))
+            if task.score_after_deadline:
+                parent_issue.mark += total_mark
+            else:
+                parent_issue.mark -= total_mark
+            parent_issue.save()
+
     if task.type == task.TYPE_SEMINAR:
-        students = User.objects.filter(group__in=task_groups).all()
-        for student in students:
-            issue, created = Issue.objects.get_or_create(task_id=task.id, student_id=student.id)
-            issue.set_status_by_tag('seminar')
-            issue.mark = sum([x.mark for x in Issue.objects.filter(task__parent_task=task, student_id=student.id).all()])
+        student_ids = User.objects.filter(group__in=task_groups).values_list('id', flat=True)
+        for student_id in student_ids:
+            issue, created = Issue.objects.get_or_create(task_id=task.id, student_id=student_id)
+            issue.set_status_seminar()
+            issue.mark = sum(Issue.objects.filter(
+                task__parent_task=task,
+                student_id=student_id).filter(
+                Q(status_field__tag=IssueStatus.STATUS_ACCEPTED) |
+                Q(task__score_after_deadline=True, status_field__tag=IssueStatus.STATUS_ACCEPTED_AFTER_DEADLINE)
+            ).values_list('mark', flat=True))
             issue.save()
 
     reversion.set_user(request.user)
