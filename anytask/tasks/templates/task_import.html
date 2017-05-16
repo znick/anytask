@@ -141,6 +141,17 @@
                         </div>
                     </div>
                 {% endif %}
+                {% if course.issue_status_system.has_accepted_after_deadline %}
+                    <div class="form-group row">
+                        <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_score_after_deadline">
+                            {% trans "uchityvat_bally_dedlajn" %}</label>
+                        <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7" style="padding-top: 5px">
+                            <input type="checkbox" name="score_after_deadline"
+                                   id="task_edit_score_after_deadline"
+                                   {% if task.score_after_deadline or is_create and course.default_accepted_after_contest_ok %}checked{% endif %}>
+                        </div>
+                    </div>
+                {% endif %}
                 <div class="form-group row" id="task_edit_label_for_changed_task">
                     <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_changed_task">{% trans "uvedomit_o_sozdanii_zadachi" %}</label>
                     <div class="controls no-validate col-lg-4 col-md-6 col-sm-7 col-xs-7">

@@ -20,12 +20,14 @@ class IssueStatus(models.Model):
     STATUS_VERIFICATION = 'verification'
     STATUS_ACCEPTED = 'accepted'
     STATUS_SEMINAR = 'seminar'
+    STATUS_ACCEPTED_AFTER_DEADLINE = 'accepted_after_deadline'
 
     RU_NAME_KEY = {
         u'Новый': _('novyj'),
         u'На доработке':  _('na_dorabotke'),
         u'На проверке': _('na_proverke'),
         u'Зачтено': _('zachteno'),
+        u'Зачтено после дедлайна': _('zachteno_posle_dedlajna'),
         u'На автоматической проверке': _('na_avtomaticheskoj_proverke'),
         u'Требуется информация': _('trebuetsja_informacija')
     }
@@ -34,7 +36,8 @@ class IssueStatus(models.Model):
         (STATUS_REWORK, _(STATUS_REWORK)),
         (STATUS_VERIFICATION, _(STATUS_VERIFICATION)),
         (STATUS_ACCEPTED, _(STATUS_ACCEPTED)),
-        (STATUS_SEMINAR, _(STATUS_SEMINAR))
+        (STATUS_SEMINAR, _(STATUS_SEMINAR)),
+        (STATUS_ACCEPTED_AFTER_DEADLINE, _(STATUS_ACCEPTED_AFTER_DEADLINE))
     )
 
     name = models.CharField(max_length=191, db_index=True, null=False, blank=False)
@@ -59,3 +62,9 @@ class IssueStatusSystem(models.Model):
 
     def __unicode__(self):
         return u'{0}'.format(self.name)
+
+    def has_accepted_after_deadline(self):
+        return self.statuses.filter(tag='accepted_after_deadline').exists()
+
+    def get_accepted_statuses(self):
+        return self.statuses.filter(tag__in=['accepted', 'accepted_after_deadline'])
