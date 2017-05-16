@@ -394,8 +394,12 @@ class Issue(models.Model):
                 value = 0
             value = normalize_decimal(value)
             if self.mark != float(value):
-                if self.task.parent_task is not None:
-                    parent_task_issue, created = Issue.objects.get_or_create(student=self.student, task=self.task.parent_task)
+                if self.task.parent_task is not None and \
+                        (self.task.score_after_deadline or not self.is_status_accepted_after_deadline()):
+                    parent_task_issue, created = Issue.objects.get_or_create(
+                        student=self.student,
+                        task=self.task.parent_task
+                    )
                     parent_task_issue.mark -= self.mark
                     parent_task_issue.mark += float(value)
                     parent_task_issue.save()

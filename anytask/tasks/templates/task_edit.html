@@ -234,7 +234,6 @@
                                 <input type="checkbox" name="rb_integrated" id="task_edit_rb_integrated"  {% if rb_integrated %}checked{% endif %}>
                             </div>
                         </div>
-
                         {% if course.show_task_one_file_upload %}
                             <div class="form-group row collapse {% if rb_integrated %}in{% endif %}">
                                 <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_one_file_upload">{% trans "otpravljat_tolko_odin_fajl" %}
@@ -260,18 +259,18 @@
                                 </div>
                             </div>
                         {% endif %}
-                        {% if course.issue_status_system.has_accepted_after_deadline %}
-                            <div class="form-group row collapse {% if contest_integrated %}in{% endif %}">
-                                <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_score_after_deadline">
-                                    {% trans "uchityvat_bally_dedlajn" %}</label>
-                                <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7" style="padding-top: 5px">
-                                    <input type="checkbox" name="score_after_deadline"
-                                           id="task_edit_score_after_deadline"
-                                           {% if task.score_after_deadline %}checked{% endif %}>
-                                </div>
-                            </div>
-                        {% endif %}
                     </div>
+                    {% if course.issue_status_system.has_accepted_after_deadline %}
+                        <div id='accepted_after_deadline_body' class="form-group row collapse {% if task.type != task.TYPE_SIMPLE and task.type != task.TYPE_SEMINAR and task.type != task.TYPE_MATERIAL%}in{% endif %}">
+                            <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_score_after_deadline">
+                                {% trans "uchityvat_bally_dedlajn" %}</label>
+                            <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7" style="padding-top: 5px">
+                                <input type="checkbox" name="score_after_deadline"
+                                       id="task_edit_score_after_deadline"
+                                       {% if task.score_after_deadline %}checked{% endif %}>
+                            </div>
+                        </div>
+                    {% endif %}
                     <div id='parent_body' class="{% if is_create or task.type != task.TYPE_SEMINAR %}in{% endif %} collapse">
                         <div class="form-group row">
                             <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_parent">{% trans "roditelskaja_zadacha" %}</label>

@@ -187,7 +187,7 @@ def issue_page(request, issue_id):
                 show_top_alert = True
             break
 
-    statuses_accepted = issue.task.course.issue_status_system.statuses.filter(tag=Issue.STATUS_ACCEPTED)
+    statuses_accepted = issue.task.course.issue_status_system.get_accepted_statuses()
     for i in range(len(statuses_accepted)):
         statuses_accepted[i].name = statuses_accepted[i].get_name()
 
@@ -205,8 +205,6 @@ def issue_page(request, issue_id):
     got_verdict_submissions = issue.contestsubmission_set.filter(got_verdict=True)
     if got_verdict_submissions.count() and not show_contest_rejudge_loading:
         show_contest_rejudge = True
-
-
 
     context = {
         'issue': issue,

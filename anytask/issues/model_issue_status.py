@@ -65,3 +65,6 @@ class IssueStatusSystem(models.Model):
 
     def has_accepted_after_deadline(self):
         return self.statuses.filter(tag='accepted_after_deadline').exists()
+
+    def get_accepted_statuses(self):
+        return self.statuses.filter(tag__in=['accepted', 'accepted_after_deadline'])
