@@ -147,7 +147,7 @@ def task_edit_page(request, task_id):
     return render_to_response('task_edit.html', context, context_instance=RequestContext(request))
 
 
-def get_task_params(request):
+def get_task_params(request, check_score_after_deadline=False):
     user = request.user
     task_title = request.POST.get('task_title', '').strip()
     task_short_title = request.POST.get('task_short_title', task_title).strip()
@@ -167,7 +167,10 @@ def get_task_params(request):
     if task_deadline:
         task_deadline = datetime.datetime.strptime(task_deadline, '%d-%m-%Y %H:%M')
 
-    score_after_deadline = 'score_after_deadline' in request.POST
+    score_after_deadline = True
+    if check_score_after_deadline:
+        score_after_deadline = 'score_after_deadline' in request.POST
+
     changed_task = 'changed_task' in request.POST
     task_type = request.POST.get('task_type', Task().TYPE_FULL).strip()
 
@@ -214,7 +217,7 @@ def get_task_params(request):
 
 
 def task_create_ot_edit(request, course, task_id=None):
-    params = get_task_params(request)
+    params = get_task_params(request, course.issue_status_system.has_accepted_after_deadline)
 
     changed_score_after_deadline = False
     if task_id:
@@ -350,7 +353,7 @@ def contest_task_import(request):
     contest_id = int(request.POST['contest_id_for_task'])
 
     tasks = []
-    common_params = get_task_params(request)
+    common_params = get_task_params(request, course.issue_status_system.has_accepted_after_deadline)
 
     got_info, contest_info = get_contest_info(contest_id)
     problem_req = FakeResponse()
