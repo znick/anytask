@@ -46,7 +46,7 @@ class CreateTest(TestCase):
         followers = [User.objects.create_user(username='follower1',
                                               password='password')]
 
-        status = IssueStatus.objects.get(tag=Issue.STATUS_ACCEPTED)
+        status = IssueStatus.objects.get(name=u'Зачтено')
 
         issue = Issue()
         issue.student = student
