@@ -112,9 +112,6 @@ class UserProfile(models.Model):
                 return True
         return False
 
-    # def get_user_tz(self):
-    #     return DB.regionById(self.region_geo_id).as_dict['tzname']
-
 
 class UserProfileLog(models.Model):
     user = models.ForeignKey(User, db_index=True, null=False, blank=False, related_name='profiles_logs_by_user')

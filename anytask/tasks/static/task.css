@@ -118,3 +118,7 @@ input[type=checkbox], input[type=radio] {
 #location_search {
     margin-bottom: 0;
 }
+
+#task_time_zone {
+    margin-bottom: 32px;
+}
