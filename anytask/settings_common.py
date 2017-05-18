@@ -232,3 +232,4 @@ PYTHONTASK_MAX_USERS_PER_TASK = 8
 PYTHONTASK_MAX_TASKS_WITHOUT_SCORE_PER_STUDENT = 2
 PYTHONTASK_DAYS_DROP_FROM_BLACKLIST = 14
 
+GEO_SUGGEST_URL = 'https://suggest-maps.yandex.ru/suggest-geo?search_type=addr&v=8&n=4&fullpath=0&bases=locality&lang=ru'

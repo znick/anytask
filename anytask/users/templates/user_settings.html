@@ -49,8 +49,7 @@
                 }
             ).on('typeahead:select', function(ev, suggestion) {
                 $('#geoid').val(suggestion.geoid);
-            }
-            );
+            });
 
             $('#submit_btn').click(function () {
                 $.post('{% url users.views.profile_settings %}', $('#user_settings').serialize(), function(data){

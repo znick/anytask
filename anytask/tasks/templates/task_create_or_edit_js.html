@@ -11,6 +11,42 @@
             '</div>'
         });
 
+        var maps_suggest_api = '{{ geo_suggest_url|safe }}';
+        var location_bloodhound = new Bloodhound({
+            datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+            queryTokenizer: Bloodhound.tokenizers.whitespace,
+            remote: {
+                prepare: function(query, settings) {
+                    settings.dataType = "jsonp";
+                    settings.url = settings.url.replace('%QUERY', query);
+                    return settings;
+                },
+                url: maps_suggest_api + '&part=%QUERY',
+                transform: function(response) {
+                    var locations = [];
+                    for (var i=0; i < response[1].length; i++) {
+                        if ('geoid' in response[1][i])
+                            locations.push(response[1][i]);
+                    }
+                    return locations;
+                }
+            }
+        });
+
+        $('#location_search').typeahead({
+                highlight: true,
+                hint: false,
+                minLength: 3
+            },
+            {
+                name: 'locations',
+                displayKey: 'name',
+                source: location_bloodhound
+            }
+        ).on('typeahead:select', function(ev, suggestion) {
+            $('#geoid').val(suggestion.geoid);
+        });
+
         {#        $('select:not([multiple])').multiselect({#}
         {#            buttonClass: 'btn btn-secondary btn-block',#}
         {#            templates: {#}

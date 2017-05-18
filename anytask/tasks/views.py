@@ -64,8 +64,8 @@ def task_create_page(request, course_id):
         'rb_integrated': course.rb_integrated,
         'hide_contest_settings': True if not course.contest_integrated else False,
         'school': schools[0] if schools else '',
-        'user_tz': request.user.get_profile().get_user_tz,
-        'time_zones': pytz.common_timezones,
+        'user_location': request.user.get_profile().location,
+        'geo_suggest_url': settings.GEO_SUGGEST_URL
     }
 
     return render_to_response('task_create.html', context, context_instance=RequestContext(request))
@@ -87,6 +87,8 @@ def task_import_page(request, course_id):
         'rb_integrated': course.rb_integrated,
         'school': schools[0] if schools else '',
         'seminar_tasks': seminar_tasks,
+        'user_location': request.user.get_profile().location,
+        'geo_suggest_url': settings.GEO_SUGGEST_URL
     }
 
     return render_to_response('task_import.html', context, context_instance=RequestContext(request))
@@ -153,8 +155,8 @@ def task_edit_page(request, task_id):
         'hide_contest_settings': True if not task.contest_integrated
                                          or task.type in [task.TYPE_SIMPLE, task.TYPE_MATERIAL] else False,
         'school': schools[0] if schools else '',
-        'user_tz': request.user.get_profile().get_user_tz,
-        'time_zones': pytz.common_timezones
+        'user_location': request.user.get_profile().location,
+        'geo_suggest_url': settings.GEO_SUGGEST_URL
     }
 
     return render_to_response('task_edit.html', context, context_instance=RequestContext(request))
