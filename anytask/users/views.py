@@ -42,6 +42,8 @@ import json
 import datetime
 import pytz
 
+from geobase5 import Lookup
+DB = Lookup('/var/cache/geobase/geodata5.bin')
 
 @login_required
 def users_redirect(request, username):
@@ -203,21 +205,23 @@ def group_by_year(objects):
 @login_required
 def profile_settings(request):
     user = request.user
-
     user_profile = user.get_profile()
 
     if request.method == 'POST':
         user_profile.show_email = 'show_email' in request.POST
         user_profile.send_my_own_events = 'send_my_own_events' in request.POST
-        user_profile.region_geo_id = int(request.POST['region_id'])
+        user_profile.location = request.POST['location']
+        tz = DB.regionById(int(request.POST['geoid'])).as_dict['tzname']
+        user_profile.time_zone = tz
         user_profile.save()
-        request.session['django_timezone'] = str(pytz.timezone(user_profile.get_user_tz()))
-        timezone.activate(pytz.timezone(user_profile.get_user_tz()))
+        request.session['django_timezone'] = tz
+        timezone.activate(pytz.timezone(tz))
 
         return HttpResponse("OK")
 
     context = {
         'user_profile': user_profile,
+        'geo_suggest_url': settings.GEO_SUGGEST_URL
     }
 
     return render_to_response('user_settings.html', context, context_instance=RequestContext(request))

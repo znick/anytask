@@ -9,16 +9,15 @@ from courses.models import Course
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import post_save
+from django.utils.translation import ugettext_lazy as _
 from groups.models import Group
 from mail.models import Message
 from users.model_user_status import UserStatus
 from years.common import get_current_year
 
 from anytask.storage import OverwriteStorage
-from geobase5 import Lookup
 
 logger = logging.getLogger('django.request')
-DB = Lookup('/var/cache/geobase/geodata5.bin')
 
 
 def get_upload_path(instance, filename):
@@ -80,7 +79,8 @@ class UserProfile(models.Model):
     ya_passport_email = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
 
     language = models.CharField(default="ru", max_length=128, unique=False, null=True, blank=True)
-    region_geo_id = models.IntegerField(null=False, blank=False, default=213)
+    time_zone = models.TextField(null=False, blank=False, default='Europe/Moscow')
+    location = models.TextField(null=False, blank=False, default=_("MSK"))
 
     def is_current_year_student(self):
         return Group.objects.filter(year=get_current_year()).filter(students=self.user).count() > 0
@@ -112,8 +112,8 @@ class UserProfile(models.Model):
                 return True
         return False
 
-    def get_user_tz(self):
-        return DB.regionById(self.region_geo_id).as_dict['tzname']
+    # def get_user_tz(self):
+    #     return DB.regionById(self.region_geo_id).as_dict['tzname']
 
 
 class UserProfileLog(models.Model):

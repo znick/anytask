@@ -7,12 +7,17 @@
     <script src="{{ STATIC_URL }}jquery.validate.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
-            var maps_suggest_api = 'https://suggest-maps.yandex.ru/suggest-geo?search_type=addr&v=5&bases=locality&n=4&fullpath=0';
+            $('[data-toggle="popover"]').popover({
+                trigger: 'hover',
+                template: '<div class="popover" role="tooltip">' +
+                '<div class="popover-arrow"></div>' +
+                '<div class="popover-content"></div>' +
+                '</div>'
+            });
+
+            var maps_suggest_api = '{{ geo_suggest_url|safe }}';
             var location_bloodhound = new Bloodhound({
-                datumTokenizer: function(datum) {
-{#                    console.log(datum);#}
-                    return Bloodhound.tokenizers.whitespace(datum.fullname);
-                },
+                datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
                 queryTokenizer: Bloodhound.tokenizers.whitespace,
                 remote: {
                     prepare: function(query, settings) {
@@ -22,15 +27,15 @@
                     },
                     url: maps_suggest_api + '&part=%QUERY',
                     transform: function(response) {
-{#                        console.log(response);#}
-                        console.log(response[1]);
-{#                        $('#location_search').data('up_limited', response.is_limited);#}
-                        return response;
+                        var locations = [];
+                        for (var i=0; i < response[1].length; i++) {
+                            if ('geoid' in response[1][i])
+                                locations.push(response[1][i]);
+                        }
+                        return locations;
                     }
                 }
             });
-
-{#            $.ajax(maps_suggest_api + '&part=%QUERY', type="GET", )#}
 
             $('#location_search').typeahead({
                     highlight: true,
@@ -40,31 +45,12 @@
                 {
                     name: 'locations',
                     displayKey: 'name',
-                    source: location_bloodhound.ttAdapter(),
-                    templates: {
-                        suggestion: function(data) {
-                            var table_html = '<div class="sgs-result-up" data-url="{0}"><table>' +
-                                '<tr><td style="padding-right: 10px;"><img class="avatar" src="{1}" style="width: 30px; height: 30px;"></td>' +
-                                '<td><div><strong>{2}</strong></div>{3}</td></tr>' +
-                                '<tr><td></td><td>{4}</td></tr>' +
-                                '<tr><td></td><td><strong>{% trans "loginy" %}</strong></td></tr>' +
-                                '<tr><td></td><td>{5}@ <small class="text-muted">Anytask</small></td></tr>' +
-                                '{6}' +
-                                '{7}' +
-                                '</table></div>';
-                            console.log(data);
-                            return data
-                        }
-                    }
+                    source: location_bloodhound
                 }
             ).on('typeahead:select', function(ev, suggestion) {
-                window.location = suggestion.url;
-            }).on('typeahead:render', function (event, items, isAsync, datasetName) {
-                if (items) {
-                    var menu = $(this).siblings('.tt-menu');
-                    $('.search-show-more', menu).remove();
-                }
-            });
+                $('#geoid').val(suggestion.geoid);
+            }
+            );
 
             $('#submit_btn').click(function () {
                 $.post('{% url users.views.profile_settings %}', $('#user_settings').serialize(), function(data){
@@ -179,6 +165,19 @@
         .social-acc-panel .social-acc-action {
             width: 90px;
         }
+        #location_label {
+            padding-top: .3rem;
+        }
+        .help-button {
+            opacity: 0.2;
+            filter: alpha(opacity=20);
+            color: #000000;
+        }
+
+        .help-button:hover {
+            opacity: 0.7;
+            filter: alpha(opacity=70);
+        }
     </style>
 
     <div class="row">
@@ -200,10 +199,14 @@
                                 {% trans "otpravljat_mne_kommentarii" %}
                             </label>
                         </div>
-                        <div class="form-check">
-                            <label class="form-check-label">{% trans "moe_mestopozhenie" %}
-                                <input type="text" class="typeahead form-control" id="location_search" name="region_id" value="{{ user_profile.region_geo_id }}">
+                        <div class="form-group row">
+                            <label id='location_label' class="col-lg-5 col-md-5 col-sm-7 col-xs-7 form-check-label">{% trans "moe_mestopozhenie" %}
+                             <a tabindex="0" data-toggle="popover" data-trigger="hover" data-content="{% trans "dlja_vremeni" %}" type="button"><i class="fa fa-question-circle help-button" aria-hidden="true"></i></a>
                             </label>
+                                <div class="controls no-validate col-lg-6 col-md-6 col-sm-7 col-xs-7">
+                                    <input type="text" class="typeahead form-control" id="location_search" name="location" value="{{ user_profile.location }}">
+                                    <input type="hidden" id="geoid" name="geoid" value="">
+                                </div>
                         </div>
                         <div id="submit_error_text"></div>
                         <button type="button" class="btn btn-primary" id="submit_btn" style="margin-top: 0.5rem">{% trans "sohranit" %}</button>

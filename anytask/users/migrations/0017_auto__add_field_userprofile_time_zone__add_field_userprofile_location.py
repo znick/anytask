@@ -8,15 +8,23 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding field 'UserProfile.region_geo_id'
-        db.add_column('users_userprofile', 'region_geo_id',
-                      self.gf('django.db.models.fields.IntegerField')(default=213),
+        # Adding field 'UserProfile.time_zone'
+        db.add_column('users_userprofile', 'time_zone',
+                      self.gf('django.db.models.fields.TextField')(default='Europe/Moscow'),
+                      keep_default=False)
+
+        # Adding field 'UserProfile.location'
+        db.add_column('users_userprofile', 'location',
+                      self.gf('django.db.models.fields.TextField')(default=u'MSK'),
                       keep_default=False)
 
 
     def backwards(self, orm):
-        # Deleting field 'UserProfile.region_geo_id'
-        db.delete_column('users_userprofile', 'region_geo_id')
+        # Deleting field 'UserProfile.time_zone'
+        db.delete_column('users_userprofile', 'time_zone')
+
+        # Deleting field 'UserProfile.location'
+        db.delete_column('users_userprofile', 'location')
 
 
     models = {
@@ -164,14 +172,15 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'info': ('django.db.models.fields.TextField', [], {'default': "''", 'null': 'True', 'blank': 'True'}),
             'language': ('django.db.models.fields.CharField', [], {'default': "'ru'", 'max_length': '128', 'null': 'True', 'blank': 'True'}),
+            'location': ('django.db.models.fields.TextField', [], {'default': "u'MSK'"}),
             'login_via_yandex': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'middle_name': ('django.db.models.fields.CharField', [], {'db_index': 'True', 'max_length': '128', 'null': 'True', 'blank': 'True'}),
             'phone': ('django.db.models.fields.CharField', [], {'max_length': '128', 'null': 'True', 'blank': 'True'}),
             'position': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '128', 'null': 'True', 'blank': 'True'}),
-            'region_geo_id': ('django.db.models.fields.IntegerField', [], {'default': '213'}),
             'send_my_own_events': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'send_notify_messages': ('django.db.models.fields.related.ManyToManyField', [], {'blank': 'True', 'related_name': "'send_notify_messages'", 'null': 'True', 'symmetrical': 'False', 'to': "orm['mail.Message']"}),
             'show_email': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
+            'time_zone': ('django.db.models.fields.TextField', [], {'default': "'Europe/Moscow'"}),
             'unit': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '128', 'null': 'True', 'blank': 'True'}),
             'university': ('django.db.models.fields.CharField', [], {'max_length': '191', 'null': 'True', 'blank': 'True'}),
             'university_class': ('django.db.models.fields.CharField', [], {'max_length': '50', 'null': 'True', 'blank': 'True'}),
