@@ -1,32 +1,27 @@
 # -*- coding: utf-8 -*-
-import pprint
-from django.contrib.auth.decorators import user_passes_test, login_required
+import os
+from copy import deepcopy
+
+from django.conf import settings
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
-import json
-import os
-from django.conf import settings
-from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpResponse
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template.context import RequestContext
 from django.utils.translation import ugettext as _
-from issues.forms import FileForm
-from issues.models import Issue, Event, File
-from issues.model_issue_field import IssueField
-from issues.model_issue_status import IssueStatus
-from anyrb.common import AnyRB
 from django.utils import timezone
-
-
-from django.core.urlresolvers import reverse
-from django.views import generic
 from django.views.decorators.http import require_POST
 from jfu.http import upload_receive, UploadResponse, JFUResponse
-from copy import deepcopy
+from unidecode import unidecode
 
 from anycontest.common import get_problem_compilers
+from anyrb.common import AnyRB
+from issues.model_issue_field import IssueField
+from issues.model_issue_status import IssueStatus
+from issues.models import Issue, Event, File
 
-from unidecode import unidecode
 
 def user_is_teacher_or_staff(user, issue):
     if user.is_staff:
@@ -71,7 +66,7 @@ def prepare_info_fields(info_fields, request, issue):
 
         field.value = issue.get_field_value_for_form(field)
 
-        data = { field.name : field.value }
+        data = {field.name: field.value}
         field.form = field.get_form(request, issue, data)
         field.title = title_map[field.name] if field.name in title_map else field.title
 
@@ -99,8 +94,8 @@ def contest_rejudge(issue):
     sent = contest_submission.upload_contest(compiler_id=old_contest_submission.compiler_id)
     if sent:
         event.value = u"<p>{0}</p>".format(_(u'otpravleno_v_kontest'))
-        if issue.status_field.tag != IssueStatus.STATUS_ACCEPTED:
-            issue.set_status_by_tag(IssueStatus.STATUS_AUTO_VERIFICATION)
+        if not issue.is_status_accepted():
+            issue.set_status_auto_verification()
     else:
         event.value = u"<p>{1}('{0}').</p>".format(
             contest_submission.send_error, _(u'oshibka_otpravki_v_kontest'))
@@ -161,7 +156,7 @@ def issue_page(request, issue_id):
                                              IssueStatus.objects.get(pk=request.POST['Accepted']),
                                              request.user)
                         else:
-                            issue.set_status_by_tag(Issue.STATUS_ACCEPTED, request.user)
+                            issue.set_status_accepted(request.user)
 
                     if field.name == 'comment':
                         value = {
@@ -169,7 +164,7 @@ def issue_page(request, issue_id):
                             'files': request.FILES.getlist('files')
                         }
                         if 'need_info' in request.POST:
-                            issue.set_status_by_tag(IssueStatus.STATUS_NEED_INFO)
+                            issue.set_status_need_info()
 
                     issue.set_field(field, value, request.user)
 
@@ -193,7 +188,7 @@ def issue_page(request, issue_id):
                 show_top_alert = True
             break
 
-    statuses_accepted = issue.task.course.issue_status_system.statuses.filter(tag=Issue.STATUS_ACCEPTED)
+    statuses_accepted = issue.task.course.issue_status_system.get_accepted_statuses()
     for i in range(len(statuses_accepted)):
         statuses_accepted[i].name = statuses_accepted[i].get_name()
 
@@ -212,8 +207,6 @@ def issue_page(request, issue_id):
     if got_verdict_submissions.count() and not show_contest_rejudge_loading:
         show_contest_rejudge = True
 
-
-
     context = {
         'issue': issue,
         'issue_fields': issue_fields,
@@ -227,6 +220,7 @@ def issue_page(request, issue_id):
         'statuses_accepted': statuses_accepted,
         'show_contest_rejudge': show_contest_rejudge,
         'show_contest_rejudge_loading': show_contest_rejudge_loading,
+        'show_contest_run_id': issue.task.course.user_can_see_contest_run_id(request.user)
     }
 
     return render_to_response('issues/issue.html', context, context_instance=RequestContext(request))

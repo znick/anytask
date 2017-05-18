@@ -71,6 +71,14 @@
                     </div>
                 </div>
                 <div class="form-group row">
+                    <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_short_header">{% trans "kratkoe_nazvanie" %}
+                    <a tabindex="0" data-toggle="popover" data-trigger="hover" data-content="{% trans "kratkoe_nazvanie_help_text" %}" type="button"><i class="fa fa-question-circle help-button" aria-hidden="true"></i></a></label>
+                    <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7" >
+                        <input class="form-control" id='task_edit_short_header' name='task_short_title' type='text' size='20' value="{{task.short_title}}" />
+                        <small class="text-help" id="task_edit_short_header_error_text"></small>
+                    </div>
+                </div>
+                <div class="form-group row">
                     <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_max_score">{% trans "max_ball" %}</label>
                     <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
                         <input class="form-control" id='task_max_score' name='max_score' type='text' maxlength='25' size='20'>
@@ -138,6 +146,17 @@
                         <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_accepted_after_contest_ok">{% trans "perevodit_v_zachteno" %}</label>
                         <div class="controls no-validate col-lg-4 col-md-6 col-sm-7 col-xs-7">
                             <input type="checkbox" name="accepted_after_contest_ok" id="task_edit_accepted_after_contest_ok"  {% if task.accepted_after_contest_ok or is_create and course.default_accepted_after_contest_ok %}checked{% endif %}>
+                        </div>
+                    </div>
+                {% endif %}
+                {% if course.issue_status_system.has_accepted_after_deadline %}
+                    <div class="form-group row">
+                        <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_score_after_deadline">
+                            {% trans "uchityvat_bally_dedlajn" %}</label>
+                        <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7" style="padding-top: 5px">
+                            <input type="checkbox" name="score_after_deadline"
+                                   id="task_edit_score_after_deadline"
+                                   {% if task.score_after_deadline or is_create and course.default_accepted_after_contest_ok %}checked{% endif %}>
                         </div>
                     </div>
                 {% endif %}

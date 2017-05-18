@@ -136,6 +136,7 @@
                 $("#task_edit_rb_integrated").show();
                 $("#max_score_body").collapse('show');
                 $("#deadline_body").collapse('show');
+                $("#accepted_after_deadline_body").collapse('show');
                 $("#parent_body").show();
                 $("#children_body").hide();
             }
@@ -147,6 +148,7 @@
                 $("#task_edit_rb_integrated").hide();
                 $("#max_score_body").collapse('show');
                 $("#deadline_body").collapse('show');
+                $("#accepted_after_deadline_body").collapse('hide');
                 $("#parent_body").show();
                 $("#children_body").hide();
             }
@@ -158,6 +160,7 @@
                 $("#task_edit_rb_integrated").hide();
                 $("#max_score_body").collapse('hide');
                 $("#deadline_body").collapse('hide');
+                $("#accepted_after_deadline_body").collapse('hide');
                 $("#parent_body").show();
                 $("#children_body").hide();
             }
@@ -169,6 +172,7 @@
                 $("#task_edit_rb_integrated").hide();
                 $("#max_score_body").collapse('hide');
                 $("#deadline_body").collapse('hide');
+                $("#accepted_after_deadline_body").collapse('hide');
                 $("#parent_body").hide();
                 $("#children_body").show();
             }
@@ -271,6 +275,9 @@
                     required: true,
                     maxlength: 254
                 },
+                task_short_title: {
+                    maxlength: 15
+                },
                 contest_id: {
                     required: true,
                     number: true
@@ -303,6 +310,9 @@
                 },
                 task_title: {
                     required: "{% trans 'nazvanie_neobhodimo' %}",
+                    maxlength: "{% trans 'ne_tak_mnogo' %}"
+                },
+                task_short_title: {
                     maxlength: "{% trans 'ne_tak_mnogo' %}"
                 },
                 contest_id: {

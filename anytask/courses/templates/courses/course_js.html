@@ -65,6 +65,13 @@
     };
 
     $(document).ready(function () {
+        $('[data-toggle="popover-help"]').popover({
+            trigger: 'hover',
+            template: '<div class="popover" role="tooltip">' +
+            '<div class="popover-arrow"></div>' +
+            '<div class="popover-content"></div>' +
+            '</div>'
+        });
 
         var info_width = $('#course-information').closest('.card').innerWidth();
 
