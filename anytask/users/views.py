@@ -211,11 +211,12 @@ def profile_settings(request):
         user_profile.show_email = 'show_email' in request.POST
         user_profile.send_my_own_events = 'send_my_own_events' in request.POST
         user_profile.location = request.POST['location']
-        tz = DB.regionById(int(request.POST['geoid'])).as_dict['tzname']
-        user_profile.time_zone = tz
-        user_profile.save()
-        request.session['django_timezone'] = tz
-        timezone.activate(pytz.timezone(tz))
+        if request.POST['geoid']:
+            tz = DB.regionById(int(request.POST['geoid'])).as_dict['tzname']
+            user_profile.time_zone = tz
+            user_profile.save()
+            request.session['django_timezone'] = tz
+            timezone.activate(pytz.timezone(tz))
 
         return HttpResponse("OK")
 

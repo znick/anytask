@@ -154,7 +154,7 @@ msgstr "для"
 
 #: users/templates/user_settings.html:203
 msgid "dlja_vremeni"
-msgstr "Используется для определения часового пояса"
+msgstr "Используется для определения часового пояса. Время дедлайнов местное"
 
 #: tasks/templates/task_create_or_edit_js.html:342
 #: tasks/templates/task_create_or_edit_js.html:343
