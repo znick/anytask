@@ -93,6 +93,11 @@ input[type=checkbox], input[type=radio] {
     border-color: #c12e2a;
 }
 
+#update_from_contest_button {
+    padding-left: .5rem;
+    padding-right: .5rem;
+}
+
 @media (max-width: 991px) {
     .footer-buttons .btn-group {
         width: 100%;
