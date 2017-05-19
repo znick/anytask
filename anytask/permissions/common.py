@@ -35,10 +35,10 @@ LOCALE_PERMS_NAMES = {
         'view_course': _(u'prosmotr_kursa'),
         'change_course_settings': _(u'izmenenie_nastroyek_kursa'),
         'view_course_queue': _(u'prosmotr_ocheredi_na_proverku'),
-        'teacher_in_course': _(u'uchitel_v_kurse'),
+        'teacher_in_course': _(u'uchitel_v_kursakh'),
     },
     'groups': {
-        'student_in_group': _(u'student_v_gruppe'),
+        'student_in_group': _(u'student_v_gruppakh'),
         'view_gradebook': _(u'prosmotr_obshchey_vedomosti'),
         'create_task': _(u'sozdanie_zadachi'),
         'view_task_settings': _(u'prosmotr_nastroyek_zadach'),
