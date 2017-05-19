@@ -140,8 +140,14 @@ class UserProfile(models.Model):
             else:
                 self.user.user_permissions.add(perm)
 
-        user_roles, created = self.user.userroles_set.get_or_create(school=school)
-        user_roles.roles.add(role)
+        if school:
+            user_roles, created = self.user.userroles_set.get_or_create(school=school)
+            user_roles.roles.add(role)
+        else:
+            for roles_visible in role.rolesvisible_set.all():
+                user_roles, created = self.user.userroles_set.get_or_create(school=roles_visible.school)
+                user_roles.roles.add(role)
+
 
     def remove_role(self, role, school=None):
         deleted_perms = []
@@ -157,7 +163,9 @@ class UserProfile(models.Model):
         if global_perms:
             self.user.user_permissions.remove(*global_perms)
 
-        self.user.userroles_set.get(school=school).roles.remove(role)
+        user_roles = self.user.userroles_set.filter(school=school)
+        if user_roles:
+            user_roles[0].roles.remove(role)
 
     def get_perms_by_role(self, role):
         qs_values_list = ["id", "content_type__app_label", "codename", "name"]
