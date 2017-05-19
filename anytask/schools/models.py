@@ -1,8 +1,9 @@
 from django.db import models
 from django.core.urlresolvers import reverse
 from courses.models import Course
+from django.db.models.signals import post_save
 
-from permissions.models import PermissionBase
+from permissions.models import PermissionBase, RolesVisible
 from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
 
 
@@ -32,3 +33,11 @@ class SchoolUserObjectPermission(UserObjectPermissionBase, PermissionBase):
 
 class SchoolGroupObjectPermission(GroupObjectPermissionBase):
     content_object = models.ForeignKey(School, on_delete=models.CASCADE)
+
+
+def create_role_visible(sender, instance, created, **kwargs):
+    if created:
+        RolesVisible.objects.get_or_create(school=instance)
+
+
+post_save.connect(create_role_visible, sender=School)

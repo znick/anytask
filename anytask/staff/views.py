@@ -145,14 +145,13 @@ def roles_page(request):
         perms = get_superuser_perms()
 
         roles_global = Role.objects.filter(rolesvisible__isnull=True).prefetch_related("permissions")
-        if roles_global:
-            roles_tables.append({
-                'school_info': {
-                    'id': 0,
-                    'name': _(u'obshchiye_roli')
-                },
-                'roles_info': get_roles_table_by_school(get_perms_translated(perms, roles_global), roles_global)
-            })
+        roles_tables.append({
+            'school_info': {
+                'id': 0,
+                'name': _(u'obshchiye_roli')
+            },
+            'roles_info': get_roles_table_by_school(get_perms_translated(perms, roles_global), roles_global)
+        })
 
         roles_visible = RolesVisible.objects \
             .all() \
