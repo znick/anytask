@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 
 from django.utils.translation import ugettext as _
-from django.contrib.auth.models import Permission
+from django.contrib.auth.models import Permission, Group as Role
+from django.core.exceptions import PermissionDenied
+
+from guardian.utils import get_user_obj_perms_model
 
 PERMS_CLASSES = {
     'users': ['userprofileuserobjectpermission'],
@@ -31,8 +34,11 @@ LOCALE_PERMS_NAMES = {
     'courses': {
         'view_course': _(u'prosmotr_kursa'),
         'change_course_settings': _(u'izmenenie_nastroyek_kursa'),
+        'view_course_queue': _(u'prosmotr_ocheredi_na_proverku'),
+        'teacher_in_course': _(u'uchitel_v_kurse'),
     },
     'groups': {
+        'student_in_group': _(u'student_v_gruppe'),
         'view_gradebook': _(u'prosmotr_obshchey_vedomosti'),
         'create_task': _(u'sozdanie_zadachi'),
         'view_task_settings': _(u'prosmotr_nastroyek_zadach'),
@@ -79,3 +85,76 @@ def get_superuser_perms():
         ).distinct()
 
     return perms
+
+
+def assign_perm_additional_changes(perm, user, obj):
+    if isinstance(perm, Permission):
+        perm = '.'.join([perm.content_type.app_label, perm.codename])
+
+    if perm == "courses.teacher_in_course":
+        obj.teachers.add(user)
+    elif perm == "groups.student_in_group":
+        obj.students.add(user)
+
+
+def remove_perm_additional_changes(perm, user, obj):
+    if isinstance(perm, Permission):
+        perm = '.'.join([perm.content_type.app_label, perm.codename])
+
+    if perm == "courses.teacher_in_course":
+        obj.teachers.remove(user)
+    elif perm == "groups.student_in_group":
+        obj.students.remove(user)
+
+
+def assign_perm_by_id(perm, user, obj=None, role=None):
+    if not isinstance(perm, Permission):
+        try:
+            perm = Permission.objects.get(id=perm)
+        except Permission.DoesNotExist:
+            raise PermissionDenied
+    if obj is None:
+        user.user_permissions.add(perm)
+        return perm
+
+    kwargs = {
+        'permission': perm,
+        'user': user,
+        'content_object': obj
+    }
+
+    obj_perm, created = get_user_obj_perms_model(obj).objects.get_or_create(**kwargs)
+    if created and role:
+        if not isinstance(role, Role):
+            try:
+                role = Role.objects.get(id=role)
+            except Role.DoesNotExist:
+                obj_perm.delete()
+                raise PermissionDenied
+
+        obj_perm.role_from = role
+        obj_perm.save()
+
+    assign_perm_additional_changes(perm, user, obj)
+
+    return obj_perm
+
+
+def remove_perm_by_id(perm, user, obj=None, role=None):
+    if not isinstance(perm, Permission):
+        try:
+            perm = Permission.objects.get(id=perm)
+        except Permission.DoesNotExist:
+            raise PermissionDenied
+
+    if obj is None:
+        user.user_permissions.remove(perm)
+        return
+
+    get_user_obj_perms_model(obj).objects.filter(
+        permission=perm,
+        user=user,
+        content_object=obj,
+    ).delete()
+
+    remove_perm_additional_changes(perm, user, obj)

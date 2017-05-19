@@ -17,4 +17,5 @@ Depends: ${shlibs:Depends}, ${misc:Depends},
  python-simplejson (>=1.9),
  python-lxml,
  python-dev,
+ gettext,
 Description: Anytask -- платформа для взаимодействия преподавателей и студентов в процессе обучения.

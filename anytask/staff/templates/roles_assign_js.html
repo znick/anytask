@@ -8,6 +8,8 @@
 <script type="text/javascript" src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap4.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/rowgroup/1.0.0/js/dataTables.rowGroup.min.js"></script>
 <script src="{{ STATIC_URL }}jquery.validate.min.js"></script>
+<script type="text/javascript" src="https://fastcdn.org/Readmore.js/2.1.0/readmore.min.js"></script>
+
 
 
 <script type="text/javascript">
@@ -68,17 +70,14 @@
             $.fn.dataTable.tables({visible: true, api: true}).draw();
         });
 
-        $("select, input", ".table-users div.search").click(function (e) {
-            e.stopPropagation();
-        });
-
         $(".change-roles", ".table-users").click(function () {
             var d = "disabled";
             var $btn = $(this);
             var $tr_main = $btn.closest("tr");
             var $modal = $("#modal_role");
-            $("#modal_new_role_table").removeClass("in");
+            $("#modal_new_role_settings").removeClass("in");
             $("#modal_new_role_collapse").removeClass("in");
+            $('span', '#modal_role_header').text($tr_main.find('span.user-fullname').text());
 
             $modal.modal("show");
 
@@ -101,6 +100,7 @@
             $modal.data("user_id", $tr_main.data("user_id"));
             $modal.data("school_id", $tr_main.data("school_id"));
             $modal.data("deleted_roles", []);
+            $modal.data("user_roles_changes", {});
 
             $(".loading", "#modal_role").show();
             $("#modal_role_body").removeClass("in");
@@ -121,6 +121,7 @@
                     $modal.data("loading", false)
                 })
                 .done(function (data) {
+                    $modal.data("select_type", {});
                     create_modal_body(data);
                     $modal.data("roles_info", data);
                 })
@@ -137,7 +138,8 @@
         $("#modal_new_role").on("change", "#modal_new_role_select", function () {
             var $select = $(this);
             var $modal_new_role_table = $("#modal_new_role_table");
-            $modal_new_role_table.removeClass("in");
+            $('#modal_new_role_settings').removeClass("in");
+            $('#modal_new_role_adv_settings_btn').removeClass("active");
             var role_id = $select.val();
             if (!role_id) {
                 return;
@@ -147,15 +149,67 @@
             var user_info = $modal.data("user_info");
             var $table = $("table", $modal_new_role_table);
             $modal.data("role_id", role_id);
-            create_modal_table($table, role_id, user_info, data, "roles")
+
+            var type_used = create_modal_table($table, role_id, user_info, data, "roles", 'new');
+            var $modal_settings = $('#modal_new_role_simple_settings');
+            $modal_settings.empty();
+
+            for (var type_id in type_used) {
+                var $select_group = $(
+                    '<div class="form-group row">' +
+                    '  <label class="col-lg-1 col-md-1 col-sm-2 col-xs-2 form-control-label"></label>' +
+                    '  <div class="controls col-lg-11 col-md-11 col-sm-10 col-xs-10">' +
+                    '  </div>' +
+                    '</div>'
+                ).appendTo("#modal_new_role_simple_settings");
+
+                var label_text = type_id;
+                if (data['type_trans'].hasOwnProperty(type_id))
+                    label_text = data['type_trans'][type_id];
+                $('label', $select_group).text(label_text);
+
+                var $select_type = $($modal.data('select_type')[type_id]).appendTo($('div.controls', $select_group));
+                if (user_info.hasOwnProperty(type_id))
+                    $("option", $select_type).each(function () {
+                        var $option = $(this);
+                        if (user_info[type_id].hasOwnProperty($option.val())) {
+                            $option.attr('selected', 'selected');
+                        }
+                    });
+
+            }
+            init_multiselect($modal_settings, false)
+        });
+
+        $("#modal_new_role_adv_settings_btn").click(function () {
+            $(this).blur().button('toggle');
         });
 
         $("#modal_role_ok").click(function () {
-            var $form = $('#modal_new_role_form');
+            var $btn = $(this);
+            $btn.blur();
 
-            if ($form.valid()) {
-                var $btn = $(this);
-                var $modal = $("#modal_role");
+            var $modal = $("#modal_role");
+            var is_forms_valid = true;
+            $('form', $modal).each(function () {
+                var $form = $(this);
+                if (!$form.valid()) {
+                    var $tab = $form.closest("div.tab-pane");
+                    if (!$tab.hasClass("active")){
+                        $('span[aria-controls="' + $tab.attr("id") + '"]', "#modal_role_body").trigger("click");
+                    }
+
+                    var $block = $form.closest("div.form-block");
+                    if (!$block.hasClass("active")) {
+                        $block.addClass("active").attr("aria-expanded", "true");
+                        $block.siblings(".form-block-toggle").trigger("click");
+                    }
+                    is_forms_valid = false;
+                    return false;
+                }
+            });
+
+            if (is_forms_valid) {
                 var d = "disabled";
 
                 $btn.data('saving', true);
@@ -163,9 +217,10 @@
                 $btn.html($btn.data('loading_text'));
                 $('button', $modal).addClass(d).attr(d, d).prop(d, true);
 
+                var $form_new_role = $('#modal_new_role_form');
                 var new_role_perms = {};
 
-                $("select", $form).each(function () {
+                $("select", $form_new_role).each(function () {
                     var $select = $(this);
                     new_role_perms[$select.data("perm_id")] = $select.val();
                 });
@@ -177,6 +232,7 @@
                     "school_id": $modal.data("school_id"),
                     "deleted_roles": $modal.data("deleted_roles"),
                     "new_role_perms": JSON.stringify(new_role_perms),
+                    "user_roles_changes": JSON.stringify($modal.data("user_roles_changes"))
                 };
 
                 $.post('{% url staff.views.ajax_save_user_roles %}', post_data)
@@ -208,7 +264,7 @@
                 scrollX: true,
                 scrollCollapse: true,
                 paging: false,
-                order: [[0, 'asc']],
+                order: [[1, 'asc']],
                 autoWidth: false,
                 dom: "<'row'<'col-xs-12'tr>>" +
                 "<'row'<'col-xs-12 col-sm-12 col-md-4 col-lg-4'i><'col-xs-12 col-sm-12 col-md-8 col-lg-8'p>>",
@@ -281,10 +337,16 @@
                             });
                         });
                     });
+
+                    $("div.search", $container).find("select, input").click(function (e) {
+                        e.stopPropagation();
+                    });
+
                     $table.DataTable().draw();
                 },
             });
         }
+
         return data_table;
     }
 
@@ -297,15 +359,15 @@
                 show_edit_button = true;
                 var $card = $('' +
                     '<div class="card" id="user_role_card_' + user_role_id + '">' +
-                    '  <div class="card-header" role="tab" id="user_role_header_' + user_role_id + '" data-toggle="collapse" data-parent="#modal_roles_accordion" href="#user_role_collapse_' + user_role_id + '" aria-expanded="true" aria-controls="user_role_collapse_' + user_role_id + '">' +
+                    '  <div class="card-header form-block-toggle" role="tab" id="user_role_header_' + user_role_id + '" data-toggle="collapse" data-parent="#modal_roles_accordion" href="#user_role_collapse_' + user_role_id + '" aria-expanded="true" aria-controls="user_role_collapse_' + user_role_id + '">' +
                     '    <a class="card-link" >' +
                     '    </a>' +
                     '    <span class="fa fa-trash-o btn-delete-role" data-toggle="popover-delete-role" tabindex="0" data-role_id="' + user_role_id + '" aria-hidden="true"></span>' +
                     '  </div>' +
-                    '  <div id="user_role_collapse_' + user_role_id + '" class="collapse user_role_collapse" role="tabpanel" aria-labelledby="user_role_header_' + user_role_id + '">' +
+                    '  <div id="user_role_collapse_' + user_role_id + '" class="collapse user-role-collapse form-block" role="tabpanel" aria-labelledby="user_role_header_' + user_role_id + '">' +
                     '    <div class="card-block table-collapse collapse">' +
                     '      <form>' +
-                    '        <table class="table table-striped table-bordered table-roles">' +
+                    '        <table class="table table-striped table-bordered table-roles" data-edit_role="true">' +
                     '          <thead><tr></tr></thead>' +
                     '          <tbody></tbody>' +
                     '        </table>' +
@@ -317,7 +379,7 @@
                 $("div.card-header", $card).find("a").text(data["user_roles"][user_role_id]["name"]);
 
                 var $table = $("table", $card);
-                create_modal_table($table, user_role_id, {}, data, "user_roles");
+                create_modal_table($table, user_role_id, {}, data, "user_roles", 'user');
 
             }
         }
@@ -363,13 +425,22 @@
 
         $('body').on("click", "button.btn-delete-role-ok", function () {
             var $span_data = $(this).closest("div.popover").find("span.popover-data");
-            $("#modal_role").data("deleted_roles").push($span_data.data("role_id"));
+            var $modal = $("#modal_role");
+            $modal.data("deleted_roles").push($span_data.data("role_id"));
+            delete $modal.data("user_roles_changes")[$span_data.data("role_id")];
             $($span_data.data("role_card_id") ,"#modal_role").hide();
         });
 
-        $('.user_role_collapse').on('show.bs.collapse', function () {
+        $('.user-role-collapse').on('show.bs.collapse', function () {
             var $table = $("table", this);
             $("tr.group.group-start", $table).find("td").attr("colspan", 2);
+            $(this).addClass("active")
+        }).on('hide.bs.collapse', function () {
+            $(this).removeClass("active")
+        });
+
+        $('#modal_new_role_settings').on('show.bs.collapse', function () {
+            $('#modal_new_role_table').removeClass("hidden");
         });
 
         var $select = $("#modal_new_role_select").html('');
@@ -384,14 +455,20 @@
         else
             $("#modal_nav_role_user_roles").addClass("hidden");
 
+        if (Object.keys(data["roles"]).length)
+            $("#modal_nav_role_new_role").removeClass("hidden");
+        else
+            $("#modal_nav_role_new_role").addClass("hidden");
+
+
         $('li:not(".hidden"):first span', "#modal_nav_role").click();
     }
 
-    function create_modal_table($table, role_id, user_info, data, data_key) {
+    function create_modal_table($table, role_id, user_info, data, data_key, prefix) {
         if ($.fn.DataTable.isDataTable($table)) {
             $table.DataTable().destroy();
         }
-
+        var type_used = {}
         var $thead = $('thead', $table).show().find("tr").html('');
         var $tbody = $('tbody', $table).html('');
         $thead.append('<th class="disable-ordering">{% trans 'dostupy' %}</th>');
@@ -406,24 +483,30 @@
                     var $td = $('<td class="centered"></td>').appendTo($tr);
                     var type = data[data_key][role_id]["perms"][perm_id]["model"];
                     if (data.hasOwnProperty(type)) {
-                        var $select_type = $('<select multiple="multiple" name="select_' + perm_id + '" data-perm_id="' + perm_id + '"></select>').appendTo($td);
+                        type_used[type] = 1;
+
+                        var $select_type = $(create_multiselect(data, type));
+                        $select_type.appendTo($td);
+                        $select_type.attr("name", prefix + "_" + role_id + "_select_" + perm_id );
+                        $select_type.attr("data-perm_id", perm_id);
+                        $select_type.attr("data-role_id", role_id);
+                        $select_type.addClass("validate");
+
                         var user_type_info = {};
                         if (user_info.hasOwnProperty(type))
                             user_type_info = user_info[type];
 
-                        for (var type_id in data[type]) {
-                            var selected = '';
+                        $("option", $select_type).each(function () {
+                            var $option = $(this);
                             if (
-                                user_type_info.hasOwnProperty(type_id) ||
+                                user_type_info.hasOwnProperty($option.val()) ||
                                 (
                                     data[data_key][role_id]["perms"][perm_id].hasOwnProperty("objects") &&
-                                    data[data_key][role_id]["perms"][perm_id]["objects"].indexOf(parseInt(type_id, 10)) !== -1
+                                    data[data_key][role_id]["perms"][perm_id]["objects"].indexOf(parseInt($option.val(), 10)) !== -1
                                 )
                             )
-                                selected = 'selected="selected"';
-
-                            $select_type.append('<option value="' + type_id + '"' + selected + '>' + data[type][type_id] + '</option>');
-                        }
+                                $option.attr('selected', 'selected');
+                        });
                     }
                     else {
                         $td.append('<input type="checkbox" checked="checked" disabled="disabled">');
@@ -432,32 +515,58 @@
         }
 
         init_modal_table($table);
+
+        return type_used
     }
 
-    function init_modal_table($table) {
-        var form_validator = $($table).closest("form").validate({
-            ignore: ':hidden:not("select")',
-            highlight: function (input) {
-                $(input).closest("td").removeClass('has-success').addClass('has-danger');
-            },
+    function create_multiselect(data, type) {
+        var $modal = $('#modal_role');
+        var select_type_dict = $modal.data('select_type');
 
-            success: function (label) {
-                label.closest('td').removeClass('has-danger');
-            },
+        if (!select_type_dict.hasOwnProperty(type)) {
+            var $select_type = $('<select multiple="multiple" data-type="' + type + '"></select>');
 
-            errorPlacement: function (error, element) {
-                $(element).closest("td").append(error);
+            for (var type_id in data[type]) {
+                $select_type.append('<option value="' + type_id + '">' + data[type][type_id] + '</option>');
             }
-        });
 
-        $("select[multiple]", $table).multiselect({
+            select_type_dict[type] = $select_type[0].outerHTML;
+            $modal.data('select_type', select_type_dict);
+        }
+
+        return $modal.data('select_type')[type];
+    }
+
+    function init_multiselect($table, is_validate) {
+        var form_validator;
+        if (is_validate)
+            form_validator = $($table).closest("form").validate({
+                ignore: ':hidden:not("select")',
+                highlight: function (input) {
+                    $(input).closest("td").removeClass('has-success').addClass('has-danger');
+                },
+
+                success: function (label) {
+                    label.closest('td').removeClass('has-danger');
+                },
+
+                errorPlacement: function (error, element) {
+                    $(element).closest("td").append(error);
+                }
+            });
+
+        var $select = $("select[multiple]", $table).multiselect({
             buttonContainer: '<div style="width:100%;" class="multiselect-dropdown dropdown"/>',
             buttonClass: 'btn btn-secondary btn-table',
             templates: {
                 ul: '<ul class="multiselect-container dropdown-menu dropdown-menu-right"></ul>',
                 li: '<li><a tabindex="0" class="dropdown-item"><label></label></a></li>',
+                filter: '<li class="multiselect-item filter"><div class="input-group"><input class="form-control form-control-sm multiselect-search" type="text"></div></li>',
+                filterClearBtn: '<span class="input-group-btn"><button class="btn btn-secondary btn-sm multiselect-clear-filter" type="button"><span class="fa fa-times"></span></button></span>'
             },
             maxHeight: 200,
+            enableCaseInsensitiveFiltering: true,
+            filterPlaceholder: "{% trans "najti" %}",
             buttonTitle: function (options, select) {
                 var labels = [];
 
@@ -479,16 +588,66 @@
                 return '{% trans "vybrano" %}: ' + options.length;
             },
             onChange: function (option, checked) {
-                form_validator.element($(option).closest("select"));
-            },
-        }).each(function () {
-            $(this).rules('add', {
-                required: true,
-                messages: {
-                    required: "required",
+                var $this_select = option.closest("select");
+                var type = $this_select.data("type");
+
+                if (is_validate) {
+                    form_validator.element($this_select);
+                    $('select[data-type="' + type + '"]', option.closest(".table-collapse").find(".mass-select")).val('').multiselect('refresh');
                 }
-            });
+                else {
+                    $('select[data-type="' + type + '"]', option.closest(".table-collapse").find("table"))
+                        .val($this_select.val())
+                        .multiselect('refresh')
+                        .closest("form").valid();
+                }
+
+                if ($table.data("edit_role")) {
+                    var $modal = $("#modal_role");
+                    var user_roles_changes = $modal.data("user_roles_changes");
+                    var role_id = $this_select.data("role_id");
+                    var perm_id = $this_select.data("perm_id");
+                    var obj_id = option.val();
+
+                    if (!user_roles_changes.hasOwnProperty(role_id))
+                        user_roles_changes[role_id] = {};
+
+                    if (!user_roles_changes[role_id].hasOwnProperty(perm_id))
+                        user_roles_changes[role_id][perm_id] = {
+                            "add": [],
+                            "remove": []
+                        };
+
+                    var remove = 'remove';
+                    var add = 'add';
+                    if (!checked)
+                        remove = [add, add = remove][0];
+
+                    var i = user_roles_changes[role_id][perm_id][remove].indexOf(obj_id);
+                    if (i !== -1) {
+                        user_roles_changes[role_id][perm_id][remove].splice(i, 1);
+                    }
+                    else
+                        user_roles_changes[role_id][perm_id][add].push(obj_id);
+
+                    $modal.data("user_roles_changes", user_roles_changes);
+                }
+            },
         });
+
+        if (is_validate)
+            $select.each(function () {
+                $(this).rules('add', {
+                    required: true,
+                    messages: {
+                        required: "required",
+                    }
+                });
+            });
+    }
+
+    function init_modal_table($table) {
+        init_multiselect($table, true);
 
         $table.DataTable({
             info: false,
@@ -518,11 +677,35 @@
             },
             initComplete: function (settings, json) {
                 var $table = $(this);
+                if ($table.attr("for"))
+                    $($table.attr("for")).addClass("hidden");
                 $table.closest("div.table-collapse").collapse("show");
                 $table.DataTable().draw();
                 $table.find("thead").hide();
             }
         });
+
+        if ($table.attr("for")) {
+            $($table.attr("for")).removeClass("hidden");
+            $("#modal_new_role_table").removeClass("active").readmore('destroy').readmore({
+                speed: 200,
+                collapsedHeight: 0,
+                moreLink: '<span class="modal-role-readmore-toggle form-block-toggle">{% trans "rasshirennyye_nastroyki" %}&nbsp;<span class="fa fa-chevron-down"></span></span>',
+                lessLink: '<span class="modal-role-readmore-toggle form-block-toggle">{% trans "skryt" %}&nbsp;<span class="fa fa-chevron-up"></span></span>',
+                beforeToggle: function (trigger, element, is_close) {
+                    $("tr.group.group-start", $table).find("td").attr("colspan", 2);
+                    console.log("is_close", is_close);
+                    if (is_close)
+                        element.removeClass("active");
+                },
+                afterToggle: function (trigger, element, opened) {
+                    if (opened)
+                        element.addClass("active");
+                    else
+                        element.removeClass("active");
+                }
+            });
+        }
     }
 
 </script>

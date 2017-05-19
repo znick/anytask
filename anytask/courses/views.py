@@ -66,8 +66,8 @@ def queue_page(request, course_id):
     course = get_object_or_404(Course, id=course_id)
     course_id_as_str = str(course_id)
 
-    if not course.user_can_see_queue(user):
-        return HttpResponseForbidden()
+    if not user.has_perm('view_course_queue', course):
+        raise PermissionDenied
 
     active_profiles = UserProfile.objects.filter(Q(user_status__tag='active') | Q(user_status__tag=None))
     active_students = []

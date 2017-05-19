@@ -20,10 +20,9 @@ from users.model_user_status import UserStatus
 
 from anytask.storage import OverwriteStorage
 
-from permissions.common import _get_perm_local_name, get_perm_local_name, PERMS_CLASSES
+from permissions.common import _get_perm_local_name, PERMS_CLASSES, assign_perm_by_id, remove_perm_additional_changes
 from permissions.models import PermissionBase, PermissionsVisible
 from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
-from guardian.shortcuts import assign_perm
 
 import os
 import django_filters
@@ -137,9 +136,7 @@ class UserProfile(models.Model):
                     except model.DoesNotExist:
                         raise PermissionDenied
 
-                    model_perm = assign_perm(perm.codename, self.user, obj)
-                    model_perm.role_from = role
-                    model_perm.save()
+                    assign_perm_by_id(perm, self.user, obj, role)
             else:
                 self.user.user_permissions.add(perm)
 
@@ -150,9 +147,11 @@ class UserProfile(models.Model):
         deleted_perms = []
         for model_app_label, model_names in PERMS_CLASSES.iteritems():
             for model_name in model_names:
-                model_perm = get_model(model_app_label, model_name).objects.filter(user=self.user, role_from=role)
-                deleted_perms += model_perm.values_list("permission__id", flat=True)
-                model_perm.delete()
+                model_perms = get_model(model_app_label, model_name).objects.filter(user=self.user, role_from=role)
+                for model_perm in model_perms:
+                    remove_perm_additional_changes(model_perm.permission, self.user, model_perm.content_object)
+                deleted_perms += model_perms.values_list("permission__id", flat=True)
+                model_perms.delete()
 
         global_perms = role.permissions.exclude(id__in=deleted_perms)
         if global_perms:

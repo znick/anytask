@@ -20,6 +20,7 @@ class Group(models.Model):
     class Meta:
         unique_together = (("year", "name"),)
         permissions = (
+            ('student_in_group', 'Student in group'),
             ('view_gradebook', 'View gradebook'),
             ('create_task', 'Create task'),
             ('view_task_settings', 'View task settings'),

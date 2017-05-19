@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-15 12:56+0000\n"
+"POT-Creation-Date: 2017-05-16 08:35+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -76,6 +76,13 @@ msgstr "Архив"
 #: mail/views.py:31
 msgid "august"
 msgstr "авг."
+
+#: staff/templates/get_gradebook.html:14 staff/templates/gradebook.html:15
+#: staff/templates/roles.html:15 staff/templates/roles_assign.html:15
+#: staff/templates/staff.html:6 staff/templates/staff.html.py:15
+#: staff/templates/user_filter_by_status.html:17 templates/base.html:685
+msgid "backoffice"
+msgstr "Backoffice"
 
 #: templates/base.html:667
 msgid "base_est_novye_soobshenija"

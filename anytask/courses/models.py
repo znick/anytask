@@ -190,9 +190,7 @@ class Course(models.Model):
             return user.id == student.id
 
     def user_can_see_queue(self, user):
-        if user.is_anonymous():
-            return False
-        if self.user_is_teacher(user):
+        if user.has_perm('view_course_queue', self):
             return True
         return False
 
@@ -254,6 +252,8 @@ class Course(models.Model):
         permissions = (
             ('view_course', 'View course'),
             ('change_course_settings', 'Change course settings'),
+            ('view_course_queue', 'View course queue'),
+            ('teacher_in_course', 'Teacher in course'),
         )
 
 
