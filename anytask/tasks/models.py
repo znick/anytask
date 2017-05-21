@@ -129,8 +129,9 @@ class Task(models.Model):
         if user.is_anonymous():
             return False
 
-        if self.user_can_take_task(user):
-            return True
+        if not self.course.is_python_task:
+            if self.user_can_take_task(user):
+                return True
 
         try:
             task_taken = self.get_task_takens().get(user=user)
