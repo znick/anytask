@@ -15,6 +15,11 @@ span.input-group-addon {
     cursor: pointer
 }
 
+#task_edit_type {
+    margin-top: 8px;
+    margin-bottom: 2px;
+}
+
 #task_edit_datepicker:disabled {
     background-color: #eceeef;
 }
