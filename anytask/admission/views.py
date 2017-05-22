@@ -13,7 +13,6 @@ from django.contrib.auth.models import User
 from admission.models import AdmissionRegistrationProfile
 from django.contrib.auth.models import User
 
-
 import json
 import requests
 import logging
@@ -155,8 +154,8 @@ def register(request):
     return HttpResponse("OK")
 
 
-def contest_register(user):
-    contest_id = settings.ADMISSION_CONTESTS[user.email.__hash__() % len(settings.ADMISSION_CONTESTS)]
+def contest_register(user, contests, log_prefix=''):
+    contest_id = contests[user.email.__hash__() % len(contests)]
 
     req = requests.get(
         settings.CONTEST_API_URL + 'register-user?uidToRegister=' + str(user.get_profile().ya_contest_uid) +
@@ -166,14 +165,14 @@ def contest_register(user):
     if 'error' in req.json():
         error_message = req.json()["error"]["message"]
         if error_message == 'User already registered for contest':
-            logger.info("Activate user - %s %s", user.username, error_message)
+            logger.info("%s - %s %s", log_prefix, user.username, error_message)
             return contest_id
 
-        logger.error("Activate user - Cant register user %s to contest %s. Error: %s", user.username, contest_id,
+        logger.error("%s - Cant register user %s to contest %s. Error: %s", log_prefix, user.username, contest_id,
                      error_message)
         return False
 
-    logger.info("Activate user - user %s was successfully registered to contest %s.", user.username, contest_id)
+    logger.info("%s - user %s was successfully registered to contest %s.", log_prefix, user.username, contest_id)
     return contest_id
 
 
@@ -186,7 +185,7 @@ def activate(request, activation_key):
         if user_info:
             set_user_info(user, json.loads(user_info))
 
-        contest_id = contest_register(user)
+        contest_id = contest_register(user, settings.ADMISSION_CONTESTS, 'Activate user')
         if contest_id:
             return HttpResponsePermanentRedirect(settings.CONTEST_URL + str(contest_id))
         else:
@@ -235,5 +234,28 @@ def contest_results_redirect(request, username):
         'info_title': _(u'oshibka'),
         'info_text': _(u'nevernyy_adres')
     }
+
+    return render_to_response('info_page.html', context, context_instance=RequestContext(request))
+
+
+@never_cache
+@require_GET
+def contest_register_and_redirect(request, username):
+    context = {}
+    log_prefix = 'Admission Part 2 register'
+    try:
+        user = User.objects.get(username=username)
+    except User.DoesNotExist:
+        context['info_text'] = _(u'nevernyy_adres')
+        logger.error("%s - user %s not found", log_prefix, username)
+    else:
+        contest_id = contest_register(user, settings.ADMISSION_CONTESTS_2, log_prefix)
+
+        if contest_id:
+            return HttpResponsePermanentRedirect(settings.CONTEST_URL + str(contest_id))
+        else:
+            context['info_text'] = _(u'oshibka_registracii_v_contest')
+
+    context['info_title'] = _(u'oshibka')
 
     return render_to_response('info_page.html', context, context_instance=RequestContext(request))
