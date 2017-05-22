@@ -17,4 +17,9 @@ Depends: ${shlibs:Depends}, ${misc:Depends},
  python-simplejson (>=1.9),
  python-lxml,
  python-dev,
+ p7zip-full,
+ tar,
+ xz-utils,
+ bzip2,
+ gzip
 Description: Anytask -- платформа для взаимодействия преподавателей и студентов в процессе обучения.
