@@ -16,7 +16,7 @@
                 <div class="card-title-block">
                     {% ifnotequal group course.group_with_extern %}
                         <h5 class="card-title">
-                            {% if group.name %}{% if not group_gradebook %}<a class="card-link table-link" href="{{ course.get_absolute_url }}/gradebook/group/{{ group.id }}">{% endif %}{{ group.name }}</a>{% endif %}&nbsp;
+                            {% if group.name %}{% if not group_gradebook %}<a class="card-link table-link" href="{{ course.get_absolute_url }}/gradebook{% if seminar %}/seminar/{{ seminar.id }}{% endif %}/group/{{ group.id }}">{% endif %}{{ group.name }}</a>{% endif %}&nbsp;
                             {% if default_teacher|key:group %}
                                 (<a class="card-link table-link" href="{{ default_teacher|get_url:group }}">{{ default_teacher|get_name:group }}</a>)
                             {% endif %}

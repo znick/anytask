@@ -12,12 +12,14 @@
     {{ block.super }}
     {% if school %}
         {% breadcrumb school.name school.get_absolute_url %}
-    {% endif %}
-    {% if not seminar %}
-        {% breadcrumb course.name "" %}
-    {% else %}
         {% breadcrumb course.name course.get_absolute_url %}
+    {% endif %}
+    {% if seminar %}
         {% breadcrumb seminar.title "" %}
+    {% elif group_gradebook %}
+        {% breadcrumb group_information|get_group_name "" %}
+    {% else %}
+        {% breadcrumb_for "" %}{% trans "obshaja_vedomost" %}{% endbreadcrumb_for %}
     {% endif %}
 {% endblock breadcrumbs %}
 
@@ -30,7 +32,8 @@
         </li>
         <li class="nav-item">
             <a class="nav-link {% if not group_gradebook %}active{% endif %}"
-               href="{{ course.get_absolute_url }}/gradebook/{% if seminar %}seminar/{{ seminar.id }}{% endif %}">{% trans "obshaja_vedomost" %}</a>
+               href="{{ course.get_absolute_url }}/gradebook/{% if seminar %}seminar/{{ seminar.id }}{% endif %}">
+                {% if seminar %}{% trans "obshaja_vedomost_seminara" %}{% else %}{% trans "obshaja_vedomost" %}{% endif %}</a>
         </li>
         {% if not seminar %}
             {% if visible_queue %}

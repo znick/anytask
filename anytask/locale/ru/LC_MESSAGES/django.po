@@ -567,10 +567,11 @@ msgstr "Минимальная длина запроса должна быть �
 msgid "moi_kursy"
 msgstr "Мои курсы"
 
-#: courses/forms.py:25 users/templates/my_tasks.html:96
-#: users/templates/my_tasks.html.py:131 users/templates/my_tasks.html:173
-#: users/templates/status_history.html:32 users/templates/user_courses.html:31
-#: users/templates/user_profile.html:21 users/templates/user_settings.html:46
+#: courses/forms.py:25 issues/templatetags/referrer_info.py:21
+#: users/templates/my_tasks.html:96 users/templates/my_tasks.html.py:131
+#: users/templates/my_tasks.html:173 users/templates/status_history.html:32
+#: users/templates/user_courses.html:31 users/templates/user_profile.html:21
+#: users/templates/user_settings.html:46
 msgid "moi_zadachi"
 msgstr "Мои задачи"
 
@@ -641,7 +642,7 @@ msgstr "Настройка задач"
 
 #: courses/templates/course_tasks_potok.html:64
 #: courses/templates/courses/course.html:46
-#: courses/templates/courses/gradebook.html:44
+#: courses/templates/courses/gradebook.html:47
 #: courses/templates/courses/queue.html:36
 #: courses/templates/courses/settings.html:19
 #: courses/templates/courses/settings.html:44 templates/base.html:683
@@ -698,12 +699,12 @@ msgstr "Пользователи не найдены."
 msgid "ne_najdeno_zadach"
 msgstr "Задачи не найдены."
 
-#: courses/templates/courses/gradebook.html:82
+#: courses/templates/courses/gradebook.html:85
 msgid "ne_pokazyvat_otchislennyh"
 msgstr "Не показывать отчисленных студентов"
 
 #: courses/templates/courses/course.html:93
-#: courses/templates/courses/gradebook.html:73
+#: courses/templates/courses/gradebook.html:76
 msgid "ne_pokazyvat_skrytye_zadachi"
 msgstr "Не показывать скрытые задачи"
 
@@ -819,7 +820,7 @@ msgstr "новых сообщений"
 msgid "novyh_soobshenija"
 msgstr "новых сообщения"
 
-#: courses/templates/courses/gradebook.html:60
+#: courses/templates/courses/gradebook.html:63
 #: courses/templatetags/course_func.py:33 issues/model_issue_status.py:26
 #: issues/models.py:76
 msgid "novyj"
@@ -876,13 +877,19 @@ msgid "obnovlenie_zadach"
 msgstr "Обновление задач..."
 
 #: courses/templates/courses/course.html:38
-#: courses/templates/courses/gradebook.html:33
+#: courses/templates/courses/gradebook.html:22
+#: courses/templates/courses/gradebook.html:36
 #: courses/templates/courses/queue.html:29
 #: courses/templates/courses/settings.html:35
+#: issues/templatetags/referrer_info.py:39
 #: staff/templates/get_gradebook.html:20 staff/templates/gradebook.html:21
 #: staff/templates/gradebook.html.py:38 staff/templates/staff.html:23
 msgid "obshaja_vedomost"
 msgstr "Общая ведомость"
+
+#: courses/templates/courses/gradebook.html:36
+msgid "obshaja_vedomost_seminara"
+msgstr "Общая ведомость семинара"
 
 #: anyrb/common.py:86 issues/templates/issues/history.html:38
 msgid "obsuzhdenie_zadachi"
@@ -907,11 +914,12 @@ msgstr "Оценка не должна быть больше"
 
 #: courses/templates/course_tasks_potok.html:61
 #: courses/templates/courses/course.html:43
-#: courses/templates/courses/gradebook.html:38
+#: courses/templates/courses/gradebook.html:41
 #: courses/templates/courses/queue.html:18
 #: courses/templates/courses/queue.html:32
 #: courses/templates/courses/settings.html:39
-#: issues/templates/issues/issue.html:30
+#: issues/templates/issues/issue.html:34
+#: issues/templatetags/referrer_info.py:23
 msgid "ochered_na_proverku"
 msgstr "Очередь на проверку"
 
@@ -1047,7 +1055,7 @@ msgstr "Отправка кода в Я.Контест произошла усп
 msgid "otpravleno_v_kontest"
 msgstr "Отправлено на проверку в Я.Контест."
 
-#: issues/templates/issues/issue.html:40
+#: issues/templates/issues/issue.html:44
 msgid "otpravljajte_ot_svoego_akkaunta"
 msgstr "Отправляйте данные в Я.Контест со своего аккаунта на Яндексе."
 
@@ -1181,7 +1189,7 @@ msgid "pokazat_citirovanie"
 msgstr "Показать цитирование"
 
 #: courses/templates/courses/course.html:95
-#: courses/templates/courses/gradebook.html:75
+#: courses/templates/courses/gradebook.html:78
 msgid "pokazat_skrytye_zadachi"
 msgstr "Показать скрытые задачи"
 
@@ -1189,7 +1197,7 @@ msgstr "Показать скрытые задачи"
 msgid "pokazyvat_moj_e-mail"
 msgstr "Показывать мой электронный адрес всем пользователям"
 
-#: courses/templates/courses/gradebook.html:84
+#: courses/templates/courses/gradebook.html:87
 msgid "pokazyvat_otchislennyh"
 msgstr "Показать отчисленных студентов"
 
@@ -1278,7 +1286,7 @@ msgstr "Привязать"
 msgid "privjazali_profil"
 msgstr "Вы привязали профиль."
 
-#: issues/templates/issues/issue.html:41
+#: issues/templates/issues/issue.html:45
 msgid "privjazat_k_profilu_kontest"
 msgstr "Чтобы сдать эту задачу, привяжите к своему"
 
@@ -1314,7 +1322,7 @@ msgstr "Теперь все посылки в соревнования буду�
 msgid "profil_studenta"
 msgstr "Профиль студента"
 
-#: issues/templates/issues/issue.html:41
+#: issues/templates/issues/issue.html:45
 msgid "profilu"
 msgstr "профилю"
 
@@ -1616,7 +1624,7 @@ msgstr "Статус поступления"
 msgid "status_studenta"
 msgstr "Статус студента"
 
-#: courses/templates/courses/gradebook.html:66 mail/templates/mail.html:177
+#: courses/templates/courses/gradebook.html:69 mail/templates/mail.html:177
 #: users/templates/status_history.html:70
 msgid "statusy"
 msgstr "Статусы"
@@ -1628,7 +1636,7 @@ msgstr "Статусы пользователя"
 
 #: courses/templates/course_tasks_potok.html:51
 #: courses/templates/courses/course.html:33
-#: courses/templates/courses/gradebook.html:29
+#: courses/templates/courses/gradebook.html:31
 #: courses/templates/courses/queue.html:25
 #: courses/templates/courses/settings.html:31
 msgid "stranica_kursa"
@@ -1636,7 +1644,7 @@ msgstr "Страница курса"
 
 #: courses/templates/course_tasks_potok.html:52
 #: courses/templates/courses/course.html:34
-#: courses/templates/courses/gradebook.html:29
+#: courses/templates/courses/gradebook.html:31
 msgid "stranica_seminara"
 msgstr "Страница семинара"
 
@@ -1664,7 +1672,7 @@ msgstr "студентом"
 msgid "studentov"
 msgstr "студентов"
 
-#: courses/templates/courses/gradebook.html:65
+#: courses/templates/courses/gradebook.html:68
 #: courses/templates/courses/tasklist/many_tasksets_many_groups.html:53
 #: courses/templates/courses/tasklist/many_tasksets_many_groups.html:146
 #: courses/templates/courses/tasklist/shad_cpp.html:60
@@ -1721,7 +1729,7 @@ msgstr "Только латинские буквы, цифры и символы
 msgid "tolko_ocenka"
 msgstr "только оценка"
 
-#: courses/forms.py:24 courses/templates/courses/gradebook.html:61
+#: courses/forms.py:24 courses/templates/courses/gradebook.html:64
 #: issues/model_issue_status.py:32 issues/models.py:81
 msgid "trebuetsja_informacija"
 msgstr "Требуется информация"
