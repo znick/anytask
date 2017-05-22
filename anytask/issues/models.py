@@ -244,6 +244,9 @@ class Issue(models.Model):
     def set_status_accepted(self, author=None):
         self.set_status_by_tag(IssueStatus.STATUS_ACCEPTED, author)
 
+    def set_status_new(self, author=None):
+        self.set_status_by_tag(IssueStatus.STATUS_NEW, author)
+
     def set_status_accepted_after_deadline(self, author=None):
         self.set_status_by_tag(IssueStatus.STATUS_ACCEPTED_AFTER_DEADLINE, author)
 
