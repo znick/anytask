@@ -162,7 +162,7 @@ class ViewsTest(TestCase):
         navbar = html.nav
         navbar_links = navbar.ul('li')
         self.assertEqual(len(navbar_links), 1, 'navbar must have only 1 link')
-        self.assertEqual(navbar_links[0].a['href'], '/course/1', 'navbar link wrong')
+        self.assertEqual(navbar_links[0].a['href'], '/course/1#tasks-tab', 'navbar link wrong')
 
         # breadcrumbs
         breadcrumbs = container.find('ul', 'breadcrumb')('li')
@@ -271,7 +271,7 @@ class ViewsTest(TestCase):
         navbar = html.nav
         navbar_links = navbar.ul('li')
         self.assertEqual(len(navbar_links), 1, 'navbar must have only 1 link')
-        self.assertEqual(navbar_links[0].a['href'], '/course/1', 'navbar link wrong')
+        self.assertEqual(navbar_links[0].a['href'], '/course/1#tasks-tab', 'navbar link wrong')
 
         # breadcrumbs
         breadcrumbs = container.find('ul', 'breadcrumb')('li')

@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponsePermanentRedirect
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template.context import RequestContext
 from django.utils.translation import ugettext as _
@@ -236,7 +236,7 @@ def get_or_create(request, task_id, student_id):
         'issue_url': issue.get_absolute_url(),
     }
 
-    return HttpResponseRedirect("/issue/"+str(issue.id))#(json.dumps(data), content_type='application/json')
+    return HttpResponsePermanentRedirect("/issue/"+str(issue.id))#(json.dumps(data), content_type='application/json')
 
 
 @login_required

@@ -17,3 +17,7 @@ def get_full_name(d, key):
 def get_url(d, key):
     return d.get(key).get_absolute_url()
 
+
+@register.filter(name='get_group_name')
+def get_url(d):
+    return d.keys()[0].name
