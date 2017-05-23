@@ -260,7 +260,7 @@ class TaskTaken(models.Model):
         return self.issue.mark
 
     def update_status(self):
-        if self.issue and int(self.issue.mark) != 0 and self.status != self.STATUS_SCORED:
+        if self.issue and abs(self.issue.mark) > 1e-6 and self.status != self.STATUS_SCORED:
             self.status = self.STATUS_SCORED
             self.save()
 
