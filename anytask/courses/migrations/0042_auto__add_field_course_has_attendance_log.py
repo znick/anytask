@@ -83,6 +83,7 @@ class Migration(SchemaMigration):
             'send_rb_and_contest_together': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'send_to_contest_from_users': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'show_accepted_after_contest_ok': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'show_contest_run_id': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'show_task_one_file_upload': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'teachers': ('django.db.models.fields.related.ManyToManyField', [], {'blank': 'True', 'related_name': "'course_teachers_set'", 'null': 'True', 'symmetrical': 'False', 'to': "orm['auth.User']"}),
             'update_time': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'auto_now': 'True', 'blank': 'True'}),
@@ -107,7 +108,7 @@ class Migration(SchemaMigration):
             'name': ('django.db.models.fields.CharField', [], {'max_length': '10'})
         },
         'courses.markfield': {
-            'Meta': {'object_name': 'MarkField'},
+            'Meta': {'ordering': "['-name_int']", 'object_name': 'MarkField'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '191', 'db_index': 'True'}),
             'name_int': ('django.db.models.fields.IntegerField', [], {'default': '-1'})
