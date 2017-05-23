@@ -16,7 +16,7 @@
                 <div class="card-title-block">
                     {% ifnotequal group course.group_with_extern %}
                         <h5 class="card-title">
-                            {% if group.name %}{% if not group_gradebook %}<a class="card-link table-link" href="{{ course.get_absolute_url }}/gradebook/group/{{ group.id }}">{% endif %}{{ group.name }}</a>{% endif %}&nbsp;
+                            {% if group.name %}{% if not group_gradebook %}<a class="card-link table-link" href="{{ course.get_absolute_url }}/gradebook{% if seminar %}/seminar/{{ seminar.id }}{% endif %}/group/{{ group.id }}">{% endif %}{{ group.name }}</a>{% endif %}&nbsp;
                             {% if default_teacher|key:group %}
                                 (<a class="card-link table-link" href="{{ default_teacher|get_url:group }}">{{ default_teacher|get_name:group }}</a>)
                             {% endif %}
@@ -45,8 +45,8 @@
                             <th align="center" class="{% if task.type == task.TYPE_SIMPLE and user_is_teacher %}dom-live-number{% else %}dom-number{% endif %} word-wrap">
                                 <a class="{% if task.is_hidden %}hidden-task-title{% endif %}" href="javascript:get_task_modal({{task.id}}, '{{task.title|escapejs}}',
                     '{{task.task_text|safe|escapejs}}',
-                     {% if task.deadline_time %} '{{task.deadline_time|date:'d-m-Y H:i'}}' {% else %}''{% endif %})">
-                                    {{ task.title }}
+                     {% if task.deadline_time %} '{{task.deadline_time|date:'d-m-Y H:i'}}' {% else %}''{% endif %})" data-toggle="popover-help" data-trigger="hover" data-placement="bottom" data-content="{{task.title}} ">
+                                    {% if task.short_title %}{{ task.short_title }}{% else %}{{ task.title }}{% endif %}
                                 </a>
                                 {% if task.type != task.TYPE_SEMINAR and task.type != task.TYPE_MATERIAL %}
                                     <span class="label {% if not task.is_hidden %} label-inverse {% else %} label-default {% endif %}">{{ task.score_max }}</span>

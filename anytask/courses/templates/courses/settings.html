@@ -62,10 +62,14 @@
 
         .card .card-block-part {
             margin-bottom: 1.5rem;
+            border-bottom-width: 1px;
+            border-bottom-color: rgb(221, 221, 221);
+            border-bottom-style: solid;
         }
 
         .card .card-block-part:last-child {
             margin-bottom: 0;
+            border-bottom-style: none;
         }
 
         .ms-container {
@@ -217,6 +221,15 @@
                     <div class="col-lg-6 col-md-5 col-sm-12">
                         <div class="card card-block" id="card_contest">
                             <h5 class="card-title">{% trans "jakontest" %}</h5>
+                            <div class="card-block-part">
+                                <p class="card-text">{% trans "nomer_posylki_kontest" %}</p>
+                                <div class="form-group row">
+                                    <div class="col-md-12">
+                                        <input type="checkbox" name="show_contest_run_id" id="show_contest_run_id" {% if course.show_contest_run_id %}checked{% endif %}>
+                                        <label class="checkbox-block" for="show_contest_run_id">{% trans "student_vidit_nomer" %}</label>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="card-block-part">
                                 <p class="card-text">{% trans "peresudit_reshenija_studentov" %}</p>
                                 <div class="form-group row" style="display: none;" >

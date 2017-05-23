@@ -235,11 +235,11 @@ class ViewsTest(TestCase):
 
         # breadcrumbs
         breadcrumbs = container.find('ul', 'breadcrumb')('li')
-        self.assertEqual(len(breadcrumbs), 3)
+        self.assertEqual(len(breadcrumbs), 4)
         self.assertEqual(breadcrumbs[0].a['href'], u'/')
         self.assertEqual(breadcrumbs[1].a['href'], u'/school/school_link')
         self.assertEqual(breadcrumbs[1].a.string.strip().strip('\n'), u'school_name')
-        self.assertEqual(breadcrumbs[2].string.strip().strip('\n'), u'course_name')
+        self.assertEqual(breadcrumbs[2].a.string.strip().strip('\n'), u'course_name')
 
         # course information
         self.assertIsNone(container.find('span', 'course-information'))
@@ -714,11 +714,12 @@ class ViewsTest(TestCase):
 
         # breadcrumbs
         breadcrumbs = container.find('ul', 'breadcrumb')('li')
-        self.assertEqual(len(breadcrumbs), 3)
+        self.assertEqual(len(breadcrumbs), 4)
+        print breadcrumbs
         self.assertEqual(breadcrumbs[0].a['href'], u'/')
         self.assertEqual(breadcrumbs[1].a['href'], u'/school/school_link')
         self.assertEqual(breadcrumbs[1].a.string.strip().strip('\n'), u'school_name')
-        self.assertEqual(breadcrumbs[2].string.strip().strip('\n'), u'course_name')
+        self.assertEqual(breadcrumbs[2].a.string.strip().strip('\n'), u'course_name')
 
         # course information
         self.assertIsNone(container.find('span', 'course-information'))

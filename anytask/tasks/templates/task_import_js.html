@@ -71,6 +71,7 @@
 
         $('.radio_problems').change(function() {
             $('#loading_max_score_img').show();
+            $('#task_edit_short_header').attr('readonly', 'readonly');
             $('#task_max_score').attr('readonly', 'readonly');
             $('#task_edit_body').attr('readonly', 'readonly');
             $('#task_edit_datepicker').css("background-color", "#eceeef");
@@ -85,6 +86,7 @@
                                 $('.task_datetime').datetimepicker('update',date_deadline);
                             }
                             $('#modal_task_header').text(problems[i].name);
+                            $('#task_edit_short_header').val(problems[i].title);
                             $('#task_max_score').val(problems[i].score);
                         }
                         if($('input:radio:checked').val() == problems[i].problemId){
@@ -106,6 +108,7 @@
                 }
                 remove_disabled();
                 $('#loading_max_score_img').hide();
+                $('#task_edit_short_header').removeAttr('readonly');
                 $('#task_max_score').removeAttr('readonly');
                 $('#task_edit_body').removeAttr('readonly');
                 $('#task_edit_datepicker').css("background-color", "white");
@@ -147,6 +150,9 @@
         var form_validator = $('#contest_task_form').validate({
             ignore: ':hidden:not(".need-validate")',
             rules: {
+                task_short_title: {
+                    maxlength: 15
+                },
                 max_score: {
                     required : true,
                     number : true,
@@ -178,6 +184,9 @@
             },
 
             messages: {
+                task_short_title: {
+                    maxlength: "{% trans 'ne_tak_mnogo' %}"
+                },
                 max_score: {
                     required : "{% trans "ukazat_maxball" %}",
                     number : "{% trans "maxball_naturalnoe_chislo" %}",

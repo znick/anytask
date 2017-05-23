@@ -363,7 +363,8 @@ def tasklist_shad_cpp(request, course, seminar=None, group=None):
             student_summ_scores = 0
             for task_taken in student_task_takens:
                 task_x_task_taken[task_taken.task.id] = task_taken
-                if not task_taken.task.is_hidden:
+                if not task_taken.task.is_hidden and \
+                        (task_taken.task.score_after_deadline or not task_taken.is_status_accepted_after_deadline()):
                     student_summ_scores += task_taken.mark
 
             student_x_task_x_task_takens[student] = (task_x_task_taken, student_summ_scores)
@@ -591,30 +592,12 @@ def course_settings(request, course_id):
     else:
         course.filename_extensions.clear()
 
-    if 'show_task_one_file_upload' in request.POST:
-        course.show_task_one_file_upload = True
-    else:
-        course.show_task_one_file_upload = False
-
-    if 'default_task_send_to_users' in request.POST:
-        course.default_task_send_to_users = True
-    else:
-        course.default_task_send_to_users = False
-
-    if 'default_task_one_file_upload' in request.POST:
-        course.default_task_one_file_upload = True
-    else:
-        course.default_task_one_file_upload = False
-
-    if 'show_accepted_after_contest_ok' in request.POST:
-        course.show_accepted_after_contest_ok = True
-    else:
-        course.show_accepted_after_contest_ok = False
-
-    if 'default_task_one_file_upload' in request.POST:
-        course.default_accepted_after_contest_ok = True
-    else:
-        course.default_accepted_after_contest_ok = False
+    course.show_task_one_file_upload = 'show_task_one_file_upload' in request.POST
+    course.default_task_send_to_users = 'default_task_send_to_users' in request.POST
+    course.default_task_one_file_upload = 'default_task_one_file_upload' in request.POST
+    course.show_accepted_after_contest_ok = 'show_accepted_after_contest_ok' in request.POST
+    course.default_accepted_after_contest_ok = 'default_accepted_after_contest_ok' in request.POST
+    course.show_contest_run_id = 'show_contest_run_id' in request.POST
 
     course.has_attendance_log = 'has_attendance_log' in request.POST
 
@@ -692,13 +675,13 @@ def set_task_mark(request):
 
     mark = 0
     if request.POST['mark_value'] == '-':
-        issue.set_status_by_tag(IssueStatus.STATUS_NEW)
+        issue.set_status_new()
     else:
         mark = float(request.POST['mark_value'])
         if mark <= 0:
-            issue.set_status_by_tag(IssueStatus.STATUS_REWORK)
+            issue.set_status_rework()
         else:
-            issue.set_status_by_tag(IssueStatus.STATUS_ACCEPTED)
+            issue.set_status_accepted()
 
     issue.set_byname('mark', mark)
 
