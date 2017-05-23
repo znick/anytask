@@ -65,7 +65,7 @@
     };
 
     $(document).ready(function () {
-        $('[data-toggle="popover-help"]').popover({
+        $('[data-toggle="popover-short-title"]').popover({
             trigger: 'hover',
             template: '<div class="popover" role="tooltip">' +
             '<div class="popover-arrow"></div>' +
@@ -739,6 +739,11 @@
                     $('ul', div_group_id).html(group.data('backup_html'));
                 }
             $(modal_button_ok.data('div_group_id')).hide();
+        });
+
+        $('#modal_task_description').on('show.bs.modal', function () {
+            $('[data-toggle="popover-short-title"]').popover('hide');
+            $('[data-toggle="popover-status"]').popover('hide');
         });
 
         $('#modal_table_edit_ok').click(function () {
