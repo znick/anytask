@@ -24,6 +24,7 @@ urlpatterns = patterns(
     url(r'^pythontask/get_task/(?P<course_id>\d+)/(?P<task_id>\d+)$', get_task),
     url(r'^pythontask/cancel_task/(?P<course_id>\d+)/(?P<task_id>\d+)$', cancel_task),
     url(r'^(?P<course_id>\d+)/attendance$', 'attendance_page'),
+    url(r'^(?P<course_id>\d+)/attendance/group/(?P<group_id>\d+)/$', 'attendance_page'),
     url(r'^lesson_visited$', 'lesson_visited'),
     url(r'^lesson_delete$', 'lesson_delete')
 )

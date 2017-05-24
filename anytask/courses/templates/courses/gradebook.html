@@ -12,8 +12,8 @@
     {{ block.super }}
     {% if school %}
         {% breadcrumb school.name school.get_absolute_url %}
-        {% breadcrumb course.name course.get_absolute_url %}
     {% endif %}
+    {% breadcrumb course.name course.get_absolute_url %}
     {% if seminar %}
         {% breadcrumb seminar.title "" %}
     {% elif group_gradebook %}
