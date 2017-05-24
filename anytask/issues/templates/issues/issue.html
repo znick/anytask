@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load django_bootstrap_breadcrumbs %}
-{% load referrer_info %}
 
 {% block scripts %}
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}issues/issue.css">
@@ -17,9 +16,6 @@
         {% breadcrumb school.name school.get_absolute_url %}
     {% endif %}
     {% breadcrumb course.name course.get_absolute_url %}
-    {% if request.META.HTTP_REFERER|get_path != course.get_absolute_url %}
-        {% breadcrumb request.META.HTTP_REFERER|get_title request.META.HTTP_REFERER %}
-    {% endif %}
     {% breadcrumb issue "" %}
 
 {% endblock breadcrumbs %}
