@@ -13,7 +13,8 @@
     {% if school %}
         {% breadcrumb school.name school.get_absolute_url %}
     {% endif %}
-    {% breadcrumb course.name "" %}
+    {% breadcrumb course.name course.get_absolute_url %}
+    {% breadcrumb_for "" %}{% trans "zhurnal_poseshaemosti" %}{% endbreadcrumb_for %}
 {% endblock breadcrumbs %}
 
 {% block navbar %}
