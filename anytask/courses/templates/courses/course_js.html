@@ -403,7 +403,7 @@
 
         });
 
-        {% if group_gradebook %}
+        {% if group_gradebook or group_attendance_list %}
             var table_card = $('.card.card-block.group-table');
             $('html, body').css({
                 'overflow': 'hidden',

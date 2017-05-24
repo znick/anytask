@@ -10,7 +10,7 @@
 {% endblock scripts %}
 
 {% for group,student_information in group_information.items %}
-    <div class="card card-block">
+    <div class="card card-block {% if group_attendance_list %}group-table{% endif %}" for="#table_results_{{ group.id }}">
         <div class="row">
             <div class="col-md-6">
                 <div class="card-title-block">
@@ -22,7 +22,7 @@
                             {% endif %}
                         </h5>
                     {% endifnotequal %}
-                    <button class="btn btn-secondary btn-table-fullscreen" type="button" for="#table_results_{{ group.id }}"><i class="fa fa-expand fa-lg"></i></button>
+                    {% if not group_attendance_list %}<button class="btn btn-secondary btn-table-fullscreen" type="button" for="#table_results_{{ group.id }}"><i class="fa fa-expand fa-lg"></i></button>{% endif %}
                 </div>
             </div>
         </div>

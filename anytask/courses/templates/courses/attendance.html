@@ -14,7 +14,11 @@
         {% breadcrumb school.name school.get_absolute_url %}
     {% endif %}
     {% breadcrumb course.name course.get_absolute_url %}
-    {% breadcrumb_for "" %}{% trans "zhurnal_poseshaemosti" %}{% endbreadcrumb_for %}
+    {% if group_attendance_list %}
+        {% breadcrumb group_information|get_group_name "" %}
+    {% else %}
+        {% breadcrumb_for "" %}{% trans "zhurnal_poseshaemosti" %}{% endbreadcrumb_for %}
+    {% endif %}
 {% endblock breadcrumbs %}
 
 {% block navbar %}
@@ -26,7 +30,7 @@
             <a class="nav-link" href="{{ course.get_absolute_url }}/gradebook/">{% trans "obshaja_vedomost" %}</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link {% if not group_attendance %}active{% endif %}"
+            <a class="nav-link {% if not group_attendance_list %}active{% endif %}"
                href="{{ course.get_absolute_url }}/attendance/">{% trans "zhurnal_poseshaemosti" %}</a>
         </li>
         <li class="nav-item">
