@@ -65,7 +65,7 @@
     };
 
     $(document).ready(function () {
-        $('[data-toggle="popover-help"]').popover({
+        $('[data-toggle="popover-short-title"]').popover({
             trigger: 'hover',
             template: '<div class="popover" role="tooltip">' +
             '<div class="popover-arrow"></div>' +
@@ -557,6 +557,18 @@
             });
         });
 
+        $('.lesson-visited-form').change(function () {
+            var $form = $(this);
+            $.post('{% url courses.views.lesson_visited %}', $form.serialize(), function (data) {
+                var val = parseInt(data.visited);
+                var lesson_id = data.lesson_id;
+                var visited_lssns_span = $form.closest('td').siblings('.total-lessons').find('span');
+                var sum_lssns = parseInt(visited_lssns_span.text()) + val;
+                $(visited_lssns_span).text(parseInt(sum_lssns));
+                $form.closest('table').find('#column_' + lesson_id).find('a').attr('data-deleted', data.deleted);
+            });
+        });
+
         var remaining_groups = {};
 
         $('.btn-table-edit').click(function () {
@@ -654,6 +666,31 @@
             '</div>'
         };
 
+        var popover_opts_lssn_del = {
+            trigger: 'manual',
+            html: true,
+            content: '<form action""><ul style="padding-left: 10px"><li><label><input type="radio" name="delete_lesson" value="delete_one" checked> {% trans 'udalit_odin' %}</label></li>' +
+                    '<li><label><input type="radio" name="delete_lesson" value="delete_all"> {% trans 'udalit_posleduushie' %}</label></li></ul></form>',
+            template: '<div class="popover" role="tooltip">' +
+            '<div class="popover-arrow"></div>' +
+            '<div class="popover-content"></div>' +
+            '<div class="popover-footer">' +
+            '<button class="btn btn-secondary" type="button" data-dismiss="popover"><i class="fa fa-times"></i></button>' +
+            '<button class="btn btn-danger lssn-delete" type="button"><i class="fa fa-trash-o"></i></button>'+
+            '</div>' +
+            '</div>'
+        };
+
+        var popover_opts_lssn_not_del = {
+            trigger: 'manual',
+            html: true,
+            content: '{% trans 'nelzia_udalit_zaniatie' %}',
+            template: '<div class="popover" role="tooltip">' +
+            '<div class="popover-arrow"></div>' +
+            '<div class="popover-content"></div>' +
+            '</div>'
+        };
+
         $('[data-toggle="popover"]').on('shown.bs.popover', function () {
             $('[data-toggle="popover"]:not([aria-describedby=' + $(this).attr('aria-describedby') + '])').popover('hide');
         });
@@ -669,7 +706,6 @@
             $('[data-toggle="popover"]').popover('hide');
         }).on('click', 'div.popover', function (e) {
             e.stopPropagation();
-
         }).on("click", '.task-delete-groups', function () {
             var task_delete_btn = $('[aria-describedby=' + $(this).closest('.popover').prop('id') + ']');
             var deleted_groups_ids = [];
@@ -725,6 +761,46 @@
             $('[data-toggle="popover"]').popover('hide');
         });
 
+        $('body').on("click", '#lssn_del_button', function (e) {
+            e.stopPropagation();
+            var del_button = $(this);
+            if (parseInt(del_button.attr('data_deleted')) === 0) {
+                del_button.popover(popover_opts_lssn_del).popover('show');
+            }
+            else {
+                del_button.popover(popover_opts_lssn_not_del).popover('show');
+            }
+
+        }).on('hidden.bs.popover', '#lssn_del_button', function () {
+            $('[data-toggle="popover"]').popover('dispose');
+        }).on('click', 'div.popover', function (e) {
+            e.stopPropagation();
+        }).on("click", '.lssn-delete', function () {
+            var lesson_id = $('#lssn_del_button').attr('data_lssn');
+            var group_id = $('#lssn_del_button').attr('data_group');
+            var delete_all = $('input[name=delete_lesson]:checked').val();
+
+            $.post('{% url courses.views.lesson_delete %}',
+                        {
+                            'csrfmiddlewaretoken': '{{ csrf_token }}',
+                            'lesson_id': lesson_id,
+                            'group_id': group_id,
+                            'delete_all': delete_all === 'delete_all'
+                        }).done(function (data) {
+                            var table = $('#table_results_' + group_id).DataTable();
+                            var deleted_ids = data.deleted;
+                            for (var i = 0; i < deleted_ids.length; ++i) {
+                                var table_col =  table.column($('#column_'+ deleted_ids[i]).index() + ':visIdx');
+                                table_col.visible(false);
+                            }
+                            var old_total = parseInt($('#total_lessons').text());
+                            $('#total_lessons').text(old_total - deleted_ids.length);
+            });
+
+            $('[data-toggle="popover"]').popover('hide');
+            $('#modal_task_description').modal('hide');
+        });
+
         $('#modal_table_edit').on('hide.bs.modal', function (e) {
             $('[data-toggle="popover"]').popover('hide');
 
@@ -739,6 +815,11 @@
                     $('ul', div_group_id).html(group.data('backup_html'));
                 }
             $(modal_button_ok.data('div_group_id')).hide();
+        });
+
+        $('#modal_task_description').on('show.bs.modal', function () {
+            $('[data-toggle="popover-short-title"]').popover('hide');
+            $('[data-toggle="popover-status"]').popover('hide');
         });
 
         $('#modal_table_edit_ok').click(function () {
@@ -835,6 +916,26 @@
         $('#modal_task_description').modal('show');
     }
 
+    function get_lesson_modal(group_id, lesson_id, lesson_title, lesson_date_start, lesson_date_end,
+                              lesson_text_to_show) {
+        $('#modal_header_task_descr').html(lesson_title);
+        $('#modal_body_task_descr').html(lesson_text_to_show);
+
+        var codesample = $('pre[class*="language-"]', '#modal_body_task_descr')[0];
+        if (codesample)
+            Prism.highlightElement(codesample);
+        $('#modal_header_deadline_time').html('<strong>{% trans "data_zaniatia" %}: ' + lesson_date_start + ' - '
+                                                                                   + lesson_date_end
+                                                                                   + ' MSK UTC+3</strong>');
+
+        $('#modal_task_desc_edit').hide();
+        $('#modal_task_descr_edit_button').attr("href", "/lesson/edit/" + lesson_id);
+
+        var lesson_can_be_deleted = $('#table_results_' + group_id).find('#column_' + lesson_id).find('a').attr('data-deleted');
+        $('#lssn_del_button').attr("data_lssn", lesson_id).attr("data_group", group_id).attr("data_deleted", lesson_can_be_deleted);
+        $('#modal_task_description').modal('show');
+    }
+
     function get_edit_course_modal(course_id, course_desc) {
         $('#course_info_edit').val(course_desc);
 
@@ -894,7 +995,6 @@
             postfix_cols = postfix_cols.concat(new_order.length + 1);
 
         new_order = new_order.concat(postfix_cols);
-
         var table = $(div_group_id.data('table')).DataTable();
         table.columns(deleting_tasks).visible(false);
         table.colReorder.order(new_order);

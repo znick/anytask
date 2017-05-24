@@ -1,0 +1,23 @@
+.mce-content-body p,
+#modal_lesson_body p,
+#modal_body_lesson_descr p{
+    margin-bottom: 0 !important;
+}
+.mce-content-body blockquote,
+#modal_lesson_body blockquote,
+#modal_body_lesson_descr blockquote {
+    margin: 0 0 0 1rem !important;
+    font-style: italic;
+    color: #555;
+}
+.mce-content-body li,
+#modal_lesson_body li,
+#modal_body_lesson_descr li {
+    padding: 0;
+}
+.mce-content-body img,
+#modal_lesson_body img,
+#modal_body_lesson_descr img {
+    max-width: 100%;
+    height: auto;
+}

@@ -3,6 +3,8 @@ import subprocess
 import tempfile
 import shutil
 
+from django.conf import settings
+
 from contextlib import contextmanager
 
 DEVNULL = open(os.devnull, "w")
@@ -53,7 +55,7 @@ def unpack_files(files):
 
         dst_dir = tempfile.mkdtemp(prefix="anytask_unpack_")
         tmp_dirs.append(dst_dir)
-        cmd = archiver + [f.file.name]
+        cmd = archiver + [os.path.join(settings.MEDIA_ROOT, f.file.name)]
         subprocess.check_call(cmd, cwd=dst_dir, stdout=DEVNULL, stderr=DEVNULL)
 
         for root, dirs, files in os.walk(dst_dir):
