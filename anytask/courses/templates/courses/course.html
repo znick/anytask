@@ -252,7 +252,7 @@
                                         <div id="collapse_group_{{ task_item.grouper.id }}" class="collapse">
                                             {% for task in task_item.list %}
                                                 {% if not task.task.parent_task %}
-                                                    {% if not task.task.is_hidden and task.task.type != task.task.TYPE_MATERIAL %}
+                                                    {% if task.task.type != task.task.TYPE_MATERIAL %}
                                                         <div class="tasks-list">
                                                             <div style="width: 35%;">
                                                                 {{ task.task.title }}
@@ -292,7 +292,7 @@
                             <div id="tasks-table" width="100%">
                                 {% if not user_is_teacher %}
                                     {% for task in seminar.children.all %}
-                                        {% if not task.is_hidden or user_is_teacher and task.type != task.TYPE_MATERIAL %}
+                                        {% if not task.is_hidden and task.type != task.TYPE_MATERIAL %}
                                             <div class="tasks-list">
                                                 <div style="width: 40%;">
                                                     <a data-toggle="collapse" aria-expanded="false"
@@ -353,7 +353,7 @@
                                         </div>
                                         <div id="collapse_group_{{ task_item.grouper.id }}" class="collapse">
                                             {% for task in task_item.list %}
-                                                {% if not task.task.is_hidden and task.task.type != task.task.TYPE_MATERIAL %}
+                                                {% if task.task.type != task.task.TYPE_MATERIAL %}
                                                     <div class="tasks-list">
                                                         <div style="width: 35%;">
                                                             {{ task.task.title }}
@@ -422,9 +422,6 @@
                                                         {% endif %}
                                                     </div>
                                                     <div style="width: 15%">
-                                                            <a style="width: 100%"
-                                                               class="btn btn-sm btn-primary pull-xs-right"
-                                                               href="/issue/get_or_create/{{ task.id }}/{{ user.id }}">{% trans "sdat" %}</a>
                                                     </div>
                                                 </div>
                                                 <div id="collapse_{{ task.id }}" class="collapse">
@@ -444,8 +441,8 @@
                                                 <h6>
                                                     <a class="btn btn-secondary btn-sm btn-square"
                                                        data-toggle="collapse" aria-expanded="false"
-                                                       aria-controls="collapse_group_{{ task_item.grouper.id }}"
-                                                       href="#collapse_group_{{ task_item.grouper.id }}">
+                                                       aria-controls="collapse_group_material_{{ task_item.grouper.id }}"
+                                                       href="#collapse_group_material_{{ task_item.grouper.id }}">
                                                         <i class="fa fa-bars" aria-hidden="true"></i>
                                                     </a>
                                                     {{ task_item.grouper.name }}
@@ -459,10 +456,10 @@
                                                                        href="{{ course.get_absolute_url }}/gradebook/group/{{ task_item.grouper.id }}">{% trans "vedomost" %}</a>
                                             </div>
                                         </div>
-                                        <div id="collapse_group_{{ task_item.grouper.id }}" class="collapse">
+                                        <div id="collapse_group_material_{{ task_item.grouper.id }}" class="collapse">
                                             {% for task in task_item.list %}
                                                 {% if not task.task.parent_task %}
-                                                    {% if not task.task.is_hidden and task.task.type == task.task.TYPE_MATERIAL %}
+                                                    {% if task.task.type == task.task.TYPE_MATERIAL %}
                                                         <div class="tasks-list">
                                                             <div style="width: 65%;">
                                                                 {{ task.task.title }}
@@ -494,7 +491,7 @@
                             <div id="tasks-table" width="100%">
                                 {% if not user_is_teacher %}
                                     {% for task in seminar.children.all %}
-                                        {% if not task.is_hidden or user_is_teacher and task.type == task.TYPE_MATERIAL %}
+                                        {% if not task.is_hidden and task.type == task.TYPE_MATERIAL %}
                                             <div class="tasks-list">
                                                 <div style="width: 65%;">
                                                     <a data-toggle="collapse" aria-expanded="false"
@@ -531,8 +528,8 @@
                                                 <h6>
                                                     <a class="btn btn-secondary btn-sm btn-square"
                                                        data-toggle="collapse" aria-expanded="false"
-                                                       aria-controls="collapse_group_{{ task_item.grouper.id }}"
-                                                       href="#collapse_group_{{ task_item.grouper.id }}">
+                                                       aria-controls="collapse_group_material_{{ task_item.grouper.id }}"
+                                                       href="#collapse_group_material_{{ task_item.grouper.id }}">
                                                         <i class="fa fa-bars" aria-hidden="true"></i>
                                                     </a>
                                                     {{ task_item.grouper.name }}
@@ -546,9 +543,9 @@
                                                 </a>
                                             </div>
                                         </div>
-                                        <div id="collapse_group_{{ task_item.grouper.id }}" class="collapse">
+                                        <div id="collapse_group_material_{{ task_item.grouper.id }}" class="collapse">
                                             {% for task in task_item.list %}
-                                                {% if not task.task.is_hidden and task.task.type == task.task.TYPE_MATERIAL %}
+                                                {% if task.task.type == task.task.TYPE_MATERIAL %}
                                                     <div class="tasks-list">
                                                         <div style="width: 65%;">
                                                             {{ task.task.title }}
