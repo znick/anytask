@@ -1,0 +1,84 @@
+{% load sanitize_html icon %}
+{% load i18n %}
+{% load dict_func %}
+{% load task_taken_func %}
+
+{% block scripts %}
+    <link href="{{ STATIC_URL }}shad_cpp.css" rel='stylesheet'/>
+
+    {% include "courses/course_js.html" %}
+{% endblock scripts %}
+
+{% for group,student_information in group_information.items %}
+    <div class="card card-block">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card-title-block">
+                    {% ifnotequal group course.group_with_extern %}
+                        <h5 class="card-title">
+                            {% if group.name %}{% if not group_gradebook %}<a class="card-link table-link" href="{{ course.get_absolute_url }}/gradebook/group/{{ group.id }}">{% endif %}{{ group.name }}</a>{% endif %}&nbsp;
+                            {% if default_teacher|key:group %}
+                                (<a class="card-link table-link" href="{{ default_teacher|get_url:group }}">{{ default_teacher|get_name:group }}</a>)
+                            {% endif %}
+                        </h5>
+                    {% endifnotequal %}
+                    <button class="btn btn-secondary btn-table-fullscreen" type="button" for="#table_results_{{ group.id }}"><i class="fa fa-expand fa-lg"></i></button>
+                </div>
+            </div>
+        </div>
+        <div class="loading-table-img">
+            <span class="fa fa-circle-o-notch fa-spin fa-3x fa-fw loading"></span>
+        </div>
+        <div class="zui-wrapper collapse">
+            <table class="table table-striped table-bordered table-results order-column hover" cellspacing="0"  id="table_results_{{ group.id }}">
+                <thead>
+                <tr>
+                    <th class="no-font-weight text-center">#</th>
+                    <th class="no-font-weight"><b>{% trans "student" %}</b></th>
+                    {% for lssn in group_lessons|key:group %}
+                            <th align="center" class="{% if user_is_teacher %}dom-live-number{% else %}dom-number{% endif %} word-wrap" id="column_{{lssn.id}}">
+                                <a href="javascript:get_lesson_modal('{{group.id}}', '{{lssn.id}}', '{{lssn.title|escapejs}}', '{{lssn.date_starttime|date:'d-m-Y H:i'}}',
+                                '{{lssn.date_endtime|date:'d-m-Y H:i'}}', '{{lssn.description|safe|escapejs}}')" data-deleted='{{ lssn|lssn_can_be_deleted }}'>
+                                    {{lssn.date_starttime|date:'d-m-Y'}}
+                                </a>
+                            </th>
+                        {% empty %}
+                    {% endfor %}
+                    <th align="center" class="no-font-weight dom-number">
+                        {% trans "poseshennye_uroki" %} <span class="label label-inverse" id="total_lessons">{{ group_lessons|key:group|length }}</span>
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for student, visited_lessons in student_information %}
+                    <tr class="{% if user.username == student.username %}table-info{% endif %}">
+                        <td class="sticky-col" align="center"></td>
+                        <td class="sticky-col">
+                            {% if not student.get_profile.is_active  %}<del>{% endif %}
+                            <a class="card-link table-link" href="{{ student.get_absolute_url }}">{{ student.last_name }}&nbsp;{{ student.first_name }}</a>
+                            {% if not student.get_profile.is_active  %}</del>{% endif %}
+                        </td>
+                        {% for lssn in group_lessons|key:group %}
+                            <td align="center" class="student_{{ student.id }}">
+                                <form method="post" class="lesson-visited-form">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="lssn_id" value="{{lssn.id}}"/>
+                                    <input type="hidden" name="student_id" value="{{student.id}}"/>
+                                    <input type="hidden" name="group_id" value="{{group.id}}"/>
+                                    <input type="checkbox" id="lssn_visited" name="lesson_visited" {% if lssn in visited_lessons%}checked{% endif %} {% if lssn|disabled %}disabled{% endif %}>
+                                </form>
+                            </td>
+                            {% empty %}
+                        {% endfor %}
+                        <td align="center" class="total-lessons">
+                            <div>
+                                <span class="label label-inverse">{{ visited_lessons|length }}</span>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endfor %}

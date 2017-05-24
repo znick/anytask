@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load sanitize_html icon %}
+{% load dict_func %}
+{% load task_taken_func %}
+{% load django_bootstrap_breadcrumbs %}
+
+{% block title %}{% if lesson.title %}{{ lesson.title }}{% endif %} | {{ course.name }} | {{ course.year }}{% endblock %}
+
+{% block scripts %}
+    <link href="{{ STATIC_URL }}lesson.css" rel='stylesheet'/>
+
+    {% include "lesson_create_or_edit_js.html" %}
+    {% include "lesson_tinymce_js.html" %}
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#modal_lesson_update').on('hidden.bs.modal', function (e) {
+                $('#update_submit_error_text').html('');
+            });
+        });
+    </script>
+{% endblock scripts %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    {% if school %}
+        {% breadcrumb school.name school.get_absolute_url %}
+    {% endif %}
+    {% breadcrumb course.name course.get_absolute_url %}
+    {% if is_create %}
+        {% breadcrumb_for "" %}
+            {% trans "sozdanie_zaniatia" %}
+        {% endbreadcrumb_for  %}
+    {% else %}
+        {% breadcrumb_for "" %}
+            {% trans "redaktirovanie_zaniatia" %}
+        {% endbreadcrumb_for %}
+    {% endif %}
+{% endblock breadcrumbs %}
+
+{#{% block navbar %}#}
+{#    <ul class="nav navbar-nav">#}
+{#        <li class="nav-item">#}
+{#            <a class="nav-link" id="course_url" href="{{ course.get_absolute_url }}">{% trans "spisok_zadach" %}</a>#}
+{#        </li>#}
+{#    </ul>#}
+{#{% endblock navbar %}#}
+
+
+{% block content %}
+    {{ block.super }}
+
+    <style>
+        #update_contest_block button.btn div {
+            overflow: hidden;
+        }
+        #modal_lesson_update .modal-body p {
+            margin-bottom: 0;
+        }
+    </style>
+
+    <div class="row collapse">
+        <div class="col-md-12">
+            <div id="lesson_edit" class="card card-block">
+                <h5 class="card-title">{% trans "redaktirovanie_zaniatia" %}</h5>
+
+                <form method="post" id="lesson_edit_form" >
+                    {% csrf_token %}
+                    <div class="form-group row">
+                        <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="lesson_edit_header">{% trans "nazvanie" %}</label>
+                        <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
+                            <input class="form-control" id='lesson_edit_header' name='lesson_title' type='text' size='20' data-value="{{lesson.title}}" value="{% if lesson.title %}{{ lesson.title }}{% endif %}" />
+                            <small class="text-help" id="lesson_edit_header_error_text"></small>
+                        </div>
+                    </div>
+                    <div id='date_lesson_body' class="form-group row">
+                        <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="lesson_edit_date_start">{% trans "data_zaniatia" %}
+                            <a tabindex="0" data-toggle="popover" data-trigger="hover" data-content="{% trans "vremia_msk" %}" type="button"><i class="fa fa-question-circle help-button" aria-hidden="true"></i></a></label>
+                        <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
+                            <div class="input-group date lesson_datetime" id="lesson_edit_date_start">
+                                <input class="form-control datetime" name='lesson_date_start' type='text' readonly value="{{lesson.date_starttime|date:'d-m-Y H:i'}}">
+                                <span class="input-group-addon"><i class="fa fa-times fa-lg"></i></span>
+                                <span class="input-group-addon"><i class="fa fa-calendar fa-lg"></i></span>
+                            </div>
+                            <small class="text-help" id="lesson_edit_datepicker_error_text"></small>
+                        </div>
+                        <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
+                            <div class="input-group date lesson_datetime" id='lesson_edit_date_finish'>
+                                <input class="form-control datetime" name='lesson_date_finish' type='text' readonly value="{{lesson.date_endtime|date:'d-m-Y H:i'}}">
+                                <span class="input-group-addon"><i class="fa fa-times fa-lg"></i></span>
+                                <span class="input-group-addon"><i class="fa fa-calendar fa-lg"></i></span>
+                            </div>
+                            <small class="text-help" id="lesson_edit_datepicker_error_text"></small>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="lesson_edit_group">{% trans "gruppa" %}</label>
+                        <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
+                            <select class="form-control" id='lesson_edit_group' name="lesson_group_id[]" multiple="multiple" disabled>
+                                {% for group in course.groups.all %}
+                                    <option value="{{ group.id }}" {% if group == lesson.group %}selected{% endif %} >{{ group.name }}</option>
+                                {% endfor %}
+                            </select>
+                            <small class="text-help" id="lesson_group_id_error_text"></small>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5  form-control-label" for="lesson_edit_type"> {% trans "povtoriat" %}</label>
+                        <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
+                            <select class="form-control" id='lesson_edit_type' name="period_type" {% if lesson.period != 'Once' %}disabled{% endif %}>
+                                {% for type_id, type in period_types %}
+                                    <option value="{{ type_id }}" {% ifequal type_id lesson.period %}selected{% endifequal %}>{{ type }}</option>
+                                {% endfor %}
+                            </select>
+                        {% if lesson.period != 'Once' %}<input type="hidden" name="period_type" value="{{ lesson.period }}"/>{% endif %}
+                        </div>
+                    </div>
+                    <div id='week_body' class="{% if lesson.period == lesson.PERIOD_WEEK %}in{% endif %} collapse">
+                        <div class="form-group row">
+                            <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="lesson_edit_weekday">{% trans "dni_nedeli" %}</label>
+                            <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
+                                <select class="form-control" name="days[]" id="lesson_edit_weekday" multiple="multiple">
+                                    <option value="0" {% if "0" in lesson.days %}selected{% endif %}>{% trans "mon" %}</option>
+                                    <option value="1" {% if "1" in lesson.days %}selected{% endif %}>{% trans "tue" %}</option>
+                                    <option value="2" {% if "2" in lesson.days %}selected{% endif %}>{% trans "wed" %}</option>
+                                    <option value="3" {% if "3" in lesson.days %}selected{% endif %}>{% trans "thu" %}</option>
+                                    <option value="4" {% if "4" in lesson.days %}selected{% endif %}>{% trans "fri" %}</option>
+                                    <option value="5" {% if "5" in lesson.days %}selected{% endif %}>{% trans "sat" %}</option>
+                                    <option value="6" {% if "6" in lesson.days %}selected{% endif %}>{% trans "sun" %}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div id='date_end_body' class="{% if lesson.period == lesson.PERIOD_WEEK %}in{% endif %} collapse form-group row">
+                        <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="lesson_end_date">{% trans "data_okonchania" %}</label>
+                        <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
+                            <div class="input-group date lesson_datetime" id="lesson_end_date">
+                                <input class="form-control datetime" name='date_end' type='text' readonly value="{{lesson.date_end|date:'d-m-Y H:i'}}">
+                                <span class="input-group-addon"><i class="fa fa-times fa-lg"></i></span>
+                                <span class="input-group-addon"><i class="fa fa-calendar fa-lg"></i></span>
+                            </div>
+                            <small class="text-help" id="lesson_edit_datepicker_error_text"></small>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="lesson_edit_body">{% trans "opisanie" %}</label>
+                        <br>
+                        <div class="controls col-xs-12">
+                            <textarea class='input-xlarge form-control' id='lesson_edit_body' name='lesson_text'>{{ lesson.description }}</textarea>
+                        </div>
+                    </div>
+                    <div class="form-group row footer-buttons">
+                        <div id="lesson_submit_error_text" class="col-xs-12"></div>
+                        <div class="col-sm-12 col-lg-2">
+                            <button type="button" id="button_preview" class="btn btn-secondary pull-xs-left">{% trans "predprosmotr" %}</button>
+                        </div>
+                        <div class="col-sm-12 col-lg-10">
+                            <div class="btn-group pull-xs-right" role="group">
+                                <button type="button" id="button_cancel_quit" class="btn btn-secondary">{% trans "otmenit_i_vyjti" %}</button>
+                                <button type="button" id="edit_button_save" class="btn btn-secondary">{% trans "sohranit_i_prodolzhit" %}</button>
+                                <button type="button" id="edit_button_save_quit" class="btn btn-primary">{% trans "sohranit_i_vyjti" %}</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal_lesson_preview" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modal_lesson_header" aria-hidden="true">
+        <div class="modal-dialog modal-lg"  role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">×</button>
+                    <h5 class="modal-title" id="modal_lesson_header"></h5>
+                    <div id="modal_lesson_date"></div>
+                </div>
+                <div class="modal-body">
+                    <div id="modal_lesson_body"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal_lesson_save" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modal_lesson_header" aria-hidden="true">
+        <div class="modal-dialog modal-lg"  role="document" style="width: 45rem;">
+            <div class="modal-content" style="padding: 2rem; text-align: center;">
+                <div class="btn-group btn-sx" role="group">
+                    <button type="button" id="button_cancel" class="btn btn-secondary">{% trans "otmena" %}</button>
+                    <button type="button" id="button_save_all" class="btn btn-secondary">{% trans "primenit_ko_vsem" %}</button>
+                    <button type="button" id="button_save_one" class="btn btn-primary">{% trans "primenit_k_sobitiu" %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

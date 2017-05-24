@@ -28,6 +28,11 @@
             <a class="nav-link"
                href="{{ course.get_absolute_url }}/gradebook">{% trans "obshaja_vedomost" %}</a>
         </li>
+        {% if visible_attendance_log %}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ course.get_absolute_url }}/attendance">{% trans "zhurnal_poseshaemosti" %}</a>
+            </li>
+        {% endif %}
         <li class="nav-item active">
             <a class="nav-link" href="">{% trans "ochered_na_proverku" %}</a>
         </li>
