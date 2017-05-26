@@ -89,9 +89,9 @@
                 else {
                     $('#lesson_submit_error_text').html(
                         '<div class="alert alert-success alert-dismissible" role ="alert" id="edit_lesson_err">' +
-                        + '<button type="button" class="close" data-dismiss="alert" aria-label="{% trans "zakryt" %}">'
-                        + '<span aria-hidden="true">&times;</span></button>'
-                        + '<span>{% trans "raspisanie_sohraneno_uspeshno" %}</span></div>'
+                        '<button type="button" class="close" data-dismiss="alert" aria-label="{% trans "zakryt" %}">' +
+                        '<span aria-hidden="true">&times;</span></button>' +
+                        '<span>{% trans "raspisanie_sohraneno_uspeshno" %}</span></div>'
                     );
                     if ($('#lesson_edit_form').data('quit'))
                         redirect();
