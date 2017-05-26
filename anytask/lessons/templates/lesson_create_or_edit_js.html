@@ -27,7 +27,8 @@
             return new Date(date.getTime() + minutes*60000);
         }
 
-        if (!($("#lesson_edit_date_start").find('input').val())) {
+        var current_start = $("#lesson_edit_date_start").find('input').val();
+        if (!(current_start)) {
             $('#lesson_edit_date_start').datetimepicker('update', now);
             $('#lesson_edit_date_finish').datetimepicker('update', addMinutes(now, 90));
         }
@@ -40,7 +41,8 @@
                                      .datetimepicker('setEndDate', addMinutes(val.date, 262800));
         });
 
-        $('#lesson_edit_date_finish').datetimepicker('setEndDate', addMinutes(now, 240));
+        $('#lesson_edit_date_finish').datetimepicker('setStartDate', current_start)
+                                     .datetimepicker('setEndDate', addMinutes(now, 240));
 
         $('#lesson_end_date').datetimepicker('setStartDate', now).datetimepicker('setEndDate', addMinutes(now, 262800));
 

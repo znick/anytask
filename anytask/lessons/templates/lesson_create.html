@@ -6,7 +6,7 @@
 {% load django_bootstrap_breadcrumbs %}
 
 
-{% block title %}{% if is_create %}{% trans "sozdanie_zaniatia" %}{% else %}{{ lesson.schedule_id }}{% endif %} | {{ course.name }} | {{ course.year }}{% endblock %}
+{% block title %}{% if is_create %}{% trans "sozdanie_zaniatia" %}{% else %}{{ lesson.title }}{% endif %} | {{ course.name }} | {{ course.year }}{% endblock %}
 
 {% block scripts %}
     <link href="{{ STATIC_URL }}lesson.css" rel='stylesheet'/>

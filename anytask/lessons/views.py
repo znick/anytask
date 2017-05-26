@@ -121,7 +121,7 @@ def lesson_create(request, course):
     reversion.set_user(user)
     reversion.set_comment("Create lesson")
 
-    return HttpResponse(json.dumps({'page_title': str(schedule_id) + ' | ' + course.name + ' | ' + str(course.year),
+    return HttpResponse(json.dumps({'page_title': params['lesson_title'] + ' | ' + course.name + ' | ' + str(course.year),
                                     'redirect_page': '/lesson/edit/' + str(lssn_id)}),
                         content_type="application/json")
 
@@ -163,6 +163,6 @@ def lesson_edit(request, course, lesson_id):
     reversion.set_user(user)
     reversion.set_comment("Edit lesson")
 
-    return HttpResponse(json.dumps({'page_title': str(schedule_id) + ' | ' + course.name + ' | ' + str(course.year),
+    return HttpResponse(json.dumps({'page_title': lesson.title + ' | ' + course.name + ' | ' + str(course.year),
                                     'redirect_page': None}),
                         content_type="application/json")
