@@ -928,6 +928,8 @@ def attendance_page(request, course_id, group_id=None):
         raise PermissionDenied
 
     course = get_object_or_404(Course, id=course_id)
+    if not course.user_can_see_attendance_log(request.user):
+        raise PermissionDenied
 
     if group_id:
         group = get_object_or_404(Group, id=group_id)
@@ -952,14 +954,14 @@ def attendance_page(request, course_id, group_id=None):
 @login_required
 def lesson_visited(request):
     if request.method != 'POST':
-        return HttpResponseForbidden()
+        raise PermissionDenied
 
     lesson_id = request.POST['lssn_id']
     lesson = get_object_or_404(Lesson, id=lesson_id)
     if not lesson.course.user_is_teacher(request.user):
-        return HttpResponseForbidden()
+        raise PermissionDenied
     if lesson.date_starttime.date() > datetime.datetime.today().date():
-        return HttpResponseForbidden()
+        raise PermissionDenied
     student = User.objects.get(id=request.POST['student_id'])
     group = Group.objects.get(id=request.POST['group_id'])
     if 'lesson_visited' in request.POST:
@@ -979,7 +981,7 @@ def lesson_visited(request):
 @login_required
 def lesson_delete(request):
     if request.method != 'POST':
-        return HttpResponseForbidden()
+        raise PermissionDenied
 
     lesson_id = request.POST['lesson_id']
     delete_all = request.POST['delete_all'] == 'true'
