@@ -23,9 +23,6 @@ from issues.model_issue_status import IssueStatus
 from issues.models import Issue
 from tasks.models import Task
 
-from geobase5 import Lookup
-DB = Lookup('/var/cache/geobase/geodata5.bin')
-
 
 def merge_two_dicts(x, y):
     z = x.copy()
@@ -183,7 +180,7 @@ def get_task_params(request, check_score_after_deadline=False):
     if task_deadline:
         task_deadline = datetime.datetime.strptime(task_deadline, '%d-%m-%Y %H:%M')
         geoid = request.POST['geoid']
-        tz = DB.regionById(int(geoid)).as_dict['tzname'] if geoid else user.get_profile().time_zone
+        tz = settings.DB.regionById(int(geoid)).as_dict['tzname'] if geoid else user.get_profile().time_zone
         task_deadline = convert_datetime(task_deadline, tz)
 
     score_after_deadline = True

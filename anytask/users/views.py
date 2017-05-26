@@ -42,8 +42,6 @@ import json
 import datetime
 import pytz
 
-from geobase5 import Lookup
-DB = Lookup('/var/cache/geobase/geodata5.bin')
 
 @login_required
 def users_redirect(request, username):
@@ -212,7 +210,7 @@ def profile_settings(request):
         user_profile.send_my_own_events = 'send_my_own_events' in request.POST
         user_profile.location = request.POST['location']
         if request.POST['geoid']:
-            tz = DB.regionById(int(request.POST['geoid'])).as_dict['tzname']
+            tz = settings.DB.regionById(int(request.POST['geoid'])).as_dict['tzname']
             user_profile.time_zone = tz
             user_profile.save()
             request.session['django_timezone'] = tz

@@ -36,6 +36,7 @@ def schedule_create_page(request, course_id):
     return render_to_response('lesson_create.html', context, context_instance=RequestContext(request))
 
 
+
 @login_required
 def schedule_edit_page(request, lesson_id):
     lssn = get_object_or_404(Lesson, id=lesson_id)

@@ -259,4 +259,5 @@ ADMISSION_DATE_END = "10.05.20 15:00"
 FILIAL_STATUSES = {}
 ENROLLEE_STATUS = 1
 
-GEO_SUGGEST_URL = 'https://suggest-maps.yandex.ru/suggest-geo?search_type=addr&v=8&n=4&fullpath=0&bases=locality&lang=ru'
+GEO_SUGGEST_URL = ''
+DB = ''

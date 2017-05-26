@@ -16,7 +16,6 @@ from django.contrib.auth.decorators import login_required
 from django.views.generic import View
 from django.utils.decorators import method_decorator
 from django.conf import settings
-from geobase5 import Lookup
 
 import datetime
 import pysvn
@@ -117,9 +116,6 @@ def gradebook(request, course_id, task_id=None, group_id=None):
         - tasks_description
     """
     user = request.user
-    DB = Lookup('/var/cache/geobase/geodata5.bin')
-    print DB.regionByIp(request.META['REMOTE_ADDR']).as_dict
-    # print request
 
     if not user.get_profile().is_active():
         raise PermissionDenied
