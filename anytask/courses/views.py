@@ -958,7 +958,8 @@ def lesson_visited(request):
     lesson = get_object_or_404(Lesson, id=lesson_id)
     if not lesson.course.user_is_teacher(request.user):
         return HttpResponseForbidden()
-
+    if lesson.date_starttime.date() > datetime.datetime.today().date():
+        return HttpResponseForbidden()
     student = User.objects.get(id=request.POST['student_id'])
     group = Group.objects.get(id=request.POST['group_id'])
     if 'lesson_visited' in request.POST:
