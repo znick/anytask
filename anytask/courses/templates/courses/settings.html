@@ -34,6 +34,11 @@
             <a class="nav-link"
                href="{{ course.get_absolute_url }}/gradebook">{% trans "obshaja_vedomost" %}</a>
         </li>
+        {% if visible_attendance_log %}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ course.get_absolute_url }}/attendance">{% trans "zhurnal_poseshaemosti" %}</a>
+            </li>
+        {% endif %}
         {% if visible_queue %}
             <li class="nav-item">
                 <a class="nav-link" href="{{ course.get_absolute_url }}/queue">{% trans "ochered_na_proverku" %}</a>
@@ -156,6 +161,17 @@
             </div>
             <div class="col-md-6 col-sm-12">
                 <div class="card card-block">
+                    <h5 class="card-title">{% trans "nastrojka_kursa" %}</h5>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item" style="border-bottom: 0">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <input type="checkbox" name="has_attendance_log" id="has_attendance_log" {% if course.has_attendance_log %}checked{% endif %}>
+                                    <label class="checkbox-block" for="has_attendance_log">{% trans "dobavit_zhurnal_poseshaemosti" %}</label>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
                     <h5 class="card-title">{% trans "nastrojka_zadach" %}</h5>
                     <p class="card-text">{% trans "skrytie_polej_ustanovka_znachenij" %}</p>
                     <ul class="list-group list-group-flush">
@@ -194,6 +210,7 @@
                                 </div>
                             </div>
                         </li>
+
                     </ul>
                 </div>
             </div>

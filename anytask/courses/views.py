@@ -43,6 +43,7 @@ from issues.views import contest_rejudge
 from users.forms import InviteActivationForm
 from users.models import UserProfile
 from courses import pythontask
+from lessons.models import Lesson
 
 from common.ordered_dict import OrderedDict
 
@@ -101,6 +102,7 @@ def queue_page(request, course_id):
     context = {
         'course': course,
         'user_is_teacher': course.user_is_teacher(request.user),
+        'visible_attendance_log': course.user_can_see_attendance_log(request.user),
         'filter': f,
         'school': schools[0] if schools else '',
     }
@@ -207,13 +209,15 @@ def course_page(request, course_id):
 
     context['course'] = course
     context['tasks'] = tasks
-    context['mark'] = mark if mark else '--'
+    context['mark'] = mark or '--'
     context['visible_queue'] = course.user_can_see_queue(user),
+    context['visible_attendance_log'] = course.user_can_see_attendance_log(user),
     context['user_is_teacher'] = course.user_is_teacher(user)
     context['task_types'] = dict(Task().TASK_TYPE_CHOICES).items()
     context['show_hidden_tasks'] = request.session.get(
         str(request.user.id) + '_' + str(course.id) + '_show_hidden_tasks', False)
     context['school'] = schools[0] if schools else ''
+    context['visible_attendance_log'] = course.user_can_see_attendance_log(request.user)
 
     return render_to_response('courses/course.html', context, context_instance=RequestContext(request))
 
@@ -268,12 +272,14 @@ def seminar_page(request, course_id, task_id):
     context['tasks'] = tasks
     context['mark'] = mark if mark else '--'
     context['visible_queue'] = course.user_can_see_queue(user),
+    context['visible_attendance_log'] = course.user_can_see_attendance_log(user),
     context['user_is_teacher'] = course.user_is_teacher(user)
     context['seminar'] = task
     context['task_types'] = dict(Task().TASK_TYPE_CHOICES).items()
     context['show_hidden_tasks'] = request.session.get(
         str(request.user.id) + '_' + str(course.id) + '_show_hidden_tasks', False)
     context['school'] = schools[0] if schools else ''
+    context['visible_attendance_log'] = course.user_can_see_attendance_log(request.user)
 
     return render_to_response('courses/course.html', context, context_instance=RequestContext(request))
 
@@ -410,6 +416,7 @@ def tasklist_shad_cpp(request, course, seminar=None, group=None):
 
         'seminar': seminar,
         'visible_queue': course.user_can_see_queue(user),
+        'visible_attendance_log': course.user_can_see_attendance_log(request.user),
         'visible_hide_button': Task.objects.filter(Q(course=course) & Q(is_hidden=True)).count(),
         'show_hidden_tasks': show_hidden_tasks,
         'visible_hide_button_users': len(academ_students),
@@ -552,6 +559,7 @@ def course_settings(request, course_id):
 
     context = {'course': course,
                'visible_queue': course.user_can_see_queue(request.user),
+               'visible_attendance_log': course.user_can_see_attendance_log(request.user),
                'user_is_teacher': course.user_is_teacher(request.user),
                'school': schools[0] if schools else '',
                'tasks_with_contest': tasks_with_contest,
@@ -595,6 +603,8 @@ def course_settings(request, course_id):
     course.show_accepted_after_contest_ok = 'show_accepted_after_contest_ok' in request.POST
     course.default_accepted_after_contest_ok = 'default_accepted_after_contest_ok' in request.POST
     course.show_contest_run_id = 'show_contest_run_id' in request.POST
+
+    course.has_attendance_log = 'has_attendance_log' in request.POST
 
     course.save()
 
@@ -829,3 +839,170 @@ def ajax_rejudge_contest_tasks(request):
         contest_rejudge(issue)
 
     return HttpResponse("OK")
+
+
+def attendance_list(request, course, group=None):
+    user = request.user
+    user_is_attended = False
+    user_is_attended_special_course = False
+    show_academ_users = request.session.get("%s_%s_show_academ_users" % (request.user.id, course.id), True)
+
+    course.can_edit = course.user_can_edit_course(user)
+    if course.can_be_chosen_by_extern:
+        course.groups.add(course.group_with_extern)
+
+    if group:
+        groups = [group]
+    else:
+        groups = course.groups.all().order_by('name')
+
+    group_x_student_x_lessons = OrderedDict()
+    group_x_lesson_list = {}
+    default_teacher = {}
+
+    academ_students = []
+
+    for group in groups:
+        group_x_lesson_list[group] = Lesson.objects.filter(course=course, group=group).order_by('position')
+
+        for lssn in group_x_lesson_list[group]:
+            if lssn.description is None:
+                lssn.description = ''
+
+        students = group.students.filter(is_active=True)
+        not_active_students = UserProfile.objects.filter(Q(user__in=group.students.filter(is_active=True)) &
+                                                         (Q(user_status__tag='not_active') | Q(
+                                                             user_status__tag='academic')))
+        academ_students += [x.user for x in not_active_students]
+        if not show_academ_users:
+            students = set(students) - set(academ_students)
+
+        from collections import defaultdict
+        students_x_lessons = defaultdict(list)
+
+        for student in students:
+            if user == student:
+                user_is_attended = True
+                user_is_attended_special_course = True
+
+            visited_lessons = []
+            for lssn in group_x_lesson_list[group]:
+                if student in lssn.visited_students.all():
+                    visited_lessons.append(lssn)
+            students_x_lessons[student] = visited_lessons
+
+        group_x_student_x_lessons[group] = students_x_lessons
+
+        try:
+            default_teacher[group] = DefaultTeacher.objects.get(course=course, group=group).teacher
+        except DefaultTeacher.DoesNotExist:
+            default_teacher[group] = None
+    group_x_student_information = OrderedDict()
+    for group, students_x_lessons in group_x_student_x_lessons.iteritems():
+        group_x_student_information.setdefault(group, [])
+
+        for student in sorted(students_x_lessons.keys(),
+                              key=lambda x: u"{0} {1}".format(x.last_name, x.first_name)):
+            if user == student:
+                user_is_attended = True
+            elif not course.user_can_see_transcript(user, student):
+                continue
+
+            group_x_student_information[group].append((student,
+                                                       students_x_lessons[student]))
+    context = {
+        'course': course,
+        'group_information': group_x_student_information,
+        'group_lessons': group_x_lesson_list,
+        'default_teacher': default_teacher,
+        'user': user,
+        'user_is_attended': user_is_attended,
+        'user_is_attended_special_course': user_is_attended_special_course,
+        'user_is_teacher': course.user_is_teacher(user),
+        'visible_hide_button_users': len(academ_students),
+        'show_academ_students': show_academ_users
+    }
+
+    return context
+
+
+@login_required
+def attendance_page(request, course_id, group_id=None):
+    user = request.user
+    if not user.get_profile().is_active():
+        raise PermissionDenied
+
+    course = get_object_or_404(Course, id=course_id)
+
+    if group_id:
+        group = get_object_or_404(Group, id=group_id)
+    else:
+        group = None
+
+    schools = course.school_set.all()
+
+    attendance_context = attendance_list(request, course, group)
+
+    context = attendance_context
+    context['lssnlist_template'] = 'courses/attendance_list.html'
+    context['group_attendance_list'] = bool(group)
+    context['school'] = schools[0] if schools else ''
+    context['show_academ_users'] = request.session.get(
+        str(request.user.id) + '_' + str(course.id) + '_show_academ_users', True)
+    context['full_width_page'] = True
+
+    return render_to_response('courses/attendance.html', context, context_instance=RequestContext(request))
+
+
+@login_required
+def lesson_visited(request):
+    if request.method != 'POST':
+        return HttpResponseForbidden()
+
+    lesson_id = request.POST['lssn_id']
+    lesson = get_object_or_404(Lesson, id=lesson_id)
+    if not lesson.course.user_is_teacher(request.user):
+        return HttpResponseForbidden()
+
+    student = User.objects.get(id=request.POST['student_id'])
+    group = Group.objects.get(id=request.POST['group_id'])
+    if 'lesson_visited' in request.POST:
+        value = 1
+        lesson.visited_students.add(student)
+    else:
+        value = -1
+        lesson.visited_students.remove(student)
+    lesson.save()
+
+    can_be_deleted = len(set(lesson.visited_students.all()).intersection(set(group.students.all())))
+    return HttpResponse(json.dumps({'visited': value, 'lesson_id': lesson_id,
+                                    'deleted': can_be_deleted}),
+                        content_type="application/json")
+
+
+@login_required
+def lesson_delete(request):
+    if request.method != 'POST':
+        return HttpResponseForbidden()
+
+    lesson_id = request.POST['lesson_id']
+    delete_all = request.POST['delete_all'] == 'true'
+
+    lesson = get_object_or_404(Lesson, id=lesson_id)
+    deleted_ids = [lesson_id]
+    if not delete_all:
+        lesson.delete()
+    else:
+        schedule_id = lesson.schedule_id
+        lessons = Lesson.objects.filter(
+            schedule_id=schedule_id,
+            date_starttime__gt=lesson.date_starttime.date(),
+            visited_students__isnull=True
+        )
+        lesson.delete()
+        for lssn in lessons:
+            deleted_ids.append(lssn.id)
+            lssn.delete()
+
+    return HttpResponse(json.dumps({'deleted': deleted_ids}),
+                        content_type="application/json")

@@ -23,7 +23,7 @@
 {% block navbar %}
     <ul class="nav navbar-nav">
         <li class="nav-item">
-            <a class="nav-link" href="{{ course.get_absolute_url }}">{% trans "spisok_zadach" %}</a>
+            <a class="nav-link" href="{{ course.get_absolute_url }}#tasks-tab">{% trans "spisok_zadach" %}</a>
         </li>
         {% if visible_queue %}
             <li class="nav-item">

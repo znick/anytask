@@ -162,6 +162,7 @@ INSTALLED_APPS = (
     'mail',
     'reversion',
     'admission',
+    'lessons'
 )
 
 AUTH_PROFILE_MODULE = "users.UserProfile"

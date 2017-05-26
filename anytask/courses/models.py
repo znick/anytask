@@ -137,6 +137,8 @@ class Course(models.Model):
 
     is_python_task = models.BooleanField(db_index=False, null=False, blank=False, default=False)
 
+    has_attendance_log = models.BooleanField(db_index=False, null=False, blank=False, default=False)
+
     show_contest_run_id = models.BooleanField(db_index=False, null=False, blank=False, default=True)
 
     def __unicode__(self):
@@ -198,6 +200,11 @@ class Course(models.Model):
         if self.send_to_contest_from_users and (self.user_is_teacher(user) or self.show_contest_run_id):
             return True
         return False
+
+    def user_can_see_attendance_log(self, user):
+        if user.is_anonymous():
+            return False
+        return self.has_attendance_log and self.user_is_teacher(user)
 
     def save(self, *args, **kwargs):
         super(Course, self).save(*args, **kwargs)
