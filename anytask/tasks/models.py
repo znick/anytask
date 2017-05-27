@@ -1,23 +1,22 @@
 # coding: utf-8
 
-from django.db import models
+import copy
 from datetime import datetime
-from django.utils.translation import ugettext_lazy as _
-from django.db.models.signals import post_save, pre_delete
+from datetime import timedelta
+
 from django.conf import settings
+from django.contrib.auth.models import User
+from django.db import models
+from django.db.models import Q, Max
+from django.utils.translation import ugettext_lazy as _
 
 from courses.models import Course
 from groups.models import Group
 
-from django.db.models import Q, Max
-
-from django.contrib.auth.models import User
-
-from datetime import timedelta
-import copy
 
 class Task(models.Model):
     title = models.CharField(max_length=191, db_index=True, null=True, blank=True)
+    short_title = models.CharField(max_length=15, db_index=True, null=True, blank=True)
     course = models.ForeignKey(Course, db_index=True, null=False, blank=False)
     group = models.ForeignKey(Group, db_index=False, null=True, blank=True, default=None)
     groups = models.ManyToManyField(Group, null=False, blank=False, related_name='groups_set')
@@ -61,6 +60,8 @@ class Task(models.Model):
 
     one_file_upload = models.BooleanField(db_index=False, null=False, blank=False, default=False)
     accepted_after_contest_ok = models.BooleanField(db_index=False, null=False, blank=False, default=False)
+
+    score_after_deadline = models.BooleanField(db_index=False, null=False, blank=False, default=True)
 
     def __unicode__(self):
         return unicode(self.title)
@@ -131,8 +132,9 @@ class Task(models.Model):
         if user.is_anonymous():
             return False
 
-        if self.user_can_take_task(user):
-            return True
+        if not self.course.is_python_task:
+            if self.user_can_take_task(user):
+                return True
 
         try:
             task_taken = self.get_task_takens().get(user=user)
@@ -261,7 +263,7 @@ class TaskTaken(models.Model):
         return self.issue.mark
 
     def update_status(self):
-        if self.issue and int(self.issue.mark) != 0 and self.status != self.STATUS_SCORED:
+        if self.issue and abs(self.issue.mark) > 1e-6 and self.status != self.STATUS_SCORED:
             self.status = self.STATUS_SCORED
             self.save()
 

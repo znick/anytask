@@ -9,6 +9,7 @@ from django.contrib.sites.models import Site
 from django.utils.translation import ugettext as _
 
 from rbtools.api.client import RBClient
+from unpacker import unpack_files
 
 logger = logging.getLogger('django.request')
 
@@ -27,79 +28,81 @@ class AnyRB(object):
         files_diff = []
         empty = True
         import magic
-        for f in self.event.file_set.all():
-            mime_type = magic.from_buffer(f.file.read(1024), mime=True)
-            if mime_type[:4] != 'text':
-                continue
 
-            empty = False
-            file_content = []
-            for line in f.file:
-                try:
-                    file_content.append(line.decode('utf-8'))
-                except:
-                    file_content.append(line.decode('cp1251'))
+        with unpack_files(self.event.file_set.all()) as files:
+            for f in files:
+                mime_type = magic.from_buffer(f.file.read(1024), mime=True)
+                if mime_type[:4] != 'text':
+                    continue
 
-            from difflib import unified_diff
-            fname = f.filename()
-            from_name = u'a/{0}'.format(fname)
-            to_name = u'b/{0}'.format(fname)
+                empty = False
+                file_content = []
+                for line in f.file:
+                    try:
+                        file_content.append(line.decode('utf-8'))
+                    except:
+                        file_content.append(line.decode('cp1251'))
 
-            diff = [(u'diff --git {0} {1}'.format(from_name, to_name))]
-            from_name = u'/dev/null'
+                from difflib import unified_diff
+                fname = f.filename()
+                from_name = u'a/{0}'.format(fname)
+                to_name = u'b/{0}'.format(fname)
 
-            diff_content = unified_diff('',
-                                        file_content,
-                                        fromfile=from_name,
-                                        tofile=to_name.encode('utf-8'))
-            for line in diff_content:
-                line = line.strip()
-                if isinstance(line, str):
-                    diff.append(line.decode('utf-8'))
-                else:
-                    diff.append(line)
+                diff = [(u'diff --git {0} {1}'.format(from_name, to_name))]
+                from_name = u'/dev/null'
 
-            files_diff.append(u'\n'.join(diff))
+                diff_content = unified_diff('',
+                                            file_content,
+                                            fromfile=from_name,
+                                            tofile=to_name.encode('utf-8'))
+                for line in diff_content:
+                    line = line.strip()
+                    if isinstance(line, str):
+                        diff.append(line.decode('utf-8'))
+                    else:
+                        diff.append(line)
 
-        files_diff = u'\n'.join(files_diff)
+                files_diff.append(u'\n'.join(diff))
 
-        if empty:
-            return None
+            files_diff = u'\n'.join(files_diff)
 
-        review_request = self.get_review_request()
-        if review_request is None:
-            review_request = self.create_review_request()
-        if review_request is None:
-            return review_request
+            if empty:
+                return None
 
-        review_request.get_diffs().upload_diff(files_diff.encode('utf-8'))
+            review_request = self.get_review_request()
+            if review_request is None:
+                review_request = self.create_review_request()
+            if review_request is None:
+                return review_request
 
-        draft = review_request.get_or_create_draft()
-        issue = self.event.issue
-        summary = u'[{0}][{1}] {2}'.format(issue.student.get_full_name(),
-                                           issue.task.course.get_user_group(issue.student),
-                                           issue.task.title)
+            review_request.get_diffs().upload_diff(files_diff.encode('utf-8'))
 
-        description_template = _(u'zadacha') + ': "{0}", ' + \
-                               _(u'kurs') + ': [{1}](http://{2}{3})\n' + \
-                               _(u'student') + ': [{4}](http://{2}{5})\n' + \
-                               '[' + _(u'obsuzhdenie_zadachi') + '](http://{2}{6})'
-        description = description_template.format(
-                        issue.task.title,
-                        issue.task.course,
-                        Site.objects.get_current().domain,
-                        issue.task.course.get_absolute_url(),
-                        issue.student.get_full_name(),
-                        issue.student.get_absolute_url(),
-                        issue.get_absolute_url()
-                      )
+            draft = review_request.get_or_create_draft()
+            issue = self.event.issue
+            summary = u'[{0}][{1}] {2}'.format(issue.student.get_full_name(),
+                                               issue.task.course.get_user_group(issue.student),
+                                               issue.task.title)
 
-        draft = draft.update(summary=summary,
-                             description=description,
-                             description_text_type='markdown',
-                             target=settings.RB_API_USERNAME, public=True,
-                             )
-        return review_request.id
+            description_template = _(u'zadacha') + ': "{0}", ' + \
+                                   _(u'kurs') + ': [{1}](http://{2}{3})\n' + \
+                                   _(u'student') + ': [{4}](http://{2}{5})\n' + \
+                                   '[' + _(u'obsuzhdenie_zadachi') + '](http://{2}{6})'
+            description = description_template.format(
+                            issue.task.title,
+                            issue.task.course,
+                            Site.objects.get_current().domain,
+                            issue.task.course.get_absolute_url(),
+                            issue.student.get_full_name(),
+                            issue.student.get_absolute_url(),
+                            issue.get_absolute_url()
+                          )
+
+            draft = draft.update(summary=summary,
+                                 description=description,
+                                 description_text_type='markdown',
+                                 target=settings.RB_API_USERNAME, public=True,
+                                 )
+            return review_request.id
 
     # def get_or_create_review_request(self):
     #     root = self.client.get_root()

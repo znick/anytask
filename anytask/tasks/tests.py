@@ -162,7 +162,7 @@ class ViewsTest(TestCase):
         navbar = html.nav
         navbar_links = navbar.ul('li')
         self.assertEqual(len(navbar_links), 1, 'navbar must have only 1 link')
-        self.assertEqual(navbar_links[0].a['href'], '/course/1', 'navbar link wrong')
+        self.assertEqual(navbar_links[0].a['href'], '/course/1#tasks-tab', 'navbar link wrong')
 
         # breadcrumbs
         breadcrumbs = container.find('ul', 'breadcrumb')('li')
@@ -271,7 +271,7 @@ class ViewsTest(TestCase):
         navbar = html.nav
         navbar_links = navbar.ul('li')
         self.assertEqual(len(navbar_links), 1, 'navbar must have only 1 link')
-        self.assertEqual(navbar_links[0].a['href'], '/course/1', 'navbar link wrong')
+        self.assertEqual(navbar_links[0].a['href'], '/course/1#tasks-tab', 'navbar link wrong')
 
         # breadcrumbs
         breadcrumbs = container.find('ul', 'breadcrumb')('li')
@@ -294,10 +294,10 @@ class ViewsTest(TestCase):
 
         form_inputs = div_task_id.form('input', 'form-control')
         self.assertEqual(form_inputs[0]['value'], 'task_title', "form input id='{}' wrong".format(form_inputs[0]['id']))
-        self.assertEqual(form_inputs[1]['value'], '10', "form input id='{}' wrong".format(form_inputs[1]['id']))
-        self.assertEqual(form_inputs[2]['value'], '01-08-2016 00:30', "form input id='{}' wrong".format(form_inputs[2]['id']))
-        self.assertEqual(form_inputs[3]['value'], '1234', "form input id='{}' wrong".format(form_inputs[4]['id']))
-        self.assertEqual(form_inputs[4]['value'], 'A', "form input id='{}' wrong".format(form_inputs[4]['id']))
+        self.assertEqual(form_inputs[2]['value'], '10', "form input id='{}' wrong".format(form_inputs[2]['id']))
+        self.assertEqual(form_inputs[3]['value'], '01-08-2016 00:30', "form input id='{}' wrong".format(form_inputs[3]['id']))
+        self.assertEqual(form_inputs[4]['value'], '1234', "form input id='{}' wrong".format(form_inputs[4]['id']))
+        self.assertEqual(form_inputs[5]['value'], 'A', "form input id='{}' wrong".format(form_inputs[5]['id']))
 
         form_checkbox = div_task_id.form('input', {'type': 'checkbox'})
 
