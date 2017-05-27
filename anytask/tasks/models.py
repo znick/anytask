@@ -97,7 +97,10 @@ class Task(models.Model):
 
         if self.parent_task is not None:
             tasks = Task.objects.filter(parent_task=self.parent_task)
-            if TaskTaken.objects.filter(user=user).filter(task__in=tasks).exclude(status=TaskTaken.STATUS_CANCELLED).count() > 0:
+            if TaskTaken.objects.filter(user=user).filter(task__in=tasks) \
+                    .exclude(status=TaskTaken.STATUS_CANCELLED) \
+                    .exclude(status=TaskTaken.STATUS_DELETED) \
+                    .count() > 0:
                 return (False, u'')
 
         try:
