@@ -110,7 +110,7 @@
                     required_date: true
                 },
                 'date_end': {
-                    required: true
+                    required_date: true
                 }
             },
 
@@ -146,7 +146,7 @@
                     required_date: "{% trans 'vybrat_vremia_okonchania' %}"
                 },
                 'date_end': {
-                    required: "{% trans 'vybrat_poslednuu_datu' %}"
+                    required_date: "{% trans 'vybrat_poslednuu_datu' %}"
                 }
             },
 
@@ -178,16 +178,18 @@
             }
         });
 
-        var start_date_time = $("#lesson_edit_date_start").find('input').val();
-{#        var start_date = start_date_time[0].split('-');#}
-{#        var current_start = new Date(start_date[2] + '-' + start_date[1] + '-' + start_date[0] + ' ' + start_date_time[1]);#}
-        $('#lesson_edit_date_finish').datetimepicker('setStartDate', strToDate(start_date_time))
-                                     .datetimepicker('setEndDate', addMinutes(strToDate(start_date_time), 240)).change(
+        var start_date_time = strToDate($("#lesson_edit_date_start").find('input').val());
+        $('#lesson_edit_date_finish').datetimepicker('setStartDate', start_date_time)
+                                     .datetimepicker('setEndDate', addMinutes(start_date_time, 240)).change(
                                          function(val){
                                             form_validator.element($('#lesson_edit_date_finish').find('input'));
                                          });
 
-        $('#lesson_end_date').datetimepicker('setStartDate', now).datetimepicker('setEndDate', addMinutes(now, 262800));
+        $('#lesson_end_date').datetimepicker('setStartDate', start_date_time)
+            .datetimepicker('setEndDate', addMinutes(start_date_time, 262800))
+            .change(function(val){
+            form_validator.element($('#lesson_end_date').find('input'));
+        });
 
         $('#lesson_edit_form').change(function () {
             $('#lesson_submit_error_text').empty();
@@ -365,48 +367,56 @@
             set_disabled();
             if ($('#lesson_edit_type').val() === 'Once') {
                 $('#lesson_edit_form').data('quit', false).submit();
-                remove_disabled();
             }
             else {
-                $('#modal_lesson_save').modal('show');
+                if ($('#lesson_edit_form').valid()) {
+                    $('#modal_lesson_save').modal('show');
 
-                $('#button_save_one').click(function () {
-                    $('#lesson_edit_form').data('quit', false).submit();
-                    remove_disabled();
-                    $('#modal_lesson_save').modal('hide');
-                });
+                    $('#button_save_one').click(function () {
+                        $('#lesson_edit_form').data('quit', false).submit();
+                        remove_disabled();
+                        $('#modal_lesson_save').modal('hide');
+                    });
 
-                $('#button_save_all').click(function () {
-                    if (show_alert())
-                        $('#lesson_edit_form').append('<input type="hidden" name="change_all"/>').data('quit', false).submit();
-                    $('#modal_lesson_save').modal('hide');
-                    remove_disabled();
-                });
+                    $('#button_save_all').click(function () {
+                        if (show_alert())
+                            $('#lesson_edit_form').append('<input type="hidden" name="change_all"/>').data('quit', false).submit();
+                        $('#modal_lesson_save').modal('hide');
+                    });
+
+                }
+                else {
+                    $(window).scrollTop($('.form-control-danger')[0]);
+                }
             }
+            remove_disabled();
         });
 
         $('#edit_button_save_quit').click(function () {
             set_disabled();
             if ($('#lesson_edit_type').val() === 'Once') {
                 $('#lesson_edit_form').data('quit', true).submit();
-                remove_disabled();
             }
             else {
-                $('#modal_lesson_save').modal('show');
+                if ($('#lesson_edit_form').valid()) {
+                    $('#modal_lesson_save').modal('show');
 
-                $('#button_save_one').click(function () {
-                    $('#lesson_edit_form').data('quit', true).submit();
-                    remove_disabled();
-                });
+                    $('#button_save_one').click(function () {
+                        $('#lesson_edit_form').data('quit', true).submit();
+                    });
 
-                $('#button_save_all').click(function () {
-                    if (show_alert())
-                        $('#lesson_edit_form').append('<input type="hidden" name="change_all"/>').data('quit', true).submit();
-                    else
-                        $('#modal_lesson_save').modal('hide');
-                    remove_disabled();
-                });
+                    $('#button_save_all').click(function () {
+                        if (show_alert())
+                            $('#lesson_edit_form').append('<input type="hidden" name="change_all"/>').data('quit', true).submit();
+                        else
+                            $('#modal_lesson_save').modal('hide');
+                    });
+                }
+                else {
+                    $(window).scrollTop($('.form-control-danger')[0]);
+                }
             }
+            remove_disabled();
         });
 
         $('#button_cancel').click(function () {
