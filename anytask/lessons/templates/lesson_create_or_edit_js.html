@@ -22,37 +22,31 @@
             minuteStep: 30
         });
 
-        var now = new Date();
-        function addMinutes(date, minutes) {
-            return new Date(date.getTime() + minutes*60000);
+        function strToDate(val) {
+            var date_time = val.split(' ');
+            var date_ = date_time[0].split('-');
+            return new Date(date_[2] + '-' + date_[1] + '-' + date_[0] + ' ' + date_time[1]);
         }
-
-        var current_start = $("#lesson_edit_date_start").find('input').val();
-        if (!(current_start)) {
-            $('#lesson_edit_date_start').datetimepicker('update', now);
-            $('#lesson_edit_date_finish').datetimepicker('update', addMinutes(now, 90));
-        }
-
-        $('#lesson_edit_date_start').on('changeDate', function(val){
-                $('#lesson_edit_date_finish').datetimepicker('update', addMinutes(val.date, 90))
-                                             .datetimepicker('setStartDate', val.date)
-                                             .datetimepicker('setEndDate', addMinutes(val.date, 240));
-                $('#lesson_end_date').datetimepicker('setStartDate', val.date)
-                                     .datetimepicker('setEndDate', addMinutes(val.date, 262800));
-        });
-
-        $('#lesson_edit_date_finish').datetimepicker('setStartDate', current_start)
-                                     .datetimepicker('setEndDate', addMinutes(now, 240));
-
-        $('#lesson_end_date').datetimepicker('setStartDate', now).datetimepicker('setEndDate', addMinutes(now, 262800));
-
-        $('#lesson_edit_form').change(function () {
-            $('#lesson_submit_error_text').empty();
-            $('#lesson_edit_form').data('changed', true);
-        });
 
         $.validator.addMethod("required_with_disabled", function(value, element) {
             return !!value;
+        });
+
+        $.validator.addMethod("required_date", function(value, element) {
+            var datetime_form = $(element).closest('lesson-datetime');
+            var is_valid = true;
+            if (!value)
+                is_valid = false;
+            else {
+                console.log(strToDate(value));
+                datetime_form.datetimepicker('setDate', strToDate(value)).on('outOfRange', function () {
+                    console.log(111);
+                    is_valid = false;
+                    return false;
+                });
+                console.log(datetime_form.datetimepicker());
+            }
+            return is_valid;
         });
 
         var form_validator = $('#lesson_edit_form').validate({
@@ -77,10 +71,10 @@
                         },
                         error: function (data) {
                             $('#lesson_submit_error_text').html(
-                                '<div  class="alert alert-danger alert-dismissible" role ="alert" id="edit_lesson_err">'
-                                + '<button type="button" class="close" data-dismiss="alert" '
-                                + 'aria-label="{% trans "zakryt" %}"><span aria-hidden="true">&times;</span></button>'
-                                + '<span>{% trans "oshibka_pri_sohranenii" %}</span></div>'
+                                '<div  class="alert alert-danger alert-dismissible" role ="alert" id="edit_lesson_err">' +
+                                '<button type="button" class="close" data-dismiss="alert" ' +
+                                'aria-label="{% trans "zakryt" %}"><span aria-hidden="true">&times;</span></button>' +
+                                '<span>{% trans "oshibka_pri_sohranenii" %}</span></div>'
                             );
                             remove_disabled();
                         }
@@ -110,13 +104,13 @@
                     required_with_disabled: true
                 },
                 'lesson_date_start': {
-                    required_with_disabled: true
+                    required_date: true
                 },
                 'lesson_date_finish': {
-                    required_with_disabled: true
+                    required_date: true
                 },
                 'date_end': {
-                    required_with_disabled: true
+                    required: true
                 }
             },
 
@@ -146,19 +140,58 @@
                     required_with_disabled: "{% trans 'neobhodimo_vybrat_den_nedeli' %}"
                 },
                 'lesson_date_start': {
-                    required_with_disabled: "{% trans 'vybrat_datu_zaniatia' %}"
+                    required_date: "{% trans 'vybrat_datu_zaniatia' %}"
                 },
                 'lesson_date_finish': {
-                    required_with_disabled: "{% trans 'vybrat_vremia_okonchania' %}"
+                    required_date: "{% trans 'vybrat_vremia_okonchania' %}"
                 },
                 'date_end': {
-                    required_with_disabled: "{% trans 'vybrat_poslednuu_datu' %}"
+                    required: "{% trans 'vybrat_poslednuu_datu' %}"
                 }
             },
 
             errorPlacement: function (error, element) {
                 $(element).closest("div.controls").find('small.text-help').empty().append(error);
             }
+        });
+
+        var now = new Date();
+        function addMinutes(date, minutes) {
+            return new Date(date.getTime() + minutes*60000);
+        }
+
+        if (!$("#lesson_edit_date_start").find('input').val()) {
+            $('#lesson_edit_date_start').datetimepicker('update', now);
+            $('#lesson_edit_date_finish').datetimepicker('update', addMinutes(now, 90));
+        }
+
+        $('#lesson_edit_date_start').change(function(val){
+            form_validator.element($('#lesson_edit_date_start').find('input'));
+        }).on('changeDate', function(val){
+            if (val.date) {
+                $('#lesson_edit_date_finish').datetimepicker('update', addMinutes(val.date, 90))
+                    .datetimepicker('setStartDate', val.date)
+                    .datetimepicker('setEndDate', addMinutes(val.date, 240));
+                $('#lesson_end_date').datetimepicker('setStartDate', val.date)
+                    .datetimepicker('setEndDate', addMinutes(val.date, 262800));
+                form_validator.element($('#lesson_edit_date_finish').find('input'));
+            }
+        });
+
+        var start_date_time = $("#lesson_edit_date_start").find('input').val();
+{#        var start_date = start_date_time[0].split('-');#}
+{#        var current_start = new Date(start_date[2] + '-' + start_date[1] + '-' + start_date[0] + ' ' + start_date_time[1]);#}
+        $('#lesson_edit_date_finish').datetimepicker('setStartDate', strToDate(start_date_time))
+                                     .datetimepicker('setEndDate', addMinutes(strToDate(start_date_time), 240)).change(
+                                         function(val){
+                                            form_validator.element($('#lesson_edit_date_finish').find('input'));
+                                         });
+
+        $('#lesson_end_date').datetimepicker('setStartDate', now).datetimepicker('setEndDate', addMinutes(now, 262800));
+
+        $('#lesson_edit_form').change(function () {
+            $('#lesson_submit_error_text').empty();
+            $('#lesson_edit_form').data('changed', true);
         });
 
         $('#lesson_edit_type').change(function () {
