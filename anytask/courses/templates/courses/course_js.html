@@ -793,8 +793,8 @@
                                 var table_col =  table.column($('#column_'+ deleted_ids[i]).index() + ':visIdx');
                                 table_col.visible(false);
                             }
-                            var old_total = parseInt($('#total_lessons').text());
-                            $('#total_lessons').text(old_total - deleted_ids.length);
+                            var old_total = parseInt($('#total_lessons_' + group_id).text());
+                            $('#total_lessons_' + group_id).text(old_total - deleted_ids.length);
             });
 
             $('[data-toggle="popover"]').popover('hide');

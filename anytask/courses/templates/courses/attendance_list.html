@@ -45,7 +45,7 @@
                         {% empty %}
                     {% endfor %}
                     <th align="center" class="no-font-weight dom-number">
-                        {% trans "poseshennye_uroki" %} <span class="label label-inverse" id="total_lessons">{{ group_lessons|key:group|length }}</span>
+                        {% trans "poseshennye_uroki" %} <span class="label label-inverse" id="total_lessons_{{ group.id }}">{{ group_lessons|key:group|length }}</span>
                     </th>
                 </tr>
                 </thead>
