@@ -789,10 +789,12 @@
                         }).done(function (data) {
                             var table = $('#table_results_' + group_id).DataTable();
                             var deleted_ids = data.deleted;
+                            var cols = [];
                             for (var i = 0; i < deleted_ids.length; ++i) {
-                                var table_col =  table.column($('#column_'+ deleted_ids[i]).index() + ':visIdx');
-                                table_col.visible(false);
+                                cols.push($('#column_'+ deleted_ids[i]).index());
                             }
+                            table.columns(cols).visible(false, false);
+                            table.columns.adjust().draw(false);
                             var old_total = parseInt($('#total_lessons_' + group_id).text());
                             $('#total_lessons_' + group_id).text(old_total - deleted_ids.length);
             });
