@@ -381,6 +381,12 @@
             }
 
             @media (max-width: 991px) {
+                .hidden-md {
+                    display: block !important;
+                }
+                .visible-md {
+                    display: none !important;
+                }
                 .navbar-brand {
                     float: none;
                     margin-right: 0;
@@ -517,6 +523,22 @@
                 .nav-form-search  form[role="search"].active .input-group-input {
                     width: 15rem;
                     left: -15rem;
+                }
+                .hidden-md {
+                    display: none !important;
+                }
+                .visible-md {
+                    margin-left: 0 !important;
+                    display: block !important;
+                }
+            }
+
+            @media (min-width: 1200px) {
+                .hidden-md {
+                    display: block !important;
+                }
+                .visible-md {
+                    display: none !important;
                 }
             }
 
