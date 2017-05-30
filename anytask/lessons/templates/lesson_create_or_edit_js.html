@@ -32,21 +32,20 @@
             return !!value;
         });
 
+        var is_date_valid;
         $.validator.addMethod("required_date", function(value, element) {
-            var datetime_form = $(element).closest('lesson-datetime');
-            var is_valid = true;
+            var datetime_form = $(element).parent();
+
             if (!value)
-                is_valid = false;
+                is_date_valid = false;
             else {
-                console.log(strToDate(value));
+                is_date_valid = true;
                 datetime_form.datetimepicker('setDate', strToDate(value)).on('outOfRange', function () {
-                    console.log(111);
-                    is_valid = false;
-                    return false;
+                    is_date_valid = false;
                 });
-                console.log(datetime_form.datetimepicker());
+
             }
-            return is_valid;
+            return is_date_valid;
         });
 
         var form_validator = $('#lesson_edit_form').validate({

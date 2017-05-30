@@ -2169,11 +2169,11 @@ msgstr "Выберете дату занятия"
 
 #: lessons/templates/lesson_create_or_edit_js.html:149
 msgid "vybrat_poslednuu_datu"
-msgstr "Выберете дату последнего занятия"
+msgstr "Выберете корректную дату последнего занятия"
 
 #: lessons/templates/lesson_create_or_edit_js.html:146
 msgid "vybrat_vremia_okonchania"
-msgstr "Выберете время окончания занятия"
+msgstr "Выберете корректное время окончания занятия"
 
 #: staff/templates/staff_js.html:50 users/templates/my_tasks.html:43
 msgid "vybrat_vse"
