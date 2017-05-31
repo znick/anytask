@@ -35,7 +35,6 @@
         var is_date_valid;
         $.validator.addMethod("required_date", function(value, element) {
             var datetime_form = $(element).parent();
-
             if (!value)
                 is_date_valid = false;
             else {
@@ -43,7 +42,6 @@
                 datetime_form.datetimepicker('setDate', strToDate(value)).on('outOfRange', function () {
                     is_date_valid = false;
                 });
-
             }
             return is_date_valid;
         });
@@ -69,6 +67,7 @@
                             $(document).prop('title', data.page_title);
                         },
                         error: function (data) {
+
                             $('#lesson_submit_error_text').html(
                                 '<div  class="alert alert-danger alert-dismissible" role ="alert" id="edit_lesson_err">' +
                                 '<button type="button" class="close" data-dismiss="alert" ' +
@@ -354,6 +353,31 @@
 
         });
 
+        var init_date_start = $('#lesson_edit_date_start').find('input').val();
+        var init_date_end = $('#lesson_end_date').find('input').val();
+        var init_weekdays = $('#lesson_edit_weekday').val();
+
+        function show_alert() {
+            var weekdays_changed = false;
+            var current_weekdays = $('#lesson_edit_weekday').val();
+            if (init_weekdays.length != current_weekdays.length)
+                weekdays_changed = true;
+            else {
+                for (var i=0; i < init_weekdays.length; ++i)
+                    if (init_weekdays[i] != current_weekdays[i]) {
+                        weekdays_changed = false;
+                        break;
+                    }
+            }
+            console.log(weekdays_changed);
+            if ((init_date_start != $('#lesson_edit_date_start').find('input').val())
+                || (init_date_end != $('#lesson_end_date').find('input').val())
+                || weekdays_changed) {
+                return confirm('{% trans "podtverdit_izmenenia" %}');
+            }
+            return true;
+        }
+
         $('#button_preview').click(function () {
             description_preview();
         });
@@ -362,33 +386,15 @@
             redirect();
         });
 
-        $('#edit_button_save').click(function () {
-            set_disabled();
-            if ($('#lesson_edit_type').val() === 'Once') {
-                $('#lesson_edit_form').data('quit', false).submit();
-            }
-            else {
-                if ($('#lesson_edit_form').valid()) {
-                    $('#modal_lesson_save').modal('show');
+        $('#button_save_one').click(function () {
+            $('#lesson_edit_form').data('quit', true).submit();
+            $('#modal_lesson_save').modal('hide');
+        });
 
-                    $('#button_save_one').click(function () {
-                        $('#lesson_edit_form').data('quit', false).submit();
-                        remove_disabled();
-                        $('#modal_lesson_save').modal('hide');
-                    });
-
-                    $('#button_save_all').click(function () {
-                        if (show_alert())
-                            $('#lesson_edit_form').append('<input type="hidden" name="change_all"/>').data('quit', false).submit();
-                        $('#modal_lesson_save').modal('hide');
-                    });
-
-                }
-                else {
-                    $(window).scrollTop($('.form-control-danger')[0]);
-                }
-            }
-            remove_disabled();
+        $('#button_save_all').click(function () {
+            if (show_alert())
+                $('#lesson_edit_form').append('<input type="hidden" name="change_all"/>').data('quit', true).submit();
+            $('#modal_lesson_save').modal('hide');
         });
 
         $('#edit_button_save_quit').click(function () {
@@ -397,23 +403,10 @@
                 $('#lesson_edit_form').data('quit', true).submit();
             }
             else {
-                if ($('#lesson_edit_form').valid()) {
+                if ($('#lesson_edit_form').valid())
                     $('#modal_lesson_save').modal('show');
-
-                    $('#button_save_one').click(function () {
-                        $('#lesson_edit_form').data('quit', true).submit();
-                    });
-
-                    $('#button_save_all').click(function () {
-                        if (show_alert())
-                            $('#lesson_edit_form').append('<input type="hidden" name="change_all"/>').data('quit', true).submit();
-                        else
-                            $('#modal_lesson_save').modal('hide');
-                    });
-                }
-                else {
+                else
                     $(window).scrollTop($('.form-control-danger')[0]);
-                }
             }
             remove_disabled();
         });
@@ -424,12 +417,6 @@
         });
 
         $('#modal_lesson_save').on('hidden.bs.modal', function (e) {
-            remove_disabled();
-        });
-
-        $('#button_save').click(function () {
-            set_disabled();
-            $('#lesson_edit_form').data('quit', false).submit();
             remove_disabled();
         });
 
@@ -448,16 +435,6 @@
             else
                 $this.prop('disabled', true);
         });
-    }
-
-    function show_alert() {
-        var $date_start = $('#lesson_edit_date_start');
-        var $date_end = $('#lesson_end_date');
-        var $weekdays = $('#lesson_edit_weekday');
-        if (($date_start.val() != $date_start.data('value')) || ($date_end.val() != $date_end.data('value'))
-            || ($weekdays.val() != $weekdays.data('value')))
-                return confirm('{% trans "podtverdit_izmenenia" %}');
-        return true;
     }
 
     function description_preview() {
