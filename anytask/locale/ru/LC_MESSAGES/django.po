@@ -1943,7 +1943,7 @@ msgstr "Укажите максимальный балл."
 #: tasks/templates/task_create_or_edit_js.html:283
 #: tasks/templates/task_import_js.html:197
 msgid "ukazat_nomer_kontesta"
-msgstr "Укажите номер задачи."
+msgstr "Укажите номер соревнования"
 
 #: mail/templates/mail_js.html:738
 msgid "ukazat_poluchatelja"

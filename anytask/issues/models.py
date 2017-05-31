@@ -378,7 +378,7 @@ class Issue(models.Model):
             try:
                 review_id = self.get_byname('review_id')
                 if review_id != '':
-                    if value.tag == IssueStatus.STATUS_ACCEPTED:
+                    if value.tag in [IssueStatus.STATUS_ACCEPTED, IssueStatus.STATUS_ACCEPTED_AFTER_DEADLINE]:
                         update_status_review_request(review_id, 'submitted')
                     elif self.is_status_accepted():
                         update_status_review_request(review_id, 'pending')
@@ -386,6 +386,16 @@ class Issue(models.Model):
                 pass
 
             if self.status_field != value:
+                if self.task.parent_task is not None and not self.task.score_after_deadline:
+                    parent_task_issue, created = Issue.objects.get_or_create(
+                        student=self.student,
+                        task=self.task.parent_task
+                    )
+                    if self.is_status_accepted_after_deadline():
+                        parent_task_issue.mark += self.mark
+                    elif value.tag == IssueStatus.STATUS_ACCEPTED_AFTER_DEADLINE:
+                        parent_task_issue.mark -= self.mark
+                    parent_task_issue.save()
                 self.status_field = value
             else:
                 delete_event = True
@@ -403,8 +413,7 @@ class Issue(models.Model):
                         student=self.student,
                         task=self.task.parent_task
                     )
-                    parent_task_issue.mark -= self.mark
-                    parent_task_issue.mark += float(value)
+                    parent_task_issue.mark += float(value) - self.mark
                     parent_task_issue.save()
 
                 self.mark = float(value)
