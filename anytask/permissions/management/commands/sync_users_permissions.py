@@ -35,9 +35,9 @@ class Command(BaseCommand):
             user_perms.exclude(content_object__in=users_profile).delete()
             bulk_create_list = []
             for user_profile in users_profile.extra(where=[
-                'NOT ("users_userprofile"."id" IN '
-                '(SELECT U1."content_object_id" FROM "users_userprofileuserobjectpermission" U1 '
-                'WHERE (U1."permission_id" = {0} AND U1."user_id" = {1} AND U1."content_object_id" IS NOT NULL)))'
+                'NOT (users_userprofile.id IN '
+                '(SELECT U1.content_object_id FROM users_userprofileuserobjectpermission U1 '
+                'WHERE (U1.permission_id = {0} AND U1.user_id = {1} AND U1.content_object_id IS NOT NULL)))'
                         .format(user_perm_to_users.permission.id, user_perm_to_users.user.id)
             ]):
                 bulk_create_list.append(
