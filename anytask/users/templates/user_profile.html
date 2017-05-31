@@ -3,6 +3,7 @@
 {% load crispy_forms_tags %}
 {% load sanitize_html %}
 {% load table_func %}
+{% load guardian_tags %}
 
 {% block title %} {{ user_to_show.get_full_name }} {% endblock %}
 
@@ -12,6 +13,8 @@
 {% endblock %}
 
 {% block navbar %}
+    {% get_obj_perms user for user_to_show_profile as "user_to_show_profile_perms" %}
+
     <ul class="nav navbar-nav">
         {% if request.user == user_to_show %}
             <li class="nav-item active">
@@ -31,7 +34,7 @@
             <li class="nav-item active">
                 <a class="nav-link" href="{% url users.views.profile user_to_show %}">{% trans "profil_studenta" %}</a>
             </li>
-            {% if user_above_user_to_show %}
+            {% if "view_profile_courses_page" in user_to_show_profile_perms %}
                 <li class="nav-item">
                     <a class="nav-link"
                        href="{% url users.views.user_courses username=user_to_show %}">{% trans "kursy_studenta" %}</a>

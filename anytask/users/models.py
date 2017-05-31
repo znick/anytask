@@ -21,7 +21,7 @@ from users.model_user_status import UserStatus
 from anytask.storage import OverwriteStorage
 
 from permissions.common import _get_perm_local_name, PERMS_CLASSES, assign_perm_by_id, remove_perm_additional_changes
-from permissions.models import PermissionBase, PermissionsVisible
+from permissions.models import PermissionBase, PermissionsVisible, UserPermissionToUsers
 from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
 
 import os
@@ -128,15 +128,29 @@ class UserProfile(models.Model):
             perm_objs = perms.get(perm.id, [])
             if not perm_objs:
                 perm_objs = perms.get(str(perm.id), [])
-            if perm_objs:
-                for obj_id in perm_objs:
-                    model = perm.content_type.model_class()
-                    try:
-                        obj = model.objects.get(id=obj_id)
-                    except model.DoesNotExist:
-                        raise PermissionDenied
 
-                    assign_perm_by_id(perm, self.user, obj, role)
+            if perm_objs:
+                if isinstance(perm_objs, list):
+                    for obj_id in perm_objs:
+                        model = perm.content_type.model_class()
+                        try:
+                            obj = model.objects.get(id=obj_id)
+                        except model.DoesNotExist:
+                            raise PermissionDenied
+
+                        assign_perm_by_id(perm, self.user, obj, role)
+                elif isinstance(perm_objs, dict):
+                    user_perm_to_users, created = UserPermissionToUsers.objects.get_or_create(
+                        user=self.user,
+                        permission=perm,
+                        role_from=role
+                    )
+                    user_perm_to_users.users = perm_objs.get('users', [])
+                    user_perm_to_users.groups = perm_objs.get('groups', [])
+                    user_perm_to_users.courses = perm_objs.get('courses', [])
+                    user_perm_to_users.statuses = perm_objs.get('statuses', [])
+                else:
+                    raise Exception('Unknown perm objects')
             else:
                 self.user.user_permissions.add(perm)
 
@@ -148,7 +162,6 @@ class UserProfile(models.Model):
                 user_roles, created = self.user.userroles_set.get_or_create(school=roles_visible.school)
                 user_roles.roles.add(role)
 
-
     def remove_role(self, role, school=None):
         deleted_perms = []
         for model_app_label, model_names in PERMS_CLASSES.iteritems():
@@ -159,6 +172,8 @@ class UserProfile(models.Model):
                 deleted_perms += model_perms.values_list("permission__id", flat=True)
                 model_perms.delete()
 
+        UserPermissionToUsers.objects.filter(user=self.user, role_from=role).delete()
+
         global_perms = role.permissions.exclude(id__in=deleted_perms)
         if global_perms:
             self.user.user_permissions.remove(*global_perms)
@@ -168,9 +183,24 @@ class UserProfile(models.Model):
             user_roles[0].roles.remove(role)
 
     def get_perms_by_role(self, role):
-        qs_values_list = ["id", "content_type__app_label", "codename", "name"]
+        qs_values_list = [
+            "id",
+            "content_type__app_label",
+            "codename",
+            "name",
+            "userpermissiontousers__users__id",
+            "userpermissiontousers__users__first_name",
+            "userpermissiontousers__users__last_name",
+            "userpermissiontousers__groups__id",
+            "userpermissiontousers__groups__name",
+            "userpermissiontousers__courses__id",
+            "userpermissiontousers__courses__name",
+            "userpermissiontousers__statuses__id",
+            "userpermissiontousers__statuses__name",
+        ]
 
-        qs_filter = Q()
+        qs_filter = Q(userpermissiontousers__role_from=role, userpermissiontousers__user=self.user)
+        user_obj_perm_keys = []
         for perm_classes in PERMS_CLASSES.itervalues():
             for perm_class in perm_classes:
                 filter_class = {
@@ -179,27 +209,56 @@ class UserProfile(models.Model):
                 }
                 qs_filter |= Q(**filter_class)
                 qs_values_list += [perm_class + "__content_object"]
+                user_obj_perm_keys += [perm_class + "__content_object"]
         perms = {}
-        for perm_info in Permission.objects.filter(qs_filter).distinct().values_list(*qs_values_list):
-            if perm_info[0] not in perms:
-                group_local_name, perm_local_name = _get_perm_local_name(perm_info[1], perm_info[2], perm_info[3])
-                perms[perm_info[0]] = {
-                    "model": perm_info[1],
-                    "codename": perm_info[1],
-                    'name': perm_local_name,
-                    'model_name': group_local_name,
-                    'objects': []
+        for perm_info in Permission.objects.filter(qs_filter).distinct().values(*qs_values_list):
+            if perm_info["id"] not in perms:
+                group_local_name, perm_local_name = _get_perm_local_name(
+                    perm_info['content_type__app_label'],
+                    perm_info['codename'],
+                    perm_info['name']
+                )
+                perms[perm_info["id"]] = {
+                    "model": perm_info["content_type__app_label"],
+                    "codename": perm_info["codename"],
+                    "name": perm_local_name,
+                    "model_name": group_local_name,
+                    "objects": defaultdict(list)
                 }
-            for obj_id in perm_info[4:]:
-                if obj_id:
-                    perms[perm_info[0]]["objects"].append(obj_id)
+            if perm_info['userpermissiontousers__users__id']:
+                perms[perm_info["id"]]["objects"]["user"].append({
+                    "id": perm_info['userpermissiontousers__users__id'],
+                    "name": u' '.join([
+                        perm_info['userpermissiontousers__users__first_name'],
+                        perm_info['userpermissiontousers__users__last_name']
+                    ]),
+                })
+            if perm_info['userpermissiontousers__groups__id']:
+                perms[perm_info["id"]]["objects"]["group"].append({
+                    "id": perm_info['userpermissiontousers__groups__id'],
+                    "name": perm_info['userpermissiontousers__groups__name'],
+                })
+            if perm_info['userpermissiontousers__courses__id']:
+                perms[perm_info["id"]]["objects"]["course"].append({
+                    "id": perm_info['userpermissiontousers__courses__id'],
+                    "name": perm_info['userpermissiontousers__courses__name'],
+                })
+            if perm_info['userpermissiontousers__statuses__id']:
+                perms[perm_info["id"]]["objects"]["status"].append({
+                    "id": perm_info['userpermissiontousers__statuses__id'],
+                    "name": perm_info['userpermissiontousers__statuses__name'],
+                })
+            for key in user_obj_perm_keys:
+                if perm_info[key]:
+                    perms[perm_info["id"]]["objects"]["objects"].append(perm_info[key])
                     break
-
         return perms
 
     class Meta:
         permissions = (
             ('view_backoffice_page', 'View backoffice page'),
+            ('view_profile', 'View profile'),
+            ('view_profile_courses_page', 'View user courses page'),
         )
 
 

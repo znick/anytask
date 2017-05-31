@@ -1,0 +1,53 @@
+{% load i18n %}
+
+<link href="{{ STATIC_URL }}add_user_or_group.css" rel='stylesheet' />
+
+<div class="modal fade" id="modal_add_group" tabindex="-1" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">{% trans "dobavit_gruppu_polzovatelej" %}</h4>
+            </div>
+            <div class="modal-body">
+                <ul class="nav nav-pills" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-toggle="pill" href="#courses" role="tab">{% trans 'kurs' %}/{% trans 'gruppa' %}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="pill" href="#statuses" role="tab">{% trans 'statusy' %}</a>
+                    </li>
+                </ul>
+
+                <div class="tab-content">
+                    <div class="tab-pane fade active in" id="courses" role="tabpanel">
+                        <select id="modal_add_group_select" multiple>
+                            {% for course_info, groups_info in groups.iteritems %}
+                                <optgroup label="{{ course_info.1 }}" data-id="{{ course_info.0 }}" data-count="{{ groups_info|length }}">
+                                    {% for group_id, group_name in groups_info.iteritems %}
+                                        <option value="{{ course_info.0 }}_{{ group_id }}" data-id="{{ group_id }}" data-type="group">{{ group_name }}</option>
+                                    {% endfor %}
+                                </optgroup>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="tab-pane fade" id="statuses" role="tabpanel">
+                        <select id="modal_add_status_select" multiple>
+                            {% for status_type, status_values in statuses.iteritems %}
+                                <optgroup data-not_selectable="1" label="{% if status_type %}{{ status_values.type_name }}{% else %}{% trans "bez_tipa" %}{% endif %}">
+                                    {% for status_info in status_values.values %}
+                                        <option value="{{ status_info.id }}" data-id="{{ status_info.id }}" data-type="status">{{ status_info.name }}</option>
+                                    {% endfor %}
+                                </optgroup>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-dismiss="modal">{% trans "zakryt" %}</button>
+                <button class="btn btn-primary" id="modal_add_group_ok" data-dismiss="modal">{% trans "dobavit" %}</button>
+            </div>
+        </div>
+    </div>
+</div>

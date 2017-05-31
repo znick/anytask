@@ -3,12 +3,16 @@
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap4.min.css"/>
 <link rel="stylesheet" type="text/css"
       href="https://cdn.datatables.net/rowgroup/1.0.0/css/rowGroup.bootstrap4.min.css"/>
+<link rel="stylesheet" type="text/css"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.css"/>
 
 <script type="text/javascript" src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap4.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/rowgroup/1.0.0/js/dataTables.rowGroup.min.js"></script>
 <script src="{{ STATIC_URL }}jquery.validate.min.js"></script>
 <script type="text/javascript" src="https://fastcdn.org/Readmore.js/2.1.0/readmore.min.js"></script>
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.min.js"></script>
 
 
 
@@ -70,6 +74,64 @@
             $.fn.dataTable.tables({visible: true, api: true}).draw();
         });
 
+        $(document).on('hidden.bs.modal', function (event) {
+            if ($('.modal:visible').length) {
+                $('body').addClass('modal-open');
+            }
+        });
+
+        $('select, input', "#modal_new_role_settings").each(function () {
+            var $select = $(this);
+            var $modal = $("#modal_role");
+            var select_type_dict = {};
+            if ($modal.data("select_type"))
+                select_type_dict = $modal.data("select_type");
+
+            if ($select.data("type"))
+                select_type_dict[$select.data("type")] = $select[0].outerHTML;
+            else
+                select_type_dict[$select.closest('div').data("type")] = $select.closest('div')[0].outerHTML;
+
+            $modal.data('select_type', select_type_dict);
+        });
+
+        $('#modal_add_group_select, #modal_add_status_select').multiselect({
+            templates: {
+                ul: '<ul class="multiselect-container dropdown-menu" style="left:inherit;top: inherit;"></ul>',
+                li: '<li><a tabindex="0" class="dropdown-item"><label></label></a></li>',
+                filter: '<li class="multiselect-item filter"><div class="input-group"><input class="form-control multiselect-search" type="text"></div></li>',
+                filterClearBtn: '<span class="input-group-btn"><button class="btn btn-secondary btn-block multiselect-clear-filter" type="button"><i class="fa fa-times"></i></button></span>'
+
+            },
+            enableClickableOptGroups: true,
+            includeSelectAllOption: true,
+            enableCaseInsensitiveFiltering: true,
+            filterPlaceholder: "{% trans 'najti' %}",
+            selectAllText: '{% trans "vydelit_vse" %}',
+            selectAllName: 'task_group_id_all',
+            selectAllValue: 'on',
+            buttonContainer: '<div style="width:100%;" class="multiselect-dropdown"/>',
+            onInitialized: function (option, dropdown, select) {
+                $('.multiselect-group a', dropdown).prop('tabindex', '0').addClass('dropdown-item').find('label').addClass('checkbox');
+                $(dropdown).addClass("open");
+                $(".dropdown-toggle", dropdown).remove();
+                $(".multiselect-container", dropdown).removeClass("dropdown-menu").addClass("build-in");
+                $(".multiselect-clear-filter", dropdown).click(function () {
+                    $(this).blur();
+                });
+                $("li:not(.filter)", dropdown).each(function () {
+                    $(this).prop("title", $.trim($("label", this).text()));
+                });
+            }
+        });
+
+        $('#modal_add_group').on('hidden.bs.modal', function (e) {
+            $("input.multiselect-search", this).val("");
+            $('#modal_add_group_select, #modal_add_status_select').multiselect('deselectAll', false);
+        });
+
+        init_multiselect_and_tagsinput($("#modal_new_role_settings"), false);
+
         $(".change-roles", ".table-users").click(function () {
             var d = "disabled";
             var $btn = $(this);
@@ -121,7 +183,6 @@
                     $modal.data("loading", false)
                 })
                 .done(function (data) {
-                    $modal.data("select_type", {});
                     create_modal_body(data);
                     $modal.data("roles_info", data);
                 })
@@ -137,14 +198,16 @@
 
         $("#modal_new_role").on("change", "#modal_new_role_select", function () {
             var $select = $(this);
+            var $modal = $("#modal_role");
             var $modal_new_role_table = $("#modal_new_role_table");
             $('#modal_new_role_settings').removeClass("in");
             $('#modal_new_role_adv_settings_btn').removeClass("active");
+            $modal_new_role_table.find("tbody").empty();
+            $modal.data("role_id", '');
             var role_id = $select.val();
             if (!role_id) {
                 return;
             }
-            var $modal = $("#modal_role");
             var data = $modal.data("roles_info");
             var user_info = $modal.data("user_info");
             var $table = $("table", $modal_new_role_table);
@@ -152,37 +215,64 @@
 
             var type_used = create_modal_table($table, role_id, user_info, data, "roles", 'new');
             var $modal_settings = $('#modal_new_role_simple_settings');
-            $modal_settings.empty();
+            $("select", $modal_settings).each(function () {
+                var $select_type = $(this);
+                var type = $select_type.data("type");
+                if (type in type_used)
+                    $select_type.closest('.form-group').show();
+                else
+                    $select_type.closest('.form-group').hide();
 
-            for (var type_id in type_used) {
-                var $select_group = $(
-                    '<div class="form-group row">' +
-                    '  <label class="col-lg-1 col-md-1 col-sm-2 col-xs-2 form-control-label"></label>' +
-                    '  <div class="controls col-lg-11 col-md-11 col-sm-10 col-xs-10">' +
-                    '  </div>' +
-                    '</div>'
-                ).appendTo("#modal_new_role_simple_settings");
-
-                var label_text = type_id;
-                if (data['type_trans'].hasOwnProperty(type_id))
-                    label_text = data['type_trans'][type_id];
-                $('label', $select_group).text(label_text);
-
-                var $select_type = $($modal.data('select_type')[type_id]).appendTo($('div.controls', $select_group));
-                if (user_info.hasOwnProperty(type_id))
+                if (user_info.hasOwnProperty(type))
                     $("option", $select_type).each(function () {
                         var $option = $(this);
-                        if (user_info[type_id].hasOwnProperty($option.val())) {
+                        if (user_info[type].hasOwnProperty($option.val()))
                             $option.attr('selected', 'selected');
-                        }
+                        else
+                            $option.removeAttr("selected");
                     });
+            }).multiselect('refresh');
 
-            }
-            init_multiselect($modal_settings, false)
+            $(".users-or-groups", $modal_settings).each(function () {
+                var $input = $(this);
+                var type = $input.closest(".users-or-groups-div").data("type");
+                if (type in type_used)
+                    $input.closest('.form-group').show();
+                else
+                    $input.closest('.form-group').hide();
+
+            }).tagsinput('removeAll');
         });
 
         $("#modal_new_role_adv_settings_btn").click(function () {
             $(this).blur().button('toggle');
+        });
+
+        $("#modal_add_group_ok").click(function () {
+            var $input_for = $($('#modal_add_group').data('for'));
+            $('optgroup', "#modal_add_group_select, #modal_add_status_select").each(function () {
+                var $optgroup = $(this);
+                if (!$optgroup.data("not_selectable") && $optgroup.data("count") === $("option:selected", this).length) {
+                    $input_for.tagsinput('add', {
+                        type: "course",
+                        id: "c_" + $optgroup.data("id"),
+                        id_post: $optgroup.data("id"),
+                        fullname: $optgroup.attr("label")
+                    });
+                }
+                else {
+                    $("option:selected", this).each(function () {
+                        var $option = $(this);
+
+                        $input_for.tagsinput('add', {
+                            type: $option.data("type"),
+                            id: $option.data("type")[0] + "_" + $option.data("id"),
+                            id_post: $option.data("id"),
+                            fullname: $option.text()
+                        });
+                    });
+                }
+            });
         });
 
         $("#modal_role_ok").click(function () {
@@ -225,15 +315,27 @@
                     new_role_perms[$select.data("perm_id")] = $select.val();
                 });
 
+                $("input.users-or-groups", $form_new_role).each(function () {
+                    var $input = $(this);
+                    new_role_perms[$input.data("perm_id")] = {
+                        'users': $input.data('user'),
+                        'groups': $input.data('group'),
+                        'courses': $input.data('course'),
+                        'statuses': $input.data('status')
+                    };
+                });
+
                 var post_data = {
                     "csrfmiddlewaretoken": $btn.data("csrf_token"),
                     "user_id": $modal.data("user_id"),
-                    "role_id": $modal.data("role_id"),
                     "school_id": $modal.data("school_id"),
                     "deleted_roles": $modal.data("deleted_roles"),
                     "new_role_perms": JSON.stringify(new_role_perms),
                     "user_roles_changes": JSON.stringify($modal.data("user_roles_changes"))
                 };
+
+                if ($modal.data("role_id"))
+                    post_data["role_id"] = $modal.data("role_id");
 
                 $.post('{% url staff.views.ajax_save_user_roles %}', post_data)
                     .always(function (data) {
@@ -468,7 +570,8 @@
         if ($.fn.DataTable.isDataTable($table)) {
             $table.DataTable().destroy();
         }
-        var type_used = {}
+        var select_type_dict = $('#modal_role').data('select_type');
+        var type_used = {};
         var $thead = $('thead', $table).show().find("tr").html('');
         var $tbody = $('tbody', $table).html('');
         $thead.append('<th class="disable-ordering">{% trans 'dostupy' %}</th>');
@@ -482,31 +585,45 @@
                     $tr.append('<td>' + data[data_key][role_id]["perms"][perm_id]["model_name"] + '</td>');
                     var $td = $('<td class="centered"></td>').appendTo($tr);
                     var type = data[data_key][role_id]["perms"][perm_id]["model"];
-                    if (data.hasOwnProperty(type)) {
+                    if (select_type_dict.hasOwnProperty(type) &&
+                        !(data['perms_global'].hasOwnProperty(type) && data['perms_global'][type].indexOf(data[data_key][role_id]["perms"][perm_id]["codename"]) !== -1)) {
                         type_used[type] = 1;
 
-                        var $select_type = $(create_multiselect(data, type));
+                        var $select_type = $(select_type_dict[type]);
                         $select_type.appendTo($td);
-                        $select_type.attr("name", prefix + "_" + role_id + "_select_" + perm_id );
-                        $select_type.attr("data-perm_id", perm_id);
-                        $select_type.attr("data-role_id", role_id);
-                        $select_type.addClass("validate");
+                        if ($select_type.attr("multiple")) {
+                            $select_type.attr("name", prefix + "_" + role_id + "_select_" + perm_id);
+                            $select_type.attr("data-perm_id", perm_id);
+                            $select_type.attr("data-role_id", role_id);
+                            $select_type.addClass("validate");
 
-                        var user_type_info = {};
-                        if (user_info.hasOwnProperty(type))
-                            user_type_info = user_info[type];
+                            var user_type_info = {};
+                            if (user_info.hasOwnProperty(type))
+                                user_type_info = user_info[type];
 
-                        $("option", $select_type).each(function () {
-                            var $option = $(this);
-                            if (
-                                user_type_info.hasOwnProperty($option.val()) ||
-                                (
-                                    data[data_key][role_id]["perms"][perm_id].hasOwnProperty("objects") &&
-                                    data[data_key][role_id]["perms"][perm_id]["objects"].indexOf(parseInt($option.val(), 10)) !== -1
+                            $("option", $select_type).each(function () {
+                                var $option = $(this);
+                                if (
+                                    user_type_info.hasOwnProperty($option.val()) ||
+                                    (
+                                        data[data_key][role_id]["perms"][perm_id].hasOwnProperty("objects") &&
+                                        data[data_key][role_id]["perms"][perm_id]["objects"]["objects"].indexOf(parseInt($option.val(), 10)) !== -1
+                                    )
                                 )
-                            )
-                                $option.attr('selected', 'selected');
-                        });
+                                    $option.attr('selected', 'selected').attr("data-selected", true);
+                            });
+                        }
+                        else {
+                            var $input = $select_type.find("input");
+                            var name = prefix + "_" + role_id + "_input_" + perm_id;
+                            $input.attr("name", name).attr("id", name);
+                            $input.attr("data-perm_id", perm_id);
+                            $input.attr("data-role_id", role_id);
+
+                            $input.addClass("validate");
+                            if (data[data_key][role_id]["perms"][perm_id].hasOwnProperty("objects"))
+                                $input.data("preint_data", data[data_key][role_id]["perms"][perm_id]["objects"]);
+                        }
                     }
                     else {
                         $td.append('<input type="checkbox" checked="checked" disabled="disabled">');
@@ -519,29 +636,59 @@
         return type_used
     }
 
-    function create_multiselect(data, type) {
-        var $modal = $('#modal_role');
-        var select_type_dict = $modal.data('select_type');
-
-        if (!select_type_dict.hasOwnProperty(type)) {
-            var $select_type = $('<select multiple="multiple" data-type="' + type + '"></select>');
-
-            for (var type_id in data[type]) {
-                $select_type.append('<option value="' + type_id + '">' + data[type][type_id] + '</option>');
+    function user_role_change(user_roles_changes, obj_id, is_added) {
+        var remove = 'remove';
+        var add = 'add';
+        if (!is_added)
+            remove = [add, add = remove][0];
+        var i = -1;
+        if (typeof obj_id === 'object')
+            for (var j = 0; j < user_roles_changes[remove].length; ++j) {
+                if (user_roles_changes[remove][j].type === obj_id.type && user_roles_changes[remove][j].id === obj_id.id) {
+                    i = j;
+                    break;
+                }
             }
-
-            select_type_dict[type] = $select_type[0].outerHTML;
-            $modal.data('select_type', select_type_dict);
+        else
+            i = user_roles_changes[remove].indexOf(obj_id);
+        if (i !== -1) {
+            user_roles_changes[remove].splice(i, 1);
         }
+        else
+            user_roles_changes[add].push(obj_id);
 
-        return $modal.data('select_type')[type];
+        return user_roles_changes
     }
 
-    function init_multiselect($table, is_validate) {
+    function user_role_change_input($input, item, is_added) {
+        var $modal = $("#modal_role");
+        var user_roles_changes = $modal.data("user_roles_changes");
+        var role_id = $input.data("role_id");
+        var perm_id = $input.data("perm_id");
+
+        if (!user_roles_changes.hasOwnProperty(role_id))
+            user_roles_changes[role_id] = {};
+
+        if (!user_roles_changes[role_id].hasOwnProperty(perm_id))
+            user_roles_changes[role_id][perm_id] = {
+                "add": [],
+                "remove": []
+            };
+
+        var obj = {
+            "type": item.type,
+            "id": item.id_post
+        };
+        user_roles_changes[role_id][perm_id] = user_role_change(user_roles_changes[role_id][perm_id], obj, is_added);
+
+        $modal.data("user_roles_changes", user_roles_changes);
+    }
+
+    function init_multiselect_and_tagsinput($table, is_validate) {
         var form_validator;
         if (is_validate)
             form_validator = $($table).closest("form").validate({
-                ignore: ':hidden:not("select")',
+                ignore: ':hidden:not(".validate")',
                 highlight: function (input) {
                     $(input).closest("td").removeClass('has-success').addClass('has-danger');
                 },
@@ -565,6 +712,7 @@
                 filterClearBtn: '<span class="input-group-btn"><button class="btn btn-secondary btn-sm multiselect-clear-filter" type="button"><span class="fa fa-times"></span></button></span>'
             },
             maxHeight: 200,
+            enableClickableOptGroups: true,
             enableCaseInsensitiveFiltering: true,
             filterPlaceholder: "{% trans "najti" %}",
             buttonTitle: function (options, select) {
@@ -587,19 +735,24 @@
 
                 return '{% trans "vybrano" %}: ' + options.length;
             },
+            onInitialized: function(option, dropdown, select) {
+                $('.multiselect-group a', dropdown).prop('tabindex', '0').addClass('dropdown-item').find('label').addClass('checkbox');
+            },
             onChange: function (option, checked) {
-                var $this_select = option.closest("select");
+                var $this_select = $(option[0]).closest("select");
                 var type = $this_select.data("type");
 
                 if (is_validate) {
                     form_validator.element($this_select);
-                    $('select[data-type="' + type + '"]', option.closest(".table-collapse").find(".mass-select")).val('').multiselect('refresh');
+                    $('select[data-type="' + type + '"]', $this_select.closest(".table-collapse").find(".mass-select")).val('').multiselect('refresh');
                 }
                 else {
-                    $('select[data-type="' + type + '"]', option.closest(".table-collapse").find("table"))
-                        .val($this_select.val())
-                        .multiselect('refresh')
-                        .closest("form").valid();
+                    var $table_select = $('select[data-type="' + type + '"]', $this_select.closest(".table-collapse").find("table.table-roles"));
+                    if ($table_select.length)
+                        $table_select
+                            .val($this_select.val())
+                            .multiselect('refresh')
+                            .closest("form").valid();
                 }
 
                 if ($table.data("edit_role")) {
@@ -607,7 +760,6 @@
                     var user_roles_changes = $modal.data("user_roles_changes");
                     var role_id = $this_select.data("role_id");
                     var perm_id = $this_select.data("perm_id");
-                    var obj_id = option.val();
 
                     if (!user_roles_changes.hasOwnProperty(role_id))
                         user_roles_changes[role_id] = {};
@@ -618,36 +770,243 @@
                             "remove": []
                         };
 
-                    var remove = 'remove';
-                    var add = 'add';
-                    if (!checked)
-                        remove = [add, add = remove][0];
+                    $(option).each(function () {
+                        var $option = $(this);
+                        var obj_id = $option.val();
 
-                    var i = user_roles_changes[role_id][perm_id][remove].indexOf(obj_id);
-                    if (i !== -1) {
-                        user_roles_changes[role_id][perm_id][remove].splice(i, 1);
-                    }
-                    else
-                        user_roles_changes[role_id][perm_id][add].push(obj_id);
+                        if ($option.is(":checked") === !!$option.data("selected")) {
+                            $(["add", "remove"]).each(function (index, item) {
+                                var i = user_roles_changes[role_id][perm_id][item].indexOf(obj_id);
+                                if (i !== -1) {
+                                    user_roles_changes[role_id][perm_id][item].splice(i, 1);
+                                }
+                            });
+
+                        }
+                        else {
+                            user_roles_changes[role_id][perm_id] = user_role_change(user_roles_changes[role_id][perm_id], obj_id, $option.is(":checked"));
+                        }
+                    });
 
                     $modal.data("user_roles_changes", user_roles_changes);
                 }
             },
         });
 
-        if (is_validate)
-            $select.each(function () {
-                $(this).rules('add', {
+        var MAX_SEARCH_SGS = 6;
+        var users_bloodhound = new Bloodhound({
+            datumTokenizer: function (datum) {
+                return Bloodhound.tokenizers.whitespace(datum.fullname);
+            },
+            queryTokenizer: Bloodhound.tokenizers.whitespace,
+            remote: {
+                wildcard: '%QUERY',
+                url: '{% url search.views.ajax_search_users %}?q=%QUERY&max=' + MAX_SEARCH_SGS,
+                transform: function (response) {
+                    $('#navbar_search').data('up_limited', response.is_limited);
+                    return $.map(response.result, function (user) {
+                        return $.extend({}, user, {
+                            'id': "u_" + user.id,
+                            'id_post': user.id,
+                            'type': "user"
+                        });
+                    });
+                }
+            }
+        });
+
+        var $input = $('.users-or-groups', $table).tagsinput({
+            maxTags: 25,
+            itemValue: 'id',
+            itemText: 'fullname',
+            focusClass: 'focus',
+            tagClass: function (item) {
+                switch (item.type) {
+                    case 'user'   :
+                        return 'label label-success';
+                    case 'group'  :
+                        return 'label label-info';
+                    case 'course':
+                        return 'label label-primary';
+                    case 'status':
+                        return 'label label-warning';
+                }
+            },
+            typeaheadjs: [
+                {
+                    highlight: true,
+                    hint: false,
+                    minLength: 3
+                },
+                {
+                    name: 'users',
+                    displayKey: 'fullname',
+                    source: users_bloodhound.ttAdapter(),
+                    templates: {
+                        suggestion: function (data) {
+                            var table_html = '<div class="sgs-result-up" data-url="{0}"><table>' +
+                                '<tr><td style="padding-right: 10px;"><img class="avatar" src="{1}" style="width: 30px; height: 30px;"></td>' +
+                                '<td><div><strong>{2}</strong></div>{3}</td></tr>' +
+                                '<tr><td></td><td>{4}</td></tr>' +
+                                '<tr><td></td><td><strong>{% trans "loginy" %}</strong></td></tr>' +
+                                '<tr><td></td><td>{5}@ <small class="text-muted">Anytask</small></td></tr>' +
+                                '{6}' +
+                                '{7}' +
+                                '</table></div>';
+                            var email_html = '';
+                            var ya_contest_login_html = '';
+                            var ya_passport_email_html = '';
+                            var avatar = data.avatar;
+                            var status_html = '';
+                            var status_template = '<span class="label label-status-sgs" style="background-color: {0}">{1}</span>';
+                            var MAX_STATUSES = 2;
+                            var status_counter = 0;
+
+                            while (status_counter < data.statuses.length) {
+                                if (status_counter == MAX_STATUSES) {
+                                    status_html += '<span class="label label-status-sgs label-default ">{% trans 'yeshcho' %} ' + (data.statuses.length - MAX_STATUSES) + '</span>';
+                                    break;
+                                }
+
+                                status_html += status_template.format(data.statuses[status_counter][1], data.statuses[status_counter][0]);
+                                ++status_counter;
+                            }
+
+                            if (!avatar)
+                                avatar = 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mm&f=y';
+                            if (data.email)
+                                email_html = '<div class="sgs-email">{0}</div>'.format(data.email);
+                            if (data.ya_contest_login)
+                                ya_contest_login_html = '<tr><td></td><td>{0}@ <small class="text-muted">{% trans "jakontest" %}</small></td></tr>'.format(data.ya_contest_login);
+                            if (data.ya_passport_email)
+                                ya_passport_email_html = '<tr><td></td><td>{0} <small class="text-muted">{% trans "ja.pochta" %}</small></td></tr>'.format(data.ya_passport_email);
+                            return table_html.format(data.url, avatar, data.fullname, email_html, status_html, data.username, ya_contest_login_html, ya_passport_email_html)
+                        }
+                    }
+                }
+            ]
+        });
+
+        $('.tt-menu', $table).on("mouseleave", function () {
+            $(this).find('.tt-cursor').removeClass('tt-cursor');
+        });
+
+        $(".btn-add-tags", $table).click(function () {
+            var $btn = $(this);
+            var $input_tags = $btn.siblings("input.users-or-groups");
+            var $modal_add_group = $("#modal_add_group");
+
+            $modal_add_group.data("for", '#' + $input_tags.attr("id"));
+        });
+
+        if (is_validate) {
+            if ($select.length)
+                $select.each(function () {
+                    $(this).rules('add', {
+                        required: true,
+                        messages: {
+                            required: "required"
+                        }
+                    });
+                });
+            for (var i = 0; i < $input.length; ++i) {
+                if (!$input[i].$element.data("init")) {
+                    $input[i].$element
+                        .data('init', true)
+                        .data('user', [])
+                        .data('group', [])
+                        .data('course', [])
+                        .data('status', []);
+                }
+
+                $input[i].$element.rules('add', {
                     required: true,
                     messages: {
                         required: "required",
                     }
                 });
-            });
+                $input[i].$element.on('itemAdded', function (e) {
+                    var $this = $(this);
+                    $this.data(e.item.type).push(e.item.id_post);
+                    var $div = $this.closest('.form-block.active');
+                    if ($div.length)
+                        $div.height($this.closest('form').height());
+                    form_validator.element($this);
+                    if (!$this.data("mass_change"))
+                        $('input.users-or-groups', $this.closest(".table-collapse").find(".mass-select")).tagsinput('removeAll');
+                    $this.data("mass_change", false);
+
+                    if ($table.data("edit_role") && !$this.data("preint_data"))
+                        user_role_change_input($this, e.item, true);
+                }).on('itemRemoved', function (e) {
+                    var $this = $(this);
+                    var index = $this.data(e.item.type).indexOf(e.item.id_post);
+                    if (index !== -1) {
+                        $this.data(e.item.type).splice(index, 1)
+                    }
+                    var $div = $this.closest('.form-block.active');
+                    if ($div.length)
+                        $div.height($this.closest('form').height());
+                    form_validator.element($this);
+                    if (!$this.data("mass_change"))
+                        $('input.users-or-groups', $this.closest(".table-collapse").find(".mass-select")).tagsinput('removeAll');
+                    $this.data("mass_change", false);
+
+                    if ($table.data("edit_role"))
+                        user_role_change_input($this, e.item, false);
+                });
+                var preint_data = $input[i].$element.data("preint_data");
+                for (var tag_key in preint_data)
+                    if (preint_data.hasOwnProperty(tag_key)) {
+                        for (var j = 0; j < preint_data[tag_key].length; ++j) {
+                            $input[i].$element.tagsinput('add', {
+                                type: tag_key,
+                                id: tag_key[0] + "_" + preint_data[tag_key][j]["id"],
+                                id_post: preint_data[tag_key][j]["id"],
+                                fullname: preint_data[tag_key][j]["name"]
+                            });
+                        }
+                    }
+                $input[i].$element.data("preint_data", false)
+            }
+        }
+        else {
+            for (var i = 0; i < $input.length; ++i) {
+                $input[i].$element.on('itemAdded', function (e) {
+                    var $mass_input = $(this);
+                    var $table_input = $('input.users-or-groups', $mass_input.closest(".table-collapse").find("table.table-roles"));
+                    if ($table_input.length) {
+                        $table_input.tagsinput('removeAll');
+                        $table_input.each(function () {
+                            $(this)
+                                .data('user', [])
+                                .data('group', [])
+                                .data('course', [])
+                                .data('status', []);
+                        });
+                        var objs = $mass_input.tagsinput('items');
+                        for (var j = 0; j < objs.length; ++j) {
+                            $table_input.each(function () {
+                                $(this).data("mass_change", true);
+                            });
+                            $table_input.tagsinput('add', objs[j]);
+                        }
+                    }
+                }).on('itemRemoved', function (e) {
+                    var $table_input = $('input.users-or-groups', $(this).closest(".table-collapse").find("table.table-roles"));
+                    if ($table_input.length) {
+                        $table_input.each(function () {
+                            $(this).data("mass_change", true);
+                        });
+                        $table_input.tagsinput('remove', e.item);
+                    }
+                });
+            }
+        }
     }
 
     function init_modal_table($table) {
-        init_multiselect($table, true);
+        init_multiselect_and_tagsinput($table, true);
 
         $table.DataTable({
             info: false,
@@ -694,7 +1053,6 @@
                 lessLink: '<span class="modal-role-readmore-toggle form-block-toggle">{% trans "skryt" %}&nbsp;<span class="fa fa-chevron-up"></span></span>',
                 beforeToggle: function (trigger, element, is_close) {
                     $("tr.group.group-start", $table).find("td").attr("colspan", 2);
-                    console.log("is_close", is_close);
                     if (is_close)
                         element.removeClass("active");
                 },

@@ -54,29 +54,23 @@ def profile(request, username=None, year=None):
     if username:
         user_to_show = get_object_or_404(User, username=username)
 
+    user_profile = user.get_profile()
     user_to_show_profile = user_to_show.get_profile()
 
     show_email = True
-    user_above_user_to_show = True
 
     if user_to_show != user:
         user_teach_user_to_show = False
         user_to_show_teach_user = False
-        user_school_user_to_show = False
-        user_school_teach_user_to_show = False
 
         groups_user_to_show = user_to_show.group_set.all()
         groups = user.group_set.all()
 
         courses_user_to_show = Course.objects.filter(groups__in=groups_user_to_show)
-        schools_user_to_show = School.objects.filter(courses__in=courses_user_to_show)
         courses_user_to_show_teacher = Course.objects.filter(teachers=user_to_show)
-        schools_user_to_show_teacher = School.objects.filter(courses__in=courses_user_to_show_teacher)
 
         courses = Course.objects.filter(groups__in=groups)
-        schools = School.objects.filter(courses__in=courses)
         courses_teacher = Course.objects.filter(teachers=user)
-        schools_teacher = School.objects.filter(courses__in=courses_teacher)
 
         if courses_user_to_show_teacher & courses:
             user_to_show_teach_user = True
@@ -84,23 +78,13 @@ def profile(request, username=None, year=None):
         if courses_teacher & courses_user_to_show:
             user_teach_user_to_show = True
 
-        if (schools_user_to_show | schools_user_to_show_teacher) & (schools | schools_teacher):
-            user_school_user_to_show = True
-
-        if schools_teacher & schools_user_to_show:
-            user_school_teach_user_to_show = True
-
-        if not (user.is_staff or user_school_user_to_show):
-            if not ((courses_user_to_show | courses_user_to_show_teacher) & (courses | courses_teacher)):
-                if not (groups_user_to_show & groups):
-                    raise PermissionDenied
+        if not user.has_perm("view_profile", user_to_show_profile):
+            raise PermissionDenied
 
         show_email = user.is_staff or \
                      user_to_show_profile.show_email or \
                      user_teach_user_to_show or \
                      user_to_show_teach_user
-        user_above_user_to_show = user.is_staff or \
-                                  user_school_teach_user_to_show
 
     teacher_in_courses = Course.objects.filter(is_active=True).filter(teachers=user_to_show).distinct()
 
@@ -113,19 +97,11 @@ def profile(request, username=None, year=None):
 
     courses = Course.objects.filter(is_active=True).filter(groups__in=groups).distinct()
 
-    can_sync_contest = False
-    for course in Course.objects.filter(is_active=True):
-        if course.get_user_group(user) and course.send_to_contest_from_users:
-            can_sync_contest = True
-
     can_generate_invites = user_to_show == user and Invite.user_can_generate_invite(user)
-
-
 
     invite_form = InviteActivationForm()
 
     if request.method == 'POST':
-        user_profile = user.get_profile()
         if 'update-avatar' in request.POST:
             filename = 'avatar'
             if 'input-avatar' in request.FILES:
@@ -151,12 +127,12 @@ def profile(request, username=None, year=None):
 
     card_width = ''
     if len(teacher_in_courses or teacher_in_courses_archive) != 0 and \
-       len(courses or courses_archive) != 0 and \
-       len(groups) != 0:
+                    len(courses or courses_archive) != 0 and \
+                    len(groups) != 0:
         card_width = 'col-md-4'
     elif len(teacher_in_courses or teacher_in_courses_archive) != 0 and len(courses or courses_archive) != 0 or \
-         len(teacher_in_courses or teacher_in_courses_archive) != 0 and len(groups) != 0 or \
-         len(courses or courses_archive) != 0 and len(groups) != 0:
+                            len(teacher_in_courses or teacher_in_courses_archive) != 0 and len(groups) != 0 or \
+                            len(courses or courses_archive) != 0 and len(groups) != 0:
         card_width = 'col-md-6'
     else:
         card_width = 'col-md-12'
@@ -167,7 +143,10 @@ def profile(request, username=None, year=None):
         age = age if age > 0 else 0
 
     context = {
+        'user'                      : user,
+        'user_profile'              : user_profile,
         'user_to_show'              : user_to_show,
+        'user_to_show_profile': user_to_show_profile,
         'courses'                   : group_by_year(courses),
         'courses_archive'           : group_by_year(courses_archive),
         'groups'                    : group_by_year(groups),
@@ -177,10 +156,8 @@ def profile(request, username=None, year=None):
         'current_year'              : unicode(current_year) if current_year is not None else '',
         'can_generate_invites'      : can_generate_invites,
         'invite_form'               : invite_form,
-        'user_to_show_profile'      : user_to_show_profile,
         'card_width'                : card_width,
         'show_email'                : show_email,
-        'user_above_user_to_show'   : user_above_user_to_show,
         'age'                       : age,
     }
 
@@ -403,7 +380,7 @@ def ya_oauth_disable(request, type_of_oauth):
 @login_required
 def ya_oauth_forbidden(request, type_of_oauth):
     oauth_error_text_header = ''
-    oauth_error_text = (_(u'profil') + u' {0} ' + _(u'uzhe_privjazan'))\
+    oauth_error_text = (_(u'profil') + u' {0} ' + _(u'uzhe_privjazan')) \
         .format(request.session["ya_oauth_login"])
     if type_of_oauth == 'contest':
         oauth_error_text_header = _(u"privjazat_profil_kontesta")
@@ -485,20 +462,7 @@ def user_courses(request, username=None, year=None):
         user_to_show = get_object_or_404(User, username=username)
 
     if user_to_show != user:
-        user_school_teach_user_to_show = False
-
-        groups_user_to_show = user_to_show.group_set.all()
-
-        courses_user_to_show = Course.objects.filter(groups__in=groups_user_to_show)
-        schools_user_to_show = School.objects.filter(courses__in=courses_user_to_show)
-
-        courses_teacher = Course.objects.filter(teachers=user)
-        schools_teacher = School.objects.filter(courses__in=courses_teacher)
-
-        if schools_teacher & schools_user_to_show:
-            user_school_teach_user_to_show = True
-
-        if not (user.is_staff or user_school_teach_user_to_show):
+        if not user.has_perm('view_profile_courses_page', user_to_show.get_profile()):
             raise PermissionDenied
 
     if year:

@@ -91,24 +91,17 @@ def search_users(query, user, max_result=None):
         if not user_is_staff:
             groups = user.group_set.all()
             courses = Course.objects.filter(groups__in=groups)
-            schools = School.objects.filter(courses__in=courses)
             courses_teacher = Course.objects.filter(teachers=user)
-            schools_teacher = School.objects.filter(courses__in=courses_teacher)
 
             for sg in sgs:
                 user_to_show = sg.object.user
                 groups_user_to_show = user_to_show.group_set.all()
                 courses_user_to_show = Course.objects.filter(groups__in=groups_user_to_show)
-                schools_user_to_show = School.objects.filter(courses__in=courses_user_to_show)
                 courses_user_to_show_teacher = Course.objects.filter(teachers=user_to_show)
-                schools_user_to_show_teacher = School.objects.filter(courses__in=courses_user_to_show_teacher)
 
-                user_school_user_to_show = False
-                if (schools_user_to_show | schools_user_to_show_teacher) & (schools | schools_teacher):
-                    user_school_user_to_show = True
-
-                if not user_school_user_to_show:
+                if not user.has_perm('view_profile', user_to_show.get_profile()):
                     continue
+
                 user_to_show_teach_user = False
                 if courses_user_to_show_teacher & courses:
                     user_to_show_teach_user = True

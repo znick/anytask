@@ -6,8 +6,11 @@ from django.core.exceptions import PermissionDenied
 
 from guardian.utils import get_user_obj_perms_model
 
+PERMS_GLOBAL = {
+    'users': ['view_backoffice_page'],
+}
+
 PERMS_CLASSES = {
-    'users': ['userprofileuserobjectpermission'],
     'schools': ['schooluserobjectpermission'],
     'courses': ['courseuserobjectpermission'],
     'groups': ['groupuserobjectpermission'],
@@ -23,6 +26,8 @@ LOCALE_PERMS_APP_NAMES = {
 LOCALE_PERMS_NAMES = {
     'users': {
         'view_backoffice_page': _(u'prosmotr_backoffice'),
+        'view_profile': _(u'prosmotr_profilya'),
+        'view_profile_courses_page': _(u'prosmotr_stranitsy_kursov_v_profile'),
     },
     'schools': {
         'view_permissions': _(u'prosmotr_dostupov'),
