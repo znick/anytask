@@ -158,6 +158,15 @@
             return new Date(date.getTime() + minutes*60000);
         }
 
+        function getWeekDay(date) {
+            var day = date.getDay();
+            if (day === 0)
+                day = 6;
+            else
+                day = day- 1;
+            return day;
+        }
+
         if (!$("#lesson_edit_date_start").find('input').val()) {
             $('#lesson_edit_date_start').datetimepicker('update', now);
             $('#lesson_edit_date_finish').datetimepicker('update', addMinutes(now, 90));
@@ -172,6 +181,8 @@
                     .datetimepicker('setEndDate', addMinutes(val.date, 240));
                 $('#lesson_end_date').datetimepicker('setStartDate', val.date)
                     .datetimepicker('setEndDate', addMinutes(val.date, 262800));
+                $('#lesson_edit_weekday').multiselect('clearSelection')
+                    .multiselect('select','').multiselect('select', getWeekDay(val.date));
                 form_validator.element($('#lesson_edit_date_finish').find('input'));
             }
         });
@@ -202,6 +213,7 @@
                 $("#week_body").collapse('hide');
             }
             else if ($lesson_edit_type.val() === 'Weekly') {
+                $('#lesson_edit_weekday').multiselect('select',  getWeekDay(strToDate($('#lesson_edit_date_start').find('input').val())));
                 $("#date_end_body").collapse('show');
                 $("#week_body").collapse('show');
             }
@@ -277,7 +289,6 @@
             onDeselectAll: function() {
                 form_validator.element('#lesson_edit_weekday');
             }
-
         });
 
         $('#lesson_edit_group').multiselect({
@@ -360,7 +371,8 @@
         function show_alert() {
             var weekdays_changed = false;
             var current_weekdays = $('#lesson_edit_weekday').val();
-            if (init_weekdays.length != current_weekdays.length)
+            if ((!init_weekdays && current_weekdays) ||
+                (init_weekdays.length != current_weekdays.length))
                 weekdays_changed = true;
             else {
                 for (var i=0; i < init_weekdays.length; ++i)
@@ -369,7 +381,6 @@
                         break;
                     }
             }
-            console.log(weekdays_changed);
             if ((init_date_start != $('#lesson_edit_date_start').find('input').val())
                 || (init_date_end != $('#lesson_end_date').find('input').val())
                 || weekdays_changed) {
