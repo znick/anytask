@@ -185,10 +185,9 @@ def get_task_params(request, check_score_after_deadline=False):
 
     rb_integrated = 'rb_integrated' in request.POST and task_type not in simple_task_types
     one_file_upload = 'one_file_upload' in request.POST and rb_integrated
-    accepted_after_contest_ok = 'accepted_after_contest_ok' in request.POST and contest_integrated
+    accepted_after_contest_ok = 'accepted_after_contest_ok' in request.POST
 
     hidden_task = 'hidden_task' in request.POST
-
     task_text = request.POST.get('task_text', '').strip()
 
     return {'attrs': {
