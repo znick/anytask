@@ -6,6 +6,8 @@ from django.core.exceptions import PermissionDenied
 
 from guardian.utils import get_user_obj_perms_model
 
+import uuid
+
 PERMS_GLOBAL = {
     'users': ['view_backoffice_page'],
 }
@@ -60,6 +62,21 @@ LOCALE_PERMS_NAMES = {
         'change_task_one_file_upload': _(u'izmeneniye_otpravki_tolko_odnogo_fayla_zadach'),
     }
 }
+
+
+def get_name_without_uuid(name):
+    if not name:
+        return name
+
+    name_splited = name.split('_')
+    if len(name_splited) == 1:
+        return name
+
+    try:
+        uuid.UUID(name_splited[-1])
+        return '_'.join(name_splited[:-1])
+    except ValueError:
+        return name
 
 
 def get_perm_local_name(perm):

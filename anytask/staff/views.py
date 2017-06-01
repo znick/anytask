@@ -27,7 +27,7 @@ from guardian.shortcuts import get_objects_for_user
 from guardian.utils import get_user_obj_perms_model
 from permissions.decorators import any_obj_permission_required_or_403
 from permissions.common import get_perm_local_name, get_superuser_perms, assign_perm_by_id, remove_perm_by_id, \
-    PERMS_GLOBAL
+    PERMS_GLOBAL, get_name_without_uuid
 from permissions.models import PermissionsVisible, RolesVisible, UserPermissionToUsers
 
 from users.model_user_status import get_statuses
@@ -97,7 +97,7 @@ def get_roles_table_by_school(perms_translated, roles):
         for role_i, role in enumerate(roles):
             header.append({
                 'id': role.id,
-                'name': role.name
+                'name': get_name_without_uuid(role.name)
             })
             for perm in role.permissions.all():
                 if perm.id not in perms_translated:
@@ -332,7 +332,7 @@ def get_users_info(users_raw, school_id=None):
             users_info[user_info_raw["id"]]["roles"] = add_user_info(
                 users_info[user_info_raw["id"]]["roles"],
                 user_info_raw["userroles__roles__id"],
-                name=user_info_raw["userroles__roles__name"]
+                name=get_name_without_uuid(user_info_raw["userroles__roles__name"])
             )
     return users_info
 
@@ -340,8 +340,8 @@ def get_users_info(users_raw, school_id=None):
 def get_users_info_by_school(schools):
     users_tables = []
     for school in schools:
-        qs_filter = Q(group__course__school=school) |\
-                    Q(course_teachers_set__school=school) |\
+        qs_filter = Q(group__course__school=school) | \
+                    Q(course_teachers_set__school=school) | \
                     Q(userroles__school=school)
         users_info_raw = User.objects \
             .filter(qs_filter) \
@@ -456,7 +456,7 @@ def get_roles_perms(roles):
     roles_info = {}
     for role in roles:
         roles_info[role.id] = {
-            'name': role.name,
+            'name': get_name_without_uuid(role.name),
             'perms': defaultdict(dict)
         }
         for perm in role.permissions.all():
@@ -512,8 +512,12 @@ def ajax_get_user_roles_info(request):
         if not user.has_perm('.'.join([perm_app_label, perm_codename]), schools_qs[0]):
             raise PermissionDenied
 
+        qs_filter = Q(group__course__school=schools_qs[0]) | \
+                    Q(course_teachers_set__school=schools_qs[0]) | \
+                    Q(userroles__school=schools_qs[0])
+
         user_to_change = User.objects \
-            .filter(Q(group__course__school=schools_qs[0]) | Q(course_teachers_set__school=schools_qs[0])) \
+            .filter(qs_filter) \
             .filter(id=request.GET['user_id']) \
             .distinct()
         if not user_to_change:
@@ -533,7 +537,7 @@ def ajax_get_user_roles_info(request):
     user_roles = {}
     for user_role in user_roles_qs.distinct():
         user_roles[user_role.id] = {
-            'name': user_role.name,
+            'name': get_name_without_uuid(user_role.name),
             'perms': user_to_change.get_profile().get_perms_by_role(user_role)
         }
     response["user_roles"] = user_roles
@@ -585,9 +589,12 @@ def ajax_save_user_roles(request):
         if not user.has_perm("schools.change_permissions", school):
             raise PermissionDenied
 
+        qs_filter = Q(group__course__school=school) | \
+                    Q(course_teachers_set__school=school) | \
+                    Q(userroles__school=school)
         try:
             user_to_change = User.objects \
-                .filter(Q(group__course__school=school) | Q(course_teachers_set__school=school)) \
+                .filter(qs_filter) \
                 .distinct() \
                 .get(id=request.POST['user_id'])
         except User.DoesNotExist:

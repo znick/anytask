@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 
 from django.db import models
+from django.db.models.signals import pre_save
 
 from django.contrib.auth.models import Permission, Group as Role, User
+
+import uuid
 
 
 class PermissionsVisible(models.Model):
@@ -75,3 +78,23 @@ class PermissionBase(models.Model):
 
     class Meta:
         abstract = True
+
+
+def add_uuid_to_name(sender, instance, **kwargs):
+    name = instance.name
+    name_splited = name.split('_')
+
+    add_uuid = False
+    if len(name_splited) < 2:
+        add_uuid = True
+    else:
+        try:
+            uuid.UUID(name_splited[-1])
+        except ValueError:
+            add_uuid = True
+
+    if add_uuid:
+        instance.name = name + '_' + str(uuid.uuid4())
+
+
+pre_save.connect(add_uuid_to_name, sender=Role)

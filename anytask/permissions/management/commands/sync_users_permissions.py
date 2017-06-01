@@ -18,6 +18,8 @@ class Command(BaseCommand):
     def handle(self, **options):
         start_time = time.time()
 
+        UserProfileUserObjectPermission.objects.filter(permission__userpermissiontousers__isnull=True).delete()
+
         for user_perm_to_users in UserPermissionToUsers.objects.all() \
                 .select_related("user__id", "permission__id", "role_from__id"):
             users_profile = UserProfile.objects.filter(
