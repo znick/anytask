@@ -605,7 +605,6 @@ def course_settings(request, course_id):
     course.has_attendance_log = 'has_attendance_log' in request.POST
 
     course.save()
-    print redirect_page
     return HttpResponse(json.dumps({'redirect_page': redirect_page}), content_type="application/json")
 
 
