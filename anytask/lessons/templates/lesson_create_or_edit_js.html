@@ -363,6 +363,12 @@
             }
 
         });
+        
+        if (document.referrer.includes('attendance/group')) {
+            var start_indx = document.referrer.indexOf('attendance/group');
+            var group_id = document.referrer.substring(start_indx + 17, document.referrer.length - 1);
+            $('#lesson_edit_group').multiselect('select', group_id);
+        }
 
         var init_date_start = $('#lesson_edit_date_start').find('input').val();
         var init_date_end = $('#lesson_end_date').find('input').val();
