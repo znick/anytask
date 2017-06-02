@@ -28,6 +28,7 @@ LOCALE_PERMS_APP_NAMES = {
 LOCALE_PERMS_NAMES = {
     'users': {
         'view_backoffice_page': _(u'prosmotr_backoffice'),
+        'parent': _(u'roditel'),
         'view_profile': _(u'prosmotr_profilya'),
         'view_profile_courses_page': _(u'prosmotr_stranitsy_kursov_v_profile'),
     },

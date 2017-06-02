@@ -28,6 +28,8 @@ from tasks.models import Task
 from schools.models import School
 from users.forms import InviteActivationForm
 
+from guardian.shortcuts import get_objects_for_user
+
 from years.common import get_current_year
 
 from crispy_forms.helper import FormHelper
@@ -142,6 +144,16 @@ def profile(request, username=None, year=None):
         age = relativedelta(datetime.datetime.now(), user_to_show_profile.birth_date).years
         age = age if age > 0 else 0
 
+    children = UserProfile.objects.none()
+    if user_to_show == user or user.is_staff:
+        children = get_objects_for_user(user_to_show, 'users.parent', with_superuser=False).values(
+            "user__id",
+            "user__username",
+            "user__last_name",
+            "user__first_name",
+            "avatar",
+        )
+
     context = {
         'user'                      : user,
         'user_profile'              : user_profile,
@@ -159,6 +171,7 @@ def profile(request, username=None, year=None):
         'card_width'                : card_width,
         'show_email'                : show_email,
         'age'                       : age,
+        'children'                  : children,
     }
 
     return render_to_response('user_profile.html', context, context_instance=RequestContext(request))

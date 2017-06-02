@@ -257,6 +257,7 @@ class UserProfile(models.Model):
     class Meta:
         permissions = (
             ('view_backoffice_page', 'View backoffice page'),
+            ('parent', 'Parent'),
             ('view_profile', 'View profile'),
             ('view_profile_courses_page', 'View user courses page'),
         )
