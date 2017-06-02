@@ -803,7 +803,7 @@
                             var deleted_ids = data.deleted;
                             var cols = [];
                             for (var i = 0; i < deleted_ids.length; ++i) {
-                                cols.push($('#column_'+ deleted_ids[i]).index());
+                                cols.push($('#column_'+ deleted_ids[i]).index() + ':visIdx');
                             }
                             table.columns(cols).visible(false, false);
                             table.columns.adjust().draw(false);
