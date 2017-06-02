@@ -559,7 +559,9 @@
 
         $('.lesson-visited-form').change(function () {
             var $form = $(this);
-            $.post('{% url courses.views.lesson_visited %}', $form.serialize(), function (data) {
+            var form_info = $form.serialize();
+            $form.find('input:checkbox').prop('disabled', true);
+            $.post('{% url courses.views.lesson_visited %}', form_info, function (data) {
                 var val = parseInt(data.visited);
                 var lesson_id = data.lesson_id;
                 var visited_lssns_span = $form.closest('td').siblings('.total-lessons').find('span');
@@ -567,6 +569,16 @@
                 $(visited_lssns_span).text(parseInt(sum_lssns));
                 $form.closest('table').find('#column_' + lesson_id).find('a').attr('data-deleted', data.deleted);
             });
+            $form.find('input:checkbox').prop('disabled', false);
+        });
+
+        $('td').click(function (event) {
+            if (!$(event.target).is('input') && !$('input:checkbox', this).is(':disabled')) {
+               $('input:checkbox', this).prop('checked', function (i, value) {
+                return !value;
+               });
+               $(this).find('form.lesson-visited-form').trigger('change');
+            }
         });
 
         var remaining_groups = {};
