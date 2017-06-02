@@ -261,8 +261,12 @@
                                 '                                     <a class="close" data-dismiss="alert">&times;</a>' +
                                 '                                     <span>{% trans "sohraneno_uspeshno" %}</span>' +
                                 '                                   </div>');
-                        if ($('#course_settings_form').data('quit'))
-                            redirect();
+                        if ($('#course_settings_form').data('quit')) {
+                            if (document.referrer.includes('attendance') && data.redirect_page)
+                                window.location.replace(data.redirect_page);
+                            else
+                                redirect();
+                        }
                         else
                             remove_disabled();
                     },

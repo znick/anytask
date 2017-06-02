@@ -599,11 +599,14 @@ def course_settings(request, course_id):
     course.default_accepted_after_contest_ok = 'default_accepted_after_contest_ok' in request.POST
     course.show_contest_run_id = 'show_contest_run_id' in request.POST
 
+    redirect_page = None
+    if course.has_attendance_log and 'has_attendance_log' not in request.POST:
+        redirect_page = '/course/%d/gradebook/' % course.id
     course.has_attendance_log = 'has_attendance_log' in request.POST
 
     course.save()
-
-    return HttpResponseRedirect('')
+    print redirect_page
+    return HttpResponse(json.dumps({'redirect_page': redirect_page}), content_type="application/json")
 
 
 def change_visibility_hidden_tasks(request):
