@@ -560,16 +560,19 @@
         $('.lesson-visited-form').change(function () {
             var $form = $(this);
             var form_info = $form.serialize();
-            $form.find('input:checkbox').prop('disabled', true);
-            $.post('{% url courses.views.lesson_visited %}', form_info, function (data) {
+            var checkbox = $form.find('input:checkbox');
+            checkbox.prop('disabled', true);
+            $.post('{% url courses.views.lesson_visited %}', form_info).done(function (data) {
                 var val = parseInt(data.visited);
                 var lesson_id = data.lesson_id;
                 var visited_lssns_span = $form.closest('td').siblings('.total-lessons').find('span');
                 var sum_lssns = parseInt(visited_lssns_span.text()) + val;
                 $(visited_lssns_span).text(parseInt(sum_lssns));
                 $form.closest('table').find('#column_' + lesson_id).find('a').attr('data-deleted', data.deleted);
+            }).always(function() {
+                checkbox.prop('disabled', false);
             });
-            $form.find('input:checkbox').prop('disabled', false);
+
         });
 
         $('td').click(function (event) {

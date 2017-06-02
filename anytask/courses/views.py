@@ -601,7 +601,7 @@ def course_settings(request, course_id):
 
     redirect_page = None
     if course.has_attendance_log and 'has_attendance_log' not in request.POST:
-        redirect_page = '/course/%d/gradebook/' % course.id
+        redirect_page = '/course/%d' % course.id
     course.has_attendance_log = 'has_attendance_log' in request.POST
 
     course.save()
