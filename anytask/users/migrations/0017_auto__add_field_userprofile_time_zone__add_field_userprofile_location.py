@@ -15,7 +15,7 @@ class Migration(SchemaMigration):
 
         # Adding field 'UserProfile.location'
         db.add_column('users_userprofile', 'location',
-                      self.gf('django.db.models.fields.TextField')(default=u'MSK'),
+                      self.gf('django.db.models.fields.TextField')(default=''),
                       keep_default=False)
 
 
@@ -172,7 +172,7 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'info': ('django.db.models.fields.TextField', [], {'default': "''", 'null': 'True', 'blank': 'True'}),
             'language': ('django.db.models.fields.CharField', [], {'default': "'ru'", 'max_length': '128', 'null': 'True', 'blank': 'True'}),
-            'location': ('django.db.models.fields.TextField', [], {'default': "u'MSK'"}),
+            'location': ('django.db.models.fields.TextField', [], {'default': "''"}),
             'login_via_yandex': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'middle_name': ('django.db.models.fields.CharField', [], {'db_index': 'True', 'max_length': '128', 'null': 'True', 'blank': 'True'}),
             'phone': ('django.db.models.fields.CharField', [], {'max_length': '128', 'null': 'True', 'blank': 'True'}),

@@ -9,7 +9,6 @@ from courses.models import Course
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import post_save
-from django.utils.translation import ugettext_lazy as _
 from groups.models import Group
 from mail.models import Message
 from users.model_user_status import UserStatus
@@ -80,7 +79,7 @@ class UserProfile(models.Model):
 
     language = models.CharField(default="ru", max_length=128, unique=False, null=True, blank=True)
     time_zone = models.TextField(null=False, blank=False, default='Europe/Moscow')
-    location = models.TextField(null=False, blank=False, default=_("MSK"))
+    location = models.TextField(null=False, blank=False, default="")
 
     def is_current_year_student(self):
         return Group.objects.filter(year=get_current_year()).filter(students=self.user).count() > 0
