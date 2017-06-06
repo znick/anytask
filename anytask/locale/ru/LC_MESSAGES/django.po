@@ -577,6 +577,10 @@ msgstr "мар."
 msgid "material"
 msgstr "материал"
 
+#: courses/templates/courses/course.html:402 courses/templates/courses/:116
+msgid "materials"
+msgstr "Материалы"
+
 #: tasks/management/commands/send_task_notifications.py:65
 #: tasks/templates/contest_import.html:91 tasks/templates/task_create.html:76
 #: tasks/templates/task_edit.html:167 tasks/templates/task_edit.html.py:401

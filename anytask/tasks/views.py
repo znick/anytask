@@ -43,7 +43,7 @@ def task_create_page(request, course_id):
         return HttpResponseForbidden()
 
     if request.method == 'POST':
-        return task_create_ot_edit(request, course)
+        return task_create_or_edit(request, course)
 
     schools = course.school_set.all()
     seminar_tasks = Task.objects.filter(type=Task().TYPE_SEMINAR).filter(course=course)
@@ -122,7 +122,7 @@ def task_edit_page(request, task_id):
         return HttpResponseForbidden()
 
     if request.method == 'POST':
-        return task_create_ot_edit(request, task.course, task_id)
+        return task_create_or_edit(request, task.course, task_id)
 
     groups_required = []
     groups = task.groups.all()
@@ -232,8 +232,8 @@ def get_task_params(request, check_score_after_deadline=False):
     }
 
 
-def task_create_ot_edit(request, course, task_id=None):
-    params = get_task_params(request, course.issue_status_system.has_accepted_after_deadline)
+def task_create_or_edit(request, course, task_id=None):
+    params = get_task_params(request, course.issue_status_system.has_accepted_after_deadline())
 
     changed_score_after_deadline = False
     if task_id:
@@ -271,7 +271,7 @@ def task_create_ot_edit(request, course, task_id=None):
     if task_id and changed_score_after_deadline:
         student_ids = User.objects.filter(group__in=task_groups).values_list('id', flat=True)
         for student_id in student_ids:
-            parent_issue, created = Issue.objects.get_or_create(task_id=task.parent.id, student_id=student_id)
+            parent_issue, created = Issue.objects.get_or_create(task_id=task.parent_task.id, student_id=student_id)
             total_mark = sum(Issue.objects.filter(
                 task=task,
                 student_id=student_id,

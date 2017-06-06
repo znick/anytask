@@ -51,11 +51,12 @@ def tasks_list(request, course):
             task_and_task_taken.append((task, task_taken_list))
 
     context = {
-        'course'        : course,
-        'tasks_taken'   : task_and_task_taken,
+        'course'          : course,
+        'user'            : user,
+        'tasks_taken'     : task_and_task_taken,
         'user_is_teacher' : course.user_is_teacher(user),
-        'STATUS_TAKEN'  : TaskTaken.STATUS_TAKEN,
-        'STATUS_SCORED' : TaskTaken.STATUS_SCORED,
+        'STATUS_TAKEN'    : TaskTaken.STATUS_TAKEN,
+        'STATUS_SCORED'   : TaskTaken.STATUS_SCORED,
     }
 
     return render_to_response('course_tasks_potok.html', context, context_instance=RequestContext(request))
@@ -97,4 +98,4 @@ def cancel_task(request, course_id, task_id):
 
         task_taken.issue.add_comment(u"{} {} {}".format(user.first_name, user.last_name, _("otkazalsya_ot_taska")))
 
-        return redirect('courses.views.course_page', course_id=course_id)
+    return redirect('courses.views.course_page', course_id=course_id)
