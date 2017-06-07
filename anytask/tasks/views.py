@@ -2,7 +2,6 @@
 
 import datetime
 import json
-from pytz import timezone
 
 import requests
 import reversion
@@ -17,6 +16,7 @@ from django.template import RequestContext
 from django.utils.translation import ugettext as _
 
 from anycontest.common import get_contest_info, FakeResponse
+from common.timezone import get_datetime_with_tz
 from courses.models import Course
 from groups.models import Group
 from issues.model_issue_status import IssueStatus
@@ -28,11 +28,6 @@ def merge_two_dicts(x, y):
     z = x.copy()
     z.update(y)
     return z
-
-
-def convert_datetime(date_time, from_time_zone, to_time_zone='Europe/Moscow'):
-    return timezone(from_time_zone).localize(date_time).\
-        astimezone(timezone(to_time_zone)).replace(tzinfo=None)
 
 
 @login_required
@@ -178,10 +173,10 @@ def get_task_params(request, check_score_after_deadline=False):
 
     task_deadline = request.POST.get('deadline') or None
     if task_deadline:
-        task_deadline = datetime.datetime.strptime(task_deadline, '%d-%m-%Y %H:%M')
-        geoid = request.POST['geoid']
-        tz = settings.DB.regionById(int(geoid)).as_dict['tzname'] if geoid else user.get_profile().time_zone
-        task_deadline = convert_datetime(task_deadline, tz)
+        # task_deadline = datetime.datetime.strptime(task_deadline, '%d-%m-%Y %H:%M')
+        # geoid = request.POST['geoid']
+        # tz = settings.DB.regionById(int(geoid)).as_dict['tzname'] if geoid else user.get_profile().time_zone
+        task_deadline = get_datetime_with_tz(task_deadline, request.POST['geoid'], user)
 
     score_after_deadline = True
     if check_score_after_deadline:

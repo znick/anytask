@@ -74,8 +74,7 @@
                         </div>
                     </div>
                     <div id='date_lesson_body' class="form-group row">
-                        <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="lesson_edit_date_start">{% trans "data_zaniatia" %}
-                            <a tabindex="0" data-toggle="popover" data-trigger="hover" data-content="{% trans "vremia_msk" %}" type="button"><i class="fa fa-question-circle help-button" aria-hidden="true"></i></a></label>
+                        <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="lesson_edit_date_start">{% trans "data_zaniatia" %}</label>
                         <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
                             <div class="input-group date lesson_datetime" id="lesson_edit_date_start">
                                 <input class="form-control datetime" name='lesson_date_start' type='text' readonly value="{{lesson.date_starttime|date:'d-m-Y H:i'}}">
@@ -91,6 +90,13 @@
                                 <span class="input-group-addon"><i class="fa fa-calendar fa-lg"></i></span>
                             </div>
                             <small class="text-help" id="lesson_edit_datepicker_error_text"></small>
+                        </div>
+                        <div id='task_time_zone'>
+                        <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="location_search">{% trans "time_zone" %}</label>
+                            <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
+                                <input type="text" class="typeahead form-control" id="location_search" name="location" value="{{ user_location }}">
+                                <input type="hidden" id="geoid" name="geoid" value="">
+                            </div>
                         </div>
                     </div>
                     <div class="form-group row">

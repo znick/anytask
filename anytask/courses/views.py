@@ -17,6 +17,7 @@ from django.views.generic import View
 from django.utils.decorators import method_decorator
 from django.conf import settings
 
+from collections import defaultdict
 import datetime
 import pysvn
 import urllib, urllib2
@@ -340,7 +341,6 @@ def tasklist_shad_cpp(request, course, seminar=None, group=None):
         issues_students_in_group = Issue.objects.filter(task__in=group_x_task_list[group]).filter(
             student__group__in=[group]).order_by('student').select_related()
 
-        from collections import defaultdict
         issues_x_student = defaultdict(list)
         for issue in issues_students_in_group.all():
             student_id = issue.student.id
@@ -873,7 +873,6 @@ def attendance_list(request, course, group=None):
         if not show_academ_users:
             students = set(students) - set(academ_students)
 
-        from collections import defaultdict
         students_x_lessons = defaultdict(list)
 
         for student in students:
