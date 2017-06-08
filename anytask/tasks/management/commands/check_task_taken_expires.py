@@ -21,6 +21,9 @@ class Command(BaseCommand):
 
     @transaction.commit_on_success()
     def check_course_task_taken_expires(self, course):
+        if not settings.PYTHONTASK_MAX_DAYS_WITHOUT_SCORES:
+            return
+
         task_expired_date = datetime.datetime.now() - datetime.timedelta(days=settings.PYTHONTASK_MAX_DAYS_WITHOUT_SCORES)
         for task in course.task_set.all():
             task_taken_query = TaskTaken.objects.filter(task=task)
@@ -51,6 +54,9 @@ class Command(BaseCommand):
 
     @transaction.commit_on_success()
     def check_blacklist_expires(self, course):
+        if not settings.PYTHONTASK_DAYS_DROP_FROM_BLACKLIST:
+            return
+
         blacklist_expired_date = datetime.datetime.now() - datetime.timedelta(days=settings.PYTHONTASK_DAYS_DROP_FROM_BLACKLIST)
 
         for task in course.task_set.all():
