@@ -12,6 +12,42 @@
             '</div>'
         });
 
+        var maps_suggest_api = '{{ geo_suggest_url|safe }}';
+        var location_bloodhound = new Bloodhound({
+            datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+            queryTokenizer: Bloodhound.tokenizers.whitespace,
+            remote: {
+                prepare: function(query, settings) {
+                    settings.dataType = "jsonp";
+                    settings.url = settings.url.replace('%QUERY', query);
+                    return settings;
+                },
+                url: maps_suggest_api + '&part=%QUERY',
+                transform: function(response) {
+                    var locations = [];
+                    for (var i=0; i < response[1].length; i++) {
+                        if ('geoid' in response[1][i])
+                            locations.push(response[1][i]);
+                    }
+                    return locations;
+                }
+            }
+        });
+
+        $('#location_search').typeahead({
+                highlight: true,
+                hint: false,
+                minLength: 3
+            },
+            {
+                name: 'locations',
+                displayKey: 'name',
+                source: location_bloodhound
+            }
+        ).on('typeahead:select', function(ev, suggestion) {
+            $('#geoid').val(suggestion.geoid);
+        });
+
         {%if not contest_import %}
             $('.task_datetime').datetimepicker({
                 format: 'dd-mm-yyyy hh:ii',
@@ -82,8 +118,9 @@
                         if($('input:radio:checked').val() == problems[i].id){
                             var deadline = problems[problems.length-1].deadline;
                             if (deadline != null){
-                                var date_deadline = new Date(deadline.slice(0,deadline.length-9));
-                                $('.task_datetime').datetimepicker('update',date_deadline);
+                                deadline = deadline.split(',')
+                                var date_deadline = new Date(deadline[0], deadline[1], deadline[2], deadline[3], deadline[4]);
+                                $('.task_datetime').datetimepicker('update', date_deadline);
                             }
                             $('#modal_task_header').text(problems[i].name);
                             $('#task_edit_short_header').val(problems[i].title);
@@ -138,11 +175,13 @@
                     startDate: null,
                     minuteStep: 30
                 });
+                $('#location_search').show().closest('div.form-group').collapse('show');;
             }
             else {
                 $('#task_edit_datepicker').prop('disabled', true).val('').closest('.form-group').removeClass('has-success has-danger');
                 $('#task_edit_datepicker_error_text').text('');
                 $('.task_datetime').datetimepicker('remove');
+                $('#location_search').show().closest('div.form-group').collapse('hide');;
 {#                $('#task_edit_datepicker').css("background-color", "#eceeef");#}
             }
         });
@@ -374,7 +413,7 @@
         var deadline = $('#task_edit_datepicker').val();
         $('#modal_task_header').show();
         if (deadline) {
-            $('#modal_task_deadline').html('<strong>{% trans "data_sdachi" %}: ' + deadline + ' MSK UTC+3</strong>');
+            $('#modal_task_deadline').html('<strong>{% trans "data_sdachi" %}: ' + deadline);
         }
         else {
             $('#modal_task_deadline').empty();
