@@ -5,7 +5,7 @@ from django.conf import settings
 
 
 def convert_datetime(date_time, from_time_zone, to_time_zone=settings.TIME_ZONE):
-    return timezone(from_time_zone).localize(date_time).\
+    return timezone(from_time_zone).localize(date_time.replace(tzinfo=None)).\
         astimezone(timezone(to_time_zone)).replace(tzinfo=None)
 
 
