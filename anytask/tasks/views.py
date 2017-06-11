@@ -16,6 +16,7 @@ from django.template import RequestContext
 from django.utils.translation import ugettext as _
 
 from anycontest.common import get_contest_info, FakeResponse
+from common.timezone import get_datetime_with_tz, convert_datetime
 from courses.models import Course
 from groups.models import Group
 from issues.model_issue_status import IssueStatus
@@ -27,6 +28,7 @@ def merge_two_dicts(x, y):
     z = x.copy()
     z.update(y)
     return z
+
 
 @login_required
 def task_create_page(request, course_id):
@@ -53,6 +55,8 @@ def task_create_page(request, course_id):
         'rb_integrated': course.rb_integrated,
         'hide_contest_settings': True if not course.contest_integrated else False,
         'school': schools[0] if schools else '',
+        'user_location': request.user.get_profile().location,
+        'geo_suggest_url': settings.GEO_SUGGEST_URL
     }
 
     return render_to_response('task_create.html', context, context_instance=RequestContext(request))
@@ -75,6 +79,8 @@ def task_import_page(request, course_id):
         'rb_integrated': course.rb_integrated,
         'school': schools[0] if schools else '',
         'seminar_tasks': seminar_tasks,
+        'user_location': request.user.get_profile().location,
+        'geo_suggest_url': settings.GEO_SUGGEST_URL
     }
 
     return render_to_response('task_import.html', context, context_instance=RequestContext(request))
@@ -98,6 +104,8 @@ def contest_import_page(request, course_id):
         'seminar_tasks': seminar_tasks,
         'school': schools[0] if schools else '',
         'contest_import': True,
+        'user_location': request.user.get_profile().location,
+        'geo_suggest_url': settings.GEO_SUGGEST_URL
     }
 
     return render_to_response('contest_import.html', context, context_instance=RequestContext(request))
@@ -142,6 +150,8 @@ def task_edit_page(request, task_id):
         'hide_contest_settings': True if not task.contest_integrated
                                          or task.type in [task.TYPE_SIMPLE, task.TYPE_MATERIAL] else False,
         'school': schools[0] if schools else '',
+        'user_location': request.user.get_profile().location,
+        'geo_suggest_url': settings.GEO_SUGGEST_URL
     }
 
     return render_to_response('task_edit.html', context, context_instance=RequestContext(request))
@@ -165,7 +175,7 @@ def get_task_params(request, check_score_after_deadline=False):
 
     task_deadline = request.POST.get('deadline') or None
     if task_deadline:
-        task_deadline = datetime.datetime.strptime(task_deadline, '%d-%m-%Y %H:%M')
+        task_deadline = get_datetime_with_tz(task_deadline, request.POST['geoid'], user)
 
     score_after_deadline = True
     if check_score_after_deadline:
@@ -327,7 +337,14 @@ def get_contest_problems(request):
         problems = problem_req['result']['problems']
 
         contest_info_problems = contest_info['problems']
-        contest_info_deadline = contest_info['endTime'] if 'endTime' in contest_info else None
+        if 'endTime' in contest_info:
+            deadline_msk = datetime.datetime.strptime(contest_info['endTime'][:-9], '%Y-%m-%dT%H:%M:%S')
+            contest_info_deadline = convert_datetime(deadline_msk, settings.CONTEST_TIME_ZONE,
+                                                     request.user.get_profile().time_zone)
+            contest_info_deadline = contest_info_deadline.strftime('%Y,%m,%d,%H,%M')
+        else:
+            contest_info_deadline = None
+        print contest_info_deadline
         problems = problems + contest_info_problems + [{'deadline': contest_info_deadline}]
 
     return HttpResponse(json.dumps({'problems': problems,
@@ -364,7 +381,6 @@ def contest_task_import(request):
         problems = problem_req.json()['result']['problems']
 
     problems_with_score = {problem['id']: problem.get('score') for problem in problems}
-    problems_with_end = {problem['id']: problem.get('end') for problem in problems}
 
     if got_info:
         if problems:
@@ -386,10 +402,10 @@ def contest_task_import(request):
                 if not current_params['score_max'] and problems_with_score:
                     current_params['score_max'] = problems_with_score[problem['problemId']] or 0
 
-                if not current_params['deadline_time'] and problems_with_end:
-                    deadline = problems_with_end[problem['problemId']]
-                    if deadline:
-                        current_params['deadline_time'] = datetime.datetime.strptime(deadline, '%Y-%m-%dT%H:%M')
+                if not current_params['deadline_time'] and 'endTime' in contest_info:
+                    current_params['deadline_time'] = datetime.datetime.strptime(
+                        contest_info['endTime'][:-12], '%Y-%m-%dT%H:%M'
+                    )
 
                 tasks.append(current_params)
 

@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load tz %}
 <script src="{{ STATIC_URL }}jquery.validate.min.js"></script>
 <script src="http://malsup.github.io/jquery.form.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.sticky/1.0.3/jquery.sticky.min.js"></script>
@@ -907,7 +908,7 @@
             Prism.highlightElement(codesample);
 
         if (deadline != '') {
-            $('#modal_header_deadline_time').html('<strong>{% trans "data_sdachi" %}: ' + deadline + ' MSK UTC+3</strong>');
+            $('#modal_header_deadline_time').html('<strong>{% trans "data_sdachi" %}: ' + deadline + '</strong>');
         }
         else {
             $('#modal_header_deadline_time').empty();
@@ -926,8 +927,7 @@
         if (codesample)
             Prism.highlightElement(codesample);
         $('#modal_header_deadline_time').html('<strong>{% trans "data_zaniatia" %}: ' + lesson_date_start + ' - '
-                                                                                   + lesson_date_end
-                                                                                   + ' MSK UTC+3</strong>');
+                                                                                   + lesson_date_end);
 
         $('#modal_task_desc_edit').hide();
         $('#modal_task_descr_edit_button').attr("href", "/lesson/edit/" + lesson_id);

@@ -25,6 +25,7 @@ MANAGERS = ADMINS
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
 TIME_ZONE = 'Europe/Moscow'
+USE_TZ = True
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
@@ -104,7 +105,8 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.transaction.TransactionMiddleware',
     'reversion.middleware.RevisionMiddleware',
-    'django.middleware.locale.LocaleMiddleware'
+    'django.middleware.locale.LocaleMiddleware',
+    'anytask.middleware.timezone_middleware.TimezoneMiddleware'
 )
 
 ROOT_URLCONF = 'anytask.urls'
@@ -183,6 +185,7 @@ RB_SYMLINK_DIR = '/var/lib/anytask/repos/'
 RB_EXTENSIONS = ['.py', '.py2', '.py3', '.cpp', '.sage', '.m', '.java', '.h', '.cs', '.sh', '.c', '.txt', '.fs', '.hpp', '.cc', '.rkt', '.sql']
 
 CONTEST_API_URL = 'https://api.contest.yandex.net/anytask/'
+CONTEST_TIME_ZONE = 'Europe/Moscow'
 CONTEST_URL = "https://contest.yandex.ru/"
 CONTEST_OAUTH = 'OAUTH'
 CONTEST_OAUTH_ID = 'OAUTH_ID'
@@ -256,3 +259,6 @@ YA_FORMS_FIELDS_ADDITIONAL = {
 ADMISSION_DATE_END = "10.05.20 15:00"
 FILIAL_STATUSES = {}
 ENROLLEE_STATUS = 1
+
+GEO_SUGGEST_URL = ''
+DB = ''

@@ -2,6 +2,7 @@
 {% load i18n %}
 {% load dict_func %}
 {% load task_taken_func %}
+{% load tz %}
 
 {% block scripts %}
     <link href="{{ STATIC_URL }}shad_cpp.css" rel='stylesheet'/>
@@ -37,9 +38,9 @@
                     <th class="no-font-weight"><b>{% trans "student" %}</b></th>
                     {% for lssn in group_lessons|key:group %}
                             <th align="center" class="{% if user_is_teacher %}dom-live-number{% else %}dom-number{% endif %} word-wrap" id="column_{{lssn.id}}">
-                                <a href="javascript:get_lesson_modal('{{group.id}}', '{{lssn.id}}', '{{lssn.title|escapejs}}', '{{lssn.date_starttime|date:'d-m-Y H:i'}}',
-                                '{{lssn.date_endtime|date:'d-m-Y H:i'}}', '{{lssn.description|safe|escapejs}}')" data-deleted='{{ lssn|lssn_can_be_deleted }}'>
-                                    {{lssn.date_starttime|date:'d-m-Y'}}
+                                <a href="javascript:get_lesson_modal('{{group.id}}', '{{lssn.id}}', '{{lssn.title|escapejs}}', '{% localtime on %}{{lssn.date_starttime|date:'d-m-Y H:i'}}{% endlocaltime %}',
+                                '{% localtime on %}{{lssn.date_endtime|date:'d-m-Y H:i'}}{% endlocaltime %}', '{{lssn.description|safe|escapejs}}')" data-deleted='{{ lssn|lssn_can_be_deleted }}'>
+                                    {% localtime on %}{{lssn.date_starttime|date:'d-m-Y'}}{% endlocaltime %}
                                 </a>
                             </th>
                         {% empty %}

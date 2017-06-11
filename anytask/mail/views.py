@@ -16,6 +16,7 @@ from users.models import UserProfile
 from users.model_user_status import get_statuses
 
 from mail.common import render_mail
+from anytask.common.timezone import convert_datetime
 
 import json
 import datetime
@@ -116,7 +117,7 @@ def ajax_get_mailbox(request):
             "0": "",
             "1": u'%s %s' % (msg.sender.last_name, msg.sender.first_name),
             "2": msg.title,
-            "3": format_date(msg.create_time),
+            "3": format_date(convert_datetime(msg.create_time, settings.TIME_ZONE, user_profile.time_zone)),
             "DT_RowClass": "unread" if msg in unread else "",
             "DT_RowId": "row_msg_" + type_msg + "_" + str(msg.id),
             "DT_RowData": {
@@ -221,7 +222,8 @@ def ajax_get_message(request):
     response['recipients_group'] = recipients_group
     response['recipients_course'] = recipients_course
     response['recipients_status'] = recipients_status
-    response['date'] = message.create_time.strftime("%d.%m.%y %H:%M:%S")
+    response['date'] = convert_datetime(message.create_time, settings.TIME_ZONE, user_profile.time_zone)\
+        .strftime("%d.%m.%y %H:%M:%S")
     response['text'] = text
     response['unread_count'] = unread_count
 
