@@ -87,22 +87,20 @@
                             <a href="{% url users.views.profile teacher.username %}">{{ teacher.last_name }} {{ teacher.first_name }}</a>{% if not forloop.last %},{% endif %}
                         {% endfor %}
                     </p>
-                    {% if course.can_edit %}
-                        {% if seminar and seminar in tasks_editable %}
-                            <a class="btn btn-secondary btn-sm" href="{% url tasks.views.task_edit_page seminar.id %}">
-                                {% trans "redaktirovat_seminar" %}
-                            </a>
-                        {% endif %}
-                        {% if visible_hide_button %}
-                            <a class="btn btn-secondary btn-sm"
-                               href="javascript:change_visibility_hidden_tasks({{ course.id }});" role="button">
-                                {% if show_hidden_tasks %}
-                                    {% trans "ne_pokazyvat_skrytye_zadachi" %}
-                                {% else %}
-                                    {% trans "pokazat_skrytye_zadachi" %}
-                                {% endif %}
-                            </a>
-                        {% endif %}
+                    {% if seminar and seminar in tasks_editable %}
+                        <a class="btn btn-secondary btn-sm" href="{% url tasks.views.task_edit_page seminar.id %}">
+                            {% trans "redaktirovat_seminar" %}
+                        </a>
+                    {% endif %}
+                    {% if visible_hide_button %}
+                        <a class="btn btn-secondary btn-sm"
+                           href="javascript:change_visibility_hidden_tasks({{ course.id }});" role="button">
+                            {% if show_hidden_tasks %}
+                                {% trans "ne_pokazyvat_skrytye_zadachi" %}
+                            {% else %}
+                                {% trans "pokazat_skrytye_zadachi" %}
+                            {% endif %}
+                        </a>
                     {% endif %}
                 </div>
                 <div class="list-group" id="courseTab">
@@ -122,19 +120,18 @@
                 <div class="tab-content">
                     <div class="tab-pane fade in" id="course-information-tab" role="tabpanel">
                         <h5 class="card-title">{% if not seminar %}{% trans "opisanie_kursa" %}{% else %}{% trans "opisanie_zanjatija" %}{% endif %}
-                            {% if course.can_edit %}
-                                {% if seminar and seminar in tasks_editable%}
-                                    <a class="btn btn-secondary btn-sm btn-square"
-                                       href="{% url tasks.views.task_edit_page seminar.id %}">
-                                        <span class="fa fa-pencil"></span>
-                                    </a>
-                                {% else %}
+                            {% if seminar and seminar in tasks_editable%}
+                                <a class="btn btn-secondary btn-sm btn-square"
+                                   href="{% url tasks.views.task_edit_page seminar.id %}">
+                                    <span class="fa fa-pencil"></span>
+                                </a>
+                            {% else %}
+                                {% if can_edit_course_info %}
                                     <a class="btn btn-secondary btn-sm btn-square"
                                        id="edit_course_info_btn">
                                         <span class="fa fa-pencil"></span>
                                     </a>
                                 {% endif %}
-
                             {% endif %}
                         </h5>
 

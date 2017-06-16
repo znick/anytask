@@ -3,7 +3,7 @@
 <link href="{{ STATIC_URL }}add_user_or_group.css" rel='stylesheet' />
 
 <div class="modal fade" id="modal_add_group" tabindex="-1" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -22,12 +22,14 @@
                 <div class="tab-content">
                     <div class="tab-pane fade active in" id="courses" role="tabpanel">
                         <select id="modal_add_group_select" multiple>
-                            {% for course_info, groups_info in groups.iteritems %}
-                                <optgroup label="{{ course_info.1 }}" data-id="{{ course_info.0 }}" data-count="{{ groups_info|length }}">
-                                    {% for group_id, group_name in groups_info.iteritems %}
-                                        <option value="{{ course_info.0 }}_{{ group_id }}" data-id="{{ group_id }}" data-type="group">{{ group_name }}</option>
-                                    {% endfor %}
-                                </optgroup>
+                            {% for school_info, courses_info in groups.iteritems %}
+                                {% for course_info, groups_info in courses_info.iteritems %}
+                                    <optgroup label="{{ course_info.1 }}" data-id="{{ course_info.0 }}" data-count="{{ groups_info|length }}">
+                                        {% for group_id, group_name in groups_info.iteritems %}
+                                            <option value="{{ course_info.0 }}_{{ group_id }}" data-id="{{ group_id }}" data-type="group">{{ group_name }}</option>
+                                        {% endfor %}
+                                    </optgroup>
+                                {% endfor %}
                             {% endfor %}
                         </select>
                     </div>

@@ -260,6 +260,7 @@ class UserProfile(models.Model):
             ('parent', 'Parent'),
             ('view_profile', 'View profile'),
             ('view_profile_courses_page', 'View user courses page'),
+            ('change_perms_for_null_school_users', 'Change permissions for users without school'),
         )
 
 

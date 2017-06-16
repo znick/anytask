@@ -9,7 +9,7 @@ from guardian.utils import get_user_obj_perms_model
 import uuid
 
 PERMS_GLOBAL = {
-    'users': ['view_backoffice_page'],
+    'users': ['view_backoffice_page', 'change_perms_for_null_school_users'],
 }
 
 PERMS_CLASSES = {
@@ -31,6 +31,7 @@ LOCALE_PERMS_NAMES = {
         'parent': _(u'roditel'),
         'view_profile': _(u'prosmotr_profilya'),
         'view_profile_courses_page': _(u'prosmotr_stranitsy_kursov_v_profile'),
+        'change_perms_for_null_school_users': _(u'izmeneniye_dostupov_pol_bez_shkoly'),
     },
     'schools': {
         'view_permissions': _(u'prosmotr_dostupov'),
@@ -44,6 +45,7 @@ LOCALE_PERMS_NAMES = {
         'change_course_settings': _(u'izmenenie_nastroyek_kursa'),
         'view_course_queue': _(u'prosmotr_ocheredi_na_proverku'),
         'teacher_in_course': _(u'uchitel_v_kursakh'),
+        'change_course_info': _(u'izmeneniye_opisaniya_kursa'),
     },
     'groups': {
         'student_in_group': _(u'student_v_gruppakh'),

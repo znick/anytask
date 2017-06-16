@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-02 09:56+0000\n"
+"POT-Creation-Date: 2017-06-16 12:38+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -92,11 +92,11 @@ msgstr "Есть новые сообщения"
 msgid "bazovaya_rol"
 msgstr "Базовая роль"
 
-#: staff/views.py:407
+#: staff/views.py:419
 msgid "bez_shkoly"
 msgstr "Без школы"
 
-#: mail/templates/mail.html:196 staff/templates/add_user_or_group.html:37
+#: mail/templates/mail.html:196 staff/templates/add_user_or_group.html:39
 #: staff/templates/user_filter_by_status.html:146
 msgid "bez_tipa"
 msgstr "Без типа"
@@ -127,7 +127,7 @@ msgstr "Да"
 msgid "dannye_skopirovany"
 msgstr "Данные скопированы в буфер обмена."
 
-#: staff/views.py:682
+#: staff/views.py:707
 msgid "dannyye_polzovateli_ne_naydeny"
 msgstr "Данные пользователи не найдены"
 
@@ -145,7 +145,7 @@ msgstr "Дата рождения"
 #: tasks/templates/contest_import.html:129
 #: tasks/templates/task_create.html:130
 #: tasks/templates/task_create_or_edit_js.html:404
-#: tasks/templates/task_edit.html:180 tasks/templates/task_edit.html.py:374
+#: tasks/templates/task_edit.html:180 tasks/templates/task_edit.html.py:375
 #: tasks/templates/task_import.html:110
 #: tasks/templates/task_import_js.html:368
 msgid "data_sdachi"
@@ -182,7 +182,7 @@ msgstr "Для всех групп"
 msgid "dnej"
 msgstr "дней"
 
-#: mail/templates/mail.html:208 staff/templates/add_user_or_group.html:49
+#: mail/templates/mail.html:208 staff/templates/add_user_or_group.html:51
 #: staff/templates/roles.html:141 staff/templates/roles_js.html:104
 msgid "dobavit"
 msgstr "Добавить"
@@ -191,7 +191,7 @@ msgstr "Добавить"
 msgid "dobavit_gruppu_polzovatelej"
 msgstr "Добавить группу пользователей"
 
-#: mail/templates/mail.html:112 staff/templates/roles_assign.html:232
+#: mail/templates/mail.html:112 staff/templates/roles_assign.html:236
 msgid "dobavit_kurs_gruppu_ili_status"
 msgstr "Добавить пользователей по курсу, группе или статусу"
 
@@ -203,7 +203,7 @@ msgstr "Добавить новую роль"
 msgid "dobavit_rol"
 msgstr "Добавить роль"
 
-#: courses/templates/courses/course.html:155
+#: courses/templates/courses/course.html:152
 #: courses/templates/courses/tasklist/many_tasksets_many_groups.html:27
 #: courses/templates/courses/tasklist/many_tasksets_many_groups.html:119
 msgid "dobavit_zadachu"
@@ -222,7 +222,7 @@ msgstr "Добавление и удаление статусов пользов
 msgid "dostup_ogranichen"
 msgstr "Доступ к этому курсу ограничен."
 
-#: staff/templates/roles.html:75 staff/templates/roles_assign_js.html:577
+#: staff/templates/roles.html:75 staff/templates/roles_assign_js.html:606
 msgid "dostupy"
 msgstr "Доступы"
 
@@ -290,7 +290,7 @@ msgstr "Формат: 5.31, 14"
 
 #: tasks/management/commands/send_task_notifications.py:64
 #: tasks/templates/task_create.html:153 tasks/templates/task_edit.html:304
-#: tasks/templates/task_edit.html.py:380 tasks/templates/task_import.html:157
+#: tasks/templates/task_edit.html.py:381 tasks/templates/task_import.html:157
 msgid "formulirovka"
 msgstr "Условие"
 
@@ -348,13 +348,13 @@ msgstr "Имя получателя"
 msgid "import"
 msgstr "Импорт"
 
-#: courses/templates/courses/course.html:168
+#: courses/templates/courses/course.html:165
 #: tasks/templates/contest_import.html:23
 #: tasks/templates/contest_import.html:58
 msgid "import_sorevnovanija"
 msgstr "Импорт соревнования из Я.Контеста"
 
-#: courses/templates/courses/course.html:166
+#: courses/templates/courses/course.html:163
 #: tasks/templates/task_import.html:25 tasks/templates/task_import.html:41
 msgid "import_zadachi_iz_kontesta"
 msgstr "Импорт задачи из Яндекс.Контеста"
@@ -415,13 +415,13 @@ msgstr "Итоговая таблица"
 
 #: courses/templates/courses/course_js.html:287 mail/templates/mail_js.html:67
 #: mail/templates/mail_js.html.py:69 staff/templates/gradebook_js.html:127
-#: staff/templates/roles_assign_js.html:400
+#: staff/templates/roles_assign_js.html:399
 #: staff/templates/user_filter_by_status_js.html:165
 #: staff/templates/user_filter_by_status_js.html:167
 msgid "iz"
 msgstr "из"
 
-#: permissions/common.py:44
+#: permissions/common.py:45
 msgid "izmenenie_nastroyek_kursa"
 msgstr "Изменение настроек курса(ов)"
 
@@ -438,13 +438,17 @@ msgstr "Изменение порядка или удаление столбцо
 msgid "izmenenie_v_zadache"
 msgstr "Уведомить студентов о создании/изменении в задаче"
 
-#: permissions/common.py:62
+#: permissions/common.py:64
 msgid "izmeneniye_daty_sdachi_zadach"
 msgstr "Изменение даты сдачи задач"
 
-#: permissions/common.py:37
+#: permissions/common.py:38
 msgid "izmeneniye_dostupov"
 msgstr "Изменение доступов"
+
+#: permissions/common.py:34
+msgid "izmeneniye_dostupov_pol_bez_shkoly"
+msgstr "Изменение доступов для пользователей без школы"
 
 #: staff/templates/roles.html:21 staff/templates/roles_assign.html:4
 #: staff/templates/roles_assign.html:21 staff/templates/roles_assign.html:31
@@ -452,47 +456,51 @@ msgstr "Изменение доступов"
 msgid "izmeneniye_dostupov_polzovateley"
 msgstr "Изменение доступов пользователей"
 
-#: permissions/common.py:57
+#: permissions/common.py:59
 msgid "izmeneniye_formulirovki_zadachi"
 msgstr "Изменение формулировки задач"
 
-#: permissions/common.py:54
+#: permissions/common.py:56
 msgid "izmeneniye_grupp_zadachi"
 msgstr "Изменение групп задач"
 
-#: permissions/common.py:58
+#: permissions/common.py:60
 msgid "izmeneniye_maksimalnogo_balla_zadach"
 msgstr "Изменение максимального балла задач"
 
-#: permissions/common.py:59
+#: permissions/common.py:61
 msgid "izmeneniye_nastroyek_kontesta_zadach"
 msgstr "Изменение настроек контеста задач"
 
-#: permissions/common.py:60
+#: permissions/common.py:62
 msgid "izmeneniye_nastroyek_rb_zadach"
 msgstr "Изменение настроек Review Board задач"
 
-#: permissions/common.py:53
+#: permissions/common.py:55
 msgid "izmeneniye_nazvaniya_zadachi"
 msgstr "Изменение названия задач"
 
-#: permissions/common.py:63
+#: permissions/common.py:48
+msgid "izmeneniye_opisaniya_kursa"
+msgstr "Изменение описания курса"
+
+#: permissions/common.py:65
 msgid "izmeneniye_otpravki_tolko_odnogo_fayla_zadach"
 msgstr "Изменение 'Отправлять только один файл' задач"
 
-#: permissions/common.py:56
+#: permissions/common.py:58
 msgid "izmeneniye_roditelskoy_zadachi_v_zadache"
 msgstr "Изменение родительской задачи в задачах"
 
-#: permissions/common.py:39
+#: permissions/common.py:40
 msgid "izmeneniye_statusov_polzovateley"
 msgstr "Изменение статусов пользователей"
 
-#: permissions/common.py:61
+#: permissions/common.py:63
 msgid "izmeneniye_tipa_zadach"
 msgstr "Изменение типа задач"
 
-#: permissions/common.py:55
+#: permissions/common.py:57
 msgid "izmeneniye_vidimosti_zadachi"
 msgstr "Изменение видимости задач"
 
@@ -529,13 +537,13 @@ msgid "ja"
 msgstr "Я"
 
 #: mail/templates/mail_js.html:563 search/templates/search.html:146
-#: staff/templates/roles_assign_js.html:882 templates/base.html:117
+#: staff/templates/roles_assign_js.html:987 templates/base.html:117
 msgid "ja.pochta"
 msgstr "Я.Почта"
 
 #: courses/templates/courses/settings.html:207
 #: issues/templates/issues/issue.html:41 mail/templates/mail_js.html:561
-#: search/templates/search.html:138 staff/templates/roles_assign_js.html:880
+#: search/templates/search.html:138 staff/templates/roles_assign_js.html:985
 #: templates/base.html:115 users/templates/user_settings.html:181
 msgid "jakontest"
 msgstr "Я.Контест"
@@ -599,7 +607,7 @@ msgstr "Кому"
 msgid "kontest"
 msgstr "Контест"
 
-#: courses/views.py:804 courses/views.py:816 tasks/views.py:399
+#: courses/views.py:804 courses/views.py:816 tasks/views.py:412
 msgid "kontesta_ne_sushestvuet"
 msgstr "Такого соревнования не существует"
 
@@ -634,7 +642,7 @@ msgid "litera_zadachi"
 msgstr "Литера задачи в соревновании"
 
 #: mail/templates/mail_js.html:532 search/templates/search.html:124
-#: staff/templates/roles_assign_js.html:851 templates/base.html:86
+#: staff/templates/roles_assign_js.html:956 templates/base.html:86
 msgid "loginy"
 msgstr "Логины"
 
@@ -656,7 +664,7 @@ msgstr "материал"
 
 #: tasks/management/commands/send_task_notifications.py:65
 #: tasks/templates/contest_import.html:91 tasks/templates/task_create.html:87
-#: tasks/templates/task_edit.html:156 tasks/templates/task_edit.html.py:368
+#: tasks/templates/task_edit.html:156 tasks/templates/task_edit.html.py:369
 #: tasks/templates/task_import.html:74
 msgid "max_ball"
 msgstr "Максимальный балл"
@@ -742,9 +750,9 @@ msgstr "найдено"
 #: courses/templates/courses/queue_js.html:22
 #: issues/templates/issues/issue_js.html:58 mail/templates/mail_js.html:76
 #: mail/templates/mail_js.html.py:604 search/templates/search.html:62
-#: staff/templates/roles_assign_js.html:109
-#: staff/templates/roles_assign_js.html:412
-#: staff/templates/roles_assign_js.html:717
+#: staff/templates/roles_assign_js.html:108
+#: staff/templates/roles_assign_js.html:415
+#: staff/templates/roles_assign_js.html:793
 #: staff/templates/user_filter_by_status_js.html:49
 #: staff/templates/user_filter_by_status_js.html:174
 #: tasks/templates/task_create_or_edit_js.html:34 templates/base.html:652
@@ -803,7 +811,7 @@ msgstr "Назад"
 #: staff/templates/roles.html:123
 #: tasks/management/commands/send_task_notifications.py:63
 #: tasks/templates/task_create.html:80 tasks/templates/task_edit.html:148
-#: tasks/templates/task_edit.html.py:362
+#: tasks/templates/task_edit.html.py:363
 msgid "nazvanie"
 msgstr "Название"
 
@@ -836,7 +844,7 @@ msgstr "Задачи не найдены."
 msgid "ne_pokazyvat_otchislennyh"
 msgstr "Не показывать отчисленных студентов"
 
-#: courses/templates/courses/course.html:100
+#: courses/templates/courses/course.html:99
 #: courses/templates/courses/gradebook.html:78
 msgid "ne_pokazyvat_skrytye_zadachi"
 msgstr "Не показывать скрытые задачи"
@@ -896,7 +904,7 @@ msgstr "Нет ни одного курса."
 msgid "net_novyh_soobshenij"
 msgstr "Новых сообщений нет."
 
-#: courses/views.py:814 tasks/views.py:389 tasks/views.py:520
+#: courses/views.py:814 tasks/views.py:402 tasks/views.py:533
 msgid "net_prav_na_kontest"
 msgstr "У Anytask нет прав на данное соревнование"
 
@@ -905,7 +913,7 @@ msgstr "У Anytask нет прав на данное соревнование"
 msgid "net_statusov"
 msgstr "Нет статусов"
 
-#: staff/views.py:685
+#: staff/views.py:710
 msgid "nevernyy_format_fayla"
 msgstr "Неверный формат файла"
 
@@ -915,7 +923,7 @@ msgstr "Неверный код активации."
 
 #: courses/templates/courses/course_js.html:294 mail/templates/mail_js.html:77
 #: search/templates/search.html:76 staff/templates/gradebook_js.html:134
-#: staff/templates/roles_assign_js.html:402
+#: staff/templates/roles_assign_js.html:401
 #: staff/templates/user_filter_by_status_js.html:164
 #: staff/templates/user_filter_by_status_js.html:175
 msgid "nichego_ne_najdeno"
@@ -981,7 +989,7 @@ msgid "objazatelnoe_pole"
 msgstr "Обязательное поле"
 
 #: courses/templates/courses/settings.html:244
-#: tasks/templates/task_edit.html:386
+#: tasks/templates/task_edit.html:387
 msgid "obnovit"
 msgstr "Обновить"
 
@@ -1059,14 +1067,14 @@ msgstr "Очередь на проверку"
 msgid "october"
 msgstr "окт."
 
-#: courses/templates/courses/course.html:111
-#: courses/templates/courses/course.html:124
+#: courses/templates/courses/course.html:109
+#: courses/templates/courses/course.html:122
 #: courses/templates/courses/task.html:23
 msgid "opisanie_kursa"
 msgstr "Описание курса"
 
-#: courses/templates/courses/course.html:112
-#: courses/templates/courses/course.html:124
+#: courses/templates/courses/course.html:110
+#: courses/templates/courses/course.html:122
 msgid "opisanie_zanjatija"
 msgstr "Описание занятия"
 
@@ -1087,7 +1095,7 @@ msgstr "Возможно, вы ищете то, чего ещё нет..."
 msgid "oshibka_500"
 msgstr "Что-то пошло не так... Пожалуйста, сообщите об этом "
 
-#: courses/views.py:806 courses/views.py:818 tasks/views.py:401
+#: courses/views.py:806 courses/views.py:818 tasks/views.py:414
 msgid "oshibka_kontesta"
 msgstr "Ошибка Я.Контеста:"
 
@@ -1237,9 +1245,9 @@ msgstr "Пароль восстановлен."
 msgid "paroli_ne_sovpadaut"
 msgstr "Пароли не совпадают"
 
-#: courses/templates/courses/course.html:218
-#: courses/templates/courses/course.html:288
-#: courses/templates/courses/course.html:398
+#: courses/templates/courses/course.html:215
+#: courses/templates/courses/course.html:285
+#: courses/templates/courses/course.html:395
 #: staff/templates/user_filter_by_status.html:199
 msgid "perejti"
 msgstr "Перейти"
@@ -1327,7 +1335,7 @@ msgstr "Показать"
 msgid "pokazat_citirovanie"
 msgstr "Показать цитирование"
 
-#: courses/templates/courses/course.html:102
+#: courses/templates/courses/course.html:101
 #: courses/templates/courses/gradebook.html:80
 msgid "pokazat_skrytye_zadachi"
 msgstr "Показать скрытые задачи"
@@ -1361,7 +1369,7 @@ msgid "polzovatelej"
 msgstr "пользователя(ей) и"
 
 #: search/templates/search.html:88 staff/templates/roles_assign.html:64
-#: staff/templates/roles_assign.html:228
+#: staff/templates/roles_assign.html:232
 #: staff/templates/user_filter_by_status.html:81 templates/base.html:80
 msgid "polzovateli"
 msgstr "Пользователи"
@@ -1414,7 +1422,7 @@ msgstr "Преподаватели"
 msgid "prepodavateli_po_umolchaniu"
 msgstr "Эти преподаватели будут назначены проверяющими при переходе задачи в статус «На проверке» (если ранее не был назначен другой преподаватель)."
 
-#: courses/views.py:97 staff/views.py:702 users/views.py:460
+#: courses/views.py:97 staff/views.py:727 users/views.py:460
 msgid "primenit"
 msgstr "Применить"
 
@@ -1482,27 +1490,27 @@ msgstr "Портрет пользователя"
 msgid "prosmotr_backoffice"
 msgstr "Просмотр страницы backoffice"
 
-#: permissions/common.py:36
+#: permissions/common.py:37
 msgid "prosmotr_dostupov"
 msgstr "Просмотр доступов"
 
-#: permissions/common.py:38
+#: permissions/common.py:39
 msgid "prosmotr_filtra_po_statusam_polzovateley"
 msgstr "Просмотр фильтра по статусам пользователей"
 
-#: permissions/common.py:43
+#: permissions/common.py:44
 msgid "prosmotr_kursa"
 msgstr "Просмотр курса(ов)"
 
-#: permissions/common.py:52
+#: permissions/common.py:54
 msgid "prosmotr_nastroyek_zadach"
 msgstr "Просмотр настроек задач"
 
-#: permissions/common.py:50
+#: permissions/common.py:52
 msgid "prosmotr_obshchey_vedomosti"
 msgstr "Просмотр общей ведомости"
 
-#: permissions/common.py:45
+#: permissions/common.py:46
 msgid "prosmotr_ocheredi_na_proverku"
 msgstr "Просмотр очереди на проверку"
 
@@ -1529,8 +1537,8 @@ msgstr "проверяющим"
 
 #: courses/templates/courses/course_js.html:284
 #: staff/templates/gradebook_js.html:124
-#: staff/templates/roles_assign_js.html:394
-#: staff/templates/roles_assign_js.html:1032 staff/templates/roles_js.html:42
+#: staff/templates/roles_assign_js.html:393
+#: staff/templates/roles_assign_js.html:1137 staff/templates/roles_js.html:42
 msgid "pustaja_tablica"
 msgstr "Пустая таблица"
 
@@ -1538,7 +1546,7 @@ msgstr "Пустая таблица"
 msgid "rasshirenija_fajlov"
 msgstr "Расширения файлов"
 
-#: staff/templates/roles_assign_js.html:1052
+#: staff/templates/roles_assign_js.html:1157
 msgid "rasshirennyye_nastroyki"
 msgstr "Расширенные настройки"
 
@@ -1565,7 +1573,7 @@ msgstr "Редактирование задачи"
 msgid "redaktirovat"
 msgstr "Редактировать"
 
-#: courses/templates/courses/course.html:93
+#: courses/templates/courses/course.html:92
 msgid "redaktirovat_seminar"
 msgstr "Редактировать семинар"
 
@@ -1624,15 +1632,15 @@ msgstr "Сброс пароля"
 #: courses/templates/course_tasks_potok.html:180
 #: courses/templates/course_tasks_potok.html:197
 #: courses/templates/course_tasks_potok.html:238
-#: courses/templates/courses/course.html:212
-#: courses/templates/courses/course.html:332
+#: courses/templates/courses/course.html:209
+#: courses/templates/courses/course.html:329
 msgid "sdat"
 msgstr "Сдать"
 
-#: courses/templates/courses/course.html:204
-#: courses/templates/courses/course.html:278
-#: courses/templates/courses/course.html:324
-#: courses/templates/courses/course.html:388
+#: courses/templates/courses/course.html:201
+#: courses/templates/courses/course.html:275
+#: courses/templates/courses/course.html:321
+#: courses/templates/courses/course.html:385
 msgid "sdat_do"
 msgstr "сдать до"
 
@@ -1665,7 +1673,7 @@ msgstr "Школы"
 msgid "skopirovat"
 msgstr "Скопировать"
 
-#: staff/templates/roles_assign_js.html:1053
+#: staff/templates/roles_assign_js.html:1158
 msgid "skryt"
 msgstr "Скрыть"
 
@@ -1710,7 +1718,7 @@ msgstr "Перед удалением семинара необходимо уд
 #: courses/templates/courses/task.html:33
 #: courses/templates/courses/tasklist/shad_cpp.html:213
 #: issues/templates/issues/issue_js.html:159 staff/templates/roles.html:56
-#: staff/templates/roles_assign.html:258
+#: staff/templates/roles_assign.html:262
 #: staff/templates/user_filter_by_status.html:176
 #: staff/templates/user_filter_by_status.html:199
 #: users/templates/status_history.html:160
@@ -1748,7 +1756,7 @@ msgstr "Сохранить и выйти"
 
 #: courses/templates/courses/course_js.html:147
 #: courses/templates/courses/course_js.html:728 staff/templates/roles.html:55
-#: staff/templates/roles.html.py:57 staff/templates/roles_assign.html:258
+#: staff/templates/roles.html.py:57 staff/templates/roles_assign.html:262
 #: users/templates/user_profile_js.html:129
 msgid "sohranit_izmenenija"
 msgstr "Сохранить изменения"
@@ -1782,7 +1790,7 @@ msgstr "Состоит в курсах (Архив)"
 msgid "sozdanie_invajtov"
 msgstr "Создание инвайтов"
 
-#: permissions/common.py:51 tasks/templates/task_create.html:9
+#: permissions/common.py:53 tasks/templates/task_create.html:9
 #: tasks/templates/task_create.html:25 tasks/templates/task_create.html:46
 #: tasks/templates/task_edit.html:8 tasks/templates/task_edit.html.py:107
 msgid "sozdanie_zadachi"
@@ -1800,8 +1808,8 @@ msgstr "создать сообщение?"
 msgid "spasibo"
 msgstr "Спасибо"
 
-#: courses/templates/courses/course.html:115
-#: courses/templates/courses/course.html:151
+#: courses/templates/courses/course.html:113
+#: courses/templates/courses/course.html:148
 msgid "spisok_grupp_i_zadach"
 msgstr "Список групп и задач"
 
@@ -1877,7 +1885,7 @@ msgstr "Страница семинара"
 msgid "student"
 msgstr "Студент"
 
-#: permissions/common.py:49 staff/templates/roles_assign.html:68
+#: permissions/common.py:51 staff/templates/roles_assign.html:68
 msgid "student_v_gruppakh"
 msgstr "Студент в группах"
 
@@ -1974,7 +1982,7 @@ msgstr "Теперь у вас новый пароль =)"
 msgid "u_vas_soobshenij"
 msgstr "У вас"
 
-#: permissions/common.py:46 staff/templates/roles_assign.html:66
+#: permissions/common.py:47 staff/templates/roles_assign.html:66
 msgid "uchitel_v_kursakh"
 msgstr "Учитель в курсах"
 
@@ -1999,7 +2007,7 @@ msgstr "Удалить роль"
 msgid "udalit_rol_info"
 msgstr "Если есть пользователи, которым назначена эта роль, они сохранят текущие"
 
-#: staff/templates/roles_assign_js.html:504
+#: staff/templates/roles_assign_js.html:512
 msgid "udalit_rol_vopros"
 msgstr "Удалить роль?"
 
@@ -2037,7 +2045,7 @@ msgstr "Укажите получателя."
 msgid "ukazhite_nazvaniye_roli"
 msgstr "Укажите название роли"
 
-#: staff/templates/roles_assign_js.html:345 staff/templates/roles_js.html:460
+#: staff/templates/roles_assign_js.html:344 staff/templates/roles_js.html:460
 msgid "uspeshno"
 msgstr "Успешно"
 
@@ -2072,8 +2080,8 @@ msgstr "В курсе"
 msgid "v_zadache"
 msgstr "В задаче"
 
-#: courses/templates/courses/course.html:253
-#: courses/templates/courses/course.html:365
+#: courses/templates/courses/course.html:250
+#: courses/templates/courses/course.html:362
 msgid "vedomost"
 msgstr "Ведомость"
 
@@ -2164,6 +2172,10 @@ msgstr "Всего задач"
 msgid "vuz"
 msgstr "ВУЗ"
 
+#: staff/templates/roles_assign.html:235
+msgid "vvedite_imya"
+msgstr "Введите имя"
+
 #: courses/templates/courses/course_forbidden.html:80
 #: courses/templates/courses/course_forbidden.html:88
 msgid "vvedite_invajt"
@@ -2221,7 +2233,7 @@ msgstr "Выбор аватара"
 msgid "vybor_grupp_zavisit_ot_zadach"
 msgstr "Из группы можно убрать только задачи, которые еще никто не сдавал."
 
-#: staff/templates/roles_assign_js.html:736
+#: staff/templates/roles_assign_js.html:813
 #: staff/templates/user_filter_by_status_js.html:182
 msgid "vybrano"
 msgstr "Выбрано"
@@ -2249,12 +2261,12 @@ msgstr "Выбрать все"
 
 #: courses/templates/courses/course_js.html:292
 #: staff/templates/gradebook_js.html:132
-#: staff/templates/roles_assign_js.html:397
-#: staff/templates/roles_assign_js.html:1035 staff/templates/roles_js.html:45
+#: staff/templates/roles_assign_js.html:396
+#: staff/templates/roles_assign_js.html:1140 staff/templates/roles_js.html:45
 msgid "vychislenie"
 msgstr "Вычисление..."
 
-#: mail/templates/mail_js.html:605 staff/templates/roles_assign_js.html:110
+#: mail/templates/mail_js.html:605 staff/templates/roles_assign_js.html:109
 msgid "vydelit_vse"
 msgstr "Выделить всё."
 
@@ -2270,7 +2282,7 @@ msgstr "На ваш электронный адрес выслано письм�
 msgid "vyvod_programmy"
 msgstr "Вывод программы"
 
-#: mail/templates/mail_js.html:548 staff/templates/roles_assign_js.html:867
+#: mail/templates/mail_js.html:548 staff/templates/roles_assign_js.html:972
 #: templates/base.html:102
 msgid "yeshcho"
 msgstr "ещё"
@@ -2291,8 +2303,8 @@ msgstr "Задача"
 msgid "zadacha_sohranena_uspeshno"
 msgstr "Задача сохранена."
 
-#: courses/templates/courses/course.html:115
-#: courses/templates/courses/course.html:151
+#: courses/templates/courses/course.html:113
+#: courses/templates/courses/course.html:148
 msgid "zadachi"
 msgstr "Задачи"
 
@@ -2323,8 +2335,8 @@ msgstr "Загрузить список студентов"
 #: courses/templates/courses/course_js.html:291 mail/templates/mail.html:5
 #: mail/templates/mail_js.html:73 mail/templates/mail_js.html.py:74
 #: staff/templates/gradebook_js.html:131
-#: staff/templates/roles_assign_js.html:396
-#: staff/templates/roles_assign_js.html:1034 staff/templates/roles_js.html:44
+#: staff/templates/roles_assign_js.html:395
+#: staff/templates/roles_assign_js.html:1139 staff/templates/roles_js.html:44
 #: staff/templates/user_filter_by_status_js.html:171
 #: staff/templates/user_filter_by_status_js.html:172
 msgid "zagruzka"
@@ -2334,9 +2346,9 @@ msgstr "Загрузка..."
 #: courses/templates/courses/settings_js.html:234
 #: courses/templates/courses/task.html:32
 #: courses/templates/courses/tasklist/shad_cpp.html:212
-#: mail/templates/mail.html:207 staff/templates/add_user_or_group.html:48
+#: mail/templates/mail.html:207 staff/templates/add_user_or_group.html:50
 #: staff/templates/roles.html:140 staff/templates/roles.html.py:158
-#: staff/templates/roles_assign.html:257
+#: staff/templates/roles_assign.html:261
 #: staff/templates/user_filter_by_status.html:175
 #: staff/templates/user_filter_by_status.html:198
 #: tasks/templates/task_create_or_edit_js.html:189

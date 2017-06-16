@@ -15,7 +15,6 @@
         src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.min.js"></script>
 
 
-
 <script type="text/javascript">
     $.fn.dataTable.ext.type.search.searchInput = function (data) {
         return $('span.search-value', data).text();
@@ -132,7 +131,7 @@
 
         init_multiselect_and_tagsinput($("#modal_new_role_settings"), false);
 
-        $(".change-roles", ".table-users").click(function () {
+        $('body').on("click", "a.change-roles", function () {
             var d = "disabled";
             var $btn = $(this);
             var $tr_main = $btn.closest("tr");
@@ -285,7 +284,7 @@
                 var $form = $(this);
                 if (!$form.valid()) {
                     var $tab = $form.closest("div.tab-pane");
-                    if (!$tab.hasClass("active")){
+                    if (!$tab.hasClass("active")) {
                         $('span[aria-controls="' + $tab.attr("id") + '"]', "#modal_role_body").trigger("click");
                     }
 
@@ -362,14 +361,14 @@
         }
         else {
             data_table = $table.DataTable({
-                scrollY: "65vh",
+                scrollY: "60vh",
                 scrollX: true,
                 scrollCollapse: true,
-                paging: false,
+                paging: true,
                 order: [[1, 'asc']],
                 autoWidth: false,
                 dom: "<'row'<'col-xs-12'tr>>" +
-                "<'row'<'col-xs-12 col-sm-12 col-md-4 col-lg-4'i><'col-xs-12 col-sm-12 col-md-8 col-lg-8'p>>",
+                "<'row table-users-info'<'col-xs-12 col-sm-12 col-md-4 col-lg-4'i><'col-xs-12 col-sm-12 col-md-8 col-lg-8'p>>",
                 columnDefs: [
                     {
                         "targets": "searchable-select",
@@ -399,7 +398,11 @@
                     "infoEmpty": "0",
                     "infoFiltered": "({% trans 'iz' %} _MAX_)",
                     "infoPostFix": "",
-                    "zeroRecords": "{% trans 'nichego_ne_najdeno' %}"
+                    "zeroRecords": "{% trans 'nichego_ne_najdeno' %}",
+                    "paginate": {
+                        "next": '<i class="fa fa-angle-right" aria-hidden="true"></i>',
+                        "previous": '<i class="fa fa-angle-left" aria-hidden="true"></i>'
+                    }
                 },
                 initComplete: function (settings, json) {
                     var $table = $(this);
@@ -445,7 +448,12 @@
                     });
 
                     $table.DataTable().draw();
+                    $("ul", ".dataTables_paginate").addClass("pagination-sm");
+
                 },
+                drawCallback: function (settings) {
+                    $("ul", ".dataTables_paginate").addClass("pagination-sm");
+                }
             });
         }
 
@@ -467,7 +475,7 @@
                     '    <span class="fa fa-trash-o btn-delete-role" data-toggle="popover-delete-role" tabindex="0" data-role_id="' + user_role_id + '" aria-hidden="true"></span>' +
                     '  </div>' +
                     '  <div id="user_role_collapse_' + user_role_id + '" class="collapse user-role-collapse form-block" role="tabpanel" aria-labelledby="user_role_header_' + user_role_id + '">' +
-                    '    <div class="card-block table-collapse collapse">' +
+                    '    <div class="card-block table-collapse collapse block-height">' +
                     '      <form>' +
                     '        <table class="table table-striped table-bordered table-roles" data-edit_role="true">' +
                     '          <thead><tr></tr></thead>' +
@@ -506,7 +514,7 @@
                 return $span[0].outerHTML;
             }
         })
-            .on('click', function(e) {
+            .on('click', function (e) {
                 e.stopPropagation();
                 $('span.btn-delete-role', "#modal_roles_accordion").not(this).popover('hide');
                 $(this).popover('toggle');
@@ -530,7 +538,7 @@
             var $modal = $("#modal_role");
             $modal.data("deleted_roles").push($span_data.data("role_id"));
             delete $modal.data("user_roles_changes")[$span_data.data("role_id")];
-            $($span_data.data("role_card_id") ,"#modal_role").hide();
+            $($span_data.data("role_card_id"), "#modal_role").hide();
         });
 
         $('.user-role-collapse').on('show.bs.collapse', function () {
@@ -546,12 +554,33 @@
         });
 
         var $select = $("#modal_new_role_select").html('');
-        $select.append('<option value=""></option>');
+        $select.append('<option class="multiselect-zero-item" value="">---</option>');
         if (data.hasOwnProperty("roles")) {
-            for (var role_id in data["roles"]) {
-                $select.append('<option value="' + role_id + '">' + data["roles"][role_id]["name"] + '</option>');
+            var roles = {};
+
+            for (var school_name in data["roles"]) {
+                var $opt_group = $('<optgroup label="' + school_name + '"></optgroup>').appendTo($select);
+                for (var role_id in data["roles"][school_name]) {
+                    roles[role_id] = data["roles"][school_name][role_id];
+                    $opt_group.append('<option class="multiselect-1st-subitem" value="' + role_id + '">' + data["roles"][school_name][role_id]["name"] + '</option>');
+                }
             }
+            data["roles"] = roles;
         }
+
+        $select.multiselect("destroy").multiselect({
+            buttonContainer: '<div style="width:100%;" class="multiselect-dropdown dropdown"/>',
+            buttonClass: 'btn btn-secondary btn-table',
+            templates: {
+                ul: '<ul class="multiselect-container dropdown-menu dropdown-menu-right ul-role-select"></ul>',
+                li: '<li><a tabindex="0" class="dropdown-item"><label></label></a></li>',
+            },
+            maxHeight: 200,
+            onInitialized: function (select, dropdown) {
+                $('.multiselect-group a', dropdown).prop('tabindex', '0').addClass('dropdown-item');
+            },
+        });
+
         if (show_edit_button)
             $("#modal_nav_role_user_roles").removeClass("hidden");
         else
@@ -684,6 +713,52 @@
         $modal.data("user_roles_changes", user_roles_changes);
     }
 
+    function sync_multiselect_checkboxes($select) {
+        var $ul = $select.closest("span.multiselect-native-select").find("ul.multiselect-container");
+        var parent_ids = {};
+        $select.find("option").each(function () {
+            var $option = $(this);
+            if ($option.data("parent_id")) {
+                if (!parent_ids.hasOwnProperty($option.data("parent_id")))
+                    parent_ids[$option.data("parent_id")] = {
+                        "checked": false,
+                        "not_checked": false
+                    };
+                parent_ids[$option.data("parent_id")][$option.attr("selected") ? "checked" : "not_checked"] = true;
+            }
+            var $input = $ul.find('input[value="' + $option.val() + '"]');
+            $input.prop('checked', !!$option.attr("selected"));
+            if (!!$option.attr("selected"))
+                $input.attr("checked", "checked");
+            else
+                $input.removeAttr("checked");
+        });
+
+        while (Object.keys(parent_ids).length) {
+            var new_parent_ids = {};
+            for (var parent_id in parent_ids) {
+                var $input = $ul.find('input[value="' + parent_id + '"]');
+                var checked = parent_ids[parent_id]["checked"] && !parent_ids[parent_id]["not_checked"];
+                $input.prop('checked', checked);
+                if (checked)
+                    $input.attr("checked", "checked");
+                else
+                    $input.removeAttr("checked");
+
+                var id = $select.find('optgroup[value="' + parent_id + '"]').data("parent_id");
+                if (id) {
+                    if (!new_parent_ids.hasOwnProperty(id))
+                        new_parent_ids[id] = {
+                            "checked": false,
+                            "not_checked": false
+                        };
+                    new_parent_ids[id][checked ? "checked" : "not_checked"] = true;
+                }
+            }
+            parent_ids = new_parent_ids;
+        }
+    }
+
     function init_multiselect_and_tagsinput($table, is_validate) {
         var form_validator;
         if (is_validate)
@@ -712,6 +787,7 @@
                 filterClearBtn: '<span class="input-group-btn"><button class="btn btn-secondary btn-sm multiselect-clear-filter" type="button"><span class="fa fa-times"></span></button></span>'
             },
             maxHeight: 200,
+            manualUpdateOptGroups: true,
             enableClickableOptGroups: true,
             enableCaseInsensitiveFiltering: true,
             filterPlaceholder: "{% trans "najti" %}",
@@ -729,17 +805,34 @@
                 return labels.join(', ');
             },
             buttonText: function (options, select) {
-                if (options.length === 0) {
+                var $option = select.find('option[selected="selected"]');
+                if ($option.length === 0) {
                     return '---';
                 }
 
-                return '{% trans "vybrano" %}: ' + options.length;
+                return '{% trans "vybrano" %}: ' + $option.length;
             },
-            onInitialized: function(option, dropdown, select) {
+            onInitialized: function (select, dropdown) {
                 $('.multiselect-group a', dropdown).prop('tabindex', '0').addClass('dropdown-item').find('label').addClass('checkbox');
+                sync_multiselect_checkboxes($(select));
             },
             onChange: function (option, checked) {
                 var $this_select = $(option[0]).closest("select");
+                if (!$this_select.length)
+                    return;
+
+                var $ul = $this_select.closest("span.multiselect-native-select").find("ul.multiselect-container");
+                for (var opt_i = 0; opt_i < option.length; ++opt_i) {
+                    var $opt = $(option[opt_i]);
+                    var $opts_to_change = $this_select.find('option[value="' + $opt.val() + '"]');
+                    var $ul_inputs = $ul.find('input[value="' + $opt.val() + '"]');
+
+                    if (checked)
+                        $opts_to_change.attr("selected", "selected");
+                    else
+                        $opts_to_change.removeAttr("selected");
+                }
+
                 var type = $this_select.data("type");
 
                 if (is_validate) {
@@ -754,7 +847,7 @@
                             .multiselect('refresh')
                             .closest("form").valid();
                 }
-
+                sync_multiselect_checkboxes($this_select);
                 if ($table.data("edit_role")) {
                     var $modal = $("#modal_role");
                     var user_roles_changes = $modal.data("user_roles_changes");
@@ -793,6 +886,18 @@
             },
         });
 
+        $("li.multiselect-item-main").find("input").change(function () {
+            var $input_select = $(this);
+            var checked_str = ':checked';
+            if ($input_select.is(":checked"))
+                checked_str = ':not(:checked)';
+            var $ul = $input_select.closest("ul.multiselect-container");
+            $input_select.closest("span.multiselect-native-select").find('select [data-parent_id="' + $input_select.val() + '"]').each(function () {
+                $ul.find('li:not(.multiselect-item-main) input[value=' + $(this).attr("value") + ']' + checked_str)
+                    .trigger("click");
+            });
+        });
+
         var MAX_SEARCH_SGS = 6;
         var users_bloodhound = new Bloodhound({
             datumTokenizer: function (datum) {
@@ -801,7 +906,7 @@
             queryTokenizer: Bloodhound.tokenizers.whitespace,
             remote: {
                 wildcard: '%QUERY',
-                url: '{% url search.views.ajax_search_users %}?q=%QUERY&max=' + MAX_SEARCH_SGS,
+                url: '{% url search.views.ajax_search_users %}?q=%QUERY&self=1&max=' + MAX_SEARCH_SGS,
                 transform: function (response) {
                     $('#navbar_search').data('up_limited', response.is_limited);
                     return $.map(response.result, function (user) {
@@ -930,7 +1035,7 @@
                     $this.data(e.item.type).push(e.item.id_post);
                     var $div = $this.closest('.form-block.active');
                     if ($div.length)
-                        $div.height($this.closest('form').height());
+                        $div.height($this.closest('.block-height').outerHeight());
                     form_validator.element($this);
                     if (!$this.data("mass_change"))
                         $('input.users-or-groups', $this.closest(".table-collapse").find(".mass-select")).tagsinput('removeAll');
@@ -946,7 +1051,7 @@
                     }
                     var $div = $this.closest('.form-block.active');
                     if ($div.length)
-                        $div.height($this.closest('form').height());
+                        $div.height($this.closest('.block-height').outerHeight());
                     form_validator.element($this);
                     if (!$this.data("mass_change"))
                         $('input.users-or-groups', $this.closest(".table-collapse").find(".mass-select")).tagsinput('removeAll');

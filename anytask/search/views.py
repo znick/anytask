@@ -37,7 +37,7 @@ def ajax_search_users(request):
     else:
         max_result = 3
 
-    result, _ = search_users(request.GET.get('q', ''), request.user, max_result + 1)
+    result, _ = search_users(request.GET.get('q', ''), request.user, max_result + 1, bool(request.GET.get("self", 0)))
 
     return HttpResponse(json.dumps({'result': result[:max_result],
                                     'is_limited': True if len(result) > max_result else False}),
@@ -61,7 +61,7 @@ def ajax_search_courses(request):
                         content_type='application/json')
 
 
-def search_users(query, user, max_result=None):
+def search_users(query, user, max_result=None, include_self=False):
     result = []
     result_objs = []
 
@@ -71,7 +71,9 @@ def search_users(query, user, max_result=None):
         if not user_is_staff:
             user_is_teacher = True if Course.objects.filter(teachers=user).count() else False
 
-        sgs = SearchQuerySet().models(UserProfile).exclude(user_id=user.id)
+        sgs = SearchQuerySet().models(UserProfile)
+        if not include_self:
+            sgs = sgs.exclude(user_id=user.id)
 
         sgs_fullname = sgs.autocomplete(fullname_auto=query)
 
