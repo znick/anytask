@@ -105,3 +105,23 @@
 .card-header {
     background-color: inherit;
 }
+
+.child-info a.card-link {
+    color: #373a3c;
+}
+
+.child-info a.card-link:hover {
+    color: #014c8c;
+}
+
+.child-info a.img-link {
+    text-decoration: none;
+}
+
+.child-info a.img-link {
+    margin-right: .5rem;
+}
+
+.child-info + .child-info {
+    margin-top: .75rem;
+}

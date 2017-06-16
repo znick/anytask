@@ -178,19 +178,72 @@
                                 <div id="modal_new_role_collapse">
                                     <div id='modal_new_role_select_block'>
                                         <div class="form-group row">
-                                            <label class="col-lg-1 col-md-1 col-sm-2 col-xs-2 form-control-label" for="modal_new_role_select">{% trans "rol" %}</label>
-                                            <div class="controls col-lg-11 col-md-11 col-sm-10 col-xs-10">
+                                            <label class="col-lg-2 col-md-2 col-sm-3 col-xs-3 form-control-label" for="modal_new_role_select">{% trans "rol" %}</label>
+                                            <div class="controls col-lg-10 col-md-10 col-sm-9 col-xs-9">
                                                 <select id="modal_new_role_select" class="form-control"></select>
                                             </div>
                                         </div>
                                     </div>
                                     <div id="modal_new_role_settings" class="collapse table-collapse">
                                         <div id="modal_new_role_simple_settings" class="mass-select">
-
+                                            <div class="form-group row" id="modal_role_new_schools">
+                                                <label class="col-lg-2 col-md-2 col-sm-3 col-xs-3 form-control-label">{% trans "shkoly" %}</label>
+                                                <div class="controls col-lg-10 col-md-10 col-sm-9 col-xs-9">
+                                                    <select multiple="multiple" data-type="schools">
+                                                        {% for school_id, school_name in schools.iteritems %}
+                                                            <option value="{{ school_id }}">{{ school_name }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row" id="modal_role_new_courses">
+                                                <label class="col-lg-2 col-md-2 col-sm-3 col-xs-3 form-control-label">{% trans "kursy" %}</label>
+                                                <div class="controls col-lg-10 col-md-10 col-sm-9 col-xs-9">
+                                                    <select multiple="multiple" data-type="courses">
+                                                        {% for school_info, course_info in courses.iteritems %}
+                                                            <optgroup label="{{ school_info.1 }}" data-id="{{ school_info.0 }}" value="s_{{ school_info.0 }}">
+                                                                {% for course_id, course_name in course_info.iteritems %}
+                                                                    <option data-parent_id="s_{{ school_info.0 }}" class="multiselect-1st-subitem" value="{{ course_id }}">{{ course_name }}</option>
+                                                                {% endfor %}
+                                                            </optgroup>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row" id="modal_role_new_groups">
+                                                <label class="col-lg-2 col-md-2 col-sm-3 col-xs-3 form-control-label">{% trans "gruppy" %}</label>
+                                                <div class="controls col-lg-10 col-md-10 col-sm-9 col-xs-9">
+                                                    <select multiple="multiple" data-type="groups">
+                                                        {% for school_info, courses_info in groups.iteritems %}
+                                                            <optgroup label="{{ school_info.1 }}" data-id="{{ school_info.0 }}" class="multiselect-item-main" value="s_{{ school_info.0 }}">
+                                                                {% for course_info, groups_info in courses_info.iteritems %}
+                                                                    <optgroup label="{{ course_info.1 }}" data-id="{{ course_info.0 }}" data-parent_id="s_{{ school_info.0 }}" class="multiselect-item-main-subitem multiselect-1st-subitem" value="c_{{ school_info.0 }}_{{ course_info.0 }}">
+                                                                        {% for group_id, group_name in groups_info.iteritems %}
+                                                                            <option data-parent_id="c_{{ school_info.0 }}_{{ course_info.0 }}" class="multiselect-2st-subitem" value="{{ group_id }}">{{ group_name }}</option>
+                                                                        {% endfor %}
+                                                                    </optgroup>
+                                                                {% endfor %}
+                                                            </optgroup>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row" id="modal_role_new_users">
+                                                <label class="col-lg-2 col-md-2 col-sm-3 col-xs-3 form-control-label">{% trans "polzovateli" %}</label>
+                                                <div class="controls col-lg-10 col-md-10 col-sm-9 col-xs-9">
+                                                    <div data-type="users" class="users-or-groups-div">
+                                                        <input type="text" class="form-control typeahead users-or-groups" id="modal_role_new_users_input" placeholder="{% trans "vvedite_imya" %}">
+                                                        <button type="button" class="btn-add-tags" data-toggle="modal" data-target="#modal_add_group" title="{% trans "dobavit_kurs_gruppu_ili_status" %}">
+                                                            <span class="add-group">+</span><span class="fa fa-users" aria-hidden="true"></span>
+                                                        </button>
+                                                        <small class="text-help" ></small>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                         <div id="modal_new_role_table_body" class="hidden">
                                             <div id="modal_new_role_table" class="form-block">
-                                                <form id="modal_new_role_form">
+                                                <form id="modal_new_role_form" class="block-height">
                                                     <table class="table table-striped table-bordered table-roles" for="#modal_new_role_table_body">
                                                         <thead><tr></tr></thead>
                                                         <tbody></tbody>
@@ -211,4 +264,6 @@
             </div>
         </div>
     </div>
+
+    {% include "add_user_or_group.html" %}
 {% endblock %}

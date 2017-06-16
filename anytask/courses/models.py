@@ -149,12 +149,10 @@ class Course(models.Model):
     def get_absolute_url(self):
         return reverse('courses.views.course_page', args=[str(self.id)])
 
-    def user_can_edit_course(self, user):
-        if user.is_anonymous():
-            return False
-        if user.is_superuser:
+    def user_can_edit_course_info(self, user):
+        if user.has_perm('change_course_info', self):
             return True
-        return self.user_is_teacher(user)
+        return False
 
     def user_is_teacher(self, user):
         if user.is_superuser or user.is_staff:
@@ -196,7 +194,6 @@ class Course(models.Model):
 
     def get_user_tasks_by_perm(self, user, perm_codename):
         return get_model('tasks', 'Task').objects.filter(groups__in=self.get_user_groups_by_perm(user, perm_codename))
-
 
     def get_user_groups_by_perm(self, user, perm_codename):
         return self.groups.filter(
@@ -254,6 +251,7 @@ class Course(models.Model):
             ('change_course_settings', 'Change course settings'),
             ('view_course_queue', 'View course queue'),
             ('teacher_in_course', 'Teacher in course'),
+            ('change_course_info', 'Change course info'),
         )
 
 

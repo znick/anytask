@@ -1,0 +1,33 @@
+#modal_add_group .modal-body {
+    max-height: none;
+}
+
+#modal_add_group .modal-body ul.nav-pills{
+    margin-bottom: 1rem;
+}
+
+#modal_add_group .ms-container {
+    width: 100%;
+}
+
+#modal_add_group .multiselect-container li:not(.multiselect-item) label{
+    padding-left: 60px;
+}
+
+#modal_add_group .multiselect-container li.multiselect-group label {
+    padding-left: 40px;
+}
+
+#modal_add_group .build-in {
+    position: relative;
+    margin: 0 -15px;
+}
+
+#modal_add_group .build-in .filter {
+    margin: 0 15px;
+}
+
+#modal_add_group .build-in li label {
+    text-overflow: ellipsis;
+    overflow: hidden;
+}

@@ -352,6 +352,7 @@
                     <p>{% trans "importirovat_polja_iz_kontesta" %}:</p>
                     <form method="post" id="task_update_form">
                         {% csrf_token %}
+                        <input type="hidden" name="update" value="1">
                         <input type="hidden" name="task_id" value="{{ task.id }}">
                         <input type="hidden" name="course_id" value="{{ course.id }}">
                         <input type="hidden" name="contest_id" value="{{ task.contest_id }}">

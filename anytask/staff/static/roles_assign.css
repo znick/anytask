@@ -17,6 +17,14 @@
     color: #000;
 }
 
+.table-users-info {
+    margin-top: 1rem;
+}
+
+.dataTables_paginate .fa {
+    line-height: 1.5;
+}
+
 .table-container {
     display: none;
 }
@@ -120,6 +128,56 @@
     width: 100%;
 }
 
+#modal_role .multiselect-container li.multiselect-1st-subitem label {
+    padding-left: 40px;
+}
+
+#modal_role .multiselect-container li.multiselect-2st-subitem label {
+    padding-left: 50px;
+}
+
+#modal_role ul.ul-role-select.multiselect-container {
+    width: 100%;
+}
+
+#modal_role ul.ul-role-select.multiselect-container li input[type="radio"] {
+    display: none;
+}
+
+#modal_role ul.ul-role-select.multiselect-container li.multiselect-zero-item label {
+    font-weight: bold;
+}
+
+#modal_role ul.ul-role-select.multiselect-container li.active a {
+    color: #2b2d2f;
+    text-decoration: none;
+    background-color: #f5f5f5;
+}
+
+#modal_role ul.ul-role-select.multiselect-container li.multiselect-zero-item label,
+#modal_role ul.ul-role-select.multiselect-container li.multiselect-group label {
+    padding-left: 10px;
+}
+
+#modal_role ul.ul-role-select.multiselect-container li.multiselect-group:focus{
+    outline: none;
+}
+
+#modal_role ul.ul-role-select.multiselect-container li.multiselect-group label{
+    cursor: default;
+}
+#modal_role ul.ul-role-select.multiselect-container li.multiselect-group a:focus,
+#modal_role ul.ul-role-select.multiselect-container li.multiselect-group a:hover {
+    outline: none;
+    color: inherit;
+    text-decoration: none;
+    background-color: inherit;
+}
+
+#modal_role ul.ul-role-select.multiselect-container li.multiselect-1st-subitem label {
+    padding-left: 20px;
+}
+
 #modal_new_role_adv_settings_btn {
     margin-bottom: 1.25rem;
 }
@@ -206,4 +264,101 @@
 .popover-footer .btn + .btn {
     margin-bottom: 0;
     margin-left: 5px;
+}
+
+.bootstrap-tagsinput {
+    display: block;
+    width: 100%;
+    padding: .375rem 2.375rem .375rem .75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #55595c;
+    background-color: #fff;
+    background-image: none;
+    border: 1px solid #ccc;
+    border-radius: .25rem;
+}
+
+.bootstrap-tagsinput.focus {
+    border-color: #66afe9;
+    outline: 0;
+}
+
+.bootstrap-tagsinput .twitter-typeahead {
+    float: none !important;
+    display: inline !important;
+    position: static !important;
+}
+
+.bootstrap-tagsinput .tt-menu {
+    padding: 0;
+    /*left: .9375rem !important;*/
+    /*width: calc(100% - 1.875rem);*/
+}
+
+.bootstrap-tagsinput input {
+    padding: 0;
+}
+
+.bootstrap-tagsinput .tag {
+    white-space: normal;
+}
+
+.bootstrap-tagsinput .sgs-result-up table tr {
+    background-color: transparent;
+}
+
+.bootstrap-tagsinput .sgs-result-up table td {
+    border-width: 0;
+    padding: 0;
+    font-weight: normal;
+    line-height: 1.42857143;
+}
+
+.btn-add-tags {
+    position: absolute;
+    top: 0;
+    right: 0;
+    cursor: pointer;
+    background: 0 0;
+    border: 0;
+    line-height: 1;
+    color: #000;
+    text-shadow: 0 1px 0 #fff;
+    opacity: .2;
+}
+
+.btn-add-tags:hover,
+.btn-add-tags:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+    opacity: .5;
+    outline: 0;
+}
+
+.has-danger .bootstrap-tagsinput {
+    border-color: #d9534f;
+}
+
+.btn-add-tags span.fa {
+    line-height: 1.5;
+}
+
+.btn-add-tags span:not(.fa) {
+    font-weight: bold;
+}
+
+.users-or-groups-div {
+    position: relative;
+    box-sizing: border-box;
+    text-align: left;
+}
+
+#modal_add_group {
+    z-index: 1052;
+}
+
+div.modal-backdrop.fade.in + div.modal-backdrop.fade.in {
+    z-index: 1051;
 }

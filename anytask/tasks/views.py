@@ -372,10 +372,23 @@ def get_contest_problems(request):
     if request.method != 'POST':
         raise PermissionDenied
 
+    user = request.user
+
     course = get_object_or_404(Course, id=request.POST['course_id'])
 
-    if not course.user_can_edit_course(request.user):
-        raise PermissionDenied
+    if "update" in request.POST:
+        if "task_id" not in request.POST:
+            raise PermissionDenied
+
+        if not Task.objects.filter(
+                id=request.POST['task_id'],
+                groups__in=course.get_user_groups_by_perm(user, 'change_task_contest')
+        ).exists():
+            raise PermissionDenied
+    else:
+        groups_available = set(course.get_user_groups_by_perm(user, 'create_task').values_list("id", flat=True))
+        if not groups_available:
+            raise PermissionDenied
 
     contest_id = request.POST['contest_id']
     is_error = False
@@ -422,12 +435,12 @@ def prettify_contest_task_text(task_text):
 def contest_task_import(request):
     if not request.method == 'POST':
         raise PermissionDenied
-    
+
     user = request.user
 
     course_id = int(request.POST['course_id'])
     course = get_object_or_404(Course, id=course_id)
-    
+
     groups_available = set(course.get_user_groups_by_perm(user, 'create_task').values_list("id", flat=True))
     if not groups_available:
         raise PermissionDenied
@@ -522,9 +535,6 @@ def contest_task_import(request):
     else:
         raise PermissionDenied
 
-    if not course.user_can_edit_course(user):
-        raise PermissionDenied
-
     for task in tasks:
         real_task = Task()
         real_task.course = course
@@ -572,14 +582,14 @@ def contest_task_import(request):
         real_task.is_hidden = hidden_task
         real_task.updated_by = user
         real_task.save()
-        
+
         task_groups = set(map(lambda a: int(a), request.POST.getlist('task_group_id[]')))
         if not task_groups:
             raise PermissionDenied
 
         if task_groups - groups_available:
             raise PermissionDenied
-        
+
         real_task.groups = task_groups
         real_task.set_position_in_new_group(real_task.groups.all())
 

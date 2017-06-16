@@ -26,10 +26,11 @@ from guardian.decorators import permission_required_or_403
 from guardian.shortcuts import get_objects_for_user
 from guardian.utils import get_user_obj_perms_model
 from permissions.decorators import any_obj_permission_required_or_403
-from permissions.common import get_perm_local_name, get_superuser_perms, assign_perm_by_id, remove_perm_by_id
-from permissions.models import PermissionsVisible, RolesVisible
+from permissions.common import get_perm_local_name, get_superuser_perms, assign_perm_by_id, remove_perm_by_id, \
+    PERMS_GLOBAL, get_name_without_uuid
+from permissions.models import PermissionsVisible, RolesVisible, UserPermissionToUsers
 
-from django.contrib.auth.decorators import user_passes_test
+from users.model_user_status import get_statuses
 
 from collections import defaultdict
 
@@ -96,7 +97,7 @@ def get_roles_table_by_school(perms_translated, roles):
         for role_i, role in enumerate(roles):
             header.append({
                 'id': role.id,
-                'name': role.name
+                'name': get_name_without_uuid(role.name)
             })
             for perm in role.permissions.all():
                 if perm.id not in perms_translated:
@@ -331,7 +332,7 @@ def get_users_info(users_raw, school_id=None):
             users_info[user_info_raw["id"]]["roles"] = add_user_info(
                 users_info[user_info_raw["id"]]["roles"],
                 user_info_raw["userroles__roles__id"],
-                name=user_info_raw["userroles__roles__name"]
+                name=get_name_without_uuid(user_info_raw["userroles__roles__name"])
             )
     return users_info
 
@@ -339,8 +340,11 @@ def get_users_info(users_raw, school_id=None):
 def get_users_info_by_school(schools):
     users_tables = []
     for school in schools:
+        qs_filter = Q(group__course__school=school) | \
+                    Q(course_teachers_set__school=school) | \
+                    Q(userroles__school=school)
         users_info_raw = User.objects \
-            .filter(Q(group__course__school=school) | Q(course_teachers_set__school=school)) \
+            .filter(qs_filter) \
             .distinct() \
             .values(
             "id",
@@ -357,7 +361,6 @@ def get_users_info_by_school(schools):
             "userroles__roles__id",
             "userroles__roles__name",
         )
-
 
         users_tables.append({
             'school_info': {
@@ -378,9 +381,23 @@ def roles_assign_page(request):
 
     if user.is_superuser:
         schools = School.objects.all()
+
+        users_tables += get_users_info_by_school(schools)
+    else:
+        perm_app_label = 'schools'
+        perm_codename = 'change_permissions'
+        schools = get_objects_for_user(user, '.'.join([perm_app_label, perm_codename])).order_by('id')
+
+        if not schools:
+            raise PermissionDenied
+
+        users_tables = get_users_info_by_school(schools)
+
+    if user.has_perm('users.change_perms_for_null_school_users'):
         users_info_raw = User.objects \
             .exclude(group__course__school__in=schools) \
             .exclude(course_teachers_set__school__in=schools) \
+            .exclude(userroles__school__in=schools) \
             .distinct() \
             .values(
             "id",
@@ -396,8 +413,7 @@ def roles_assign_page(request):
             "userroles__roles__id",
             "userroles__roles__name",
         )
-
-        users_tables.append({
+        users_tables.insert(0, {
             'school_info': {
                 'id': 0,
                 'name': _(u'bez_shkoly')
@@ -405,21 +421,37 @@ def roles_assign_page(request):
             'users_info': get_users_info(users_info_raw)
         })
 
-        users_tables += get_users_info_by_school(schools)
-    else:
-        perm_app_label = 'schools'
-        perm_codename = 'change_permissions'
-        schools = get_objects_for_user(user, '.'.join([perm_app_label, perm_codename])).order_by('id')
-
-        if not schools:
-            raise PermissionDenied
-
-        users_tables = get_users_info_by_school(schools)
+    schools_info = {}
+    courses_info = defaultdict(dict)
+    groups_info = defaultdict(dict)
+    for info_raw in schools.values(
+            "id",
+            "name",
+            "courses__id",
+            "courses__is_active",
+            "courses__name",
+            "courses__groups__id",
+            "courses__groups__name",
+    ):
+        schools_info[info_raw["id"]] = info_raw["name"]
+        if info_raw["courses__id"]:
+            courses_info_i = (info_raw["id"], info_raw["name"])
+            courses_info[courses_info_i][info_raw["courses__id"]] = info_raw["courses__name"]
+            if info_raw["courses__groups__id"]:
+                groups_info_i = (info_raw["courses__id"], info_raw["courses__name"])
+                if groups_info_i not in groups_info[courses_info_i]:
+                    groups_info[courses_info_i][groups_info_i] = {}
+                groups_info[courses_info_i][groups_info_i][info_raw["courses__groups__id"]] = \
+                    info_raw["courses__groups__name"]
 
     context = {
         'user': user,
         'full_width_page': True,
         'users_tables': users_tables,
+        'schools': schools_info,
+        'courses': dict(courses_info),
+        'groups': dict(groups_info),
+        'statuses': get_statuses(),
     }
     return render_to_response('roles_assign.html', context, context_instance=RequestContext(request))
 
@@ -428,7 +460,7 @@ def get_roles_perms(roles):
     roles_info = {}
     for role in roles:
         roles_info[role.id] = {
-            'name': role.name,
+            'name': get_name_without_uuid(role.name),
             'perms': defaultdict(dict)
         }
         for perm in role.permissions.all():
@@ -439,6 +471,16 @@ def get_roles_perms(roles):
                 'name': perm_local_name,
                 'model_name': group_local_name,
             }
+
+    return roles_info
+
+
+def get_roles_info(roles_visible_set, include_school_isnull=False):
+    roles_info = {}
+    for roles_visible in roles_visible_set:
+        roles_info[roles_visible.school.name] = get_roles_perms(roles_visible.roles.all())
+    if include_school_isnull:
+        roles_info[_(u"obshchiye_roli")] = get_roles_perms(Role.objects.filter(rolesvisible__isnull=True))
 
     return roles_info
 
@@ -457,7 +499,6 @@ def ajax_get_user_roles_info(request):
     school_id = int(request.GET["school_id"])
 
     if user.is_superuser:
-        schools_qs = School.objects.all()
         try:
             user_to_change = User.objects.get(id=request.GET['user_id'])
         except User.DoesNotExist:
@@ -467,102 +508,65 @@ def ajax_get_user_roles_info(request):
         if school_id != 0:
             user_roles_qs = user_roles_qs.filter(userroles__school__id=school_id)
 
-            perms_visible, roles_visible = get_perms_roles_visible(
-                [school_id],
-                only_roles=True
-            )
-            roles = roles_visible[0].roles.all() if roles_visible else Role.objects.none()
-        else:
-            roles = Role.objects.all()
+        perms_visible, roles_visible = get_perms_roles_visible(
+            School.objects.all(),
+            only_roles=True
+        )
+        roles_info = get_roles_info(roles_visible, True)
 
     else:
         perm_app_label = 'schools'
         perm_codename = 'change_permissions'
-        schools_qs = School.objects.filter(id=school_id)
+        schools_qs = get_objects_for_user(user, '.'.join([perm_app_label, perm_codename])).order_by('id')
+        if not (school_id == 0 and user.has_perm('users.change_perms_for_null_school_users') or
+                    schools_qs.filter(id=school_id).exists()):
+            raise PermissionDenied
 
-        if not schools_qs:
-            raise PermissionDenied
-        if not user.has_perm('.'.join([perm_app_label, perm_codename]), schools_qs[0]):
-            raise PermissionDenied
+        if school_id == 0 and user.has_perm('users.change_perms_for_null_school_users'):
+            qs_filter = Q(group__isnull=True, course_teachers_set__isnull=True, userroles__isnull=True)
+        else:
+            qs_filter = Q(group__course__school__in=schools_qs) | \
+                        Q(course_teachers_set__school__in=schools_qs) | \
+                        Q(userroles__school__in=schools_qs)
 
         user_to_change = User.objects \
-            .filter(Q(group__course__school=schools_qs[0]) | Q(course_teachers_set__school=schools_qs[0])) \
+            .filter(qs_filter) \
             .filter(id=request.GET['user_id']) \
             .distinct()
         if not user_to_change:
             raise PermissionDenied
 
         user_to_change = user_to_change[0]
-        user_roles_qs = Role.objects.filter(userroles__user=user_to_change, userroles__school=schools_qs[0])
+        user_roles_qs = Role.objects.filter(userroles__user=user_to_change, userroles__school__id=school_id)
 
         perms_visible, roles_visible = get_perms_roles_visible(
-            [schools_qs[0]],
+            schools_qs,
             perm_app_label,
             perm_codename,
             only_roles=True
         )
-        roles = roles_visible[0].roles.all() if roles_visible else Role.objects.none()
+        roles_info = get_roles_info(roles_visible)
 
     user_roles = {}
-    for user_role in user_roles_qs:
+    for user_role in user_roles_qs.distinct():
         user_roles[user_role.id] = {
-            'name': user_role.name,
+            'name': get_name_without_uuid(user_role.name),
             'perms': user_to_change.get_profile().get_perms_by_role(user_role)
         }
-
-    schools = {}
-    courses = {}
-    groups = {}
-    for info_raw in schools_qs.values(
-            "id",
-            "name",
-            "courses__id",
-            "courses__is_active",
-            "courses__name",
-            "courses__groups__id",
-            "courses__groups__name",
-    ):
-        if info_raw["id"]:
-            schools[info_raw["id"]] = info_raw["name"]
-        if info_raw["courses__id"]:
-            courses[info_raw["courses__id"]] = info_raw["courses__name"]
-        if info_raw["courses__groups__id"]:
-            groups[info_raw["courses__groups__id"]] = info_raw["courses__groups__name"]
-
-            # if info_raw["id"] not in courses:
-            #     courses[info_raw["id"]] = {
-            #         "name": info_raw["name"],
-            #         "values": {},
-            #     }
-            # courses[info_raw["id"]]["values"][info_raw["courses__id"]] = info_raw["courses__name"]
-            #
-            # if info_raw["courses__id"] not in groups:
-            #     groups[info_raw["courses__id"]] = {
-            #         "name": info_raw["courses__name"],
-            #         "values": {},
-            #     }
-            # groups[info_raw["courses__id"]]["values"][info_raw["courses__groups__id"]] = \
-            #     info_raw["courses__groups__name"]
-
-    response["schools"] = schools
-    response["courses"] = courses
-    response["groups"] = groups
-    response["type_trans"] = {
-        "schools" : _(u'shkoly'),
-        "courses" : _(u'kursy'),
-        "groups" : _(u'gruppy'),
-    }
     response["user_roles"] = user_roles
-    response["roles"] = get_roles_perms(roles.exclude(id__in=user_roles.keys()))
+    response["roles"] = roles_info
+    response["perms_global"] = PERMS_GLOBAL
 
     return HttpResponse(json.dumps(response), content_type="application/json")
 
 
-def get_roles_by_id(role_ids, school, is_superuser):
+def get_roles_by_id(role_ids, is_superuser, roles_visible_ids=None):
     if is_superuser:
         roles = Role.objects.filter(id__in=role_ids)
     else:
-        roles = Role.objects.filter(id__in=role_ids, rolesvisible__school=school)
+        if not roles_visible_ids:
+            roles_visible_ids = []
+        roles = Role.objects.filter(id__in=role_ids).filter(id__in=roles_visible_ids)
 
     if not roles:
         raise PermissionDenied
@@ -589,6 +593,7 @@ def ajax_save_user_roles(request):
         except School.DoesNotExist:
             raise PermissionDenied
 
+    roles_visible_ids = []
     if user.is_superuser:
         try:
             user_to_change = User.objects \
@@ -597,43 +602,71 @@ def ajax_save_user_roles(request):
         except User.DoesNotExist:
             raise PermissionDenied
     else:
-        if not user.has_perm("schools.change_permissions", school):
+        if not (school_id == 0 and user.has_perm('users.change_perms_for_null_school_users') or
+                        school and user.has_perm("schools.change_permissions", school)):
             raise PermissionDenied
 
+        if school_id == 0 and user.has_perm('users.change_perms_for_null_school_users'):
+            qs_filter = Q(group__isnull=True, course_teachers_set__isnull=True, userroles__isnull=True)
+        else:
+            qs_filter = Q(group__course__school=school) | \
+                        Q(course_teachers_set__school=school) | \
+                        Q(userroles__school=school)
         try:
             user_to_change = User.objects \
-                .filter(Q(group__course__school=school) | Q(course_teachers_set__school=school)) \
+                .filter(qs_filter) \
                 .distinct() \
                 .get(id=request.POST['user_id'])
         except User.DoesNotExist:
             raise PermissionDenied
 
+        roles_visible_ids = RolesVisible.objects \
+            .filter(school__in=get_objects_for_user(user, 'schools.change_permissions')) \
+            .distinct() \
+            .values_list('roles__id', flat=True)
+
     user_to_change_profile = user_to_change.get_profile()
     if "role_id" in request.POST and 'new_role_perms' in request.POST:
-        role = get_roles_by_id([request.POST['role_id']], school, user.is_superuser)
+        role = get_roles_by_id([request.POST['role_id']], user.is_superuser, roles_visible_ids)
         user_to_change_profile.add_role(role[0], json.loads(request.POST['new_role_perms']), school)
 
     if "deleted_roles[]" in request.POST and 'new_role_perms' in request.POST:
-        deleted_roles = get_roles_by_id(request.POST.getlist("deleted_roles[]"), school, user.is_superuser)
+        deleted_roles = get_roles_by_id(request.POST.getlist("deleted_roles[]"), user.is_superuser, roles_visible_ids)
         for role in deleted_roles:
             user_to_change_profile.remove_role(role, school)
 
     if "user_roles_changes" in request.POST:
         for role_id, role_changes in json.loads(request.POST["user_roles_changes"]).iteritems():
+            try:
+                role = Role.objects.get(id=role_id)
+            except Role.DoesNotExist:
+                raise PermissionDenied
+
             for perm_id, perm_info in role_changes.iteritems():
                 try:
                     perm = Permission.objects.get(id=perm_id)
                 except Permission.DoesNotExist:
                     raise PermissionDenied
 
-                model = perm.content_type.model_class()
-                try:
+                is_user_perm_to_users = False
+                for change_type in ['add', 'remove']:
+                    changes = perm_info.get(change_type, [])
+                    if changes:
+                        if type(changes[0]) == dict:
+                            is_user_perm_to_users = True
+                            for obj in changes:
+                                user_perm_to_users, created = UserPermissionToUsers.objects \
+                                    .get_or_create(user=user_to_change, permission=perm, role_from=role)
+                                user_perm_to_users.change_by_obj(obj, change_type == 'add')
+                        else:
+                            break
+
+                if not is_user_perm_to_users:
+                    model = perm.content_type.model_class()
                     for obj in model.objects.filter(id__in=perm_info.get("add", [])):
-                        assign_perm_by_id(perm, user_to_change, obj, role_id)
-                except Exception as e:
-                    print e
-                for obj in model.objects.filter(id__in=perm_info.get("remove", [])):
-                    remove_perm_by_id(perm, user_to_change, obj, role_id)
+                        assign_perm_by_id(perm, user_to_change, obj, role)
+                    for obj in model.objects.filter(id__in=perm_info.get("remove", [])):
+                        remove_perm_by_id(perm, user_to_change, obj, role)
 
     return HttpResponse("OK")
 

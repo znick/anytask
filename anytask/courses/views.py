@@ -181,9 +181,9 @@ def course_page(request, course_id):
                                    'school': schools[0] if schools else '',
                                    'invite_form': InviteActivationForm()},
                                   context_instance=RequestContext(request))
-    course.can_edit = course.user_can_edit_course(user)
-    if course.can_edit:
-        groups = course.groups.all().order_by('name')
+
+    groups = course.get_user_groups_by_perm(user, 'view_task_settings').order_by('name')
+    if groups:
         tasks = [{'group': tgr.group, 'task': tgr.task} for tgr in
                  TaskGroupRelations.objects.filter(task__course=course, group__in=groups, deleted=False).order_by(
                      'group', 'position')]
@@ -216,6 +216,7 @@ def course_page(request, course_id):
     context['groups_with_gradebook'] = course.get_user_groups_by_perm(user, 'view_gradebook')
     context['can_add_task'] = course.get_user_groups_by_perm(user, 'create_task').exists()
     context['tasks_editable'] = course.get_user_tasks_by_perm(user, 'view_task_settings')
+    context['can_edit_course_info'] = course.user_can_edit_course_info(user)
 
     return render_to_response('courses/course.html', context, context_instance=RequestContext(request))
 
@@ -242,10 +243,10 @@ def seminar_page(request, course_id, task_id):
                                    'school': schools[0] if schools else '',
                                    'invite_form': InviteActivationForm()},
                                   context_instance=RequestContext(request))
-    course.can_edit = course.user_can_edit_course(user)
 
-    if course.can_edit:
-        groups = task.groups.all().order_by('name')
+    groups = course.get_user_groups_by_perm(user, 'view_task_settings').order_by('name') & \
+             task.groups.all().order_by('name')
+    if groups:
         tasks = [{'group': tgr.group, 'task': tgr.task} for tgr in
                  TaskGroupRelations.objects.filter(task__parent_task=task, group__in=groups, deleted=False).order_by(
                      'group',
@@ -294,7 +295,6 @@ def tasklist_shad_cpp(request, course, seminar=None, group=None):
     else:
         groups = course.groups.all().order_by('name')
 
-    course.can_edit = course.user_can_edit_course(user)
     if course.can_be_chosen_by_extern:
         course.groups.add(course.group_with_extern)
 
@@ -493,7 +493,7 @@ def edit_course_information(request):
 
     course = get_object_or_404(Course, id=course_id)
 
-    if not course.user_can_edit_course(user):
+    if not course.user_can_edit_course_info(user):
         return HttpResponseForbidden()
 
     if course_information and not course_information.startswith(u'<div class="not-sanitize">'):

@@ -6,8 +6,13 @@ from django.core.exceptions import PermissionDenied
 
 from guardian.utils import get_user_obj_perms_model
 
+import uuid
+
+PERMS_GLOBAL = {
+    'users': ['view_backoffice_page', 'change_perms_for_null_school_users'],
+}
+
 PERMS_CLASSES = {
-    'users': ['userprofileuserobjectpermission'],
     'schools': ['schooluserobjectpermission'],
     'courses': ['courseuserobjectpermission'],
     'groups': ['groupuserobjectpermission'],
@@ -23,6 +28,10 @@ LOCALE_PERMS_APP_NAMES = {
 LOCALE_PERMS_NAMES = {
     'users': {
         'view_backoffice_page': _(u'prosmotr_backoffice'),
+        'parent': _(u'roditel'),
+        'view_profile': _(u'prosmotr_profilya'),
+        'view_profile_courses_page': _(u'prosmotr_stranitsy_kursov_v_profile'),
+        'change_perms_for_null_school_users': _(u'izmeneniye_dostupov_pol_bez_shkoly'),
     },
     'schools': {
         'view_permissions': _(u'prosmotr_dostupov'),
@@ -36,6 +45,7 @@ LOCALE_PERMS_NAMES = {
         'change_course_settings': _(u'izmenenie_nastroyek_kursa'),
         'view_course_queue': _(u'prosmotr_ocheredi_na_proverku'),
         'teacher_in_course': _(u'uchitel_v_kursakh'),
+        'change_course_info': _(u'izmeneniye_opisaniya_kursa'),
     },
     'groups': {
         'student_in_group': _(u'student_v_gruppakh'),
@@ -55,6 +65,21 @@ LOCALE_PERMS_NAMES = {
         'change_task_one_file_upload': _(u'izmeneniye_otpravki_tolko_odnogo_fayla_zadach'),
     }
 }
+
+
+def get_name_without_uuid(name):
+    if not name:
+        return name
+
+    name_splited = name.split('_')
+    if len(name_splited) == 1:
+        return name
+
+    try:
+        uuid.UUID(name_splited[-1])
+        return '_'.join(name_splited[:-1])
+    except ValueError:
+        return name
 
 
 def get_perm_local_name(perm):
