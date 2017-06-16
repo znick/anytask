@@ -480,7 +480,7 @@ def get_roles_info(roles_visible_set, include_school_isnull=False):
     for roles_visible in roles_visible_set:
         roles_info[roles_visible.school.name] = get_roles_perms(roles_visible.roles.all())
     if include_school_isnull:
-        roles_info[u"obshchiye_roli"] = get_roles_perms(Role.objects.filter(rolesvisible__isnull=True))
+        roles_info[_(u"obshchiye_roli")] = get_roles_perms(Role.objects.filter(rolesvisible__isnull=True))
 
     return roles_info
 
