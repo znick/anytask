@@ -22,35 +22,28 @@
             minuteStep: 30
         });
 
-        var now = new Date();
-        function addMinutes(date, minutes) {
-            return new Date(date.getTime() + minutes*60000);
+        function strToDate(val) {
+            var date_time = val.split(' ');
+            var date_ = date_time[0].split('-');
+            return new Date(date_[2] + '-' + date_[1] + '-' + date_[0] + ' ' + date_time[1]);
         }
-
-        if (!($("#lesson_edit_date_start").find('input').val())) {
-            $('#lesson_edit_date_start').datetimepicker('update', now);
-            $('#lesson_edit_date_finish').datetimepicker('update', addMinutes(now, 90));
-        }
-
-        $('#lesson_edit_date_start').on('changeDate', function(val){
-                $('#lesson_edit_date_finish').datetimepicker('update', addMinutes(val.date, 90))
-                                             .datetimepicker('setStartDate', val.date)
-                                             .datetimepicker('setEndDate', addMinutes(val.date, 240));
-                $('#lesson_end_date').datetimepicker('setStartDate', val.date)
-                                     .datetimepicker('setEndDate', addMinutes(val.date, 262800));
-        });
-
-        $('#lesson_edit_date_finish').datetimepicker('setEndDate', addMinutes(now, 240));
-
-        $('#lesson_end_date').datetimepicker('setStartDate', now).datetimepicker('setEndDate', addMinutes(now, 262800));
-
-        $('#lesson_edit_form').change(function () {
-            $('#lesson_submit_error_text').empty();
-            $('#lesson_edit_form').data('changed', true);
-        });
 
         $.validator.addMethod("required_with_disabled", function(value, element) {
             return !!value;
+        });
+
+        var is_date_valid;
+        $.validator.addMethod("required_date", function(value, element) {
+            var datetime_form = $(element).parent();
+            if (!value)
+                is_date_valid = false;
+            else {
+                is_date_valid = true;
+                datetime_form.datetimepicker('setDate', strToDate(value)).on('outOfRange', function () {
+                    is_date_valid = false;
+                });
+            }
+            return is_date_valid;
         });
 
         var form_validator = $('#lesson_edit_form').validate({
@@ -74,11 +67,12 @@
                             $(document).prop('title', data.page_title);
                         },
                         error: function (data) {
+
                             $('#lesson_submit_error_text').html(
-                                '<div  class="alert alert-danger alert-dismissible" role ="alert" id="edit_lesson_err">'
-                                + '<button type="button" class="close" data-dismiss="alert" '
-                                + 'aria-label="{% trans "zakryt" %}"><span aria-hidden="true">&times;</span></button>'
-                                + '<span>{% trans "oshibka_pri_sohranenii" %}</span></div>'
+                                '<div  class="alert alert-danger alert-dismissible" role ="alert" id="edit_lesson_err">' +
+                                '<button type="button" class="close" data-dismiss="alert" ' +
+                                'aria-label="{% trans "zakryt" %}"><span aria-hidden="true">&times;</span></button>' +
+                                '<span>{% trans "oshibka_pri_sohranenii" %}</span></div>'
                             );
                             remove_disabled();
                         }
@@ -87,9 +81,9 @@
                 else {
                     $('#lesson_submit_error_text').html(
                         '<div class="alert alert-success alert-dismissible" role ="alert" id="edit_lesson_err">' +
-                        + '<button type="button" class="close" data-dismiss="alert" aria-label="{% trans "zakryt" %}">'
-                        + '<span aria-hidden="true">&times;</span></button>'
-                        + '<span>{% trans "raspisanie_sohraneno_uspeshno" %}</span></div>'
+                        '<button type="button" class="close" data-dismiss="alert" aria-label="{% trans "zakryt" %}">' +
+                        '<span aria-hidden="true">&times;</span></button>' +
+                        '<span>{% trans "raspisanie_sohraneno_uspeshno" %}</span></div>'
                     );
                     if ($('#lesson_edit_form').data('quit'))
                         redirect();
@@ -99,7 +93,7 @@
             rules: {
                 lesson_title: {
                     frequired: false,
-                    maxlength: 100
+                    maxlength: 50
                 },
                 'lesson_group_id[]': {
                     required_with_disabled: true
@@ -108,13 +102,13 @@
                     required_with_disabled: true
                 },
                 'lesson_date_start': {
-                    required_with_disabled: true
+                    required_date: true
                 },
                 'lesson_date_finish': {
-                    required_with_disabled: true
+                    required_date: true
                 },
                 'date_end': {
-                    required_with_disabled: true
+                    required_date: true
                 }
             },
 
@@ -144,19 +138,71 @@
                     required_with_disabled: "{% trans 'neobhodimo_vybrat_den_nedeli' %}"
                 },
                 'lesson_date_start': {
-                    required_with_disabled: "{% trans 'vybrat_datu_zaniatia' %}"
+                    required_date: "{% trans 'vybrat_datu_zaniatia' %}"
                 },
                 'lesson_date_finish': {
-                    required_with_disabled: "{% trans 'vybrat_vremia_okonchania' %}"
+                    required_date: "{% trans 'vybrat_vremia_okonchania' %}"
                 },
                 'date_end': {
-                    required_with_disabled: "{% trans 'vybrat_poslednuu_datu' %}"
+                    required_date: "{% trans 'vybrat_poslednuu_datu' %}"
                 }
             },
 
             errorPlacement: function (error, element) {
                 $(element).closest("div.controls").find('small.text-help').empty().append(error);
             }
+        });
+
+        var now = new Date();
+        function addMinutes(date, minutes) {
+            return new Date(date.getTime() + minutes*60000);
+        }
+
+        function getWeekDay(date) {
+            var day = date.getDay();
+            if (day === 0)
+                day = 6;
+            else
+                day = day- 1;
+            return day;
+        }
+
+        if (!$("#lesson_edit_date_start").find('input').val()) {
+            $('#lesson_edit_date_start').datetimepicker('update', now);
+            $('#lesson_edit_date_finish').datetimepicker('update', addMinutes(now, 90));
+        }
+
+        $('#lesson_edit_date_start').change(function(val){
+            form_validator.element($('#lesson_edit_date_start').find('input'));
+        }).on('changeDate', function(val){
+            if (val.date) {
+                $('#lesson_edit_date_finish').datetimepicker('update', addMinutes(val.date, 90))
+                    .datetimepicker('setStartDate', val.date)
+                    .datetimepicker('setEndDate', addMinutes(val.date, 240));
+                $('#lesson_end_date').datetimepicker('setStartDate', val.date)
+                    .datetimepicker('setEndDate', addMinutes(val.date, 262800));
+                $('#lesson_edit_weekday').multiselect('clearSelection')
+                    .multiselect('select','').multiselect('select', getWeekDay(val.date));
+                form_validator.element($('#lesson_edit_date_finish').find('input'));
+            }
+        });
+
+        var start_date_time = strToDate($("#lesson_edit_date_start").find('input').val());
+        $('#lesson_edit_date_finish').datetimepicker('setStartDate', start_date_time)
+                                     .datetimepicker('setEndDate', addMinutes(start_date_time, 240)).change(
+                                         function(val){
+                                            form_validator.element($('#lesson_edit_date_finish').find('input'));
+                                         });
+
+        $('#lesson_end_date').datetimepicker('setStartDate', start_date_time)
+            .datetimepicker('setEndDate', addMinutes(start_date_time, 262800))
+            .change(function(val){
+            form_validator.element($('#lesson_end_date').find('input'));
+        });
+
+        $('#lesson_edit_form').change(function () {
+            $('#lesson_submit_error_text').empty();
+            $('#lesson_edit_form').data('changed', true);
         });
 
         $('#lesson_edit_type').change(function () {
@@ -167,6 +213,7 @@
                 $("#week_body").collapse('hide');
             }
             else if ($lesson_edit_type.val() === 'Weekly') {
+                $('#lesson_edit_weekday').multiselect('select',  getWeekDay(strToDate($('#lesson_edit_date_start').find('input').val())));
                 $("#date_end_body").collapse('show');
                 $("#week_body").collapse('show');
             }
@@ -242,7 +289,6 @@
             onDeselectAll: function() {
                 form_validator.element('#lesson_edit_weekday');
             }
-
         });
 
         $('#lesson_edit_group').multiselect({
@@ -318,6 +364,37 @@
 
         });
 
+        if (document.referrer.includes('attendance/group')) {
+            var start_indx = document.referrer.indexOf('attendance/group');
+            var group_id = document.referrer.substring(start_indx + 17, document.referrer.length - 1);
+            $('#lesson_edit_group').multiselect('select', group_id);
+        }
+
+        var init_date_start = $('#lesson_edit_date_start').find('input').val();
+        var init_date_end = $('#lesson_end_date').find('input').val();
+        var init_weekdays = $('#lesson_edit_weekday').val();
+
+        function show_alert() {
+            var weekdays_changed = false;
+            var current_weekdays = $('#lesson_edit_weekday').val();
+            if ((!init_weekdays && current_weekdays) ||
+                (init_weekdays.length != current_weekdays.length))
+                weekdays_changed = true;
+            else {
+                for (var i=0; i < init_weekdays.length; ++i)
+                    if (init_weekdays[i] != current_weekdays[i]) {
+                        weekdays_changed = false;
+                        break;
+                    }
+            }
+            if ((init_date_start != $('#lesson_edit_date_start').find('input').val())
+                || (init_date_end != $('#lesson_end_date').find('input').val())
+                || weekdays_changed) {
+                return confirm('{% trans "podtverdit_izmenenia" %}');
+            }
+            return true;
+        }
+
         $('#button_preview').click(function () {
             description_preview();
         });
@@ -326,52 +403,29 @@
             redirect();
         });
 
-        $('#edit_button_save').click(function () {
-            set_disabled();
-            if ($('#lesson_edit_type').val() === 'Once') {
-                $('#lesson_edit_form').data('quit', false).submit();
-                remove_disabled();
-            }
-            else {
-                $('#modal_lesson_save').modal('show');
+        $('#button_save_one').click(function () {
+            $('#lesson_edit_form').data('quit', true).submit();
+            $('#modal_lesson_save').modal('hide');
+        });
 
-                $('#button_save_one').click(function () {
-                    $('#lesson_edit_form').data('quit', false).submit();
-                    remove_disabled();
-                    $('#modal_lesson_save').modal('hide');
-                });
-
-                $('#button_save_all').click(function () {
-                    if (show_alert())
-                        $('#lesson_edit_form').append('<input type="hidden" name="change_all"/>').data('quit', false).submit();
-                    $('#modal_lesson_save').modal('hide');
-                    remove_disabled();
-                });
-            }
+        $('#button_save_all').click(function () {
+            if (show_alert())
+                $('#lesson_edit_form').append('<input type="hidden" name="change_all"/>').data('quit', true).submit();
+            $('#modal_lesson_save').modal('hide');
         });
 
         $('#edit_button_save_quit').click(function () {
             set_disabled();
             if ($('#lesson_edit_type').val() === 'Once') {
                 $('#lesson_edit_form').data('quit', true).submit();
-                remove_disabled();
             }
             else {
-                $('#modal_lesson_save').modal('show');
-
-                $('#button_save_one').click(function () {
-                    $('#lesson_edit_form').data('quit', true).submit();
-                    remove_disabled();
-                });
-
-                $('#button_save_all').click(function () {
-                    if (show_alert())
-                        $('#lesson_edit_form').append('<input type="hidden" name="change_all"/>').data('quit', true).submit();
-                    else
-                        $('#modal_lesson_save').modal('hide');
-                    remove_disabled();
-                });
+                if ($('#lesson_edit_form').valid())
+                    $('#modal_lesson_save').modal('show');
+                else
+                    $(window).scrollTop($('.form-control-danger')[0]);
             }
+            remove_disabled();
         });
 
         $('#button_cancel').click(function () {
@@ -380,12 +434,6 @@
         });
 
         $('#modal_lesson_save').on('hidden.bs.modal', function (e) {
-            remove_disabled();
-        });
-
-        $('#button_save').click(function () {
-            set_disabled();
-            $('#lesson_edit_form').data('quit', false).submit();
             remove_disabled();
         });
 
@@ -404,16 +452,6 @@
             else
                 $this.prop('disabled', true);
         });
-    }
-
-    function show_alert() {
-        var $date_start = $('#lesson_edit_date_start');
-        var $date_end = $('#lesson_end_date');
-        var $weekdays = $('#lesson_edit_weekday');
-        if (($date_start.val() != $date_start.data('value')) || ($date_end.val() != $date_end.data('value'))
-            || ($weekdays.val() != $weekdays.data('value')))
-                return confirm('{% trans "podtverdit_izmenenia" %}');
-        return true;
     }
 
     function description_preview() {
@@ -448,6 +486,6 @@
     }
 
     function redirect() {
-        window.location.href = document.referrer + '#lessons-tab';
+        window.location.href = document.referrer;
     }
 </script>

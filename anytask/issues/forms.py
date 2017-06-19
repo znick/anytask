@@ -55,7 +55,7 @@ def get_followers_form(field_name, request, issue, data=None, *args, **kwargs):
 
 def get_status_choice(issue):
     statuses = []
-    for status in issue.task.course.issue_status_system.statuses.all():
+    for status in issue.task.course.issue_status_system.statuses.all().exclude(tag=IssueStatus.STATUS_SEMINAR):
         statuses.append((status.id, status.get_name()))
     return statuses
 

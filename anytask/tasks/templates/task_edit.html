@@ -272,7 +272,7 @@
                         {% endif %}
                     </div>
                     {% if course.issue_status_system.has_accepted_after_deadline %}
-                        <div id='accepted_after_deadline_body' class="form-group row collapse {% if task.type != task.TYPE_SIMPLE and task.type != task.TYPE_SEMINAR and task.type != task.TYPE_MATERIAL%}in{% endif %}">
+                        <div id='accepted_after_deadline_body' class="form-group row collapse {% if task.type == task.TYPE_FULL %}in{% endif %}">
                             <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_score_after_deadline">
                                 {% trans "uchityvat_bally_dedlajn" %}</label>
                             <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7" style="padding-top: 5px">

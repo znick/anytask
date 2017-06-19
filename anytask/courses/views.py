@@ -599,11 +599,13 @@ def course_settings(request, course_id):
     course.default_accepted_after_contest_ok = 'default_accepted_after_contest_ok' in request.POST
     course.show_contest_run_id = 'show_contest_run_id' in request.POST
 
+    redirect_page = None
+    if course.has_attendance_log and 'has_attendance_log' not in request.POST:
+        redirect_page = '/course/%d' % course.id
     course.has_attendance_log = 'has_attendance_log' in request.POST
 
     course.save()
-
-    return HttpResponseRedirect('')
+    return HttpResponse(json.dumps({'redirect_page': redirect_page}), content_type="application/json")
 
 
 def change_visibility_hidden_tasks(request):
@@ -928,6 +930,8 @@ def attendance_page(request, course_id, group_id=None):
         raise PermissionDenied
 
     course = get_object_or_404(Course, id=course_id)
+    if not course.user_can_see_attendance_log(request.user):
+        raise PermissionDenied
 
     if group_id:
         group = get_object_or_404(Group, id=group_id)
@@ -952,13 +956,14 @@ def attendance_page(request, course_id, group_id=None):
 @login_required
 def lesson_visited(request):
     if request.method != 'POST':
-        return HttpResponseForbidden()
+        raise PermissionDenied
 
     lesson_id = request.POST['lssn_id']
     lesson = get_object_or_404(Lesson, id=lesson_id)
     if not lesson.course.user_is_teacher(request.user):
-        return HttpResponseForbidden()
-
+        raise PermissionDenied
+    if lesson.date_starttime.date() > datetime.datetime.today().date():
+        raise PermissionDenied
     student = User.objects.get(id=request.POST['student_id'])
     group = Group.objects.get(id=request.POST['group_id'])
     if 'lesson_visited' in request.POST:
@@ -978,7 +983,7 @@ def lesson_visited(request):
 @login_required
 def lesson_delete(request):
     if request.method != 'POST':
-        return HttpResponseForbidden()
+        raise PermissionDenied
 
     lesson_id = request.POST['lesson_id']
     delete_all = request.POST['delete_all'] == 'true'

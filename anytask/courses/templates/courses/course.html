@@ -39,7 +39,8 @@
         </li>
         {% if visible_attendance_log %}
             <li class="nav-item">
-                <a class="nav-link" href="{{ course.get_absolute_url }}/attendance">{% trans "zhurnal_poseshaemosti" %}</a>
+                <a class="nav-link hidden-md" href="{{ course.get_absolute_url }}/attendance">{% trans "zhurnal_poseshaemosti" %}</a>
+                <a class="nav-link visible-md" href="{{ course.get_absolute_url }}/attendance">{% trans "poseshaemost" %}</a>
             </li>
         {% endif %}
         {% if not seminar %}
@@ -244,6 +245,12 @@
                                                     {% endif %}
                                                 </h6>
                                             </div>
+                                        {% if course.has_attendance_log %}
+                                            <div style="width: 30%"><a style="width: 100%"
+                                                                       class="btn btn-secondary btn-sm"
+                                                                       href="{{ course.get_absolute_url }}/attendance/group/{{ task_item.grouper.id }}">{% trans "poseshaemost" %}</a>
+                                            </div>&nbsp;
+                                        {% endif %}
                                             <div style="width: 20%"><a style="width: 100%"
                                                                        class="btn btn-secondary btn-sm"
                                                                        href="{{ course.get_absolute_url }}/gradebook/group/{{ task_item.grouper.id }}">{% trans "vedomost" %}</a>

@@ -413,6 +413,10 @@ class ViewsTest(TestCase):
                                {'group_1': '1'}, follow=True)
         self.assertEqual(response.status_code, 200)
 
+        # get page
+        response = client.get(reverse('courses.views.course_settings', kwargs={'course_id': self.course.id}))
+        self.assertEqual(response.status_code, 200)
+
         html = BeautifulSoup(response.content)
         container = html.body.find('div', 'container', recursive=False)
 
@@ -715,7 +719,6 @@ class ViewsTest(TestCase):
         # breadcrumbs
         breadcrumbs = container.find('ul', 'breadcrumb')('li')
         self.assertEqual(len(breadcrumbs), 4)
-        print breadcrumbs
         self.assertEqual(breadcrumbs[0].a['href'], u'/')
         self.assertEqual(breadcrumbs[1].a['href'], u'/school/school_link')
         self.assertEqual(breadcrumbs[1].a.string.strip().strip('\n'), u'school_name')
