@@ -10,7 +10,6 @@ from django.core.mail import send_mail
 from mail.common import send_mass_mail_html
 
 from django.contrib.auth.models import User
-from users.models import UserProfile
 
 import datetime
 import hashlib
@@ -83,7 +82,6 @@ class AdmissionRegistrationProfileManager(RegistrationManager):
         return new_user, registration_profile
 
     def send_mail_update_user(self, email):
-        site = Site.objects.get_current()
 
         subject = render_to_string('email_update_subject.txt')
         subject = ''.join(subject.splitlines())

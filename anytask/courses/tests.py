@@ -97,7 +97,6 @@ class ViewsTest(TestCase):
         self.teacher.last_name = 'teacher_last_name'
         self.teacher.save()
 
-
         self.student_password = 'password2'
         self.student = User.objects.create_user(username='student',
                                                 password=self.student_password)
@@ -225,7 +224,8 @@ class ViewsTest(TestCase):
         self.assertEqual(navbar_links[3].a['href'], u'/course/1/settings')
 
         navbar_dropdown = navbar.find('li', 'dropdown')
-        self.assertEqual(navbar_dropdown.find('div', 'dropdown-menu').h6.string.strip().strip('\n'), u'teacher_name teacher_last_name')
+        self.assertEqual(navbar_dropdown.find('div', 'dropdown-menu').h6.string.strip().strip('\n'),
+                         u'teacher_name teacher_last_name')
         navbar_dropdown_inside = navbar_dropdown.find('div', 'dropdown-menu')('a')
         self.assertEqual(len(navbar_dropdown_inside), 4)
         self.assertEqual(navbar_dropdown_inside[0]['href'], u'/accounts/profile')
@@ -313,16 +313,16 @@ class ViewsTest(TestCase):
         form_id_responsible = form.find('select', {'id': 'id_responsible'})('option')
         self.assertEqual(len(form_id_responsible), 2)
         self.assertEqual(form_id_responsible[0]['value'], '')
-        self.assertTrue(form_id_responsible[0].has_key('selected'))
+        self.assertTrue('selected' in form_id_responsible[0])
         self.assertEqual(form_id_responsible[0].string.strip().strip('\n'), u'luboj')
         self.assertEqual(form_id_responsible[1]['value'], '1')
-        self.assertFalse(form_id_responsible[1].has_key('selected'))
+        self.assertFalse('selected' in form_id_responsible[1])
         self.assertEqual(form_id_responsible[1].string.strip().strip('\n'), u'teacher_name teacher_last_name')
 
         form_id_followers = form.find('div', {'id': 'div_id_followers'}).find('select')('option')
         self.assertEqual(len(form_id_followers), 1)
         self.assertEqual(form_id_followers[0]['value'], '1')
-        self.assertFalse(form_id_responsible[0].has_key('checked'))
+        self.assertFalse('checked' in form_id_responsible[0])
         self.assertEqual(form_id_followers[0].next.string.strip().strip('\n'), u'teacher_name teacher_last_name')
 
         # table queue
@@ -402,10 +402,10 @@ class ViewsTest(TestCase):
 
         form_select = form.find('div', 'form-group')('option')
         self.assertEqual(form_select[0]['value'], '0')
-        self.assertTrue(form_select[0].has_key('selected'))
+        self.assertTrue('selected' in form_select[0])
         self.assertEqual(form_select[0].string, '---')
         self.assertEqual(form_select[1]['value'], '1')
-        self.assertFalse(form_select[1].has_key('selected'))
+        self.assertFalse('selected' in form_select[1])
         self.assertEqual(form_select[1].string, 'teacher_name teacher_last_name')
 
         # post page
@@ -423,10 +423,10 @@ class ViewsTest(TestCase):
         # form
         form_select = container.form.find('div', 'form-group')('option')
         self.assertEqual(form_select[0]['value'], '0')
-        self.assertFalse(form_select[0].has_key('selected'))
+        self.assertFalse('selected' in form_select[0])
         self.assertEqual(form_select[0].string, '---')
         self.assertEqual(form_select[1]['value'], '1')
-        self.assertTrue(form_select[1].has_key('selected'))
+        self.assertTrue('selected' in form_select[1])
         self.assertEqual(form_select[1].string, 'teacher_name teacher_last_name')
 
     def test_change_visibility_hidden_tasks_with_teacher(self):
@@ -540,13 +540,13 @@ class ViewsTest(TestCase):
         self.assertEqual(table_course_mark_inputs[3]['name'], 'student_id')
         self.assertEqual(table_course_mark_inputs[3]['value'], '2')
         self.assertEqual(len(table_course_mark_select), 3)
-        self.assertFalse(table_course_mark_select[0].has_key('selected'))
+        self.assertFalse('selected' in table_course_mark_select[0])
         self.assertEqual(table_course_mark_select[0]['value'], '-1')
         self.assertEqual(table_course_mark_select[0].string, '--')
-        self.assertFalse(table_course_mark_select[1].has_key('selected'))
+        self.assertFalse('selected' in table_course_mark_select[1])
         self.assertEqual(table_course_mark_select[1]['value'], '1')
         self.assertEqual(table_course_mark_select[1].string, 'mark1')
-        self.assertFalse(table_course_mark_select[2].has_key('selected'))
+        self.assertFalse('selected' in table_course_mark_select[2])
         self.assertEqual(table_course_mark_select[2]['value'], '2')
         self.assertEqual(table_course_mark_select[2].string, 'mark2')
 
@@ -582,14 +582,14 @@ class ViewsTest(TestCase):
         self.assertEqual(table_course_mark_inputs[3]['name'], 'student_id')
         self.assertEqual(table_course_mark_inputs[3]['value'], '2')
         self.assertEqual(len(table_course_mark_select), 3)
-        self.assertFalse(table_course_mark_select[0].has_key('selected'))
+        self.assertFalse('selected' in table_course_mark_select[0])
         self.assertEqual(table_course_mark_select[0]['value'], '-1')
         self.assertEqual(table_course_mark_select[0].string, '--')
-        self.assertTrue(table_course_mark_select[1].has_key('selected'))
+        self.assertTrue('selected' in table_course_mark_select[1])
         self.assertEqual(table_course_mark_select[1]['selected'], 'selected')
         self.assertEqual(table_course_mark_select[1]['value'], '1')
         self.assertEqual(table_course_mark_select[1].string, 'mark1')
-        self.assertFalse(table_course_mark_select[2].has_key('selected'))
+        self.assertFalse('selected' in table_course_mark_select[2])
         self.assertEqual(table_course_mark_select[2]['value'], '2')
         self.assertEqual(table_course_mark_select[2].string, 'mark2')
 
@@ -708,7 +708,8 @@ class ViewsTest(TestCase):
         self.assertEqual(navbar_links[1].a['href'], u'/course/1/gradebook/')
 
         navbar_dropdown = navbar.find('li', 'dropdown')
-        self.assertEqual(navbar_dropdown.find('div', 'dropdown-menu').h6.string.strip().strip('\n'), u'student_name student_last_name')
+        self.assertEqual(navbar_dropdown.find('div', 'dropdown-menu').h6.string.strip().strip('\n'),
+                         u'student_name student_last_name')
         navbar_dropdown_inside = navbar_dropdown.find('div', 'dropdown-menu')('a')
         self.assertEqual(len(navbar_dropdown_inside), 4)
         self.assertEqual(navbar_dropdown_inside[0]['href'], u'/accounts/profile')
@@ -915,7 +916,6 @@ class ViewsTest(TestCase):
         table_body_sum = table.tbody('td')[3]
         self.assertEqual(table_body_sum.span.string.strip().strip('\n'), '0')
 
-
         # post page
         # response = client.post(reverse('courses.views.set_task_mark'),
         #                        {'task_id': task.id,
@@ -959,9 +959,10 @@ class ViewsTest(TestCase):
         table_body_sum = table.tbody('td')[3]
         self.assertEqual(table_body_sum.span.string.strip().strip('\n'), '3.0')
 
+
 class PythonTaskTest(TestCase):
     def setUp(self):
-        User.objects.create_user (username="anytask")
+        User.objects.create_user(username="anytask")
         self.year = Year.objects.create(start_year=2016)
         self.group = Group(name="test_group", year=self.year)
         self.group.save()
@@ -1017,10 +1018,14 @@ class PythonTaskTest(TestCase):
         response = client.get(reverse('courses.views.course_page', kwargs={'course_id': self.course.id}))
         self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
 
-        response = client.get(reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id, 'task_id': self.task.id}), follow=True)
+        response = client.get(
+            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id, 'task_id': self.task.id}),
+            follow=True)
         self.assertContains(response, "{} {}".format(user.last_name, user.first_name))
 
-        response = client.get(reverse('courses.pythontask.cancel_task', kwargs={'course_id': self.course.id, 'task_id': self.task.id}), follow=True)
+        response = client.get(
+            reverse('courses.pythontask.cancel_task', kwargs={'course_id': self.course.id, 'task_id': self.task.id}),
+            follow=True)
         self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
 
     def test_take_and_cancel_subtask(self):
@@ -1030,10 +1035,13 @@ class PythonTaskTest(TestCase):
         response = client.get(reverse('courses.views.course_page', kwargs={'course_id': self.course.id}))
         self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
 
-        response = client.get(reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id, 'task_id': self.subtask1.id}), follow=True)
+        response = client.get(
+            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id, 'task_id': self.subtask1.id}),
+            follow=True)
         self.assertContains(response, "{} {}".format(user.last_name, user.first_name))
 
-        response = client.get(reverse('courses.pythontask.cancel_task', kwargs={'course_id': self.course.id, 'task_id': self.subtask1.id}), follow=True)
+        response = client.get(reverse('courses.pythontask.cancel_task',
+                                      kwargs={'course_id': self.course.id, 'task_id': self.subtask1.id}), follow=True)
         self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
 
     def test_take_tasks_limit(self):
@@ -1044,12 +1052,16 @@ class PythonTaskTest(TestCase):
             response = client.get(reverse('courses.views.course_page', kwargs={'course_id': self.course.id}))
             self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
 
-            response = client.get(reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id, 'task_id': self.task.id}), follow=True)
+            response = client.get(
+                reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id, 'task_id': self.task.id}),
+                follow=True)
             self.assertContains(response, "{} {}".format(user.last_name, user.first_name))
 
         user = self.users[9]
         self.assertTrue(client.login(username=user, password="password9"))
-        response = client.get(reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id, 'task_id': self.task.id}), follow=True)
+        response = client.get(
+            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id, 'task_id': self.task.id}),
+            follow=True)
         self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
 
     def test_take_subtasks_limit(self):
@@ -1080,8 +1092,12 @@ class PythonTaskTest(TestCase):
         response = client.get(reverse('courses.views.course_page', kwargs={'course_id': self.course.id}))
         self.assertNotIn("{} {}".format(user.last_name, user.first_name), response.content)
 
-        response = client.get(reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id, 'task_id': self.subtask1.id}), follow=True)
+        response = client.get(
+            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id, 'task_id': self.subtask1.id}),
+            follow=True)
         self.assertContains(response, "{} {}".format(user.last_name, user.first_name), count=1)
 
-        response = client.get(reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id, 'task_id': self.subtask2.id}), follow=True)
+        response = client.get(
+            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id, 'task_id': self.subtask2.id}),
+            follow=True)
         self.assertContains(response, "{} {}".format(user.last_name, user.first_name), count=1)

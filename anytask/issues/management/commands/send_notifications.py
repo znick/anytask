@@ -10,7 +10,6 @@ from django.utils.translation import ugettext as _
 
 from issues.models import Issue
 from issues.models import Event
-from users.models import UserProfile
 import time
 
 
@@ -18,6 +17,7 @@ class Command(BaseCommand):
     help = "Send notifications via email"
 
     option_list = BaseCommand.option_list
+
     def handle(self, **options):
         all_events = Event.objects.filter(sended_notify=False).exclude(
             Q(author__isnull=True) | Q(field__name='review_id')).order_by("issue")
@@ -77,11 +77,14 @@ class Command(BaseCommand):
                 if issue.student.email:
                     message_body_text = get_message_body(messages_author, messages_body, issue.student)
                     if message_body_text:
-                        message_text = message_header.format(issue.student.first_name,
-                                                             get_html_url(issue_url, issue.task.title),
-                                                             _(u'studentom')) + \
-                                       message_body_text + \
-                                       message_footer
+                        message_text = \
+                            message_header.format(
+                                issue.student.first_name,
+                                get_html_url(issue_url, issue.task.title),
+                                _(u'studentom')
+                            ) + \
+                            message_body_text + \
+                            message_footer
 
                         notify_messages.append(get_message(issue.student.email))
                         excluded_ids.append(issue.student.id)
@@ -90,11 +93,14 @@ class Command(BaseCommand):
                     if issue.responsible.email:
                         message_body_text = get_message_body(messages_author, messages_body, issue.responsible)
                         if message_body_text:
-                            message_text = message_header.format(issue.responsible.first_name,
-                                                                 get_html_url(issue_url, issue.task.title),
-                                                                 _(u'proverjaushim')) + \
-                                           message_body_text + \
-                                           message_footer
+                            message_text = \
+                                message_header.format(
+                                    issue.responsible.first_name,
+                                    get_html_url(issue_url, issue.task.title),
+                                    _(u'proverjaushim')
+                                ) + \
+                                message_body_text + \
+                                message_footer
 
                             notify_messages.append(get_message(issue.responsible.email))
                             excluded_ids.append(issue.responsible.id)
@@ -103,11 +109,14 @@ class Command(BaseCommand):
                     if follower.email:
                         message_body_text = get_message_body(messages_author, messages_body, follower)
                         if message_body_text:
-                            message_text = message_header.format(follower.first_name,
-                                                                 get_html_url(issue_url, issue.task.title),
-                                                                 _(u'nabludatelem')) + \
-                                           message_body_text + \
-                                           message_footer
+                            message_text = \
+                                message_header.format(
+                                    follower.first_name,
+                                    get_html_url(issue_url, issue.task.title),
+                                    _(u'nabludatelem')
+                                ) + \
+                                message_body_text + \
+                                message_footer
 
                             notify_messages.append(get_message(follower.email))
                 send_mass_mail_html(notify_messages)
@@ -131,8 +140,7 @@ def get_message_body(messages_author, messages_body, author):
 
 
 def send_mass_mail_html(datatuple, fail_silently=False, user=None, password=None, connection=None):
-    connection = connection or \
-                 get_connection(username=user, password=password, fail_silently=fail_silently)
+    connection = connection or get_connection(username=user, password=password, fail_silently=fail_silently)
     messages = []
     for subject, html, from_email, recipient in datatuple:
         message = EmailMultiAlternatives(subject, '...', from_email, recipient)

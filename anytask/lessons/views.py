@@ -81,7 +81,8 @@ def get_params(request_dict):
     if params['period'] != 'Once':
         params['date_end'] = datetime.datetime.strptime(request_dict['date_end'], '%d-%m-%Y %H:%M')
         week_days = list(map(int, (dict(request_dict)['days[]'])))
-        params['lesson_dates'] = get_lesson_dates(params['date_starttime'], params['date_endtime'], params['date_end'], week_days)
+        params['lesson_dates'] = \
+            get_lesson_dates(params['date_starttime'], params['date_endtime'], params['date_end'], week_days)
         params['lesson_days'] = ','.join(dict(request_dict)['days[]'])
     else:
         params['date_end'] = params['date_endtime']
@@ -121,7 +122,7 @@ def lesson_create(request, course):
     reversion.set_user(user)
     reversion.set_comment("Create lesson")
 
-    return HttpResponse(json.dumps({'page_title': params['lesson_title'] + ' | ' + course.name + ' | ' + str(course.year),
+    return HttpResponse(json.dumps({'page_title': ' | '.join([params['lesson_title'], course.name, str(course.year)]),
                                     'redirect_page': '/lesson/edit/' + str(lssn_id)}),
                         content_type="application/json")
 
@@ -158,11 +159,12 @@ def lesson_edit(request, course, lesson_id):
             )
 
     for i, lssn_date in enumerate(params['lesson_dates']):
-        set_params(params, course, group, user, schedule_id, lssn_date, None if not lesson_changed else lesson_changed[i])
+        set_params(params, course, group, user, schedule_id, lssn_date,
+                   None if not lesson_changed else lesson_changed[i])
 
     reversion.set_user(user)
     reversion.set_comment("Edit lesson")
 
-    return HttpResponse(json.dumps({'page_title': lesson.title + ' | ' + course.name + ' | ' + str(course.year),
+    return HttpResponse(json.dumps({'page_title': ' | '.join([lesson.title, course.name, str(course.year)]),
                                     'redirect_page': None}),
                         content_type="application/json")

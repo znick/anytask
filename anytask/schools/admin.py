@@ -1,6 +1,7 @@
 from schools.models import School
 from django.contrib import admin
 
+
 class SchoolAdmin(admin.ModelAdmin):
     filter_horizontal = ('courses',)
     list_display = ('name',)
@@ -9,4 +10,3 @@ class SchoolAdmin(admin.ModelAdmin):
 
 
 admin.site.register(School, SchoolAdmin)
-

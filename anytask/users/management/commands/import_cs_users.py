@@ -15,16 +15,18 @@ import sys
 import random
 import string
 
+
 def get_users_from_cs_xml(cs_xml_fn):
     doc = parse(cs_xml_fn)
     for student_el in doc.getElementsByTagName("student"):
         student = {
-            'username'  : student_el.getAttribute('dir'),
-            'name'      : student_el.getAttribute('name'),
-            'email'     : student_el.getAttribute('email'),
-            'year'     : student_el.getAttribute('year'),
+            'username': student_el.getAttribute('dir'),
+            'name': student_el.getAttribute('name'),
+            'email': student_el.getAttribute('email'),
+            'year': student_el.getAttribute('year'),
         }
         yield student
+
 
 class Command(NoArgsCommand):
     help = "Import users from cs.usu.edu.ru/home. Put default.xml to STDIN"
@@ -35,11 +37,11 @@ class Command(NoArgsCommand):
             username = student['username']
             email = student['email']
 
-            user, created = User.objects.get_or_create(username=username, first_name=first_name, last_name=last_name, email=email)
+            user, created = User.objects.get_or_create(username=username, first_name=first_name, last_name=last_name,
+                                                       email=email)
 
-            if ( user.password == "" ) or ( user.has_usable_password() is False ):
+            if (user.password == "") or (user.has_usable_password() is False):
                 user.set_password(''.join(random.choice(string.letters) for i in xrange(20)))
                 user.save()
-
 
             print "{0} {1}".format(user, user.get_full_name().encode("utf-8"))

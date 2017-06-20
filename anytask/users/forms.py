@@ -6,7 +6,8 @@ from invites.models import Invite
 
 import datetime
 
-attrs_dict = { 'class': 'required' }
+attrs_dict = {'class': 'required'}
+
 
 class InviteActivationForm(forms.Form):
     invite = forms.CharField(widget=forms.TextInput(attrs=attrs_dict), label="")

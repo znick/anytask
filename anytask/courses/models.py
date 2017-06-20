@@ -1,16 +1,11 @@
 # -*- coding: utf-8 -*-
-import os
-import json
 
 from django.core.urlresolvers import reverse
 from django.db import models
 from datetime import datetime
 from django.contrib.auth.models import User
 from django.db.models.signals import m2m_changed
-from django.conf import settings
 from django.db.models.signals import post_save
-from django.db.models import Q
-from django.utils.translation import ugettext_lazy as _
 
 from groups.models import Group
 from issues.model_issue_status import IssueStatusSystem
@@ -46,11 +41,13 @@ class DefaultIssueFields(set):
         return default_issue_fields_pks, default_issue_fields
 
     def get_pks(self):
-        self.__class__._default_issue_fields_pks, self.__class__._default_issue_fields = self._get_default_issue_fields()
+        self.__class__._default_issue_fields_pks, \
+            self.__class__._default_issue_fields = self._get_default_issue_fields()
         return self.__class__._default_issue_fields_pks
 
     def get_issue_fields(self):
-        self.__class__._default_issue_fields_pks, self.__class__._default_issue_fields = self._get_default_issue_fields()
+        self.__class__._default_issue_fields_pks, \
+            self.__class__._default_issue_fields = self._get_default_issue_fields()
         return self.__class__._default_issue_fields
 
     def get_deleted_pks(self):
@@ -90,7 +87,6 @@ class CourseMarkSystem(models.Model):
 
 
 class Course(models.Model):
-
     name = models.CharField(max_length=191, db_index=True, null=False, blank=False)
     name_id = models.CharField(max_length=191, db_index=True, null=True, blank=True)
 
@@ -111,7 +107,8 @@ class Course(models.Model):
 
     send_to_contest_from_users = models.BooleanField(db_index=False, null=False, blank=False, default=False)
 
-    filename_extensions = models.ManyToManyField(FilenameExtension, related_name='filename_extensions_set', null=True, blank=True)
+    filename_extensions = models.ManyToManyField(FilenameExtension, related_name='filename_extensions_set', null=True,
+                                                 blank=True)
 
     full_transcript = models.BooleanField(db_index=False, null=False, blank=False, default=True)
 
@@ -121,7 +118,8 @@ class Course(models.Model):
     update_time = models.DateTimeField(auto_now=True, default=datetime.now)
 
     can_be_chosen_by_extern = models.BooleanField(db_index=False, null=False, blank=False, default=False)
-    group_with_extern = models.ForeignKey(Group, related_name="course_with_extern", db_index=False, null=True, blank=True)
+    group_with_extern = models.ForeignKey(Group, related_name="course_with_extern", db_index=False, null=True,
+                                          blank=True)
 
     mark_system = models.ForeignKey(CourseMarkSystem, db_index=False, null=True, blank=True)
 
@@ -212,19 +210,19 @@ class Course(models.Model):
 
     def add_group_with_extern(self):
         if self.group_with_extern is None and self.can_be_chosen_by_extern:
-            group, ok = Group.objects.get_or_create(year=self.year,name=u'%s - слушатели' % self.name)
+            group, ok = Group.objects.get_or_create(year=self.year, name=u'%s - слушатели' % self.name)
             group.save()
             self.group_with_extern = group
             self.groups.add(group)
             self.save()
 
-    def add_user_to_group_with_extern(self,user):
+    def add_user_to_group_with_extern(self, user):
         self.add_group_with_extern()
         self.group_with_extern.students.add(user)
 
-    def remove_user_from_group_with_extern(self,user):
-         if self.group_with_extern is not None:
-             self.group_with_extern.students.remove(user)
+    def remove_user_from_group_with_extern(self, user):
+        if self.group_with_extern is not None:
+            self.group_with_extern.students.remove(user)
 
     def get_teachers(self):
         return self.teachers.order_by('last_name', 'first_name')
@@ -311,6 +309,7 @@ def update_rb_review_group(sender, instance, created, **kwargs):
     for teacher in teachers:
         if teacher not in rg_users:
             rg.user_add(teacher)
+
 
 m2m_changed.connect(add_default_issue_fields, sender=Course.issue_fields.through)
 post_save.connect(update_rb_review_group, sender=Course)

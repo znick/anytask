@@ -1,15 +1,10 @@
-
 from django.core.management.base import BaseCommand
-from django.contrib.auth.models import User
 from django.db import transaction
 
 from groups.models import Group
-from tasks.models import Task
 
-from xml.dom.minidom import parse
 from optparse import make_option
 import copy
-import sys
 
 
 class Command(BaseCommand):
@@ -17,11 +12,11 @@ class Command(BaseCommand):
 
     option_list = BaseCommand.option_list + (
         make_option('--group_id',
-            action='store',
-            dest='group_id',
-            default=None,
-            help='Group id'),
-        )
+                    action='store',
+                    dest='group_id',
+                    default=None,
+                    help='Group id'),
+    )
 
     @transaction.commit_on_success
     def handle(self, **options):

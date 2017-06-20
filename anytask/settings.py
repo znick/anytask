@@ -1,14 +1,15 @@
 # Django settings for anytask project.
 
-from settings_common import *
+from settings_common import *  # NOQA
+import os
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'sqlite3.db',                      # Or path to database file if using sqlite3.
+        'ENGINE': 'django.db.backends.sqlite3',  # Add 'postgresql_psycopg2','postgresql','mysql','sqlite3' or 'oracle'.
+        'NAME': 'sqlite3.db',            # Or path to database file if using sqlite3.
         'USER': '',                      # Not used with sqlite3.
         'PASSWORD': '',                  # Not used with sqlite3.
         'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
@@ -42,7 +43,7 @@ LOGGING = {
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # local overrides (optional)
-import os
+
 _settings_local = os.path.join(os.path.dirname(__file__), 'settings_local.py')
 if os.path.exists(_settings_local):
-    execfile(_settings_local)
+    execfile(_settings_local)  # NOQA

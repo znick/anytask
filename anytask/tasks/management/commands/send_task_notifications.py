@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 
-import tasks.admin
+import tasks.admin  # NOQA
 
 from django.core.management.base import BaseCommand
 from django.contrib.sites.models import Site
 from django.conf import settings
-from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
 from django.utils import translation
 from django.utils.translation import ugettext as _
@@ -97,10 +96,9 @@ class Command(BaseCommand):
         domain = Site.objects.get_current().domain
         from_email = settings.DEFAULT_FROM_EMAIL
         plain_header = _(u'zdravstvujte') + u', {0}.\n\n'
-        plain_body_course = _(u'v_kurse') + u' "{0}" ' + _(u'izmenilis_zadachi') + u':\n'\
-                            u'{1}\n' + \
-                            _(u'pereyti_v_kurs') + u':\n' \
-                            u'{2}\n\n'
+        plain_body_course = \
+            _(u'v_kurse') + u' "{0}" ' + _(u'izmenilis_zadachi') + u':\n' u'{1}\n' + \
+            _(u'pereyti_v_kurs') + u':\n' u'{2}\n\n'
         plain_body_task = _(u'v_zadache').lower() + u' "{0}" ' + _(u'izmenilis') + u': {1}\n'
         plain_body_task_new = u'  - ' + _(u'dobavlena_zadacha') + u' "{0}"\n'
 

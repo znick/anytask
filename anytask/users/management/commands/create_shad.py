@@ -13,7 +13,7 @@ from django.contrib.auth.models import User
 from groups.models import Group
 from courses.models import Course
 from schools.models import School
-from years.common import get_current_year, get_or_create_current_year
+from years.common import get_or_create_current_year
 from years.models import Year
 
 from xml.dom.minidom import parse
@@ -22,26 +22,28 @@ import sys
 import random
 import string
 
+
 def get_users_from_cs_xml(cs_xml_fn):
     doc = parse(cs_xml_fn)
     for student_el in doc.getElementsByTagName("student"):
         student = {
-            'login'    : student_el.getAttribute('login'),
-            'name'     : student_el.getAttribute('name'),
-            'grp'      : student_el.getAttribute('grp'),
+            'login': student_el.getAttribute('login'),
+            'name': student_el.getAttribute('name'),
+            'grp': student_el.getAttribute('grp'),
         }
         yield student
+
 
 class Command(BaseCommand):
     help = "Creating shad users, python course, shad school."
 
     option_list = BaseCommand.option_list + (
         make_option('--year',
-            action='store',
-            dest='year',
-            default=None,
-            help='Course start year'),
-        )
+                    action='store',
+                    dest='year',
+                    default=None,
+                    help='Course start year'),
+    )
 
     def handle(self, **options):
         year = options['year']
@@ -55,7 +57,7 @@ class Command(BaseCommand):
         school, created = School.objects.get_or_create(link='shad', name='School of Data Analysis')
         if created:
             print "WARNING: NEW School created!"
-            school.save()  
+            school.save()
 
         course, created = Course.objects.get_or_create(year=year, name='Python')
         if created:
@@ -79,7 +81,7 @@ class Command(BaseCommand):
                 user.last_name = last_name
                 user.first_name = first_name
 
-            if ( user.password == "" ) or ( user.has_usable_password() == False ):
+            if (user.password == "") or (not user.has_usable_password()):
                 user.set_password(''.join(random.choice(string.letters) for i in xrange(20)))
                 user.save()
 

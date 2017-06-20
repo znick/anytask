@@ -24,17 +24,19 @@ import cgi
 
 from django.test.utils import override_settings
 
-
 CONTEST_PORT = 8079
+
 
 class ContestServerMock(threading.Thread):
     allow_reuse_address = True
+
     class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
         allow_reuse_address = True
+
         def log_message(self, format, *args):
             return
 
-        def do_GET(self):
+        def do_get(self):
             if self.path.startswith("/anytask/contest?contestId="):
                 self.send_response(200)
                 self.end_headers()
@@ -87,7 +89,7 @@ class ContestServerMock(threading.Thread):
                         'compileLog': "compileLog",
                         'tests': [
                             {
-                                'usedTime' : 1,
+                                'usedTime': 1,
                                 'usedMemory': 2000000,
                                 'input': "input",
                                 'output': "output",
@@ -114,8 +116,7 @@ class ContestServerMock(threading.Thread):
             self.send_response(501)
             self.end_headers()
 
-
-        def do_POST(self):
+        def do_post(self):
             content_type, pdict = cgi.parse_header(self.headers.getheader("content-type"))
             fields = cgi.parse_multipart(self.rfile, pdict)
 
@@ -141,7 +142,6 @@ class ContestServerMock(threading.Thread):
             self.send_response(501)
             self.end_headers()
 
-
     def run(self):
         server_address = ('127.0.0.1', CONTEST_PORT)
         self.httpd = SocketServer.TCPServer(server_address, self.Handler)
@@ -149,10 +149,9 @@ class ContestServerMock(threading.Thread):
         self.httpd.submit_error = False
         self.httpd.serve_forever()
 
-
-
     def stop(self):
         self.httpd.shutdown()
+
 
 @override_settings(CONTEST_API_URL='http://127.0.0.1:{}/anytask/'.format(CONTEST_PORT))
 @override_settings(CONTEST_URL="http://127.0.0.1:{}/".format(CONTEST_PORT))
@@ -299,7 +298,7 @@ class AnyContestTest(TestCase):
 
         contest_submition.save()
 
-        comment = contest_submition.check_submission()  # Contest returns 501 here and no JSON
+        contest_submition.check_submission()  # Contest returns 501 here and no JSON
         self.assertFalse(contest_submition.got_verdict)
 
     def test_check_submission_wrong_json(self):
@@ -314,5 +313,5 @@ class AnyContestTest(TestCase):
 
         contest_submition.save()
 
-        comment = contest_submition.check_submission()
+        contest_submition.check_submission()
         self.assertFalse(contest_submition.got_verdict)

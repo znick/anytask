@@ -60,7 +60,6 @@ CONTEST_INFO = {
     }
 }
 
-
 CONTEST_PROBLEMS = {
     "invocationInfo": {
         "action": "listContestProblems",
@@ -81,13 +80,15 @@ CONTEST_PROBLEMS = {
             },
             {
                 "id": "1055/2013_03_12/loULOTuOJy",
-                "name": "\u0417\u0430\u043f\u0440\u0435\u0449\u0435\u043d\u043d\u044b\u0435 \u043f\u043e\u0434\u0441\u0442\u0440\u043e\u043a\u0438",
+                "name": "\u0417\u0430\u043f\u0440\u0435\u0449\u0435\u043d\u043d\u044b\u0435" +
+                        " \u043f\u043e\u0434\u0441\u0442\u0440\u043e\u043a\u0438",
                 "score": 100,
                 "title": "B"
             },
             {
                 "id": "1055/2013_03_25/0ZP5X0zqQ5",
-                "name": "\u041a\u043e\u043b\u0438\u0447\u0435\u0441\u0442\u0432\u043e \u0440\u0430\u0437\u043b\u0438\u0447\u043d\u044b\u0445 \u043f\u043e\u0434\u0441\u0442\u0440\u043e\u043a",
+                "name": "\u041a\u043e\u043b\u0438\u0447\u0435\u0441\u0442\u0432\u043e \u0440\u0430\u0437\u043b" +
+                        "\u0438\u0447\u043d\u044b\u0445 \u043f\u043e\u0434\u0441\u0442\u0440\u043e\u043a",
                 "score": 100,
                 "title": "C"
             },

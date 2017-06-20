@@ -1,38 +1,35 @@
 # -*- coding: utf-8 -*-
 
 from django.core.management.base import BaseCommand
-from django.core.mail import send_mass_mail
-from django.contrib.sites.models import Site
-from django.conf import settings
 from optparse import make_option
 
 from issues.models import Event
 
 import re
 
+
 class Command(BaseCommand):
     help = "Rewrite comments"
 
     option_list = BaseCommand.option_list + (
         make_option('--pattern',
-            action='store',
-            dest='pattern',
-            default=None,
-            help='pattern'),
+                    action='store',
+                    dest='pattern',
+                    default=None,
+                    help='pattern'),
         make_option('--replace',
-            action='store',
-            dest='replace',
-            default=None,
-            help='replace'),
+                    action='store',
+                    dest='replace',
+                    default=None,
+                    help='replace'),
         make_option('--dry_run',
-            action='store_true',
-            dest='dry_run',
-            default=False,
-            help='dry_run'),
+                    action='store_true',
+                    dest='dry_run',
+                    default=False,
+                    help='dry_run'),
     )
 
     def handle(self, **options):
-
 
         pattern = options['pattern']
         replace = options['replace']
@@ -53,4 +50,3 @@ class Command(BaseCommand):
             print "======================="
             if not dry_run:
                 event.save()
-

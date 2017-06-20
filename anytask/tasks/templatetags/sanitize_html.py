@@ -1,12 +1,11 @@
 from BeautifulSoup import BeautifulSoup, Comment
 from django import template
-from django.utils.translation import ugettext as _
-
 
 register = template.Library()
 
 ALLOWED_TAGS = 'p i strong b u a h1 h2 h3 pre br img blockquote'
 ALLOWED_TAGS_STRING = "Allowed tags: " + ALLOWED_TAGS
+
 
 def sanitize_html(value):
     valid_tags = ALLOWED_TAGS.split()
@@ -17,7 +16,7 @@ def sanitize_html(value):
 
     soup = BeautifulSoup(value)
 
-    if not(soup.find('div', 'not-sanitize')):
+    if not (soup.find('div', 'not-sanitize')):
         for comment in soup.findAll(text=lambda text: isinstance(text, Comment)):
             comment.extract()
         for tag in soup.findAll(True):
@@ -27,5 +26,6 @@ def sanitize_html(value):
                          if attr in valid_attrs]
         return '<p>' + soup.renderContents().decode('utf8').replace('javascript:', '').replace("\n", '</p><p>') + '</p>'
     return soup.renderContents().decode('utf8')
+
 
 register.filter('sanitize', sanitize_html)

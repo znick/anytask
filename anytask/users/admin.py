@@ -4,6 +4,8 @@ from users.models import UserProfile, UserProfileLog
 from users.model_user_status import UserStatus
 from django.contrib import admin
 from django.utils.translation import ugettext as _
+from django.contrib.auth import admin as auth_admin
+
 
 def display_color(obj):
     return u'<span style="' \
@@ -18,8 +20,11 @@ def display_color(obj):
            u'border-radius: .25rem;' \
            u'background-color:{0}' \
            u'">{1}</span>'.format(obj.color, obj.name)
+
+
 display_color.short_description = _(u'status')
 display_color.allow_tags = True
+
 
 class UserStatusAdmin(admin.ModelAdmin):
     list_display = (display_color, 'tag', 'type')
@@ -30,6 +35,7 @@ class UserStatusAdmin(admin.ModelAdmin):
         # if request.user.is_superuser:
         #     return qs
         return qs
+
 
 class UserProfileLogAdmin(admin.ModelAdmin):
     list_display = ('user', 'updated_by', 'update_time')
@@ -46,5 +52,4 @@ admin.site.register(UserProfile, UserProfileAdmin)
 admin.site.register(UserStatus, UserStatusAdmin)
 admin.site.register(UserProfileLog, UserProfileLogAdmin)
 
-from django.contrib.auth import admin as auth_admin
 auth_admin.UserAdmin.list_display += ('last_login',)
