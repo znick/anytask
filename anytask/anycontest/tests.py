@@ -36,7 +36,7 @@ class ContestServerMock(threading.Thread):
         def log_message(self, format, *args):
             return
 
-        def do_get(self):
+        def do_GET(self):  #NOQA
             if self.path.startswith("/anytask/contest?contestId="):
                 self.send_response(200)
                 self.end_headers()
@@ -116,7 +116,7 @@ class ContestServerMock(threading.Thread):
             self.send_response(501)
             self.end_headers()
 
-        def do_post(self):
+        def do_POST(self):  # NOQA
             content_type, pdict = cgi.parse_header(self.headers.getheader("content-type"))
             fields = cgi.parse_multipart(self.rfile, pdict)
 
