@@ -313,7 +313,7 @@ class ViewsTest(TestCase):
         form_id_responsible = form.find('select', {'id': 'id_responsible'})('option')
         self.assertEqual(len(form_id_responsible), 2)
         self.assertEqual(form_id_responsible[0]['value'], '')
-        self.assertTrue('selected' in form_id_responsible[0])
+        self.assertTrue('selected' in dict(form_id_responsible[0].attrs))
         self.assertEqual(form_id_responsible[0].string.strip().strip('\n'), u'luboj')
         self.assertEqual(form_id_responsible[1]['value'], '1')
         self.assertFalse('selected' in form_id_responsible[1])
@@ -402,7 +402,7 @@ class ViewsTest(TestCase):
 
         form_select = form.find('div', 'form-group')('option')
         self.assertEqual(form_select[0]['value'], '0')
-        self.assertTrue('selected' in form_select[0])
+        self.assertTrue('selected' in dict(form_select[0].attrs))
         self.assertEqual(form_select[0].string, '---')
         self.assertEqual(form_select[1]['value'], '1')
         self.assertFalse('selected' in form_select[1])
@@ -426,7 +426,7 @@ class ViewsTest(TestCase):
         self.assertFalse('selected' in form_select[0])
         self.assertEqual(form_select[0].string, '---')
         self.assertEqual(form_select[1]['value'], '1')
-        self.assertTrue('selected' in form_select[1])
+        self.assertTrue('selected' in dict(form_select[1].attrs))
         self.assertEqual(form_select[1].string, 'teacher_name teacher_last_name')
 
     def test_change_visibility_hidden_tasks_with_teacher(self):
@@ -585,7 +585,7 @@ class ViewsTest(TestCase):
         self.assertFalse('selected' in table_course_mark_select[0])
         self.assertEqual(table_course_mark_select[0]['value'], '-1')
         self.assertEqual(table_course_mark_select[0].string, '--')
-        self.assertTrue('selected' in table_course_mark_select[1])
+        self.assertTrue('selected' in dict(table_course_mark_select[1].attrs))
         self.assertEqual(table_course_mark_select[1]['selected'], 'selected')
         self.assertEqual(table_course_mark_select[1]['value'], '1')
         self.assertEqual(table_course_mark_select[1].string, 'mark1')

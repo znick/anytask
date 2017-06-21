@@ -193,7 +193,7 @@ class ViewsTest(TestCase):
         form_select_group = div_task_id.form.find('select', {'id': 'task_edit_group'})('option')
         self.assertEqual(len(form_select_group), 1, "form select group len not 2")
         self.assertEqual(form_select_group[0]['value'], '1', 'form select group 1nd option value wrong')
-        self.assertTrue('selected' in form_select_group[0], 'form select group 1nd option selected')
+        self.assertTrue('selected' in dict(form_select_group[0].attrs) , 'form select group 1nd option selected')
         self.assertEqual(form_select_group[0].string.strip().strip('\n'),
                          u'group_name',
                          'form select group 2nd option text wrong')
@@ -308,13 +308,13 @@ class ViewsTest(TestCase):
                 self.assertFalse('checked' in form_checkbox[i],
                                  "form checkbox id='{}' checked".format(form_checkbox[i]['id']))
             else:
-                self.assertTrue('checked' in form_checkbox[i],
+                self.assertTrue('checked' in dict(form_checkbox[i].attrs),
                                 "form checkbox id='{}' not checked".format(form_checkbox[i]['id']))
 
         form_select_group = div_task_id.form.find('select', {'id': 'task_edit_group'})('option')
         self.assertEqual(len(form_select_group), 1, "form select group len not 2")
         self.assertEqual(form_select_group[0]['value'], '1', 'form select group 2nd option value wrong')
-        self.assertTrue('selected' in form_select_group[0], 'form select group 2nd option selected')
+        self.assertTrue('selected' in dict(form_select_group[0].attrs), 'form select group 2nd option selected')
         self.assertEqual(form_select_group[0].string.strip().strip('\n'),
                          u'group_name',
                          'form select group 2nd option text wrong')
@@ -322,12 +322,12 @@ class ViewsTest(TestCase):
         form_select_type = div_task_id.form.find('select', {'id': 'task_edit_type'})('option')
         self.assertEqual(len(form_select_type), 3, "form select type len not 3")
         self.assertEqual(form_select_type[0]['value'], 'All', 'form select type 1st option value wrong')
-        self.assertTrue('selected' in form_select_group[0], 'form select type 1nd option not selected')
+        self.assertTrue('selected' in dict(form_select_group[0].attrs), 'form select type 1nd option not selected')
         self.assertEqual(form_select_type[0].string.strip().strip('\n'),
                          u's_obsuzhdeniem',
                          'form select type 1st option text wrong')
         self.assertEqual(form_select_type[1]['value'], 'Only mark', 'form select type 2nd option value wrong')
-        self.assertFalse('selected' in form_select_group[1], 'form select type 2nd option selected')
+        self.assertFalse('selected' in dict(form_select_type[1].attrs), 'form select type 2nd option selected')
         self.assertEqual(form_select_type[1].string.strip().strip('\n'),
                          u'tolko_ocenka',
                          'form select type 2nd option text wrong')
