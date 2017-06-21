@@ -36,7 +36,7 @@ class ContestServerMock(threading.Thread):
         def log_message(self, format, *args):
             return
 
-        def do_GET(self):  #NOQA
+        def do_GET(self):  # NOQA
             if self.path.startswith("/anytask/contest?contestId="):
                 self.send_response(200)
                 self.end_headers()

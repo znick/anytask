@@ -22,19 +22,23 @@ class CourseStatistics(object):
 
     def get_course_statistics(self):
         (self.course_statistics['middle_score'], self.course_statistics['middle_score_on_students'],
-         self.course_statistics['ratio']) = self._calculate_scores_statistics(self.course_statistics['number_students'],
-                                                                              self.course_statistics[
-                                                                                  'number_students_with_tasks'],
-                                                                              self.course_statistics['summ_scores'])
+         self.course_statistics['ratio']) = \
+            self._calculate_scores_statistics(
+                self.course_statistics['number_students'],
+                self.course_statistics['number_students_with_tasks'],
+                self.course_statistics['summ_scores']
+            )
 
         groups_statistics_list = []
         for group, statistics in self.groups_statistics.iteritems():
-            groups_statistics_list.append((group, statistics['group_summ_scores'],
-                                           statistics['number_group_students'],
-                                           statistics['number_students_with_tasks'],
-                                           statistics['middle_score'],
-                                           statistics['middle_score_on_group'],
-                                           statistics['ratio']))
+            groups_statistics_list.append((
+                group, statistics['group_summ_scores'],
+                statistics['number_group_students'],
+                statistics['number_students_with_tasks'],
+                statistics['middle_score'],
+                statistics['middle_score_on_group'],
+                statistics['ratio']
+            ))
 
         groups_statistics_list.append((None, self.course_statistics['summ_scores'],
                                        self.course_statistics['number_students'],
@@ -78,10 +82,12 @@ class CourseStatistics(object):
             statistics['group_summ_scores'] += scores
 
         statistics['students_statistics'] = group_students
-        (statistics['middle_score'], statistics['middle_score_on_group'],
-         statistics['ratio']) = self._calculate_scores_statistics(statistics['number_group_students'],
-                                                                  statistics['number_students_with_tasks'],
-                                                                  statistics['group_summ_scores'])
+        (statistics['middle_score'], statistics['middle_score_on_group'], statistics['ratio']) = \
+            self._calculate_scores_statistics(
+                statistics['number_group_students'],
+                statistics['number_students_with_tasks'],
+                statistics['group_summ_scores']
+            )
 
         self.groups_statistics[group] = statistics
 
@@ -105,5 +111,8 @@ class CourseStatistics(object):
     def _calculate_scores_statistics(self, number_of_students, number_of_students_with_tasks, scores):
         if number_of_students == 0 or number_of_students_with_tasks == 0:
             return (0, 0, 0)
-        return (float(scores) / number_of_students_with_tasks, float(scores) / number_of_students,
-                float(number_of_students_with_tasks) / number_of_students)
+        return (
+            float(scores) / number_of_students_with_tasks,
+            float(scores) / number_of_students,
+            float(number_of_students_with_tasks) / number_of_students
+        )

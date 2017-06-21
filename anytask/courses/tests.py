@@ -1040,8 +1040,14 @@ class PythonTaskTest(TestCase):
             follow=True)
         self.assertContains(response, "{} {}".format(user.last_name, user.first_name))
 
-        response = client.get(reverse('courses.pythontask.cancel_task',
-                                      kwargs={'course_id': self.course.id, 'task_id': self.subtask1.id}), follow=True)
+        response = client.get(
+            reverse(
+                'courses.pythontask.cancel_task',
+                kwargs={'course_id': self.course.id, 'task_id': self.subtask1.id}
+            ),
+            follow=True
+        )
+
         self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
 
     def test_take_tasks_limit(self):

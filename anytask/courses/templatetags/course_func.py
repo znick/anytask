@@ -12,7 +12,7 @@ register = template.Library()
 def get_score(task, user):
     try:
         return Issue.objects.get(task=task, student=user).mark
-    except Exception:
+    except Issue.DoesNotExist:
         return 0
 
 
@@ -20,7 +20,7 @@ def get_score(task, user):
 def get_status_color(task, user):
     try:
         return Issue.objects.get(task=task, student=user).status_field.color
-    except Exception:
+    except Issue.DoesNotExist:
         return IssueStatus.COLOR_DEFAULT
 
 
@@ -28,7 +28,7 @@ def get_status_color(task, user):
 def get_status_name(task, user):
     try:
         return Issue.objects.get(task=task, student=user).status_field.name
-    except Exception:
+    except Issue.DoesNotExist:
         return _(u"novyj")
 
 
@@ -36,5 +36,5 @@ def get_status_name(task, user):
 def get_default_teacher(group, course):
     try:
         return DefaultTeacher.objects.get(group=group, course=course).teacher.get_full_name()
-    except Exception:
+    except Issue.DoesNotExist:
         return ""

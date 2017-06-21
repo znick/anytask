@@ -107,8 +107,9 @@ class Course(models.Model):
 
     send_to_contest_from_users = models.BooleanField(db_index=False, null=False, blank=False, default=False)
 
-    filename_extensions = models.ManyToManyField(FilenameExtension, related_name='filename_extensions_set', null=True,
-                                                 blank=True)
+    filename_extensions = models.ManyToManyField(
+        FilenameExtension, related_name='filename_extensions_set', null=True, blank=True
+    )
 
     full_transcript = models.BooleanField(db_index=False, null=False, blank=False, default=True)
 
@@ -118,8 +119,9 @@ class Course(models.Model):
     update_time = models.DateTimeField(auto_now=True, default=datetime.now)
 
     can_be_chosen_by_extern = models.BooleanField(db_index=False, null=False, blank=False, default=False)
-    group_with_extern = models.ForeignKey(Group, related_name="course_with_extern", db_index=False, null=True,
-                                          blank=True)
+    group_with_extern = models.ForeignKey(
+        Group, related_name="course_with_extern", db_index=False, null=True, blank=True
+    )
 
     mark_system = models.ForeignKey(CourseMarkSystem, db_index=False, null=True, blank=True)
 

@@ -52,8 +52,11 @@ class DefaultTeacherForm(forms.Form):
         for group in course.groups.all():
             group_key = "group_{0}".format(group.id)
             self.groups[group_key] = group
-            self.fields[group_key] = forms.ChoiceField(initial=groups_teacher.get(group.id, 0), choices=self.teachers,
-                                                       label=group.name)
+            self.fields[group_key] = forms.ChoiceField(
+                initial=groups_teacher.get(group.id, 0),
+                choices=self.teachers,
+                label=group.name
+            )
 
 
 def default_teacher_forms_factory(course, group, teacher=None, post_data=None):

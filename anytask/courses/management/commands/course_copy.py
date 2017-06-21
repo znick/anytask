@@ -24,11 +24,13 @@ class Command(BaseCommand):
     help = "Copy course"
 
     option_list = BaseCommand.option_list + (
-        make_option('--course_id',
-                    action='store',
-                    dest='course_id',
-                    default=None,
-                    help='Course id'),
+        make_option(
+            '--course_id',
+            action='store',
+            dest='course_id',
+            default=None,
+            help='Course id'
+        ),
     )
 
     @transaction.commit_on_success
