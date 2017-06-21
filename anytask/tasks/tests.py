@@ -193,7 +193,7 @@ class ViewsTest(TestCase):
         form_select_group = div_task_id.form.find('select', {'id': 'task_edit_group'})('option')
         self.assertEqual(len(form_select_group), 1, "form select group len not 2")
         self.assertEqual(form_select_group[0]['value'], '1', 'form select group 1nd option value wrong')
-        self.assertTrue('selected' in dict(form_select_group[0].attrs) , 'form select group 1nd option selected')
+        self.assertTrue('selected' in dict(form_select_group[0].attrs), 'form select group 1nd option selected')
         self.assertEqual(form_select_group[0].string.strip().strip('\n'),
                          u'group_name',
                          'form select group 2nd option text wrong')
