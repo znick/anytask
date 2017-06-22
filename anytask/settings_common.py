@@ -4,8 +4,8 @@
 from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
 
 import os
-PROJECT_PATH = os.path.dirname(os.path.abspath(__file__))
 
+PROJECT_PATH = os.path.dirname(os.path.abspath(__file__))
 
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
@@ -13,9 +13,7 @@ ADMINS = (
     ('Nickolai Zhuravlev', 'znick@znick.ru'),
 )
 
-
 MANAGERS = ADMINS
-
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -68,7 +66,7 @@ STATIC_URL = '/static/'
 # URL prefix for admin static files -- CSS, JavaScript and images.
 # Make sure to use a trailing slash.
 # Examples: "http://foo.com/static/admin/", "/static/admin/".
-#ADMIN_MEDIA_PREFIX = '/static/admin/'
+# ADMIN_MEDIA_PREFIX = '/static/admin/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
@@ -83,7 +81,7 @@ STATICFILES_DIRS = (
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-#    'django.contrib.staticfiles.finders.DefaultStorageFinder',
+    # 'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
 # Make this unique, and don't share it with anybody.
@@ -93,7 +91,7 @@ SECRET_KEY = '3$uum*a)#mnl()ds5em&scsv9gz*!fwbqa&%apz&ccbdukyyku'
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-#     'django.template.loaders.eggs.Loader',
+    # 'django.template.loaders.eggs.Loader',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -173,30 +171,32 @@ RECAPTCHA_PRIVATE_KEY = "18ccfac9d336db9817a893ce45751d5a"
 
 ANYSVN_SVN_URL_PREFIX = "/svn/"
 ANYSVN_REPOS_PATH = "../svn/user_repos"
-ANYSVN_REFFERENCE_REPO = "../new_repo" #for new svns
+ANYSVN_REFFERENCE_REPO = "../new_repo"  # for new svns
 
 RB_API_URL = "http://localhost:8080"
 RB_API_USERNAME = "anytask"
 RB_API_PASSWORD = "P@ssw0rd"
 RB_API_DEFAULT_REVIEW_GROUP = 'teachers'
 RB_SYMLINK_DIR = '/var/lib/anytask/repos/'
-RB_EXTENSIONS = ['.py', '.py2', '.py3', '.cpp', '.sage', '.m', '.java', '.h', '.cs', '.sh', '.c', '.txt', '.fs', '.hpp', '.cc', '.rkt', '.sql']
+RB_EXTENSIONS = ['.py', '.py2', '.py3', '.cpp', '.sage', '.m', '.java', '.h', '.cs', '.sh', '.c', '.txt', '.fs', '.hpp',
+                 '.cc', '.rkt', '.sql']
 
 CONTEST_API_URL = 'https://api.contest.yandex.net/anytask/'
 CONTEST_URL = "https://contest.yandex.ru/"
 CONTEST_OAUTH = 'OAUTH'
 CONTEST_OAUTH_ID = 'OAUTH_ID'
 CONTEST_OAUTH_PASSWORD = 'OAUTH_PASSWORD'
-CONTEST_EXTENSIONS = {'.py':'python2_6', '.py2':'python2_6', '.py3':'python3', '.cpp':'gcc0x', '.java':'java8', '.h':'gcc0x', '.cs':'mono_csharp', '.c':'plain_c'} #Actually python2_6 is python 2.7
+CONTEST_EXTENSIONS = {'.py': 'python2_6', '.py2': 'python2_6', '.py3': 'python3', '.cpp': 'gcc0x', '.java': 'java8',
+                      '.h': 'gcc0x', '.cs': 'mono_csharp', '.c': 'plain_c'}  # Actually python2_6 is python 2.7
 CONTEST_EXTENSIONS_COURSE = {
-    30 : {
-        ".py" : "python3"
+    30: {
+        ".py": "python3"
     },
-    13 : {
-        ".h" : "make2"
+    13: {
+        ".h": "make2"
     },
-    61 : {
-        ".h" : "make2"
+    61: {
+        ".h": "make2"
     }
 }
 
@@ -208,7 +208,7 @@ PASSPORT_OAUTH_PASSWORD = 'PASSWORD'
 IPYTHON_URL = "http://localhost:8888/notebooks"
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-MAX_FILE_SIZE = 100*1024*1024
+MAX_FILE_SIZE = 100 * 1024 * 1024
 
 EMAIL_DEFAULT_BCC = None
 

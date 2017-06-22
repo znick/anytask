@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
 
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpResponse
-from django.shortcuts import render_to_response, get_object_or_404
+from django.http import HttpResponseForbidden, HttpResponse
+from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from django.utils.translation import ugettext as _
 from django.views.decorators.http import require_POST, require_GET
 from django.conf import settings
 
-from django.contrib.auth.models import User
 from mail.models import Message
 from courses.models import Course
 from groups.models import Group
@@ -48,7 +47,7 @@ def mail_page(request):
         if key in request.session:
             users_from_staff_len = {
                 'index': request.GET['from_staff'],
-                'length': len(request.session[key]) ,
+                'length': len(request.session[key]),
             }
 
     if user.is_staff:
@@ -232,9 +231,7 @@ def ajax_get_message(request):
 @require_POST
 @login_required
 def ajax_send_message(request):
-    response = dict()
     user = request.user
-    user_profile = user.get_profile()
 
     data = dict(request.POST)
 

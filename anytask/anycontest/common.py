@@ -1,14 +1,10 @@
 # -*- coding: utf-8 -*-
 import requests
 import logging
-import os
 import xmltodict
 from BeautifulSoup import BeautifulStoneSoup
 
-from time import sleep
 from django.conf import settings
-from issues.model_issue_field import IssueField
-from django.contrib.auth.models import User
 
 logger = logging.getLogger('django.request')
 
@@ -105,7 +101,8 @@ def get_contest_mark(contest_id, problem_id, ya_login):
             submits.reverse()
 
             for submit in submits:
-                if submit['@userId'] == user_id and submit['@problemTitle'] == problem_id and submit['@verdict'] == 'OK':
+                if submit['@userId'] == user_id and submit['@problemTitle'] == problem_id \
+                        and submit['@verdict'] == 'OK':
                     contest_mark = submit['@score']
                     break
         except:
@@ -122,8 +119,9 @@ def get_contest_mark(contest_id, problem_id, ya_login):
             submits = soup.contestlog.events.submit
 
             while submits:
-                if submits != '\n' and submits.name != 'testinglog' and submits.has_key('userid'):
-                    if submits['userid'] == user_id and submits['problemtitle'] == problem_id and submits['verdict'] == 'OK':
+                if submits != '\n' and submits.name != 'testinglog' and 'userid' in submits:
+                    if submits['userid'] == user_id and submits['problemtitle'] == problem_id \
+                            and submits['verdict'] == 'OK':
                         contest_mark = submits['score']
                         break
                 submits = submits.next

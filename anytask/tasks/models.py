@@ -67,7 +67,6 @@ class Task(models.Model):
         return unicode(self.title)
 
     def user_can_take_task(self, user):
-        course = self.course
 
         for task_taken in TaskTaken.objects.filter(task=self):
             task_taken.update_status()
@@ -82,17 +81,22 @@ class Task(models.Model):
             return (False, u'')
 
         if settings.PYTHONTASK_MAX_USERS_PER_TASK:
-            if TaskTaken.objects.filter(task=self).filter(Q( Q(status=TaskTaken.STATUS_TAKEN) | Q(status=TaskTaken.STATUS_SCORED))).count() >= settings.PYTHONTASK_MAX_USERS_PER_TASK:
-                return (False, u'Задача не может быть взята более чем %d студентами' % settings.PYTHONTASK_MAX_USERS_PER_TASK)
+            if TaskTaken.objects.filter(task=self).filter(Q(Q(status=TaskTaken.STATUS_TAKEN) | Q(
+                    status=TaskTaken.STATUS_SCORED))).count() >= settings.PYTHONTASK_MAX_USERS_PER_TASK:
+                return (
+                    False,
+                    u'Задача не может быть взята более чем %d студентами' % settings.PYTHONTASK_MAX_USERS_PER_TASK)
 
         if settings.PYTHONTASK_MAX_TASKS_WITHOUT_SCORE_PER_STUDENT:
-            if TaskTaken.objects.filter(user=user).filter(status=TaskTaken.STATUS_TAKEN).count() >= settings.PYTHONTASK_MAX_TASKS_WITHOUT_SCORE_PER_STUDENT:
+            if TaskTaken.objects.filter(user=user).filter(
+                    status=TaskTaken.STATUS_TAKEN).count() >= settings.PYTHONTASK_MAX_TASKS_WITHOUT_SCORE_PER_STUDENT:
                 return (False, u'')
 
         if Task.objects.filter(parent_task=self).count() > 0:
             return (False, u'')
 
-        if TaskTaken.objects.filter(task=self).filter(user=user).filter(Q( Q(status=TaskTaken.STATUS_TAKEN) | Q(status=TaskTaken.STATUS_SCORED))).count() != 0:
+        if TaskTaken.objects.filter(task=self).filter(user=user).filter(
+                Q(Q(status=TaskTaken.STATUS_TAKEN) | Q(status=TaskTaken.STATUS_SCORED))).count() != 0:
             return (False, u'')
 
         if self.parent_task is not None:
@@ -105,7 +109,8 @@ class Task(models.Model):
 
         try:
             task_taken = TaskTaken.objects.filter(task=self).filter(user=user).get(status=TaskTaken.STATUS_BLACKLISTED)
-            black_list_expired_date = task_taken.update_time + timedelta(days=settings.PYTHONTASK_DAYS_DROP_FROM_BLACKLIST)
+            black_list_expired_date = task_taken.update_time + timedelta(
+                days=settings.PYTHONTASK_DAYS_DROP_FROM_BLACKLIST)
             return (False, u'Вы сможете взять эту задачу с %s' % black_list_expired_date.strftime("%d.%m.%Y"))
         except TaskTaken.DoesNotExist:
             pass
@@ -153,7 +158,8 @@ class Task(models.Model):
         return Task.objects.filter(parent_task=self)
 
     def get_task_takens(self):
-        return TaskTaken.objects.filter(task=self).filter(Q( Q(status=TaskTaken.STATUS_TAKEN) | Q(status=TaskTaken.STATUS_SCORED)))
+        return TaskTaken.objects.filter(task=self).filter(
+            Q(Q(status=TaskTaken.STATUS_TAKEN) | Q(status=TaskTaken.STATUS_SCORED)))
 
     def add_user_properties(self, user):
         self.can_take = self.user_can_take_task(user)
@@ -177,7 +183,7 @@ class Task(models.Model):
             task_related, created = TaskGroupRelations.objects.get_or_create(task=self, group=group)
 
             if created:
-                max_position = TaskGroupRelations.objects.filter(group=group).exclude(id=task_related.id)\
+                max_position = TaskGroupRelations.objects.filter(group=group).exclude(id=task_related.id) \
                     .aggregate(Max('position'))['position__max']
                 task_related.position = max_position + 1 if max_position is not None else 0
             else:
@@ -222,6 +228,7 @@ class TaskLog(models.Model):
     def __unicode__(self):
         return unicode(self.title)
 
+
 class TaskTaken(models.Model):
     STATUS_TAKEN = 0
     STATUS_CANCELLED = 1
@@ -234,13 +241,14 @@ class TaskTaken(models.Model):
     issue = models.ForeignKey('issues.Issue', db_index=True, null=True, blank=False)
 
     TASK_TAKEN_STATUSES = (
-        (STATUS_TAKEN,          u'Task taken'),
-        (STATUS_CANCELLED,      u'Task cancelled'),
-        (STATUS_BLACKLISTED,    u'Task blacklisted'),
-        (STATUS_SCORED,         u'Task scored'),
-        (STATUS_DELETED,        u'TaskTaken deleted')
+        (STATUS_TAKEN, u'Task taken'),
+        (STATUS_CANCELLED, u'Task cancelled'),
+        (STATUS_BLACKLISTED, u'Task blacklisted'),
+        (STATUS_SCORED, u'Task scored'),
+        (STATUS_DELETED, u'TaskTaken deleted')
     )
-    status = models.IntegerField(max_length=1, choices=TASK_TAKEN_STATUSES, db_index=True, null=False, blank=False, default=0)
+    status = models.IntegerField(max_length=1, choices=TASK_TAKEN_STATUSES, db_index=True, null=False, blank=False,
+                                 default=0)
 
     EDIT = 'EDIT'
     QUEUE = 'QUEUE'
@@ -273,6 +281,7 @@ class TaskTaken(models.Model):
     def __unicode__(self):
         return unicode(self.task) + " (" + unicode(self.user) + ")"
 
+
 class TaskGroupRelations(models.Model):
     task = models.ForeignKey(Task, db_index=False, null=False, blank=False)
     group = models.ForeignKey(Group, db_index=False, null=False, blank=False)
@@ -290,7 +299,7 @@ class TaskGroupRelations(models.Model):
 
 def task_save_to_log_post_save(sender, instance, created, **kwargs):
     task_log = TaskLog()
-    task_log_dict  = copy.deepcopy(instance.__dict__)
+    task_log_dict = copy.deepcopy(instance.__dict__)
     task_log_dict['id'] = None
     task_log.__dict__ = task_log_dict
     task_log.sended_notify = False

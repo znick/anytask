@@ -7,8 +7,6 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from anycontest.common import FakeResponse, escape, user_register_to_contest
 
-from datetime import datetime
-
 import requests
 import os
 import logging
@@ -61,10 +59,10 @@ class ContestSubmission(models.Model):
             self.compiler_id = compiler_id[0] if isinstance(compiler_id, list) else compiler_id
 
             if student_profile.ya_contest_oauth and course.send_to_contest_from_users:
-                OAUTH = student_profile.ya_contest_oauth
+                oauth = student_profile.ya_contest_oauth
                 reg_req = requests.get(
                     settings.CONTEST_API_URL + 'status?contestId=' + str(contest_id),
-                    headers={'Authorization': 'OAuth ' + OAUTH})
+                    headers={'Authorization': 'OAuth ' + oauth})
                 if 'error' in reg_req.json():
                     self.send_error = reg_req.json()["error"]["message"]
                     self.save()
@@ -77,7 +75,7 @@ class ContestSubmission(models.Model):
                         self.save()
                         return False
             else:
-                OAUTH = settings.CONTEST_OAUTH
+                oauth = settings.CONTEST_OAUTH
 
             problem_req = requests.get(settings.CONTEST_API_URL + 'problems?contestId=' + str(contest_id),
                                        headers={'Authorization': 'OAuth ' + settings.CONTEST_OAUTH})
@@ -101,8 +99,8 @@ class ContestSubmission(models.Model):
                                                      'contestId': contest_id,
                                                      'problemId': problem_id},
                                                files=files,
-                                               headers={'Authorization': 'OAuth ' + OAUTH})
-                    if not 'error' in submit_req.json():
+                                               headers={'Authorization': 'OAuth ' + oauth})
+                    if 'error' not in submit_req.json():
                         break
                     time.sleep(0.5)
 
@@ -150,13 +148,13 @@ class ContestSubmission(models.Model):
             student_profile = issue.student.get_profile()
             course = issue.task.course
             if student_profile.ya_contest_oauth and course.send_to_contest_from_users:
-                OAUTH = student_profile.ya_contest_oauth
+                oauth = student_profile.ya_contest_oauth
             else:
-                OAUTH = settings.CONTEST_OAUTH
+                oauth = settings.CONTEST_OAUTH
             contest_id = issue.task.contest_id
             results_req = requests.get(
                 settings.CONTEST_API_URL + 'results?runId=' + str(run_id) + '&contestId=' + str(contest_id),
-                headers={'Authorization': 'OAuth ' + OAUTH})
+                headers={'Authorization': 'OAuth ' + oauth})
 
             results_req_json = results_req.json()
             self.full_response = results_req_json
@@ -183,7 +181,7 @@ class ContestSubmission(models.Model):
                     self.used_time = test['usedTime']
                     self.used_memory = test['usedMemory']
                     test_resourses = u'<p><u>{0}</u> '.format(_(u'resursy')) + str(test['usedTime']) \
-                                     + 'ms/' + '%.2f' % (test['usedMemory']/(1024.*1024)) + 'Mb</p>'
+                                     + 'ms/' + '%.2f' % (test['usedMemory'] / (1024. * 1024)) + 'Mb</p>'
                     if 'input' in test:
                         test_input = u'<p><u>{0}</u></p><p>'.format(_(u'vvod')) + \
                                      escape(test['input']) if test['input'] else ""

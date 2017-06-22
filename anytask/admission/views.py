@@ -14,9 +14,7 @@ from anycontest.common import user_register_to_contest
 from admission.models import AdmissionRegistrationProfile
 
 import json
-import requests
 import logging
-import locale
 import datetime
 
 logger = logging.getLogger('django.request')

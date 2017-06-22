@@ -9,16 +9,13 @@ from django.conf import settings
 from django.utils.http import is_safe_url
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
-from django.core.files.base import ContentFile
 from django.utils.translation import ugettext as _
 from django.utils.translation import check_for_language
-
 
 from users.models import UserProfile, UserProfileLog
 from users.model_user_status import UserStatus
 from issues.model_issue_student_filter import IssueFilterStudent
 from django.contrib.auth.models import User
-from tasks.models import TaskTaken
 from years.models import Year
 from groups.models import Group
 from courses.models import Course, StudentCourseMark
@@ -31,9 +28,8 @@ from users.forms import InviteActivationForm
 from years.common import get_current_year
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, HTML
+from crispy_forms.layout import HTML
 from dateutil.relativedelta import relativedelta
-
 
 import yandex_oauth
 import requests
@@ -95,12 +91,14 @@ def profile(request, username=None, year=None):
                 if not (groups_user_to_show & groups):
                     raise PermissionDenied
 
-        show_email = user.is_staff or \
-                     user_to_show_profile.show_email or \
-                     user_teach_user_to_show or \
-                     user_to_show_teach_user
-        user_above_user_to_show = user.is_staff or \
-                                  user_school_teach_user_to_show
+        show_email = \
+            user.is_staff or \
+            user_to_show_profile.show_email or \
+            user_teach_user_to_show or \
+            user_to_show_teach_user
+        user_above_user_to_show = \
+            user.is_staff or \
+            user_school_teach_user_to_show
 
     teacher_in_courses = Course.objects.filter(is_active=True).filter(teachers=user_to_show).distinct()
 
@@ -113,14 +111,7 @@ def profile(request, username=None, year=None):
 
     courses = Course.objects.filter(is_active=True).filter(groups__in=groups).distinct()
 
-    can_sync_contest = False
-    for course in Course.objects.filter(is_active=True):
-        if course.get_user_group(user) and course.send_to_contest_from_users:
-            can_sync_contest = True
-
     can_generate_invites = user_to_show == user and Invite.user_can_generate_invite(user)
-
-
 
     invite_form = InviteActivationForm()
 
@@ -149,14 +140,14 @@ def profile(request, username=None, year=None):
     teacher_in_courses_archive = Course.objects.filter(is_active=False).filter(teachers=user_to_show).distinct()
     courses_archive = Course.objects.filter(is_active=False).filter(groups__in=groups).distinct()
 
-    card_width = ''
-    if len(teacher_in_courses or teacher_in_courses_archive) != 0 and \
-       len(courses or courses_archive) != 0 and \
-       len(groups) != 0:
+    if len(teacher_in_courses or teacher_in_courses_archive) != 0 \
+            and len(courses or courses_archive) != 0 \
+            and len(groups) != 0:
         card_width = 'col-md-4'
-    elif len(teacher_in_courses or teacher_in_courses_archive) != 0 and len(courses or courses_archive) != 0 or \
-         len(teacher_in_courses or teacher_in_courses_archive) != 0 and len(groups) != 0 or \
-         len(courses or courses_archive) != 0 and len(groups) != 0:
+    elif len(teacher_in_courses or teacher_in_courses_archive) != 0 \
+            and len(courses or courses_archive) != 0 or len(teacher_in_courses or teacher_in_courses_archive) != 0 \
+            and len(groups) != 0 or len(courses or courses_archive) != 0 \
+            and len(groups) != 0:
         card_width = 'col-md-6'
     else:
         card_width = 'col-md-12'
@@ -167,21 +158,20 @@ def profile(request, username=None, year=None):
         age = age if age > 0 else 0
 
     context = {
-        'user_to_show'              : user_to_show,
-        'courses'                   : group_by_year(courses),
-        'courses_archive'           : group_by_year(courses_archive),
-        'groups'                    : group_by_year(groups),
-        # 'user_course_information'   : user_course_information,
-        'teacher_in_courses'        : group_by_year(teacher_in_courses),
+        'user_to_show': user_to_show,
+        'courses': group_by_year(courses),
+        'courses_archive': group_by_year(courses_archive),
+        'groups': group_by_year(groups),
+        'teacher_in_courses': group_by_year(teacher_in_courses),
         'teacher_in_courses_archive': group_by_year(teacher_in_courses_archive),
-        'current_year'              : unicode(current_year) if current_year is not None else '',
-        'can_generate_invites'      : can_generate_invites,
-        'invite_form'               : invite_form,
-        'user_to_show_profile'      : user_to_show_profile,
-        'card_width'                : card_width,
-        'show_email'                : show_email,
-        'user_above_user_to_show'   : user_above_user_to_show,
-        'age'                       : age,
+        'current_year': unicode(current_year) if current_year is not None else '',
+        'can_generate_invites': can_generate_invites,
+        'invite_form': invite_form,
+        'user_to_show_profile': user_to_show_profile,
+        'card_width': card_width,
+        'show_email': show_email,
+        'user_above_user_to_show': user_above_user_to_show,
+        'age': age,
     }
 
     return render_to_response('user_profile.html', context, context_instance=RequestContext(request))
@@ -197,6 +187,7 @@ def group_by_year(objects):
             group_dict[year] = [obj]
 
     return sorted(group_dict.iteritems())
+
 
 @login_required
 def profile_settings(request):
@@ -233,11 +224,11 @@ def profile_history(request, username=None):
         user_to_show = get_object_or_404(User, username=username)
 
     context = {
-        'user_profile':         user_to_show.get_profile(),
+        'user_profile': user_to_show.get_profile(),
         'user_profile_history': UserProfileLog.objects.filter(user=user_to_show).order_by('update_time'),
-        'user_to_show':         user_to_show,
-        'status_types':         UserStatus.TYPE_STATUSES,
-        'user_statuses':        UserStatus.objects.all(),
+        'user_to_show': user_to_show,
+        'status_types': UserStatus.TYPE_STATUSES,
+        'user_statuses': UserStatus.objects.all(),
     }
 
     return render_to_response('status_history.html', context, context_instance=RequestContext(request))
@@ -290,10 +281,10 @@ def set_user_statuses(request, username=None):
 
     user_profile_log = {'update_time': user_profile.update_time.strftime("%d-%m-%Y %H:%M"),
                         'updated_by': user_profile.updated_by.username,
-                        'fullname': user_profile.updated_by.get_full_name(),}
+                        'fullname': user_profile.updated_by.get_full_name()}
 
     return HttpResponse(json.dumps({'user_statuses': user_statuses,
-                                    'user_profile_log' : user_profile_log,
+                                    'user_profile_log': user_profile_log,
                                     'is_error': is_error,
                                     'error': error}),
                         content_type="application/json")
@@ -308,7 +299,7 @@ def ya_oauth_request(request, type_of_oauth):
         OAUTH = settings.PASSPORT_OAUTH_ID
         PASSWORD = settings.PASSPORT_OAUTH_PASSWORD
 
-    ya_oauth = yandex_oauth.OAuthYandex(OAUTH,PASSWORD)
+    ya_oauth = yandex_oauth.OAuthYandex(OAUTH, PASSWORD)
 
     return redirect(ya_oauth.get_code())
 
@@ -339,9 +330,9 @@ def ya_oauth_passport(user, ya_response, ya_passport_response):
 
     if not user_profile.ya_passport_oauth:
         for user_p in UserProfile.objects.exclude(ya_passport_email=''):
-            if user_p.ya_passport_uid == ya_passport_response['id'] or \
-                            user_p.ya_passport_login == ya_passport_response['login'] or \
-                            user_p.ya_passport_email == ya_passport_response['default_email']:
+            if user_p.ya_passport_uid == ya_passport_response['id'] \
+                    or user_p.ya_passport_login == ya_passport_response['login'] \
+                    or user_p.ya_passport_email == ya_passport_response['default_email']:
                 return redirect('users.views.ya_oauth_forbidden', type_of_oauth='passport')
 
     user_profile.ya_passport_oauth = ya_response['access_token']
@@ -403,15 +394,15 @@ def ya_oauth_disable(request, type_of_oauth):
 @login_required
 def ya_oauth_forbidden(request, type_of_oauth):
     oauth_error_text_header = ''
-    oauth_error_text = (_(u'profil') + u' {0} ' + _(u'uzhe_privjazan'))\
+    oauth_error_text = (_(u'profil') + u' {0} ' + _(u'uzhe_privjazan')) \
         .format(request.session["ya_oauth_login"])
     if type_of_oauth == 'contest':
         oauth_error_text_header = _(u"privjazat_profil_kontesta")
     elif type_of_oauth == 'passport':
         oauth_error_text_header = _(u"privjazat_profil_ja")
     context = {
-        'oauth_error_text_header' : oauth_error_text_header,
-        'oauth_error_text'        : oauth_error_text,
+        'oauth_error_text_header': oauth_error_text_header,
+        'oauth_error_text': oauth_error_text,
     }
 
     return render_to_response('oauth_error.html', context, context_instance=RequestContext(request))
@@ -420,8 +411,8 @@ def ya_oauth_forbidden(request, type_of_oauth):
 @login_required
 def ya_oauth_changed(request):
     context = {
-        'oauth_error_text_header':  _(u"privjazat_profil_kontesta"),
-        'oauth_error_text'       : _(u"pereprivjazat_tolko_svoj_profil"),
+        'oauth_error_text_header': _(u"privjazat_profil_kontesta"),
+        'oauth_error_text': _(u"pereprivjazat_tolko_svoj_profil"),
     }
 
     return render_to_response('oauth_error.html', context, context_instance=RequestContext(request))
@@ -465,9 +456,11 @@ def my_tasks(request):
 
     f.form.helper = FormHelper(f.form)
     f.form.helper.form_method = 'get'
-    f.form.helper.layout.append(HTML(u"""<div class="form-group row">
-                                           <button id="button_filter" class="btn btn-secondary pull-xs-right" type="submit">{0}</button>
-                                         </div>""".format(_(u'primenit'))))
+    f.form.helper.layout.append(
+        HTML(u"""<div class="form-group row">
+        <button id="button_filter" class="btn btn-secondary pull-xs-right" type="submit">{0}</button>
+        </div>""".format(_(u'primenit')))
+    )
 
     context = {
         'filter': f,
@@ -549,10 +542,10 @@ def user_courses(request, username=None, year=None):
             tables[is_archive][table_year][table_key] = [new_course_statistics]
 
     context = {
-        'tables'            : [sorted(x.iteritems()) for x in tables],
-        'current_year'      : unicode(current_year) if current_year is not None else '',
-        'user_to_show'      : user_to_show,
-        'user'              : user,
+        'tables': [sorted(x.iteritems()) for x in tables],
+        'current_year': unicode(current_year) if current_year is not None else '',
+        'user_to_show': user_to_show,
+        'user': user,
     }
 
     return render_to_response('user_courses.html', context, context_instance=RequestContext(request))

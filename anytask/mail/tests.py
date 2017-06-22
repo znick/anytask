@@ -7,7 +7,6 @@ from courses.models import Course
 from groups.models import Group
 from years.models import Year
 
-from BeautifulSoup import BeautifulSoup
 from django.core.urlresolvers import reverse
 from mail.views import format_date
 import json
@@ -211,7 +210,6 @@ class ViewsTest(TestCase):
             'recipients_status': []
         }
 
-
         # login
         self.assertTrue(client.login(username=self.sender.username, password=self.sender_password))
 
@@ -304,8 +302,6 @@ class ViewsTest(TestCase):
         response = client.get(reverse('mail.views.ajax_get_mailbox'), get_data)
         self.assertEqual(response.status_code, 200)
         self.assertDictEqual(json.loads(response.content), response_data)
-
-
 
         for recipient in self.recipients:
             # check inbox

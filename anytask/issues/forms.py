@@ -10,7 +10,7 @@ from issues.model_issue_status import IssueStatus
 
 
 class DefaultForm(forms.Form):
-    def __init__(self, field_name, request, issue, data = None, *args, **kwargs):
+    def __init__(self, field_name, request, issue, data=None, *args, **kwargs):
         self._field_name = field_name
         self._request = request
         self._issue = issue
@@ -35,21 +35,25 @@ def get_users_choise(issue):
         users_set.add(user)
 
     for user in users_set:
-        users.append((user.id, user.get_full_name())) #Yes this is strange difference %)
+        users.append((user.id, user.get_full_name()))  # Yes this is strange difference %)
 
     return users
 
 
 def get_responsible_form(field_name, request, issue, data=None, *args, **kwargs):
     class _form(DefaultForm):
-        responsible_name = forms.TypedChoiceField(get_users_choise(issue), coerce=user_id2user, label='', required=False)
+        responsible_name = forms.TypedChoiceField(get_users_choise(issue), coerce=user_id2user, label='',
+                                                  required=False)
+
     return _form(field_name, request, issue, data, *args, **kwargs)
 
 
 def get_followers_form(field_name, request, issue, data=None, *args, **kwargs):
     class _form(DefaultForm):
-        followers_names = forms.MultipleChoiceField(get_users_choise(issue), required=False, label='') #we dont need coerce function here
-                                                                                       #because add user id to m2m field is ok.
+        followers_names = forms.MultipleChoiceField(get_users_choise(issue), required=False,
+                                                    label='')  # we dont need coerce function here
+        # because add user id to m2m field is ok.
+
     return _form(field_name, request, issue, data, *args, **kwargs)
 
 
@@ -67,6 +71,7 @@ def status_id2status(status_id):
 def get_status_form(field_name, request, issue, data=None, *args, **kwargs):
     class _form(DefaultForm):
         status = forms.TypedChoiceField(get_status_choice(issue), coerce=status_id2status, label='', required=False)
+
     return _form(field_name, request, issue, data, *args, **kwargs)
 
 
@@ -103,7 +108,7 @@ class MultiFileField(forms.FileField):
         return ret
 
     def validate(self, data):
-        while None in data: #Got data == [None] when there is no files.
+        while None in data:  # Got data == [None] when there is no files.
             data.remove(None)
 
         super(MultiFileField, self).validate(data)
@@ -117,7 +122,7 @@ class MultiFileField(forms.FileField):
             raise ValidationError(self.error_messages['max_num'] % {'max_num': self.max_num, 'num_files': num_files})
         for uploaded_file in data:
             if uploaded_file.size > self.maximum_file_size:
-                raise ValidationError(self.error_messages['file_size'] % { 'uploaded_file_name': uploaded_file.name})
+                raise ValidationError(self.error_messages['file_size'] % {'uploaded_file_name': uploaded_file.name})
 
 
 class CommentForm(DefaultForm):
@@ -146,6 +151,7 @@ class MarkForm(DefaultForm):
     mark = forms.FloatField(label='',
                             widget=forms.TextInput(attrs=float_field_attrs),
                             required=False)
+
 
 # class StatusForm(DefaultForm):
 #

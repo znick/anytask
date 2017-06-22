@@ -16,7 +16,7 @@ def findall(dir = os.curdir):
         if base:
             files = [os.path.join(base, f) for f in files]
         all_files.extend(filter(os.path.isfile, files))
-    return all_files
+    return all_files # noqa
 
 distutils.filelist.findall = findall    # fix findall bug in distutils.
 

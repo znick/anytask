@@ -9,8 +9,7 @@ logger = logging.getLogger('django.request')
 
 
 def send_mass_mail_html(datatuple, fail_silently=False, user=None, password=None, connection=None):
-    connection = connection or \
-                 get_connection(username=user, password=password, fail_silently=fail_silently)
+    connection = connection or get_connection(username=user, password=password, fail_silently=fail_silently)
     messages = []
     for subject, plain_text, html, from_email, recipient in datatuple:
         message = EmailMultiAlternatives(subject, plain_text, from_email, recipient)

@@ -9,14 +9,15 @@ from django.views.generic import View
 
 from courses.models import Course
 
+
 class HttpResponseUnauthorized(HttpResponse):
     def __init__(self, *args, **kwargs):
         HttpResponse.__init__(self, *args, **kwargs)
         self.status_code = 401
         self["WWW-Authenticate"] = 'Basic realm="AnyTask SVN access"'
 
-class SvnAccesss(View):
 
+class SvnAccesss(View):
     def _get_user(self, username, password):
         return authenticate(username=username, password=password)
 

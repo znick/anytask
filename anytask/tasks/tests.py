@@ -15,7 +15,7 @@ from groups.models import Group
 from years.models import Year
 from tasks.models import Task, TaskGroupRelations
 
-from mock import patch, MagicMock
+from mock import patch
 from BeautifulSoup import BeautifulSoup
 from datetime import datetime, timedelta
 from django.core.urlresolvers import reverse
@@ -78,6 +78,7 @@ class CreateTest(TestCase):
         self.assertEqual(task.problem_id, 'A')
         self.assertEqual(task.sended_notify, False)
         self.assertEqual(task.one_file_upload, True)
+
 
 class ViewsTest(TestCase):
     def setUp(self):
@@ -187,12 +188,12 @@ class ViewsTest(TestCase):
 
         form_checkbox = div_task_id.form('input', {'type': 'checkbox'})
         for checkbox in form_checkbox:
-            self.assertFalse(checkbox.has_key('checked'), "form checkbox id='{}' not empty".format(checkbox['id']))
+            self.assertFalse('checked' in checkbox, "form checkbox id='{}' not empty".format(checkbox['id']))
 
         form_select_group = div_task_id.form.find('select', {'id': 'task_edit_group'})('option')
         self.assertEqual(len(form_select_group), 1, "form select group len not 2")
         self.assertEqual(form_select_group[0]['value'], '1', 'form select group 1nd option value wrong')
-        self.assertTrue(form_select_group[0].has_key('selected'), 'form select group 1nd option selected')
+        self.assertTrue('selected' in dict(form_select_group[0].attrs), 'form select group 1nd option selected')
         self.assertEqual(form_select_group[0].string.strip().strip('\n'),
                          u'group_name',
                          'form select group 2nd option text wrong')
@@ -204,7 +205,7 @@ class ViewsTest(TestCase):
                          u's_obsuzhdeniem',
                          'form select type 1st option text wrong')
         self.assertEqual(form_select_type[1]['value'], 'Only mark', 'form select type 2nd option value wrong')
-        self.assertFalse(form_select_type[1].has_key('selected'), 'form select type 2nd option selected')
+        self.assertFalse('selected' in form_select_type[1], 'form select type 2nd option selected')
         self.assertEqual(form_select_type[1].string.strip().strip('\n'),
                          u'tolko_ocenka',
                          'form select type 2nd option text wrong')
@@ -295,7 +296,8 @@ class ViewsTest(TestCase):
         form_inputs = div_task_id.form('input', 'form-control')
         self.assertEqual(form_inputs[0]['value'], 'task_title', "form input id='{}' wrong".format(form_inputs[0]['id']))
         self.assertEqual(form_inputs[2]['value'], '10', "form input id='{}' wrong".format(form_inputs[2]['id']))
-        self.assertEqual(form_inputs[3]['value'], '01-08-2016 00:30', "form input id='{}' wrong".format(form_inputs[3]['id']))
+        self.assertEqual(form_inputs[3]['value'], '01-08-2016 00:30',
+                         "form input id='{}' wrong".format(form_inputs[3]['id']))
         self.assertEqual(form_inputs[4]['value'], '1234', "form input id='{}' wrong".format(form_inputs[4]['id']))
         self.assertEqual(form_inputs[5]['value'], 'A', "form input id='{}' wrong".format(form_inputs[5]['id']))
 
@@ -303,16 +305,16 @@ class ViewsTest(TestCase):
 
         for i in range(len(form_checkbox)):
             if form_checkbox[i]['id'] == "task_edit_changed_task":
-                self.assertFalse(form_checkbox[i].has_key('checked'),
-                                "form checkbox id='{}' checked".format(form_checkbox[i]['id']))
+                self.assertFalse('checked' in form_checkbox[i],
+                                 "form checkbox id='{}' checked".format(form_checkbox[i]['id']))
             else:
-                self.assertTrue(form_checkbox[i].has_key('checked'),
+                self.assertTrue('checked' in dict(form_checkbox[i].attrs),
                                 "form checkbox id='{}' not checked".format(form_checkbox[i]['id']))
 
         form_select_group = div_task_id.form.find('select', {'id': 'task_edit_group'})('option')
         self.assertEqual(len(form_select_group), 1, "form select group len not 2")
         self.assertEqual(form_select_group[0]['value'], '1', 'form select group 2nd option value wrong')
-        self.assertTrue(form_select_group[0].has_key('selected'), 'form select group 2nd option selected')
+        self.assertTrue('selected' in dict(form_select_group[0].attrs), 'form select group 2nd option selected')
         self.assertEqual(form_select_group[0].string.strip().strip('\n'),
                          u'group_name',
                          'form select group 2nd option text wrong')
@@ -320,18 +322,18 @@ class ViewsTest(TestCase):
         form_select_type = div_task_id.form.find('select', {'id': 'task_edit_type'})('option')
         self.assertEqual(len(form_select_type), 3, "form select type len not 3")
         self.assertEqual(form_select_type[0]['value'], 'All', 'form select type 1st option value wrong')
-        self.assertTrue(form_select_type[0].has_key('selected'), 'form select type 1nd option not selected')
+        self.assertTrue('selected' in dict(form_select_group[0].attrs), 'form select type 1nd option not selected')
         self.assertEqual(form_select_type[0].string.strip().strip('\n'),
                          u's_obsuzhdeniem',
                          'form select type 1st option text wrong')
         self.assertEqual(form_select_type[1]['value'], 'Only mark', 'form select type 2nd option value wrong')
-        self.assertFalse(form_select_type[1].has_key('selected'), 'form select type 2nd option selected')
+        self.assertFalse('selected' in dict(form_select_type[1].attrs), 'form select type 2nd option selected')
         self.assertEqual(form_select_type[1].string.strip().strip('\n'),
                          u'tolko_ocenka',
                          'form select type 2nd option text wrong')
 
         form_textarea = div_task_id.form.textarea
-        self.assertEqual(form_textarea.string, 'task_text',"form textarea empty")
+        self.assertEqual(form_textarea.string, 'task_text', "form textarea empty")
 
         # get course and show hidden task page
         response = client.post(reverse('courses.views.change_visibility_hidden_tasks'),

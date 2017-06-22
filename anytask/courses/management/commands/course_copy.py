@@ -1,41 +1,37 @@
-
 from django.core.management.base import BaseCommand
-from django.contrib.auth.models import User
 from django.db import transaction
 
-from groups.models import Group
 from courses.models import Course
 from tasks.models import Task
-from years.common import get_current_year, get_or_create_current_year
-from years.models import Year
 
 from xml.dom.minidom import parse
 from optparse import make_option
 import copy
-import sys
-import random
-import string
+
 
 def get_users_from_cs_xml(cs_xml_fn):
     doc = parse(cs_xml_fn)
     for student_el in doc.getElementsByTagName("student"):
         student = {
-            'login'    : student_el.getAttribute('login'),
-            'name'     : student_el.getAttribute('name'),
-            'grp'      : student_el.getAttribute('grp'),
+            'login': student_el.getAttribute('login'),
+            'name': student_el.getAttribute('name'),
+            'grp': student_el.getAttribute('grp'),
         }
         yield student
+
 
 class Command(BaseCommand):
     help = "Copy course"
 
     option_list = BaseCommand.option_list + (
-        make_option('--course_id',
+        make_option(
+            '--course_id',
             action='store',
             dest='course_id',
             default=None,
-            help='Course id'),
-        )
+            help='Course id'
+        ),
+    )
 
     @transaction.commit_on_success
     def handle(self, **options):

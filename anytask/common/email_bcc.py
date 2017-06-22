@@ -1,6 +1,7 @@
 from django.core.mail.backends.smtp import EmailBackend
 from django.conf import settings
 
+
 class BCCEmailBackend(EmailBackend):
     def _send(self, email_message):
         bcc_email = getattr(settings, 'EMAIL_DEFAULT_BCC')

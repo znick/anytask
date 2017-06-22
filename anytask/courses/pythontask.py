@@ -1,4 +1,3 @@
-
 from tasks.models import Task, TaskTaken
 from issues.models import Issue
 
@@ -11,7 +10,6 @@ from django.template import RequestContext
 from django.utils.translation import ugettext_lazy as _
 
 import datetime
-
 
 
 def tasks_list(request, course):
@@ -27,7 +25,8 @@ def tasks_list(request, course):
             task.task_text = ''
 
         task_taken_list = []
-        for task_taken in TaskTaken.objects.filter(task=task).exclude(task__is_hidden=True).filter(Q( Q(status=TaskTaken.STATUS_TAKEN) | Q(status=TaskTaken.STATUS_SCORED))):
+        for task_taken in TaskTaken.objects.filter(task=task).exclude(task__is_hidden=True).filter(
+                Q(Q(status=TaskTaken.STATUS_TAKEN) | Q(status=TaskTaken.STATUS_SCORED))):
 
             if settings.PYTHONTASK_MAX_DAYS_WITHOUT_SCORES and task_taken.status == TaskTaken.STATUS_TAKEN:
                 task_taken.cancel_date = task_taken.added_time + delta
@@ -41,7 +40,9 @@ def tasks_list(request, course):
                 if subtask.task_text is None:
                     subtask.task_text = ''
 
-                subtask_takens = list(TaskTaken.objects.filter(task=subtask).exclude(task__is_hidden=True).exclude(task__parent_task__is_hidden=True).filter(Q( Q(status=TaskTaken.STATUS_TAKEN) | Q(status=TaskTaken.STATUS_SCORED))))
+                subtask_takens = list(TaskTaken.objects.filter(task=subtask).exclude(task__is_hidden=True).exclude(
+                    task__parent_task__is_hidden=True).filter(
+                    Q(Q(status=TaskTaken.STATUS_TAKEN) | Q(status=TaskTaken.STATUS_SCORED))))
                 if settings.PYTHONTASK_MAX_DAYS_WITHOUT_SCORES:
                     for subtask_taken in filter(lambda x: x.status == TaskTaken.STATUS_TAKEN, subtask_takens):
                         subtask_taken.cancel_date = subtask_taken.added_time + delta
@@ -51,15 +52,16 @@ def tasks_list(request, course):
             task_and_task_taken.append((task, task_taken_list))
 
     context = {
-        'course'          : course,
-        'user'            : user,
-        'tasks_taken'     : task_and_task_taken,
-        'user_is_teacher' : course.user_is_teacher(user),
-        'STATUS_TAKEN'    : TaskTaken.STATUS_TAKEN,
-        'STATUS_SCORED'   : TaskTaken.STATUS_SCORED,
+        'course': course,
+        'user': user,
+        'tasks_taken': task_and_task_taken,
+        'user_is_teacher': course.user_is_teacher(user),
+        'STATUS_TAKEN': TaskTaken.STATUS_TAKEN,
+        'STATUS_SCORED': TaskTaken.STATUS_SCORED,
     }
 
     return render_to_response('course_tasks_potok.html', context, context_instance=RequestContext(request))
+
 
 @login_required
 @transaction.commit_on_success
@@ -80,6 +82,7 @@ def get_task(request, course_id, task_id):
         task_taken.issue.add_comment(u"{} {} {}".format(user.first_name, user.last_name, _("zapisalsya_na_task")))
 
     return redirect('courses.views.course_page', course_id=course_id)
+
 
 @login_required
 def cancel_task(request, course_id, task_id):

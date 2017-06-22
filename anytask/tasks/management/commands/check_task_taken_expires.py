@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 import datetime
 from django.db.models import Q
 from django.conf import settings
@@ -24,11 +24,13 @@ class Command(BaseCommand):
         if not settings.PYTHONTASK_MAX_DAYS_WITHOUT_SCORES:
             return
 
-        task_expired_date = datetime.datetime.now() - datetime.timedelta(days=settings.PYTHONTASK_MAX_DAYS_WITHOUT_SCORES)
+        task_expired_date = datetime.datetime.now() - datetime.timedelta(
+            days=settings.PYTHONTASK_MAX_DAYS_WITHOUT_SCORES)
         for task in course.task_set.all():
             task_taken_query = TaskTaken.objects.filter(task=task)
-            task_taken_query = task_taken_query.filter(Q(Q(status=TaskTaken.STATUS_TAKEN) | Q(status=TaskTaken.STATUS_CANCELLED)))
-            task_taken_query = task_taken_query.filter(update_time__lte = task_expired_date)
+            task_taken_query = task_taken_query.filter(
+                Q(Q(status=TaskTaken.STATUS_TAKEN) | Q(status=TaskTaken.STATUS_CANCELLED)))
+            task_taken_query = task_taken_query.filter(update_time__lte=task_expired_date)
 
             task_taken_to_delete = []
             task_taken_to_blacklist = []
@@ -45,7 +47,8 @@ class Command(BaseCommand):
 
             for task_taken in task_taken_to_blacklist:
                 task_taken.status = TaskTaken.STATUS_BLACKLISTED
-                task_taken.issue.add_comment(u"Запись на задачу отменена автоматически в связи с истечением времени сдачи")
+                task_taken.issue.add_comment(
+                    u"Запись на задачу отменена автоматически в связи с истечением времени сдачи")
                 task_taken.save()
 
             for task_taken in task_taken_to_delete:
@@ -57,12 +60,13 @@ class Command(BaseCommand):
         if not settings.PYTHONTASK_DAYS_DROP_FROM_BLACKLIST:
             return
 
-        blacklist_expired_date = datetime.datetime.now() - datetime.timedelta(days=settings.PYTHONTASK_DAYS_DROP_FROM_BLACKLIST)
+        blacklist_expired_date = datetime.datetime.now() - datetime.timedelta(
+            days=settings.PYTHONTASK_DAYS_DROP_FROM_BLACKLIST)
 
         for task in course.task_set.all():
             task_taken_query = TaskTaken.objects.filter(task=task)
             task_taken_query = task_taken_query.filter(status=TaskTaken.STATUS_BLACKLISTED)
-            task_taken_query = task_taken_query.filter(update_time__lte = blacklist_expired_date)
+            task_taken_query = task_taken_query.filter(update_time__lte=blacklist_expired_date)
 
             task_taken_to_delete = []
             for task_taken in task_taken_query:
