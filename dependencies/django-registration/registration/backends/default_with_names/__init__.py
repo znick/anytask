@@ -24,6 +24,8 @@ attrs_dict = { 'class': 'required' }
 
 
 class AnytaskLoginForm(AuthenticationForm):
+    username = forms.CharField(label=_("Username"), max_length=75)
+
     def __init__(self, *args, **kwargs):
         AuthenticationForm.__init__(self, *args, **kwargs)
         self.fields['username'].label = _(u"Логин / E-mail")
