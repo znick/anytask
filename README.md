@@ -1,4 +1,4 @@
-Anytask [![Build Status](https://drone.yandex-team.ru/api/badges/gebetix/anytask/status.svg?branch=master)](https://drone.yandex-team.ru/gebetix/anytask)
+Anytask [![Build Status](https://drone.yandex-team.ru/api/badges/education/anytask/status.svg?branch=master)](https://drone.yandex-team.ru/education/anytask)
 =======
 
 

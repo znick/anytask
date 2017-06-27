@@ -15,6 +15,6 @@ pipeline:
       - apt-get install -y p7zip-full; mkdir -m 777 /var/lib/anytask/;
       - cd /var/lib/anytask/
       - git clone https://github.com/gebetix/repos
-      - cd /drone/src/github.yandex-team.ru/gebetix/anytask/anytask
+      - cd /drone/src/github.yandex-team.ru/education/anytask/anytask
       - flake8
       - python manage.py test
