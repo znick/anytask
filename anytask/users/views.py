@@ -11,6 +11,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.utils.translation import ugettext as _
 from django.utils.translation import check_for_language
+from django.utils import timezone
 
 from users.models import UserProfile, UserProfileLog
 from users.model_user_status import UserStatus
@@ -35,6 +36,7 @@ import yandex_oauth
 import requests
 import json
 import datetime
+import pytz
 
 
 @login_required
@@ -192,18 +194,28 @@ def group_by_year(objects):
 @login_required
 def profile_settings(request):
     user = request.user
-
     user_profile = user.get_profile()
 
     if request.method == 'POST':
-        user_profile.show_email = True if 'show_email' in request.POST else False
-        user_profile.send_my_own_events = True if 'send_my_own_events' in request.POST else False
-        user_profile.save()
+        user_profile.show_email = 'show_email' in request.POST
+        user_profile.send_my_own_events = 'send_my_own_events' in request.POST
+        user_profile.location = request.POST['location']
+        if request.POST['geoid']:
+            tz = requests.get(settings.GEOBASE_API,
+                              params={'id': request.POST['geoid']},
+                              headers={"Authorization": "anytask"}
+                              ).json()['tzname']
+            # tz = settings.DB.regionById(int(request.POST['geoid'])).as_dict['tzname']
+            user_profile.time_zone = tz
+            user_profile.save()
+            request.session['django_timezone'] = tz
+            timezone.activate(pytz.timezone(tz))
 
         return HttpResponse("OK")
 
     context = {
         'user_profile': user_profile,
+        'geo_suggest_url': settings.GEO_SUGGEST_URL
     }
 
     return render_to_response('user_settings.html', context, context_instance=RequestContext(request))

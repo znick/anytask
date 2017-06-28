@@ -4,6 +4,7 @@
 {% load dict_func %}
 {% load task_taken_func %}
 {% load django_bootstrap_breadcrumbs %}
+{% load tz %}
 
 {% block title %}{% if is_create %}{% trans "sozdanie_zadachi" %}{% else %}{{ task.title }}{% endif %} | {{ course.name }} | {{ course.year }}{% endblock %}
 
@@ -196,6 +197,13 @@
                                     <span class="input-group-addon"><i class="fa fa-calendar fa-lg"></i></span>
                                 </div>
                                 <small class="text-help" id="task_edit_datepicker_error_text"></small>
+                            </div>
+                        </div>
+                        <div class="form-group row" id="task_time_zone">
+                            <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="location_search">{% trans "time_zone" %}</label>
+                            <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
+                                <input type="text" class="typeahead form-control" id="location_search" name="location" value="{{ user_location }}">
+                                <input type="hidden" id="geoid" name="geoid" value="">
                             </div>
                         </div>
                     {% endif %}

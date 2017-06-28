@@ -36,5 +36,5 @@ def get_status_name(task, user):
 def get_default_teacher(group, course):
     try:
         return DefaultTeacher.objects.get(group=group, course=course).teacher.get_full_name()
-    except Issue.DoesNotExist:
+    except DefaultTeacher.DoesNotExist:
         return ""

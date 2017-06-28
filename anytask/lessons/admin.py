@@ -9,12 +9,5 @@ class LessonAdmin(admin.ModelAdmin):
     list_filter = ('group', 'course', 'course__year__start_year')
     search_fields = ('title', 'course__name', 'description')
 
-#
-# class LessonGroupRelationsAdmin(admin.ModelAdmin):
-#     list_display = ('lesson', 'group', 'position', 'deleted')
-#     list_filter = ('lesson__course', 'group')
-#     search_fields = ('lesson__title', 'lesson__course__name', 'group__name', 'lesson__task_text')
-
 
 admin.site.register(Lesson, LessonAdmin)
-# admin.site.register(LessonGroupRelations, LessonGroupRelationsAdmin)

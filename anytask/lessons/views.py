@@ -6,6 +6,8 @@ import uuid
 
 import reversion
 from courses.models import Course
+from common.timezone import get_datetime_with_tz
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import render_to_response, get_object_or_404
@@ -31,6 +33,8 @@ def schedule_create_page(request, course_id):
         'course': course,
         'period_types': Lesson().PERIOD_CHOICES,
         'school': schools[0] if schools else '',
+        'user_location': request.user.get_profile().location,
+        'geo_suggest_url': settings.GEO_SUGGEST_URL
     }
 
     return render_to_response('lesson_create.html', context, context_instance=RequestContext(request))
@@ -54,6 +58,8 @@ def schedule_edit_page(request, lesson_id):
         'lesson': lssn,
         'period_types': lssn.PERIOD_CHOICES,
         'school': schools[0] if schools else '',
+        'user_location': request.user.get_profile().location,
+        'geo_suggest_url': settings.GEO_SUGGEST_URL
     }
 
     return render_to_response('lesson_edit.html', context, context_instance=RequestContext(request))
@@ -70,16 +76,17 @@ def get_lesson_dates(date_startime, date_endtime, date_end, week_days):
     return lesson_dates
 
 
-def get_params(request_dict):
+def get_params(request_dict, user):
     params = dict()
     params['lesson_title'] = request_dict['lesson_title'].strip()
     if 'lesson_group_id[]' in request_dict:
         params['lesson_groups'] = Group.objects.filter(id__in=dict(request_dict)['lesson_group_id[]'])
     params['period'] = request_dict['period_type'].strip()
-    params['date_starttime'] = datetime.datetime.strptime(request_dict['lesson_date_start'], '%d-%m-%Y %H:%M')
-    params['date_endtime'] = datetime.datetime.strptime(request_dict['lesson_date_finish'], '%d-%m-%Y %H:%M')
+    geoid = request_dict['geoid']
+    params['date_starttime'] = get_datetime_with_tz(request_dict['lesson_date_start'], geoid, user)
+    params['date_endtime'] = get_datetime_with_tz(request_dict['lesson_date_finish'], geoid, user)
     if params['period'] != 'Once':
-        params['date_end'] = datetime.datetime.strptime(request_dict['date_end'], '%d-%m-%Y %H:%M')
+        params['date_end'] = get_datetime_with_tz(request_dict['date_end'], geoid, user)
         week_days = list(map(int, (dict(request_dict)['days[]'])))
         params['lesson_dates'] = \
             get_lesson_dates(params['date_starttime'], params['date_endtime'], params['date_end'], week_days)
@@ -113,7 +120,7 @@ def set_params(params, course, group, user, schedule_id, lssn_date, lesson=None)
 
 def lesson_create(request, course):
     user = request.user
-    params = get_params(request.POST)
+    params = get_params(request.POST, user)
     for group in params['lesson_groups']:
         schedule_id = uuid.uuid1().hex
         for lssn_date in params['lesson_dates']:

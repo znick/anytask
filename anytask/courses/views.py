@@ -11,6 +11,7 @@ from django.utils.translation import ugettext as _
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 
+from collections import defaultdict
 import datetime
 import logging
 import requests
@@ -103,6 +104,7 @@ def gradebook(request, course_id, task_id=None, group_id=None):
         - tasks_description
     """
     user = request.user
+
     if not user.get_profile().is_active():
         raise PermissionDenied
 
@@ -326,7 +328,6 @@ def tasklist_shad_cpp(request, course, seminar=None, group=None):
         issues_students_in_group = Issue.objects.filter(task__in=group_x_task_list[group]).filter(
             student__group__in=[group]).order_by('student').select_related()
 
-        from collections import defaultdict
         issues_x_student = defaultdict(list)
         for issue in issues_students_in_group.all():
             student_id = issue.student.id
@@ -866,7 +867,6 @@ def attendance_list(request, course, group=None):
         if not show_academ_users:
             students = set(students) - set(academ_students)
 
-        from collections import defaultdict
         students_x_lessons = defaultdict(list)
 
         for student in students:
