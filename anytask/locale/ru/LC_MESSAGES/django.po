@@ -2349,3 +2349,12 @@ msgstr "Здравствуйте"
 #: courses/templates/courses/settings.html:39
 msgid "zhurnal_poseshaemosti"
 msgstr "Журнал посещаемости"
+
+msgid "generacia"
+msgstr "Генерация"
+
+msgid "sgenerirovat_obshuu_vedomost_vopros"
+msgstr "Сгенерировать общую ведомость?"
+
+msgid "oshibka_pri_generacii"
+msgstr "Ошибка при генерации"

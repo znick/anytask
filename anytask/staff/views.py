@@ -163,12 +163,18 @@ def gradebook_page(request, statuses=None):
     if not user.is_staff:
         raise PermissionDenied
 
-    user_statuses = []
-    for status_id in statuses.split('_'):
-        if status_id:
-            user_statuses.append(get_object_or_404(UserStatus, id=int(status_id)))
+    if statuses:
+        user_statuses = []
+        for status_id in statuses.split('_'):
+            if status_id:
+                user_statuses.append(get_object_or_404(UserStatus, id=int(status_id)))
+        profiles = UserProfile.objects.filter(user_status__in=user_statuses).all()
+
+    elif user.is_staff and 'from_staff' in request.GET and 'user_ids_send_mail_counter' in request.session:
+        student_ids = request.session['user_ids_send_mail_' + request.GET['from_staff']]
+        profiles = UserProfile.objects.filter(user_id__in=student_ids).all()
+
     students = set()
-    profiles = UserProfile.objects.filter(user_status__in=user_statuses).all()
     for profile in profiles:
         students.add(profile.user)
 
@@ -187,9 +193,10 @@ def gradebook_page(request, statuses=None):
         for course in courses:
             if marks.filter(student=student, course=course):
                 mark = marks.get(student=student, course=course).mark
+                mark = (mark.name, mark.name_int) if mark else ('--', '-1')
             else:
-                mark = None
-            marks_for_student.append(mark if mark else '--')
+                mark = ('--', '-2')
+            marks_for_student.append(mark)
         entry['marks'] = marks_for_student
         students_with_marks.append(entry)
 
