@@ -79,7 +79,7 @@ class UserProfile(models.Model):
 
     language = models.CharField(default="ru", max_length=128, unique=False, null=True, blank=True)
     time_zone = models.TextField(null=False, blank=False, default='Europe/Moscow')
-    location = models.TextField(null=False, blank=False, default="")
+    location = models.TextField(null=True, blank=True, default="")
 
     def is_current_year_student(self):
         return Group.objects.filter(year=get_current_year()).filter(students=self.user).count() > 0

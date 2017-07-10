@@ -147,27 +147,31 @@ def lesson_edit(request, course, lesson_id):
     lesson = get_object_or_404(Lesson, id=lesson_id)
     schedule_id = lesson.schedule_id
     group = lesson.group
-    params = get_params(request.POST)
+    params = get_params(request.POST, request.user)
 
-    lesson_changed = False
     if 'change_all' not in request.POST:
-        params['lesson_dates'] = [params['lesson_dates'][0]]
-        lesson_changed = [lesson]
+        set_params(params, course, group, user, schedule_id, params['lesson_dates'][0], lesson)
     else:
         if need_delete(lesson, params):
             Lesson.objects.filter(
                 schedule_id=schedule_id,
-                date_starttime__gte=lesson.date_starttime.date()
+                date_starttime__gte=lesson.date_starttime
             ).delete()
+            for i, lssn_date in enumerate(params['lesson_dates']):
+                set_params(params, course, group, user, schedule_id, lssn_date, None)
+
         else:
             lesson_changed = Lesson.objects.filter(
                 schedule_id=schedule_id,
-                date_starttime__gte=lesson.date_starttime.date()
+                date_starttime__gte=lesson.date_starttime
             )
-
-    for i, lssn_date in enumerate(params['lesson_dates']):
-        set_params(params, course, group, user, schedule_id, lssn_date,
-                   None if not lesson_changed else lesson_changed[i])
+            i = j = 0
+            while i < len(lesson_changed):
+                if lesson_changed[i].date_starttime.date() != params['lesson_dates'][j][0].date():
+                    j += 1
+                else:
+                    set_params(params, course, group, user, schedule_id, params['lesson_dates'][j], lesson_changed[i])
+                    i += 1
 
     reversion.set_user(user)
     reversion.set_comment("Edit lesson")

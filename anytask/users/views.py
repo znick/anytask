@@ -25,6 +25,7 @@ from issues.models import Issue
 from tasks.models import Task
 from schools.models import School
 from users.forms import InviteActivationForm
+from anytask.common.timezone import get_tz
 
 from years.common import get_current_year
 
@@ -201,11 +202,7 @@ def profile_settings(request):
         user_profile.send_my_own_events = 'send_my_own_events' in request.POST
         user_profile.location = request.POST['location']
         if request.POST['geoid']:
-            tz = requests.get(settings.GEOBASE_API,
-                              params={'id': request.POST['geoid']},
-                              headers={"Authorization": "anytask"}
-                              ).json()['tzname']
-            # tz = settings.DB.regionById(int(request.POST['geoid'])).as_dict['tzname']
+            tz = get_tz(request.POST['geoid'])
             user_profile.time_zone = tz
             user_profile.save()
             request.session['django_timezone'] = tz

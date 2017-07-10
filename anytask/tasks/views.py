@@ -14,6 +14,7 @@ from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.utils.translation import ugettext as _
+from django.utils.timezone import make_aware
 
 from anycontest.common import get_contest_info, FakeResponse
 from common.timezone import get_datetime_with_tz, convert_datetime
@@ -22,6 +23,8 @@ from groups.models import Group
 from issues.model_issue_status import IssueStatus
 from issues.models import Issue
 from tasks.models import Task
+
+from pytz import timezone
 
 
 def merge_two_dicts(x, y):
@@ -401,8 +404,9 @@ def contest_task_import(request):
                     current_params['score_max'] = problems_with_score[problem['problemId']] or 0
 
                 if not current_params['deadline_time'] and 'endTime' in contest_info:
-                    current_params['deadline_time'] = datetime.datetime.strptime(
-                        contest_info['endTime'][:-12], '%Y-%m-%dT%H:%M'
+                    current_params['deadline_time'] = make_aware(
+                        datetime.datetime.strptime(contest_info['endTime'][:-12], '%Y-%m-%dT%H:%M'),
+                        timezone(settings.CONTEST_TIME_ZONE)
                     )
 
                 tasks.append(current_params)

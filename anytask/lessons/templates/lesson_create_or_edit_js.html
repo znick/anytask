@@ -1,6 +1,6 @@
 {% load i18n %}
 <script src="{{ STATIC_URL }}jquery.validate.min.js"></script>
-<script src="http://malsup.github.io/jquery.form.js"></script>
+<script src="https://malsup.github.io/jquery.form.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
         $('[data-toggle="popover"]').popover({
@@ -217,8 +217,11 @@
                     .datetimepicker('setEndDate', addMinutes(val.date, 240));
                 $('#lesson_end_date').datetimepicker('setStartDate', val.date)
                     .datetimepicker('setEndDate', addMinutes(val.date, 262800));
-                $('#lesson_edit_weekday').multiselect('clearSelection')
+                if (!($('#lesson_edit_weekday').val()) ||
+                ($('#lesson_edit_weekday').val() && !(getWeekDay(val.date) in $('#lesson_edit_weekday').val()))) {
+                    $('#lesson_edit_weekday').multiselect('clearSelection')
                     .multiselect('select','').multiselect('select', getWeekDay(val.date));
+                }
                 form_validator.element($('#lesson_edit_date_finish').find('input'));
             }
         });
@@ -406,8 +409,8 @@
             $('#lesson_edit_group').multiselect('select', group_id);
         }
 
-        var init_date_start = $('#lesson_edit_date_start').find('input').val();
-        var init_date_end = $('#lesson_end_date').find('input').val();
+        var init_date_start = $('#lesson_edit_date_start').find('input').val().substring(0, 10);
+        var init_date_end = $('#lesson_end_date').find('input').val().substring(0, 10);
         var init_weekdays = $('#lesson_edit_weekday').val();
 
         function show_alert() {
@@ -423,8 +426,8 @@
                         break;
                     }
             }
-            if ((init_date_start != $('#lesson_edit_date_start').find('input').val())
-                || (init_date_end != $('#lesson_end_date').find('input').val())
+            if ((init_date_start != $('#lesson_edit_date_start').find('input').val().substring(0, 10))
+                || (init_date_end != $('#lesson_end_date').find('input').val().substring(0, 10))
                 || weekdays_changed) {
                 return confirm('{% trans "podtverdit_izmenenia" %}');
             }

@@ -240,3 +240,50 @@
 .breadcrumb {
     margin-bottom: -.1rem;
 }
+
+.checkbox-success {
+    user-select: none;
+    position: relative;
+}
+.checkbox-success input[type="checkbox"] {
+    opacity: 0;
+}
+
+.checkbox-success input[type="checkbox"] + label::before,
+.checkbox-success input[type="checkbox"] + label::after {
+    display: inline-block;
+    content: "";
+    position: absolute;
+    width: .9rem;
+    height: .9rem;
+    top: .2rem;
+    margin-left: -20px;
+    font-size: 11px;
+    border-radius: 3px;
+    border: 1px solid #cccccc;
+}
+
+.checkbox-success input[type="checkbox"].notactive:disabled + label {
+    opacity: 0.65;
+}
+.checkbox-success input[type="checkbox"].notactive:disabled + label::after {
+    content: "";
+    background-color: #eeeeee;
+    cursor: not-allowed;
+}
+
+.checkbox-success input[type="checkbox"]:not(.notactive) + label::after {
+    font-family: 'FontAwesome';
+    content: "\f00d";
+    background-color: #d9534f;
+    border: 1px solid #d9534f;
+    color: #fff;
+}
+
+.checkbox-success input[type="checkbox"]:checked + label::after {
+    font-family: 'FontAwesome';
+    content: "\f00c";
+    color: #fff;
+    background-color: #5cb85c;
+    border-color: #5cb85c;
+}

@@ -10,7 +10,7 @@
     {% include "courses/course_js.html" %}
 {% endblock scripts %}
 
-{% for group,student_information in group_information.items %}
+{% for group, student_information in group_information.items %}
     <div class="card card-block {% if group_attendance_list %}group-table{% endif %}" for="#table_results_{{ group.id }}">
         <div class="row">
             <div class="col-md-6">
@@ -37,7 +37,7 @@
                     <th class="no-font-weight text-center">#</th>
                     <th class="no-font-weight"><b>{% trans "student" %}</b></th>
                     {% for lssn in group_lessons|key:group %}
-                            <th align="center" class="{% if user_is_teacher %}dom-live-number{% else %}dom-number{% endif %} word-wrap" id="column_{{lssn.id}}">
+                            <th align="center" class="dom-checked word-wrap" id="column_{{lssn.id}}">
                                 <a href="javascript:get_lesson_modal('{{group.id}}', '{{lssn.id}}', '{{lssn.title|escapejs}}', '{% localtime on %}{{lssn.date_starttime|date:'d-m-Y H:i'}}{% endlocaltime %}',
                                 '{% localtime on %}{{lssn.date_endtime|date:'d-m-Y H:i'}}{% endlocaltime %}', '{{lssn.description|safe|escapejs}}')" data-deleted='{{ lssn|lssn_can_be_deleted }}' {% if lssn.title %}data-toggle="popover-short-title" data-trigger="hover" data-placement="bottom" data-content="{{lssn.title}} "{% endif %}>
                                     {% localtime on %}{{lssn.date_starttime|date:'d-m-Y'}}{% endlocaltime %}
@@ -51,7 +51,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                {% for student, visited_lessons in student_information %}
+                {% for student, not_visited_lessons, visited_lessons in student_information %}
                     <tr class="{% if user.username == student.username %}table-info{% endif %}">
                         <td class="sticky-col" align="center"></td>
                         <td class="sticky-col">
@@ -66,14 +66,19 @@
                                     <input type="hidden" name="lssn_id" value="{{lssn.id}}"/>
                                     <input type="hidden" name="student_id" value="{{student.id}}"/>
                                     <input type="hidden" name="group_id" value="{{group.id}}"/>
-                                    <input type="checkbox" name="lesson_visited" {% if lssn in visited_lessons%}checked{% endif %} {% if lssn|disabled %}disabled{% endif %}>
+                                    <div class="checkbox-success">
+                                        <input type="checkbox" name="lesson_visited" id="checklesson_{{lssn.id}}_{{student.id}}"
+                                               {% if lssn in group_inactive_lessons|key:group %}class="checkbox-success notactive" disabled
+                                               {% else %}class="checkbox-success" {%if lssn not in not_visited_lessons %}checked{% endif %}{% endif %}>
+                                        <label for="checklesson_{{lssn.id}}_{{student.id}}"></label>
+                                    </div>
                                 </form>
                             </td>
                             {% empty %}
                         {% endfor %}
                         <td align="center" class="total-lessons">
                             <div>
-                                <span class="label label-inverse">{{ visited_lessons|length }}</span>
+                                <span class="label label-inverse" id="total-lessons_{{group.id}}_{{student.id}}">{{ visited_lessons }}</span>
                             </div>
                         </td>
                     </tr>

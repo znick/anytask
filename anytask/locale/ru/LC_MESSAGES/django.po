@@ -1332,9 +1332,8 @@ msgstr "Пользователи"
 #: courses/templates/courses/gradebook.html:41
 #: courses/templates/courses/queue.html:34
 #: courses/templates/courses/settings.html:40
-#, fuzzy
 msgid "poseshaemost"
-msgstr "Журнал посещаемости"
+msgstr "Посещаемость"
 
 #: courses/templates/courses/attendance_list.html:49
 msgid "poseshennye_uroki"
@@ -1948,7 +1947,7 @@ msgstr "Удалить одно занятие"
 
 #: courses/templates/courses/course_js.html:690
 msgid "udalit_posleduushie"
-msgstr "Удалить это и все последующие занятия"
+msgstr "Удалить это и все последующие занятия (в том числе посещенные)"
 
 #: courses/templates/courses/course_js.html:674
 msgid "udalit_zadachu_iz_grupp"
@@ -2349,6 +2348,12 @@ msgstr "Здравствуйте"
 #: courses/templates/courses/settings.html:39
 msgid "zhurnal_poseshaemosti"
 msgstr "Журнал посещаемости"
+
+msgid "udalit_poseshennoe_vse"
+msgstr "Занятие было посещено студентами. Вы уверены, что хотите удалить это занятие и все последующие?"
+
+msgid "udalit_poseshennoe"
+msgstr "Занятие было посещено студентами. Вы уверены, что хотите удалить это занятие?"
 
 msgid "generacia"
 msgstr "Генерация"
