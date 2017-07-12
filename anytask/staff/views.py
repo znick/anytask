@@ -191,9 +191,12 @@ def gradebook_page(request, statuses=None):
         entry['name'] = student.get_full_name()
         entry['url'] = student.get_absolute_url()
         for course in courses:
-            if marks.filter(student=student, course=course):
-                mark = marks.get(student=student, course=course).mark
-                mark = (mark.name, mark.name_int) if mark else ('--', '-1')
+            if course.get_user_group(student):
+                if marks.filter(student=student, course=course).exclude(mark__isnull=True):
+                    mark = marks.get(student=student, course=course).mark
+                    mark = mark.name, mark.name_int
+                else:
+                    mark = '--', '-1'
             else:
                 mark = ('--', '-2')
             marks_for_student.append(mark)
