@@ -8,7 +8,7 @@ class Migration(DataMigration):
     no_dry_run = True
 
     def forwards(self, orm):
-        orm.IssueStatus(**{'name': u'Зачтено после дедлайна',
+        orm.IssueStatus(**{'name': u'{"ru": "Зачтено после дедлайна", "en": "Accepted after deadline"}',
                            'tag': 'accepted_after_deadline',
                            'color': '#ACCD8C',
                            'hidden': False}).save()

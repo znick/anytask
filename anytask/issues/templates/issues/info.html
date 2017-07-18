@@ -103,19 +103,19 @@
                                         <button type="submit" class="btn btn-secondary" name="Me">{%  trans "ja" %}</button>
                                     {% endif %}
                                     {% if field.name == 'mark' %}
-                                        {% if statuses_accepted.count > 1 %}
+                                        {% if statuses_accepted|length > 1 %}
                                             <div class="dropdown dropdown-submit" style="display: inline-block;">
                                                 <button class="btn btn-secondary dropdown-toggle" type="button" id="accepted_btn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                     {%  trans "status" %}
                                                 </button>
                                                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                                    {% for status in statuses_accepted %}
-                                                        <button type="submit" class="dropdown-item" href="#" name="Accepted" value="{{ status.id }}">{{ status.name }}</button>
+                                                    {% for status_id, status_name in statuses_accepted %}
+                                                        <button type="submit" class="dropdown-item" href="#" name="Accepted" value="{{ status_id }}">{{ status_name }}</button>
                                                     {% endfor %}
                                                 </div>
                                             </div>
                                         {% else %}
-                                            <button type="submit" class="btn btn-secondary" name="Accepted">{{ statuses_accepted.0.name }}</button>
+                                            <button type="submit" class="btn btn-secondary" name="Accepted">{{ statuses_accepted.0.1 }}</button>
                                         {% endif %}
                                     {% endif %}
                                 </div>

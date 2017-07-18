@@ -50,8 +50,9 @@ logger = logging.getLogger('django.request')
 def queue_page(request, course_id):
     course = get_object_or_404(Course, id=course_id)
     course_id_as_str = str(course_id)
+    user = request.user
 
-    if not course.user_can_see_queue(request.user):
+    if not course.user_can_see_queue(user):
         return HttpResponseForbidden()
 
     active_profiles = UserProfile.objects.filter(Q(user_status__tag='active') | Q(user_status__tag=None))
@@ -65,8 +66,9 @@ def queue_page(request, course_id):
         status_field__tag=IssueStatus.STATUS_SEMINAR
     ).order_by('update_time')
 
+    lang = user.get_profile().language
     f = IssueFilter(request.GET, issues)
-    f.set_course(course)
+    f.set_course(course, lang)
 
     if f.form.data:
         request.session[course_id_as_str] = f.form.data
@@ -129,6 +131,8 @@ def gradebook(request, course_id, task_id=None, group_id=None):
                                    'school': schools[0] if schools else '',
                                    'invite_form': InviteActivationForm()},
                                   context_instance=RequestContext(request))
+    lang = request.session.get('django_language', user.get_profile().language)
+    issue_statuses = [(status.color, status.get_name(lang)) for status in course.issue_status_system.statuses.all()]
 
     tasklist_context = tasklist_shad_cpp(request, course, task, group)
 
@@ -142,6 +146,7 @@ def gradebook(request, course_id, task_id=None, group_id=None):
         str(request.user.id) + '_' + str(course.id) + '_show_academ_users', True)
     context['school'] = schools[0] if schools else ''
     context['full_width_page'] = True
+    context['issue_statuses'] = issue_statuses
 
     return render_to_response('courses/gradebook.html', context, context_instance=RequestContext(request))
 

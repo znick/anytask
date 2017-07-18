@@ -115,9 +115,6 @@ class Issue(models.Model):
             mark = 0
         return mark
 
-    def get_status(self):
-        return self.status_field.get_name()
-
     def last_comment(self):
         field = IssueField.objects.get(id=1)
         comment = self.get_field_value(field)
@@ -126,7 +123,7 @@ class Issue(models.Model):
 
         return comment
 
-    def get_field_repr(self, field):
+    def get_field_repr(self, field, lang=settings.LANGUAGE_CODE):
         name = field.name
 
         if name == 'student_name':
@@ -152,7 +149,7 @@ class Issue(models.Model):
         if name == 'comment':
             return None
         if name == 'status':
-            return self.get_status()
+            return self.status_field.get_name(lang)
         if name == 'mark':
             return self.score()
         if name == 'review_id' and self.task.rb_integrated:
@@ -398,7 +395,7 @@ class Issue(models.Model):
             else:
                 delete_event = True
 
-            value = self.get_status()
+            value = self.status_field.get_name()
 
         elif name == 'mark':
             if not value:
@@ -551,7 +548,7 @@ class IssueFilter(django_filters.FilterSet):
     followers = django_filters.MultipleChoiceFilter(label=_('nabludateli'), widget=forms.SelectMultiple)
     task = django_filters.ChoiceFilter(label=_('zadacha'))
 
-    def set_course(self, course):
+    def set_course(self, course, lang=settings.LANGUAGE_CODE):
         for field in self.filters:
             self.filters[field].field.label = u'<strong>{0}</strong>'.format(self.filters[field].field.label)
         teacher_choices = [(teacher.id, teacher.get_full_name()) for teacher in course.get_teachers()]
@@ -565,10 +562,10 @@ class IssueFilter(django_filters.FilterSet):
         task_choices.insert(0, (u'', _(u'lubaja')))
         self.filters['task'].field.choices = tuple(task_choices)
 
-        status_choices = [(status.id, status.get_name()) for status in course.issue_status_system.statuses.all()]
+        status_choices = [(status.id, status.get_name(lang)) for status in course.issue_status_system.statuses.all()]
         for status_id in sorted(IssueStatus.HIDDEN_STATUSES.values(), reverse=True):
             status_field = IssueStatus.objects.get(pk=status_id)
-            status_choices.insert(0, (status_field.id, status_field.get_name()))
+            status_choices.insert(0, (status_field.id, status_field.get_name(lang)))
         self.filters['status_field'].field.choices = tuple(status_choices)
 
     class Meta:
