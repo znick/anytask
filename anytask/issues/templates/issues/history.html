@@ -1,6 +1,8 @@
 {% load link_to_open %}
 {% load i18n %}
 {% load tz %}
+{% load info %}
+{% get_current_language as LANGUAGE_CODE %}
 
 {% load sanitize_html %}
 
@@ -24,14 +26,14 @@
     }
 </style>
 <div class="card card-block">
-    <h5 class="card-title">{{ issue.task.title }}
+    <h5 class="card-title">{% get_text_from_json issue.task 'get_title' LANGUAGE_CODE %}
         <a class="btn btn-secondary btn-sm btn-square" data-toggle="collapse" href="#task-text"
            aria-expanded="false" aria-controls="task-text">
             <span class="fa fa-caret-down"></span>
         </a>
     </h5>
     <div class="collapse" id="task-text">
-        {{ issue.task.task_text|safe }}
+        {{ issue.task|get_description:LANGUAGE_CODE|safe }}
     </div>
 </div>
 <div class="card card-block">

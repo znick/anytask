@@ -145,7 +145,7 @@ class Issue(models.Model):
             return u'<a href="{0}">{1}</a>'.format(course.get_absolute_url(), course.name)
         if name == 'task_name':
             task = self.task
-            return task.title
+            return task.get_title(lang)
         if name == 'comment':
             return None
         if name == 'status':
@@ -451,7 +451,7 @@ class Issue(models.Model):
         return events
 
     def __unicode__(self):
-        return u'Issue: {0} {1}'.format(self.id, self.task.title)
+        return u'Issue: {0} {1}'.format(self.id, self.task.get_title())
 
     def get_absolute_url(self):
         return reverse('issues.views.issue_page', args=[str(self.id)])
@@ -558,7 +558,7 @@ class IssueFilter(django_filters.FilterSet):
         teacher_choices.pop(0)
         self.filters['followers'].field.choices = tuple(teacher_choices)
 
-        task_choices = [(task.id, task.title) for task in Task.objects.all().filter(course=course)]
+        task_choices = [(task.id, task.get_title(lang)) for task in Task.objects.all().filter(course=course)]
         task_choices.insert(0, (u'', _(u'lubaja')))
         self.filters['task'].field.choices = tuple(task_choices)
 

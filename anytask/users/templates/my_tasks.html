@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load crispy_forms_tags %}
+{% load info %}
 {% load table_func %}
 {% get_current_language as LANGUAGE_CODE %}
 
@@ -148,9 +149,9 @@
                                     <tr onclick="location.href='{% if issue.task.has_issue_access %}{{ issue.get_absolute_url }}{% else %}#{% endif %}'">
                                         <td>
                                             {% if issue.task.has_issue_access %}
-                                                <a href="{{ issue.get_absolute_url }}">{{ issue.task }}</a>
+                                                <a href="{{ issue.get_absolute_url }}">{% get_text_from_json issue.task 'get_title' LANGUAGE_CODE %}</a>
                                             {% else %}
-                                                {{ issue.task }}
+                                                {% get_text_from_json issue.task 'get_title' LANGUAGE_CODE %}
                                             {% endif %}
                                         </td>
                                         <td><a href="{{ issue.task.course.get_absolute_url }}">{{ issue.task.course }}</a></td>

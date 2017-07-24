@@ -757,14 +757,18 @@
 {#                <form style="display: inline;" name="setLangRU" action="/setlanguage/" method="POST">#}
 {#                    {% csrf_token %}#}
 {#                    <input type="hidden" name="language" value="ru">#}
-{#                    <a href="#" onclick="document.setLangRU.submit();#}
-{#                            return false;">RU</a>#}
+{#                    <input type="hidden" name="referrer" value="">#}
+{#                    <a href="#" onclick="$('input[type=hidden][name=referrer]').val(document.referrer);#}
+{#                                         document.setLangRU.submit();#}
+{#                                         return false;">RU</a>#}
 {#                </form>/#}
 {#                <form style="display: inline;" name="setLangEN" action="/setlanguage/" method="POST">#}
 {#                    {% csrf_token %}#}
 {#                    <input type="hidden" name="language" value="en">#}
-{#                    <a href="#" onclick="document.setLangEN.submit();#}
-{#                            return false;">EN</a>#}
+{#                    <input type="hidden" name="referrer" value="">#}
+{#                    <a href="#" onclick="$('input[type=hidden][name=referrer]').val(document.referrer);#}
+{#                                         document.setLangEN.submit();#}
+{#                                         return false;">EN</a>#}
 {#                </form>#}
 {#            </small>#}
             <small class="text-muted pull-xs-right" >{% trans "pishite_nam" %} <a href="mailto:anytask@yandex.ru">anytask@yandex.ru</a></small>

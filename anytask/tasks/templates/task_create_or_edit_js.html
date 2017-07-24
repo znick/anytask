@@ -473,6 +473,10 @@
     }
 
     function redirect() {
-        window.location.href = document.referrer + '#tasks-tab';
+        var page = decodeURIComponent(window.location.search.substring(1));
+        if (page && page.indexOf("ref") === 0)
+             window.location.href = page.substr(4) + '#tasks-tab';
+        else
+            window.location.href = document.referrer + '#tasks-tab';
     }
 </script>

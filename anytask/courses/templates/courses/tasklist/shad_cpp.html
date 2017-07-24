@@ -3,6 +3,8 @@
 {% load dict_func %}
 {% load task_taken_func %}
 {% load tz %}
+{% load info %}
+{% get_current_language as LANGUAGE_CODE %}
 
 {% block scripts %}
     <link href="{{ STATIC_URL }}shad_cpp.css" rel='stylesheet'/>
@@ -44,10 +46,10 @@
                     {% for task in group_tasks|key:group %}
                         {% if not task.is_hidden or user_is_teacher %}
                             <th align="center" class="{% if task.type == task.TYPE_SIMPLE and user_is_teacher %}dom-live-number{% else %}dom-number{% endif %} word-wrap">
-                                <a class="{% if task.is_hidden %}hidden-task-title{% endif %}" href="javascript:get_task_modal({{task.id}}, '{{task.title|escapejs}}',
-                    '{{task.task_text|safe|escapejs}}',
-                     {% if task.deadline_time %} '{% localtime on %}{{task.deadline_time|date:'d-m-Y H:i'}}{% endlocaltime %}' {% else %}''{% endif %})" data-toggle="popover-short-title" data-trigger="hover" data-placement="bottom" data-content="{{task.title}} ">
-                                    {% if task.short_title %}{{ task.short_title }}{% else %}{{ task.title }}{% endif %}
+                                <a class="{% if task.is_hidden %}hidden-task-title{% endif %}" href="javascript:get_task_modal({{task.id}}, '{% get_text_from_json task 'get_title' LANGUAGE_CODE %}',
+                    '{{task|get_description:LANGUAGE_CODE|safe|escapejs}}',
+                     {% if task.deadline_time %} '{% localtime on %}{{task.deadline_time|date:'d-m-Y H:i'}}{% endlocaltime %}' {% else %}''{% endif %})" data-toggle="popover-short-title" data-trigger="hover" data-placement="bottom" data-content="{% get_text_from_json task 'get_title' LANGUAGE_CODE %} ">
+                                    {% if task.short_title %}{{ task.short_title }}{% else %}{% get_text_from_json task 'get_title' LANGUAGE_CODE %}{% endif %}
                                 </a>
                                 {% if task.type != task.TYPE_SEMINAR and task.type != task.TYPE_MATERIAL %}
                                     <span class="label {% if not task.is_hidden %} label-inverse {% else %} label-default {% endif %}">{{ task.score_max }}</span>
@@ -195,7 +197,7 @@
                             <ul class="group-sortable" name="group_sort_{{ group.id }}">
                                 {% for task in tasks %}
                                     <li class="ui-state-default" name="task_sort_{{ task.id }}" value="{{ task.id }}">
-                                        <span>{{ task.title }}</span>
+                                        <span>{% get_text_from_json task 'get_title' LANGUAGE_CODE %}</span>
                                         <a class="task-delete pull-xs-right" data-name="task_delete_{{ task.id }}" {% autoescape off %}{{ task|group_info }}{% endautoescape %} tabindex="0" data-toggle="popover" type="button">
                                             <i class="fa fa-trash-o" aria-hidden="true"></i>
                                         </a>

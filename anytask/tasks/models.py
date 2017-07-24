@@ -1,6 +1,7 @@
 # coding: utf-8
 
 import copy
+import json
 from datetime import datetime
 from datetime import timedelta
 
@@ -12,6 +13,24 @@ from django.utils.translation import ugettext_lazy as _
 
 from courses.models import Course
 from groups.models import Group
+
+
+def check_json(text):
+    try:
+        text_to_json = json.loads(text, strict=False)
+        if not isinstance(text_to_json, dict):
+            raise ValueError
+        return text_to_json
+    except (ValueError, TypeError):
+        return False
+
+
+def get_lang_text(text, lang):
+    text_ = check_json(text)
+    if text_:
+        lang = lang if lang in text_ else settings.LANGUAGE_CODE
+        return text_[lang]
+    return unicode(text)
 
 
 class Task(models.Model):
@@ -63,8 +82,14 @@ class Task(models.Model):
 
     score_after_deadline = models.BooleanField(db_index=False, null=False, blank=False, default=True)
 
-    def __unicode__(self):
-        return unicode(self.title)
+    def get_title(self, lang=settings.LANGUAGE_CODE):
+        return get_lang_text(self.title, lang)
+
+    def get_description(self, lang=settings.LANGUAGE_CODE):
+        return get_lang_text(self.task_text, lang)
+
+    def is_text_json(self):
+        return check_json(self.task_text)
 
     def user_can_take_task(self, user):
 

@@ -5,6 +5,8 @@
 {% load sanitize_html icon %}
 {% load dict_func %}
 {% load task_taken_func %}
+{% load info %}
+{% get_current_language as LANGUAGE_CODE %}
 
 {% block title %}{{ course.name }} | {{ course.year }}{% endblock %}
 
@@ -99,7 +101,7 @@
                                     {{ issue.student.last_name }} {{ issue.student.first_name }}
                                 </a>
                             </td>
-                            <td>{{ issue.task }}</td>
+                            <td>{% get_text_from_json issue.task 'get_title' LANGUAGE_CODE %}</td>
                             <td>
                                 <i class="fa fa-clock-o fa-flip-horizontal"></i> {{ issue.update_time|date:"Y-m-d H:i" }}
                             </td>

@@ -21,7 +21,7 @@ import reversion
 from courses.models import Course, DefaultTeacher, StudentCourseMark, MarkField, FilenameExtension
 from groups.models import Group
 from tasks.models import Task, TaskGroupRelations
-from tasks.views import prettify_contest_task_text
+from anycontest.common import prettify_contest_task_text
 from years.models import Year
 from years.common import get_current_year
 from anycontest.common import get_contest_info, FakeResponse
@@ -65,6 +65,7 @@ def queue_page(request, course_id):
     ).exclude(
         status_field__tag=IssueStatus.STATUS_SEMINAR
     ).order_by('update_time')
+    lang = request.user.get_profile().language
 
     lang = user.get_profile().language
     f = IssueFilter(request.GET, issues)

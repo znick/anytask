@@ -1,6 +1,8 @@
 {% load crispy_forms_tags %}
 {% load i18n %}
 {% load tz %}
+{% load info %}
+{% get_current_language as LANGUAGE_CODE %}
 
 <style>
     .card-header {
@@ -145,14 +147,14 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h5  class="modal-title" id="modal_header_task_descr" style="display: inline-block; ">{{ issue.task.title }}</h5>
+                <h5  class="modal-title" id="modal_header_task_descr" style="display: inline-block; ">{% get_text_from_json issue.task 'get_title' LANGUAGE_CODE %}</h5>
                 {% if teacher_or_staff %}
                     <a id="modal_task_descr_edit_button" href="{% url tasks.views.task_edit_page task_id=issue.task.id %}" type="button" style="opacity:0.2;filter: alpha(opacity=20);color:#000000;display: inline-block;vertical-align: super;margin-left: 5px;"><i class="fa fa-edit fa-lg"></i></a>
                 {% endif %}
                 <div id="modal_header_deadline_time">{% if issue.task.deadline_time %}<strong>{%  trans "data_sdachi" %}:{% localtime on %} {{ issue.task.deadline_time|date:'d-m-Y H:i' }}{% endlocaltime %}{% endif %}</strong></div>
             </div>
             <div class="modal-body">
-                <div id="modal_body_task_descr">{{ issue.task.task_text|safe }}</div>
+                <div id="modal_body_task_descr">{{ issue.task|get_description:LANGUAGE_CODE|safe }}</div>
             </div>
         </div>
     </div>

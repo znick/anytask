@@ -127,7 +127,9 @@
                             $('#task_max_score').val(problems[i].score);
                         }
                         if($('input:radio:checked').val() == problems[i].problemId){
-                            $('#task_edit_body').val(problems[i].statement.replace(/<table/g, '<table class="table table-sm"').replace(/src="/g, 'src="https://contest.yandex.ru'));
+                            $('#task_edit_body').val(problems[i].statement
+                                .replace(/<table/g, '<table class="table table-sm"')
+                                .replace(/src="/g, 'src="https://contest.yandex.ru'));
                         }
                     }
                     $('#task_contest_body').show();

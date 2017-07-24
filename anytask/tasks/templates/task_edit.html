@@ -5,6 +5,8 @@
 {% load task_taken_func %}
 {% load django_bootstrap_breadcrumbs %}
 {% load tz %}
+{% load info %}
+{% get_current_language as LANGUAGE_CODE %}
 
 {% block title %}{% if is_create %}{% trans "sozdanie_zadachi" %}{% else %}{{ task.title }}{% endif %} | {{ course.name }} | {{ course.year }}{% endblock %}
 
@@ -151,7 +153,7 @@
                     <div class="form-group row">
                         <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_header">{% trans "nazvanie" %}</label>
                         <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
-                            <input class="form-control" id='task_edit_header' name='task_title' type='text' size='20' data-value="{{task.title}}" value="{{task.title}}" />
+                            <input class="form-control" id='task_edit_header' name='task_title' type='text' size='20' data-value="{% get_text_from_json task 'get_title' LANGUAGE_CODE %}" value="{% get_text_from_json task 'get_title' LANGUAGE_CODE %}" />
                             <small class="text-help" id="task_edit_header_error_text"></small>
                         </div>
                     </div>
@@ -331,7 +333,7 @@
                         <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_body">{% trans "formulirovka" %}</label>
                         <br>
                         <div class="controls col-xs-12">
-                            <textarea class='input-xlarge form-control'id='task_edit_body' name='task_text'>{{ task.task_text }}</textarea>
+                            <textarea class='input-xlarge form-control'id='task_edit_body' name='task_text'>{% get_text_from_json task 'get_description' LANGUAGE_CODE %}</textarea>
                         </div>
                     </div>
                     <div class="form-group row footer-buttons">

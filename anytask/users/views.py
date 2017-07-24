@@ -32,6 +32,7 @@ from years.common import get_current_year
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML
 from dateutil.relativedelta import relativedelta
+from urlparse import urlparse
 
 import yandex_oauth
 import requests
@@ -618,6 +619,7 @@ def ajax_edit_user_info(request):
 
 def set_user_language(request):
     next = request.REQUEST.get('next')
+    print request
     if not is_safe_url(url=next, host=request.get_host()):
         next = request.META.get('HTTP_REFERER')
         if not is_safe_url(url=next, host=request.get_host()):
@@ -625,6 +627,9 @@ def set_user_language(request):
     response = HttpResponseRedirect(next)
     if request.method == 'POST':
         lang_code = request.POST.get('language', None)
+        if 'ref' not in next:
+            ref = urlparse(request.POST.get('referrer', next))
+            response = HttpResponseRedirect('?ref='.join([next, ref.path]))
         if lang_code and check_for_language(lang_code):
             if hasattr(request, 'session'):
                 request.session['django_language'] = lang_code

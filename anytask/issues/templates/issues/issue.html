@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load django_bootstrap_breadcrumbs %}
+{% load info %}
+{% get_current_language as LANGUAGE_CODE %}
 
 {% block scripts %}
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}issues/issue.css">
@@ -8,7 +10,7 @@
 {% endblock %}
 
 
-{% block title %}{{ issue.task }} | {{ issue.student.last_name }} {{ issue.student.first_name }} {% endblock %}
+{% block title %}{% get_text_from_json issue.task 'get_title' LANGUAGE_CODE %} | {{ issue.student.last_name }} {{ issue.student.first_name }} {% endblock %}
 
 {% block breadcrumbs %}
     {{ block.super }}
@@ -16,7 +18,7 @@
         {% breadcrumb school.name school.get_absolute_url %}
     {% endif %}
     {% breadcrumb course.name course.get_absolute_url %}
-    {% breadcrumb issue "" %}
+    {% breadcrumb issue|get_title_breadcrumb:LANGUAGE_CODE "" %}
 
 {% endblock breadcrumbs %}
 

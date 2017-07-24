@@ -7,6 +7,17 @@ from BeautifulSoup import BeautifulStoneSoup
 from django.conf import settings
 
 logger = logging.getLogger('django.request')
+HEADERS = {'Authorization': 'OAuth ' + settings.CONTEST_OAUTH}
+
+
+def prettify_contest_task_text(task_text):
+    return task_text \
+        .replace('<table', '<table class="table table-sm"') \
+        .replace('src="', 'src="https://contest.yandex.ru')
+
+
+def process_task_text(text):
+    return prettify_contest_task_text(text).replace('"', '\\"')
 
 
 class FakeResponse(object):
@@ -26,7 +37,7 @@ def user_register_to_contest(contest_id, ya_contest_uid):
         req = requests.get(
             settings.CONTEST_API_URL + 'register-user?uidToRegister=' + str(ya_contest_uid) +
             '&contestId=' + str(contest_id),
-            headers={'Authorization': 'OAuth ' + settings.CONTEST_OAUTH})
+            headers=HEADERS)
         req_json = req.json()
         if 'error' in req_json:
             got_info = False
@@ -49,7 +60,7 @@ def get_problem_compilers(problem_id, contest_id):
 
     try:
         contest_req = requests.get(settings.CONTEST_API_URL + 'contest?contestId=' + str(contest_id),
-                                   headers={'Authorization': 'OAuth ' + settings.CONTEST_OAUTH})
+                                   headers=HEADERS)
         for problem in contest_req.json()['result']['problems']:
             if problem['alias'] == problem_id:
                 problem_compilers = problem['compilers']
@@ -132,17 +143,29 @@ def get_contest_mark(contest_id, problem_id, ya_login):
     return contest_mark
 
 
-def get_contest_info(contest_id):
+def get_contest_info(contest_id, lang=None):
     contest_req = FakeResponse()
+    contest_api = settings.CONTEST_API_URL + 'contest?contestId={cont_id}&locale={lang}'
 
     try:
-        contest_req = requests.get(settings.CONTEST_API_URL + 'contest?contestId=' + str(contest_id),
-                                   headers={'Authorization': 'OAuth ' + settings.CONTEST_OAUTH})
+        lang_ = 'ru' if lang is None else lang
+        contest_req = requests.get(contest_api.format(lang=lang_, cont_id=str(contest_id)), headers=HEADERS)
 
         if 'error' in contest_req.json():
             return False, contest_req.json()["error"]["message"]
 
         contest_info = contest_req.json()['result']
+
+        if lang is None:
+            contest_info_en = requests.get(contest_api.format(lang='en', cont_id=str(contest_id)),
+                                           headers=HEADERS).json()['result']
+            json_str = u'{{"ru": "{0}", "en": "{1}"}}'
+            for problem in contest_info['problems']:
+                problem_en = (item for item in contest_info_en['problems']
+                              if item['problemId'] == problem['problemId']).next()
+                problem['problemTitle'] = json_str.format(problem['problemTitle'], problem_en['problemTitle'])
+                problem['statement'] = json_str.format(process_task_text(problem['statement']),
+                                                       process_task_text(problem_en['statement']))
         got_info = True
     except Exception as e:
         logger.exception("Exception while request to Contest: '%s' : '%s', Exception: '%s'",
