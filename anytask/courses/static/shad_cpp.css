@@ -1,11 +1,20 @@
 .card-title-block {
-    display: table;
+    display: inline-block;
     margin-bottom: 0.5rem;
 }
 
 .card-title-block h5.card-title {
-    display: table-cell;
+    display: inline-block;
     margin: 0;
+    vertical-align: middle;
+}
+
+.card-title-teacher-buttons {
+    display: inline-block;
+}
+
+.card-title-teacher-view-buttons {
+    display: inline;
     vertical-align: middle;
 }
 
