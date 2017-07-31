@@ -31,3 +31,5 @@ sqlparse==0.1.19
 django-reversion==1.6.6
 dateutils
 psycopg2
+boto
+django-boto
