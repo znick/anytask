@@ -127,13 +127,13 @@ class Command(BaseCommand):
                     else:
                         task_text += plain_body_task.format(task_info[0].title, u', '.join(task_info[2:]))
 
-                course_url = 'http://' + domain + tasks_info['course'].get_absolute_url()
+                course_url = domain + tasks_info['course'].get_absolute_url()
                 plain_body += plain_body_course.format(tasks_info['course'].name, task_text, course_url)
 
             plain_text = plain_header.format(user.first_name) + plain_body + plain_footer
             context = {
                 "user": user,
-                "domain": 'http://' + domain,
+                "domain": domain,
                 "courses_info": courses_info,
             }
             html = render_to_string('email_notification_task.html', context)
