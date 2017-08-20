@@ -10,8 +10,9 @@ Replace this with more appropriate tests for your application.
 from django.test import TestCase
 from django.contrib.auth.models import User
 from schools.models import School
-from courses.models import Course, IssueField, FilenameExtension, CourseMarkSystem, MarkField, IssueStatusSystem
-from issues.models import IssueStatus
+from courses.models import Course, IssueField, FilenameExtension, CourseMarkSystem, MarkField, IssueStatusSystem,\
+    DefaultTeacher
+from issues.models import Issue, IssueStatus
 from groups.models import Group
 from years.models import Year
 from tasks.models import Task
@@ -1107,3 +1108,49 @@ class PythonTaskTest(TestCase):
             reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id, 'task_id': self.subtask2.id}),
             follow=True)
         self.assertContains(response, "{} {}".format(user.last_name, user.first_name), count=1)
+
+    def _test_set_detault_teacher__retake_task(self):
+        client = self.client
+        user = self.users[0]
+
+        self.assertTrue(client.login(username=user.username, password="password0"))
+
+        # cancel task
+        client.get(reverse('courses.pythontask.cancel_task',
+                           kwargs={'course_id': self.course.id, 'task_id': self.task.id}),
+                   follow=True)
+
+        # get task
+        client.get(reverse('courses.pythontask.get_task',
+                           kwargs={'course_id': self.course.id, 'task_id': self.task.id}),
+                   follow=True)
+
+        # create issue
+        client.get(reverse('issues.views.get_or_create',
+                           kwargs={'student_id': user.id, 'task_id': self.task.id}),
+                   follow=True)
+
+        # get task list
+        client.get(reverse('courses.views.course_page',
+                           kwargs={'course_id': self.course.id}),
+                   follow=True)
+
+    def test_set_detault_teacher(self):
+        # check no teacher if default teacher not set
+        self._test_set_detault_teacher__retake_task()
+        issue = Issue.objects.get(task=self.task)
+        self.assertIsNone(issue.responsible)
+
+        # set default teacher
+        default_teacher = DefaultTeacher(teacher=self.teacher, course=self.course, group=self.group)
+        default_teacher.save()
+        self._test_set_detault_teacher__retake_task()
+        issue = Issue.objects.get(task=self.task)
+        self.assertEqual(issue.responsible, self.teacher)
+
+        # check default teacher will not be changed if its already set
+        default_teacher.teacher = self.users[1]
+        default_teacher.save()
+        self._test_set_detault_teacher__retake_task()
+        issue = Issue.objects.get(task=self.task)
+        self.assertEqual(issue.responsible, self.teacher)

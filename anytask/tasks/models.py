@@ -1,6 +1,8 @@
 # coding: utf-8
 
 import copy
+import sys
+
 from datetime import datetime
 from datetime import timedelta
 
@@ -271,9 +273,16 @@ class TaskTaken(models.Model):
         return self.issue.mark
 
     def update_status(self):
-        if self.issue and abs(self.issue.mark) > 1e-6 and self.status != self.STATUS_SCORED:
+        if self.issue and abs(self.issue.mark) > sys.float_info.epsilon and self.status != self.STATUS_SCORED:
             self.status = self.STATUS_SCORED
             self.save()
+
+        if not self.issue.get_byname('responsible_name'):
+            group = self.task.course.get_user_group(self.user)
+            if group:
+                default_teacher = self.task.course.get_default_teacher(group)
+                if default_teacher:
+                    self.issue.set_byname('responsible_name', default_teacher, author=None)
 
     class Meta:
         unique_together = (("user", "task"),)
