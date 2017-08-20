@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 import base64
 import json
 
@@ -6,6 +8,7 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth import authenticate, login
 
 from courses.models import Course
+from issues.models import Issue
 
 
 def login_required_basic_auth(view):
@@ -38,6 +41,7 @@ def login_required_basic_auth(view):
 
 def unpack_issue(issue):
     ret = {
+        "id": issue.id,
         "mark": issue.mark,
         "create_time": issue.create_time.isoformat() + "Z",
         "update_time": issue.update_time.isoformat() + "Z",
@@ -48,6 +52,28 @@ def unpack_issue(issue):
 
     if issue.responsible:
         ret["responsible"] = issue.responsible.username
+
+    return ret
+
+
+def unpack_file(request, f):
+    return {
+        "id": f.id,
+        "filename": f.filename(),
+        "path": f.file.url,
+        "url": request.build_absolute_uri(f.file.url),
+    }
+
+
+def unpack_event(request, event):
+    ret = {
+        "id": event.id,
+        "timestamp": event.timestamp.isoformat() + "Z",
+        "author": event.author.username,
+        "message": event.get_message(),
+        # "files": list(event.file_set.all())
+        "files": map(lambda x: unpack_file(request, x), event.file_set.filter(deleted=False)),
+    }
 
     return ret
 
@@ -66,4 +92,32 @@ def get_issues(request, course_id):
             issues.append(unpack_issue(issue))
 
     return HttpResponse(json.dumps(issues),
+                        content_type="application/json")
+
+
+@login_required_basic_auth
+def get_issue(request, issue_id):
+    user = request.user
+    issue = get_object_or_404(Issue, id=issue_id)
+    access_ok = False
+
+    if user in (issue.student,
+                issue.responsible):
+        access_ok = True
+
+    if not access_ok and issue.followers.filter(id=user.id).count() != 0:
+        access_ok = True
+
+    if not access_ok:
+        course = issue.task.course
+        if course.user_is_teacher(user):
+            access_ok = True
+
+    if not access_ok:
+        return HttpResponseForbidden()
+
+    ret = unpack_issue(issue)
+    ret["events"] = map(lambda x: unpack_event(request, x), issue.get_history())
+
+    return HttpResponse(json.dumps(ret),
                         content_type="application/json")
