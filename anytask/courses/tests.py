@@ -997,6 +997,8 @@ class PythonTaskTest(TestCase):
         self.course.save()
 
         self.task = Task.objects.create(title='task_title', course=self.course, score_max=10)
+        self.task2 = Task.objects.create(title='task2_title', course=self.course, score_max=10)
+        self.task3 = Task.objects.create(title='task3_title', course=self.course, score_max=10)
         self.seminar = Task.objects.create(title='seminar_title', course=self.course, type=Task.TYPE_SEMINAR)
         self.subtask1 = Task.objects.create(title='subtask1_title', course=self.course,
                                             parent_task=self.seminar, score_max=10)
@@ -1110,15 +1112,47 @@ class PythonTaskTest(TestCase):
             follow=True)
         self.assertContains(response, "{} {}".format(user.last_name, user.first_name), count=1)
 
+    def set_mark(self, task, student, mark):
+        issue, _ = Issue.objects.get_or_create(task_id=task.id, student_id=student.id)
+        issue.mark = mark
+        issue.save()
+
+    def test_max_incomplete_constraint(self):
+        client = self.client
+        user = self.users[0]
+        self.assertTrue(client.login(username=user.username, password='password0'))
+
+        client.get(
+            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id,
+                    'task_id': self.task.id}), follow=True)
+        self.set_mark(self.task, user, 1.0)
+
+        client.get(
+            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id,
+                    'task_id': self.task3.id}), follow=True)
+        self.set_mark(self.task3, user, 2.0)
+
+        response = client.get(
+            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id,
+                    'task_id': self.subtask1.id}), follow=True)
+
+        self.assertContains(response, "{} {}".format(user.last_name, user.first_name), count=3)
+
+        response = client.get(
+            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id,
+                    'task_id': self.task2.id}), follow=True)
+        self.assertContains(response, "{} {}".format(user.last_name, user.first_name), count=3)
+
+        self.set_mark(self.task3, user, 10)
+        response = client.get(
+            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id,
+                    'task_id': self.task2.id}), follow=True)
+        self.assertContains(response, "{} {}".format(user.last_name, user.first_name), count=4)
+
     def test_statistics(self):
         client = self.client
         user1 = self.users[0]
         user2 = self.users[1]
-
-        def set_mark(task, student, mark):
-            issue, _ = Issue.objects.get_or_create(task_id=task.id, student_id=student.id)
-            issue.mark = mark
-            issue.save()
 
         self.assertTrue(client.login(username=user1.username, password='password0'))
         client.get(
@@ -1137,9 +1171,9 @@ class PythonTaskTest(TestCase):
                     'task_id': self.task.id}), follow=True)
 
         self.assertTrue(client.login(username=self.teacher.username, password='teacher'))
-        set_mark(self.task, user1, 1.5)
-        set_mark(self.subtask1, user1, 2.3)
-        set_mark(self.subtask2, user2, 1.0)
+        self.set_mark(self.task, user1, 1.5)
+        self.set_mark(self.subtask1, user1, 2.3)
+        self.set_mark(self.subtask2, user2, 1.0)
 
         self.assertTrue(client.login(username=user1.username, password='password0'))
         response = client.get(

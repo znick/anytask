@@ -85,8 +85,9 @@
     {% endif%}
     </dt>
 
+    {% if user_is_teacher %}
     <a class="btn-small" href="/task/create/{{course.id}}">Добавить задачу</a>
-
+    {% endif %}
 
 	<dd>Преподаватели:
 		{% for teacher in course.teachers.all %}

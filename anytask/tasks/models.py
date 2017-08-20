@@ -67,7 +67,6 @@ class Task(models.Model):
         return unicode(self.title)
 
     def user_can_take_task(self, user):
-
         for task_taken in TaskTaken.objects.filter(task=self):
             task_taken.update_status()
 
@@ -116,6 +115,12 @@ class Task(models.Model):
             pass
 
         if TaskTaken.objects.filter(task=self).filter(user=user).filter(status=TaskTaken.STATUS_SCORED).count() != 0:
+            return (False, u'')
+
+        all_scored = TaskTaken.objects.filter(user=user).filter(Q(Q(status=TaskTaken.STATUS_TAKEN) | Q(
+            status=TaskTaken.STATUS_SCORED)))
+        incompleted = 1 + sum(1 for t in all_scored if t.score != t.task.score_max)
+        if incompleted > settings.PYTHONTASK_MAX_INCOMPLETE_TASKS:
             return (False, u'')
 
         return (True, u'')
