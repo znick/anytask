@@ -75,10 +75,16 @@ class ApiTest(TestCase):
         return self.client.get(*args, **kwargs)
 
     def test_get_issues(self):
-        issues_list = [
-            {u'status': u'novyj', u'responsible': None, u'mark': 0.0, u'followers': [], u'id': 1},
-            {u'status': u'novyj', u'responsible': None, u'mark': 0.0, u'followers': [], u'id': 2}
-        ]
+        issues_list = [{u'status': u'novyj', u'task': {u'id': 1, u'title': u'task_title1'},
+                        u'followers': [], u'student': {u'username': u'student', u'first_name': u'student_name',
+                                                       u'last_name': u'student_last_name', u'middle_name': None,
+                                                       u'name': u'student_name student_last_name', u'id': 3},
+                        u'responsible': None, u'id': 1, u'mark': 0.0},
+                       {u'status': u'novyj', u'task': {u'id': 2, u'title': u'task_title2'},
+                        u'followers': [], u'student': {u'username': u'student', u'first_name': u'student_name',
+                                                       u'last_name': u'student_last_name', u'middle_name': None,
+                                                       u'name': u'student_name student_last_name', u'id': 3},
+                        u'responsible': None, u'id': 2, u'mark': 0.0}]
         response = self._get(self.teacher, self.teacher_password,
                              reverse("api.views.get_issues", kwargs={"course_id": self.course.id}))
         self.assertEqual(response.status_code, 200)
@@ -100,14 +106,25 @@ class ApiTest(TestCase):
             username = self.teacher
             password = self.teacher_password
 
-        issue = {u'status': u'novyj', u'responsible': None, u'mark': 0.0, u'followers': [],
-                 u'events': [
-                     {u'files': [{u'id': 1,
-                                  u'filename': u'test_fail_rb.py'}],
-                      u'message': u'<div class="contest-response-comment not-sanitize">Test comment</div>',
-                      u'id': 1,
-                      u'author': u'anytask'}],
-                 u'id': 1}
+        issue = {u'status': u'novyj', u'task': {u'id': 1, u'title': u'task_title1'},
+                 u'followers': [], u'student': {u'username': u'student', u'first_name': u'student_name',
+                                                u'last_name': u'student_last_name', u'middle_name': None,
+                                                u'name': u'student_name student_last_name', u'id': 3},
+                 u'events': [{
+                     u'files': [
+                         {
+                             u'id': 1,
+                             u'filename': u'test_fail_rb.py'}],
+                     u'message': u'<div class="contest-response-comment not-sanitize">Test comment</div>',
+                     u'id': 1,
+                     u'author': {
+                         u'username': u'anytask',
+                         u'first_name': u'',
+                         u'last_name': u'',
+                         u'middle_name': None,
+                         u'name': u'',
+                         u'id': 1}}],
+                 u'responsible': None, u'id': 1, u'mark': 0.0}
 
         response = self._get(username, password,
                              reverse("api.views.get_issue", kwargs={"issue_id": self.issue1.id}))

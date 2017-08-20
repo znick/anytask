@@ -39,19 +39,41 @@ def login_required_basic_auth(view):
     return check_auth
 
 
+def unpack_user(user):
+    profile = user.get_profile()
+    return {
+        "id": user.id,
+        "name": user.get_full_name(),
+        "first_name": user.first_name,
+        "last_name": user.last_name,
+        "username": user.username,
+        "middle_name": profile.middle_name,
+    }
+
+
+def unpack_task(task):
+    return {
+        "id": task.id,
+        "title": task.title,
+    }
+
+
 def unpack_issue(issue):
+    task = issue.task
     ret = {
         "id": issue.id,
         "mark": issue.mark,
         "create_time": issue.create_time.isoformat() + "Z",
         "update_time": issue.update_time.isoformat() + "Z",
         "responsible": None,
-        "followers": map(lambda x: x.username, issue.followers.all()),
+        "followers": map(lambda x: unpack_user(x), issue.followers.all()),
         "status": issue.get_status(),
+        "student": unpack_user(issue.student),
+        "task": unpack_task(task)
     }
 
     if issue.responsible:
-        ret["responsible"] = issue.responsible.username
+        ret["responsible"] = unpack_user(issue.responsible.username)
 
     return ret
 
@@ -69,7 +91,7 @@ def unpack_event(request, event):
     ret = {
         "id": event.id,
         "timestamp": event.timestamp.isoformat() + "Z",
-        "author": event.author.username,
+        "author": unpack_user(event.author),
         "message": event.get_message(),
         # "files": list(event.file_set.all())
         "files": map(lambda x: unpack_file(request, x), event.file_set.filter(deleted=False)),
