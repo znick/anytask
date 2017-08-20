@@ -26,5 +26,6 @@ urlpatterns = patterns(
     url(r'^(?P<course_id>\d+)/attendance$', 'attendance_page'),
     url(r'^(?P<course_id>\d+)/attendance/group/(?P<group_id>\d+)/$', 'attendance_page'),
     url(r'^lesson_visited$', 'lesson_visited'),
-    url(r'^lesson_delete$', 'lesson_delete')
+    url(r'^lesson_delete$', 'lesson_delete'),
+    url(r'^(?P<course_id>\d+)/statistic$', 'view_statistic')
 )

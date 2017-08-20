@@ -64,6 +64,9 @@
                     <a class="nav-link" href="{% url courses.views.course_settings course.id %}">{% trans "nastrojki" %}</a>
                 </li>
             {% endif %}
+            <li class="nav-item">
+                <a class="nav-link" href="{% url courses.views.view_statistic course.id %}">Статистика</a>
+            </li>
         {% endif %}
     </ul>
 {% endblock navbar %}
@@ -73,7 +76,6 @@
 {% block content %}
 
     {{ block.super }}
-
 
 <dl>
 	<dt><h3>{{ course.name }} <small>{{ course.year }}</small>

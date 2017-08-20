@@ -11,7 +11,7 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 from schools.models import School
 from courses.models import Course, IssueField, FilenameExtension, CourseMarkSystem, MarkField, IssueStatusSystem
-from issues.models import IssueStatus
+from issues.models import Issue, IssueStatus
 from groups.models import Group
 from years.models import Year
 from tasks.models import Task
@@ -996,10 +996,12 @@ class PythonTaskTest(TestCase):
         self.course.is_python_task = True
         self.course.save()
 
-        self.task = Task.objects.create(title='task_title', course=self.course)
+        self.task = Task.objects.create(title='task_title', course=self.course, score_max=10)
         self.seminar = Task.objects.create(title='seminar_title', course=self.course, type=Task.TYPE_SEMINAR)
-        self.subtask1 = Task.objects.create(title='subtask1_title', course=self.course, parent_task=self.seminar)
-        self.subtask2 = Task.objects.create(title='subtask2_title', course=self.course, parent_task=self.seminar)
+        self.subtask1 = Task.objects.create(title='subtask1_title', course=self.course,
+                                            parent_task=self.seminar, score_max=10)
+        self.subtask2 = Task.objects.create(title='subtask2_title', course=self.course,
+                                            parent_task=self.seminar, score_max=10)
 
     def test_list(self):
         client = self.client
@@ -1107,3 +1109,42 @@ class PythonTaskTest(TestCase):
             reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id, 'task_id': self.subtask2.id}),
             follow=True)
         self.assertContains(response, "{} {}".format(user.last_name, user.first_name), count=1)
+
+    def test_statistics(self):
+        client = self.client
+        user1 = self.users[0]
+        user2 = self.users[1]
+
+        def set_mark(task, student, mark):
+            issue, _ = Issue.objects.get_or_create(task_id=task.id, student_id=student.id)
+            issue.mark = mark
+            issue.save()
+
+        self.assertTrue(client.login(username=user1.username, password='password0'))
+        client.get(
+            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id,
+                    'task_id': self.subtask1.id}), follow=True)
+        client.get(
+            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id,
+                    'task_id': self.task.id}), follow=True)
+
+        self.assertTrue(client.login(username=user2.username, password='password1'))
+        client.get(
+            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id,
+                    'task_id': self.subtask2.id}), follow=True)
+        client.get(
+            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id,
+                    'task_id': self.task.id}), follow=True)
+
+        self.assertTrue(client.login(username=self.teacher.username, password='teacher'))
+        set_mark(self.task, user1, 1.5)
+        set_mark(self.subtask1, user1, 2.3)
+        set_mark(self.subtask2, user2, 1.0)
+
+        self.assertTrue(client.login(username=user1.username, password='password0'))
+        response = client.get(
+            reverse('courses.views.view_statistic', kwargs={'course_id': self.course.id}), follow=True)
+        self.assertContains(response, "1.5")
+        self.assertContains(response, "2.3")
+        self.assertContains(response, "1")
+        self.assertContains(response, "3.8")

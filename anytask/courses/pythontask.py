@@ -1,5 +1,6 @@
 from tasks.models import Task, TaskTaken
 from issues.models import Issue
+from pythonstat import PythonTaskStat
 
 from django.conf import settings
 from django.db.models import Q
@@ -61,6 +62,22 @@ def tasks_list(request, course):
     }
 
     return render_to_response('course_tasks_potok.html', context, context_instance=RequestContext(request))
+
+
+def python_stat(request, course):
+    tasks = Task.objects.filter(course=course)
+    stat = PythonTaskStat(tasks)
+
+    for group in course.groups.all().order_by('name'):
+        stat.update(group)
+
+    context = {
+        'course': course,
+        'group_stat': stat.get_group_stat(),
+        'course_stat': stat.get_course_stat()
+    }
+
+    return render_to_response('statistics.html', context, context_instance=RequestContext(request))
 
 
 @login_required
