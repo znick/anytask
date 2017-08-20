@@ -20,6 +20,8 @@ def display_color(obj):
            u'border-radius: .25rem;' \
            u'background-color:{0}' \
            u'">{1}</span>'.format(obj.color, obj.name)
+
+
 display_color.short_description = _(u'status')
 display_color.allow_tags = True
 
@@ -41,7 +43,7 @@ class IssueStatusAdmin(admin.ModelAdmin):
 
 
 class IssueStatusSystemAdmin(admin.ModelAdmin):
-    list_display = ('name', )
+    list_display = ('name',)
     filter_horizontal = ('statuses',)
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
@@ -49,8 +51,10 @@ class IssueStatusSystemAdmin(admin.ModelAdmin):
             kwargs["queryset"] = IssueStatus.objects.exclude(hidden=True)
         return super(IssueStatusSystemAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
 
+
 class EventAdmin(admin.ModelAdmin):
     raw_id_fields = ['author', 'issue']
+
 
 admin.site.register(Issue)
 admin.site.register(Event, EventAdmin)

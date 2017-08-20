@@ -32,4 +32,3 @@ class TestResponse(TestCase):
         # get blog page
         response = client.get(reverse('blog.views.blog_page'))
         self.assertEqual(response.status_code, 200)
-

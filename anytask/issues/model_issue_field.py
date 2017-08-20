@@ -4,8 +4,8 @@ import inspect
 import sys
 
 from django.db import models
-from issues.forms import IntForm, MarkForm, FileForm, CommentForm, get_responsible_form, get_followers_form, get_status_form
-
+from issues.forms import IntForm, MarkForm, FileForm, CommentForm, get_responsible_form, get_followers_form, \
+    get_status_form
 
 
 class DefaultPlugin(object):
@@ -22,16 +22,13 @@ class FieldDefaultPlugin(DefaultPlugin):
     def can_edit(field_name, user, issue):
         return issue.task.course.user_is_teacher(user)
 
-
     @classmethod
     def get_form(cls, *args, **kwargs):
         return cls.FORM(*args, **kwargs)
 
-
     @staticmethod
     def is_visible(field_name):
         return True
-
 
     @staticmethod
     def get_default_value(field_name):
@@ -40,6 +37,7 @@ class FieldDefaultPlugin(DefaultPlugin):
     @staticmethod
     def get_value(issue):
         return None
+
 
 class FieldCommentPlugin(FieldDefaultPlugin):
     PLUGIN_NAME = "FieldCommentPlugin"
@@ -67,6 +65,7 @@ class FieldMarkPlugin(FieldDefaultPlugin):
     @staticmethod
     def get_default_value(field_name):
         return 0
+
 
 class FieldStatusPlugin(FieldDefaultPlugin):
     PLUGIN_NAME = "FieldStatusPlugin"
@@ -114,7 +113,6 @@ class FieldReadOnlyPlugin(FieldDefaultPlugin):
         return False
 
 
-
 class IssueField(models.Model):
     name = models.CharField(max_length=191)
     title = models.CharField(max_length=191, blank=True)
@@ -159,6 +157,7 @@ class IssueField(models.Model):
 
     def __unicode__(self):
         return u'{0}: {1}/{2} - {3}'.format(self.id, self.plugin, self.name, self.title)
+
 
 IssueField._init_plugins()
 

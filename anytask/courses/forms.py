@@ -1,15 +1,18 @@
-#coding: utf-8
+# coding: utf-8
 
 from django import forms
 from django.utils.translation import ugettext as _
 from courses.models import DefaultTeacher
 import os
 
+
 class PdfForm(forms.Form):
     pdf = forms.FileField(required=False)
+
     def __init__(self, *args, **kwargs):
         self.extensions = kwargs.pop('extensions', None)
         super(PdfForm, self).__init__(*args, **kwargs)
+
     def clean_pdf(self):
         file = self.cleaned_data.get('pdf')
         if file:
@@ -28,11 +31,13 @@ class QueueForm(forms.Form):
     not_owned = forms.BooleanField(initial=True, label=u'Ничьи', required=False)
     overdue = forms.IntegerField(initial=0, label=u'Ждут проверки несколько дней')
 
+
 def get_teacher_choises(course):
     teachers = [(0, "---")]
     for teacher in course.get_teachers():
         teachers.append((teacher.id, teacher.get_full_name()))
     return teachers
+
 
 class DefaultTeacherForm(forms.Form):
     def __init__(self, course, *args, **kwargs):
@@ -47,7 +52,12 @@ class DefaultTeacherForm(forms.Form):
         for group in course.groups.all():
             group_key = "group_{0}".format(group.id)
             self.groups[group_key] = group
-            self.fields[group_key] = forms.ChoiceField(initial=groups_teacher.get(group.id, 0), choices=self.teachers, label=group.name)
+            self.fields[group_key] = forms.ChoiceField(
+                initial=groups_teacher.get(group.id, 0),
+                choices=self.teachers,
+                label=group.name
+            )
+
 
 def default_teacher_forms_factory(course, group, teacher=None, post_data=None):
     teacher_id = 0
@@ -58,4 +68,5 @@ def default_teacher_forms_factory(course, group, teacher=None, post_data=None):
         course_id = forms.IntegerField(initial=course.id, widget=forms.HiddenInput)
         groups_id = forms.IntegerField(initial=group.id, widget=forms.HiddenInput)
         teacher = forms.ChoiceField(initial=teacher_id, choices=get_teacher_choises(course), label="")
+
     return DefaultTeacherForm()

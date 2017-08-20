@@ -127,7 +127,6 @@ class ViewsTest(TestCase):
                                       kwargs={'issue_id': issue.id}))
         self.assertEqual(response.status_code, 302, "Need login for issue_page")
 
-
     def test_get_or_create_with_teacher(self):
         client = self.client
 

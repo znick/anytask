@@ -4,6 +4,7 @@ from datetime import datetime
 
 from years.models import Year
 
+
 class Group(models.Model):
     year = models.ForeignKey(Year, db_index=True, null=False, blank=True)
     name = models.CharField(max_length=191, db_index=True, null=False, blank=True)

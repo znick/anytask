@@ -26,7 +26,6 @@ class Command(BaseCommand):
                 .exclude(run_id__isnull=True):
             try:
                 issue = contest_submission.issue
-                run_id = contest_submission.run_id
                 task = issue.task
                 lang = UserProfile.objects.get(user=contest_submission.author).language
                 translation.activate(lang)
@@ -39,9 +38,8 @@ class Command(BaseCommand):
                         anyrb = AnyRB(contest_submission.file.event)
                         review_request_id = anyrb.upload_review()
                         if review_request_id is not None:
-                            comment += '\n' + \
-                                       u'<a href="{1}/r/{0}">Review request {0}</a>'. \
-                                           format(review_request_id, settings.RB_API_URL)
+                            comment += '\n' + u'<a href="{1}/r/{0}">Review request {0}</a>'. \
+                                format(review_request_id, settings.RB_API_URL)
                         else:
                             comment += '\n' + _(u'oshibka_otpravki_v_rb')
                     if contest_submission.verdict == 'ok' and \
@@ -64,4 +62,3 @@ class Command(BaseCommand):
                 translation.deactivate()
             except Exception as e:
                 logger.exception(e)
-

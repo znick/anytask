@@ -41,7 +41,7 @@ def normalize_decimal(number):
 
 
 class File(models.Model):
-    file = models.FileField(upload_to=get_file_path, null=True, blank=True, max_length = 500)
+    file = models.FileField(upload_to=get_file_path, null=True, blank=True, max_length=500)
     event = models.ForeignKey('Event')
     deleted = models.BooleanField(default=False)
 
@@ -213,7 +213,7 @@ class Issue(models.Model):
         ret = self.get_field_value(field)
         if field.name == 'responsible_name':
             if ret:
-                ret = ret.id #Hack hack hack :\
+                ret = ret.id  # Hack hack hack :\
             return ret
         if field.name == 'status':
             if ret.id not in IssueStatus.HIDDEN_STATUSES.values():
@@ -299,7 +299,7 @@ class Issue(models.Model):
                 delete_event = True
             else:
                 deleted_followers = [get_user_fullname(follower)
-                                    for follower in set(self.followers.all()).difference(set(new_followers))]
+                                     for follower in set(self.followers.all()).difference(set(new_followers))]
                 add_followers = [get_user_fullname(follower) for follower in new_followers.all()]
                 self.followers = value
                 value = ', '.join(add_followers) + '\n' + ', '.join(deleted_followers)
@@ -325,14 +325,12 @@ class Issue(models.Model):
                                         self.set_status_auto_verification()
                                 else:
                                     value['comment'] += u"<p>{0}('{1}')</p>".format(_(u'oshibka_otpravki_v_kontest'),
-                                                                                     contest_submission.send_error)
+                                                                                    contest_submission.send_error)
                                     self.followers.add(User.objects.get(username='anytask.monitoring'))
                                 break
 
-                    if self.task.rb_integrated and (
-                                course.send_rb_and_contest_together or
-                                not self.task.contest_integrated
-                    ):
+                    if self.task.rb_integrated \
+                            and (course.send_rb_and_contest_together or not self.task.contest_integrated):
                         for ext in settings.RB_EXTENSIONS + [str(ext.name) for ext in course.filename_extensions.all()]:
                             filename, extension = os.path.splitext(file.name)
                             if ext == extension or ext == '.*':
@@ -340,7 +338,7 @@ class Issue(models.Model):
                                 review_request_id = anyrb.upload_review()
                                 if review_request_id is not None:
                                     value['comment'] += u'<p><a href="{1}/r/{0}">Review request {0}</a></p>'. \
-                                        format(review_request_id,settings.RB_API_URL)
+                                        format(review_request_id, settings.RB_API_URL)
                                 else:
                                     value['comment'] += u'<p>{0}</p>'.format(_(u'oshibka_otpravki_v_rb'))
                                     self.followers.add(User.objects.get(username='anytask.monitoring'))
@@ -359,13 +357,13 @@ class Issue(models.Model):
                     if author == self.responsible:
                         if self.is_status_need_info():
                             status_field = IssueField.objects.get(name='status')
-                            status_events = Event.objects\
-                                .filter(issue_id=self.id, field=status_field)\
-                                .exclude(author__isnull=True)\
+                            status_events = Event.objects \
+                                .filter(issue_id=self.id, field=status_field) \
+                                .exclude(author__isnull=True) \
                                 .order_by('-timestamp')
 
                             if status_events:
-                                status_prev = self.task.course.issue_status_system.statuses\
+                                status_prev = self.task.course.issue_status_system.statuses \
                                     .filter(name=status_events[0].value)
                                 if status_prev:
                                     self.set_field(status_field, status_prev[0])
@@ -378,7 +376,7 @@ class Issue(models.Model):
             try:
                 review_id = self.get_byname('review_id')
                 if review_id != '':
-                    if value.tag == IssueStatus.STATUS_ACCEPTED:
+                    if value.tag in [IssueStatus.STATUS_ACCEPTED, IssueStatus.STATUS_ACCEPTED_AFTER_DEADLINE]:
                         update_status_review_request(review_id, 'submitted')
                     elif self.is_status_accepted():
                         update_status_review_request(review_id, 'pending')
@@ -386,6 +384,16 @@ class Issue(models.Model):
                 pass
 
             if self.status_field != value:
+                if self.task.parent_task is not None and not self.task.score_after_deadline:
+                    parent_task_issue, created = Issue.objects.get_or_create(
+                        student=self.student,
+                        task=self.task.parent_task
+                    )
+                    if self.is_status_accepted_after_deadline():
+                        parent_task_issue.mark += self.mark
+                    elif value.tag == IssueStatus.STATUS_ACCEPTED_AFTER_DEADLINE:
+                        parent_task_issue.mark -= self.mark
+                    parent_task_issue.save()
                 self.status_field = value
             else:
                 delete_event = True
@@ -403,8 +411,7 @@ class Issue(models.Model):
                         student=self.student,
                         task=self.task.parent_task
                     )
-                    parent_task_issue.mark -= self.mark
-                    parent_task_issue.mark += float(value)
+                    parent_task_issue.mark += float(value) - self.mark
                     parent_task_issue.save()
 
                 self.mark = float(value)
@@ -442,8 +449,8 @@ class Issue(models.Model):
         """
         :returns event objects
         """
-        events = Event.objects.filter(issue_id=self.id).exclude(Q(author__isnull=True) | 
-                    Q(field__name='review_id')).order_by('timestamp')
+        events = Event.objects.filter(issue_id=self.id).exclude(Q(author__isnull=True) |
+                                                                Q(field__name='review_id')).order_by('timestamp')
         return events
 
     def __unicode__(self):
@@ -521,10 +528,10 @@ class Event(models.Model):
     def is_change(self):
         return self.field.name != 'comment'
 
-#    def save(self, *a, **ka):
-#        import traceback
-#        traceback.print_stack()
-#        return super(self.__class__, self).save(*a, **ka)
+    #    def save(self, *a, **ka):
+    #        import traceback
+    #        traceback.print_stack()
+    #        return super(self.__class__, self).save(*a, **ka)
 
     def __unicode__(self):
         if not self.author:

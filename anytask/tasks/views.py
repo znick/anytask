@@ -28,6 +28,7 @@ def merge_two_dicts(x, y):
     z.update(y)
     return z
 
+
 @login_required
 def task_create_page(request, course_id):
     course = get_object_or_404(Course, id=course_id)
@@ -46,7 +47,7 @@ def task_create_page(request, course_id):
     context = {
         'is_create': True,
         'course': course,
-        'task_types':  Task().TASK_TYPE_CHOICES if has_seminar else Task().TASK_TYPE_CHOICES[:-1],
+        'task_types': Task().TASK_TYPE_CHOICES if has_seminar else Task().TASK_TYPE_CHOICES[:-1],
         'seminar_tasks': seminar_tasks,
         'not_seminar_tasks': not_seminar_tasks,
         'contest_integrated': course.contest_integrated,
@@ -116,7 +117,7 @@ def task_edit_page(request, task_id):
     groups_required = []
     groups = task.groups.all()
     if task.type == task.TYPE_SEMINAR:
-        children_groups = reduce(lambda x, y: x+y, [list(child.groups.all()) for child in task.children.all()], [])
+        children_groups = reduce(lambda x, y: x + y, [list(child.groups.all()) for child in task.children.all()], [])
         groups_required = set(children_groups).intersection(groups)
     else:
         for group in groups:
@@ -139,8 +140,8 @@ def task_edit_page(request, task_id):
         'not_seminar_tasks': not_seminar_tasks,
         'contest_integrated': task.contest_integrated,
         'rb_integrated': task.rb_integrated,
-        'hide_contest_settings': True if not task.contest_integrated
-                                         or task.type in [task.TYPE_SIMPLE, task.TYPE_MATERIAL] else False,
+        'hide_contest_settings': True if not task.contest_integrated or task.type in [task.TYPE_SIMPLE,
+                                                                                      task.TYPE_MATERIAL] else False,
         'school': schools[0] if schools else '',
     }
 
@@ -185,10 +186,9 @@ def get_task_params(request, check_score_after_deadline=False):
 
     rb_integrated = 'rb_integrated' in request.POST and task_type not in simple_task_types
     one_file_upload = 'one_file_upload' in request.POST and rb_integrated
-    accepted_after_contest_ok = 'accepted_after_contest_ok' in request.POST and contest_integrated
+    accepted_after_contest_ok = 'accepted_after_contest_ok' in request.POST
 
     hidden_task = 'hidden_task' in request.POST
-
     task_text = request.POST.get('task_text', '').strip()
 
     return {'attrs': {
@@ -210,7 +210,7 @@ def get_task_params(request, check_score_after_deadline=False):
         'score_after_deadline': score_after_deadline,
         'is_hidden': hidden_task,
         'task_text': task_text
-        },
+    },
         'children': children,
         'groups': task_groups
     }

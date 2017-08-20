@@ -1,42 +1,29 @@
 # coding: utf-8
-import pprint
 
-from django.shortcuts import render_to_response, get_object_or_404, redirect
-from django.http import Http404, HttpResponseRedirect
+from django.shortcuts import render_to_response, get_object_or_404
+from django.http import Http404
 from django.template import RequestContext
 from django.core.exceptions import PermissionDenied
-from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound
-from django.core.exceptions import ObjectDoesNotExist
-from django.core.urlresolvers import reverse
+from django.http import HttpResponse, HttpResponseForbidden
 from django.db.models import Q
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext as _
-from django.db.models import Max
 from django.contrib.auth.decorators import login_required
-from django.views.generic import View
-from django.utils.decorators import method_decorator
 from django.conf import settings
 
 import datetime
-import pysvn
-import urllib, urllib2
-import httplib
 import logging
 import requests
 import reversion
 
 from courses.models import Course, DefaultTeacher, StudentCourseMark, MarkField, FilenameExtension
 from groups.models import Group
-from tasks.models import TaskTaken, Task, TaskGroupRelations
+from tasks.models import Task, TaskGroupRelations
 from tasks.views import prettify_contest_task_text
 from years.models import Year
 from years.common import get_current_year
-from course_statistics import CourseStatistics
-from score import TaskInfo
-from anysvn.common import svn_log_rev_message, svn_log_head_revision, get_svn_external_url, svn_log_min_revision
-from anyrb.common import AnyRB
 from anycontest.common import get_contest_info, FakeResponse
-from issues.models import Issue, Event, IssueFilter
+from issues.models import Issue, IssueFilter
 from issues.model_issue_status import IssueStatus
 from issues.views import contest_rejudge
 from users.forms import InviteActivationForm
@@ -46,19 +33,14 @@ from lessons.models import Lesson
 
 from common.ordered_dict import OrderedDict
 
-from courses.forms import PdfForm, QueueForm, default_teacher_forms_factory, DefaultTeacherForm
-from django.utils.html import strip_tags
-from filemanager import FileManager
-from settings import UPLOAD_ROOT
-import os.path
+from courses.forms import default_teacher_forms_factory, DefaultTeacherForm
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, HTML
+from crispy_forms.layout import HTML
 
 import json
 
 logger = logging.getLogger('django.request')
-
 
 
 @login_required
@@ -92,9 +74,14 @@ def queue_page(request, course_id):
     f.form.helper.form_method = 'get'
     # f.form.helper.label_class = 'col-md-4'
     # f.form.helper.field_class = 'selectpicker'
-    f.form.helper.layout.append(HTML(u"""<div class="form-group row">
-                                           <button id="button_filter" class="btn btn-secondary pull-xs-right" type="submit">{0}</button>
-                                         </div>""".format(_(u'primenit'))))
+    f.form.helper.layout.append(
+        HTML(
+            u"""<div class="form-group row">
+            <button id="button_filter" class="btn btn-secondary pull-xs-right" type="submit">{0}</button>
+            </div>""".
+            format(_(u'primenit'))
+        )
+    )
 
     schools = course.school_set.all()
 
@@ -187,12 +174,12 @@ def course_page(request, course_id):
     else:
         groups = Group.objects.filter(students=user, course__in=[course])
         tasks = TaskGroupRelations.objects.filter(
-                    task__course=course, group__in=groups, deleted=False
-                ).order_by(
-                    'group', 'position'
-                ).values_list(
-                    'task__id', flat=True
-                ).distinct()
+            task__course=course, group__in=groups, deleted=False
+        ).order_by(
+            'group', 'position'
+        ).values_list(
+            'task__id', flat=True
+        ).distinct()
         tasks = Task.objects.filter(id__in=tasks)
 
     if StudentCourseMark.objects.filter(student=user, course=course):
@@ -250,12 +237,12 @@ def seminar_page(request, course_id, task_id):
     else:
         groups = Group.objects.filter(students=user, course__in=[course])
         tasks = TaskGroupRelations.objects.filter(
-                    task__course=course, group__in=groups, deleted=False
-                ).order_by(
-                    'group', 'position'
-                ).values_list(
-                    'task__id', flat=True
-                ).distinct()
+            task__course=course, group__in=groups, deleted=False
+        ).order_by(
+            'group', 'position'
+        ).values_list(
+            'task__id', flat=True
+        ).distinct()
         tasks = Task.objects.filter(id__in=tasks)
     if Issue.objects.filter(task=task, student=user):
         mark = Issue.objects.get(task=task, student=user).mark
@@ -346,8 +333,13 @@ def tasklist_shad_cpp(request, course, seminar=None, group=None):
             issues_x_student[student_id].append(issue)
 
         students = group.students.filter(is_active=True)
-        not_active_students = UserProfile.objects.filter(Q(user__in=group.students.filter(is_active=True)) &
-                                                  (Q(user_status__tag='not_active') | Q(user_status__tag='academic')))
+        not_active_students = UserProfile.objects.filter(
+            Q(user__in=group.students.filter(is_active=True)) &
+            (
+                Q(user_status__tag='not_active') |
+                Q(user_status__tag='academic')
+            )
+        )
         academ_students += [x.user for x in not_active_students]
         if not show_academ_users:
             students = set(students) - set(academ_students)
@@ -599,11 +591,13 @@ def course_settings(request, course_id):
     course.default_accepted_after_contest_ok = 'default_accepted_after_contest_ok' in request.POST
     course.show_contest_run_id = 'show_contest_run_id' in request.POST
 
+    redirect_page = None
+    if course.has_attendance_log and 'has_attendance_log' not in request.POST:
+        redirect_page = '/course/%d' % course.id
     course.has_attendance_log = 'has_attendance_log' in request.POST
 
     course.save()
-
-    return HttpResponseRedirect('')
+    return HttpResponse(json.dumps({'redirect_page': redirect_page}), content_type="application/json")
 
 
 def change_visibility_hidden_tasks(request):
@@ -928,6 +922,8 @@ def attendance_page(request, course_id, group_id=None):
         raise PermissionDenied
 
     course = get_object_or_404(Course, id=course_id)
+    if not course.user_can_see_attendance_log(request.user):
+        raise PermissionDenied
 
     if group_id:
         group = get_object_or_404(Group, id=group_id)
@@ -952,13 +948,14 @@ def attendance_page(request, course_id, group_id=None):
 @login_required
 def lesson_visited(request):
     if request.method != 'POST':
-        return HttpResponseForbidden()
+        raise PermissionDenied
 
     lesson_id = request.POST['lssn_id']
     lesson = get_object_or_404(Lesson, id=lesson_id)
     if not lesson.course.user_is_teacher(request.user):
-        return HttpResponseForbidden()
-
+        raise PermissionDenied
+    if lesson.date_starttime.date() > datetime.datetime.today().date():
+        raise PermissionDenied
     student = User.objects.get(id=request.POST['student_id'])
     group = Group.objects.get(id=request.POST['group_id'])
     if 'lesson_visited' in request.POST:
@@ -978,7 +975,7 @@ def lesson_visited(request):
 @login_required
 def lesson_delete(request):
     if request.method != 'POST':
-        return HttpResponseForbidden()
+        raise PermissionDenied
 
     lesson_id = request.POST['lesson_id']
     delete_all = request.POST['delete_all'] == 'true'

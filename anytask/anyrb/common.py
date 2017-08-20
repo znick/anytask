@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import datetime
 import logging
 import os
 import requests
@@ -13,12 +12,11 @@ from unpacker import unpack_files
 
 logger = logging.getLogger('django.request')
 
-# from anysvn.common import get_svn_uri, svn_diff
-
 
 class AnyRB(object):
     def __init__(self, event):
-        self.client = RBClient(settings.RB_API_URL, username=settings.RB_API_USERNAME, password=settings.RB_API_PASSWORD)
+        self.client = RBClient(settings.RB_API_URL, username=settings.RB_API_USERNAME,
+                               password=settings.RB_API_PASSWORD)
         self.event = event
 
     def upload_review(self):
@@ -83,19 +81,21 @@ class AnyRB(object):
                                                issue.task.course.get_user_group(issue.student),
                                                issue.task.title)
 
-            description_template = _(u'zadacha') + ': "{0}", ' + \
-                                   _(u'kurs') + ': [{1}](http://{2}{3})\n' + \
-                                   _(u'student') + ': [{4}](http://{2}{5})\n' + \
-                                   '[' + _(u'obsuzhdenie_zadachi') + '](http://{2}{6})'
+            description_template = \
+                _(u'zadacha') + ': "{0}", ' + \
+                _(u'kurs') + ': [{1}](http://{2}{3})\n' + \
+                _(u'student') + ': [{4}](http://{2}{5})\n' + '[' + \
+                _(u'obsuzhdenie_zadachi') + '](http://{2}{6})'
+
             description = description_template.format(
-                            issue.task.title,
-                            issue.task.course,
-                            Site.objects.get_current().domain,
-                            issue.task.course.get_absolute_url(),
-                            issue.student.get_full_name(),
-                            issue.student.get_absolute_url(),
-                            issue.get_absolute_url()
-                          )
+                issue.task.title,
+                issue.task.course,
+                Site.objects.get_current().domain,
+                issue.task.course.get_absolute_url(),
+                issue.student.get_full_name(),
+                issue.student.get_absolute_url(),
+                issue.get_absolute_url()
+            )
 
             draft = draft.update(summary=summary,
                                  description=description,
@@ -130,7 +130,6 @@ class AnyRB(object):
     #                                                   grant_entity='group',
     #                                                   grant_name='teachers_{0}'.format(course_id))
 
-
     #         review_request = root.get_review_requests().create(repository=repository.id)
     #     self.event.issue.set_byname('review_id', review_request.id, self.event.author)
     #     return review_request
@@ -158,28 +157,30 @@ class AnyRB(object):
         course_id = self.event.issue.task.course.id
         repository_name = str(self.event.issue.id)
         repository_path = os.path.join(settings.RB_SYMLINK_DIR, repository_name)
-        os.symlink(settings.RB_SYMLINK_DIR,repository_path)
+        os.symlink(settings.RB_SYMLINK_DIR, repository_path)
 
         try:
             repository = root.get_repositories().create(
-                     name=repository_name,
-                     path=os.path.join(repository_path,'.git'),
-                     tool='Git',
-                     public=False)
+                name=repository_name,
+                path=os.path.join(repository_path, '.git'),
+                tool='Git',
+                public=False)
             root.get_repository(repository_id=repository.id).update(grant_type='add',
-                                                      grant_entity='user',
-                                                      grant_name=self.event.issue.student)
+                                                                    grant_entity='user',
+                                                                    grant_name=self.event.issue.student)
             root.get_repository(repository_id=repository.id).update(grant_type='add',
-                                                      grant_entity='group',
-                                                      grant_name='teachers_{0}'.format(course_id))
+                                                                    grant_entity='group',
+                                                                    grant_name='teachers_{0}'.format(course_id))
 
             review_request = root.get_review_requests().create(repository=repository.id)
             self.event.issue.set_byname('review_id', review_request.id, self.event.author)
         except Exception as e:
-            logger.exception("Exception while creating review_request. Exception: '%s'. Issue: '%s'", e, self.event.issue.id)
+            logger.exception("Exception while creating review_request. Exception: '%s'. Issue: '%s'", e,
+                             self.event.issue.id)
             return None
 
         return review_request
+
 
 class RbReviewGroup(object):
     def __init__(self, review_group_name):
@@ -188,9 +189,9 @@ class RbReviewGroup(object):
     def create(self):
         url = settings.RB_API_URL + "/api/groups/"
         payload = {
-            'display_name' : self.review_group_name,
-            'invite_only' : True,
-            'name' : self.review_group_name,
+            'display_name': self.review_group_name,
+            'invite_only': True,
+            'name': self.review_group_name,
         }
         r = requests.post(url, auth=(settings.RB_API_USERNAME, settings.RB_API_PASSWORD), data=payload)
         assert r.status_code in (200, 201, 223, 409)
@@ -204,7 +205,7 @@ class RbReviewGroup(object):
     def user_add(self, username):
         url = settings.RB_API_URL + "/api/groups/{0}/users/".format(self.review_group_name)
         payload = {
-            'username' : username,
+            'username': username,
         }
         r = requests.post(url, auth=(settings.RB_API_USERNAME, settings.RB_API_PASSWORD), data=payload)
         assert r.status_code in (200, 201)
@@ -214,55 +215,55 @@ class RbReviewGroup(object):
         r = requests.delete(url, auth=(settings.RB_API_USERNAME, settings.RB_API_PASSWORD))
         assert r.status_code in (200, 201)
 
-    # def get_repository(self, user):
+        # def get_repository(self, user):
         # username = user.username
         # root = self.client.get_root()
         # for repo in root.get_repositories():
-            # if repo.fields["name"] == username:
-                # return repo
+        # if repo.fields["name"] == username:
+        # return repo
 
         # return None
 
-    # def create_repository(self, user):
+        # def create_repository(self, user):
         # root = self.client.get_root()
         # root.get_repositories().create(name=user.username,
-                                            # path=get_svn_uri(user),
-                                            # tool="Subversion",
-                                            # public=False,
-                                            # access_users=",".join((user.username, settings.RB_API_USERNAME)),
-                                            # access_groups=settings.RB_API_DEFAULT_REVIEW_GROUP
-                                            # )
+        # path=get_svn_uri(user),
+        # tool="Subversion",
+        # public=False,
+        # access_users=",".join((user.username, settings.RB_API_USERNAME)),
+        # access_groups=settings.RB_API_DEFAULT_REVIEW_GROUP
+        # )
         # return self.get_repository(user)
 
-    # def submit_review(self, user, rev_a, rev_b, path="", summary="", description="",review_group_name=None):
+        # def submit_review(self, user, rev_a, rev_b, path="", summary="", description="",review_group_name=None):
         # if isinstance(summary, unicode):
-            # summary = summary.encode("utf-8")
+        # summary = summary.encode("utf-8")
 
         # root = self.client.get_root()
 
         # repository = self.get_repository(user)
         # if repository is None:
-            # repository = self.create_repository(user)
+        # repository = self.create_repository(user)
 
         # review_request = root.get_review_requests().create(repository=repository.id, submit_as=user.username)
 
         # diff_content = svn_diff(user, rev_a, rev_b, path=path)
         # try:
-            # review_request.get_diffs().upload_diff(diff_content, base_dir="/")
+        # review_request.get_diffs().upload_diff(diff_content, base_dir="/")
         # except Exception:
-            # description +="\n WARNING: Diff has not been uploaded. Probably it contains non-ASCII filenames. Non-ASCII filenames are not supported."
-
+        # description +="\n WARNING: Diff has not been uploaded. Probably it contains non-ASCII filenames.
+        # Non-ASCII filenames are not supported."
 
         # draft = review_request.get_or_create_draft()
         # description = "=== Added on {0} ===\n".format(datetime.datetime.now()) + description
         # draft = draft.update(summary=summary, description=description)
 
         # if review_group_name:
-            # draft.update(target_groups=review_group_name)
+        # draft.update(target_groups=review_group_name)
 
         # return review_request.id
 
-    # def update_review(self, user, rev_a, rev_b, review_id, description="", path=""):
+        # def update_review(self, user, rev_a, rev_b, review_id, description="", path=""):
         # root = self.client.get_root()
 
         # review_request = root.get_review_request(review_request_id=review_id)
@@ -275,24 +276,24 @@ class RbReviewGroup(object):
 
         # diff_content = svn_diff(user, rev_a, rev_b, path=path)
         # try:
-            # review_request.get_diffs().upload_diff(diff_content, base_dir="/")
+        # review_request.get_diffs().upload_diff(diff_content, base_dir="/")
         # except Exception:
-            # descriptions.append("\n WARNING: Diff has not been uploaded. Probably it contains non-ASCII filenames. Non-ASCII filenames are not supported.")
+        # descriptions.append("\n WARNING: Diff has not been uploaded. Probably it contains non-ASCII filenames.
+        # Non-ASCII filenames are not supported.")
         # draft.update(description="\n".join(descriptions))
         # review_request.update(status="pending")
 
         # return review_id
 
-
-    # def get_review_url(self, request, review_id):
+        # def get_review_url(self, request, review_id):
         # host = request.get_host()
         # proto = "http://"
         # if request.is_secure():
-            # proto = "https://"
+        # proto = "https://"
 
         # return "{0}{1}/rb/r/{2}".format(proto, host, review_id)
 
+
 def update_status_review_request(review_id, status):
-    url = settings.RB_API_URL + '/api/review-requests/' + review_id +'/'
-    req = requests.put(url,data={'status': status},
-                       auth=(settings.RB_API_USERNAME, settings.RB_API_PASSWORD))
+    url = settings.RB_API_URL + '/api/review-requests/' + review_id + '/'
+    requests.put(url, data={'status': status}, auth=(settings.RB_API_USERNAME, settings.RB_API_PASSWORD))

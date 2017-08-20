@@ -6,7 +6,7 @@
 {% load django_bootstrap_breadcrumbs %}
 
 
-{% block title %}{% if is_create %}{% trans "sozdanie_zaniatia" %}{% else %}{{ lesson.schedule_id }}{% endif %} | {{ course.name }} | {{ course.year }}{% endblock %}
+{% block title %}{% if is_create %}{% trans "sozdanie_zaniatia" %}{% else %}{{ lesson.title }}{% endif %} | {{ course.name }} | {{ course.year }}{% endblock %}
 
 {% block scripts %}
     <link href="{{ STATIC_URL }}lesson.css" rel='stylesheet'/>
@@ -47,7 +47,7 @@
                     <div id='date_lesson_body' class="form-group row">
                         <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="lesson_edit_date_start">{% trans "data_zaniatia" %}
                             <a tabindex="0" data-toggle="popover" data-trigger="hover" data-content="{% trans "vremia_msk" %}" type="button"><i class="fa fa-question-circle help-button" aria-hidden="true"></i></a></label>
-                        <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
+                        <div class="controls form-group col-lg-4 col-md-6 col-sm-7 col-xs-7">
                             <div class="input-group date lesson_datetime" id='lesson_edit_date_start'>
                                 <input class="form-control datetime" name='lesson_date_start' type='text'>
                                 <span class="input-group-addon"><i class="fa fa-times fa-lg"></i></span>
@@ -55,7 +55,7 @@
                             </div>
                             <small class="text-help" id="lesson_date_start_error_text"></small>
                         </div>
-                        <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
+                        <div class="controls form-group col-lg-4 col-md-6 col-sm-7 col-xs-7">
                             <div class="input-group date lesson_datetime" id='lesson_edit_date_finish'>
                                 <input class="form-control datetime" name='lesson_date_finish' type='text'>
                                 <span class="input-group-addon"><i class="fa fa-times fa-lg"></i></span>
@@ -85,7 +85,7 @@
                             </select>
                         </div>
                     </div>
-                    <div id='week_body' class="{% if lesson.period != lesson.PERIOD_WEEK %}in{% endif %} collapse">
+                    <div id='week_body' class="{% if lesson.period != lesson.PERIOD_SIMPLE %}in{% endif %} collapse">
                         <div class="form-group row">
                             <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="lesson_edit_weekday">{% trans "dni_nedeli" %}</label>
                             <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
@@ -128,7 +128,6 @@
                         <div class="col-sm-12 col-lg-10">
                             <div class="btn-group pull-xs-right" role="group">
                                 <button type="button" id="button_cancel_quit" class="btn btn-secondary">{% trans "otmenit_i_vyjti" %}</button>
-                                <button type="button" id="button_save" class="btn btn-secondary">{% trans "sohranit_i_prodolzhit" %}</button>
                                 <button type="button" id="button_save_quit" class="btn btn-primary">{% trans "sohranit_i_vyjti" %}</button>
                             </div>
                         </div>

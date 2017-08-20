@@ -73,9 +73,8 @@ def prepare_info_fields(info_fields, request, issue):
 def contest_rejudge(issue):
     got_verdict_submissions = issue.contestsubmission_set.filter(got_verdict=True)
 
-    if not (got_verdict_submissions.count() and
-       issue.contestsubmission_set.count() == (got_verdict_submissions.count() +
-                                               issue.contestsubmission_set.exclude(send_error__isnull=True).count())):
+    if not (got_verdict_submissions.count() and issue.contestsubmission_set.count() ==
+            (got_verdict_submissions.count() + issue.contestsubmission_set.exclude(send_error__isnull=True).count())):
         return
 
     old_contest_submission = got_verdict_submissions.order_by("-create_time")[0]
@@ -139,7 +138,7 @@ def issue_page(request, issue_id):
                 if form.is_valid():
                     value = form.cleaned_data[field.name]
 
-                    if field.name in ['mark','status', 'responsible_name', 'followers_names']:
+                    if field.name in ['mark', 'status', 'responsible_name', 'followers_names']:
                         if not user_is_teacher_or_staff(request.user, issue):
                             raise PermissionDenied
 
@@ -196,8 +195,8 @@ def issue_page(request, issue_id):
     show_contest_rejudge_loading = False
     if issue.contestsubmission_set \
             .exclude(run_id__exact="") \
-            .exclude(run_id__isnull=True)\
-            .filter(send_error__isnull=True, got_verdict=False)\
+            .exclude(run_id__isnull=True) \
+            .filter(send_error__isnull=True, got_verdict=False) \
             .count():
         show_contest_rejudge_loading = True
 
@@ -227,22 +226,22 @@ def issue_page(request, issue_id):
 
 @login_required
 def get_or_create(request, task_id, student_id):
-    #if not request.is_ajax():
+    # if not request.is_ajax():
     #    return HttpResponseForbidden()
 
     issue, created = Issue.objects.get_or_create(task_id=task_id, student_id=student_id)
 
-    data = {
-        'issue_url': issue.get_absolute_url(),
-    }
+    # data = {
+    #     'issue_url': issue.get_absolute_url(),
+    # }
 
-    return HttpResponsePermanentRedirect("/issue/"+str(issue.id))#(json.dumps(data), content_type='application/json')
+    return HttpResponsePermanentRedirect(
+        "/issue/" + str(issue.id))  # (json.dumps(data), content_type='application/json')
 
 
 @login_required
 @require_POST
 def upload(request):
-
     # The assumption here is that jQuery File Upload
     # has been configured to send files one at a time.
     # If multiple files can be uploaded simulatenously,
@@ -250,20 +249,20 @@ def upload(request):
     issue = get_object_or_404(Issue, id=int(request.POST['issue_id']))
 
     if 'update_issue' in request.POST:
-        event_value = {'files':[], 'comment':'', 'compilers':[]}
+        event_value = {'files': [], 'comment': '', 'compilers': []}
         event_value['comment'] = request.POST['comment']
         file_counter = 0
         for field, value in dict(request.POST).iteritems():
             if 'compiler' in field:
                 pk = int(field[13:])
-                file = File.objects.get(pk = pk)
+                file = File.objects.get(pk=pk)
                 compiler_id = value
                 event_value['files'].append(file.file)
                 event_value['compilers'].append(compiler_id)
 
             if 'pk' in field:
                 pk = int(value[0])
-                file = File.objects.get(pk = pk)
+                file = File.objects.get(pk=pk)
                 file_counter += 1
                 event_value['files'].append(file.file)
                 event_value['compilers'].append(None)
@@ -307,17 +306,17 @@ def upload(request):
     basename = instance.filename()
 
     file_dict = {
-        'name' : basename,
-        'size' : file.size,
+        'name': basename,
+        'size': file.size,
 
         'url': instance.file.url,
         'thumbnailUrl': instance.file.url,
 
-        'delete_url': reverse('jfu_delete', kwargs = { 'pk': instance.pk }),
+        'delete_url': reverse('jfu_delete', kwargs={'pk': instance.pk}),
         'delete_type': 'POST',
 
         'problem_compilers': problem_compilers,
-        'chosen_compiler' : chosen_compiler,
+        'chosen_compiler': chosen_compiler,
         'pk': instance.pk,
         'send_to_contest': send_to_contest,
 
@@ -332,7 +331,7 @@ def upload(request):
 def upload_delete(request, pk):
     success = True
     try:
-        instance = File.objects.get(pk = pk)
+        instance = File.objects.get(pk=pk)
         os.unlink(instance.file.path)
         instance.delete()
     except File.DoesNotExist:

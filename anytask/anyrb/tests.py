@@ -6,6 +6,7 @@ from unpacker import UnpackedFile, unpack_files
 CUR_DIR = os.path.dirname(os.path.abspath(__file__))
 TEST_DIR = os.path.join(CUR_DIR, "test_data")
 
+
 class UnpackerTest(TestCase):
     def test_no_change_on_no_archive(self):
         files = [

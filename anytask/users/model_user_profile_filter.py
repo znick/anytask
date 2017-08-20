@@ -112,8 +112,11 @@ class UserProfileFilter(django_filters.FilterSet):
                 status_join.append(self.STATUS_SQL_JOIN.format(table_name))
                 status_where.append(
                     '({0}.userstatus_id = {1})'
-                        .format(table_name,
-                                ' OR {0}.userstatus_id = '.join(self.data.getlist(filter_name)).format(table_name))
+                    .format(
+                        table_name, ' OR {0}.userstatus_id = '.join(
+                            self.data.getlist(filter_name)
+                        ).format(table_name)
+                    )
                 )
 
         if status_type_counter:

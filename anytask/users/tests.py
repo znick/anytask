@@ -1,6 +1,5 @@
 # encoding: utf-8
 
-
 from django.test import TestCase
 from django.contrib.auth.models import User
 
@@ -64,8 +63,10 @@ class UserLoginTest(TestCase):
 
         response = client.post('/accounts/login/', form_data)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response,
-                            u"Пожалуйста, введите верные имя пользователя и пароль. Помните, оба поля чувствительны к регистру.")
+        self.assertContains(
+            response,
+            u"Пожалуйста, введите верные имя пользователя и пароль. Помните, оба поля чувствительны к регистру."
+        )
 
     def test_login_user__bad_password(self):
         client = self.client
@@ -75,8 +76,10 @@ class UserLoginTest(TestCase):
 
         response = client.post('/accounts/login/', form_data)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response,
-                            u"Пожалуйста, введите верные имя пользователя и пароль. Помните, оба поля чувствительны к регистру.")
+        self.assertContains(
+            response,
+            u"Пожалуйста, введите верные имя пользователя и пароль. Помните, оба поля чувствительны к регистру."
+        )
 
     def test_login_user__bad_email(self):
         client = self.client
@@ -86,8 +89,10 @@ class UserLoginTest(TestCase):
 
         response = client.post('/accounts/login/', form_data)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response,
-                            u"Пожалуйста, введите верные имя пользователя и пароль. Помните, оба поля чувствительны к регистру.")
+        self.assertContains(
+            response,
+            u"Пожалуйста, введите верные имя пользователя и пароль. Помните, оба поля чувствительны к регистру."
+        )
 
     def test_register_user(self):
         client = self.client
@@ -166,7 +171,7 @@ class UserProfileAccess(TestCase):
         self.student_2_group_1 = User.objects.create_user(username='student_2_group_1', password=self.password)
         self.student_1_group_2 = User.objects.create_user(username='student_1_group_2', password=self.password)
         self.student_1_group_3 = User.objects.create_user(username='student_1_group_3', password=self.password)
-        
+
         self.user_staff = User.objects.create_user(username='user_staff', password=self.password)
         self.user_staff.is_staff = True
         self.user_staff.save()
@@ -278,7 +283,6 @@ class UserProfileAccess(TestCase):
         self.check_access(access_result_different_school)
 
     def test_user_profile_access_teacher_1_course_1(self):
-        client = self.client
 
         self.check_access_by_school(self.teacher_1_course_1,
                                     [
@@ -313,7 +317,6 @@ class UserProfileAccess(TestCase):
                                     ])
 
     def test_user_profile_access_student_1_group_1(self):
-        client = self.client
 
         self.check_access_by_school(self.student_1_group_1,
                                     [
@@ -348,7 +351,6 @@ class UserProfileAccess(TestCase):
                                     ])
 
     def test_user_profile_access_user_staff(self):
-        client = self.client
 
         self.check_access_by_school(self.user_staff,
                                     [

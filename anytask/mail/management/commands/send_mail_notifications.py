@@ -3,7 +3,6 @@
 from django.core.management.base import BaseCommand
 from django.conf import settings
 from django.contrib.sites.models import Site
-from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
 from django.utils import translation
 from django.utils.translation import ugettext as _
@@ -73,8 +72,11 @@ def send_only_notify(domain, from_email):
 def send_fulltext(domain, from_email):
     notify_messages = []
 
-    for i_message, message in enumerate(Message.objects.exclude(send_notify_messages__isnull=True)
-                                                .prefetch_related('recipients')):
+    for i_message, message in enumerate(
+            Message.objects.exclude(
+                send_notify_messages__isnull=True
+            ).prefetch_related('recipients')
+    ):
         notify_messages.append([])
         for user in message.recipients.all():
             user_profile = user.get_profile()

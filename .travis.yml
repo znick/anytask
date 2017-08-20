@@ -12,4 +12,5 @@ script:
   - cd /var/lib/anytask/
   - git clone https://github.com/gebetix/repos
   - cd ~/build/znick/anytask/anytask
+  - flake8
   - python manage.py test

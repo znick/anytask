@@ -30,7 +30,8 @@
         </li>
         {% if visible_attendance_log %}
             <li class="nav-item">
-                <a class="nav-link" href="{{ course.get_absolute_url }}/attendance">{% trans "zhurnal_poseshaemosti" %}</a>
+                <a class="nav-link hidden-md" href="{{ course.get_absolute_url }}/attendance">{% trans "zhurnal_poseshaemosti" %}</a>
+                <a class="nav-link visible-md" href="{{ course.get_absolute_url }}/attendance">{% trans "poseshaemost" %}</a>
             </li>
         {% endif %}
         <li class="nav-item active">

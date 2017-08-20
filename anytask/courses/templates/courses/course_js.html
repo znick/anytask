@@ -560,14 +560,29 @@
 
         $('.lesson-visited-form').change(function () {
             var $form = $(this);
-            $.post('{% url courses.views.lesson_visited %}', $form.serialize(), function (data) {
+            var form_info = $form.serialize();
+            var checkbox = $form.find('input:checkbox');
+            checkbox.prop('disabled', true);
+            $.post('{% url courses.views.lesson_visited %}', form_info).done(function (data) {
                 var val = parseInt(data.visited);
                 var lesson_id = data.lesson_id;
                 var visited_lssns_span = $form.closest('td').siblings('.total-lessons').find('span');
                 var sum_lssns = parseInt(visited_lssns_span.text()) + val;
                 $(visited_lssns_span).text(parseInt(sum_lssns));
                 $form.closest('table').find('#column_' + lesson_id).find('a').attr('data-deleted', data.deleted);
+            }).always(function() {
+                checkbox.prop('disabled', false);
             });
+
+        });
+
+        $('td').click(function (event) {
+            if (!$(event.target).is('input') && !$('input:checkbox', this).is(':disabled')) {
+               $('input:checkbox', this).prop('checked', function (i, value) {
+                return !value;
+               });
+               $(this).find('form.lesson-visited-form').trigger('change');
+            }
         });
 
         var remaining_groups = {};
@@ -790,12 +805,14 @@
                         }).done(function (data) {
                             var table = $('#table_results_' + group_id).DataTable();
                             var deleted_ids = data.deleted;
+                            var cols = [];
                             for (var i = 0; i < deleted_ids.length; ++i) {
-                                var table_col =  table.column($('#column_'+ deleted_ids[i]).index() + ':visIdx');
-                                table_col.visible(false);
+                                cols.push($('#column_'+ deleted_ids[i]).index() + ':visIdx');
                             }
-                            var old_total = parseInt($('#total_lessons').text());
-                            $('#total_lessons').text(old_total - deleted_ids.length);
+                            table.columns(cols).visible(false, false);
+                            table.columns.adjust().draw(false);
+                            var old_total = parseInt($('#total_lessons_' + group_id).text());
+                            $('#total_lessons_' + group_id).text(old_total - deleted_ids.length);
             });
 
             $('[data-toggle="popover"]').popover('hide');

@@ -19,5 +19,5 @@ def get_url(d, key):
 
 
 @register.filter(name='get_group_name')
-def get_url(d):
+def get_group_name(d):
     return d.keys()[0].name
