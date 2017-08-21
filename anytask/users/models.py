@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import copy
 import logging
 import settings
 import os
@@ -184,17 +183,4 @@ def create_user_profile(sender, instance, created, **kwargs):
         UserProfile.objects.create(user=instance)
 
 
-def user_profile_log_save_to_log_post_save(sender, instance, created, **kwargs):
-    user_profile_log = UserProfileLog()
-    user_profile_log_dict = copy.deepcopy(instance.__dict__)
-    user_profile_log_dict['id'] = None
-    user_profile_log.__dict__ = user_profile_log_dict
-    user_profile_log.save()
-    user_profile_log.user_status.add(*instance.user_status.all())
-    user_profile_log.unread_messages.add(*instance.unread_messages.all())
-    user_profile_log.deleted_messages.add(*instance.deleted_messages.all())
-    user_profile_log.send_notify_messages.add(*instance.send_notify_messages.all())
-
-
 post_save.connect(create_user_profile, sender=User)
-post_save.connect(user_profile_log_save_to_log_post_save, sender=UserProfile)

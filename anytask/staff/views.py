@@ -8,6 +8,7 @@ from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 from django.utils.translation import ugettext as _
+from django.db.models.signals import post_save
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML
@@ -17,7 +18,7 @@ from users.models import UserProfile
 from users.model_user_profile_filter import UserProfileFilter
 from users.model_user_status import UserStatus, get_statuses
 
-
+import reversion
 import csv
 import logging
 import json
@@ -111,6 +112,10 @@ def ajax_change_status(request):
         for profile in UserProfile.objects.filter(id__in=post_dict['profile_ids[]']):
             for status in statuses:
                 profile.set_status(status)
+
+            post_save.send(UserProfile, instance=profile, created=False)
+            reversion.set_user(request.user)
+            reversion.set_comment("Change from user status bulk change")
 
     return HttpResponse("OK")
 

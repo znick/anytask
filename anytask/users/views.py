@@ -13,7 +13,7 @@ from django.utils.translation import ugettext as _
 from django.utils.translation import check_for_language
 from django.utils import timezone
 
-from users.models import UserProfile, UserProfileLog
+from users.models import UserProfile
 from users.model_user_status import UserStatus
 from issues.model_issue_student_filter import IssueFilterStudent
 from django.contrib.auth.models import User
@@ -26,6 +26,7 @@ from tasks.models import Task
 from schools.models import School
 from users.forms import InviteActivationForm
 from anytask.common.timezone import get_tz
+from pytz import timezone as timezone_pytz
 
 from years.common import get_current_year
 
@@ -39,6 +40,7 @@ import requests
 import json
 import datetime
 import pytz
+import reversion
 
 
 @login_required
@@ -232,10 +234,26 @@ def profile_history(request, username=None):
     user_to_show = user
     if username:
         user_to_show = get_object_or_404(User, username=username)
+    user_profile = user_to_show.get_profile()
+
+    version_list = reversion.get_for_object(user_profile)
+    user_status_prev = None
+    history = []
+    for version in reversed(version_list):
+        user_status_cur = set(version.field_dict['user_status'])
+        if user_status_cur == user_status_prev:
+            continue
+        history.append({
+            'update_time': version.revision.date_created,
+            'updated_by': version.revision.user,
+            'user_statuses': UserStatus.objects.filter(id__in=user_status_cur).order_by("type").values("color", "name")
+        })
+
+        user_status_prev = user_status_cur
 
     context = {
-        'user_profile': user_to_show.get_profile(),
-        'user_profile_history': UserProfileLog.objects.filter(user=user_to_show).order_by('update_time'),
+        'user_profile': user_profile,
+        'user_profile_history': history,
         'user_to_show': user_to_show,
         'status_types': UserStatus.TYPE_STATUSES,
         'user_statuses': UserStatus.objects.all(),
@@ -261,37 +279,26 @@ def set_user_statuses(request, username=None):
     user_profile = user_to_show.get_profile()
     is_error = False
     error = ''
-    user_statuses = []
 
     try:
-        new_user_statuses = dict(request.POST)['status_by_type[]']
-        if not new_user_statuses:
-            new_user_statuses = []
-        old_user_statuses = user_profile.user_status.all()
-
-        for status in old_user_statuses:
-            if str(status.id) not in new_user_statuses:
-                user_profile.user_status.remove(status)
-
-        for status_id in new_user_statuses:
-            if status_id:
-                status = UserStatus.objects.get(id=status_id)
-                if status not in user_profile.user_status.all():
-                    user_profile.user_status.add(status)
-
+        user_profile.user_status = filter(bool, dict(request.POST).get('status_by_type[]', []))
         user_profile.updated_by = user
         user_profile.save()
-
+        reversion.set_user(user)
+        reversion.set_comment("Change from user profile")
     except Exception as e:
         is_error = True
-        error = e
+        error = unicode(e)
 
-    for status in user_profile.user_status.all():
-        user_statuses.append({'name': status.name, 'color': status.color})
+    user_statuses = list(user_profile.user_status.all().values("name", "color"))
 
-    user_profile_log = {'update_time': user_profile.update_time.strftime("%d-%m-%Y %H:%M"),
-                        'updated_by': user_profile.updated_by.username,
-                        'fullname': user_profile.updated_by.get_full_name()}
+    user_profile_log = {
+        'update_time': user_profile.update_time.astimezone(
+            timezone_pytz(user.get_profile().time_zone)
+        ).strftime("%d-%m-%Y %H:%M"),
+        'updated_by': user_profile.updated_by.username,
+        'fullname': user_profile.updated_by.get_full_name()
+    }
 
     return HttpResponse(json.dumps({'user_statuses': user_statuses,
                                     'user_profile_log': user_profile_log,
