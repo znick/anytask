@@ -23,10 +23,6 @@ from unidecode import unidecode
 import uuid
 import django_filters
 
-from django_boto.s3.storage import S3Storage
-
-s3 = S3Storage()
-
 
 def get_file_path(instance, filename):
     return '/'.join(['files', str(uuid.uuid4()), filename])
@@ -45,12 +41,7 @@ def normalize_decimal(number):
 
 
 class File(models.Model):
-    file = models.FileField(
-        upload_to=get_file_path,
-        null=True, blank=True,
-        max_length=500,
-        storage=s3 if settings.S3_ACTIVE else ''
-    )
+    file = models.FileField(upload_to=get_file_path, null=True, blank=True, max_length=500)
     event = models.ForeignKey('Event')
     deleted = models.BooleanField(default=False)
 

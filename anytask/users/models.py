@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import logging
-import settings
 import os
 from datetime import datetime
 
@@ -15,9 +14,6 @@ from users.model_user_status import UserStatus
 from years.common import get_current_year
 
 from anytask.storage import OverwriteStorage
-from django_boto.s3.storage import S3Storage
-
-s3 = S3Storage()
 
 logger = logging.getLogger('django.request')
 
@@ -33,7 +29,7 @@ class UserProfile(models.Model):
                                          related_name='users_by_status')
 
     avatar = models.ImageField('profile picture', upload_to=get_upload_path, blank=True, null=True,
-                               storage=s3 if settings.S3_ACTIVE else OverwriteStorage())
+                               storage=OverwriteStorage())
     birth_date = models.DateField(blank=True, null=True)
 
     info = models.TextField(default="", blank=True, null=True)
@@ -121,7 +117,7 @@ class UserProfileLog(models.Model):
     user_status = models.ManyToManyField(UserStatus, db_index=True, null=True, blank=True)
 
     avatar = models.ImageField('profile picture', upload_to=get_upload_path, blank=True, null=True,
-                               storage=S3Storage())
+                               storage=OverwriteStorage())
     birth_date = models.DateField(blank=True, null=True)
 
     info = models.TextField(default="", blank=True, null=True)
