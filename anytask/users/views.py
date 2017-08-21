@@ -207,9 +207,9 @@ def profile_settings(request):
         if request.POST['geoid']:
             tz = get_tz(request.POST['geoid'])
             user_profile.time_zone = tz
-            user_profile.save()
             request.session['django_timezone'] = tz
             timezone.activate(pytz.timezone(tz))
+        user_profile.save()
 
         return HttpResponse("OK")
 
