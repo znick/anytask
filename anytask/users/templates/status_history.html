@@ -82,7 +82,7 @@
                         {% for entry in user_profile_history %}
                             <tr>
                                 <td>{% localtime on %}{{ entry.update_time|date:'d-m-Y H:i' }}{% endlocaltime %}</td>
-                                <td><a href="{{ entry.get_absolute_url }}">{{ entry.updated_by.get_full_name }}</a></td>
+                                <td><a href="{{ entry.updated_by.get_absolute_url }}">{{ entry.updated_by.get_full_name }}</a></td>
                                 <td>
                                     {% for user_status in entry.user_statuses %}
                                         <span class="label big-label"
