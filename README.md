@@ -1,4 +1,4 @@
-Anytask [![Build Status](https://drone.yandex-team.ru/api/badges/education/anytask/status.svg?branch=master)](https://drone.yandex-team.ru/education/anytask)
+Anytask [![Build Status](https://travis-ci.org/znick/anytask.svg?branch=master)](https://travis-ci.org/znick/anytask)
 =======
 
 
