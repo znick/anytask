@@ -8,6 +8,7 @@ from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 from django.utils.translation import ugettext as _
+from django.db.models.signals import post_save
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML
@@ -17,7 +18,7 @@ from users.models import UserProfile
 from users.model_user_profile_filter import UserProfileFilter
 from users.model_user_status import UserStatus, get_statuses
 
-
+import reversion
 import csv
 import logging
 import json
@@ -112,6 +113,10 @@ def ajax_change_status(request):
             for status in statuses:
                 profile.set_status(status)
 
+            post_save.send(UserProfile, instance=profile, created=False)
+            reversion.set_user(request.user)
+            reversion.set_comment("Change from user status bulk change")
+
     return HttpResponse("OK")
 
 
@@ -163,12 +168,18 @@ def gradebook_page(request, statuses=None):
     if not user.is_staff:
         raise PermissionDenied
 
-    user_statuses = []
-    for status_id in statuses.split('_'):
-        if status_id:
-            user_statuses.append(get_object_or_404(UserStatus, id=int(status_id)))
+    if statuses:
+        user_statuses = []
+        for status_id in statuses.split('_'):
+            if status_id:
+                user_statuses.append(get_object_or_404(UserStatus, id=int(status_id)))
+        profiles = UserProfile.objects.filter(user_status__in=user_statuses).all()
+
+    elif user.is_staff and 'from_staff' in request.GET and 'user_ids_send_mail_counter' in request.session:
+        student_ids = request.session['user_ids_send_mail_' + request.GET['from_staff']]
+        profiles = UserProfile.objects.filter(user_id__in=student_ids).all()
+
     students = set()
-    profiles = UserProfile.objects.filter(user_status__in=user_statuses).all()
     for profile in profiles:
         students.add(profile.user)
 
@@ -185,11 +196,15 @@ def gradebook_page(request, statuses=None):
         entry['name'] = student.get_full_name()
         entry['url'] = student.get_absolute_url()
         for course in courses:
-            if marks.filter(student=student, course=course):
-                mark = marks.get(student=student, course=course).mark
+            if course.get_user_group(student):
+                if marks.filter(student=student, course=course).exclude(mark__isnull=True):
+                    mark = marks.get(student=student, course=course).mark
+                    mark = mark.name, mark.name_int
+                else:
+                    mark = '--', '-1'
             else:
-                mark = None
-            marks_for_student.append(mark if mark else '--')
+                mark = ('--', '-2')
+            marks_for_student.append(mark)
         entry['marks'] = marks_for_student
         students_with_marks.append(entry)
 

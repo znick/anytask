@@ -5,6 +5,9 @@
 {% load dict_func %}
 {% load task_taken_func %}
 {% load course_func %}
+{% load tz %}
+{% load info %}
+{% get_current_language as LANGUAGE_CODE %}
 
 {% block title %}{% if seminar %}{{ seminar.title }} | {% endif %}{{ course.name }} | {{ course.year }}{% endblock %}
 
@@ -189,7 +192,7 @@
                                                         <a data-toggle="collapse" aria-expanded="false"
                                                            aria-controls="collapse_{{ task.id }}"
                                                            href="#collapse_{{ task.id }}">
-                                                            {{ task.title }}</a>
+                                                            {% get_text_from_json task 'get_title' LANGUAGE_CODE %}</a>
                                                     </div>
                                                     <div style="width: 10%">
                                                         {{ task|get_score:user }}
@@ -201,7 +204,7 @@
                                                     </div>
                                                     <div style="width: 20%">
                                                         {% if task.deadline_time %}{% trans "sdat_do" %}
-                                                            {{ task.deadline_time|date:"H:i d-m-Y" }}
+                                                            {% localtime on %}{{ task.deadline_time|date:"H:i d-m-Y" }}{% endlocaltime %}
                                                         {% endif %}
                                                     </div>
                                                     <div style="width: 15%">
@@ -221,7 +224,7 @@
                                                 <div id="collapse_{{ task.id }}" class="collapse">
                                                     <div style="width: 100%" style="border-top: 0;">
                                                         <p class="card-text">
-                                                            {{ task.task_text|safe }}
+                                                            {{ task|get_description:LANGUAGE_CODE|safe }}
                                                         </p>
                                                     </div>
                                                 </div>
@@ -262,7 +265,7 @@
                                                     {% if task.task.type != task.task.TYPE_MATERIAL %}
                                                         <div class="tasks-list">
                                                             <div style="width: 35%;">
-                                                                {{ task.task.title }}
+                                                                {% get_text_from_json task.task 'get_title' LANGUAGE_CODE %}
                                                             </div>
                                                             <div style="width: 10%;">
                                                                 <a class="btn btn-secondary btn-sm btn-square"
@@ -275,7 +278,7 @@
                                                             </div>
                                                             <div style="width: 25%">
                                                                 {% if task.task.deadline_time %}{% trans "sdat_do" %}
-                                                                    {{ task.task.deadline_time|date:"H:i d-m-Y"}}
+                                                                    {% localtime on %}{{ task.task.deadline_time|date:"H:i d-m-Y" }}{% endlocaltime %}
                                                                 {% endif %}
                                                             </div>
                                                             <div style="width: 20%">
@@ -305,7 +308,7 @@
                                                     <a data-toggle="collapse" aria-expanded="false"
                                                        aria-controls="collapse_{{ task.id }}"
                                                        href="#collapse_{{ task.id }}">
-                                                        {{ task.title }}</a>
+                                                        {% get_text_from_json task 'get_title' LANGUAGE_CODE %}</a>
                                                 </div>
                                                 <div style="width: 10%">
                                                     {{ task|get_score:user }}
@@ -317,7 +320,7 @@
                                                 </div>
                                                 <div style="width: 20%">
                                                     {% if task.deadline_time %}{% trans "sdat_do" %}
-                                                        {{ task.deadline_time|date:"H:i d-m-Y" }}
+                                                        {% localtime on %}{{ task.deadline_time|date:"H:i d-m-Y" }}{% endlocaltime %}
                                                     {% endif %}
                                                 </div>
                                                 <div style="width: 15%">
@@ -331,7 +334,7 @@
                                             <div id="collapse_{{ task.id }}" class="collapse">
                                                 <div style="width: 100%" style="border-top: 0;">
                                                     <p class="card-text">
-                                                        {{ task.task_text|safe }}
+                                                        {{ task|get_description:LANGUAGE_CODE|safe }}
                                                     </p>
                                                 </div>
                                             </div>
@@ -363,7 +366,7 @@
                                                 {% if task.task.type != task.task.TYPE_MATERIAL %}
                                                     <div class="tasks-list">
                                                         <div style="width: 35%;">
-                                                            {{ task.task.title }}
+                                                            {% get_text_from_json task.task 'get_title' LANGUAGE_CODE %}
                                                         </div>
                                                         <div style="width: 10%;">
                                                             <a class="btn btn-secondary btn-sm btn-square"
@@ -376,7 +379,7 @@
                                                         </div>
                                                         <div style="width: 25%">
                                                             {% if task.task.deadline_time %}{% trans "sdat_do" %}
-                                                                {{ task.task.deadline_time|date:"H:i d-m-Y"}}
+                                                                {% localtime on %}{{ task.task.deadline_time|date:"H:i d-m-Y" }}{% endlocaltime %}
                                                             {% endif %}
                                                         </div>
                                                         <div style="width: 20%">
@@ -421,7 +424,7 @@
                                                         <a data-toggle="collapse" aria-expanded="false"
                                                            aria-controls="collapse_{{ task.id }}"
                                                            href="#collapse_{{ task.id }}">
-                                                            {{ task.title }}</a>
+                                                           {% get_text_from_json task 'get_title' LANGUAGE_CODE %}</a>
                                                     </div>
                                                     <div style="width: 20%">
                                                         {% if task.deadline_time %}{% trans "sdat_do" %}
@@ -434,7 +437,7 @@
                                                 <div id="collapse_{{ task.id }}" class="collapse">
                                                     <div style="width: 100%" style="border-top: 0;">
                                                         <p class="card-text">
-                                                            {{ task.task_text|safe }}
+                                                            {{ task|get_description:LANGUAGE_CODE|safe }}
                                                         </p>
                                                     </div>
                                                 </div>
@@ -469,7 +472,7 @@
                                                     {% if task.task.type == task.task.TYPE_MATERIAL %}
                                                         <div class="tasks-list">
                                                             <div style="width: 65%;">
-                                                                {{ task.task.title }}
+                                                                {% get_text_from_json task.task 'get_title' LANGUAGE_CODE %}
                                                             </div>
                                                             <div style="width: 15%;">
                                                                 <a class="btn btn-secondary btn-sm btn-square"
@@ -504,7 +507,7 @@
                                                     <a data-toggle="collapse" aria-expanded="false"
                                                        aria-controls="collapse_{{ task.id }}"
                                                        href="#collapse_{{ task.id }}">
-                                                        {{ task.title }}</a>
+                                                        {% get_text_from_json task 'get_title' LANGUAGE_CODE %}</a>
                                                 </div>
                                                 <div style="width: 20%">
                                                     {% if task.deadline_time %}{% trans "sdat_do" %}
@@ -522,7 +525,7 @@
                                             <div id="collapse_{{ task.id }}" class="collapse">
                                                 <div style="width: 100%" style="border-top: 0;">
                                                     <p class="card-text">
-                                                        {{ task.task_text|safe }}
+                                                        {{ task|get_description:LANGUAGE_CODE|safe }}
                                                     </p>
                                                 </div>
                                             </div>
@@ -555,7 +558,7 @@
                                                 {% if task.task.type == task.task.TYPE_MATERIAL %}
                                                     <div class="tasks-list">
                                                         <div style="width: 65%;">
-                                                            {{ task.task.title }}
+                                                            {% get_text_from_json task.task 'get_title' LANGUAGE_CODE %}
                                                         </div>
                                                         <div style="width: 15%;">
                                                             <a class="btn btn-secondary btn-sm btn-square"

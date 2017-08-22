@@ -27,7 +27,7 @@ def get_status_color(task, user):
 @register.filter(name='get_status_name')
 def get_status_name(task, user):
     try:
-        return Issue.objects.get(task=task, student=user).status_field.name
+        return Issue.objects.get(task=task, student=user).status_field.get_name(user.get_profile().language)
     except Issue.DoesNotExist:
         return _(u"novyj")
 
@@ -36,5 +36,5 @@ def get_status_name(task, user):
 def get_default_teacher(group, course):
     try:
         return DefaultTeacher.objects.get(group=group, course=course).teacher.get_full_name()
-    except Issue.DoesNotExist:
+    except DefaultTeacher.DoesNotExist:
         return ""

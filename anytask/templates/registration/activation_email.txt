@@ -2,7 +2,7 @@
 
 {% trans "activacia_akkaunta" %}
 
-http://{{ site }}/accounts/activate/{{ activation_key }}
+{{ site }}/accounts/activate/{{ activation_key }}
 
 {% trans "ssilka_dejstvitelna" %} {{ expiration_days }} {% trans "dnej" %}.
 

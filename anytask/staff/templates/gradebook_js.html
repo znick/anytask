@@ -21,7 +21,10 @@
 
 
 <script type="text/javascript">
-
+    $.fn.dataTable.ext.type.order['number-pre'] = function (td) {
+        var $mark_int = parseInt($('label', td).data('mark-int'));
+        return $mark_int;
+    };
 
     $(document).ready(function () {
         var orderCount = 0;
@@ -119,6 +122,12 @@
                             }
                         }
                     }],
+                columnDefs: [
+                    {
+                        targets: "number",
+                        type: "number"
+                    }
+                ],
                 language: {
                     "decimal": "",
                     "emptyTable": "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{% trans 'pustaja_tablica' %}",

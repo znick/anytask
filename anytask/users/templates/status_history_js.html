@@ -1,0 +1,74 @@
+{% load i18n %}
+<script src="{{ STATIC_URL }}jquery.stickytableheaders.min.js"></script>
+<script type="text/javascript">
+    $.tablesorter.addParser({
+        id: "customDate",
+        is: function (s) {
+            return /\d{1,2}-\d{1,2}-\d{1,4} \d{1,2}:\d{1,2}/.test(s);
+        },
+        format: function (s) {
+            s = s.replace(/\-/g, " ");
+            s = s.replace(/:/g, " ");
+            s = $.trim(s).split(" ");
+            return $.tablesorter.formatFloat(new Date(s[2], s[1] - 1, s[0], s[3], s[4]).getTime());
+        },
+        type: "numeric"
+    });
+    $(document).ready(function () {
+        $(".table-history")
+            .tablesorter({
+                headers: {
+                    0: {
+                        sorter: 'customDate'
+                    },
+                    2: {
+                        sorter: false
+                    }
+                },
+                sortList: [[0,0]]
+            })
+            .stickyTableHeaders({fixedOffset: $('.navbar')});
+
+        $('#modal_status_edit_ok').click(function () {
+            var modal_status_ok = $('#modal_status_edit_ok');
+            var d = 'disabled';
+
+            modal_status_ok.data('btn_clicked', true);
+            modal_status_ok.data('resetText', modal_status_ok.html());
+            modal_status_ok.html(modal_status_ok.data('loadingText'));
+            modal_status_ok.addClass(d).attr(d, d).prop(d, true);
+
+            $.post('{% url users.views.set_user_statuses user_to_show %}', $('#status_edit_form').serialize(), function (data) {
+                var user_statuses = data.user_statuses;
+                var user_profile_log = data.user_profile_log;
+                var log_entry = '';
+                if (data.is_error === false) {
+                    var $user_statuses = $('#user_statuses');
+                    $user_statuses.empty();
+                    if (user_statuses.length === 0) {
+                        $user_statuses.html('<p class="card-text">{% trans "net_statusov" %}</p>');
+                    }
+                    for (i = 0; i < user_statuses.length; i++) {
+                        var status_template = '<span class="' + 'label' + '" style="' +
+                            'font-size: 1rem; margin-bottom: .3rem; background-color: ' +
+                            user_statuses[i].color + '">' +
+                            user_statuses[i].name + '</span> ';
+                        $user_statuses.append(status_template);
+                        log_entry += status_template;
+                    }
+                    $(".delete-after-add", '#tbody_history').remove();
+                    $('#tbody_history').append('<tr><td>' + user_profile_log.update_time + '</td><td><a href="/users/' +
+                        user_profile_log.updated_by + '">' + user_profile_log.fullname + '</a>' + '</td><td>' + log_entry + '</td>');
+
+                }
+                else {
+                    alert(data.error);
+                }
+                modal_status_ok.html(modal_status_ok.data('resetText'));
+                modal_status_ok.removeClass(d).removeAttr(d).prop(d, false);
+                $('#modal_status_edit').modal('hide');
+            });
+
+        });
+    });
+</script>

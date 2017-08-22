@@ -91,8 +91,8 @@
                                                             <th><div class="text-arrow">{%  trans "kurs" %}</div></th>
                                                             <th><div class="text-arrow">{%  trans "summarnyj_ball" %}</div></th>
                                                             <th><div class="text-arrow">{%  trans "itogovaja_ocenka" %}</div></th>
-                                                            {% for status, sum in course_statistics.0.issues_count %}
-                                                                <th><div class="text-arrow">{{ status.name }}</div></th>
+                                                            {% for status_color, status_name, sum in course_statistics.0.issues_count %}
+                                                                <th><div class="text-arrow">{{ status_name }}</div></th>
                                                             {% endfor %}
                                                             <th><div class="text-arrow">{%  trans "vsego_zadach" %}</div></th>
                                                         </tr>
@@ -105,8 +105,8 @@
                                                                 </td>
                                                                 <td><label class="label label-inverse big-label">{{ course.summ_score }}</label></td>
                                                                 <td><label class="label label-success big-label">{{ course.mark }}</label></td>
-                                                                {% for status, sum in course.issues_count %}
-                                                                    <td><label class="label big-label" style="background-color: {{ status.color }};">{{ sum }}</label></td>
+                                                                {% for status_color, status_name, sum in course.issues_count %}
+                                                                    <td><label class="label big-label" style="background-color: {{ status_color }};">{{ sum }}</label></td>
                                                                 {% endfor %}
                                                                 <td><label class="label label-inverse big-label">{{ course.tasks }}</label></td>
                                                             </tr>

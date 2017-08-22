@@ -57,10 +57,10 @@ def get_followers_form(field_name, request, issue, data=None, *args, **kwargs):
     return _form(field_name, request, issue, data, *args, **kwargs)
 
 
-def get_status_choice(issue):
+def get_status_choice(issue, lang):
     statuses = []
     for status in issue.task.course.issue_status_system.statuses.all().exclude(tag=IssueStatus.STATUS_SEMINAR):
-        statuses.append((status.id, status.get_name()))
+        statuses.append((status.id, status.get_name(lang)))
     return statuses
 
 
@@ -70,7 +70,9 @@ def status_id2status(status_id):
 
 def get_status_form(field_name, request, issue, data=None, *args, **kwargs):
     class _form(DefaultForm):
-        status = forms.TypedChoiceField(get_status_choice(issue), coerce=status_id2status, label='', required=False)
+        lang = request.user.get_profile().language
+        status = forms.TypedChoiceField(get_status_choice(issue, lang),
+                                        coerce=status_id2status, label='', required=False)
 
     return _form(field_name, request, issue, data, *args, **kwargs)
 

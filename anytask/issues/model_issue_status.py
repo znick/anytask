@@ -1,9 +1,22 @@
 # coding: utf-8
+import json
 
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from colorfield.fields import ColorField
+
+
+def validate_json(value):
+    try:
+        json_name = json.loads(value)
+        if 'ru' not in json_name:
+            raise KeyError
+    except ValueError:
+        raise ValidationError(u'%s is not a json string' % value)
+    except KeyError:
+        raise ValidationError(u'%s does not contains required "ru" key' % value)
 
 
 class IssueStatus(models.Model):
@@ -22,16 +35,6 @@ class IssueStatus(models.Model):
     STATUS_SEMINAR = 'seminar'
     STATUS_ACCEPTED_AFTER_DEADLINE = 'accepted_after_deadline'
 
-    RU_NAME_KEY = {
-        u'Новый': _('novyj'),
-        u'На доработке':  _('na_dorabotke'),
-        u'На проверке': _('na_proverke'),
-        u'Зачтено': _('zachteno'),
-        u'Зачтено после дедлайна': _('zachteno_posle_dedlajna'),
-        u'На автоматической проверке': _('na_avtomaticheskoj_proverke'),
-        u'Требуется информация': _('trebuetsja_informacija')
-    }
-
     ISSUE_STATUSES = (
         (STATUS_REWORK, _(STATUS_REWORK)),
         (STATUS_VERIFICATION, _(STATUS_VERIFICATION)),
@@ -40,16 +43,24 @@ class IssueStatus(models.Model):
         (STATUS_ACCEPTED_AFTER_DEADLINE, _(STATUS_ACCEPTED_AFTER_DEADLINE))
     )
 
-    name = models.CharField(max_length=191, db_index=True, null=False, blank=False)
+    name = models.CharField(max_length=191, db_index=True, null=False, blank=False,
+                            help_text=u'Format is {"ru": "Cеминар", "en": "Seminar", etc.} or {"ru": "Cеминар"}',
+                            validators=[validate_json])
     tag = models.CharField(max_length=191, db_index=False, null=True, blank=True, choices=ISSUE_STATUSES)
     color = ColorField(default=COLOR_DEFAULT)
 
     hidden = models.BooleanField(default=False)
 
-    def get_name(self):
-        name = u'{0}'.format(self.name)
-        if name in self.RU_NAME_KEY:
-            name = unicode(self.RU_NAME_KEY[name])
+    def get_name(self, lang='ru'):
+        try:
+            json_name = json.loads(self.name)
+            if lang in json_name:
+                name = json_name[lang]
+            else:
+                name = json_name['ru']
+        except ValueError:
+            name = self.name
+        name = u'{0}'.format(name)
         return name
 
     def __unicode__(self):
