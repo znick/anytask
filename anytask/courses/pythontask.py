@@ -30,10 +30,16 @@ class PythonTaskStat(object):
         return [(group, stat['student_stat']) for (group, stat) in self.group_stat.iteritems()]
 
     def get_course_stat(self):
-        return (self.course_stat['total'], self.course_stat['active_students'],
-                self.course_stat['avg_score'],
-                [(group, stat['total'], stat['active_students'], stat['avg_score'])
-                 for (group, stat) in self.group_stat.iteritems()])
+        stat = [
+            (group, stat['total'], stat['active_students'], stat['avg_score'])
+            for (group, stat) in self.group_stat.iteritems()
+        ]
+
+        stat.append(
+            (None, self.course_stat['total'], self.course_stat['active_students'], self.course_stat['avg_score'])
+        )
+
+        return stat
 
     def _student_stat(self, tasks):
         total = 0.0
@@ -61,7 +67,7 @@ class PythonTaskStat(object):
             if tasks.count() > 0:
                 stat['active_students'] += 1
 
-            (scores, student_tasks) = self._student_stat(tasks)
+            scores, student_tasks = self._student_stat(tasks)
             group_students.append((student, scores, student_tasks))
             stat['total'] += scores
 

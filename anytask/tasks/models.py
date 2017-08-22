@@ -120,7 +120,7 @@ class Task(models.Model):
         if settings.PYTHONTASK_MAX_INCOMPLETE_TASKS:
             all_scored = TaskTaken.objects.filter(user=user).filter(Q(Q(status=TaskTaken.STATUS_TAKEN) | Q(
                 status=TaskTaken.STATUS_SCORED)))
-            incompleted = 1 + sum(1 for t in all_scored if t.score != t.task.score_max)
+            incompleted = 1 + sum(t.score != t.task.score_max for t in all_scored)
             if incompleted > settings.PYTHONTASK_MAX_INCOMPLETE_TASKS:
                 return (False, u'')
 

@@ -98,10 +98,9 @@
             </table>
         {% endfor %}
 
-        {% for group,total,active,avg in course_stat.3 %}
-        <pre>{{ group.name }} {{ total|floatformat }}/{{ active }} ({{ avg|floatformat }})</pre>
+        {% for group,total,active,avg in course_stat %}
+        <pre>{% if not forloop.last %}{{ group.name }} {% endif %}{{ total|floatformat }}/{{ active }} ({{ avg|floatformat }})</pre>
         {% endfor %}
-        <pre>{{ course_stat.0|floatformat }}/{{ course_stat.1 }} ({{ course_stat.2|floatformat }})</pre>
 	</div>
 </div>
 {% include "courses/task.html" %}

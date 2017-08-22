@@ -1000,10 +1000,12 @@ class PythonTaskTest(TestCase):
         self.task2 = Task.objects.create(title='task2_title', course=self.course, score_max=10)
         self.task3 = Task.objects.create(title='task3_title', course=self.course, score_max=10)
         self.seminar = Task.objects.create(title='seminar_title', course=self.course, type=Task.TYPE_SEMINAR)
-        self.subtask1 = Task.objects.create(title='subtask1_title', course=self.course,
-                                            parent_task=self.seminar, score_max=10)
-        self.subtask2 = Task.objects.create(title='subtask2_title', course=self.course,
-                                            parent_task=self.seminar, score_max=10)
+        self.subtask1 = Task.objects.create(
+            title='subtask1_title', course=self.course, parent_task=self.seminar, score_max=10
+        )
+        self.subtask2 = Task.objects.create(
+            title='subtask2_title', course=self.course, parent_task=self.seminar, score_max=10
+        )
 
     def test_list(self):
         client = self.client
