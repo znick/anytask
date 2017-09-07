@@ -1,20 +1,39 @@
 # -*- coding: utf-8 -*-
 from south.utils import datetime_utils as datetime
 from south.db import db
-from south.v2 import DataMigration
+from south.v2 import SchemaMigration
 from django.db import models
 
-class Migration(DataMigration):
-    no_dry_run = True
+
+class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        orm.IssueStatus(**{'name': u'{"ru": "Зачтено после дедлайна", "en": "Accepted after deadline"}',
-                           'tag': 'accepted_after_deadline',
-                           'color': '#ACCD8C',
-                           'hidden': False}).save()
+        # Removing M2M table for field visited_students on 'Lesson'
+        db.delete_table(db.shorten_name('lessons_lesson_visited_students'))
+
+        # Adding M2M table for field not_visited_students on 'Lesson'
+        m2m_table_name = db.shorten_name('lessons_lesson_not_visited_students')
+        db.create_table(m2m_table_name, (
+            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
+            ('lesson', models.ForeignKey(orm['lessons.lesson'], null=False)),
+            ('user', models.ForeignKey(orm['auth.user'], null=False))
+        ))
+        db.create_unique(m2m_table_name, ['lesson_id', 'user_id'])
+
 
     def backwards(self, orm):
-        orm.IssueStatus.objects.get(tag='accepted_after_deadline').delete()
+        # Adding M2M table for field visited_students on 'Lesson'
+        m2m_table_name = db.shorten_name('lessons_lesson_visited_students')
+        db.create_table(m2m_table_name, (
+            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
+            ('lesson', models.ForeignKey(orm['lessons.lesson'], null=False)),
+            ('user', models.ForeignKey(orm['auth.user'], null=False))
+        ))
+        db.create_unique(m2m_table_name, ['lesson_id', 'user_id'])
+
+        # Removing M2M table for field not_visited_students on 'Lesson'
+        db.delete_table(db.shorten_name('lessons_lesson_not_visited_students'))
+
 
     models = {
         'auth.group': {
@@ -60,13 +79,16 @@ class Migration(DataMigration):
             'contest_integrated': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'default_accepted_after_contest_ok': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'default_task_one_file_upload': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'default_task_send_to_users': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'filename_extensions': ('django.db.models.fields.related.ManyToManyField', [], {'blank': 'True', 'related_name': "'filename_extensions_set'", 'null': 'True', 'symmetrical': 'False', 'to': "orm['courses.FilenameExtension']"}),
             'full_transcript': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'group_with_extern': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'course_with_extern'", 'null': 'True', 'db_index': 'False', 'to': "orm['groups.Group']"}),
             'groups': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'to': "orm['groups.Group']", 'null': 'True', 'blank': 'True'}),
+            'has_attendance_log': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'information': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'db_index': 'True'}),
+            'is_python_task': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'issue_fields': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'to': "orm['issues.IssueField']", 'null': 'True', 'blank': 'True'}),
             'issue_status_system': ('django.db.models.fields.related.ForeignKey', [], {'default': '1', 'to': "orm['issues.IssueStatusSystem']", 'db_index': 'False'}),
             'mark_system': ('django.db.models.fields.related.ForeignKey', [], {'db_index': 'False', 'to': "orm['courses.CourseMarkSystem']", 'null': 'True', 'blank': 'True'}),
@@ -77,6 +99,7 @@ class Migration(DataMigration):
             'send_rb_and_contest_together': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'send_to_contest_from_users': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'show_accepted_after_contest_ok': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'show_contest_run_id': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'show_task_one_file_upload': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'teachers': ('django.db.models.fields.related.ManyToManyField', [], {'blank': 'True', 'related_name': "'course_teachers_set'", 'null': 'True', 'symmetrical': 'False', 'to': "orm['auth.User']"}),
             'update_time': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'auto_now': 'True', 'blank': 'True'}),
@@ -94,10 +117,10 @@ class Migration(DataMigration):
             'name': ('django.db.models.fields.CharField', [], {'max_length': '10'})
         },
         'courses.markfield': {
-            'Meta': {'object_name': 'MarkField'},
+            'Meta': {'ordering': "['-name_int']", 'object_name': 'MarkField'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '191', 'db_index': 'True'}),
-            'name_int': ('django.db.models.fields.IntegerField', [], {'default': '0'})
+            'name_int': ('django.db.models.fields.IntegerField', [], {'default': '-1'})
         },
         'groups.group': {
             'Meta': {'unique_together': "(('year', 'name'),)", 'object_name': 'Group'},
@@ -107,36 +130,6 @@ class Migration(DataMigration):
             'students': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'to': "orm['auth.User']", 'null': 'True', 'blank': 'True'}),
             'update_time': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'auto_now': 'True', 'blank': 'True'}),
             'year': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['years.Year']", 'blank': 'True'})
-        },
-        'issues.event': {
-            'Meta': {'object_name': 'Event'},
-            'author': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']", 'null': 'True', 'blank': 'True'}),
-            'field': ('django.db.models.fields.related.ForeignKey', [], {'default': '1', 'to': "orm['issues.IssueField']"}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'issue': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['issues.Issue']"}),
-            'sended_notify': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'timestamp': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
-            'value': ('django.db.models.fields.TextField', [], {'max_length': '2500', 'blank': 'True'})
-        },
-        'issues.file': {
-            'Meta': {'object_name': 'File'},
-            'deleted': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'event': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['issues.Event']"}),
-            'file': ('django.db.models.fields.files.FileField', [], {'max_length': '500', 'null': 'True', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
-        },
-        'issues.issue': {
-            'Meta': {'object_name': 'Issue'},
-            'create_time': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'auto_now_add': 'True', 'blank': 'True'}),
-            'followers': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'to': "orm['auth.User']", 'null': 'True', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'mark': ('django.db.models.fields.FloatField', [], {'default': '0'}),
-            'responsible': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'responsible'", 'null': 'True', 'to': "orm['auth.User']"}),
-            'status': ('django.db.models.fields.CharField', [], {'default': "'new'", 'max_length': '20'}),
-            'status_field': ('django.db.models.fields.related.ForeignKey', [], {'default': '1', 'to': "orm['issues.IssueStatus']"}),
-            'student': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'student'", 'to': "orm['auth.User']"}),
-            'task': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['tasks.Task']", 'null': 'True'}),
-            'update_time': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'})
         },
         'issues.issuefield': {
             'Meta': {'object_name': 'IssueField'},
@@ -149,7 +142,7 @@ class Migration(DataMigration):
         },
         'issues.issuestatus': {
             'Meta': {'object_name': 'IssueStatus'},
-            'color': ('colorfield.fields.ColorField', [], {'default': "'#818A91'", 'max_length': '10'}),
+            'color': ('colorfield.fields.ColorField', [], {'default': "'#818A91'", 'max_length': '18'}),
             'hidden': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '191', 'db_index': 'True'}),
@@ -161,30 +154,22 @@ class Migration(DataMigration):
             'name': ('django.db.models.fields.CharField', [], {'max_length': '191'}),
             'statuses': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'to': "orm['issues.IssueStatus']", 'null': 'True', 'blank': 'True'})
         },
-        'tasks.task': {
-            'Meta': {'object_name': 'Task'},
-            'accepted_after_contest_ok': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'added_time': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'auto_now_add': 'True', 'blank': 'True'}),
-            'contest_id': ('django.db.models.fields.IntegerField', [], {'default': '0', 'db_index': 'True'}),
-            'contest_integrated': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+        'lessons.lesson': {
+            'Meta': {'object_name': 'Lesson'},
             'course': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['courses.Course']"}),
-            'deadline_time': ('django.db.models.fields.DateTimeField', [], {'default': 'None', 'null': 'True'}),
-            'group': ('django.db.models.fields.related.ForeignKey', [], {'default': 'None', 'to': "orm['groups.Group']", 'null': 'True', 'db_index': 'False', 'blank': 'True'}),
-            'groups': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'groups_set'", 'symmetrical': 'False', 'to': "orm['groups.Group']"}),
+            'date_end': ('django.db.models.fields.DateTimeField', [], {'default': 'None', 'null': 'True'}),
+            'date_endtime': ('django.db.models.fields.DateTimeField', [], {'default': 'None', 'null': 'True'}),
+            'date_starttime': ('django.db.models.fields.DateTimeField', [], {'default': 'None', 'null': 'True'}),
+            'days': ('django.db.models.fields.CharField', [], {'db_index': 'True', 'max_length': '100', 'null': 'True', 'blank': 'True'}),
+            'description': ('django.db.models.fields.TextField', [], {'default': "''", 'null': 'True', 'blank': 'True'}),
+            'group': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['groups.Group']"}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'is_hidden': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'db_index': 'True'}),
-            'one_file_upload': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'parent_task': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'children'", 'null': 'True', 'to': "orm['tasks.Task']"}),
-            'problem_id': ('django.db.models.fields.CharField', [], {'db_index': 'True', 'max_length': '128', 'null': 'True', 'blank': 'True'}),
-            'rb_integrated': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'score_max': ('django.db.models.fields.IntegerField', [], {'default': '0', 'db_index': 'True'}),
-            'sended_notify': ('django.db.models.fields.BooleanField', [], {'default': 'True', 'db_index': 'True'}),
-            'task_text': ('django.db.models.fields.TextField', [], {'default': 'None', 'null': 'True', 'blank': 'True'}),
-            'title': ('django.db.models.fields.CharField', [], {'db_index': 'True', 'max_length': '191', 'null': 'True', 'blank': 'True'}),
-            'type': ('django.db.models.fields.CharField', [], {'default': "'All'", 'max_length': '128'}),
-            'update_time': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'auto_now': 'True', 'blank': 'True'}),
-            'updated_by': ('django.db.models.fields.related.ForeignKey', [], {'db_index': 'False', 'to': "orm['auth.User']", 'null': 'True', 'blank': 'True'}),
-            'weight': ('django.db.models.fields.IntegerField', [], {'default': '0', 'db_index': 'True'})
+            'not_visited_students': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'to': "orm['auth.User']", 'null': 'True', 'blank': 'True'}),
+            'period': ('django.db.models.fields.CharField', [], {'default': "'Once'", 'max_length': '128'}),
+            'position': ('django.db.models.fields.IntegerField', [], {'db_index': 'True', 'null': 'True', 'blank': 'True'}),
+            'schedule_id': ('django.db.models.fields.CharField', [], {'db_index': 'True', 'max_length': '100', 'null': 'True', 'blank': 'True'}),
+            'title': ('django.db.models.fields.CharField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
+            'updated_by': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'authors'", 'null': 'True', 'db_index': 'False', 'to': "orm['auth.User']"})
         },
         'years.year': {
             'Meta': {'object_name': 'Year'},
@@ -195,5 +180,4 @@ class Migration(DataMigration):
         }
     }
 
-    complete_apps = ['issues']
-    symmetrical = True
+    complete_apps = ['lessons']

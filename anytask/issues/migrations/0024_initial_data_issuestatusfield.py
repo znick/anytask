@@ -10,35 +10,35 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
         # pk 1
-        orm.IssueStatus(**{'name': u'Новый',
-                                'tag': 'new',
-                                'color': '#818A91',
-                                'hidden': True}).save()
+        orm.IssueStatus(**{'name': u'{"ru": "Новый", "en": "New"}',
+                           'tag': 'new',
+                           'color': '#818A91',
+                           'hidden': True}).save()
         # pk 2
-        orm.IssueStatus(**{'name': u'На автоматической проверке',
-                                'tag': 'auto_verification',
-                                'color': '#818A91',
-                                'hidden': True}).save()
+        orm.IssueStatus(**{'name': u'{"ru": "На автоматической проверке", "en": "Auto-checking"}',
+                           'tag': 'auto_verification',
+                           'color': '#818A91',
+                           'hidden': True}).save()
         # pk 3
-        orm.IssueStatus(**{'name': u'На проверке',
-                                'tag': 'verification',
-                                'color': '#F0AD4E',
-                                'hidden': False}).save()
+        orm.IssueStatus(**{'name': u'{"ru": "На проверке", "en": "Checking"}',
+                           'tag': 'verification',
+                           'color': '#F0AD4E',
+                           'hidden': False}).save()
         # pk 4
-        orm.IssueStatus(**{'name': u'На доработке',
-                                'tag': 'rework',
-                                'color': '#D9534F',
-                                'hidden': False}).save()
+        orm.IssueStatus(**{'name': u'{"ru": "На доработке", "en": "Revising"}',
+                           'tag': 'rework',
+                           'color': '#D9534F',
+                           'hidden': False}).save()
         # pk 5
-        orm.IssueStatus(**{'name': u'Зачтено',
-                                'tag': 'accepted',
-                                'color': '#5CB85C',
-                                'hidden': False}).save()
+        orm.IssueStatus(**{'name': u'{"ru": "Зачтено", "en": "Accepted"}',
+                           'tag': 'accepted',
+                           'color': '#5CB85C',
+                           'hidden': False}).save()
         # pk 6
-        orm.IssueStatus(**{'name': u'Требуется информация',
-                                'tag': 'need_info',
-                                'color': '#5BC0DE',
-                                'hidden': True}).save()
+        orm.IssueStatus(**{'name': u'{"ru": "Требуется информация", "en": "Need information"}',
+                           'tag': 'need_info',
+                           'color': '#5BC0DE',
+                           'hidden': True}).save()
 
         # default IssueStatusSystem
         orm.IssueStatusSystem(**{'name': u'Стандартная система'}).save()

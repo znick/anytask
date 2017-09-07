@@ -42,7 +42,7 @@
                             <tr style="background-color: #ffffff;">
                                 <th>{% trans "student" %}</th>
                                 {% for course in courses %}
-                                    <th>{{ course.name }}</th>
+                                    <th class="number">{{ course.name }}</th>
                                 {% endfor %}
                             </tr>
                             </thead>
@@ -50,8 +50,9 @@
                             {% for student in students %}
                                 <tr>
                                     <td><a href="{{ student.url }}">{{ student.name }}</a></td>
-                                    {% for mark in student.marks %}
-                                        <td>{% if mark %}<h5><label class="label label-success">{{ mark }}</label></h5>{% endif %}</td>
+                                    {% for mark, mark_int in student.marks %}
+                                        <td><h5><label class="label {% if mark_int != '-2' %}label-success{% else %}label-default{% endif %}"
+                                                       data-mark-int="{{ mark_int }}">{{ mark }}</label></h5></td>
                                     {% endfor %}
                                 </tr>
                             {% endfor %}

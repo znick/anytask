@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 
-from users.models import UserProfile, UserProfileLog
+from users.models import UserProfile
 from users.model_user_status import UserStatus
 from django.contrib import admin
 from django.utils.translation import ugettext as _
 from django.contrib.auth import admin as auth_admin
+
+import reversion
 
 
 def display_color(obj):
@@ -37,19 +39,17 @@ class UserStatusAdmin(admin.ModelAdmin):
         return qs
 
 
-class UserProfileLogAdmin(admin.ModelAdmin):
-    list_display = ('user', 'updated_by', 'update_time')
-    search_fields = ('name', 'update_by',)
-
-
-class UserProfileAdmin(admin.ModelAdmin):
+class UserProfileBaseAdmin(admin.ModelAdmin):
     list_display = ('user', 'updated_by', 'update_time')
     filter_horizontal = ('user_status', 'unread_messages', 'deleted_messages', 'send_notify_messages')
     search_fields = ('user__username', 'user_status__name')
 
 
+class UserProfileAdmin(reversion.VersionAdmin, UserProfileBaseAdmin):
+    pass
+
+
 admin.site.register(UserProfile, UserProfileAdmin)
 admin.site.register(UserStatus, UserStatusAdmin)
-admin.site.register(UserProfileLog, UserProfileLogAdmin)
 
 auth_admin.UserAdmin.list_display += ('last_login',)

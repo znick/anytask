@@ -55,7 +55,7 @@ def send_only_notify(domain, from_email):
         context = {
             "user": user,
             "user_profile": user_profile,
-            "domain": 'http://' + domain,
+            "domain": domain,
             "unread_count": unread_count,
             "unread_count_string": unread_count_string
         }
