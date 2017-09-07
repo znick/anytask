@@ -64,6 +64,9 @@
                     <a class="nav-link" href="{% url courses.views.course_settings course.id %}">{% trans "nastrojki" %}</a>
                 </li>
             {% endif %}
+            <li class="nav-item">
+                <a class="nav-link" href="{% url courses.views.view_statistic course.id %}">Статистика</a>
+            </li>
         {% endif %}
     </ul>
 {% endblock navbar %}
@@ -74,15 +77,17 @@
 
     {{ block.super }}
 
-
 <dl>
 	<dt><h3>{{ course.name }} <small>{{ course.year }}</small>
     {% if course.can_edit %}
         <a class="btn btn-secondary btn-sm btn-square" id="edit_course_info_btn">
         <span class="fa fa-pencil"></span></a></h3>
     {% endif%}
-</dt>
+    </dt>
 
+    {% if user_is_teacher %}
+    <a class="btn-small" href="/task/create/{{course.id}}">Добавить задачу</a>
+    {% endif %}
 
 	<dd>Преподаватели:
 		{% for teacher in course.teachers.all %}

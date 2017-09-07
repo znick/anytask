@@ -1026,3 +1026,10 @@ def lesson_delete(request):
     return HttpResponse(json.dumps({'deleted': deleted_ids,
                                     'students_lesson_diff': students_x_lesson_diff.items()}),
                         content_type="application/json")
+
+
+def view_statistic(request, course_id):
+    course = get_object_or_404(Course, id=course_id)
+
+    if course.is_python_task:
+        return pythontask.python_stat(request, course)
