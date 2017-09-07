@@ -8,9 +8,11 @@ from django.http import HttpResponse, HttpResponseForbidden
 from django.db.models import Q
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext as _
+from django.utils.timezone import localtime, now
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 
+from collections import defaultdict, Counter
 import datetime
 import logging
 import requests
@@ -19,7 +21,7 @@ import reversion
 from courses.models import Course, DefaultTeacher, StudentCourseMark, MarkField, FilenameExtension
 from groups.models import Group
 from tasks.models import Task, TaskGroupRelations
-from tasks.views import prettify_contest_task_text
+from anycontest.common import prettify_contest_task_text
 from years.models import Year
 from years.common import get_current_year
 from anycontest.common import get_contest_info, FakeResponse
@@ -32,6 +34,7 @@ from courses import pythontask
 from lessons.models import Lesson
 
 from common.ordered_dict import OrderedDict
+from common.timezone import convert_datetime
 
 from courses.forms import default_teacher_forms_factory, DefaultTeacherForm
 
@@ -47,8 +50,9 @@ logger = logging.getLogger('django.request')
 def queue_page(request, course_id):
     course = get_object_or_404(Course, id=course_id)
     course_id_as_str = str(course_id)
+    user = request.user
 
-    if not course.user_can_see_queue(request.user):
+    if not course.user_can_see_queue(user):
         return HttpResponseForbidden()
 
     active_profiles = UserProfile.objects.filter(Q(user_status__tag='active') | Q(user_status__tag=None))
@@ -61,9 +65,11 @@ def queue_page(request, course_id):
     ).exclude(
         status_field__tag=IssueStatus.STATUS_SEMINAR
     ).order_by('update_time')
+    lang = request.user.get_profile().language
 
+    lang = user.get_profile().language
     f = IssueFilter(request.GET, issues)
-    f.set_course(course)
+    f.set_course(course, lang)
 
     if f.form.data:
         request.session[course_id_as_str] = f.form.data
@@ -103,6 +109,7 @@ def gradebook(request, course_id, task_id=None, group_id=None):
         - tasks_description
     """
     user = request.user
+
     if not user.get_profile().is_active():
         raise PermissionDenied
 
@@ -125,6 +132,8 @@ def gradebook(request, course_id, task_id=None, group_id=None):
                                    'school': schools[0] if schools else '',
                                    'invite_form': InviteActivationForm()},
                                   context_instance=RequestContext(request))
+    lang = request.session.get('django_language', user.get_profile().language)
+    issue_statuses = [(status.color, status.get_name(lang)) for status in course.issue_status_system.statuses.all()]
 
     tasklist_context = tasklist_shad_cpp(request, course, task, group)
 
@@ -138,6 +147,7 @@ def gradebook(request, course_id, task_id=None, group_id=None):
         str(request.user.id) + '_' + str(course.id) + '_show_academ_users', True)
     context['school'] = schools[0] if schools else ''
     context['full_width_page'] = True
+    context['issue_statuses'] = issue_statuses
 
     return render_to_response('courses/gradebook.html', context, context_instance=RequestContext(request))
 
@@ -326,7 +336,6 @@ def tasklist_shad_cpp(request, course, seminar=None, group=None):
         issues_students_in_group = Issue.objects.filter(task__in=group_x_task_list[group]).filter(
             student__group__in=[group]).order_by('student').select_related()
 
-        from collections import defaultdict
         issues_x_student = defaultdict(list)
         for issue in issues_students_in_group.all():
             student_id = issue.student.id
@@ -835,6 +844,7 @@ def attendance_list(request, course, group=None):
     user_is_attended = False
     user_is_attended_special_course = False
     show_academ_users = request.session.get("%s_%s_show_academ_users" % (request.user.id, course.id), True)
+    msk_time = convert_datetime(localtime(now()), user.get_profile().time_zone)
 
     course.can_edit = course.user_can_edit_course(user)
     if course.can_be_chosen_by_extern:
@@ -847,16 +857,18 @@ def attendance_list(request, course, group=None):
 
     group_x_student_x_lessons = OrderedDict()
     group_x_lesson_list = {}
+    group_inactive_lessons = {}
     default_teacher = {}
 
     academ_students = []
 
     for group in groups:
         group_x_lesson_list[group] = Lesson.objects.filter(course=course, group=group).order_by('position')
-
-        for lssn in group_x_lesson_list[group]:
-            if lssn.description is None:
-                lssn.description = ''
+        group_inactive_lessons[group] = Lesson.objects.filter(course=course,
+                                                              group=group,
+                                                              date_starttime__gt=msk_time
+                                                              ).order_by('position')
+        active_lessons_count = len(group_x_lesson_list[group]) - len(group_inactive_lessons[group])
 
         students = group.students.filter(is_active=True)
         not_active_students = UserProfile.objects.filter(Q(user__in=group.students.filter(is_active=True)) &
@@ -866,19 +878,18 @@ def attendance_list(request, course, group=None):
         if not show_academ_users:
             students = set(students) - set(academ_students)
 
-        from collections import defaultdict
-        students_x_lessons = defaultdict(list)
+        students_x_lessons = {}
 
         for student in students:
             if user == student:
                 user_is_attended = True
                 user_is_attended_special_course = True
 
-            visited_lessons = []
-            for lssn in group_x_lesson_list[group]:
-                if student in lssn.visited_students.all():
-                    visited_lessons.append(lssn)
-            students_x_lessons[student] = visited_lessons
+            not_visited_lessons = []
+            for lssn in group_x_lesson_list[group][:active_lessons_count]:
+                if student in lssn.not_visited_students.all():
+                    not_visited_lessons.append(lssn)
+            students_x_lessons[student] = not_visited_lessons, active_lessons_count - len(not_visited_lessons)
 
         group_x_student_x_lessons[group] = students_x_lessons
 
@@ -898,11 +909,12 @@ def attendance_list(request, course, group=None):
                 continue
 
             group_x_student_information[group].append((student,
-                                                       students_x_lessons[student]))
+                                                       students_x_lessons[student][0], students_x_lessons[student][1]))
     context = {
         'course': course,
         'group_information': group_x_student_information,
         'group_lessons': group_x_lesson_list,
+        'group_inactive_lessons': group_inactive_lessons,
         'default_teacher': default_teacher,
         'user': user,
         'user_is_attended': user_is_attended,
@@ -957,16 +969,15 @@ def lesson_visited(request):
     if lesson.date_starttime.date() > datetime.datetime.today().date():
         raise PermissionDenied
     student = User.objects.get(id=request.POST['student_id'])
-    group = Group.objects.get(id=request.POST['group_id'])
     if 'lesson_visited' in request.POST:
         value = 1
-        lesson.visited_students.add(student)
+        lesson.not_visited_students.remove(student)
     else:
         value = -1
-        lesson.visited_students.remove(student)
+        lesson.not_visited_students.add(student)
     lesson.save()
 
-    can_be_deleted = len(set(lesson.visited_students.all()).intersection(set(group.students.all())))
+    can_be_deleted = lesson.group.students.count() - lesson.not_visited_students.count()
     return HttpResponse(json.dumps({'visited': value, 'lesson_id': lesson_id,
                                     'deleted': can_be_deleted}),
                         content_type="application/json")
@@ -979,24 +990,41 @@ def lesson_delete(request):
 
     lesson_id = request.POST['lesson_id']
     delete_all = request.POST['delete_all'] == 'true'
-
     lesson = get_object_or_404(Lesson, id=lesson_id)
-    deleted_ids = [lesson_id]
+    student_ids = lesson.group.students.values_list('id', flat=True)
+    students_x_lesson_diff = {}
+
     if not delete_all:
+        deleted_ids = [lesson_id]
+        students_not_visited = lesson.not_visited_students.values_list('id', flat=True)
+        if lesson.date_starttime <= now():
+            students_x_lesson_diff = {stud: 1 for stud in student_ids if stud not in students_not_visited}
         lesson.delete()
     else:
         schedule_id = lesson.schedule_id
-        lessons = Lesson.objects.filter(
+        count_lessons_inactive = Lesson.objects.filter(
             schedule_id=schedule_id,
-            date_starttime__gt=lesson.date_starttime.date(),
-            visited_students__isnull=True
-        )
-        lesson.delete()
-        for lssn in lessons:
+            date_starttime__gte=max(now(), lesson.date_starttime)
+        ).count()
+
+        lessons_to_del = Lesson.objects.filter(
+            schedule_id=schedule_id,
+            date_starttime__gte=lesson.date_starttime
+        ).order_by('position')
+
+        students_x_lesson_diff = {stud: len(lessons_to_del) - count_lessons_inactive for stud in student_ids}
+        deleted_ids = []
+        students_not_visited = []
+        for lssn in lessons_to_del:
+            students_not_visited += lssn.not_visited_students.values_list('id', flat=True)
             deleted_ids.append(lssn.id)
             lssn.delete()
+        count_not_visited_students = Counter(students_not_visited)
+        for stud in student_ids:
+            students_x_lesson_diff[stud] -= count_not_visited_students[stud]
 
-    return HttpResponse(json.dumps({'deleted': deleted_ids}),
+    return HttpResponse(json.dumps({'deleted': deleted_ids,
+                                    'students_lesson_diff': students_x_lesson_diff.items()}),
                         content_type="application/json")
 
 

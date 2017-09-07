@@ -3,7 +3,7 @@
 import django_filters
 
 from django import forms
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 
 from courses.models import Course
 from issues.models import Issue
@@ -51,10 +51,11 @@ class IssueFilterStudent(django_filters.FilterSet):
         teacher_choices = [(teacher.id, teacher.get_full_name()) for teacher in teacher_set]
         self.filters['responsible'].field.choices = tuple(teacher_choices)
 
-        status_choices = [(status.id, status.get_name()) for status in status_set]
+        lang = user.get_profile().language
+        status_choices = [(status.id, status.get_name(lang)) for status in status_set]
         for status_id in sorted(IssueStatus.HIDDEN_STATUSES.values(), reverse=True):
             status_field = IssueStatus.objects.get(pk=status_id)
-            status_choices.insert(0, (status_field.id, status_field.get_name()))
+            status_choices.insert(0, (status_field.id, status_field.get_name(lang)))
         self.filters['status_field'].field.choices = tuple(status_choices)
 
     class Meta:

@@ -1,6 +1,5 @@
-from datetime import datetime
-
 from django import template
+from django.utils import timezone
 from issues.models import Issue
 from issues.model_issue_status import IssueStatus
 from lessons.models import Lesson
@@ -85,13 +84,10 @@ def task_group_info(task):
     return ''
 
 
-@register.filter(name='disabled')
-def lesson_disabled(lesson):
-    if isinstance(lesson, Lesson):
-        return lesson.date_starttime.date() > datetime.today().date()
-
-
 @register.filter(name='lssn_can_be_deleted')
 def lesson_can_be_deleted(lesson):
     if isinstance(lesson, Lesson):
-        return lesson.visited_students.count()
+        if lesson.date_starttime > timezone.now():
+            return 0
+        else:
+            return lesson.group.students.count() - lesson.not_visited_students.count()

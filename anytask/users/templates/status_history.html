@@ -2,24 +2,13 @@
 {% load i18n %}
 {% load crispy_forms_tags %}
 {% load table_func %}
+{% load tz %}
 
 {% block title %} {{ user_to_show.get_full_name }} {% endblock %}
 
 {% block scripts %}
-    {% include "user_profile_js.html" %}
-    <script src="{{ STATIC_URL }}jquery.stickytableheaders.min.js"></script>
-    <script type="text/javascript">
-        $(document).ready(function () {
-            $(".table_history").tablesorter();
-            $(".table_history").stickyTableHeaders({fixedOffset: $('.navbar')});
-
-            $('.switch-tab').click(function () {
-                $(this).tab('show');
-                $(this).removeClass('active');
-            });
-        });
-    </script>
-
+    {% include "status_history_js.html" %}
+    <link href="{{ STATIC_URL }}status_history.css" rel='stylesheet'/>
 {% endblock %}
 
 {% block navbar %}
@@ -52,32 +41,23 @@
 {% endblock navbar %}
 
 {% block content %}
-
-    <style>
-
-        .card-header {
-            background-color: inherit;
-        }
-
-        .label {
-            margin-bottom: .3rem;
-        }
-    </style>
     <div class="row">
-        <div class="col-md-3 col-xs-12">
+        <div class="col-md-12 col-lg-4 col-xl-3">
             <div class="card">
                 <div class="card-header">
                     <h5 class="card-title">{% trans "statusy" %} {{ user_profile.user.get_full_name }}</h5>
                 </div>
-                <div class="card-block" id="user_statuses">
-                    {% if user_profile.user_status.all %}
-                        {% for user_status in user_profile.user_status.all %}
-                            <span class="label"
-                                  style="font-size: 1rem; background-color: {{ user_status.color }}">{{ user_status.name }}</span>
-                        {% endfor %}
-                    {% else %}
-                        <p class="card-text">{% trans "net_statusov" %}</p>
-                    {% endif %}
+                <div class="card-block">
+                    <div id="user_statuses">
+                        {% if user_profile.user_status.all %}
+                            {% for user_status in user_profile.user_status.all %}
+                                <span class="label big-label"
+                                      style="background-color: {{ user_status.color }}">{{ user_status.name }}</span>
+                            {% endfor %}
+                        {% else %}
+                            <p class="card-text">{% trans "net_statusov" %}</p>
+                        {% endif %}
+                    </div>
                 </div>
                 <div class="card-block">
                     <button class="btn btn-secondary" type="button" data-toggle="modal"
@@ -86,31 +66,33 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-9 col-xs-12">
+        <div class="col-md-12 col-lg-8 col-xl-9">
             <div class="card">
                 <div class="card-block">
                     <h5 class="card-title">{% trans "istorija_izmenenij" %} {{ user_profile.user.get_full_name }}</h5>
-
-                    <table class="table table_history">
+                    <table class="table table-history">
                         <thead>
-                        <tr style="background-color: #ffffff;">
-                            <th>{% trans "kogda_byl_izmenen" %}<i class="fa fa-fw fa-sort"></i></th>
-                            <th>{% trans "kem" %}<i class="fa fa-fw fa-sort"></i></th>
-                            <th>{% trans "statusy_polzovatelja" %}<i class="fa fa-fw fa-sort"></i></th>
+                        <tr>
+                            <th>{% trans "kogda_byl_izmenen" %}<span class="fa fa-fw fa-sort"></span></th>
+                            <th>{% trans "kem" %}<span class="fa fa-fw fa-sort"></span></th>
+                            <th class="no-sort">{% trans "statusy_polzovatelja" %}</th>
                         </tr>
                         </thead>
                         <tbody id="tbody_history">
-                        {% for entry in user_profile_history.all %}
+                        {% for entry in user_profile_history %}
                             <tr>
-                                <td>{{ entry.update_time|date:'Y-m-d H:i' }}</td>
-                                <td><a href="/users/{{ entry.updated_by }}">{{ entry.updated_by.get_full_name }}</a>
-                                </td>
+                                <td>{% localtime on %}{{ entry.update_time|date:'d-m-Y H:i' }}{% endlocaltime %}</td>
+                                <td><a href="{{ entry.updated_by.get_absolute_url }}">{{ entry.updated_by.get_full_name }}</a></td>
                                 <td>
-                                    {% for user_status in entry.user_status.all %}
-                                        <span class="label"
-                                              style="font-size: 1rem; background-color: {{ user_status.color }}">{{ user_status.name }}</span>
+                                    {% for user_status in entry.user_statuses %}
+                                        <span class="label big-label"
+                                              style="background-color: {{ user_status.color }}">{{ user_status.name }}</span>
                                     {% endfor %}
                                 </td>
+                            </tr>
+                        {% empty %}
+                            <tr class="delete-after-add">
+                                <td colspan="4" class="centered">{% trans "pustaja_tablica" %}</td>
                             </tr>
                         {% endfor %}
                         </tbody>
@@ -129,22 +111,21 @@
                             aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title" id="modal_status_edit_header">{% trans "statusy_polzovatelja" %}</h4>
                 </div>
-                <div class="modal-body" style="max-height: none;">
+                <div class="modal-body">
                     <p>{% trans "dobavlenie_udalenie_statusov_polzovatelja" %}</p>
                     <form method="post" id="status_edit_form">
                         {% csrf_token %}
                         {% for type, name in status_types %}
                             <div class="form-group">
-                                <label class="form-control-label" for="status_edit_type"
-                                       style="padding-left: 0;"> {{ name }}</label>
+                                <label class="form-control-label" for="status_edit_type"> {{ name }}</label>
                                 <select class="form-control" id='status_edit_type' name="status_by_type[]">
                                     <option value=""> ---</option>
                                     {% for status in user_statuses %}
                                         {% if status.type == type %}
                                             <option name="{{ type }}" value="{{ status.id }}"
                                                     {% if status in user_profile.user_status.all %}selected{% endif %}>
-                                                <span class="label"
-                                                      style="font-size: 1rem; background-color: {{ status.color }}">{{ status.name }}
+                                                <span class="label big-label"
+                                                      style="background-color: {{ status.color }}">{{ status.name }}
                                                 </span>
                                             </option>
                                         {% endif %}

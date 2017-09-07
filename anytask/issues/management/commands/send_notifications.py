@@ -30,7 +30,7 @@ class Command(BaseCommand):
             translation.activate(lang)
 
             events = all_events.filter(issue=issue).all()
-            issue_url = 'http://' + domain + issue.get_absolute_url()
+            issue_url = domain + issue.get_absolute_url()
             message_header = '<div>' + \
                              '<p>' + _(u'zdravstvujte') + u', {0}.<br></p>' + \
                              '<p>' + _(u'v_zadache') + u' {1}, ' + _(u'vy_javljaetes') + u' <strong>{2}</strong>, ' + \

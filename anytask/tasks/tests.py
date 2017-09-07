@@ -73,7 +73,7 @@ class CreateTest(TestCase):
         self.assertEqual(task.contest_integrated, True)
         self.assertEqual(task.rb_integrated, True)
         self.assertEqual(task.type, Task.TYPE_SIMPLE)
-        self.assertEqual(task.deadline_time, deadline_time)
+        self.assertEqual(task.deadline_time.replace(tzinfo=None), deadline_time - timedelta(hours=3))
         self.assertEqual(task.contest_id, 1234)
         self.assertEqual(task.problem_id, 'A')
         self.assertEqual(task.sended_notify, False)
@@ -218,7 +218,7 @@ class ViewsTest(TestCase):
                                {'task_title': 'task_title',
                                 'max_score': '10',
                                 'task_group_id[]': ['1'],
-                                'deadline': '01-08-2016 0:30',
+                                'deadline': '01-08-2016 5:30',
                                 'changed_task': 'on',
                                 'task_type': 'All',
                                 'contest_integrated': 'on',
@@ -245,7 +245,8 @@ class ViewsTest(TestCase):
         self.assertEqual(created_task.contest_integrated, True, 'Created task wrong contest_integrated')
         self.assertEqual(created_task.rb_integrated, True, 'Created task wrong rb_integrated')
         self.assertEqual(created_task.type, Task.TYPE_FULL, 'Created task wrong type')
-        self.assertEqual(created_task.deadline_time, datetime(2016, 8, 1, 0, 30), 'Created task wrong deadline_time')
+        self.assertEqual(created_task.deadline_time.replace(tzinfo=None), datetime(2016, 8, 1, 2, 30),
+                         'Created task wrong deadline_time')
         self.assertEqual(created_task.contest_id, 1234, 'Created task wrong contest_id')
         self.assertEqual(created_task.problem_id, 'A', 'Created task wrong problem_id')
         self.assertEqual(created_task.sended_notify, False, 'Created task wrong sended_notify')
@@ -296,10 +297,10 @@ class ViewsTest(TestCase):
         form_inputs = div_task_id.form('input', 'form-control')
         self.assertEqual(form_inputs[0]['value'], 'task_title', "form input id='{}' wrong".format(form_inputs[0]['id']))
         self.assertEqual(form_inputs[2]['value'], '10', "form input id='{}' wrong".format(form_inputs[2]['id']))
-        self.assertEqual(form_inputs[3]['value'], '01-08-2016 00:30',
+        self.assertEqual(form_inputs[3]['value'], '01-08-2016 05:30',
                          "form input id='{}' wrong".format(form_inputs[3]['id']))
-        self.assertEqual(form_inputs[4]['value'], '1234', "form input id='{}' wrong".format(form_inputs[4]['id']))
-        self.assertEqual(form_inputs[5]['value'], 'A', "form input id='{}' wrong".format(form_inputs[5]['id']))
+        self.assertEqual(form_inputs[5]['value'], '1234', "form input id='{}' wrong".format(form_inputs[5]['id']))
+        self.assertEqual(form_inputs[6]['value'], 'A', "form input id='{}' wrong".format(form_inputs[6]['id']))
 
         form_checkbox = div_task_id.form('input', {'type': 'checkbox'})
 
@@ -464,7 +465,8 @@ class ViewsTest(TestCase):
             self.assertEqual(task.contest_integrated, True)
             self.assertEqual(task.rb_integrated, True)
             self.assertEqual(task.type, Task.TYPE_FULL)
-            self.assertEqual(task.deadline_time, datetime.strptime(post_data['deadline'], '%d-%m-%Y %H:%M'))
+            self.assertEqual(task.deadline_time.replace(tzinfo=None),
+                             datetime.strptime(post_data['deadline'], '%d-%m-%Y %H:%M') - timedelta(hours=3))
             self.assertEqual(str(task.contest_id), post_data['contest_id_for_task'])
             self.assertEqual(task.problem_id, problems[problems_idx]['alias'])
             self.assertEqual(task.sended_notify, False)

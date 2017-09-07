@@ -58,10 +58,11 @@ def prepare_info_fields(info_fields, request, issue):
                  }
 
     user = request.user
+    lang = user.get_profile().language
     for field in info_fields:
         field.editable = field.can_edit(user, issue)
         if field.is_visible():
-            field.repr = issue.get_field_repr(field)
+            field.repr = issue.get_field_repr(field, lang)
 
         field.value = issue.get_field_value_for_form(field)
 
@@ -119,7 +120,8 @@ def contest_rejudge(issue):
 @login_required
 def issue_page(request, issue_id):
     issue = get_object_or_404(Issue, id=issue_id)
-    if not user_can_read(request.user, issue):
+    user = request.user
+    if not user_can_read(user, issue):
         raise PermissionDenied
 
     issue_fields = issue.task.course.issue_fields.all()
@@ -186,9 +188,9 @@ def issue_page(request, issue_id):
                 show_top_alert = True
             break
 
-    statuses_accepted = issue.task.course.issue_status_system.get_accepted_statuses()
-    for i in range(len(statuses_accepted)):
-        statuses_accepted[i].name = statuses_accepted[i].get_name()
+    lang = user.get_profile().language
+    statuses_accepted = [(status.id, status.get_name(lang))
+                         for status in issue.task.course.issue_status_system.get_accepted_statuses()]
 
     schools = issue.task.course.school_set.all()
 

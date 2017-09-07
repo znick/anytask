@@ -178,7 +178,7 @@ class AdmissionRegistrationProfile(models.Model):
         context = {
             'user': self.user,
             'user_info': json.loads(self.user_info),
-            'domain': 'http://' + str(site),
+            'domain': str(site),
             'activation_key': self.activation_key,
             'is_updating': self.is_updating
         }
