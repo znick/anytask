@@ -2314,7 +2314,7 @@ msgstr "Закрыть"
 
 #: courses/pythontask.py:82
 msgid "zapisalsya_na_task"
-msgstr "записался на задачу"
+msgstr "Студент записался на задачу"
 
 #: courses/templates/courses/course_js.html:317
 #: staff/templates/gradebook_js.html:148

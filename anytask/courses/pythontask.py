@@ -79,7 +79,7 @@ def get_task(request, course_id, task_id):
             task_taken.issue = issue
 
         task_taken.save()
-        task_taken.issue.add_comment(u"{} {} {}".format(user.first_name, user.last_name, _("zapisalsya_na_task")))
+        task_taken.issue.add_comment(unicode(_("zapisalsya_na_task")))
 
     return redirect('courses.views.course_page', course_id=course_id)
 
