@@ -324,12 +324,13 @@ def ya_oauth_request(request, type_of_oauth):
 def ya_oauth_contest(user, ya_response, ya_contest_response):
     user_profile = user.get_profile()
     if not user_profile.ya_contest_oauth:
-        users_with_ya_contest_oauth = UserProfile.objects.all().filter(~Q(ya_contest_login=''))
-
-        for user in users_with_ya_contest_oauth:
-            if user.ya_contest_login == ya_contest_response['login'] or user.ya_contest_uid == \
-                    ya_contest_response['id']:
-                return redirect('users.views.ya_oauth_forbidden', type_of_oauth='contest')
+        users_with_ya_contest_oauth = UserProfile.objects.filter(
+            Q(ya_contest_login=ya_contest_response['login']) | Q(ya_contest_uid=ya_contest_response['id'])
+        ).exclude(
+            ya_contest_login=user_profile.ya_contest_login
+        )
+        if users_with_ya_contest_oauth:
+            return redirect('users.views.ya_oauth_forbidden', type_of_oauth='contest')
 
     if not user_profile.ya_contest_oauth or user_profile.ya_contest_login == ya_contest_response['login']:
         user_profile.ya_contest_oauth = ya_response['access_token']
