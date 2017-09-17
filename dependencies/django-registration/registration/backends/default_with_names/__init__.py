@@ -10,12 +10,17 @@ from django.contrib.sites.models import Site
 from django.utils.translation import ugettext as _
 from django.utils.translation import get_language_from_request
 from django import forms
-from django.shortcuts import get_object_or_404
+from django.contrib.auth.tokens import default_token_generator
 from users.models import UserProfile
+from django.template.loader import render_to_string
+from django.utils.http import int_to_base36
+from django.utils import translation
 
 from registration import signals
 from registration.forms import RegistrationForm, RegistrationFormUniqueEmail
 from registration.models import RegistrationProfile
+
+from mail.common import send_mass_mail_html
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, HTML
@@ -73,6 +78,41 @@ class AnytaskPasswordResetForm(PasswordResetForm):
                                                <button type="submit" class="btn btn-secondary">""" + _(u'Сбросить') + """</button>
                                              </div>
                                            </div>"""))
+
+    def save(self, domain_override=None,
+             subject_template_name='registration/password_reset_subject.txt',
+             email_template_name='registration/password_reset_email.html',
+             use_https=False, token_generator=default_token_generator,
+             from_email=None, request=None):
+
+        email_template_name_plain = 'registration/password_reset_email.txt'
+
+        site = Site.objects.get_current()
+        from_email = settings.DEFAULT_FROM_EMAIL
+        notify_messages = []
+        for user in self.users_cache:
+            # lang = user.get_profile().language
+            # translation.activate(lang)
+
+            context = {
+                'domain': site.domain,
+                'site_name': site.name,
+                'uid': int_to_base36(user.id),
+                'user': user,
+                'token': token_generator.make_token(user),
+            }
+
+            subject = render_to_string(subject_template_name, context)
+            subject = ''.join(subject.splitlines())
+
+            context["title"] = subject
+            plain_text = render_to_string(email_template_name_plain, context)
+            html = render_to_string(email_template_name, context)
+            # translation.deactivate()
+
+            notify_messages.append((subject, plain_text, html, from_email, [user.email]))
+        if notify_messages:
+            send_mass_mail_html(notify_messages)
 
 
 class AnytaskSetPasswordForm(SetPasswordForm):

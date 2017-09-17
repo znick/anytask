@@ -6,7 +6,7 @@
         formData: [
             { name: "csrfmiddlewaretoken", value: "{{ csrf_token }}"},
             { name: "issue_id", value: "{{ issue.id }}"},
-            { name: "comment", value:$( "#id_comment" ).val()}
+            { name: "comment", value:function() {return $("#id_comment").val()}}
         ],
         {% block JS_OPTS %}
             autoUpload: true,

@@ -11,6 +11,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import Q, Max
 from django.utils.translation import ugettext_lazy as _
+from django.utils.html import escape
 
 from courses.models import Course
 from groups.models import Group
@@ -83,8 +84,11 @@ class Task(models.Model):
 
     score_after_deadline = models.BooleanField(db_index=False, null=False, blank=False, default=True)
 
+    def __unicode__(self):
+        return unicode(self.title)
+
     def get_title(self, lang=settings.LANGUAGE_CODE):
-        return get_lang_text(self.title, lang)
+        return escape(get_lang_text(self.title, lang))
 
     def get_description(self, lang=settings.LANGUAGE_CODE):
         return get_lang_text(self.task_text, lang)
@@ -201,7 +205,7 @@ class Task(models.Model):
         self.is_shown = not self.is_hidden or self.course.user_is_teacher(user)
 
     def has_issue_access(self):
-        return self.type not in [self.TYPE_SIMPLE, self.TYPE_MATERIAL]
+        return self.type not in [self.TYPE_SIMPLE, self.TYPE_MATERIAL, self.TYPE_SEMINAR]
 
     def set_position_in_new_group(self, groups=None):
         if not groups:

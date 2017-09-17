@@ -1,26 +1,15 @@
 # coding: utf-8
-import json
 
-from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from common.locale_funcs import validate_json, get_value_from_json
 
 from colorfield.fields import ColorField
 
 
-def validate_json(value):
-    try:
-        json_name = json.loads(value)
-        if 'ru' not in json_name:
-            raise KeyError
-    except ValueError:
-        raise ValidationError(u'%s is not a json string' % value)
-    except KeyError:
-        raise ValidationError(u'%s does not contains required "ru" key' % value)
-
-
 class IssueStatus(models.Model):
     COLOR_DEFAULT = '#818A91'
+    NAME_DEFAULT = _(u"novyj")
 
     STATUS_NEW = 'new'
     STATUS_AUTO_VERIFICATION = 'auto_verification'
@@ -52,16 +41,7 @@ class IssueStatus(models.Model):
     hidden = models.BooleanField(default=False)
 
     def get_name(self, lang='ru'):
-        try:
-            json_name = json.loads(self.name)
-            if lang in json_name:
-                name = json_name[lang]
-            else:
-                name = json_name['ru']
-        except ValueError:
-            name = self.name
-        name = u'{0}'.format(name)
-        return name
+        return get_value_from_json(self.name, lang)
 
     def __unicode__(self):
         return u'{0}'.format(self.get_name())

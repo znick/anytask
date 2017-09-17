@@ -48,7 +48,7 @@
                     {% for task in group_tasks|key:group %}
                         {% if not task.is_hidden or user_is_teacher %}
                             <th align="center" class="{% if task.type == task.TYPE_SIMPLE and user_is_teacher %}dom-live-number{% else %}dom-number{% endif %} word-wrap">
-                                <a class="{% if task.is_hidden %}hidden-task-title{% endif %}" href="javascript:get_task_modal({{task.id}}, '{% get_text_from_json task 'get_title' LANGUAGE_CODE %}',
+                                <a class="{% if task.is_hidden %}hidden-task-title{% endif %}" href="javascript:get_task_modal({{task.id}}, '{{task|get_title:LANGUAGE_CODE|safe|escapejs}}',
                     '{{task|get_description:LANGUAGE_CODE|safe|escapejs}}',
                      {% if task.deadline_time %} '{% localtime on %}{{task.deadline_time|date:'d-m-Y H:i'}}{% endlocaltime %}' {% else %}''{% endif %})" data-toggle="popover-short-title" data-trigger="hover" data-placement="bottom" data-content="{% get_text_from_json task 'get_title' LANGUAGE_CODE %} ">
                                     {% if task.short_title %}{{ task.short_title }}{% else %}{% get_text_from_json task 'get_title' LANGUAGE_CODE %}{% endif %}
@@ -200,12 +200,14 @@
                                 {% for task in tasks %}
                                     <li class="ui-state-default" name="task_sort_{{ task.id }}" value="{{ task.id }}">
                                         <span>{% get_text_from_json task 'get_title' LANGUAGE_CODE %}</span>
-                                        <a class="task-delete pull-xs-right" data-name="task_delete_{{ task.id }}" {% autoescape off %}{{ task|group_info }}{% endautoescape %} tabindex="0" data-toggle="popover" type="button">
+                                    {% with task_info=task|group_info%}
+                                        <a class="task-delete pull-xs-right" data-name="task_delete_{{ task.id }}" {% autoescape off %}{{ task_info }}{% endautoescape %} tabindex="0" data-toggle="popover" type="button">
                                             <i class="fa fa-trash-o" aria-hidden="true"></i>
                                         </a>
-                                        <a class="task-seminar-notempty pull-xs-right" {% autoescape off %}{{ task|group_info }}{% endautoescape %} tabindex="0" data-toggle="popover-help" data-trigger="hover" data-content="{%  trans "snachala_udalit_podzadchi" %}" type="button">
+                                        <a class="task-seminar-notempty pull-xs-right" {% autoescape off %}{{ task_info }}{% endautoescape %} tabindex="0" data-toggle="popover-help" data-trigger="hover" data-content="{%  trans "snachala_udalit_podzadchi" %}" type="button">
                                             <i class="fa fa-question-circle" aria-hidden="true"></i>
                                         </a>
+                                    {% endwith %}
                                     </li>
                                 {% endfor %}
                             </ul>

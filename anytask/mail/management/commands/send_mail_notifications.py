@@ -22,6 +22,8 @@ class Command(BaseCommand):
     option_list = BaseCommand.option_list
 
     def handle(self, **options):
+        start_time = time.time()
+
         domain = Site.objects.get_current().domain
         from_email = settings.DEFAULT_FROM_EMAIL
 
@@ -30,10 +32,17 @@ class Command(BaseCommand):
         else:
             notify_messages = [send_only_notify(domain, from_email)]
 
+        num_sent = 0
+        sleep_time = 0
         for messages in notify_messages:
             if messages:
-                send_mass_mail_html(messages)
+                num_sent += send_mass_mail_html(messages)
                 time.sleep(1)
+                sleep_time += 1
+
+        # logging to cron log
+        print "Command send_mail_notifications send {0} email(s) and took {1} seconds (sleep {2} seconds)" \
+            .format(num_sent, time.time() - start_time, sleep_time)
 
 
 def send_only_notify(domain, from_email):
@@ -41,7 +50,14 @@ def send_only_notify(domain, from_email):
 
     for user_profile in UserProfile.objects.exclude(send_notify_messages__isnull=True).select_related('user'):
         user = user_profile.user
-        unread_count = user_profile.send_notify_messages.count()
+        if not user.email:
+            continue
+
+        unread_messages = user_profile.send_notify_messages.all()
+        unread_count = len(unread_messages)
+
+        if not unread_count:
+            continue
 
         lang = user_profile.language
         translation.activate(lang)
@@ -53,11 +69,13 @@ def send_only_notify(domain, from_email):
         unread_count_string = get_string(unread_count)
 
         context = {
-            "user": user,
-            "user_profile": user_profile,
             "domain": domain,
+            "title": subject,
+            "user": user,
             "unread_count": unread_count,
-            "unread_count_string": unread_count_string
+            "unread_count_string": unread_count_string,
+            "messages": unread_messages,
+            "STATIC_URL": settings.STATIC_URL,
         }
 
         plain_text = render_to_string('email_notification_mail.txt', context)
@@ -79,6 +97,9 @@ def send_fulltext(domain, from_email):
     ):
         notify_messages.append([])
         for user in message.recipients.all():
+            if not user.email:
+                continue
+
             user_profile = user.get_profile()
             user_profile.send_notify_messages.remove(message)
 
@@ -91,6 +112,8 @@ def send_fulltext(domain, from_email):
             plain_text = strip_tags(message_text).replace('&nbsp;', ' ')
 
             context = {
+                "domain": domain,
+                "title": subject,
                 "message_text": message_text,
             }
             html = render_to_string('email_fulltext_mail.html', context)

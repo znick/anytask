@@ -47,6 +47,9 @@ class UserStatus(models.Model):
     def __unicode__(self):
         return u'{0}'.format(self.name)
 
+    def get_full_name(self):
+        return unicode(self.name)
+
 
 def get_statuses():
     statuses = {}

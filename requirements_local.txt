@@ -29,3 +29,4 @@ Whoosh
 django-reversion==1.6.6
 dateutils
 flake8
+django_premailer==0.2.0

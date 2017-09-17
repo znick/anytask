@@ -5,6 +5,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
+from django.db.models import Q
 
 from issues.model_issue_status import IssueStatus
 
@@ -26,23 +27,23 @@ def user_id2user(user_id):
     return User.objects.get(id=user_id)
 
 
-def get_users_choise(issue):
-    users_set = set()
+def get_users_choise(issue, field=None):
     users = []
-    for user in issue.task.course.teachers.all():
-        users_set.add(user)
-    for user in User.objects.filter(is_staff=True):
-        users_set.add(user)
+    qs_filter = Q()
+    if field == 'responsible':
+        qs_filter = Q(id=issue.responsible_id)
+    elif field == 'followers':
+        qs_filter = Q(id__in=issue.followers.all().values_list("id", flat=True))
 
-    for user in users_set:
-        users.append((user.id, user.get_full_name()))  # Yes this is strange difference %)
+    for user in User.objects.filter(Q(is_staff=True) | Q(course_teachers_set=issue.task.course) | qs_filter).distinct():
+        users.append((user.id, user.get_full_name()))
 
     return users
 
 
 def get_responsible_form(field_name, request, issue, data=None, *args, **kwargs):
     class _form(DefaultForm):
-        responsible_name = forms.TypedChoiceField(get_users_choise(issue), coerce=user_id2user, label='',
+        responsible_name = forms.TypedChoiceField(get_users_choise(issue, 'responsible'), coerce=user_id2user, label='',
                                                   required=False)
 
     return _form(field_name, request, issue, data, *args, **kwargs)
@@ -50,7 +51,7 @@ def get_responsible_form(field_name, request, issue, data=None, *args, **kwargs)
 
 def get_followers_form(field_name, request, issue, data=None, *args, **kwargs):
     class _form(DefaultForm):
-        followers_names = forms.MultipleChoiceField(get_users_choise(issue), required=False,
+        followers_names = forms.MultipleChoiceField(get_users_choise(issue, 'followers'), required=False,
                                                     label='')  # we dont need coerce function here
         # because add user id to m2m field is ok.
 

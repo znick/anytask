@@ -9,7 +9,7 @@
 {% load info %}
 {% get_current_language as LANGUAGE_CODE %}
 
-{% block title %}{% if seminar %}{{ seminar.title }} | {% endif %}{{ course.name }} | {{ course.year }}{% endblock %}
+{% block title %}{% if seminar %}{% get_text_from_json seminar 'get_title' LANGUAGE_CODE %} | {% endif %}{{ course.name }} | {{ course.year }}{% endblock %}
 
 {% block scripts %}
 
@@ -26,7 +26,7 @@
         {% breadcrumb course.name "" %}
     {% else %}
         {% breadcrumb course.name course.get_absolute_url %}
-        {% breadcrumb seminar.title "" %}
+        {% breadcrumb seminar|get_title:LANGUAGE_CODE "" %}
     {% endif %}
 {% endblock breadcrumbs %}
 
@@ -80,7 +80,7 @@
             <div id="right-side">
                 <div class="card card-block">
                     <h5 class="card-title">{% if not seminar %} {{ course.name }} {% else %}
-                        {{ seminar.title }} {% endif %}{% if mark %}<span class="label label-success">
+                        {% get_text_from_json seminar 'get_title' LANGUAGE_CODE %} {% endif %}{% if mark %}<span class="label label-success">
                         {{ mark }}</span>{% endif %}
                     </h5>
                     <p class="card-text course_teachers">
@@ -147,7 +147,7 @@
                         <div id="course-information" class="card-text"
                              style="margin-top: 1rem; margin-bottom: 0; display: none;">
                             {% if seminar %}
-                                {{ seminar.task_text|safe }}
+                                {{ seminar|get_description:LANGUAGE_CODE|safe }}
                             {% elif course.information %}
                                 {{ course.information|safe }}
                             {% endif %}
@@ -166,8 +166,7 @@
                                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             <span class="sr-only">Toggle Dropdown</span>
                                         </button>
-                                        <div style="font-size: .875rem;" class="dropdown-menu"
-                                             aria-labelledby="dropdownMenuButton">
+                                        <div style="font-size: .875rem;" class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
                                             <a class="dropdown-item" href="/task/import/{{ course.id }}" role="button">
                                                 {% trans "import_zadachi_iz_kontesta" %}
                                             </a>

@@ -39,9 +39,9 @@ class UserProfile(models.Model):
 
     university = models.CharField(max_length=191, null=True, blank=True)
     university_in_process = models.BooleanField(null=False, blank=False, default=False)
-    university_class = models.CharField(max_length=50, null=True, blank=True)
+    university_class = models.CharField(max_length=191, null=True, blank=True)
     university_department = models.CharField(max_length=191, null=True, blank=True)
-    university_year_end = models.CharField(max_length=20, null=True, blank=True)
+    university_year_end = models.CharField(max_length=191, null=True, blank=True)
 
     additional_info = models.TextField(null=True, blank=True)
 
@@ -62,16 +62,16 @@ class UserProfile(models.Model):
 
     updated_by = models.ForeignKey(User, db_index=False, null=True, blank=True)
 
-    login_via_yandex = models.BooleanField(db_index=False, null=False, blank=False, default=True)
+    login_via_yandex = models.BooleanField(db_index=False, null=False, blank=False, default=False)
 
     ya_uid = models.IntegerField(null=True, blank=True)
     ya_login = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
 
-    ya_contest_uid = models.IntegerField(null=True, blank=True)
+    ya_contest_uid = models.CharField(max_length=191, null=True, blank=True)
     ya_contest_oauth = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
     ya_contest_login = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
 
-    ya_passport_uid = models.IntegerField(null=True, blank=True)
+    ya_passport_uid = models.CharField(max_length=191, null=True, blank=True)
     ya_passport_oauth = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
     ya_passport_login = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
     ya_passport_email = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)

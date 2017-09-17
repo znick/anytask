@@ -4,13 +4,14 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.http import Http404
 from django.template import RequestContext
 from django.core.exceptions import PermissionDenied
-from django.http import HttpResponse, HttpResponseForbidden
+from django.http import HttpResponse
 from django.db.models import Q
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext as _
 from django.utils.timezone import localtime, now
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
+from django.views.decorators.http import require_http_methods
 
 from collections import defaultdict, Counter
 import datetime
@@ -21,12 +22,10 @@ import reversion
 from courses.models import Course, DefaultTeacher, StudentCourseMark, MarkField, FilenameExtension
 from groups.models import Group
 from tasks.models import Task, TaskGroupRelations
-from anycontest.common import prettify_contest_task_text
 from years.models import Year
 from years.common import get_current_year
 from anycontest.common import get_contest_info, FakeResponse
 from issues.models import Issue, IssueFilter
-from issues.model_issue_status import IssueStatus
 from issues.views import contest_rejudge
 from users.forms import InviteActivationForm
 from users.models import UserProfile
@@ -46,6 +45,7 @@ import json
 logger = logging.getLogger('django.request')
 
 
+@require_http_methods(['GET'])
 @login_required
 def queue_page(request, course_id):
     course = get_object_or_404(Course, id=course_id)
@@ -53,19 +53,19 @@ def queue_page(request, course_id):
     user = request.user
 
     if not course.user_can_see_queue(user):
-        return HttpResponseForbidden()
-
-    active_profiles = UserProfile.objects.filter(Q(user_status__tag='active') | Q(user_status__tag=None))
-    active_students = []
-    for profile in active_profiles:
-        active_students.append(profile.user)
+        raise PermissionDenied
 
     issues = Issue.objects.filter(
-        task__course=course, student__in=active_students
+        Q(task__course=course) &
+        (
+            Q(student__profile__user_status__tag='active') |
+            Q(student__profile__user_status__tag=None)
+        )
     ).exclude(
-        status_field__tag=IssueStatus.STATUS_SEMINAR
+        task__type=Task.TYPE_SEMINAR,
+    ).exclude(
+        task__type=Task.TYPE_MATERIAL,
     ).order_by('update_time')
-    lang = request.user.get_profile().language
 
     lang = user.get_profile().language
     f = IssueFilter(request.GET, issues)
@@ -93,14 +93,15 @@ def queue_page(request, course_id):
 
     context = {
         'course': course,
-        'user_is_teacher': course.user_is_teacher(request.user),
-        'visible_attendance_log': course.user_can_see_attendance_log(request.user),
+        'user_is_teacher': course.user_is_teacher(user),
+        'visible_attendance_log': course.user_can_see_attendance_log(user),
         'filter': f,
         'school': schools[0] if schools else '',
     }
     return render_to_response('courses/queue.html', context, context_instance=RequestContext(request))
 
 
+@require_http_methods(['GET'])
 @login_required
 def gradebook(request, course_id, task_id=None, group_id=None):
     """Page with course related information
@@ -115,7 +116,7 @@ def gradebook(request, course_id, task_id=None, group_id=None):
 
     course = get_object_or_404(Course, id=course_id)
     if task_id:
-        task = get_object_or_404(Task, id=task_id)
+        task = get_object_or_404(Task, id=task_id, type=Task.TYPE_SEMINAR)
     else:
         task = None
 
@@ -138,20 +139,25 @@ def gradebook(request, course_id, task_id=None, group_id=None):
     tasklist_context = tasklist_shad_cpp(request, course, task, group)
 
     context = tasklist_context
-    context['tasklist_template'] = 'courses/tasklist/shad_cpp.html'
-    context['task_types'] = dict(Task().TASK_TYPE_CHOICES).items()
-    context['group_gradebook'] = True if group else False
-    context['show_hidden_tasks'] = request.session.get(
-        str(request.user.id) + '_' + str(course.id) + '_show_hidden_tasks', False)
-    context['show_academ_users'] = request.session.get(
-        str(request.user.id) + '_' + str(course.id) + '_show_academ_users', True)
-    context['school'] = schools[0] if schools else ''
-    context['full_width_page'] = True
-    context['issue_statuses'] = issue_statuses
+    context.update({
+        'tasklist_template': 'courses/tasklist/shad_cpp.html',
+        'task_types': dict(Task().TASK_TYPE_CHOICES).items(),
+        'group_gradebook': True if group else False,
+        'show_hidden_tasks': request.session.get(
+            str(request.user.id) + '_' + str(course.id) + '_show_hidden_tasks', False
+        ),
+        'show_academ_users': request.session.get(
+            str(request.user.id) + '_' + str(course.id) + '_show_academ_users', True
+        ),
+        'school': schools[0] if schools else '',
+        'full_width_page': True,
+        'issue_statuses': issue_statuses,
+    })
 
     return render_to_response('courses/gradebook.html', context, context_instance=RequestContext(request))
 
 
+@require_http_methods(['GET'])
 @login_required
 def course_page(request, course_id):
     """Page with course related information
@@ -280,10 +286,8 @@ def tasklist_shad_cpp(request, course, seminar=None, group=None):
     user = request.user
     user_is_attended = False
     user_is_attended_special_course = False
-    is_seminar = False
 
     if seminar:
-        is_seminar = True
         groups = seminar.groups.all().order_by('name')
     else:
         groups = course.groups.all().order_by('name')
@@ -307,14 +311,13 @@ def tasklist_shad_cpp(request, course, seminar=None, group=None):
     for group in groups:
         student_x_task_x_task_takens = {}
 
-        if is_seminar:
-            tasks_for_groups = TaskGroupRelations.objects.filter(task__course=course, group=group, deleted=False,
-                                                                 task__parent_task=seminar).order_by(
-                'position').select_related('task')
-        else:
-            tasks_for_groups = TaskGroupRelations.objects.filter(task__course=course, group=group, deleted=False,
-                                                                 task__parent_task=None).order_by(
-                'position').select_related('task')
+        tasks_for_groups = TaskGroupRelations.objects \
+            .filter(task__course=course, group=group, deleted=False, task__parent_task=seminar) \
+            .exclude(task__type=Task.TYPE_MATERIAL) \
+            .distinct() \
+            .order_by('position') \
+            .prefetch_related('task__groups') \
+            .select_related('task')
 
         if show_hidden_tasks:
             group_x_task_list[group] = [x.task for x in tasks_for_groups]
@@ -333,8 +336,11 @@ def tasklist_shad_cpp(request, course, seminar=None, group=None):
             if task.task_text is None:
                 task.task_text = ''
 
-        issues_students_in_group = Issue.objects.filter(task__in=group_x_task_list[group]).filter(
-            student__group__in=[group]).order_by('student').select_related()
+        issues_students_in_group = Issue.objects \
+            .filter(task__in=group_x_task_list[group], student__group__in=[group]) \
+            .order_by('student')\
+            .select_related("task")\
+            .prefetch_related('task__groups', 'task')
 
         issues_x_student = defaultdict(list)
         for issue in issues_students_in_group.all():
@@ -413,7 +419,7 @@ def tasklist_shad_cpp(request, course, seminar=None, group=None):
         'seminar': seminar,
         'visible_queue': course.user_can_see_queue(user),
         'visible_attendance_log': course.user_can_see_attendance_log(request.user),
-        'visible_hide_button': Task.objects.filter(Q(course=course) & Q(is_hidden=True)).count(),
+        'visible_hide_button': Task.objects.filter(Q(course=course) & Q(is_hidden=True)).exists(),
         'show_hidden_tasks': show_hidden_tasks,
         'visible_hide_button_users': len(academ_students),
         'show_academ_users': show_academ_users
@@ -467,26 +473,25 @@ def courses_list(request, year=None):
     return render_to_response('course_list.html', context, context_instance=RequestContext(request))
 
 
+@require_http_methods(['POST'])
+@login_required
 def edit_course_information(request):
     user = request.user
 
-    if not request.method == 'POST':
-        return HttpResponseForbidden()
-
     for key in ['course_id', 'course_information']:
         if key not in request.POST:
-            return HttpResponseForbidden()
+            raise PermissionDenied
 
     try:
         course_id = int(request.POST['course_id'])
         course_information = request.POST['course_information'].strip()
     except ValueError:  # not int
-        return HttpResponseForbidden()
+        raise PermissionDenied
 
     course = get_object_or_404(Course, id=course_id)
 
     if not course.user_can_edit_course(user):
-        return HttpResponseForbidden()
+        raise PermissionDenied
 
     if course_information and not course_information.startswith(u'<div class="not-sanitize">'):
         course_information = u'<div class="not-sanitize">' + course_information + u'</div>'
@@ -497,17 +502,16 @@ def edit_course_information(request):
                         content_type="application/json")
 
 
+@require_http_methods(['POST'])
 @login_required
 def set_spectial_course_attend(request):
     user = request.user
-    if not request.method == 'POST':
-        return HttpResponseForbidden()
 
     try:
         course_id = int(request.POST['course_id'])
         action = request.POST['action']
     except ValueError:  # not int
-        return HttpResponseForbidden()
+        raise PermissionDenied
 
     course = get_object_or_404(Course, id=course_id)
 
@@ -540,11 +544,12 @@ def get_filename_extensions(course):
     return [(ext, True) if ext in course_extensions else (ext, False) for ext in extensions]
 
 
+@require_http_methods(['GET', 'POST'])
 @login_required
 def course_settings(request, course_id):
     course = get_object_or_404(Course, id=course_id)
     if not course.user_is_teacher(request.user):
-        return HttpResponseForbidden()
+        raise PermissionDenied
 
     schools = course.school_set.all()
 
@@ -609,13 +614,12 @@ def course_settings(request, course_id):
     return HttpResponse(json.dumps({'redirect_page': redirect_page}), content_type="application/json")
 
 
+@require_http_methods(['POST'])
+@login_required
 def change_visibility_hidden_tasks(request):
-    if not request.method == 'POST':
-        return HttpResponseForbidden()
-
     course = get_object_or_404(Course, id=int(request.POST['course_id']))
     if not course.user_is_teacher(request.user):
-        return HttpResponseForbidden()
+        raise PermissionDenied
 
     session_var_name = str(request.user.id) + '_' + request.POST['course_id'] + '_show_hidden_tasks'
     request.session[session_var_name] = not request.session.get(session_var_name, False)
@@ -623,13 +627,12 @@ def change_visibility_hidden_tasks(request):
     return HttpResponse("OK")
 
 
+@require_http_methods(['POST'])
+@login_required
 def change_visibility_academ_users(request):
-    if not request.method == 'POST':
-        return HttpResponseForbidden()
-
     course = get_object_or_404(Course, id=int(request.POST['course_id']))
     if not course.user_is_teacher(request.user):
-        return HttpResponseForbidden()
+        raise PermissionDenied
 
     session_var_name = str(request.user.id) + '_' + request.POST['course_id'] + '_show_academ_users'
     request.session[session_var_name] = not request.session.get(session_var_name, True)
@@ -637,12 +640,15 @@ def change_visibility_academ_users(request):
     return HttpResponse("OK")
 
 
+@require_http_methods(['POST'])
 @login_required
 def set_course_mark(request):
-    if request.method != 'POST':
-        return HttpResponseForbidden()
+    user = request.user
 
     course = get_object_or_404(Course, id=request.POST['course_id'])
+    if not course.user_is_teacher(user):
+        raise PermissionDenied
+
     student = get_object_or_404(User, id=request.POST['student_id'])
     if request.POST['mark_id'] != '-1':
         mark = get_object_or_404(MarkField, id=request.POST['mark_id'])
@@ -656,7 +662,7 @@ def set_course_mark(request):
         student_course_mark.course = course
         student_course_mark.student = student
 
-    student_course_mark.teacher = request.user
+    student_course_mark.teacher = user
     student_course_mark.update_time = datetime.datetime.now()
     student_course_mark.mark = mark
     student_course_mark.save()
@@ -664,15 +670,13 @@ def set_course_mark(request):
                         content_type="application/json")
 
 
+@require_http_methods(['POST'])
 @login_required
 def set_task_mark(request):
-    if request.method != 'POST':
-        return HttpResponseForbidden()
-
     task_id = request.POST['task_id']
     task = get_object_or_404(Task, id=task_id)
     if not task.course.user_is_teacher(request.user):
-        return HttpResponseForbidden()
+        raise PermissionDenied
 
     issue, created = Issue.objects.get_or_create(task_id=task_id, student_id=request.POST['student_id'])
 
@@ -693,14 +697,12 @@ def set_task_mark(request):
                         content_type="application/json")
 
 
+@require_http_methods(['POST'])
 @login_required
 def change_table_tasks_pos(request):
-    if request.method != 'POST':
-        return HttpResponseForbidden()
-
     course = get_object_or_404(Course, id=int(request.POST['course_id']))
     if not course.user_is_teacher(request.user):
-        return HttpResponseForbidden()
+        raise PermissionDenied
 
     group = get_object_or_404(Group, id=int(request.POST['group_id']))
     deleting_ids_from_groups = json.loads(request.POST['deleting_ids_from_groups'])
@@ -714,11 +716,11 @@ def change_table_tasks_pos(request):
                 children_groups = reduce(lambda x, y: x + y,
                                          [list(child.groups.all()) for child in task.children.all()], [])
                 if set(children_groups).intersection(task_groups):
-                    return HttpResponseForbidden()
+                    raise PermissionDenied
             else:
                 for tg in task_groups:
                     if Issue.objects.filter(task=task, student__in=tg.students.all()).count():
-                        return HttpResponseForbidden()
+                        raise PermissionDenied
             task.groups.remove(*task.groups.filter(id__in=group_ids))
             task.save()
 
@@ -729,7 +731,7 @@ def change_table_tasks_pos(request):
     if 'task_deleted[]' in request.POST:
         task_deleted = map(lambda x: int(x), dict(request.POST)['task_deleted[]'])
         for task in Task.objects.filter(id__in=task_deleted):
-            if task.type == task.TYPE_SEMINAR and not task.children.count():
+            if task.type == task.TYPE_SEMINAR and not task.children.exists():
                 Issue.objects.filter(task=task).delete()
 
             if not Issue.objects.filter(task=task).count():
@@ -739,7 +741,7 @@ def change_table_tasks_pos(request):
                 except TaskGroupRelations.DoesNotExist:
                     pass
             else:
-                return HttpResponseForbidden()
+                raise PermissionDenied
 
     if 'task_order[]' in request.POST:
         task_order = map(lambda x: int(x), dict(request.POST)['task_order[]'])
@@ -752,13 +754,15 @@ def change_table_tasks_pos(request):
     return HttpResponse("OK")
 
 
+@require_http_methods(['POST'])
 @login_required
 def ajax_update_contest_tasks(request):
+    user = request.user
     if not request.is_ajax():
-        return HttpResponseForbidden()
+        raise PermissionDenied
 
     if 'tasks_with_contest[]' not in request.POST or 'contest_id' not in request.POST:
-        return HttpResponseForbidden()
+        raise PermissionDenied
 
     contest_id = int(request.POST['contest_id'])
 
@@ -801,7 +805,7 @@ def ajax_update_contest_tasks(request):
             for problem in contest_responses[0]['problems']:
                 if problem['alias'] == alias:
                     task.title = problem['problemTitle']
-                    task.task_text = prettify_contest_task_text(problem['statement'])
+                    task.task_text = problem['statement']
                     if 'endTime' in contest_responses[0]:
                         deadline = contest_responses[0]['endTime'].split('+')[0]
                         task.deadline_time = datetime.datetime.strptime(deadline, '%Y-%m-%dT%H:%M:%S.%f')
@@ -816,22 +820,23 @@ def ajax_update_contest_tasks(request):
 
             task.save()
 
-            reversion.set_user(request.user)
+            reversion.set_user(user)
             reversion.set_comment("Update from contest")
 
-            response['tasks_title'][task.id] = task.title
+            response['tasks_title'][task.id] = task.get_title(user.get_profile().language)
 
     return HttpResponse(json.dumps(response),
                         content_type="application/json")
 
 
+@require_http_methods(['POST'])
 @login_required
 def ajax_rejudge_contest_tasks(request):
     if not request.is_ajax():
-        return HttpResponseForbidden()
+        raise PermissionDenied
 
     if 'tasks_with_contest[]' not in request.POST:
-        return HttpResponseForbidden()
+        raise PermissionDenied
 
     for issue in Issue.objects.filter(task_id__in=dict(request.POST)['tasks_with_contest[]']):
         contest_rejudge(issue)
@@ -927,6 +932,7 @@ def attendance_list(request, course, group=None):
     return context
 
 
+@require_http_methods(['GET'])
 @login_required
 def attendance_page(request, course_id, group_id=None):
     user = request.user
@@ -957,11 +963,9 @@ def attendance_page(request, course_id, group_id=None):
     return render_to_response('courses/attendance.html', context, context_instance=RequestContext(request))
 
 
+@require_http_methods(['POST'])
 @login_required
 def lesson_visited(request):
-    if request.method != 'POST':
-        raise PermissionDenied
-
     lesson_id = request.POST['lssn_id']
     lesson = get_object_or_404(Lesson, id=lesson_id)
     if not lesson.course.user_is_teacher(request.user):

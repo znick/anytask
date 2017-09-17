@@ -22,6 +22,7 @@ from groups.models import Group
 from courses.models import Course, StudentCourseMark
 from invites.models import Invite
 from issues.models import Issue
+from issues.model_issue_status import IssueStatus
 from tasks.models import Task
 from schools.models import School
 from users.forms import InviteActivationForm
@@ -203,8 +204,8 @@ def profile_settings(request):
     if request.method == 'POST':
         user_profile.show_email = 'show_email' in request.POST
         user_profile.send_my_own_events = 'send_my_own_events' in request.POST
-        user_profile.location = request.POST['location']
-        if request.POST['geoid']:
+        user_profile.location = request.POST.get('location', '')
+        if 'geoid' in request.POST:
             tz = get_tz(request.POST['geoid'])
             user_profile.time_zone = tz
             request.session['django_timezone'] = tz
@@ -460,7 +461,11 @@ def add_user_to_group(request):
 @login_required
 def my_tasks(request):
     user = request.user
-    issues = Issue.objects.filter(student=user).order_by('-update_time')
+    issues = Issue.objects \
+        .filter(student=user) \
+        .exclude(task__type=Task.TYPE_MATERIAL) \
+        .exclude(task__type=Task.TYPE_SEMINAR) \
+        .order_by('-update_time')
 
     user_as_str = str(user.username) + '_tasks_filter'
 
@@ -526,7 +531,10 @@ def user_courses(request, username=None, year=None):
 
     for course in courses:
 
-        tasks = Task.objects.filter(course=course, groups__in=groups, is_hidden=False).distinct()
+        tasks = Task.objects\
+            .filter(course=course, groups__in=groups, is_hidden=False) \
+            .exclude(type=Task.TYPE_MATERIAL)\
+            .distinct()
         issues = Issue.objects.filter(student=user_to_show).filter(task__in=tasks)
 
         if StudentCourseMark.objects.filter(student=user_to_show, course=course):
@@ -534,7 +542,9 @@ def user_courses(request, username=None, year=None):
         else:
             mark = None
 
-        student_summ_score = issues.aggregate(Sum('mark'))['mark__sum'] or 0
+        student_summ_score = issues \
+            .exclude(status_field__tag=IssueStatus.STATUS_SEMINAR) \
+            .aggregate(Sum('mark'))['mark__sum'] or 0
 
         new_course_statistics = dict()
         new_course_statistics['name'] = course.name
@@ -627,7 +637,6 @@ def ajax_edit_user_info(request):
 
 def set_user_language(request):
     next = request.REQUEST.get('next')
-    print request
     if not is_safe_url(url=next, host=request.get_host()):
         next = request.META.get('HTTP_REFERER')
         if not is_safe_url(url=next, host=request.get_host()):

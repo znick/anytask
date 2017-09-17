@@ -21,5 +21,6 @@ Depends: ${shlibs:Depends}, ${misc:Depends},
  tar,
  xz-utils,
  bzip2,
- gzip
+ gzip,
+ gettext
 Description: Anytask -- платформа для взаимодействия преподавателей и студентов в процессе обучения.

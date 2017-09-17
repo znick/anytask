@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 
 import logging
-from datetime import datetime
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
-from django.utils import translation
+from django.utils import translation, timezone
 from django.utils.translation import ugettext as _
 
 from anycontest.common import comment_verdict, get_contest_mark
@@ -45,7 +44,7 @@ class Command(BaseCommand):
                     if contest_submission.verdict == 'ok' and \
                             task.accepted_after_contest_ok and \
                             not issue.is_status_accepted():
-                        if task.deadline_time and task.deadline_time < datetime.now() and \
+                        if task.deadline_time and task.deadline_time < timezone.now() and \
                                 task.course.issue_status_system.has_accepted_after_deadline():
                             issue.set_status_accepted_after_deadline()
                             if not issue.task.score_after_deadline:

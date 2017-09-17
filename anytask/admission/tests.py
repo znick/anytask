@@ -147,9 +147,9 @@ class ViewsTest(TestCase):
         self.assertEqual(user_profile.university_class, test_data['university_class'])
         self.assertEqual(user_profile.university_department, test_data['university_department'])
         self.assertEqual(user_profile.university_year_end, test_data['university_year_end'])
-        self.assertEqual(user_profile.ya_contest_uid, int(test_header['HTTP_UID']))
+        self.assertEqual(user_profile.ya_contest_uid, test_header['HTTP_UID'])
         self.assertEqual(user_profile.ya_contest_login, test_header['HTTP_LOGIN'])
-        self.assertEqual(user_profile.ya_passport_uid, int(test_header['HTTP_UID']))
+        self.assertEqual(user_profile.ya_passport_uid, test_header['HTTP_UID'])
         self.assertEqual(user_profile.ya_passport_email, test_header['HTTP_EMAIL'])
         self.assertEqual(user_profile.ya_passport_login, test_header['HTTP_LOGIN'])
 

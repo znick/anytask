@@ -4,6 +4,10 @@
     padding: 0;
 }
 
+.history .issue-page-comment.not-sanitize {
+    overflow: auto;
+}
+
 .history li {
     /*margin: 10px 0;*/
     padding: 10px 15px;

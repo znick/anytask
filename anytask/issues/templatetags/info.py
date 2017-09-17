@@ -18,6 +18,12 @@ def get_text_from_json(obj, method_name, *args):
 
 
 @register.filter
+def get_title(task, lang):
+    if isinstance(task, Task):
+        return task.get_title(lang)
+
+
+@register.filter
 def get_description(task, lang):
     if isinstance(task, Task):
         return task.get_description(lang)

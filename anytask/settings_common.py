@@ -162,6 +162,7 @@ INSTALLED_APPS = (
     'admission',
     'lessons',
     'api',
+    'django_premailer',
 )
 
 AUTH_PROFILE_MODULE = "users.UserProfile"
@@ -265,3 +266,7 @@ ENROLLEE_STATUS = 1
 GEO_SUGGEST_URL = ''
 GEOBASE_API = ''
 USE_LOCAL_GEOBASE = False
+
+PREMAILER_OPTIONS = {
+    'remove_classes': True,
+}

@@ -1,0 +1,12 @@
+{% load i18n %}
+{% load info %}
+{% trans "zdravstvujte" %}, {{ user.get_full_name }}.
+
+{% trans "v_zadache" %} "{% get_text_from_json issue.task 'get_title' LANGUAGE_CODE %}", {% trans "vy_javljaetes" %} {% trans user_type %}, {% trans "pojavilis_novye_kommentarii" %}.
+{% trans "perejti" %}:
+{{ domain }}{{ issue.get_absolute_url }}
+
+
+--
+{% trans "s_uvazheniem" %},
+{% trans "komanda_anytask" %}.

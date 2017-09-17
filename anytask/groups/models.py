@@ -18,3 +18,6 @@ class Group(models.Model):
 
     def __unicode__(self):
         return u"{0}|{1}".format(self.year, unicode(self.name))
+
+    def get_full_name(self):
+        return unicode(self.name)
