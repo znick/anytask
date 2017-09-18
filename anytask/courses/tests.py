@@ -142,13 +142,13 @@ class ViewsTest(TestCase):
 
         # get page
         response = client.get(reverse('courses.views.edit_course_information'))
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 405)
 
         # post page
         response = client.post(reverse('courses.views.edit_course_information'),
                                {'course_id': self.course.id,
                                 'course_information': 'course_information'})
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 302)
 
     def test_course_settings_anonymously(self):
         client = self.client
@@ -162,19 +162,19 @@ class ViewsTest(TestCase):
 
         # get page
         response = client.get(reverse('courses.views.change_visibility_hidden_tasks'))
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 405)
 
         # post page
         response = client.post(reverse('courses.views.change_visibility_hidden_tasks'),
                                {'course_id': self.course.id})
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 302)
 
     def test_set_course_mark_anonymously(self):
         client = self.client
 
         # get page
         response = client.get(reverse('courses.views.set_course_mark'))
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 405)
 
         # post page
         response = client.post(reverse('courses.views.set_course_mark'),
@@ -189,7 +189,7 @@ class ViewsTest(TestCase):
 
         # get page
         response = client.get(reverse('courses.views.set_task_mark'))
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 405)
 
         # post page
         response = client.post(reverse('courses.views.set_task_mark'),
@@ -340,7 +340,7 @@ class ViewsTest(TestCase):
 
         # get page
         response = client.get(reverse('courses.views.edit_course_information'))
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 405)
 
         # post page
         response = client.post(reverse('courses.views.edit_course_information'),
@@ -438,7 +438,7 @@ class ViewsTest(TestCase):
 
         # get page
         response = client.get(reverse('courses.views.change_visibility_hidden_tasks'))
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 405)
 
         Task.objects.create(title='task_title',
                             course=self.course,
@@ -509,7 +509,7 @@ class ViewsTest(TestCase):
 
         # get page
         response = client.get(reverse('courses.views.set_course_mark'))
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 405)
 
         mark_fields = [MarkField.objects.create(name='mark1'), MarkField.objects.create(name='mark2')]
         course_mark_system = CourseMarkSystem.objects.create(name='course_mark_system')
@@ -602,7 +602,7 @@ class ViewsTest(TestCase):
 
         # get page
         response = client.get(reverse('courses.views.set_task_mark'))
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 405)
 
         task = Task.objects.create(title='task_title',
                                    course=self.course,
@@ -771,7 +771,7 @@ class ViewsTest(TestCase):
 
         # get page
         response = client.get(reverse('courses.views.edit_course_information'))
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 405)
 
         # post page
         response = client.post(reverse('courses.views.edit_course_information'),
@@ -802,7 +802,7 @@ class ViewsTest(TestCase):
 
         # get page
         response = client.get(reverse('courses.views.change_visibility_hidden_tasks'))
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 405)
 
         # post page
         response = client.post(reverse('courses.views.change_visibility_hidden_tasks'),

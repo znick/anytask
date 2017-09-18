@@ -77,9 +77,10 @@ class AnyRB(object):
 
             draft = review_request.get_or_create_draft()
             issue = self.event.issue
+            task_title = issue.task.get_title(issue.student.get_profile().language)
             summary = u'[{0}][{1}] {2}'.format(issue.student.get_full_name(),
                                                issue.task.course.get_user_group(issue.student),
-                                               issue.task.title)
+                                               task_title)
 
             description_template = \
                 _(u'zadacha') + ': "{0}", ' + \
@@ -88,7 +89,7 @@ class AnyRB(object):
                 _(u'obsuzhdenie_zadachi') + ']({2}{6})'
 
             description = description_template.format(
-                issue.task.title,
+                task_title,
                 issue.task.course,
                 Site.objects.get_current().domain,
                 issue.task.course.get_absolute_url(),

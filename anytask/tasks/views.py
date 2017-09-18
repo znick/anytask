@@ -275,7 +275,7 @@ def task_create_or_edit(request, course, task_id=None):
     task.groups = task_groups
     task.set_position_in_new_group(task_groups)
 
-    if task_id and changed_score_after_deadline:
+    if task_id and changed_score_after_deadline and task.parent_task:
         student_ids = User.objects.filter(group__in=task_groups).values_list('id', flat=True)
         for student_id in student_ids:
             parent_issue, created = Issue.objects.get_or_create(task_id=task.parent_task.id, student_id=student_id)
@@ -377,7 +377,7 @@ def contest_task_import(request):
     contest_id = int(request.POST['contest_id_for_task'])
 
     tasks = []
-    common_params = get_task_params(request, course.issue_status_system.has_accepted_after_deadline)
+    common_params = get_task_params(request, course.issue_status_system.has_accepted_after_deadline())
 
     got_info, contest_info = get_contest_info(contest_id)
 

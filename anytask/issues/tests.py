@@ -176,7 +176,7 @@ class ViewsTest(TestCase):
         results = info('div', 'accordion2-result')
         forms = info('form')
         self.assertEqual(len(forms), 4, 'Issue field forms len is not 8')
-        self.assertEqual(labels[0].string.strip().strip('\n'), u'predmet:', '1st issue field label wrong')
+        self.assertEqual(labels[0].string.strip().strip('\n'), u'kurs:', '1st issue field label wrong')
         self.assertEqual(results[0].a['href'], '/course/1', '1st issue field link wrong')
         self.assertEqual(results[0].a.string.strip().strip('\n'), 'course_name', '1st issue field link text wrong')
 
@@ -202,7 +202,7 @@ class ViewsTest(TestCase):
                          '4th issue field select option text wrong')
         self.assertEqual(len(forms[0]('button')), 2, '4th issue field button len is not 2')
         self.assertEqual(forms[0]('button')[0].string.strip().strip('\n'),
-                         u'otpravit',
+                         u'sohranit',
                          '4th issue field 1st button wrong ')
         self.assertEqual(forms[0]('button')[1].string.strip().strip('\n'),
                          u'ja',
@@ -221,7 +221,7 @@ class ViewsTest(TestCase):
                          '5th issue field select option text wrong')
         self.assertEqual(len(forms[1]('button')), 2, '5th issue field button len is not 2')
         self.assertEqual(forms[1]('button')[0].string.strip().strip('\n'),
-                         u'otpravit',
+                         u'sohranit',
                          '5th issue field 1st button wrong ')
         self.assertEqual(forms[1]('button')[1].string.strip().strip('\n'),
                          u'ja',
@@ -248,7 +248,7 @@ class ViewsTest(TestCase):
                       '6th issue field select 3st option text wrong')
         self.assertEqual(len(forms[2]('button')), 1, '6th issue field button len is not 1')
         self.assertEqual(forms[2]('button')[0].string.strip().strip('\n'),
-                         u'otpravit',
+                         u'sohranit',
                          '6th issue field 1st button wrong ')
 
         self.assertEqual(labels[6].a.string.strip().strip('\n'), u'ocenka', '7th issue field label text wrong')
@@ -263,7 +263,7 @@ class ViewsTest(TestCase):
         self.assertIsNotNone(forms[3].find('input', {'name': 'mark'}), '7th issue field mark input wrong')
         self.assertEqual(len(forms[3]('button')), 2, '7th issue field button len is not 2')
         self.assertEqual(forms[3]('button')[0].string.strip().strip('\n'),
-                         u'otpravit',
+                         u'sohranit',
                          '7th issue field 1st button wrong ')
         self.assertEqual(forms[3]('button')[1].string.strip().strip('\n'),
                          u'Зачтено',
@@ -668,7 +668,7 @@ class ViewsTest(TestCase):
         results = info('div', 'accordion2-result')
         forms = info('form')
         self.assertEqual(len(forms), 0, 'Issue field forms len is not 0')
-        self.assertEqual(labels[0].string.strip().strip('\n'), u'predmet:', '1st issue field label wrong')
+        self.assertEqual(labels[0].string.strip().strip('\n'), u'kurs:', '1st issue field label wrong')
         self.assertEqual(results[0].a['href'], '/course/1', '1st issue field link wrong')
         self.assertEqual(results[0].a.string.strip().strip('\n'), 'course_name', '1st issue field link text wrong')
 

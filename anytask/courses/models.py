@@ -144,6 +144,9 @@ class Course(models.Model):
     def __unicode__(self):
         return unicode(self.name)
 
+    def get_full_name(self):
+        return unicode(self.name)
+
     def get_absolute_url(self):
         return reverse('courses.views.course_page', args=[str(self.id)])
 
@@ -160,6 +163,9 @@ class Course(models.Model):
 
         return self.teachers.filter(id=user.id).count() > 0
 
+    def user_is_student(self, user):
+        return self.groups.filter(students=user).exists()
+
     def get_user_group(self, user):
         for group in self.groups.filter(students=user):
             return group
@@ -172,7 +178,7 @@ class Course(models.Model):
         if self.user_is_teacher(user):
             return True
 
-        if self.get_user_group(user):
+        if self.user_is_student(user):
             return True
 
         return False
@@ -236,10 +242,10 @@ class Course(models.Model):
             return None
 
     def is_rb_integrated(self):
-        return self.rb_integrated or self.task_set.filter(rb_integrated=True).count()
+        return self.rb_integrated
 
     def is_contest_integrated(self):
-        return self.contest_integrated or self.task_set.filter(contest_integrated=True).count()
+        return self.contest_integrated or self.task_set.filter(contest_integrated=True).exists()
 
 
 class DefaultTeacher(models.Model):

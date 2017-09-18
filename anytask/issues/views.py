@@ -45,7 +45,7 @@ def user_can_read(user, issue):
 
 def prepare_info_fields(info_fields, request, issue):
     title_map = {'comment': _('kommentarij'),
-                 'course_name': _('predmet'),
+                 'course_name': _('kurs'),
                  'task_name': _('zadacha'),
                  'student_name': _('student'),
                  'responsible_name': _('proverjaushij'),

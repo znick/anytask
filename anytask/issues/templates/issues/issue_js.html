@@ -19,7 +19,9 @@
             'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css',
             '{{ STATIC_URL }}tinymce-style-issue-comment.css',
             '{{ STATIC_URL }}prism.css'
-        ]
+        ],
+        relative_urls : false,
+        remove_script_host: false
     };
 
     $(document).ready(function () {
@@ -31,19 +33,24 @@
         });
 
         $('#task-text').on('hide.bs.collapse', function () {
+            $(".btn-history-task-text").blur();
             window.sessionStorage.setItem('collapsed', true);
-        });
-
-        $('#task-text').on('show.bs.collapse', function () {
+        }).on('show.bs.collapse', function () {
+            $(".btn-history-task-text").blur();
             window.sessionStorage.setItem('collapsed', false);
+        }).on('hidden.bs.collapse', function () {
+            $("span.fa", ".btn-history-task-text").removeClass("fa-caret-up").addClass("fa-caret-down");
+        }).on('shown.bs.collapse', function () {
+            window.sessionStorage.setItem('collapsed', false);
+            $("span.fa", ".btn-history-task-text").removeClass("fa-caret-down").addClass("fa-caret-up");
         });
 
-        collapsed = window.sessionStorage.getItem('collapsed');
-
-        if(collapsed == "true") {
+        if(window.sessionStorage.getItem('collapsed') === "true") {
             $('#task-text').collapse('hide');
+            $("span.fa", ".btn-history-task-text").removeClass("fa-caret-up").addClass("fa-caret-down");
         } else {
             $('#task-text').collapse('show');
+            $("span.fa", ".btn-history-task-text").removeClass("fa-caret-down").addClass("fa-caret-up");
         }
 
         $("select[multiple]").multiselect({

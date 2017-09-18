@@ -44,7 +44,7 @@
         {% endif %}
         {% if visible_queue %}
             <li class="nav-item">
-                <a class="nav-link" href="{{ course.get_absolute_url }}/queue">{% trans "ochered_na_proverku" %}</a>
+                <a class="nav-link" href="{% url courses.views.queue_page course.id %}">{% trans "ochered_na_proverku" %}</a>
             </li>
         {% endif %}
         {% if user_is_teacher %}
@@ -187,6 +187,7 @@
                                 </div>
                             </div>
                         </li>
+                        {% if course.is_rb_integrated %}
                         <li class="list-group-item">
                             <div class="row">
                                 <p class="card-text">{% trans "otpravljat_tolko_odin_fajl" %}</p>
@@ -200,6 +201,7 @@
                                 </div>
                             </div>
                         </li>
+                        {% endif %}
                         <li class="list-group-item">
                             <div class="row">
                                 <p class="card-text">{% trans "perevodit_v_zachteno" %}</p>

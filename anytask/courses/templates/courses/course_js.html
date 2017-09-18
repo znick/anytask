@@ -142,6 +142,8 @@
             image_description: false,
             link_assume_external_targets: true,
             default_link_target: "_blank",
+            relative_urls : false,
+            remove_script_host: false,
             table_default_attributes: {
                 "class": 'table table-bordered table-comment'
             },
@@ -216,7 +218,8 @@
 
         if (window.innerWidth >= 992) {
             $("#right-side").sticky({
-                topSpacing: 70
+                topSpacing: parseInt($("body").css("padding-top"), 10),
+                bottomSpacing: $("footer.footer").height()
             });
         }
 

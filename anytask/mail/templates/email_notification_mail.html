@@ -1,19 +1,56 @@
 {% extends "base_email.html" %}
 {% load i18n %}
-{% block main_width %}475px{% endblock %}
 {% block content %}
-    <p style="color:#373a3c;line-height:20px;margin:0 0 20px">
-        {% trans "u_vas" %} {{ unread_count }} {{ unread_count_string }}.
-    </p>
-    <table cellpadding="0" cellspacing="0" style="border-collapse: separate;">
+    <table cellspacing="0" cellpadding="0" width="100%" style="color:#373a3c;border-collapse:separate">
         <tbody>
         <tr>
-            <td bgcolor="#0275d8"
-                style="border: 1px solid #0275d8;background-color: #0275d8;border-radius: 4px">
-                <a href="{{ domain }}{% url mail.views.mail_page %}"
-                   target="_blank"
-                   style="color:#fff;padding: 8px 16px;font-size:17px;line-height:20px;font-weight:normal;text-decoration:none;display:block;height:20px;"
-                >{% trans "perejti_k_soobshenijam" %}</a>
+            <td>
+                <p style="line-height:20px;margin:0 0 15px 0">
+                    {% trans "zdravstvujte" %},&nbsp;{{ user.get_full_name }}!
+                </p>
+                <p style="line-height:20px;margin:0 0 30px">
+                    {% trans "u_vas" %} {{ unread_count }} {{ unread_count_string }}.
+                </p>
+            </td>
+        </tr>
+        {% for message in messages %}
+            <tr>
+                <td>
+                    <table cellpadding="0" cellspacing="0"
+                           style="border-collapse:collapse;margin-bottom:30px;width:100%;">
+                        <tbody>
+                        <tr>
+                            <td style="border-collapse:collapse;padding-right:15px;padding-top:3px;vertical-align:top;width:50px;">
+                                <div style="width: 50px; height: 50px;border-radius: 50%;border: 1px solid #c3c3c3;vertical-align: middle;background-size: cover;background-image: url({{ domain }}{% if not message.sender.get_profile.avatar %}{{ STATIC_URL }}default_avatar.png{% else %}{{ message.sender.get_profile.avatar.url }}{% endif %});background-position: center center;"></div>
+                            </td>
+                            <td style="border-collapse:collapse;vertical-align:middle;">
+                                <p style="line-height:20px;margin:0;font-weight: bold">
+                                    <strong>{{ message.sender.get_full_name }}</strong>
+                                </p>
+                                <p style="line-height:20px;margin:0">
+                                    {{ message.title }}
+                                </p>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+        {% endfor %}
+        <tr>
+            <td>
+                <table cellpadding="0" cellspacing="0" style="border-collapse: separate;">
+                    <tbody>
+                    <tr>
+                        <td style="border: 1px solid #0275d8;background-color: #0275d8;border-radius: 4px;">
+                            <a href="{{ domain }}{% url mail.views.mail_page %}"
+                               target="_blank"
+                               style="color:#fff;padding: 8px 16px;font-size:17px;line-height:20px;font-weight:normal;text-decoration:none;display:block;height:20px;"
+                            >{% trans "perejti_k_soobshenijam" %}</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
             </td>
         </tr>
         </tbody>

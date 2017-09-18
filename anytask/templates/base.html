@@ -10,7 +10,7 @@
         <script src="https://yastatic.net/jquery-ui/1.11.2/jquery-ui.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/smalot-bootstrap-datetimepicker/2.4.4/js/bootstrap-datetimepicker.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/smalot-bootstrap-datetimepicker/2.4.4/js/locales/bootstrap-datetimepicker.ru.js"></script>
-        <script src="https://www.atlasestateagents.co.uk/javascript/tether.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/js/bootstrap.min.js"></script>
         <script src="https://malsup.github.io/jquery.form.js"></script>
         <script src="{{ STATIC_URL }}jquery.tablesorter/jquery.tablesorter.min.js"></script>
@@ -646,7 +646,7 @@
     {% block scripts %}{% endblock %}
 </head>
 
-<body data-spy="scroll" style="">
+<body>
 {% block navbar_all %}
     <nav class="navbar navbar-fixed-top navbar-dark navbar-blue">
         <div class="{% if full_width_page %}container-fluid{% else %}container{% endif %}">
@@ -657,7 +657,7 @@
             </ul>
             -->
             <button class="navbar-toggler hidden-lg-up pull-xs-right" type="button" data-toggle="collapse" data-target="#exCollapsingNavbar2">
-                &#9776;
+                <span class="fa fa-bars fa" aria-hidden="true"></span>
             </button>
             <div class="collapse navbar-toggleable-md" id="exCollapsingNavbar2">
                 {% block navbar %} {% endblock navbar %}
