@@ -75,12 +75,12 @@ class ApiTest(TestCase):
         return self.client.get(*args, **kwargs)
 
     def test_get_issues(self):
-        issues_list = [{u'status': u'novyj', u'task': {u'id': 1, u'title': u'task_title1'},
+        issues_list = [{u'status': u'New', u'task': {u'id': 1, u'title': u'task_title1'},
                         u'followers': [], u'student': {u'username': u'student', u'first_name': u'student_name',
                                                        u'last_name': u'student_last_name', u'middle_name': None,
                                                        u'name': u'student_name student_last_name', u'id': 3},
                         u'responsible': None, u'id': 1, u'mark': 0.0},
-                       {u'status': u'novyj', u'task': {u'id': 2, u'title': u'task_title2'},
+                       {u'status': u'New', u'task': {u'id': 2, u'title': u'task_title2'},
                         u'followers': [], u'student': {u'username': u'student', u'first_name': u'student_name',
                                                        u'last_name': u'student_last_name', u'middle_name': None,
                                                        u'name': u'student_name student_last_name', u'id': 3},
@@ -106,7 +106,7 @@ class ApiTest(TestCase):
             username = self.teacher
             password = self.teacher_password
 
-        issue = {u'status': u'novyj', u'task': {u'id': 1, u'title': u'task_title1'},
+        issue = {u'status': u'New', u'task': {u'id': 1, u'title': u'task_title1'},
                  u'followers': [], u'student': {u'username': u'student', u'first_name': u'student_name',
                                                 u'last_name': u'student_last_name', u'middle_name': None,
                                                 u'name': u'student_name student_last_name', u'id': 3},
