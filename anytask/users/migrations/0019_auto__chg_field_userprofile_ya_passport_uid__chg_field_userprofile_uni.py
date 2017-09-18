@@ -12,9 +12,6 @@ class Migration(SchemaMigration):
         # Changing field 'UserProfile.ya_passport_uid'
         db.alter_column('users_userprofile', 'ya_passport_uid', self.gf('django.db.models.fields.CharField')(max_length=191, null=True))
 
-        # Changing field 'UserProfile.location'
-        db.alter_column('users_userprofile', 'location', self.gf('django.db.models.fields.TextField')(null=True))
-
         # Changing field 'UserProfile.university_class'
         db.alter_column('users_userprofile', 'university_class', self.gf('django.db.models.fields.CharField')(max_length=191, null=True))
 
@@ -24,14 +21,10 @@ class Migration(SchemaMigration):
         # Changing field 'UserProfile.university_year_end'
         db.alter_column('users_userprofile', 'university_year_end', self.gf('django.db.models.fields.CharField')(max_length=191, null=True))
 
-
     def backwards(self, orm):
 
         # Changing field 'UserProfile.ya_passport_uid'
         db.alter_column('users_userprofile', 'ya_passport_uid', self.gf('django.db.models.fields.IntegerField')(null=True))
-
-        # Changing field 'UserProfile.location'
-        db.alter_column('users_userprofile', 'location', self.gf('django.db.models.fields.TextField')())
 
         # Changing field 'UserProfile.university_class'
         db.alter_column('users_userprofile', 'university_class', self.gf('django.db.models.fields.CharField')(max_length=50, null=True))
@@ -41,7 +34,6 @@ class Migration(SchemaMigration):
 
         # Changing field 'UserProfile.university_year_end'
         db.alter_column('users_userprofile', 'university_year_end', self.gf('django.db.models.fields.CharField')(max_length=20, null=True))
-
 
     models = {
         'auth.group': {
