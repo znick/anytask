@@ -1,6 +1,6 @@
 {% load i18n %}
 <script src="{{ STATIC_URL }}jquery.validate.min.js"></script>
-<script src="http://malsup.github.io/jquery.form.js"></script>
+<script src="https://malsup.github.io/jquery.form.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.sticky/1.0.3/jquery.sticky.min.js"></script>
 <script src="{{ STATIC_URL }}jquery.stickytableheaders.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/spark-md5/2.0.2/spark-md5.min.js"></script>
@@ -170,46 +170,6 @@
                         });
             });
         {% endif %}
-
-        $('#modal_status_edit_ok').click(function() {
-            var modal_status_ok = $('#modal_status_edit_ok');
-            var d = 'disabled';
-
-            modal_status_ok.data('btn_clicked', true);
-            modal_status_ok.data('resetText', modal_status_ok.html());
-            modal_status_ok.html(modal_status_ok.data('loadingText'));
-            modal_status_ok.addClass(d).attr(d, d).prop(d, true);
-
-            $.post('{% url users.views.set_user_statuses user_to_show %}', $('#status_edit_form').serialize(), function (data) {
-                var user_statuses = data.user_statuses;
-                var user_profile_log = data.user_profile_log;
-                var log_entry = '';
-                if (data.is_error == false) {
-                    $('#user_statuses').html('');
-                    if (user_statuses.length == 0) {
-                        $('#user_statuses').html('<p class="card-text">{% trans "net_statusov" %}</p>');
-                    }
-                    for (i = 0; i < user_statuses.length; i++){
-                        var status_template = '<span class="' + 'label' + '" style="' +
-                                'font-size: 1rem; margin-bottom: .3rem; background-color: ' +
-                                user_statuses[i].color + '">' +
-                                user_statuses[i].name + '</span> ';
-                        $('#user_statuses').append(status_template);
-                        log_entry += status_template;
-                    }
-                    $('#tbody_history').append('<tr><td>'+user_profile_log.update_time+'</td><td><a href="/users/'+
-                                            user_profile_log.updated_by+'">'+user_profile_log.fullname+'</a>'+'</td><td>'+log_entry+'</td>');
-
-                }
-                else {
-                    alert(data.error);
-                }
-                modal_status_ok.html(modal_status_ok.data('resetText'));
-                modal_status_ok.removeClass(d).removeAttr(d).prop(d, false);
-                $('#modal_status_edit').modal('hide');
-            });
-
-        });
     });
 
     function readURL(input) {

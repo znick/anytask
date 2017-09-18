@@ -67,7 +67,7 @@ def unpack_issue(issue):
         "update_time": issue.update_time.isoformat() + "Z",
         "responsible": None,
         "followers": map(lambda x: unpack_user(x), issue.followers.all()),
-        "status": issue.status_field.get_name(),
+        "status": issue.status_field.get_name(lang='en'),
         "student": unpack_user(issue.student),
         "task": unpack_task(task)
     }

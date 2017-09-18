@@ -1,5 +1,8 @@
 {% load crispy_forms_tags %}
 {% load i18n %}
+{% load tz %}
+{% load info %}
+{% get_current_language as LANGUAGE_CODE %}
 
 <style>
     .card-header {
@@ -102,19 +105,19 @@
                                         <button type="submit" class="btn btn-secondary" name="Me">{%  trans "ja" %}</button>
                                     {% endif %}
                                     {% if field.name == 'mark' %}
-                                        {% if statuses_accepted.count > 1 %}
+                                        {% if statuses_accepted|length > 1 %}
                                             <div class="dropdown dropdown-submit" style="display: inline-block;">
                                                 <button class="btn btn-secondary dropdown-toggle" type="button" id="accepted_btn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                     {%  trans "status" %}
                                                 </button>
                                                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                                    {% for status in statuses_accepted %}
-                                                        <button type="submit" class="dropdown-item" href="#" name="Accepted" value="{{ status.id }}">{{ status.name }}</button>
+                                                    {% for status_id, status_name in statuses_accepted %}
+                                                        <button type="submit" class="dropdown-item" href="#" name="Accepted" value="{{ status_id }}">{{ status_name }}</button>
                                                     {% endfor %}
                                                 </div>
                                             </div>
                                         {% else %}
-                                            <button type="submit" class="btn btn-secondary" name="Accepted">{{ statuses_accepted.0.name }}</button>
+                                            <button type="submit" class="btn btn-secondary" name="Accepted">{{ statuses_accepted.0.1 }}</button>
                                         {% endif %}
                                     {% endif %}
                                 </div>
@@ -130,7 +133,7 @@
             <div class="row col-wrap">
                 <div class="col-md-5 accordion2-label">{%  trans "data_sdachi" %}:</div>
                 <div class="col-md-7 accordion2-result">
-                    {{ issue.task.deadline_time|date:'d-m-Y H:i' }} {% if issue.task.deadline_time %} MSK UTC+3 {% endif %}
+                    {% localtime on %}{{ issue.task.deadline_time|date:'d-m-Y H:i' }}{% endlocaltime%} {% if issue.task.deadline_time %} {% endif %}
                 </div>
             </div>
         </div>
@@ -144,14 +147,14 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h5  class="modal-title" id="modal_header_task_descr" style="display: inline-block; ">{{ issue.task.title }}</h5>
+                <h5  class="modal-title" id="modal_header_task_descr" style="display: inline-block; ">{% get_text_from_json issue.task 'get_title' LANGUAGE_CODE %}</h5>
                 {% if teacher_or_staff %}
                     <a id="modal_task_descr_edit_button" href="{% url tasks.views.task_edit_page task_id=issue.task.id %}" type="button" style="opacity:0.2;filter: alpha(opacity=20);color:#000000;display: inline-block;vertical-align: super;margin-left: 5px;"><i class="fa fa-edit fa-lg"></i></a>
                 {% endif %}
-                <div id="modal_header_deadline_time">{% if issue.task.deadline_time %}<strong>{%  trans "data_sdachi" %}: {{ issue.task.deadline_time|date:'d-m-Y H:i' }} MSK UTC+3 {% endif %}</strong></div>
+                <div id="modal_header_deadline_time">{% if issue.task.deadline_time %}<strong>{%  trans "data_sdachi" %}:{% localtime on %} {{ issue.task.deadline_time|date:'d-m-Y H:i' }}{% endlocaltime %}{% endif %}</strong></div>
             </div>
             <div class="modal-body">
-                <div id="modal_body_task_descr">{{ issue.task.task_text|safe }}</div>
+                <div id="modal_body_task_descr">{{ issue.task|get_description:LANGUAGE_CODE|safe }}</div>
             </div>
         </div>
     </div>

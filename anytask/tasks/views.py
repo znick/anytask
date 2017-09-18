@@ -14,13 +14,20 @@ from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.utils.translation import ugettext as _
+from django.utils.timezone import make_aware
 
-from anycontest.common import get_contest_info, FakeResponse
+from anycontest.common import get_contest_info
+from common.timezone import get_datetime_with_tz, convert_datetime
 from courses.models import Course
 from groups.models import Group
 from issues.model_issue_status import IssueStatus
 from issues.models import Issue
 from tasks.models import Task
+
+from pytz import timezone
+
+HEADERS = {'Authorization': 'OAuth ' + settings.CONTEST_OAUTH}
+PROBLEMS_API = settings.CONTEST_API_URL + 'problems?locale={lang}&contestId={cont_id}'
 
 
 def merge_two_dicts(x, y):
@@ -54,6 +61,8 @@ def task_create_page(request, course_id):
         'rb_integrated': course.rb_integrated,
         'hide_contest_settings': True if not course.contest_integrated else False,
         'school': schools[0] if schools else '',
+        'user_location': request.user.get_profile().location,
+        'geo_suggest_url': settings.GEO_SUGGEST_URL
     }
 
     return render_to_response('task_create.html', context, context_instance=RequestContext(request))
@@ -76,6 +85,8 @@ def task_import_page(request, course_id):
         'rb_integrated': course.rb_integrated,
         'school': schools[0] if schools else '',
         'seminar_tasks': seminar_tasks,
+        'user_location': request.user.get_profile().location,
+        'geo_suggest_url': settings.GEO_SUGGEST_URL
     }
 
     return render_to_response('task_import.html', context, context_instance=RequestContext(request))
@@ -99,6 +110,8 @@ def contest_import_page(request, course_id):
         'seminar_tasks': seminar_tasks,
         'school': schools[0] if schools else '',
         'contest_import': True,
+        'user_location': request.user.get_profile().location,
+        'geo_suggest_url': settings.GEO_SUGGEST_URL
     }
 
     return render_to_response('contest_import.html', context, context_instance=RequestContext(request))
@@ -143,6 +156,8 @@ def task_edit_page(request, task_id):
         'hide_contest_settings': True if not task.contest_integrated or task.type in [task.TYPE_SIMPLE,
                                                                                       task.TYPE_MATERIAL] else False,
         'school': schools[0] if schools else '',
+        'user_location': request.user.get_profile().location,
+        'geo_suggest_url': settings.GEO_SUGGEST_URL
     }
 
     return render_to_response('task_edit.html', context, context_instance=RequestContext(request))
@@ -166,7 +181,7 @@ def get_task_params(request, check_score_after_deadline=False):
 
     task_deadline = request.POST.get('deadline') or None
     if task_deadline:
-        task_deadline = datetime.datetime.strptime(task_deadline, '%d-%m-%Y %H:%M')
+        task_deadline = get_datetime_with_tz(task_deadline, request.POST.get('geoid', None), user)
 
     score_after_deadline = True
     if check_score_after_deadline:
@@ -222,6 +237,14 @@ def task_create_or_edit(request, course, task_id=None):
     changed_score_after_deadline = False
     if task_id:
         task = get_object_or_404(Task, id=task_id)
+        task_text = task.is_text_json()
+        if task_text:
+            lang = request.user.get_profile().language
+            task_title = json.loads(task.title, strict=False)
+            task_title[lang] = params['attrs']['title']
+            task_text[lang] = params['attrs']['task_text']
+            params['attrs']['title'] = json.dumps(task_title, ensure_ascii=False)
+            params['attrs']['task_text'] = json.dumps(task_text, ensure_ascii=False)
         changed_score_after_deadline = task.score_after_deadline != params['attrs']['score_after_deadline']
     else:
         task = Task()
@@ -296,6 +319,7 @@ def get_contest_problems(request):
     if request.method != 'POST':
         return HttpResponseForbidden()
 
+    lang = request.user.get_profile().language
     course = get_object_or_404(Course, id=request.POST['course_id'])
 
     if not course.user_can_edit_course(request.user):
@@ -306,15 +330,15 @@ def get_contest_problems(request):
     error = ''
     problems = []
 
-    got_info, contest_info = get_contest_info(contest_id)
+    got_info, contest_info = get_contest_info(contest_id, lang=lang)
     if "You're not allowed to view this contest." in contest_info:
         return HttpResponse(json.dumps({'problems': problems,
                                         'is_error': True,
                                         'error': _(u"net_prav_na_kontest")}),
                             content_type="application/json")
 
-    problem_req = requests.get(settings.CONTEST_API_URL + 'problems?contestId=' + str(contest_id),
-                               headers={'Authorization': 'OAuth ' + settings.CONTEST_OAUTH})
+    problem_req = requests.get(PROBLEMS_API.format(lang=lang, cont_id=str(contest_id)),
+                               headers=HEADERS)
     problem_req = problem_req.json()
 
     if 'error' in problem_req:
@@ -327,19 +351,19 @@ def get_contest_problems(request):
         problems = problem_req['result']['problems']
 
         contest_info_problems = contest_info['problems']
-        contest_info_deadline = contest_info['endTime'] if 'endTime' in contest_info else None
+        if 'endTime' in contest_info:
+            deadline_msk = datetime.datetime.strptime(contest_info['endTime'][:-9], '%Y-%m-%dT%H:%M:%S')
+            contest_info_deadline = convert_datetime(deadline_msk, settings.CONTEST_TIME_ZONE,
+                                                     request.user.get_profile().time_zone)
+            contest_info_deadline = contest_info_deadline.strftime('%Y,%m,%d,%H,%M')
+        else:
+            contest_info_deadline = None
         problems = problems + contest_info_problems + [{'deadline': contest_info_deadline}]
 
     return HttpResponse(json.dumps({'problems': problems,
                                     'is_error': is_error,
                                     'error': error}),
                         content_type="application/json")
-
-
-def prettify_contest_task_text(task_text):
-    return task_text \
-        .replace('<table', '<table class="table table-sm"') \
-        .replace('src="', 'src="https://contest.yandex.ru')
 
 
 @login_required
@@ -356,15 +380,14 @@ def contest_task_import(request):
     common_params = get_task_params(request, course.issue_status_system.has_accepted_after_deadline)
 
     got_info, contest_info = get_contest_info(contest_id)
-    problem_req = FakeResponse()
-    problem_req = requests.get(settings.CONTEST_API_URL + 'problems?contestId=' + str(contest_id),
-                               headers={'Authorization': 'OAuth ' + settings.CONTEST_OAUTH})
+
+    problem_req = requests.get(PROBLEMS_API.format(lang='ru', cont_id=str(contest_id)),
+                               headers=HEADERS)
     problems = []
     if 'result' in problem_req.json():
         problems = problem_req.json()['result']['problems']
 
     problems_with_score = {problem['id']: problem.get('score') for problem in problems}
-    problems_with_end = {problem['id']: problem.get('end') for problem in problems}
 
     if got_info:
         if problems:
@@ -376,7 +399,7 @@ def contest_task_import(request):
                 current_params = common_params['attrs'].copy()
                 current_params.update({
                     'title': problem['problemTitle'],
-                    'task_text': current_params['task_text'] or prettify_contest_task_text(problem['statement']),
+                    'task_text': problem['statement'],
                     'short_title': current_params['short_title'] or problem['alias'],
                     'contest_integrated': True,
                     'contest_id': contest_id,
@@ -386,10 +409,11 @@ def contest_task_import(request):
                 if not current_params['score_max'] and problems_with_score:
                     current_params['score_max'] = problems_with_score[problem['problemId']] or 0
 
-                if not current_params['deadline_time'] and problems_with_end:
-                    deadline = problems_with_end[problem['problemId']]
-                    if deadline:
-                        current_params['deadline_time'] = datetime.datetime.strptime(deadline, '%Y-%m-%dT%H:%M')
+                if not current_params['deadline_time'] and 'endTime' in contest_info:
+                    current_params['deadline_time'] = make_aware(
+                        datetime.datetime.strptime(contest_info['endTime'][:-12], '%Y-%m-%dT%H:%M'),
+                        timezone(settings.CONTEST_TIME_ZONE)
+                    )
 
                 tasks.append(current_params)
 

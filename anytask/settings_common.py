@@ -23,6 +23,7 @@ MANAGERS = ADMINS
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
 TIME_ZONE = 'Europe/Moscow'
+USE_TZ = True
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
@@ -102,7 +103,8 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.transaction.TransactionMiddleware',
     'reversion.middleware.RevisionMiddleware',
-    'django.middleware.locale.LocaleMiddleware'
+    'django.middleware.locale.LocaleMiddleware',
+    'anytask.middleware.timezone_middleware.TimezoneMiddleware'
 )
 
 ROOT_URLCONF = 'anytask.urls'
@@ -183,6 +185,7 @@ RB_EXTENSIONS = ['.py', '.py2', '.py3', '.cpp', '.sage', '.m', '.java', '.h', '.
                  '.cc', '.rkt', '.sql']
 
 CONTEST_API_URL = 'https://api.contest.yandex.net/anytask/'
+CONTEST_TIME_ZONE = 'Europe/Moscow'
 CONTEST_URL = "https://contest.yandex.ru/"
 CONTEST_OAUTH = 'OAUTH'
 CONTEST_OAUTH_ID = 'OAUTH_ID'
@@ -231,6 +234,7 @@ PYTHONTASK_MAX_DAYS_WITHOUT_SCORES = 0
 PYTHONTASK_MAX_USERS_PER_TASK = 8
 PYTHONTASK_MAX_TASKS_WITHOUT_SCORE_PER_STUDENT = 2
 PYTHONTASK_DAYS_DROP_FROM_BLACKLIST = 14
+PYTHONTASK_MAX_INCOMPLETE_TASKS = 3
 
 # Admission settings
 YA_FORMS_OAUTH = 'TEST_YA_FORMS_OAUTH'
@@ -257,3 +261,7 @@ YA_FORMS_FIELDS_ADDITIONAL = {
 ADMISSION_DATE_END = "10.05.20 15:00"
 FILIAL_STATUSES = {}
 ENROLLEE_STATUS = 1
+
+GEO_SUGGEST_URL = ''
+GEOBASE_API = ''
+USE_LOCAL_GEOBASE = False

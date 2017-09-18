@@ -1,6 +1,7 @@
 {% load i18n %}
+{% load tz %}
 <script src="{{ STATIC_URL }}jquery.validate.min.js"></script>
-<script src="http://malsup.github.io/jquery.form.js"></script>
+<script src="https://malsup.github.io/jquery.form.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.sticky/1.0.3/jquery.sticky.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap4.min.js"></script>
@@ -46,10 +47,15 @@
         });
     };
 
-     $.fn.dataTable.ext.type.order['dom-html-text-pre'] = function (td) {
+    $.fn.dataTable.ext.type.order['dom-html-text-pre'] = function (td) {
          return $.trim($(td).text());
     };
 
+    $.fn.dataTable.ext.order['dom-checkbox'] = function  (settings, col) {
+        return this.api().column(col, {order: 'index'}).nodes().map(function (td, i) {
+            return $('input:checkbox', td).prop('checked') ? '1' : '0';
+        });
+    };
 
     $.fn.dataTable.ext.type.search.selectText = function (data) {
         return !data ? '' : $('select option:selected', $(data)).text()
@@ -342,6 +348,10 @@
                         "orderDataType": "dom-select",
                         "type": "selectText",
                     },
+                    {
+                        "targets": "dom-checked",
+                        "orderDataType": "dom-checkbox"
+                    }
                 ],
                 order: [[1, 'asc']],
                 fixedColumns: {
@@ -349,8 +359,8 @@
                 },
                 initComplete: function (settings, json) {
                     $(".zui-wrapper").show();
-                    $(".btn-table-fullscreen").css('display', 'table-cell');
-                    $(".btn-table-edit").css('display', 'table-cell');
+                    $(".btn-table-fullscreen").css('display', 'inline');
+                    $(".btn-table-edit").css('display', 'inline');
                     $(".loading-table-img").hide();
                 },
                 autoWidth: false,
@@ -697,16 +707,6 @@
             '</div>'
         };
 
-        var popover_opts_lssn_not_del = {
-            trigger: 'manual',
-            html: true,
-            content: '{% trans 'nelzia_udalit_zaniatie' %}',
-            template: '<div class="popover" role="tooltip">' +
-            '<div class="popover-arrow"></div>' +
-            '<div class="popover-content"></div>' +
-            '</div>'
-        };
-
         $('[data-toggle="popover"]').on('shown.bs.popover', function () {
             $('[data-toggle="popover"]:not([aria-describedby=' + $(this).attr('aria-describedby') + '])').popover('hide');
         });
@@ -776,47 +776,55 @@
             }
             $('[data-toggle="popover"]').popover('hide');
         });
-
+        
+        var show_confirm = false;
         $('body').on("click", '#lssn_del_button', function (e) {
             e.stopPropagation();
             var del_button = $(this);
-            if (parseInt(del_button.attr('data_deleted')) === 0) {
-                del_button.popover(popover_opts_lssn_del).popover('show');
-            }
-            else {
-                del_button.popover(popover_opts_lssn_not_del).popover('show');
-            }
+            show_confirm = parseInt(del_button.attr('data_deleted'), 10) != 0;
+            del_button.popover(popover_opts_lssn_del).popover('show');
 
         }).on('hidden.bs.popover', '#lssn_del_button', function () {
             $('[data-toggle="popover"]').popover('dispose');
         }).on('click', 'div.popover', function (e) {
             e.stopPropagation();
         }).on("click", '.lssn-delete', function () {
-            var lesson_id = $('#lssn_del_button').attr('data_lssn');
-            var group_id = $('#lssn_del_button').attr('data_group');
             var delete_all = $('input[name=delete_lesson]:checked').val();
-
-            $.post('{% url courses.views.lesson_delete %}',
-                        {
-                            'csrfmiddlewaretoken': '{{ csrf_token }}',
-                            'lesson_id': lesson_id,
-                            'group_id': group_id,
-                            'delete_all': delete_all === 'delete_all'
-                        }).done(function (data) {
-                            var table = $('#table_results_' + group_id).DataTable();
-                            var deleted_ids = data.deleted;
-                            var cols = [];
-                            for (var i = 0; i < deleted_ids.length; ++i) {
-                                cols.push($('#column_'+ deleted_ids[i]).index() + ':visIdx');
-                            }
-                            table.columns(cols).visible(false, false);
-                            table.columns.adjust().draw(false);
-                            var old_total = parseInt($('#total_lessons_' + group_id).text());
-                            $('#total_lessons_' + group_id).text(old_total - deleted_ids.length);
-            });
-
-            $('[data-toggle="popover"]').popover('hide');
-            $('#modal_task_description').modal('hide');
+            if (confirm_delete(show_confirm, delete_all === 'delete_all')) {
+                var lesson_id = $('#lssn_del_button').attr('data_lssn');
+                var group_id = $('#lssn_del_button').attr('data_group');
+                $.post('{% url courses.views.lesson_delete %}', {
+                    'csrfmiddlewaretoken': '{{ csrf_token }}',
+                    'lesson_id': lesson_id,
+                    'group_id': group_id,
+                    'delete_all': delete_all === 'delete_all'
+                    }).done(function (data) {
+                        var table = $('#table_results_' + group_id).DataTable();
+                        var deleted_ids = data.deleted;
+                        var student_lssn_diff = data.students_lesson_diff;
+                        var cols = [];
+                        for (var i = 0; i < deleted_ids.length; ++i) {
+                            cols.push($('#column_'+ deleted_ids[i]).index() + ':visIdx');
+                        }
+                        var total_lessons_student;
+                        var old_visited;
+                        for (i = 0; i < student_lssn_diff.length; ++i) {
+                            total_lessons_student = $('#total-lessons_' + group_id + '_' + student_lssn_diff[i][0]);
+                            old_visited = parseInt(total_lessons_student.text());
+                            total_lessons_student.text(old_visited - parseInt(student_lssn_diff[i][1]));
+                        }
+                        table.columns(cols).visible(false, false);
+                        table.columns.adjust().draw(false);
+                        var total_lessons = $('#total_lessons_' + group_id);
+                        var old_total = parseInt(total_lessons.text());
+                        total_lessons.text(old_total - deleted_ids.length);
+                    });
+                $('[data-toggle="popover"]').popover('hide');
+                $('#modal_task_description').modal('hide');
+            }
+            else {
+                $('[data-toggle="popover"]').popover('hide');
+            }
         });
 
         $('#modal_table_edit').on('hide.bs.modal', function (e) {
@@ -924,7 +932,7 @@
             Prism.highlightElement(codesample);
 
         if (deadline != '') {
-            $('#modal_header_deadline_time').html('<strong>{% trans "data_sdachi" %}: ' + deadline + ' MSK UTC+3</strong>');
+            $('#modal_header_deadline_time').html('<strong>{% trans "data_sdachi" %}: ' + deadline + '</strong>');
         }
         else {
             $('#modal_header_deadline_time').empty();
@@ -943,8 +951,7 @@
         if (codesample)
             Prism.highlightElement(codesample);
         $('#modal_header_deadline_time').html('<strong>{% trans "data_zaniatia" %}: ' + lesson_date_start + ' - '
-                                                                                   + lesson_date_end
-                                                                                   + ' MSK UTC+3</strong>');
+                                                                                   + lesson_date_end);
 
         $('#modal_task_desc_edit').hide();
         $('#modal_task_descr_edit_button').attr("href", "/lesson/edit/" + lesson_id);
@@ -1021,5 +1028,15 @@
         for (var i = 0; i < deleting_tasks.length; ++i)
             deleted = deleted.concat([task_count + prefix_cols.length + i]);
         div_group_id.data('deleted', deleted.concat(div_group_id.data('deleted')));
+    }
+    
+    function confirm_delete(show_confirm, delete_all) {
+        if (show_confirm) {
+            if (delete_all)
+                return confirm('{% trans "udalit_poseshennoe_vse" %}');
+            else
+                return confirm('{% trans "udalit_poseshennoe" %}');
+        }
+        return true;
     }
 </script>

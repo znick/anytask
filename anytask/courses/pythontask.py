@@ -12,6 +12,84 @@ from django.utils.translation import ugettext_lazy as _
 import datetime
 
 
+class PythonTaskStat(object):
+    def __init__(self, course_tasks):
+        self.tasks = course_tasks
+        self.group_stat = {}
+        self.course_stat = {
+            'total': 0.0,
+            'active_students': 0,
+            'avg_score': 0.0,
+        }
+
+    def update(self, group):
+        self._group_update(group)
+        self._course_update(group)
+
+    def get_group_stat(self):
+        return [(group, stat['student_stat']) for (group, stat) in self.group_stat.iteritems()]
+
+    def get_course_stat(self):
+        stat = [
+            (group, stat['total'], stat['active_students'], stat['avg_score'])
+            for (group, stat) in self.group_stat.iteritems()
+        ]
+
+        stat.append(
+            (None, self.course_stat['total'], self.course_stat['active_students'], self.course_stat['avg_score'])
+        )
+
+        return stat
+
+    def _student_stat(self, tasks):
+        total = 0.0
+        tasks_list = []
+
+        for task in tasks:
+            total += task.score
+            tasks_list.append((task.task, task.score))
+
+        return (total, tasks_list)
+
+    def _group_update(self, group):
+        stat = {
+            'total': 0.0,
+            'active_students': 0,
+            'avg_score': 0.0,
+            'student_stat': [],
+        }
+
+        group_students = []
+
+        for student in group.students.filter(is_active=True).order_by('last_name', 'first_name'):
+            tasks = TaskTaken.objects.filter(user=student).filter(task__in=self.tasks) \
+                .filter(Q(Q(status=TaskTaken.STATUS_TAKEN) | Q(status=TaskTaken.STATUS_SCORED)))
+            if tasks.count() > 0:
+                stat['active_students'] += 1
+
+            scores, student_tasks = self._student_stat(tasks)
+            group_students.append((student, scores, student_tasks))
+            stat['total'] += scores
+
+        stat['student_stat'] = group_students
+
+        if stat['active_students'] > 0:
+            stat['avg_score'] = stat['total'] / stat['active_students']
+
+        self.group_stat[group] = stat
+
+    def _course_update(self, group):
+        stat = self.group_stat[group]
+
+        self.course_stat['total'] += stat['total']
+        self.course_stat['active_students'] += stat['active_students']
+
+        if self.course_stat['active_students'] > 0:
+            self.course_stat['avg_score'] = self.course_stat['total'] / self.course_stat['active_students']
+        else:
+            self.course_stat['avg_score'] = 0.0
+
+
 def tasks_list(request, course):
     user = request.user
 
@@ -63,6 +141,22 @@ def tasks_list(request, course):
     return render_to_response('course_tasks_potok.html', context, context_instance=RequestContext(request))
 
 
+def python_stat(request, course):
+    tasks = Task.objects.filter(course=course)
+    stat = PythonTaskStat(tasks)
+
+    for group in course.groups.all().order_by('name'):
+        stat.update(group)
+
+    context = {
+        'course': course,
+        'group_stat': stat.get_group_stat(),
+        'course_stat': stat.get_course_stat()
+    }
+
+    return render_to_response('statistics.html', context, context_instance=RequestContext(request))
+
+
 @login_required
 @transaction.commit_on_success
 def get_task(request, course_id, task_id):
@@ -79,7 +173,7 @@ def get_task(request, course_id, task_id):
             task_taken.issue = issue
 
         task_taken.save()
-        task_taken.issue.add_comment(u"{} {} {}".format(user.first_name, user.last_name, _("zapisalsya_na_task")))
+        task_taken.issue.add_comment(unicode(_("zapisalsya_na_task")))
 
     return redirect('courses.views.course_page', course_id=course_id)
 

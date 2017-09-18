@@ -11,8 +11,9 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.utils.translation import ugettext as _
 from django.utils.translation import check_for_language
+from django.utils import timezone
 
-from users.models import UserProfile, UserProfileLog
+from users.models import UserProfile
 from users.model_user_status import UserStatus
 from issues.model_issue_student_filter import IssueFilterStudent
 from django.contrib.auth.models import User
@@ -24,17 +25,22 @@ from issues.models import Issue
 from tasks.models import Task
 from schools.models import School
 from users.forms import InviteActivationForm
+from anytask.common.timezone import get_tz
+from pytz import timezone as timezone_pytz
 
 from years.common import get_current_year
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML
 from dateutil.relativedelta import relativedelta
+from urlparse import urlparse
 
 import yandex_oauth
 import requests
 import json
 import datetime
+import pytz
+import reversion
 
 
 @login_required
@@ -192,18 +198,24 @@ def group_by_year(objects):
 @login_required
 def profile_settings(request):
     user = request.user
-
     user_profile = user.get_profile()
 
     if request.method == 'POST':
-        user_profile.show_email = True if 'show_email' in request.POST else False
-        user_profile.send_my_own_events = True if 'send_my_own_events' in request.POST else False
+        user_profile.show_email = 'show_email' in request.POST
+        user_profile.send_my_own_events = 'send_my_own_events' in request.POST
+        user_profile.location = request.POST['location']
+        if request.POST['geoid']:
+            tz = get_tz(request.POST['geoid'])
+            user_profile.time_zone = tz
+            request.session['django_timezone'] = tz
+            timezone.activate(pytz.timezone(tz))
         user_profile.save()
 
         return HttpResponse("OK")
 
     context = {
         'user_profile': user_profile,
+        'geo_suggest_url': settings.GEO_SUGGEST_URL
     }
 
     return render_to_response('user_settings.html', context, context_instance=RequestContext(request))
@@ -222,10 +234,26 @@ def profile_history(request, username=None):
     user_to_show = user
     if username:
         user_to_show = get_object_or_404(User, username=username)
+    user_profile = user_to_show.get_profile()
+
+    version_list = reversion.get_for_object(user_profile)
+    user_status_prev = None
+    history = []
+    for version in reversed(version_list):
+        user_status_cur = set(version.field_dict['user_status'])
+        if user_status_cur == user_status_prev:
+            continue
+        history.append({
+            'update_time': version.revision.date_created,
+            'updated_by': version.revision.user,
+            'user_statuses': UserStatus.objects.filter(id__in=user_status_cur).order_by("type").values("color", "name")
+        })
+
+        user_status_prev = user_status_cur
 
     context = {
-        'user_profile': user_to_show.get_profile(),
-        'user_profile_history': UserProfileLog.objects.filter(user=user_to_show).order_by('update_time'),
+        'user_profile': user_profile,
+        'user_profile_history': history,
         'user_to_show': user_to_show,
         'status_types': UserStatus.TYPE_STATUSES,
         'user_statuses': UserStatus.objects.all(),
@@ -251,37 +279,26 @@ def set_user_statuses(request, username=None):
     user_profile = user_to_show.get_profile()
     is_error = False
     error = ''
-    user_statuses = []
 
     try:
-        new_user_statuses = dict(request.POST)['status_by_type[]']
-        if not new_user_statuses:
-            new_user_statuses = []
-        old_user_statuses = user_profile.user_status.all()
-
-        for status in old_user_statuses:
-            if str(status.id) not in new_user_statuses:
-                user_profile.user_status.remove(status)
-
-        for status_id in new_user_statuses:
-            if status_id:
-                status = UserStatus.objects.get(id=status_id)
-                if status not in user_profile.user_status.all():
-                    user_profile.user_status.add(status)
-
+        user_profile.user_status = filter(bool, dict(request.POST).get('status_by_type[]', []))
         user_profile.updated_by = user
         user_profile.save()
-
+        reversion.set_user(user)
+        reversion.set_comment("Change from user profile")
     except Exception as e:
         is_error = True
-        error = e
+        error = unicode(e)
 
-    for status in user_profile.user_status.all():
-        user_statuses.append({'name': status.name, 'color': status.color})
+    user_statuses = list(user_profile.user_status.all().values("name", "color"))
 
-    user_profile_log = {'update_time': user_profile.update_time.strftime("%d-%m-%Y %H:%M"),
-                        'updated_by': user_profile.updated_by.username,
-                        'fullname': user_profile.updated_by.get_full_name()}
+    user_profile_log = {
+        'update_time': user_profile.update_time.astimezone(
+            timezone_pytz(user.get_profile().time_zone)
+        ).strftime("%d-%m-%Y %H:%M"),
+        'updated_by': user_profile.updated_by.username,
+        'fullname': user_profile.updated_by.get_full_name()
+    }
 
     return HttpResponse(json.dumps({'user_statuses': user_statuses,
                                     'user_profile_log': user_profile_log,
@@ -307,12 +324,13 @@ def ya_oauth_request(request, type_of_oauth):
 def ya_oauth_contest(user, ya_response, ya_contest_response):
     user_profile = user.get_profile()
     if not user_profile.ya_contest_oauth:
-        users_with_ya_contest_oauth = UserProfile.objects.all().filter(~Q(ya_contest_login=''))
-
-        for user in users_with_ya_contest_oauth:
-            if user.ya_contest_login == ya_contest_response['login'] or user.ya_contest_uid == \
-                    ya_contest_response['id']:
-                return redirect('users.views.ya_oauth_forbidden', type_of_oauth='contest')
+        users_with_ya_contest_oauth = UserProfile.objects.filter(
+            Q(ya_contest_login=ya_contest_response['login']) | Q(ya_contest_uid=ya_contest_response['id'])
+        ).exclude(
+            ya_contest_login=user_profile.ya_contest_login
+        )
+        if users_with_ya_contest_oauth:
+            return redirect('users.views.ya_oauth_forbidden', type_of_oauth='contest')
 
     if not user_profile.ya_contest_oauth or user_profile.ya_contest_login == ya_contest_response['login']:
         user_profile.ya_contest_oauth = ya_response['access_token']
@@ -472,6 +490,7 @@ def my_tasks(request):
 @login_required
 def user_courses(request, username=None, year=None):
     user = request.user
+    lang = user.get_profile().language
 
     user_to_show = user
     if username:
@@ -523,7 +542,8 @@ def user_courses(request, username=None, year=None):
 
         new_course_statistics['issues_count'] = []
         for status in course.issue_status_system.statuses.all():
-            new_course_statistics['issues_count'].append((status, issues.filter(status_field=status).count()))
+            new_course_statistics['issues_count'].append((status.color, status.get_name(lang),
+                                                          issues.filter(status_field=status).count()))
 
         new_course_statistics['tasks'] = tasks.count
         new_course_statistics['mark'] = mark if mark else '--'
@@ -607,6 +627,7 @@ def ajax_edit_user_info(request):
 
 def set_user_language(request):
     next = request.REQUEST.get('next')
+    print request
     if not is_safe_url(url=next, host=request.get_host()):
         next = request.META.get('HTTP_REFERER')
         if not is_safe_url(url=next, host=request.get_host()):
@@ -614,6 +635,9 @@ def set_user_language(request):
     response = HttpResponseRedirect(next)
     if request.method == 'POST':
         lang_code = request.POST.get('language', None)
+        if 'ref' not in next:
+            ref = urlparse(request.POST.get('referrer', next))
+            response = HttpResponseRedirect('?ref='.join([next, ref.path]))
         if lang_code and check_for_language(lang_code):
             if hasattr(request, 'session'):
                 request.session['django_language'] = lang_code

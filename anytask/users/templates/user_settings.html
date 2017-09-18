@@ -7,6 +7,50 @@
     <script src="{{ STATIC_URL }}jquery.validate.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
+            $('[data-toggle="popover"]').popover({
+                trigger: 'hover',
+                template: '<div class="popover" role="tooltip">' +
+                '<div class="popover-arrow"></div>' +
+                '<div class="popover-content"></div>' +
+                '</div>'
+            });
+
+            var maps_suggest_api = '{{ geo_suggest_url|safe }}';
+            var location_bloodhound = new Bloodhound({
+                datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+                queryTokenizer: Bloodhound.tokenizers.whitespace,
+                remote: {
+                    prepare: function(query, settings) {
+                        settings.dataType = "jsonp";
+                        settings.url = settings.url.replace('%QUERY', query);
+                        return settings;
+                    },
+                    url: maps_suggest_api + '&part=%QUERY',
+                    transform: function(response) {
+                        var locations = [];
+                        for (var i=0; i < response[1].length; i++) {
+                            if ('geoid' in response[1][i])
+                                locations.push(response[1][i]);
+                        }
+                        return locations;
+                    }
+                }
+            });
+
+            $('#location_search').typeahead({
+                    highlight: true,
+                    hint: false,
+                    minLength: 3
+                },
+                {
+                    name: 'locations',
+                    displayKey: 'name',
+                    source: location_bloodhound
+                }
+            ).on('typeahead:select', function(ev, suggestion) {
+                $('#geoid').val(suggestion.geoid);
+            });
+
             $('#submit_btn').click(function () {
                 $.post('{% url users.views.profile_settings %}', $('#user_settings').serialize(), function(data){
                     $('#submit_error_text').html('<div class="alert alert-success alert-dismissible fade in" role ="alert" id="user_settings_err">' +
@@ -120,6 +164,19 @@
         .social-acc-panel .social-acc-action {
             width: 90px;
         }
+        #location_label {
+            padding-top: .3rem;
+        }
+        .help-button {
+            opacity: 0.2;
+            filter: alpha(opacity=20);
+            color: #000000;
+        }
+
+        .help-button:hover {
+            opacity: 0.7;
+            filter: alpha(opacity=70);
+        }
     </style>
 
     <div class="row">
@@ -140,6 +197,15 @@
                                 <input type="checkbox" class="form-check-input" id="send_my_own_events" name="send_my_own_events" {% if user_profile.send_my_own_events %}checked{% endif %}>
                                 {% trans "otpravljat_mne_kommentarii" %}
                             </label>
+                        </div>
+                        <div class="form-group row">
+                            <label id='location_label' class="col-lg-5 col-md-5 col-sm-7 col-xs-7 form-check-label">{% trans "moe_mestopozhenie" %}
+                             <a tabindex="0" data-toggle="popover" data-trigger="hover" data-content="{% trans "dlja_vremeni" %}" type="button"><i class="fa fa-question-circle help-button" aria-hidden="true"></i></a>
+                            </label>
+                                <div class="controls no-validate col-lg-6 col-md-6 col-sm-7 col-xs-7">
+                                    <input type="text" class="typeahead form-control" id="location_search" name="location" value="{{ user_profile.location }}">
+                                    <input type="hidden" id="geoid" name="geoid" value="">
+                                </div>
                         </div>
                         <div id="submit_error_text"></div>
                         <button type="button" class="btn btn-primary" id="submit_btn" style="margin-top: 0.5rem">{% trans "sohranit" %}</button>

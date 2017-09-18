@@ -33,6 +33,9 @@
                         check_changed($("#task_edit_body"));
                     {% endif %}
                 });
+                if ($('#' + editor.id).is(':disabled')) {
+                    editor.settings.readonly = true;
+                }
             },
             plugins: [
                 'autoresize advlist autolink lists link image charmap hr',
