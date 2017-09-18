@@ -83,9 +83,9 @@ class AnyRB(object):
 
             description_template = \
                 _(u'zadacha') + ': "{0}", ' + \
-                _(u'kurs') + ': [{1}](http://{2}{3})\n' + \
-                _(u'student') + ': [{4}](http://{2}{5})\n' + '[' + \
-                _(u'obsuzhdenie_zadachi') + '](http://{2}{6})'
+                _(u'kurs') + ': [{1}]({2}{3})\n' + \
+                _(u'student') + ': [{4}]({2}{5})\n' + '[' + \
+                _(u'obsuzhdenie_zadachi') + ']({2}{6})'
 
             description = description_template.format(
                 issue.task.title,

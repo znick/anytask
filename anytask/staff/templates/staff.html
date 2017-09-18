@@ -19,9 +19,6 @@
         <li class="nav-item">
             <a class="nav-link active" href="#">{% trans "filtry_po_statusam" %}</a>
         </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{% url staff.views.get_gradebook %}">{% trans "obshaja_vedomost" %}</a>
-        </li>
     </ul>
 {% endblock navbar %}
 
@@ -202,6 +199,29 @@
         </div>
     </div>
 
+    <div class="modal fade" id="modal_gen_gradebook" tabindex="-1" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">{% trans "sgenerirovat_obshuu_vedomost" %}</h4>
+                </div>
+                <div class="modal-body">
+                    <p>{% trans "sgenerirovat_obshuu_vedomost_vopros" %}</p>
+                    <p>{% trans "vybrano_polzovateley" %}&nbsp;<span class="selected_users_count"></span>.</p>
+                    <form id="form_gen_gradebook">
+                        {% csrf_token %}
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <div id="modal_gen_gradebook_error_text"></div>
+                    <button class="btn btn-secondary" data-dismiss="modal" type="button">{% trans "zakryt" %}</button>
+                    <button class="btn btn-primary" id="modal_gen_gradebook_ok" type="button" data-loading-text="<span class='fa fa-circle-o-notch fa-spin'></span> {% trans "generacia" %}">{% trans "sgenerirovat" %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="table-buttons remove-after-init">
         <div class="table-options" >
             <button type="button" class="btn btn-sm btn-secondary table-change-status" data-toggle="modal" data-target="#modal_change_status" title="{% trans "izmenit_status_dlya_vsekh_polzovateley" %}">
@@ -209,6 +229,9 @@
             </button>
             <button type="button" class="btn btn-sm btn-secondary table-send-mail" data-toggle="modal" data-target="#modal_send_mail" title="{% trans "otpravit_soobshcheniye_vsem_polzovatelyam" %}">
                 <span class="fa fa-envelope fa-fw" aria-hidden="true"></span>
+            </button>
+            <button type="button" class="btn btn-sm btn-secondary table-gradebook" data-toggle="modal" data-target="#modal_gen_gradebook">
+                {% trans "sgenerirovat_obshuu_vedomost" %}
             </button>
         </div>
     </div>

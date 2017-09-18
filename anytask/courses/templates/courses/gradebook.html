@@ -38,7 +38,7 @@
         {% if visible_attendance_log %}
             <li class="nav-item">
                 <a class="nav-link hidden-md" href="{{ course.get_absolute_url }}/attendance">{% trans "zhurnal_poseshaemosti" %}</a>
-                <a class="nav-link visible-md" href="{{ course.get_absolute_url }}/attendance">{% trans "poseshaemost" %}</a>/a>
+                <a class="nav-link visible-md" href="{{ course.get_absolute_url }}/attendance">{% trans "poseshaemost" %}</a>
             </li>
         {% endif %}
         {% if not seminar %}
@@ -68,8 +68,8 @@
                        data-content='<ul style="padding: 0; font-size: 1.25rem">
                                         <li><span class="label label-default">{% trans "novyj" %}</span></li>
                                         <li><span class="label label-info">{% trans "trebuetsja_informacija" %}</span></li>
-                                        {% for issue_status in course.issue_status_system.statuses.all %}
-                                            <li><span class="label" style="background-color: {{ issue_status.color }}">{{ issue_status.name }}</span></li>
+                                        {% for status_color, status_name in issue_statuses %}
+                                            <li><span class="label" style="background-color: {{ status_color }}">{{ status_name }}</span></li>
                                         {% endfor %}
                                         <li><span class="label label-inverse">{% trans "summarnyj_ball" %}</span></li>
                                     </ul>'>{% trans "statusy" %}

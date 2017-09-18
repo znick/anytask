@@ -197,8 +197,9 @@ class AnyContestTest(TestCase):
         self.issue_id = self.issue.id
 
     def test_contest_info(self):
+        self.maxDiff = None
         # with override_settings(CONTEST_API_URL='http://127.0.0.1:{}/anytask/'.format(self.contest_port))
-        self.assertDictEqual(get_contest_info(1)[1], tests_data.CONTEST_INFO['result'])
+        self.assertDictEqual(get_contest_info(1, lang='ru')[1], tests_data.CONTEST_INFO['result'])
 
     def test_contest_submition_ok(self):
         contest_submition = ContestSubmission()

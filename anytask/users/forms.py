@@ -3,6 +3,7 @@ from django import forms
 from django.conf import settings
 from django.utils.translation import ugettext as _
 from invites.models import Invite
+from django.utils import timezone
 
 import datetime
 
@@ -23,7 +24,7 @@ class InviteActivationForm(forms.Form):
         except:
             raise forms.ValidationError(_(u"invajta_ne_sushestvuet"))
 
-        if invite.added_time + datetime.timedelta(days=settings.INVITE_EXPIRED_DAYS) < datetime.datetime.now():
+        if invite.added_time + datetime.timedelta(days=settings.INVITE_EXPIRED_DAYS) < timezone.now():
             raise forms.ValidationError(_(u"srok_dejstvija_invajta_istek"))
         else:
             return self.cleaned_data['invite']
