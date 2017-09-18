@@ -36,4 +36,5 @@ urlpatterns = patterns(
     url(r'^shad2017/activate/(?P<activation_key>\w+)/', 'admission.views.activate'),
     url(r'^shad2017/decline/(?P<activation_key>\w+)/', 'admission.views.decline'),
     url(r'^lesson/', include('lessons.urls')),
+    url(r'^api/', include('api.urls')),
 )
