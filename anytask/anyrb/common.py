@@ -197,7 +197,6 @@ class AnyRB(object):
     def get_repository(self, name):
         root = self.client.get_root()
 
-        repo_count = root.get_repositories(counts_only=True).count
         repositories = root.get_repositories()
         try:
             while True:
