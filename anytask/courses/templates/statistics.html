@@ -62,11 +62,6 @@
 
 <dl>
     <dt><h3>{{ course.name }} <small>{{ course.year }}</small></h3></dt>
-
-	<dd>
-		{% if course.information %}<br>{% endif %}
-        <div id="course-information">{{ course.information|sanitize|safe }}</div>
-	</dd>
 </dl>
 
 <div class="row">
