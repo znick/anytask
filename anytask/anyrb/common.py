@@ -73,6 +73,7 @@ class AnyRB(object):
             if review_request is None:
                 return review_request
 
+            logger.info("Diff to upload: >>>%s<<<", files_diff)
             review_request.get_diffs().upload_diff(files_diff.encode('utf-8'))
 
             draft = review_request.get_or_create_draft()
@@ -158,14 +159,25 @@ class AnyRB(object):
         course_id = self.event.issue.task.course.id
         repository_name = str(self.event.issue.id)
         repository_path = os.path.join(settings.RB_SYMLINK_DIR, repository_name)
-        os.symlink(settings.RB_SYMLINK_DIR, repository_path)
+        if not os.path.exists(repository_path):
+            os.symlink(settings.RB_SYMLINK_DIR, repository_path)
 
         try:
-            repository = root.get_repositories().create(
-                name=repository_name,
-                path=os.path.join(repository_path, '.git'),
-                tool='Git',
-                public=False)
+
+            repository = None
+            try:
+                repository = root.get_repositories().create(
+                    name=repository_name,
+                    path=os.path.join(repository_path, '.git'),
+                    tool='Git',
+                    public=False)
+            except Exception as e:
+                logger.warning("Cant create repository '%s', trying to find it", repository_name)
+                repository = self.get_repository(repository_name)
+
+            if repository is None:
+                raise Exception("Cant find repository '%s', trying to find it", repository_name)
+
             root.get_repository(repository_id=repository.id).update(grant_type='add',
                                                                     grant_entity='user',
                                                                     grant_name=self.event.issue.student)
@@ -181,6 +193,21 @@ class AnyRB(object):
             return None
 
         return review_request
+
+    def get_repository(self, name):
+        root = self.client.get_root()
+
+        repositories = root.get_repositories()
+        try:
+            while True:
+                for repo in repositories:
+                    if repo.name == name:
+                        return repo
+                repositories = repositories.get_next()
+        except StopIteration:
+            return None
+
+        return None
 
 
 class RbReviewGroup(object):

@@ -26,14 +26,14 @@ ARCHIVERS = {
 class UnpackedFile(object):
     def __init__(self, path, filename):
         self.path = path
-        self.file = open(path)
         self._filename = filename
+
+    @property
+    def file(self):
+        return open(self.path)
 
     def filename(self):
         return self._filename
-
-    def __del__(self):
-        self.file.close()
 
 
 def get_archiver(filename):
