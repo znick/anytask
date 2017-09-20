@@ -65,7 +65,7 @@ def queue_page(request, course_id):
         task__type=Task.TYPE_SEMINAR,
     ).exclude(
         task__type=Task.TYPE_MATERIAL,
-    ).order_by('update_time')
+    ).select_related('student', 'task', 'responsible').order_by('update_time')
 
     lang = user.get_profile().language
     f = IssueFilter(request.GET, issues)
