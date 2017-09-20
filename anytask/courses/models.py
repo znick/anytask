@@ -13,6 +13,9 @@ from issues.model_issue_field import IssueField
 from years.models import Year
 from anyrb.common import RbReviewGroup
 
+import logging
+logger = logging.getLogger('django.request')
+
 
 def add_group_with_extern(sender, instance, **kwargs):
     instance.add_group_with_extern()
@@ -300,6 +303,7 @@ def add_default_issue_fields(sender, instance, action, **kwargs):
 
 def update_rb_review_group(sender, instance, created, **kwargs):
     course = instance
+    logger.info("update_rb_review_group: '%s'", course)
 
     if not course.is_rb_integrated():
         return
@@ -310,12 +314,16 @@ def update_rb_review_group(sender, instance, created, **kwargs):
     teachers = set([teacher.username for teacher in course.teachers.all()])
     rg_users = set(rg.list())
 
+    logger.info("Course: '%s', teachets '%s', rg_users '%s'", course, teachers, rg_users)
+
     for rg_user in rg_users:
         if rg_user not in teachers:
+            logger.info("Course: '%s', user_del '%s'", course, rg_user)
             rg.user_del(rg_user)
 
     for teacher in teachers:
         if teacher not in rg_users:
+            logger.info("Course: '%s', user_add '%s'", course, teacher)
             rg.user_add(teacher)
 
 
