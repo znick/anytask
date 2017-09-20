@@ -236,13 +236,15 @@ class RbReviewGroup(object):
             'username': username,
         }
         r = requests.post(url, auth=(settings.RB_API_USERNAME, settings.RB_API_PASSWORD), data=payload)
-        logger.info("ReviewGroup user_add Add '%s' to '%s. Status:'%s'", username, self.review_group_name, r.status_code)
+        logger.info("ReviewGroup user_add Add '%s' to '%s. Status:'%s'",
+                    username, self.review_group_name, r.status_code)
         assert r.status_code in (200, 201, 204)
 
     def user_del(self, username):
         url = settings.RB_API_URL + "/api/groups/{0}/users/{1}/".format(self.review_group_name, username)
         r = requests.delete(url, auth=(settings.RB_API_USERNAME, settings.RB_API_PASSWORD))
-        logger.info("ReviewGroup user_del Drop '%s' from '%s'. Status:'%s'", username, self.review_group_name, r.status_code)
+        logger.info("ReviewGroup user_del Drop '%s' from '%s'. Status:'%s'",
+                    username, self.review_group_name, r.status_code)
         assert r.status_code in (200, 201, 204)
 
         # def get_repository(self, user):
