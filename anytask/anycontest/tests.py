@@ -53,6 +53,7 @@ class ContestServerMock(threading.Thread):
                 reply = {
                     'result': {
                         'submission': {
+                            'status': "",
                             'verdict': "ok",
                         }
                     }
@@ -66,6 +67,7 @@ class ContestServerMock(threading.Thread):
                 reply = {
                     'result': {
                         'submission': {
+                            'status': "",
                             'verdict': "precompile-check-failed",
                         },
                         'precompileChecks': [
@@ -84,6 +86,7 @@ class ContestServerMock(threading.Thread):
                 reply = {
                     'result': {
                         'submission': {
+                            'status': "",
                             'verdict': "failed",
                         },
                         'compileLog': "compileLog",
