@@ -590,7 +590,7 @@ def course_settings(request, course_id):
             default_teacher.teacher = teacher
             default_teacher.save()
 
-            for issue in Issue.objects.filter(task__course=course, task__groups=group, responsible__isnull=True):
+            for issue in Issue.objects.filter(task__course=course, student__group=group, responsible__isnull=True):
                 issue.set_teacher(teacher=teacher)
 
     if 'rb_extensions[]' in request.POST:

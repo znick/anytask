@@ -74,8 +74,12 @@ def prepare_info_fields(info_fields, request, issue):
 def contest_rejudge(issue):
     got_verdict_submissions = issue.contestsubmission_set.filter(got_verdict=True)
 
-    if not (got_verdict_submissions.count() and issue.contestsubmission_set.count() ==
-            (got_verdict_submissions.count() + issue.contestsubmission_set.exclude(send_error__isnull=True).count())):
+    if not (got_verdict_submissions.count() and
+            issue.contestsubmission_set.count() ==
+            (
+                got_verdict_submissions.count() +
+                issue.contestsubmission_set.exclude(send_error__isnull=True).exclude(send_error="").count()
+            )):
         return
 
     old_contest_submission = got_verdict_submissions.order_by("-create_time")[0]

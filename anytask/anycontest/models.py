@@ -39,6 +39,8 @@ class ContestSubmission(models.Model):
     create_time = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(auto_now=True)
 
+    sended_notify = models.BooleanField(default=False)
+
     def __unicode__(self):
         return u"{0} {1}".format(self.issue, self.run_id)
 
