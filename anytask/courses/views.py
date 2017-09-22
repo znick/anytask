@@ -65,7 +65,7 @@ def queue_page(request, course_id):
         task__type=Task.TYPE_SEMINAR,
     ).exclude(
         task__type=Task.TYPE_MATERIAL,
-    ).select_related('student', 'task', 'responsible').order_by('update_time')
+    ).distinct().select_related('student', 'task', 'responsible').order_by('update_time')
 
     lang = user.get_profile().language
     f = IssueFilter(request.GET, issues)
@@ -585,13 +585,13 @@ def course_settings(request, course_id):
         if teacher_id == 0:
             DefaultTeacher.objects.filter(course=course).filter(group=group).delete()
         else:
-            teacher = User.objects.get(pk=teacher_id)
+            teacher = get_object_or_404(User, id=teacher_id)
             default_teacher, _ = DefaultTeacher.objects.get_or_create(course=course, group=group)
             default_teacher.teacher = teacher
             default_teacher.save()
 
-            for issue in Issue.objects.filter(task__course=course, task__groups=group):
-                issue.set_teacher(default=True, groups=[group])
+            for issue in Issue.objects.filter(task__course=course, task__groups=group, responsible__isnull=True):
+                issue.set_teacher(teacher=teacher)
 
     if 'rb_extensions[]' in request.POST:
         course.filename_extensions = request.POST.getlist('rb_extensions[]')

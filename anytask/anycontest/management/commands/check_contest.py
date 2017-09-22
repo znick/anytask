@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 
 import logging
+import time
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.utils import translation, timezone
 from django.utils.translation import ugettext as _
+from django.db.models import Q
 
 from anycontest.common import comment_verdict, set_contest_marks, convert_to_contest_login
 from anycontest.models import ContestSubmission
@@ -21,11 +23,13 @@ class Command(BaseCommand):
     help = "Check contest submissions and comment verdict"
 
     def handle(self, **options):
+        start_time = time.time()
         contest_marks = defaultdict(dict)
-        for contest_submission in ContestSubmission.objects \
-                .filter(got_verdict=False, send_error__isnull=True) \
-                .exclude(run_id__exact="") \
-                .exclude(run_id__isnull=True):
+        contest_submissions = ContestSubmission.objects \
+            .filter(Q(got_verdict=False) & (Q(send_error__isnull=True) | Q(send_error=""))) \
+            .exclude(run_id__exact="") \
+            .exclude(run_id__isnull=True)
+        for contest_submission in contest_submissions:
             try:
                 issue = contest_submission.issue
                 task = issue.task
@@ -68,3 +72,7 @@ class Command(BaseCommand):
 
         for contest_id, students_info in contest_marks.iteritems():
             set_contest_marks(contest_id, students_info)
+
+        # logging to cron log
+        print "Command check_contest check {0} submissions ({1} - contests with marks) took {2} seconds" \
+            .format(len(contest_submissions), len(contest_marks), time.time() - start_time)

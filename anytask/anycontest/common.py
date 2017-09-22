@@ -12,8 +12,9 @@ HEADERS = {'Authorization': 'OAuth ' + settings.CONTEST_OAUTH}
 
 def prettify_contest_task_text(task_text):
     return task_text \
-        .replace('<table', '<table class="table table-sm"') \
-        .replace('src="', 'src="https://contest.yandex.ru')
+        .replace('<table', '<table class="table table-sm table-from-contest"') \
+        .replace('src="', 'src="https://contest.yandex.ru') \
+        .replace('white-space: nowrap;', 'white-space: nowrap; overflow: auto;')
 
 
 def process_task_text(text):
@@ -72,8 +73,8 @@ def get_problem_compilers(problem_id, contest_id):
 
 
 def escape(text):
-    symbols = ["&", "'", '"', "<", ">"]
-    symbols_escaped = ["&amp;", "&#39;", "&quot;", "&lt;", "&gt;"]
+    symbols = ["&", "'", '"', "<", ">", u"\x00"]
+    symbols_escaped = ["&amp;", "&#39;", "&quot;", "&lt;", "&gt;", u"\\x00"]
 
     for i, j in zip(symbols, symbols_escaped):
         text = text.replace(i, j)
@@ -125,7 +126,7 @@ def set_contest_marks(contest_id, students_info):
                             and submit['@verdict'] == 'OK':
                         score = submit['@score']
                         if score and float(score) > 0:
-                            students_ids[user_id][problem_id].set_byname('mark', float(score))
+                            students_ids[user_id][problem_id].set_byname('mark', float(score), from_contest=True)
                             problems_len -= 1
                             if not problems_len:
                                 break
@@ -160,7 +161,7 @@ def set_contest_marks(contest_id, students_info):
                                 and submits['verdict'] == 'OK':
                             score = submits['score']
                             if score and float(score) > 0:
-                                students_ids[user_id][problem_id].set_byname('mark', float(score))
+                                students_ids[user_id][problem_id].set_byname('mark', float(score), from_contest=True)
                                 problems_len -= 1
                                 if not problems_len:
                                     break

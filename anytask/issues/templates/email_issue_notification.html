@@ -113,10 +113,10 @@
                                         </tr>
                                         <tr>
                                             <td style="width: 100%;background-color: #add8e6;border-radius: 9px;padding: 10px 15px;">
-                                                <table cellpadding="0" cellspacing="0" style="border-collapse: separate;width: 100%">
+                                                <table cellpadding="0" cellspacing="0" style="border-collapse: separate;width: 100%;table-layout: fixed;">
                                                     <tbody>
                                                     <tr>
-                                                        <td colspan="3"  class="text_info" style="color: #373a3c">
+                                                        <td class="text_info" style="color: #373a3c;word-wrap: break-word;">
                                                             {% autoescape off %}
                                                                 {{ event.get_message }}
                                                             {% endautoescape %}
@@ -124,16 +124,23 @@
                                                     </tr>
                                                     {% if event.file_set.exists %}
                                                         <tr>
-                                                            <td style="width: 100%;"></td>
                                                             <td>
-                                                                <img src="{{ domain }}{{ STATIC_URL }}file.png" height="17" width="15"/>&nbsp;
-                                                            </td>
-                                                            <td style="color: #373a3c">
-                                                                <div style="overflow: hidden; text-overflow: ellipsis;max-width: 410px">
-                                                                    {% for file in event.file_set.all %}
-                                                                        {{ file.filename }}&nbsp;
-                                                                    {% endfor %}
-                                                                </div>
+                                                                <table cellpadding="0" cellspacing="0" style="border-collapse: separate;margin-left: auto;width: auto;margin-right: 0px;">
+                                                                    <tbody>
+                                                                    <tr>
+                                                                        <td>
+                                                                            <img src="{{ domain }}{{ STATIC_URL }}file.png" height="17" width="15"/>&nbsp;
+                                                                        </td>
+                                                                        <td style="color: #373a3c">
+                                                                            <div style="overflow: hidden; text-overflow: ellipsis;max-width: 410px">
+                                                                                {% for file in event.file_set.all %}
+                                                                                    {{ file.filename }}&nbsp;
+                                                                                {% endfor %}
+                                                                            </div>
+                                                                        </td>
+                                                                    </tr>
+                                                                    </tbody>
+                                                                </table>
                                                             </td>
                                                         </tr>
                                                     {% endif %}
@@ -185,10 +192,10 @@
                                                 <div style="width: 0;height: 0;vertical-align: middle;border-top: 6px solid transparent;border-bottom: 6px solid transparent;border-right: 6px solid #f5f8fa;"></div>
                                             </td>
                                             <td style="width: 100%;background-color: #f5f8fa;border-radius: 9px;padding: 10px 15px;">
-                                                <table cellpadding="0" cellspacing="0" style="border-collapse: separate;width: 100%">
+                                                <table cellpadding="0" cellspacing="0" style="border-collapse: separate;width: 100%;table-layout: fixed;">
                                                     <tbody>
                                                     <tr>
-                                                        <td colspan="3"  class="text_info" style="color: #373a3c">
+                                                        <td class="text_info" style="color: #373a3c;word-wrap: break-word;">
                                                             {% autoescape off %}
                                                                 {{ event.get_message }}
                                                             {% endautoescape %}
@@ -196,16 +203,23 @@
                                                     </tr>
                                                     {% if event.file_set.exists %}
                                                         <tr>
-                                                            <td style="width: 100%;"></td>
                                                             <td>
-                                                                <img src="{{ domain }}{{ STATIC_URL }}file.png" height="17" width="15"/>&nbsp;
-                                                            </td>
-                                                            <td style="color: #373a3c">
-                                                                <div style="overflow: hidden; text-overflow: ellipsis;max-width: 410px">
-                                                                    {% for file in event.file_set.all %}
-                                                                        {{ file.filename }}&nbsp;
-                                                                    {% endfor %}
-                                                                </div>
+                                                                <table cellpadding="0" cellspacing="0" style="border-collapse: separate;margin-left: auto;width: auto;margin-right: 0px;">
+                                                                    <tbody>
+                                                                    <tr>
+                                                                        <td>
+                                                                            <img src="{{ domain }}{{ STATIC_URL }}file.png" height="17" width="15"/>&nbsp;
+                                                                        </td>
+                                                                        <td style="color: #373a3c">
+                                                                            <div style="overflow: hidden; text-overflow: ellipsis;max-width: 410px">
+                                                                                {% for file in event.file_set.all %}
+                                                                                    {{ file.filename }}&nbsp;
+                                                                                {% endfor %}
+                                                                            </div>
+                                                                        </td>
+                                                                    </tr>
+                                                                    </tbody>
+                                                                </table>
                                                             </td>
                                                         </tr>
                                                     {% endif %}

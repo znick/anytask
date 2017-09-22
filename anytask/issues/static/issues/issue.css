@@ -19,6 +19,7 @@
     padding: 10px 15px;
     background-color: #f5f8fa;
     word-wrap: break-word;
+    min-height: 2.75rem;
 }
 
 .history .after_deadline {
