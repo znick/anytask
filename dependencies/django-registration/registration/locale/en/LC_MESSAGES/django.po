@@ -132,3 +132,6 @@ msgstr "Show my e-mail"
 #: backends/default_with_names/__init__.py:143
 msgid "Зарегистрироваться"
 msgstr "Sign up"
+
+msgid "Пожалуйста, введите верные имя пользователя / адрес электронной почты  и пароль."
+msgstr "Please enter a correct username/email and password."

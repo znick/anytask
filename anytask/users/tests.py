@@ -65,7 +65,7 @@ class UserLoginTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(
             response,
-            u"Пожалуйста, введите верные имя пользователя и пароль. Помните, оба поля чувствительны к регистру."
+            u"Пожалуйста, введите верные имя пользователя / адрес электронной почты  и пароль."
         )
 
     def test_login_user__bad_password(self):
@@ -78,7 +78,7 @@ class UserLoginTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(
             response,
-            u"Пожалуйста, введите верные имя пользователя и пароль. Помните, оба поля чувствительны к регистру."
+            u"Пожалуйста, введите верные имя пользователя / адрес электронной почты  и пароль."
         )
 
     def test_login_user__bad_email(self):
@@ -91,7 +91,7 @@ class UserLoginTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(
             response,
-            u"Пожалуйста, введите верные имя пользователя и пароль. Помните, оба поля чувствительны к регистру."
+            u"Пожалуйста, введите верные имя пользователя / адрес электронной почты  и пароль."
         )
 
     def test_register_user(self):

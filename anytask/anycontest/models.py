@@ -3,6 +3,7 @@
 from django.db import models
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
+from django.utils import timezone
 
 from django.contrib.auth.models import User
 from anycontest.common import FakeResponse, escape, user_register_to_contest
@@ -37,6 +38,8 @@ class ContestSubmission(models.Model):
 
     create_time = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(auto_now=True)
+
+    sended_notify = models.BooleanField(default=False)
 
     def __unicode__(self):
         return u"{0} {1}".format(self.issue, self.run_id)
@@ -157,7 +160,10 @@ class ContestSubmission(models.Model):
                 headers={'Authorization': 'OAuth ' + oauth})
 
             results_req_json = results_req.json()
-            self.full_response = results_req_json
+            self.full_response = results_req.content
+
+            if results_req_json['result']['submission']['status'] == "running":
+                raise Exception("run_id {0} is running for {1}".format(run_id, timezone.now() - self.create_time))
 
             contest_verdict = results_req_json['result']['submission']['verdict']
             self.verdict = contest_verdict
@@ -183,35 +189,35 @@ class ContestSubmission(models.Model):
                     test_resourses = u'<p><u>{0}</u> '.format(_(u'resursy')) + str(test['usedTime']) \
                                      + 'ms/' + '%.2f' % (test['usedMemory'] / (1024. * 1024)) + 'Mb</p>'
                     if 'input' in test:
-                        test_input = u'<p><u>{0}</u></p><p>'.format(_(u'vvod')) + \
+                        test_input = u'<p><u>{0}</u></p><pre>'.format(_(u'vvod')) + \
                                      escape(test['input']) if test['input'] else ""
-                        test_input += '</p>'
+                        test_input += '</pre>'
                     else:
                         test_input = ""
                     if 'output' in test:
-                        test_output = u'<p><u>{0}</u></p><p>'.format(_(u'vyvod_programmy')) + \
+                        test_output = u'<p><u>{0}</u></p><pre>'.format(_(u'vyvod_programmy')) + \
                                       escape(test['output']) if test['output'] else ""
-                        test_output += '</p>'
+                        test_output += '</pre>'
                     else:
                         test_output = ""
                     if 'answer' in test:
-                        test_answer = u'<p><u>{0}</u></p><p>'.format(_(u'pravilnyj_otvet')) + \
+                        test_answer = u'<p><u>{0}</u></p><pre>'.format(_(u'pravilnyj_otvet')) + \
                                       escape(test['answer']) if test['answer'] else ""
-                        test_answer += '</p>'
+                        test_answer += '</pre>'
                     else:
                         test_answer = ""
                     if 'error' in test:
                         self.error = test['error']
-                        test_error = u'<p><u>Stderr</u></p><p>' + \
+                        test_error = u'<p><u>Stderr</u></p><pre>' + \
                                      escape(test['error']) if test['error'] else ""
-                        test_error += '</p>'
+                        test_error += '</pre>'
                     else:
                         test_error = ""
                     if 'message' in test:
                         self.message = test['message']
-                        test_message = u'<p><u>{0}</u></p><p>'.format(_(u'soobshenie_chekera')) + \
+                        test_message = u'<p><u>{0}</u></p><pre>'.format(_(u'soobshenie_chekera')) + \
                                        escape(test['message']) if test['message'] else ""
-                        test_message += '</p>'
+                        test_message += '</pre>'
                     else:
                         test_message = ""
                     self.test_number = test['testNumber']

@@ -262,11 +262,11 @@ class Issue(models.Model):
     def set_status_seminar(self, author=None):
         self.set_status_by_tag(IssueStatus.STATUS_SEMINAR, author)
 
-    def set_byname(self, name, value, author=None):
+    def set_byname(self, name, value, author=None, from_contest=False):
         field = IssueField.objects.get(name=name)
-        return self.set_field(field, value, author)
+        return self.set_field(field, value, author, from_contest)
 
-    def set_field(self, field, value, author=None):
+    def set_field(self, field, value, author=None, from_contest=False):
         event = self.create_event(field, author)
         name = field.name
         course = self.task.course
@@ -416,7 +416,7 @@ class Issue(models.Model):
                 delete_event = True
 
             value = str(value)
-            if not self.is_status_accepted() and not self.is_status_new():
+            if not from_contest and not self.is_status_accepted() and not self.is_status_new():
                 self.set_status_rework()
 
         self.save()
@@ -558,11 +558,15 @@ class IssueFilter(django_filters.FilterSet):
         teacher_choices.pop(0)
         self.filters['followers'].field.choices = tuple(teacher_choices)
 
-        task_choices = [(task.id, task.get_title(lang)) for task in Task.objects.all().filter(course=course)]
+        tasks = Task.objects.filter(course=course).exclude(type=Task.TYPE_SEMINAR).exclude(type=Task.TYPE_MATERIAL)
+        task_choices = [(task.id, task.get_title(lang)) for task in tasks]
         task_choices.insert(0, (u'', _(u'lubaja')))
         self.filters['task'].field.choices = tuple(task_choices)
 
-        status_choices = [(status.id, status.get_name(lang)) for status in course.issue_status_system.statuses.all()]
+        status_choices = [
+            (status.id, status.get_name(lang))
+            for status in course.issue_status_system.statuses.exclude(tag=IssueStatus.STATUS_SEMINAR)
+        ]
         for status_id in sorted(IssueStatus.HIDDEN_STATUSES.values(), reverse=True):
             status_field = IssueStatus.objects.get(pk=status_id)
             status_choices.insert(0, (status_field.id, status_field.get_name(lang)))

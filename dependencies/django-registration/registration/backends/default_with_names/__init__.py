@@ -33,6 +33,7 @@ class AnytaskLoginForm(AuthenticationForm):
 
     def __init__(self, *args, **kwargs):
         AuthenticationForm.__init__(self, *args, **kwargs)
+        self.error_messages['invalid_login'] = _(u"Пожалуйста, введите верные имя пользователя / адрес электронной почты  и пароль.")
         self.fields['username'].label = _(u"Логин / E-mail")
 
         self.helper = FormHelper(self)
@@ -54,16 +55,17 @@ class AnytaskLoginForm(AuthenticationForm):
     def clean_username(self):
         username = self.cleaned_data.get('username', '')
 
-        if User.objects.filter(username=username).count():
-            return username
+        try:
+            user = User.objects.get(username__iexact=username)
+            return user.username
+        except User.DoesNotExist:
+            pass
 
         try:
-            user = User.objects.get(email=username)
-        except User.DoesNotExist:
-            return username
-
-        if user.username:
+            user = User.objects.get(email__iexact=username)
             return user.username
+        except User.DoesNotExist:
+            pass
 
         return username
 

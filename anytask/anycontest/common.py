@@ -12,8 +12,9 @@ HEADERS = {'Authorization': 'OAuth ' + settings.CONTEST_OAUTH}
 
 def prettify_contest_task_text(task_text):
     return task_text \
-        .replace('<table', '<table class="table table-sm"') \
-        .replace('src="', 'src="https://contest.yandex.ru')
+        .replace('<table', '<table class="table table-sm table-from-contest"') \
+        .replace('src="', 'src="https://contest.yandex.ru') \
+        .replace('white-space: nowrap;', 'white-space: nowrap; overflow: auto;')
 
 
 def process_task_text(text):
@@ -72,8 +73,8 @@ def get_problem_compilers(problem_id, contest_id):
 
 
 def escape(text):
-    symbols = ["&", "'", '"', "<", ">"]
-    symbols_escaped = ["&amp;", "&#39;", "&quot;", "&lt;", "&gt;"]
+    symbols = ["&", "'", '"', "<", ">", u"\x00"]
+    symbols_escaped = ["&amp;", "&#39;", "&quot;", "&lt;", "&gt;", u"\\x00"]
 
     for i, j in zip(symbols, symbols_escaped):
         text = text.replace(i, j)
@@ -91,10 +92,91 @@ def comment_verdict(issue, verdict, comment):
     issue.save()
 
 
+def convert_to_contest_login(login):
+    return str(login).replace('-', '?').replace('.', '?').lower()
+
+
+def set_contest_marks(contest_id, students_info):
+    results_req = FakeResponse()
+    try:
+        results_req = requests.get(
+            settings.CONTEST_URL + 'action/api/download-log?contestId=' + str(contest_id) + '&snarkKey=spike')
+        try:
+            contest_dict = xmltodict.parse(results_req.content)
+
+            users = contest_dict['contestLog']['users']['user']
+            student_len = len(students_info)
+            students_ids = {}
+            problems_len = 0
+            for user in users:
+                true_login = convert_to_contest_login(user['@loginName'])
+                if true_login in students_info:
+                    students_ids[user['@id']] = students_info[true_login]
+                    problems_len += len(students_info[true_login])
+                    student_len -= 1
+                    if not student_len:
+                        break
+
+            submits = contest_dict['contestLog']['events']['submit']
+            if problems_len:
+                for submit in reversed(submits):
+                    user_id = submit['@userId']
+                    problem_id = submit['@problemTitle']
+                    if user_id in students_ids and problem_id in students_ids[user_id] \
+                            and submit['@verdict'] == 'OK':
+                        score = submit['@score']
+                        if score and float(score) > 0:
+                            students_ids[user_id][problem_id].set_byname('mark', float(score), from_contest=True)
+                            problems_len -= 1
+                            if not problems_len:
+                                break
+        except:
+            soup = BeautifulStoneSoup(results_req.content)
+            users = soup.contestlog.users.user
+            student_len = len(students_info)
+            students_ids = {}
+            problems_len = 0
+
+            while users:
+                if users != '\n' and users.attrs:
+                    if 'loginname' not in dict(users.attrs):
+                        break
+                    true_login = convert_to_contest_login(users['loginname'])
+                    if true_login in students_info:
+                        students_ids[users['id']] = students_info[true_login]
+                        problems_len += len(students_info[true_login])
+                        student_len -= 1
+                        if not student_len:
+                            break
+                users = users.next
+
+            submits = soup.contestlog.events.submit
+
+            if problems_len:
+                while submits:
+                    if submits != '\n' and submits.name != 'testinglog' and 'userid' in submits:
+                        user_id = submits['userid']
+                        problem_id = submits['problemtitle']
+                        if user_id in students_ids and problem_id in students_ids[user_id] \
+                                and submits['verdict'] == 'OK':
+                            score = submits['score']
+                            if score and float(score) > 0:
+                                students_ids[user_id][problem_id].set_byname('mark', float(score), from_contest=True)
+                                problems_len -= 1
+                                if not problems_len:
+                                    break
+                    submits = submits.next
+
+    except Exception as e:
+        logger.exception("Exception while request to Contest: '%s', Exception: '%s'",
+                         results_req.url, e)
+
+
 def get_contest_mark(contest_id, problem_id, ya_login):
     results_req = FakeResponse()
     contest_mark = None
     user_id = None
+    ya_login = convert_to_contest_login(ya_login)
     try:
         results_req = requests.get(
             settings.CONTEST_URL + 'action/api/download-log?contestId=' + str(contest_id) + '&snarkKey=spike')
@@ -104,7 +186,7 @@ def get_contest_mark(contest_id, problem_id, ya_login):
             users = contest_dict['contestLog']['users']['user']
 
             for user in users:
-                if user['@loginName'] == ya_login:
+                if convert_to_contest_login(user['@loginName']) == ya_login:
                     user_id = user['@id']
                     break
 
@@ -122,7 +204,7 @@ def get_contest_mark(contest_id, problem_id, ya_login):
 
             while users:
                 if users != '\n':
-                    if users['loginname'] == ya_login:
+                    if convert_to_contest_login(users['loginname']) == ya_login:
                         user_id = users['id']
                         break
                 users = users.next

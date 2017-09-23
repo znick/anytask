@@ -1,16 +1,20 @@
 # -*- coding: utf-8 -*-
 
 import logging
+import time
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.utils import translation, timezone
 from django.utils.translation import ugettext as _
+from django.db.models import Q
 
-from anycontest.common import comment_verdict, get_contest_mark
+from anycontest.common import comment_verdict, set_contest_marks, convert_to_contest_login
 from anycontest.models import ContestSubmission
 from anyrb.common import AnyRB
 from users.models import UserProfile
+
+from collections import defaultdict
 
 logger = logging.getLogger('django.request')
 
@@ -19,10 +23,13 @@ class Command(BaseCommand):
     help = "Check contest submissions and comment verdict"
 
     def handle(self, **options):
-        for contest_submission in ContestSubmission.objects \
-                .filter(got_verdict=False, send_error__isnull=True) \
-                .exclude(run_id__exact="") \
-                .exclude(run_id__isnull=True):
+        start_time = time.time()
+        contest_marks = defaultdict(dict)
+        contest_submissions = ContestSubmission.objects \
+            .filter(Q(got_verdict=False) & (Q(send_error__isnull=True) | Q(send_error=""))) \
+            .exclude(run_id__exact="") \
+            .exclude(run_id__isnull=True)
+        for contest_submission in contest_submissions:
             try:
                 issue = contest_submission.issue
                 task = issue.task
@@ -54,10 +61,18 @@ class Command(BaseCommand):
                     if issue.task.course.id in settings.COURSES_WITH_CONTEST_MARKS:
                         student_profile = issue.student.get_profile()
                         if student_profile.ya_contest_login:
-                            mark = get_contest_mark(task.contest_id, task.problem_id, student_profile.ya_contest_login)
-                            if mark and float(mark) > 0:
-                                issue.set_byname('mark', float(mark))
+                            ya_login = convert_to_contest_login(student_profile.ya_contest_login)
+                            if ya_login not in contest_marks[task.contest_id]:
+                                contest_marks[task.contest_id][ya_login] = defaultdict(dict)
+                            contest_marks[task.contest_id][ya_login][task.problem_id] = issue
                     comment_verdict(issue, contest_submission.verdict == 'ok', comment)
                 translation.deactivate()
             except Exception as e:
                 logger.exception(e)
+
+        for contest_id, students_info in contest_marks.iteritems():
+            set_contest_marks(contest_id, students_info)
+
+        # logging to cron log
+        print "Command check_contest check {0} submissions ({1} - contests with marks) took {2} seconds" \
+            .format(len(contest_submissions), len(contest_marks), time.time() - start_time)
