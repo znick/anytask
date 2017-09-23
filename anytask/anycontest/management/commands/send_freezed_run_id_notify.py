@@ -36,13 +36,16 @@ class Command(BaseCommand):
         for contest_submission in contest_submissions:
             issue = contest_submission.issue
 
-            message += u"Issue:\t\t{0}{1} \n".format(domain, issue.get_absolute_url())
-            message += u"Run id:\t\thttps://contest.yandex.ru/contest/{1}/run-report/{0} \n".format(
+            message += u"Issue:\t\t{0}{1}\n".format(domain, issue.get_absolute_url())
+            message += u"Run info:\thttps://contest.yandex.ru/contest/{1}/run-report/{0}\n".format(
                 contest_submission.run_id,
                 issue.task.contest_id,
             )
-            message += u"Time created:\t{0} \n".format(contest_submission.create_time.strftime("%d-%m-%Y %H:%M:%S"))
-            message += u"Time delta:\t{0} \n".format(timezone.now() - contest_submission.create_time)
+            message += u"Run info full:\thttps://contest.yandex.ru/admin/run-report?id={0}\n".format(
+                contest_submission.run_id,
+            )
+            message += u"Time created:\t{0}\n".format(contest_submission.create_time.strftime("%d-%m-%Y %H:%M:%S"))
+            message += u"Time delta:\t{0}\n".format(timezone.now() - contest_submission.create_time)
             # message += u"Last contest response:\t{0} \n".format(contest_submission.full_response)
             message += u"\n\n"
 
