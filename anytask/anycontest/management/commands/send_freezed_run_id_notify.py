@@ -38,7 +38,7 @@ class Command(BaseCommand):
 
             message += u"Issue:\t\t{0}{1} \n".format(domain, issue.get_absolute_url())
             message += u"Run id:\t\thttps://contest.yandex.ru/contest/{1}/run-report/{0} \n".format(
-                issue.get_byname('run_id'),
+                contest_submission.run_id,
                 issue.task.contest_id,
             )
             message += u"Time created:\t{0} \n".format(contest_submission.create_time.strftime("%d-%m-%Y %H:%M:%S"))
