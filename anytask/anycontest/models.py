@@ -16,6 +16,14 @@ import time
 logger = logging.getLogger('django.request')
 
 
+class ContestSubmissionRunning(Exception):
+    pass
+
+
+class ContestSubmissionWaiting(Exception):
+    pass
+
+
 class ContestSubmission(models.Model):
     issue = models.ForeignKey('issues.Issue', db_index=True, null=False, blank=False)
     author = models.ForeignKey(User, null=False, blank=False)
@@ -145,9 +153,9 @@ class ContestSubmission(models.Model):
         results_req = FakeResponse()
         issue = self.issue
         comment = ''
+        run_id = self.run_id
 
         try:
-            run_id = self.run_id
             student_profile = issue.student.get_profile()
             course = issue.task.course
             if student_profile.ya_contest_oauth and course.send_to_contest_from_users:
@@ -162,8 +170,11 @@ class ContestSubmission(models.Model):
             results_req_json = results_req.json()
             self.full_response = results_req.content
 
+            if results_req_json['result']['submission']['status'] == "waiting":
+                raise ContestSubmissionWaiting
+
             if results_req_json['result']['submission']['status'] == "running":
-                raise Exception("run_id {0} is running for {1}".format(run_id, timezone.now() - self.create_time))
+                raise ContestSubmissionRunning
 
             contest_verdict = results_req_json['result']['submission']['verdict']
             self.verdict = contest_verdict
@@ -227,6 +238,12 @@ class ContestSubmission(models.Model):
 
             logger.info("Contest submission verdict with run_id '%s' got successfully.", run_id)
             got_verdict = True
+        except ContestSubmissionWaiting:
+            logger.warning("Run_id %s is waiting for %s", run_id, timezone.now() - self.create_time)
+            got_verdict = False
+        except ContestSubmissionRunning:
+            logger.warning("Run_id %s is running for %s", run_id, timezone.now() - self.create_time)
+            got_verdict = False
         except Exception as e:
             logger.exception("Exception while request to Contest: '%s' : '%s', Exception: '%s'",
                              results_req.url, results_req.json(), e)
