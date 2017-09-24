@@ -151,10 +151,9 @@ def set_contest_marks(contest_id, students_info):
                 users = users.next
 
             submits = soup.contestlog.events.submit
-
             if problems_len:
                 while submits:
-                    if submits != '\n' and submits.name != 'testinglog' and 'userid' in submits:
+                    if submits != '\n' and submits.attrs and 'userid' in dict(submits.attrs):
                         user_id = submits['userid']
                         problem_id = submits['problemtitle']
                         if user_id in students_ids and problem_id in students_ids[user_id] \
