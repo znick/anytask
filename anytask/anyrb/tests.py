@@ -10,12 +10,12 @@ TEST_DIR = os.path.join(CUR_DIR, "test_data")
 class UnpackerTest(TestCase):
     def test_no_change_on_no_archive(self):
         files = [
-            UnpackedFile(os.path.join(TEST_DIR, "1.txt"), "1.txt"),
-            UnpackedFile(os.path.join(TEST_DIR, "1.py"), "1.py"),
-            UnpackedFile(os.path.join(TEST_DIR, "1.py"), "1.py"),
-            UnpackedFile(os.path.join(TEST_DIR, "1.pl"), "1.pl"),
-            UnpackedFile(os.path.join(TEST_DIR, "test.cpp"), "test.cpp"),
-            UnpackedFile(os.path.join(TEST_DIR, "test.c"), "test.c"),
+            UnpackedFile(os.path.join(TEST_DIR, "1.txt"), u"1.txt"),
+            UnpackedFile(os.path.join(TEST_DIR, "1.py"), u"1.py"),
+            UnpackedFile(os.path.join(TEST_DIR, "1.py"), u"1.py"),
+            UnpackedFile(os.path.join(TEST_DIR, "1.pl"), u"1.pl"),
+            UnpackedFile(os.path.join(TEST_DIR, "test.cpp"), u"test.cpp"),
+            UnpackedFile(os.path.join(TEST_DIR, "test.c"), u"test.c"),
         ]
 
         with unpack_files(files) as unpacked_files:
@@ -23,7 +23,7 @@ class UnpackerTest(TestCase):
 
     def _test_unpack(self, arcfilename):
         files = [
-            UnpackedFile(os.path.join(TEST_DIR, "1.txt"), "1.txt"),
+            UnpackedFile(os.path.join(TEST_DIR, "1.txt"), u"1.txt"),
             UnpackedFile(os.path.join(TEST_DIR, arcfilename), arcfilename),
         ]
 
@@ -36,12 +36,16 @@ class UnpackerTest(TestCase):
 
     def test_unpack_zip_cp1251(self):
         files = [
-            UnpackedFile(os.path.join(TEST_DIR, "1.txt"), "1.txt"),
-            UnpackedFile(os.path.join(TEST_DIR, "zipfile_cp1251.zip"), "zipfile_cp1251.zip"),
+            UnpackedFile(os.path.join(TEST_DIR, "1.txt"), u"1.txt"),
+            UnpackedFile(os.path.join(TEST_DIR, "zipfile_cp1251.zip"), u"zipfile_cp1251.zip"),
         ]
         with unpack_files(files) as unpacked_files:
             unpacked_filenames = map(lambda x: x.filename(), unpacked_files)
-#            self.assertListEqual(['1.txt', arcfilename + '/1.py', arcfilename + '/dir/1.pl'], unpacked_filenames)
+            expected = [u'1.txt',
+                        u'zipfile_cp1251.zip/\x85e\u0301n\u0303 a\u0308\xa0\xa9\xab.txt',
+                        u'zipfile_cp1251.zip/\x94\xa0\xa9\xab.txt',
+                        u'zipfile_cp1251.zip/catalog/test.txt']
+            self.assertListEqual(expected, unpacked_filenames)
 
     def test_unpack_7z(self):
         self._test_unpack("7zfile.7z")
