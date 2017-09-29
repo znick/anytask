@@ -2,6 +2,7 @@ import os
 import subprocess
 import tempfile
 import shutil
+import logging
 
 from django.conf import settings
 
@@ -21,6 +22,8 @@ ARCHIVERS = {
     '.rar': _7Z,
     '.7z': _7Z,
 }
+
+logger = logging.getLogger('django.request')
 
 
 class UnpackedFile(object):
@@ -60,11 +63,15 @@ def unpack_files(files):
 
         for root, dirs, files in os.walk(dst_dir):
             for unpacked_file in files:
-                unpacked_filepath = os.path.join(root, unpacked_file)
-                unpacked_filename = unpacked_filepath[len(dst_dir):]
-
-                unpacked_file = UnpackedFile(unpacked_filepath, f.filename() + unpacked_filename)
-                res.append(unpacked_file)
+                try:
+                    unpacked_filepath = os.path.join(root, unpacked_file)
+                    unpacked_filename = unpacked_filepath[len(dst_dir):]
+                    unpacked_filename = unpacked_filename.decode("utf-8", errors="ignore")
+                    unpacked_file = UnpackedFile(unpacked_filepath, f.filename() + unpacked_filename)
+                    res.append(unpacked_file)
+                except Exception as e:
+                    logger.exception("Exception while making UnpackedFile object for archive file '%s' in '%s', '%s'",
+                                     unpacked_file, root, e)
 
     yield res
 
