@@ -34,19 +34,6 @@ class UnpackerTest(TestCase):
     def test_unpack_zip(self):
         self._test_unpack("zipfile.zip")
 
-    def test_unpack_zip_cp1251(self):
-        files = [
-            UnpackedFile(os.path.join(TEST_DIR, "1.txt"), u"1.txt"),
-            UnpackedFile(os.path.join(TEST_DIR, "zipfile_cp1251.zip"), u"zipfile_cp1251.zip"),
-        ]
-        with unpack_files(files) as unpacked_files:
-            unpacked_filenames = map(lambda x: x.filename(), unpacked_files)
-            expected = [u'1.txt',
-                        u'zipfile_cp1251.zip/\x94\xa0\xa9\xab.txt',
-                        u'zipfile_cp1251.zip/\x85\xe9\xf1 \xe4\xa0\xa9\xab.txt',
-                        u'zipfile_cp1251.zip/catalog/test.txt']
-            self.assertListEqual(expected, unpacked_filenames)
-
     def test_unpack_7z(self):
         self._test_unpack("7zfile.7z")
 
