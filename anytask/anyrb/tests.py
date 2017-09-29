@@ -42,8 +42,8 @@ class UnpackerTest(TestCase):
         with unpack_files(files) as unpacked_files:
             unpacked_filenames = map(lambda x: x.filename(), unpacked_files)
             expected = [u'1.txt',
-                        u'zipfile_cp1251.zip/\x85e\u0301n\u0303 a\u0308\xa0\xa9\xab.txt',
                         u'zipfile_cp1251.zip/\x94\xa0\xa9\xab.txt',
+                        u'zipfile_cp1251.zip/\x85\xe9\xf1 \xe4\xa0\xa9\xab.txt',
                         u'zipfile_cp1251.zip/catalog/test.txt']
             self.assertListEqual(expected, unpacked_filenames)
 
