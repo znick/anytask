@@ -35,6 +35,7 @@ class AnyRB(object):
 
                 empty = False
                 file_content = []
+                f.file.open()
                 for line in f.file:
                     try:
                         file_content.append(line.decode('utf-8'))
