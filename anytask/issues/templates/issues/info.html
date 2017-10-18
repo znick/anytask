@@ -69,6 +69,8 @@
                                         {% elif show_contest_rejudge_loading %}
                                             <button type="submit" class="btn btn-secondary" style="cursor: default" disabled="disabled"><span class='fa fa-circle-o-notch fa-spin fa-fw'></span></button>
                                         {% endif %}
+                                    {% elif field.name == 'mark' %}
+                                        {{ field.repr }} {% trans "iz" %} {{ issue.task.score_max }}
                                     {% else %}
                                         {{ field.repr }}
                                     {% endif %}
@@ -151,7 +153,7 @@
                 {% if teacher_or_staff %}
                     <a id="modal_task_descr_edit_button" href="{% url tasks.views.task_edit_page task_id=issue.task.id %}" type="button" style="opacity:0.2;filter: alpha(opacity=20);color:#000000;display: inline-block;vertical-align: super;margin-left: 5px;"><i class="fa fa-edit fa-lg"></i></a>
                 {% endif %}
-                <div id="modal_header_deadline_time">{% if issue.task.deadline_time %}<strong>{%  trans "data_sdachi" %}:{% localtime on %} {{ issue.task.deadline_time|date:'d-m-Y H:i' }}{% endlocaltime %}{% endif %}</strong></div>
+                <div id="modal_header_deadline_time">{% if issue.task.deadline_time %}<strong>{%  trans "data_sdachi" %}:{% localtime on %} {{ issue.task.deadline_time|date:'d-m-Y H:i' }}{% endlocaltime %}</strong>{% endif %}</div>
             </div>
             <div class="modal-body">
                 <div id="modal_body_task_descr">{{ issue.task|get_description:LANGUAGE_CODE|safe }}</div>

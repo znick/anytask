@@ -238,6 +238,12 @@ class Course(models.Model):
     def get_teachers(self):
         return self.teachers.order_by('last_name', 'first_name')
 
+    def get_students(self):
+        return User.objects\
+            .filter(group__in=self.groups.all())\
+            .distinct()\
+            .order_by('last_name', 'first_name')
+
     def get_default_teacher(self, group):
         try:
             return DefaultTeacher.objects.filter(course=self).get(group=group).teacher

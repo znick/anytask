@@ -21,3 +21,7 @@
     max-width: 100%;
     height: auto;
 }
+
+.mce-content-body table.table-from-contest {
+    table-layout: fixed;
+}

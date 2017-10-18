@@ -50,72 +50,55 @@
 
 {% block scripts %}
     {% include "courses/queue_js.html" %}
-
+    <link href="{{ STATIC_URL }}queue.css" rel='stylesheet'/>
 {% endblock scripts %}
 
 {% block content %}
     {{ block.super }}
 
-    <style>
-        .table_queue th {
-            white-space: nowrap
-        }
-    </style>
-
     <div class="row">
-        <div class="col-md-2">
-            <div class="card card-block" id="filters" style="min-width:11.5rem;">
-                <div style="padding: 0px 15px 0px 15px;">
-                    {% crispy filter.form %}
+        <div class="col-md-12">
+            <div class="card card-block">
+                <h5 class="card-title">
+                    {% trans "ochered_na_proverku" %}
+                    <button id="btn_filter_open" title="{% trans "filtr" %}" class="btn btn-square btn-sm btn-secondary" data-toggle="modal" data-target="#modal_filter">
+                        <span class="fa fa-fw fa-filter" aria-hidden="true"></span>
+                    </button>
+                </h5>
+                <div class="loading">
+                    <span class='fa fa-circle-o-notch fa-spin'></span>
+                </div>
+                <div class="main-table">
+                    <table class="table table-queue table-striped" id="table_queue" data-lang="{{ LANGUAGE_CODE }}" data-timezone="{{ timezone }}" data-course_id="{{ course.id }}">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>{% trans "student" %}</th>
+                            <th>{% trans "zadacha" %}</th>
+                            <th>{% trans "obnovlena" %}</th>
+                            <th>{% trans "ocenka" %}</th>
+                            <th>{% trans "proverjaushij" %}</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                    </table>
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="col-md-10">
-            <div class="card card-block">
-                <table class="table table_queue css-serial" id="table_queue">
-                    <thead>
-                    <tr style="background-color: #ffffff;">
-                        <th>#</th>
-                        <th>id<i class="fa fa-fw fa-sort"></i></th>
-                        <th>{% trans "student" %}<i class="fa fa-fw fa-sort"></i></th>
-                        <th>{% trans "zadacha" %}<i class="fa fa-fw fa-sort"></i></th>
-                        <th>{% trans "obnovlena" %}<i class="fa fa-fw fa-sort"></i></th>
-                        <th>{% trans "ocenka" %}<i class="fa fa-fw fa-sort"></i></th>
-                        <th>{% trans "proverjaushij" %}<i class="fa fa-fw fa-sort"></i></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for issue in filter %}
-                        <tr>
-                            <td>&nbsp;</td>
-                            <td>
-                                {% if issue.task.has_issue_access %}
-                                    <a href="{{ issue.get_absolute_url }}">
-                                        {{ issue.id }}
-                                    </a>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <a href="{{ issue.student.get_absolute_url }}">
-                                    {{ issue.student.last_name }} {{ issue.student.first_name }}
-                                </a>
-                            </td>
-                            <td>{% get_text_from_json issue.task 'get_title' LANGUAGE_CODE %}</td>
-                            <td>
-                                <i class="fa fa-clock-o fa-flip-horizontal"></i> {{ issue.update_time|date:"Y-m-d H:i" }}
-                            </td>
-                            <td>{{ issue.score }}</td>
-                            <td>
-                                <a href="{{ issue.responsible.get_absolute_url }}">
-                                    {{ issue.responsible.last_name }} {{ issue.responsible.first_name }}
-                                </a>
-                            </td>
-                        </tr>
-                    {% endfor %}
-
-                    </tbody>
-                </table>
+    <div id="modal_filter" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modal_filter_header" aria-hidden="true">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">×</button>
+                    <h5 class="modal-title" id="modal_filter_header">{% trans "filtr" %}</h5>
+                </div>
+                <div class="modal-body">
+                    <div id="filters">
+                        {% crispy filter.form %}
+                    </div>
+                </div>
             </div>
         </div>
     </div>

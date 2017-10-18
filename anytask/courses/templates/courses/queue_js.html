@@ -1,15 +1,14 @@
 {% load i18n %}
-<script src="{{ STATIC_URL }}jquery.stickytableheaders.min.js"></script>
-{#<script src="{{ STATIC_URL }}bootstrap-select.min.js"></script>#}
-{#<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.11.0/js/i18n/defaults-ru_RU.js"></script>#}
-{#<link rel="stylesheet" href="{{ STATIC_URL }}bootstrap-select.min.css">#}
+{% get_current_language as LANGUAGE_CODE %}
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap4.min.js"></script>
+
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap4.min.css"/>
+
 <script type="text/javascript">
 
-    $(document).ready(function() {
-        $(".table_queue").tablesorter();
-        $(".table_queue").stickyTableHeaders({fixedOffset: $('.navbar')});
-
-         $("select[multiple]").multiselect({
+    $(document).ready(function () {
+        $("select[multiple]").multiselect({
             buttonClass: 'btn btn-secondary btn-block',
             templates: {
                 ul: '<ul class="multiselect-container dropdown-menu" style="left:inherit;top: inherit;"></ul>',
@@ -25,7 +24,7 @@
             maxHeight: 200,
             buttonContainer: '<div style="width:100%;" class="multiselect-dropdown"/>',
             buttonWidth: '100%',
-            buttonTitle: function(options, select) {
+            buttonTitle: function (options, select) {
                 var labels = [];
 
                 if (options.length === 0) {
@@ -41,7 +40,7 @@
                 }
                 return labels.join(', ');
             },
-            buttonText: function(options, select) {
+            buttonText: function (options, select) {
                 if (options.length === 0) {
                     return '---';
                 }
@@ -50,7 +49,7 @@
                 }
                 else {
                     var labels = [];
-                    options.each(function() {
+                    options.each(function () {
                         if ($(this).attr('label') !== undefined) {
                             labels.push($(this).attr('label'));
                         }
@@ -60,7 +59,152 @@
                     });
                     return labels.join(', ') + '';
                 }
+            },
+            onInitialized: function(select, container) {
+                $(".row", "#filters").removeClass("row");
             }
+        });
+
+        $(".table-queue").DataTable({
+            searching: false,
+            ordering: true,
+            order: [[ 3, "desc" ]],
+            paging: true,
+            processing: true,
+            serverSide: true,
+            autoWidth: false,
+            scrollY: "60vh",
+            scrollX: true,
+            scrollCollapse: true,
+            pageLength: 50,
+            dom: "<'row'<'col-xs-12'tr>>" +
+            "<'row table-queue-info'<'col-xs-12 col-sm-12 col-md-4 col-lg-4'i><'col-xs-12 col-sm-12 col-md-8 col-lg-8'p>>",
+            columns: [
+                {
+                    className: "index-td",
+                    data: null,
+                    searchable: false,
+                    orderable: false,
+                    defaultContent: "",
+                    render: function (value, type, data, row) {
+                        return data["start"] + row.row + 1 ;
+                    }
+                },
+                {
+                    data: "student_name",
+                    className: "student-name-td",
+                    render: function (value, type, data, row) {
+                        var $a = $('<a></a>');
+                        $a.attr("href", data["student_url"]);
+                        $a.text(value);
+                        return $a[0].outerHTML;
+                    }
+                },
+                {
+                    data: "task_title",
+                    className: "task-title-td"
+                },
+                {
+                    data: "update_time",
+                    className: "update-time-td"
+                },
+                {
+                    data: "mark",
+                    className: "mark-td",
+                    render: function (value, type, data, row) {
+                        var $span = $('<span class="label"></span>');
+                        $span.css("background-color", data["status_color"]);
+                        $span.attr("title", data["status_name"]);
+                        $span.text(value);
+                        return $span[0].outerHTML;
+                    }
+                },
+                {
+                    data: "responsible_name",
+                    className: "responsible-name-td",
+                    render: function (value, type, data, row) {
+                        var $a = $('<a></a>');
+                        $a.attr("href", data["responsible_url"]);
+                        $a.text(value);
+                        return $a[0].outerHTML;
+                    }
+                },
+                {
+                    className: "redirect-col",
+                    data: null,
+                    searchable: false,
+                    orderable: false,
+                    defaultContent: "",
+                    render: function (value, type, data, row) {
+                        if (!data["has_issue_access"])
+                            return "";
+                        var $a = $('<a class="btn btn-square btn-sm btn-primary"><span class="fa fa-fw fa-arrow-right" aria-hidden="true"></span></a>');
+                        $a.attr("href", data["issue_url"]);
+                        $a.attr("title", "{% trans "perejti" %}");
+                        return $a[0].outerHTML;
+                    }
+                }
+            ],
+            initComplete: function (settings, json) {
+                var $table = $(settings.nTable);
+
+                $table.closest(".main-table").show();
+                $table.DataTable().draw();
+                $(".loading").hide();
+            },
+            drawCallback: function (settings) {
+                if ($("form", "#filters").serialize() !== "update_time=")
+                    $("#btn_filter_open").addClass("active");
+                else
+                    $("#btn_filter_open").removeClass("active");
+                $("ul", ".dataTables_paginate").addClass("pagination-sm");
+            },
+            language: {
+                "decimal": "",
+                "emptyTable": "{% trans 'pustaja_tablica' %}",
+                "info": "_START_-_END_ {% trans 'iz' %} _TOTAL_",
+                "infoEmpty": "0",
+                "infoFiltered": "({% trans 'iz' %} _MAX_)",
+                "infoPostFix": "",
+                "thousands": ",",
+                "lengthMenu": "{% trans "pokazat" %} _MENU_",
+                "loadingRecords": "{% trans "zagruzka" %}",
+                "processing": "<span class='fa fa-circle-o-notch fa-spin'></span>&nbsp;{% trans "zagruzka" %}",
+                "search": "",
+                "searchPlaceholder": "{% trans "najti" %}",
+                "zeroRecords": "{% trans "nichego_ne_najdeno" %}",
+                "paginate": {
+                    "next": '<i class="fa fa-angle-right" aria-hidden="true"></i>',
+                    "previous": '<i class="fa fa-angle-left" aria-hidden="true"></i>'
+                }
+            },
+            ajax: {
+                "url": "{% url courses.views.ajax_get_queue %}",
+                "data": function (data) {
+                    var $table_queue = $("#table_queue");
+                    data["lang"] = $table_queue.data("lang");
+                    data["timezone"] = $table_queue.data("timezone");
+                    data["course_id"] = $table_queue.data("course_id");
+                    data["filter"] = $("form", "#filters").serialize();
+                    data["order"] = JSON.stringify(data["order"]);
+                }
+            }
+        }).on('xhr.dt', function (e, settings, json, xhr) {
+            history.replaceState(null, '', json["url"]);
+        });
+
+        $("#button_filter").click(function () {
+            $(this).closest(".modal").modal("hide");
+        });
+
+        $("#modal_filter").on('hidden.bs.modal', function (e) {
+            $(".table-queue").DataTable().ajax.reload();
+        });
+
+        $("#button_clear").click(function () {
+            $("option", "select[multiple]").prop("selected", false);
+            $("select[multiple]", "#filters").multiselect("refresh");
+            $("select:not([multiple])", "#filters").val("");
         });
     });
 </script>

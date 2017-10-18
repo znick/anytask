@@ -9,6 +9,7 @@ from years.models import Year
 
 from django.core.urlresolvers import reverse
 from mail.views import format_date
+from pytz import timezone as timezone_pytz
 import json
 
 
@@ -192,7 +193,9 @@ class ViewsTest(TestCase):
             },
             'unread_count': 0,
             'text': message.text,
-            'date': message.create_time.strftime("%d.%m.%y %H:%M:%S"),
+            'date': message.create_time.astimezone(
+                timezone_pytz(self.sender.get_profile().time_zone)
+            ).strftime("%d.%m.%y %H:%M:%S"),
             'recipients_course': [{
                 'url': self.recipients_course[0].get_absolute_url(),
                 'name': self.recipients_course[0].name,
@@ -288,7 +291,7 @@ class ViewsTest(TestCase):
                 u'0': u'',
                 u'1': u'%s %s' % (message.sender.last_name, message.sender.first_name),
                 u'2': message.title,
-                u'3': format_date(message.create_time),
+                u'3': format_date(message.create_time.astimezone(timezone_pytz(self.sender.get_profile().time_zone))),
                 u'DT_RowClass': u'',
                 u'DT_RowData': {u'id': 1},
                 u'DT_RowId': u'row_msg_sent_' + str(message.id)
@@ -319,7 +322,9 @@ class ViewsTest(TestCase):
                     u'0': u'',
                     u'1': u'%s %s' % (message.sender.last_name, message.sender.first_name),
                     u'2': message.title,
-                    u'3': format_date(message.create_time),
+                    u'3': format_date(
+                        message.create_time.astimezone(timezone_pytz(recipient.get_profile().time_zone))
+                    ),
                     u'DT_RowClass': u'unread',
                     u'DT_RowData': {u'id': 1},
                     u'DT_RowId': u'row_msg_inbox_' + str(message.id)
@@ -381,7 +386,7 @@ class ViewsTest(TestCase):
                 u'0': u'',
                 u'1': u'%s %s' % (message.sender.last_name, message.sender.first_name),
                 u'2': message.title,
-                u'3': format_date(message.create_time),
+                u'3': format_date(message.create_time.astimezone(timezone_pytz(recipient.get_profile().time_zone))),
                 u'DT_RowClass': u'',
                 u'DT_RowData': {u'id': 1},
                 u'DT_RowId': u'row_msg_inbox_' + str(message.id)
@@ -416,7 +421,9 @@ class ViewsTest(TestCase):
                 u'0': u'',
                 u'1': u'%s %s' % (message.sender.last_name, message.sender.first_name),
                 u'2': message.title,
-                u'3': format_date(message.create_time),
+                u'3': format_date(
+                    message.create_time.astimezone(timezone_pytz(recipient.get_profile().time_zone))
+                ),
                 u'DT_RowClass': u'unread',
                 u'DT_RowData': {u'id': 1},
                 u'DT_RowId': u'row_msg_inbox_' + str(message.id)
@@ -447,7 +454,9 @@ class ViewsTest(TestCase):
                 u'0': u'',
                 u'1': u'%s %s' % (message.sender.last_name, message.sender.first_name),
                 u'2': message.title,
-                u'3': format_date(message.create_time),
+                u'3': format_date(
+                    message.create_time.astimezone(timezone_pytz(recipient.get_profile().time_zone))
+                ),
                 u'DT_RowClass': u'unread',
                 u'DT_RowData': {u'id': 1},
                 u'DT_RowId': u'row_msg_trash_' + str(message.id)
@@ -481,7 +490,9 @@ class ViewsTest(TestCase):
                 u'0': u'',
                 u'1': u'%s %s' % (message.sender.last_name, message.sender.first_name),
                 u'2': message.title,
-                u'3': format_date(message.create_time),
+                u'3': format_date(
+                    message.create_time.astimezone(timezone_pytz(recipient.get_profile().time_zone))
+                ),
                 u'DT_RowClass': u'unread',
                 u'DT_RowData': {u'id': 1},
                 u'DT_RowId': u'row_msg_inbox_' + str(message.id)

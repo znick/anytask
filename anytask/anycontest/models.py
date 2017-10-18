@@ -138,6 +138,32 @@ class ContestSubmission(models.Model):
 
         return sent
 
+    def get_contest_mark(self):
+        results_req = FakeResponse()
+        run_id = self.run_id
+        issue = self.issue
+
+        try:
+            oauth = settings.CONTEST_OAUTH
+            contest_id = issue.task.contest_id
+            results_req = requests.get(
+                settings.CONTEST_V1_API_URL + '/contests/' + str(contest_id) + '/submissions/' + str(run_id) + '/full',
+                headers={'Authorization': 'OAuth ' + oauth}
+            )
+
+            results_req_json = results_req.json()
+            issue.set_byname('mark', float(results_req_json['finalScore']))
+
+            logger.info("Contest submission mark with run_id '%s' got successfully.", run_id)
+            got_mark = True
+        except Exception as e:
+            logger.exception("Exception while request to Contest: '%s' : '%s', Exception: '%s'",
+                             results_req.url, results_req.json(), e)
+            got_mark = False
+        self.save()
+
+        return got_mark
+
     def get_compiler_id(self, extension):
         course_id = self.issue.task.course.id
         compiler_id = settings.CONTEST_EXTENSIONS[extension]
@@ -165,7 +191,8 @@ class ContestSubmission(models.Model):
             contest_id = issue.task.contest_id
             results_req = requests.get(
                 settings.CONTEST_API_URL + 'results?runId=' + str(run_id) + '&contestId=' + str(contest_id),
-                headers={'Authorization': 'OAuth ' + oauth})
+                headers={'Authorization': 'OAuth ' + oauth}
+            )
 
             results_req_json = results_req.json()
             self.full_response = results_req.content

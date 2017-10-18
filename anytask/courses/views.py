@@ -1,7 +1,7 @@
 # coding: utf-8
 
 from django.shortcuts import render_to_response, get_object_or_404
-from django.http import Http404
+from django.http import Http404, QueryDict
 from django.template import RequestContext
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
@@ -26,6 +26,7 @@ from years.models import Year
 from years.common import get_current_year
 from anycontest.common import get_contest_info, FakeResponse
 from issues.models import Issue, IssueFilter
+from issues.model_issue_status import IssueStatus
 from issues.views import contest_rejudge
 from users.forms import InviteActivationForm
 from users.models import UserProfile
@@ -44,13 +45,80 @@ import json
 
 logger = logging.getLogger('django.request')
 
+QUEUE_SESSION_PREFIX = 'queue'
+QUEUE_COLUMN_ORDER = {
+    "1": ["student__last_name", "student__first_name"],
+    "2": ["task__title"],
+    "3": ["update_time"],
+    "4": ["mark"],
+    "5": ["responsible__last_name", "responsible__first_name"],
+}
+
 
 @require_http_methods(['GET'])
 @login_required
 def queue_page(request, course_id):
-    course = get_object_or_404(Course, id=course_id)
-    course_id_as_str = str(course_id)
     user = request.user
+    course = get_object_or_404(Course, id=course_id)
+
+    if not course.user_can_see_queue(user):
+        raise PermissionDenied
+
+    f = IssueFilter(request.GET, {})
+    default_choices = f.set_course(course, user)
+    session_key = '_'.join([QUEUE_SESSION_PREFIX, str(course_id)])
+    if request.GET:
+        request.session[session_key] = f.form.data
+    elif session_key in request.session:
+        f.form.data = request.session.get(session_key)
+    else:
+        f.form.data = default_choices
+
+    f.form.helper = FormHelper(f.form)
+    f.form.helper.form_method = 'get'
+    f.form.helper.layout.append(
+        HTML(
+            u"""
+            <div class="form-group row">
+            <button id="button_clear" class="btn btn-secondary" type="button">{0}</button>
+            </div>
+            <div class="form-group row">
+            <button id="button_filter" class="btn btn-primary" type="button">{1}</button>
+            </div>
+            """.
+            format(_(u'ochistit'), _(u'primenit'))
+        )
+    )
+
+    schools = course.school_set.all()
+
+    context = {
+        'course': course,
+        'user_is_teacher': course.user_is_teacher(user),
+        'visible_attendance_log': course.user_can_see_attendance_log(user),
+        'filter': f,
+        'school': schools[0] if schools else '',
+        'full_width_page': True,
+        'timezone': user.get_profile().time_zone
+    }
+    return render_to_response('courses/queue.html', context, context_instance=RequestContext(request))
+
+
+def set_order_direction(values, direction):
+    if direction == "desc":
+        return map(lambda x: "-" + x, values)
+    return values
+
+
+@require_http_methods(['GET'])
+@login_required
+def ajax_get_queue(request):
+    user = request.user
+
+    if "draw" not in request.GET or "course_id" not in request.GET:
+        raise PermissionDenied
+
+    course = get_object_or_404(Course, id=request.GET['course_id'])
 
     if not course.user_can_see_queue(user):
         raise PermissionDenied
@@ -65,40 +133,22 @@ def queue_page(request, course_id):
         task__type=Task.TYPE_SEMINAR,
     ).exclude(
         task__type=Task.TYPE_MATERIAL,
-    ).distinct().select_related('student', 'task', 'responsible').order_by('update_time')
+    ).distinct().select_related('student', 'task', 'responsible', 'status_field')
 
-    lang = user.get_profile().language
-    f = IssueFilter(request.GET, issues)
-    f.set_course(course, lang)
+    order = []
+    for order_info in json.loads(request.GET.get("order", "[]")):
+        order.extend(set_order_direction(QUEUE_COLUMN_ORDER.get(str(order_info.get("column"))), order_info.get("dir")))
+    issues = issues.order_by(*order)
 
+    f = IssueFilter(QueryDict(request.GET["filter"]), issues)
+    f.set_course(course, user)
+    f.set_data(request.GET)
+    session_key = '_'.join([QUEUE_SESSION_PREFIX, str(course.id)])
     if f.form.data:
-        request.session[course_id_as_str] = f.form.data
-    elif course_id_as_str in request.session:
-        f.form.data = request.session.get(course_id_as_str)
+        request.session[session_key] = f.form.data
+    f.count()
 
-    f.form.helper = FormHelper(f.form)
-    f.form.helper.form_method = 'get'
-    # f.form.helper.label_class = 'col-md-4'
-    # f.form.helper.field_class = 'selectpicker'
-    f.form.helper.layout.append(
-        HTML(
-            u"""<div class="form-group row">
-            <button id="button_filter" class="btn btn-secondary pull-xs-right" type="submit">{0}</button>
-            </div>""".
-            format(_(u'primenit'))
-        )
-    )
-
-    schools = course.school_set.all()
-
-    context = {
-        'course': course,
-        'user_is_teacher': course.user_is_teacher(user),
-        'visible_attendance_log': course.user_can_see_attendance_log(user),
-        'filter': f,
-        'school': schools[0] if schools else '',
-    }
-    return render_to_response('courses/queue.html', context, context_instance=RequestContext(request))
+    return HttpResponse(json.dumps(f.response), content_type="application/json")
 
 
 @require_http_methods(['GET'])
@@ -134,7 +184,12 @@ def gradebook(request, course_id, task_id=None, group_id=None):
                                    'invite_form': InviteActivationForm()},
                                   context_instance=RequestContext(request))
     lang = request.session.get('django_language', user.get_profile().language)
-    issue_statuses = [(status.color, status.get_name(lang)) for status in course.issue_status_system.statuses.all()]
+    issue_statuses = []
+    seminar_color = IssueStatus.COLOR_DEFAULT
+    for status in course.issue_status_system.statuses.all():
+        issue_statuses.append((status.color, status.get_name(lang)))
+        if status.tag == IssueStatus.STATUS_SEMINAR:
+            seminar_color = status.color
 
     tasklist_context = tasklist_shad_cpp(request, course, task, group)
 
@@ -152,6 +207,7 @@ def gradebook(request, course_id, task_id=None, group_id=None):
         'school': schools[0] if schools else '',
         'full_width_page': True,
         'issue_statuses': issue_statuses,
+        'seminar_color': seminar_color,
     })
 
     return render_to_response('courses/gradebook.html', context, context_instance=RequestContext(request))
@@ -233,7 +289,7 @@ def seminar_page(request, course_id, task_id):
         raise PermissionDenied
 
     course = get_object_or_404(Course, id=course_id)
-    task = get_object_or_404(Task, id=task_id)
+    task = get_object_or_404(Task, id=task_id, type=Task.TYPE_SEMINAR)
     schools = course.school_set.all()
 
     if course.private and not course.user_is_attended(request.user):
@@ -370,9 +426,11 @@ def tasklist_shad_cpp(request, course, seminar=None, group=None):
             student_summ_scores = 0
             for task_taken in student_task_takens:
                 task_x_task_taken[task_taken.task.id] = task_taken
-                if not task_taken.task.is_hidden and \
-                        (task_taken.task.score_after_deadline or not task_taken.is_status_accepted_after_deadline()):
-                    student_summ_scores += task_taken.mark
+                if not task_taken.task.is_hidden:
+                    if task_taken.task.type == Task.TYPE_SEMINAR or \
+                            task_taken.task.score_after_deadline and task_taken.is_status_accepted() or \
+                            not task_taken.task.score_after_deadline and task_taken.is_status_only_accepted():
+                        student_summ_scores += task_taken.mark
 
             student_x_task_x_task_takens[student] = (task_x_task_taken, student_summ_scores)
 

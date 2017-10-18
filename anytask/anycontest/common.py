@@ -8,6 +8,7 @@ from django.conf import settings
 
 logger = logging.getLogger('django.request')
 HEADERS = {'Authorization': 'OAuth ' + settings.CONTEST_OAUTH}
+HTTP_RESPONSE_STATUS_OK = 200
 
 
 def prettify_contest_task_text(task_text):
@@ -244,9 +245,14 @@ def get_contest_info(contest_id, lang=None):
             for problem in contest_info['problems']:
                 problem_en = (item for item in contest_info_en['problems']
                               if item['problemId'] == problem['problemId']).next()
-                problem['problemTitle'] = json_str.format(problem['problemTitle'], problem_en['problemTitle'])
-                problem['statement'] = json_str.format(process_task_text(problem['statement']),
-                                                       process_task_text(problem_en['statement']))
+                problem['problemTitle'] = json_str.format(
+                    process_task_text(problem['problemTitle']),
+                    process_task_text(problem_en['problemTitle'])
+                )
+                problem['statement'] = json_str.format(
+                    process_task_text(problem['statement']),
+                    process_task_text(problem_en['statement'])
+                )
         got_info = True
     except Exception as e:
         logger.exception("Exception while request to Contest: '%s' : '%s', Exception: '%s'",

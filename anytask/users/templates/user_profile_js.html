@@ -24,6 +24,16 @@
             $(this).removeClass('active');
         });
 
+
+        $(".social-acc-form").ajaxForm({
+            success: function(data, status, xhr, $form) {
+                var $card = $form.closest("div.social-acc-card");
+                $form.closest("li").remove();
+                if ($("li", $card).length === 0)
+                    $card.remove();
+            },
+        });
+
         {% if user == user_to_show %}
 {#            $('#get-gravatar').click(function () {#}
 {#                var gravatar_link = 'https://www.gravatar.com/avatar/' + SparkMD5.hash('{{ user_to_show.email }}') + '?d=identicon';#}
@@ -111,6 +121,8 @@
                 image_description: false,
                 link_assume_external_targets: true,
                 default_link_target: "_blank",
+                relative_urls : false,
+                remove_script_host: false,
                 table_default_attributes: {
                     "class": 'table table-bordered table-comment'
                 },
@@ -155,19 +167,19 @@
                 $('#update_user_info_error_text').hide();
 
                 $.post('{% url users.views.ajax_edit_user_info %}', $('#user-info-form').serialize())
-                        .always(function () {
-                            modal_button_ok.html(modal_button_ok.data('resetText'));
-                            modal_button_ok.data('btn_clicked', false);
-                            $('.modal-footer', '#modal_user_info_edit').find('button').removeClass(d).removeAttr(d).prop(d, false);
-                        })
-                        .done(function (data) {
-                            $('#user_info_body').html(data.info);
-                            modal_button_ok.data('exit_modal', true);
-                            modal_button_ok.closest('.modal').modal('hide');
-                        })
-                        .fail(function (data) {
-                            $('#update_user_info_error_text').show();
-                        });
+                    .always(function () {
+                        modal_button_ok.html(modal_button_ok.data('resetText'));
+                        modal_button_ok.data('btn_clicked', false);
+                        $('.modal-footer', '#modal_user_info_edit').find('button').removeClass(d).removeAttr(d).prop(d, false);
+                    })
+                    .done(function (data) {
+                        $('#user_info_body').html(data.info);
+                        modal_button_ok.data('exit_modal', true);
+                        modal_button_ok.closest('.modal').modal('hide');
+                    })
+                    .fail(function (data) {
+                        $('#update_user_info_error_text').show();
+                    });
             });
         {% endif %}
     });
@@ -178,7 +190,7 @@
 
             reader.onload = function (e) {
                 $('#edit-avatar')
-                        .attr('src', e.target.result)
+                    .attr('src', e.target.result)
             };
 
             reader.readAsDataURL(input.files[0]);

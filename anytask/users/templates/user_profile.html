@@ -9,6 +9,7 @@
 {% block scripts %}
     {% include "user_profile_js.html" %}
     <link href="{{ STATIC_URL }}user_profile.css" rel='stylesheet'/>
+    <link href="{{ STATIC_URL }}user_settings.css" rel='stylesheet'/>
 {% endblock %}
 
 {% block navbar %}
@@ -148,6 +149,54 @@
                         </div>
                     </div>
                 </div>
+            {% elif user.is_superuser %}
+                {% if user_to_show_profile.ya_passport_login or user_to_show_profile.ya_contest_login %}
+                    <div class="card social-acc-card">
+                        <div class="card-block">
+                            <h5 class="card-title">{% trans "privjazka_akkauntov" %}</h5>
+                            <ul class="social-acc-panel">
+                                {% if user_to_show_profile.ya_passport_login %}
+                                    <li>
+                                        <div class="social-acc-panel-item">
+                                            <div class="social-acc-type social-acc social-acc-ya">
+                                                <span class="social-icons social-acc-ya-item">{% trans "jandeks" %}</span>
+                                            </div>
+                                            <div class="social-acc-login">
+                                                {{ user_to_show_profile.ya_passport_login }}
+                                            </div>
+                                            <div class="social-acc-action">
+                                                <form class="social-acc-form" method="post" action="{% url users.views.ya_oauth_disable type_of_oauth='passport'%}">
+                                                    {% csrf_token %}
+                                                    <input name="profile_id" type="hidden" value="{{ user_to_show_profile.id }}">
+                                                    <button class="btn btn-secondary btn-icon" type="submit"><i class="fa fa-fw fa-trash-o"></i></button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </li>
+                                {% endif %}
+                                {% if user_to_show_profile.ya_contest_login %}
+                                    <li>
+                                        <div class="social-acc-panel-item">
+                                            <div class="social-acc-type social-acc social-acc-contest">
+                                                <span class="social-icons social-acc-contest-item">{% trans "jakontest" %}</span>
+                                            </div>
+                                            <div class="social-acc-login">
+                                                {{ user_to_show_profile.ya_contest_login }}
+                                            </div>
+                                            <div class="social-acc-action">
+                                                <form class="social-acc-form" method="post" action="{% url users.views.ya_oauth_disable type_of_oauth='contest'%}">
+                                                    {% csrf_token %}
+                                                    <input name="profile_id" type="hidden" value="{{ user_to_show_profile.id }}">
+                                                    <button class="btn btn-secondary btn-icon" type="submit"><i class="fa fa-fw fa-trash-o"></i></button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                {% endif %}
             {% endif %}
         </div>
     </div>
