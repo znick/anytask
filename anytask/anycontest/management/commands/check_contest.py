@@ -14,7 +14,6 @@ from anycontest.models import ContestSubmission
 from anyrb.common import AnyRB
 from users.models import UserProfile
 
-from collections import defaultdict
 
 logger = logging.getLogger('django.request')
 
