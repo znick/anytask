@@ -196,7 +196,7 @@ class ViewsTest(TestCase):
                          'responsible_name_form',
                          '4th issue field input form_name wrong')
         self.assertEqual(len(forms[0]('option')), 1, '4th issue field select option len is not 1')
-        self.assertEqual(forms[0]('option')[0]['value'], '1', '4th issue field select option value wrong')
+        self.assertEqual(forms[0]('option')[0]['value'], str(self.teacher.id))
         self.assertEqual(forms[0]('option')[0].string.strip().strip('\n'),
                          'teacher_name teacher_last_name',
                          '4th issue field select option text wrong')
@@ -215,7 +215,7 @@ class ViewsTest(TestCase):
                          'followers_names_form',
                          '5th issue field input form_name wrong')
         self.assertEqual(len(forms[1]('option')), 1, '5th issue field select option len is not 1')
-        self.assertEqual(forms[1]('option')[0]['value'], '1', '5th issue field select option value wrong')
+        self.assertEqual(forms[1]('option')[0]['value'], str(self.teacher.id))
         self.assertEqual(forms[1]('option')[0].string.strip().strip('\n'),
                          'teacher_name teacher_last_name',
                          '5th issue field select option text wrong')
@@ -253,7 +253,7 @@ class ViewsTest(TestCase):
 
         self.assertEqual(labels[6].a.string.strip().strip('\n'), u'ocenka', '7th issue field label text wrong')
         self.assertEqual(labels[6].a['data-target'], u'#collapse8', '7th issue field label data-target wrong')
-        self.assertEqual(results[6].string.strip().strip('\n'), '0', '7th issue field text wrong')
+        self.assertEqual(results[6].string.strip().strip('\n'), '0 iz 10', '7th issue field text wrong')
         self.assertEqual(forms[3].find('input', {'name': 'form_name'})['value'],
                          'mark_form',
                          '7th issue field input form_name wrong')
@@ -283,7 +283,7 @@ class ViewsTest(TestCase):
         # post
         response = client.post(reverse('issues.views.issue_page', kwargs={'issue_id': issue.id}),
                                {'form_name': 'responsible_name_form',
-                                'responsible_name': '1'},
+                                'responsible_name': str(self.teacher.id)},
                                follow=True)
         self.assertEqual(response.status_code, 200, "Can't get issue_page via teacher")
         self.assertEqual(len(response.redirect_chain), 1, "Must be redirect")
@@ -316,7 +316,7 @@ class ViewsTest(TestCase):
                          '4th issue field text link wrong')
         self.assertEqual(len(forms[0]('option')), 1, '4th issue field select option len is not 1')
         self.assertIsNotNone(forms[0]('option')[0]['selected'], '4th issue field select option not selected')
-        self.assertEqual(forms[0]('option')[0]['value'], '1', '4th issue field select option value wrong')
+        self.assertEqual(forms[0]('option')[0]['value'], str(self.teacher.id))
         self.assertEqual(forms[0]('option')[0].string.strip().strip('\n'),
                          'teacher_name teacher_last_name',
                          '4th issue field select option text wrong')
@@ -364,7 +364,7 @@ class ViewsTest(TestCase):
                          '4th issue field text link wrong')
         self.assertEqual(len(forms[0]('option')), 1, '4th issue field select option len is not 1')
         self.assertIsNotNone(forms[0]('option')[0]['selected'], '4th issue field select option not selected')
-        self.assertEqual(forms[0]('option')[0]['value'], '1', '4th issue field select option value wrong')
+        self.assertEqual(forms[0]('option')[0]['value'], str(self.teacher.id))
         self.assertEqual(forms[0]('option')[0].string.strip().strip('\n'),
                          'teacher_name teacher_last_name',
                          '4th issue field select option text wrong')
@@ -380,7 +380,7 @@ class ViewsTest(TestCase):
         # post
         response = client.post(reverse('issues.views.issue_page', kwargs={'issue_id': issue.id}),
                                {'form_name': 'followers_names_form',
-                                'followers_names': ['1']}, follow=True)
+                                'followers_names': [str(self.teacher.id)]}, follow=True)
         self.assertEqual(response.status_code, 200, "Can't get issue_page via teacher")
         self.assertEqual(len(response.redirect_chain), 1, "Must be redirect")
 
@@ -412,7 +412,7 @@ class ViewsTest(TestCase):
                          '4th issue field text link wrong')
         self.assertEqual(len(forms[1]('option')), 1, '5th issue field select option len is not 1')
         self.assertIsNotNone(forms[1]('option')[0]['selected'], '5th issue field select option not selected')
-        self.assertEqual(forms[1]('option')[0]['value'], '1', '5th issue field select option value wrong')
+        self.assertEqual(forms[1]('option')[0]['value'], str(self.teacher.id))
         self.assertEqual(forms[1]('option')[0].string.strip().strip('\n'),
                          'teacher_name teacher_last_name',
                          '5th issue field select option text wrong')
@@ -460,7 +460,7 @@ class ViewsTest(TestCase):
                          '4th issue field text link wrong')
         self.assertEqual(len(forms[1]('option')), 1, '5th issue field select option len is not 1')
         self.assertIsNotNone(forms[1]('option')[0]['selected'], '5th issue field select option not selected')
-        self.assertEqual(forms[1]('option')[0]['value'], '1', '5th issue field select option value wrong')
+        self.assertEqual(forms[1]('option')[0]['value'], str(self.teacher.id))
         self.assertEqual(forms[1]('option')[0].string.strip().strip('\n'),
                          'teacher_name teacher_last_name',
                          '5th issue field select option text wrong')
@@ -537,7 +537,7 @@ class ViewsTest(TestCase):
         info = container.find('div', {'id': 'accordion2'})
         results = info('div', 'accordion2-result')
         self.assertEqual(results[5].string.strip().strip('\n'), u'Новый', '6th issue field text wrong')
-        self.assertEqual(results[6].string.strip().strip('\n'), u'3', '7th issue field text wrong')
+        self.assertEqual(results[6].string.strip().strip('\n'), u'3 iz 10', '7th issue field text wrong')
 
     def test_post_mark_form_accept_button_with_teacher(self):
         client = self.client
@@ -584,7 +584,7 @@ class ViewsTest(TestCase):
         info = container.find('div', {'id': 'accordion2'})
         results = info('div', 'accordion2-result')
         self.assertEqual(results[5].string.strip().strip('\n'), u'Зачтено', '6th issue field text wrong')
-        self.assertEqual(results[6].string.strip().strip('\n'), u'3', '7th issue field text wrong')
+        self.assertEqual(results[6].string.strip().strip('\n'), u'3 iz 10', '7th issue field text wrong')
 
     def test_comment_with_teacher(self):
         client = self.client
@@ -691,7 +691,7 @@ class ViewsTest(TestCase):
         self.assertEqual(results[5].string.strip().strip('\n'), u'Новый', '6th issue field text wrong')
 
         self.assertEqual(labels[6].string.strip().strip('\n'), u'ocenka:', '7th issue field label text wrong')
-        self.assertEqual(results[6].string.strip().strip('\n'), '0', '7th issue field text wrong')
+        self.assertEqual(results[6].string.strip().strip('\n'), '0 iz 10', '7th issue field text wrong')
 
         self.assertEqual(labels[7].string.strip().strip('\n'), u'data_sdachi:', '8th issue field label wrong')
         self.assertEqual(results[7].string.strip().strip('\n'), '', '8th issue field text wrong')

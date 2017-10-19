@@ -181,7 +181,7 @@
 
         {{ JQ_OPEN }} if (file.error) { {{ JQ_CLOSE }}
             <td class="error" colspan="2">
-                <span class="label label-important">Error</span>.
+                <span class="label label-danger">{% trans "oshibka" %}</span>
                 {{ JQ_OPEN }}=file.error{{ JQ_CLOSE }}
             </td>
         {{ JQ_OPEN }} } else if (o.files.valid && !i) { {{ JQ_CLOSE }}

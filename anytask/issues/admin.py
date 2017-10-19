@@ -54,6 +54,8 @@ class IssueStatusSystemAdmin(admin.ModelAdmin):
 
 class EventAdmin(admin.ModelAdmin):
     raw_id_fields = ['author', 'issue']
+    search_fields = ('issue__id', )
+    readonly_fields = ('timestamp',)
 
 
 admin.site.register(Issue)

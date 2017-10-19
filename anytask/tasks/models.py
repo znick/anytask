@@ -11,6 +11,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import Q, Max
 from django.utils.translation import ugettext_lazy as _
+from django.core.urlresolvers import reverse
 from django.utils.html import escape
 
 from courses.models import Course
@@ -69,7 +70,7 @@ class Task(models.Model):
 
     added_time = models.DateTimeField(auto_now_add=True, default=datetime.now)
     update_time = models.DateTimeField(auto_now=True, default=datetime.now)
-    deadline_time = models.DateTimeField(auto_now=False, null=True, default=None)
+    deadline_time = models.DateTimeField(auto_now=False, blank=True, null=True, default=None)
 
     updated_by = models.ForeignKey(User, db_index=False, null=True, blank=True)
 
@@ -225,6 +226,9 @@ class Task(models.Model):
             else:
                 task_related.deleted = False
             task_related.save()
+
+    def get_url_in_course(self):
+        return reverse('courses.views.seminar_page', kwargs={'course_id': self.course_id, 'task_id': self.id})
 
 
 class TaskLog(models.Model):

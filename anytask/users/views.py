@@ -396,9 +396,20 @@ def ya_oauth_response(request, type_of_oauth):
 @login_required
 def ya_oauth_disable(request, type_of_oauth):
     user = request.user
-    user_profile = user.get_profile()
+    if request.method == "GET":
+        user_profile = user.get_profile()
+        response = redirect('users.views.profile_settings')
+    elif user.is_superuser and request.method == "POST" and "profile_id" in request.POST:
+        user_profile = get_object_or_404(UserProfile, id=request.POST["profile_id"])
+        response = HttpResponse("OK")
+    else:
+        raise PermissionDenied
+
     if type_of_oauth == 'contest':
-        pass
+        if user.is_superuser:
+            user_profile.ya_contest_oauth = ""
+            user_profile.ya_contest_uid = None
+            user_profile.ya_contest_login = ""
     elif type_of_oauth == 'passport':
         user_profile.ya_passport_oauth = ""
         user_profile.ya_passport_uid = None
@@ -407,7 +418,7 @@ def ya_oauth_disable(request, type_of_oauth):
 
     user_profile.save()
 
-    return redirect('users.views.profile_settings')
+    return response
 
 
 @login_required
@@ -535,7 +546,7 @@ def user_courses(request, username=None, year=None):
             .filter(course=course, groups__in=groups, is_hidden=False) \
             .exclude(type=Task.TYPE_MATERIAL)\
             .distinct()
-        issues = Issue.objects.filter(student=user_to_show).filter(task__in=tasks)
+        issues = Issue.objects.filter(student=user_to_show, task__in=tasks)
 
         if StudentCourseMark.objects.filter(student=user_to_show, course=course):
             mark = StudentCourseMark.objects.get(student=user_to_show, course=course).mark
@@ -543,7 +554,12 @@ def user_courses(request, username=None, year=None):
             mark = None
 
         student_summ_score = issues \
-            .exclude(status_field__tag=IssueStatus.STATUS_SEMINAR) \
+            .filter(task__parent_task__isnull=True) \
+            .filter(
+                Q(status_field__tag=IssueStatus.STATUS_ACCEPTED) |
+                Q(task__type=Task.TYPE_SEMINAR) |
+                Q(task__score_after_deadline=True, status_field__tag=IssueStatus.STATUS_ACCEPTED_AFTER_DEADLINE)
+            ) \
             .aggregate(Sum('mark'))['mark__sum'] or 0
 
         new_course_statistics = dict()
@@ -555,7 +571,7 @@ def user_courses(request, username=None, year=None):
             new_course_statistics['issues_count'].append((status.color, status.get_name(lang),
                                                           issues.filter(status_field=status).count()))
 
-        new_course_statistics['tasks'] = tasks.count
+        new_course_statistics['tasks'] = tasks.exclude(type=Task.TYPE_SEMINAR).count()
         new_course_statistics['mark'] = mark if mark else '--'
         new_course_statistics['summ_score'] = student_summ_score
 

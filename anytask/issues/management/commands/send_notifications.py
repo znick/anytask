@@ -26,14 +26,13 @@ class Command(BaseCommand):
         sleep_time = 0
         all_events = Event.objects \
             .filter(sended_notify=False) \
-            .exclude(Q(author__isnull=True) | Q(field__name='review_id')) \
+            .exclude(Q(author__isnull=True) | Q(author__username="anytask") | Q(field__name='review_id')) \
             .distinct() \
             .select_related("issue", "author") \
             .prefetch_related("file_set") \
             .order_by("issue")
         domain = Site.objects.get_current().domain
         from_email = settings.DEFAULT_FROM_EMAIL
-
         for issue in Issue.objects\
                 .filter(event__in=all_events) \
                 .distinct() \
@@ -87,7 +86,7 @@ def get_message(user, user_type, issue, events, from_email, domain):
 
     if not events:
         return ()
-    print user
+
     lang = user_profile.language
     translation.activate(lang)
     timezone.activate(user_profile.time_zone)

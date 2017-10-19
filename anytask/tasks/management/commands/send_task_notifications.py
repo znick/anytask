@@ -37,7 +37,7 @@ class Command(BaseCommand):
         DIFF_FIELDS = [u'title', u'task_text', u'score_max', u'deadline_time']
 
         students_tasks_info = {}
-        for task in Task.objects.filter(sended_notify=False):
+        for task in Task.objects.filter(sended_notify=False).prefetch_related("groups"):
             course = task.course
             if task.is_hidden:
                 continue

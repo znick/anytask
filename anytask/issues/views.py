@@ -14,6 +14,7 @@ from django.utils.translation import ugettext as _
 from django.views.decorators.http import require_POST
 from jfu.http import upload_receive, UploadResponse, JFUResponse
 from unidecode import unidecode
+from django.db.transaction import commit_on_success
 
 from anycontest.common import get_problem_compilers
 from anyrb.common import AnyRB
@@ -130,6 +131,8 @@ def issue_page(request, issue_id):
 
     issue_fields = issue.task.course.issue_fields.all()
 
+    seminar = issue.task.parent_task
+
     if request.method == 'POST':
         if 'contest_rejudge' in request.POST:
             contest_rejudge(issue)
@@ -167,7 +170,7 @@ def issue_page(request, issue_id):
                             'comment': value,
                             'files': request.FILES.getlist('files')
                         }
-                        if 'need_info' in request.POST:
+                        if 'need_info' in request.POST and any(value.itervalues()):
                             issue.set_status_need_info()
 
                     issue.set_field(field, value, request.user)
@@ -211,10 +214,16 @@ def issue_page(request, issue_id):
     if got_verdict_submissions.count() and not show_contest_rejudge_loading:
         show_contest_rejudge = True
 
+    if seminar:
+        seminar_url = issue.task.course.get_absolute_url() + "/seminar/" + str(seminar.id)
+    else:
+        seminar_url = None
+
     context = {
         'issue': issue,
         'issue_fields': issue_fields,
         'course': issue.task.course,
+        'seminar_url': seminar_url,
         'events_to_show': events_to_show,
         'first_event_after_deadline': first_event_after_deadline,
         'show_top_alert': show_top_alert,
@@ -231,6 +240,7 @@ def issue_page(request, issue_id):
 
 
 @login_required
+@commit_on_success
 def get_or_create(request, task_id, student_id):
     # if not request.is_ajax():
     #    return HttpResponseForbidden()

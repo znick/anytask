@@ -18,6 +18,9 @@
         {% breadcrumb school.name school.get_absolute_url %}
     {% endif %}
     {% breadcrumb course.name course.get_absolute_url %}
+    {% if seminar_url %}
+        {% breadcrumb issue.task.parent_task|get_title:LANGUAGE_CODE seminar_url %}
+    {% endif %}
     {% breadcrumb issue|get_title_breadcrumb:LANGUAGE_CODE "" %}
 
 {% endblock breadcrumbs %}

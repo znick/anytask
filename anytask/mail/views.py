@@ -5,6 +5,7 @@ from django.http import HttpResponseForbidden, HttpResponse
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from django.utils.translation import ugettext as _
+from django.utils import timezone
 from django.views.decorators.http import require_POST, require_GET
 from django.conf import settings
 
@@ -15,10 +16,9 @@ from users.models import UserProfile
 from users.model_user_status import get_statuses
 
 from mail.common import render_mail
-from anytask.common.timezone import convert_datetime
+from pytz import timezone as timezone_pytz
 
 import json
-import datetime
 
 MONTH = {
     1: _(u"january"),
@@ -85,16 +85,26 @@ def ajax_get_mailbox(request):
             user_profile.unread_messages.clear()
             user_profile.send_notify_messages.clear()
         else:
-            user_profile.unread_messages = user_profile.unread_messages \
+            user_profile.unread_messages = list(
+                user_profile.unread_messages
                 .exclude(id__in=datatable_data["make_read[]"])
-            user_profile.send_notify_messages = user_profile.send_notify_messages \
+                .values_list("id", flat=True)
+            )
+            user_profile.send_notify_messages = list(
+                user_profile.send_notify_messages
                 .exclude(id__in=datatable_data["make_read[]"])
+                .values_list("id", flat=True)
+            )
     if "make_unread[]" in datatable_data:
         user_profile.unread_messages.add(*Message.objects.filter(id__in=datatable_data["make_unread[]"]))
     if "make_delete[]" in datatable_data:
         user_profile.deleted_messages.add(*Message.objects.filter(id__in=datatable_data["make_delete[]"]))
     if "make_undelete[]" in datatable_data:
-        user_profile.deleted_messages = user_profile.deleted_messages.exclude(id__in=datatable_data["make_undelete[]"])
+        user_profile.deleted_messages = list(
+            user_profile.deleted_messages
+            .exclude(id__in=datatable_data["make_undelete[]"])
+            .values_list("id", flat=True)
+        )
 
     messages = Message.objects.none()
     messages_deleted = user_profile.deleted_messages.all()
@@ -116,7 +126,7 @@ def ajax_get_mailbox(request):
             "0": "",
             "1": u'%s %s' % (msg.sender.last_name, msg.sender.first_name),
             "2": msg.title,
-            "3": format_date(convert_datetime(msg.create_time, settings.TIME_ZONE, user_profile.time_zone)),
+            "3": format_date(msg.create_time.astimezone(timezone_pytz(user_profile.time_zone))),
             "DT_RowClass": "unread" if msg in unread else "",
             "DT_RowId": "row_msg_" + type_msg + "_" + str(msg.id),
             "DT_RowData": {
@@ -137,10 +147,9 @@ def ajax_get_mailbox(request):
 
 def format_date(date):
     date_str = ""
-    now = datetime.datetime.now()
-
+    now = timezone.now()
     if now.year == date.year:
-        if now.day == date.day:
+        if now.day == date.day and now.month == date.month:
             date_str = date.strftime("%H:%M")
         else:
             date_str = unicode(date.day) + u" " + MONTH[date.month]
@@ -221,7 +230,7 @@ def ajax_get_message(request):
     response['recipients_group'] = recipients_group
     response['recipients_course'] = recipients_course
     response['recipients_status'] = recipients_status
-    response['date'] = convert_datetime(message.create_time, settings.TIME_ZONE, user_profile.time_zone)\
+    response['date'] = message.create_time.astimezone(timezone_pytz(user_profile.time_zone))\
         .strftime("%d.%m.%y %H:%M:%S")
     response['text'] = text
     response['unread_count'] = unread_count

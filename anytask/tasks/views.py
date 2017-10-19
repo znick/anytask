@@ -15,6 +15,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.utils.translation import ugettext as _
 from django.utils.timezone import make_aware
+from django.db.models import Sum
 
 from anycontest.common import get_contest_info
 from common.timezone import get_datetime_with_tz, convert_datetime
@@ -233,13 +234,13 @@ def get_task_params(request, check_score_after_deadline=False):
 
 def task_create_or_edit(request, course, task_id=None):
     params = get_task_params(request, course.issue_status_system.has_accepted_after_deadline())
+    lang = request.user.get_profile().language
 
     changed_score_after_deadline = False
     if task_id:
         task = get_object_or_404(Task, id=task_id)
         task_text = task.is_text_json()
         if task_text:
-            lang = request.user.get_profile().language
             task_title = json.loads(task.title, strict=False)
             task_title[lang] = params['attrs']['title']
             task_text[lang] = params['attrs']['task_text']
@@ -279,37 +280,39 @@ def task_create_or_edit(request, course, task_id=None):
         student_ids = User.objects.filter(group__in=task_groups).values_list('id', flat=True)
         for student_id in student_ids:
             parent_issue, created = Issue.objects.get_or_create(task_id=task.parent_task.id, student_id=student_id)
-            total_mark = sum(Issue.objects.filter(
-                task=task,
-                student_id=student_id,
-                status_field__tag=IssueStatus.STATUS_ACCEPTED_AFTER_DEADLINE
-            ).values_list('mark', flat=True))
+            total_mark = Issue.objects \
+                .filter(task=task, student_id=student_id) \
+                .exclude(task__is_hiddne=True) \
+                .filter(status_field__tag=IssueStatus.STATUS_ACCEPTED_AFTER_DEADLINE) \
+                .aggregate(Sum('mark'))['mark__sum'] or 0
             if task.score_after_deadline:
                 parent_issue.mark += total_mark
             else:
                 parent_issue.mark -= total_mark
-            parent_issue.save()
+            parent_issue.set_status_seminar()
 
     if task.type == task.TYPE_SEMINAR:
         student_ids = User.objects.filter(group__in=task_groups).values_list('id', flat=True)
         for student_id in student_ids:
             issue, created = Issue.objects.get_or_create(task_id=task.id, student_id=student_id)
+            issue.mark = Issue.objects \
+                .filter(task__parent_task=task, student_id=student_id) \
+                .exclude(task__is_hidden=True) \
+                .filter(
+                    Q(status_field__tag=IssueStatus.STATUS_ACCEPTED) |
+                    Q(task__score_after_deadline=True, status_field__tag=IssueStatus.STATUS_ACCEPTED_AFTER_DEADLINE)
+                ) \
+                .aggregate(Sum('mark'))['mark__sum'] or 0
             issue.set_status_seminar()
-            issue.mark = sum(Issue.objects.filter(
-                task__parent_task=task,
-                student_id=student_id).filter(
-                Q(status_field__tag=IssueStatus.STATUS_ACCEPTED) |
-                Q(task__score_after_deadline=True, status_field__tag=IssueStatus.STATUS_ACCEPTED_AFTER_DEADLINE)
-            ).values_list('mark', flat=True))
-            issue.save()
 
+    task.save()
     reversion.set_user(request.user)
     if task_id:
         reversion.set_comment("Edit task")
     else:
         reversion.set_comment("Create task")
 
-    return HttpResponse(json.dumps({'page_title': task.title + ' | ' + course.name + ' | ' + str(course.year),
+    return HttpResponse(json.dumps({'page_title': task.get_title(lang) + ' | ' + course.name + ' | ' + str(course.year),
                                     'redirect_page': '/task/edit/' + str(task.id) if not task_id else None}),
                         content_type="application/json")
 

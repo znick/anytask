@@ -9,12 +9,11 @@ from django.utils import translation, timezone
 from django.utils.translation import ugettext as _
 from django.db.models import Q
 
-from anycontest.common import comment_verdict, set_contest_marks, convert_to_contest_login
+from anycontest.common import comment_verdict  # , set_contest_marks, convert_to_contest_login
 from anycontest.models import ContestSubmission
 from anyrb.common import AnyRB
 from users.models import UserProfile
 
-from collections import defaultdict
 
 logger = logging.getLogger('django.request')
 
@@ -24,7 +23,7 @@ class Command(BaseCommand):
 
     def handle(self, **options):
         start_time = time.time()
-        contest_marks = defaultdict(dict)
+        contest_marks_len = 0
         contest_submissions = ContestSubmission.objects \
             .filter(Q(got_verdict=False) & (Q(send_error__isnull=True) | Q(send_error=""))) \
             .exclude(run_id__exact="") \
@@ -58,21 +57,20 @@ class Command(BaseCommand):
                                 comment += '\n' + _(u'bally_ne_uchityvautsia')
                         else:
                             issue.set_status_accepted()
-                    if issue.task.course.id in settings.COURSES_WITH_CONTEST_MARKS:
-                        student_profile = issue.student.get_profile()
-                        if student_profile.ya_contest_login:
-                            ya_login = convert_to_contest_login(student_profile.ya_contest_login)
-                            if ya_login not in contest_marks[task.contest_id]:
-                                contest_marks[task.contest_id][ya_login] = defaultdict(dict)
-                            contest_marks[task.contest_id][ya_login][task.problem_id] = issue
+
+                    if contest_submission.verdict == 'ok':
+                        if issue.task.course.id in settings.COURSES_WITH_CONTEST_MARKS:
+                            contest_submission.get_contest_mark()
+                            contest_marks_len += 1
+
                     comment_verdict(issue, contest_submission.verdict == 'ok', comment)
                 translation.deactivate()
             except Exception as e:
                 logger.exception(e)
 
-        for contest_id, students_info in contest_marks.iteritems():
-            set_contest_marks(contest_id, students_info)
+        # for contest_id, students_info in contest_marks.iteritems():
+        #     set_contest_marks(contest_id, students_info)
 
         # logging to cron log
-        print "Command check_contest check {0} submissions ({1} - contests with marks) took {2} seconds" \
-            .format(len(contest_submissions), len(contest_marks), time.time() - start_time)
+        print "Command check_contest check {0} submissions ({1} - with marks) took {2} seconds" \
+            .format(len(contest_submissions), contest_marks_len, time.time() - start_time)
