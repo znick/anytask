@@ -2410,3 +2410,12 @@ msgstr "Здравствуйте"
 #: courses/templates/courses/settings.html:41
 msgid "zhurnal_poseshaemosti"
 msgstr "Журнал посещаемости"
+
+msgid "studentom"
+msgstr "студентом"
+
+msgid "proverjaushim"
+msgstr "проверяющим"
+
+msgid "nabludatelem"
+msgstr "наблюдателем"
