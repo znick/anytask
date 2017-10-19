@@ -110,15 +110,15 @@ def set_order_direction(values, direction):
     return values
 
 
-@require_http_methods(['GET'])
+@require_http_methods(['POST'])
 @login_required
 def ajax_get_queue(request):
     user = request.user
 
-    if "draw" not in request.GET or "course_id" not in request.GET:
+    if "draw" not in request.POST or "course_id" not in request.POST:
         raise PermissionDenied
 
-    course = get_object_or_404(Course, id=request.GET['course_id'])
+    course = get_object_or_404(Course, id=request.POST['course_id'])
 
     if not course.user_can_see_queue(user):
         raise PermissionDenied
@@ -136,13 +136,13 @@ def ajax_get_queue(request):
     ).distinct().select_related('student', 'task', 'responsible', 'status_field')
 
     order = []
-    for order_info in json.loads(request.GET.get("order", "[]")):
+    for order_info in json.loads(request.POST.get("order", "[]")):
         order.extend(set_order_direction(QUEUE_COLUMN_ORDER.get(str(order_info.get("column"))), order_info.get("dir")))
     issues = issues.order_by(*order)
 
-    f = IssueFilter(QueryDict(request.GET["filter"]), issues)
+    f = IssueFilter(QueryDict(request.POST["filter"]), issues)
     f.set_course(course, user)
-    f.set_data(request.GET)
+    f.set_data(request.POST)
     session_key = '_'.join([QUEUE_SESSION_PREFIX, str(course.id)])
     if f.form.data:
         request.session[session_key] = f.form.data
