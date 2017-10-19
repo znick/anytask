@@ -180,8 +180,10 @@
             },
             ajax: {
                 "url": "{% url courses.views.ajax_get_queue %}",
+                "type": "POST",
                 "data": function (data) {
                     var $table_queue = $("#table_queue");
+                    data["csrfmiddlewaretoken"] = "{{ csrf_token }}",
                     data["lang"] = $table_queue.data("lang");
                     data["timezone"] = $table_queue.data("timezone");
                     data["course_id"] = $table_queue.data("course_id");
