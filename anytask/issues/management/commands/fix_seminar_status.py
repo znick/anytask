@@ -19,7 +19,7 @@ logger = logging.getLogger('django.request')
 def get_mark(task_id, student_id):
     return Issue.objects \
         .filter(task__parent_task_id=task_id, student_id=student_id) \
-        .exclude(task__is_hiddne=True) \
+        .exclude(task__is_hidden=True) \
         .filter(
             Q(status_field__tag=IssueStatus.STATUS_ACCEPTED) |
             Q(
