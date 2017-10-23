@@ -3,9 +3,10 @@ from __future__ import unicode_literals
 import base64
 import json
 
-from django.http import HttpResponse, HttpResponseForbidden
+from django.http import HttpResponse, HttpResponseForbidden, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import authenticate, login
+from django.views.decorators.http import require_POST
 
 from courses.models import Course
 from issues.models import Issue
@@ -87,6 +88,21 @@ def unpack_file(request, f):
     }
 
 
+def has_access(user, issue):
+    if user in (issue.student,
+                issue.responsible):
+        return True
+
+    if issue.followers.filter(id=user.id).count() != 0:
+        return True
+
+    course = issue.task.course
+    if course.user_is_teacher(user):
+        return True
+
+    return False
+
+
 def unpack_event(request, event):
     ret = {
         "id": event.id,
@@ -121,21 +137,8 @@ def get_issues(request, course_id):
 def get_issue(request, issue_id):
     user = request.user
     issue = get_object_or_404(Issue, id=issue_id)
-    access_ok = False
 
-    if user in (issue.student,
-                issue.responsible):
-        access_ok = True
-
-    if not access_ok and issue.followers.filter(id=user.id).count() != 0:
-        access_ok = True
-
-    if not access_ok:
-        course = issue.task.course
-        if course.user_is_teacher(user):
-            access_ok = True
-
-    if not access_ok:
+    if not has_access(user, issue):
         return HttpResponseForbidden()
 
     ret = unpack_issue(issue)
@@ -143,3 +146,21 @@ def get_issue(request, issue_id):
 
     return HttpResponse(json.dumps(ret),
                         content_type="application/json")
+
+
+@login_required_basic_auth
+@require_POST
+def add_comment(request, issue_id):
+    comment = request.POST.get('comment')
+    if not comment:
+        return HttpResponseBadRequest()
+
+    user = request.user
+    issue = get_object_or_404(Issue, id=issue_id)
+
+    if not has_access(user, issue):
+        return HttpResponseForbidden()
+
+    issue.add_comment(comment, author=user)
+
+    return HttpResponse(status=201)

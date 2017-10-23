@@ -468,8 +468,9 @@ class Issue(models.Model):
     def get_absolute_url(self):
         return reverse('issues.views.issue_page', args=[str(self.id)])
 
-    def add_comment(self, comment):
-        author = User.objects.get(username="anytask")
+    def add_comment(self, comment, author=None):
+        if author is None:
+            author = User.objects.get(username="anytask")
         field, field_get = IssueField.objects.get_or_create(name='comment')
         event = self.create_event(field, author=author)
         event.value = u'<div class="contest-response-comment not-sanitize">' + comment + u'</div>'
