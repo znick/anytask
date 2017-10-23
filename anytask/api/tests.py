@@ -62,6 +62,8 @@ class ApiTest(TestCase):
 
         self.issue1 = Issue.objects.create(task_id=self.task1.id, student_id=self.student.id)
         self.issue2 = Issue.objects.create(task_id=self.task2.id, student_id=self.student.id)
+        self.issue2.responsible = self.teacher
+        self.issue2.save()
 
         event = self.issue1.add_comment("Test comment")
         File.objects.create(file=SimpleUploadedFile('test_fail_rb.py', 'print "_failed_"'), event=event)
@@ -84,7 +86,10 @@ class ApiTest(TestCase):
                         u'followers': [], u'student': {u'username': u'student', u'first_name': u'student_name',
                                                        u'last_name': u'student_last_name', u'middle_name': None,
                                                        u'name': u'student_name student_last_name', u'id': 3},
-                        u'responsible': None, u'id': 2, u'mark': 0.0}]
+                        u'responsible': {u'username': u'teacher', u'first_name': u'teacher_name',
+                                         u'last_name': u'teacher_last_name', u'middle_name': None,
+                                         u'name': u'teacher_name teacher_last_name', u'id': 2},
+                        u'id': 2, u'mark': 0.0}]
         response = self._get(self.teacher, self.teacher_password,
                              reverse("api.views.get_issues", kwargs={"course_id": self.course.id}))
         self.assertEqual(response.status_code, 200)

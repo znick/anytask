@@ -73,7 +73,7 @@ def unpack_issue(issue):
     }
 
     if issue.responsible:
-        ret["responsible"] = unpack_user(issue.responsible.username)
+        ret["responsible"] = unpack_user(issue.responsible)
 
     return ret
 
