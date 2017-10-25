@@ -11,7 +11,7 @@ case "$1" in
             adduser --system --disabled-login ipython
             chown -R ipython:nogroup /var/lib/anytask/media
             chmod a+x /usr/share/python/anytask/lib/python2.7/site-packages/Anytask-0.0.0-py2.7.egg/anytask/manage.py
-            cp -r /usr/share/python/anytask/django /usr/share/python/anytask/lib/python2.7/site-packages
+            cp -r /usr/share/python/anytask/django /usr/share/python/anytask/lib/python2.7/site-packages || true
             cd /usr/share/python/anytask/lib/python2.7/site-packages/Anytask-0.0.0-py2.7.egg/anytask && /usr/share/python/anytask/bin/python manage.py collectstatic --noinput
             chown -R anytask:nogroup /usr/share/python/anytask
             chown -R anytask:nogroup /var/lib/anytask/
