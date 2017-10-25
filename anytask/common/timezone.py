@@ -14,7 +14,7 @@ def get_tz(geoid):
                             params={'id': geoid},
                             headers={"Authorization": "anytask"}
                             ).json()['tzname']
-    except:
+    except:  # noqa
         return settings.TIME_ZONE
 
 

@@ -15,7 +15,7 @@ def message_from_rb(request, review_id):
             if one_issue.get_byname('review_id') == review_id:
                 issue = one_issue
                 break
-        except:
+        except:  # noqa
             pass
 
     if request.method == 'POST':
