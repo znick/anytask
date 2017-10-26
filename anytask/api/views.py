@@ -59,7 +59,7 @@ def unpack_task(task):
     }
 
 
-def unpack_issue(issue):
+def unpack_issue(issue, add_events=False, request=None):
     task = issue.task
     ret = {
         "id": issue.id,
@@ -75,6 +75,9 @@ def unpack_issue(issue):
 
     if issue.responsible:
         ret["responsible"] = unpack_user(issue.responsible)
+
+    if add_events and request:
+        ret["events"] = map(lambda x: unpack_event(request, x), issue.get_history())
 
     return ret
 
@@ -120,6 +123,7 @@ def unpack_event(request, event):
 def get_issues(request, course_id):
     course = get_object_or_404(Course, id=course_id)
     user = request.user
+    add_events = bool(request.GET.get("add_events", False))
 
     if not course.user_is_teacher(user):
         return HttpResponseForbidden()
@@ -127,7 +131,7 @@ def get_issues(request, course_id):
     issues = []
     for task in course.task_set.all():
         for issue in task.issue_set.all():
-            issues.append(unpack_issue(issue))
+            issues.append(unpack_issue(issue, add_events=add_events, request=request))
 
     return HttpResponse(json.dumps(issues),
                         content_type="application/json")
@@ -141,8 +145,7 @@ def get_issue(request, issue_id):
     if not has_access(user, issue):
         return HttpResponseForbidden()
 
-    ret = unpack_issue(issue)
-    ret["events"] = map(lambda x: unpack_event(request, x), issue.get_history())
+    ret = unpack_issue(issue, add_events=True, request=request)
 
     return HttpResponse(json.dumps(ret),
                         content_type="application/json")

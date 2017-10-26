@@ -18,6 +18,26 @@ from django.test import TestCase
 
 
 class ApiTest(TestCase):
+    maxDiff = None
+
+    @classmethod
+    def clean_timestamps(cls, x):
+        if isinstance(x, list):
+            for y in x:
+                cls.clean_timestamps(y)
+            return
+
+        if not isinstance(x, dict):
+            return
+
+        x.pop("create_time", None)
+        x.pop("update_time", None)
+        x.pop("timestamp", None)
+
+        for k, v in x.iteritems():
+            cls.clean_timestamps(k)
+            cls.clean_timestamps(v)
+
     def setUp(self):
 
         self.anytask_password = "anytask"
@@ -97,11 +117,52 @@ class ApiTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
         response_data = json.loads(response.content)
-        for resp in response_data:
-            del resp['create_time']
-            del resp['update_time']
-
+        self.clean_timestamps(response_data)
         self.assertListEqual(issues_list, response_data)
+
+    def test_get_issues__add_events(self):
+        issues_list = [{u'status': u'New', u'task': {u'id': 1, u'title': u'task_title1'},
+                        u'followers': [], u'student': {u'username': u'student', u'first_name': u'student_name',
+                                                       u'last_name': u'student_last_name', u'middle_name': None,
+                                                       u'name': u'student_name student_last_name', u'id': 3},
+                        u'responsible': None, u'id': 1, u'mark': 0.0,
+                        u'events': [{u'author': {u'first_name': u'',
+                                                 u'id': 1,
+                                                 u'last_name': u'',
+                                                 u'middle_name': None,
+                                                 u'name': u'',
+                                                 u'username': u'anytask'},
+                                     u'files': [{u'filename': u'test_fail_rb.py',
+                                                 u'id': 1}],
+                                     u'id': 1,
+                                     u'message':
+                                         u'<div class="contest-response-comment not-sanitize">Test comment</div>',
+                                     u'timestamp': u'2017-10-26T05:29:33.287393+00:00Z'}]},
+                       {u'status': u'New', u'task': {u'id': 2, u'title': u'task_title2'},
+                        u'events': [],
+                        u'followers': [], u'student': {u'username': u'student', u'first_name': u'student_name',
+                                                       u'last_name': u'student_last_name', u'middle_name': None,
+                                                       u'name': u'student_name student_last_name', u'id': 3},
+                        u'responsible': {u'username': u'teacher', u'first_name': u'teacher_name',
+                                         u'last_name': u'teacher_last_name', u'middle_name': None,
+                                         u'name': u'teacher_name teacher_last_name', u'id': 2},
+                        u'id': 2, u'mark': 0.0}]
+        response = self._request(self.teacher, self.teacher_password,
+                                 path=reverse("api.views.get_issues",
+                                              kwargs={"course_id": self.course.id}) + "?add_events=1")
+        self.assertEqual(response.status_code, 200)
+
+        response_data = json.loads(response.content)
+        self.clean_timestamps(response_data)
+        self.clean_timestamps(issues_list)
+
+        url = response_data[0]['events'][0]['files'][0].pop("url")
+        path = response_data[0]['events'][0]['files'][0].pop("path")
+        self.assertIn("http", url)
+        self.assertIn("/media/", url)
+        self.assertIn("/media/", path)
+
+        self.assertEqual(issues_list, response_data)
 
     def test_get_issues__not_teacher(self):
         response = self._request(self.student, self.student_password,
@@ -138,9 +199,7 @@ class ApiTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
         response_data = json.loads(response.content)
-        del response_data['create_time']
-        del response_data['update_time']
-        del response_data['events'][0]['timestamp']
+        self.clean_timestamps(response_data)
 
         url = response_data['events'][0]['files'][0].pop("url")
         path = response_data['events'][0]['files'][0].pop("path")
