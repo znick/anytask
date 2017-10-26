@@ -131,7 +131,7 @@ def set_contest_marks(contest_id, students_info):
                             problems_len -= 1
                             if not problems_len:
                                 break
-        except:
+        except:  # noqa
             soup = BeautifulStoneSoup(results_req.content)
             users = soup.contestlog.users.user
             student_len = len(students_info)
@@ -198,7 +198,7 @@ def get_contest_mark(contest_id, problem_id, ya_login):
                         and submit['@verdict'] == 'OK':
                     contest_mark = submit['@score']
                     break
-        except:
+        except:  # noqa
             soup = BeautifulStoneSoup(results_req.content)
             users = soup.contestlog.users.user
 
