@@ -21,7 +21,7 @@ class InviteActivationForm(forms.Form):
 
         try:
             invite = Invite.objects.get(key=self.cleaned_data['invite'])
-        except:
+        except:  # noqa
             raise forms.ValidationError(_(u"invajta_ne_sushestvuet"))
 
         if invite.added_time + datetime.timedelta(days=settings.INVITE_EXPIRED_DAYS) < timezone.now():

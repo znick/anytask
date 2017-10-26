@@ -381,7 +381,7 @@ class Issue(models.Model):
                         update_status_review_request(review_id, 'submitted')
                     elif self.is_status_accepted():
                         update_status_review_request(review_id, 'pending')
-            except:
+            except:  # noqa
                 pass
 
             if self.status_field != value:
