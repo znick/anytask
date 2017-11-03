@@ -107,7 +107,7 @@ def tasks_list(request, course):
                 Q(Q(status=TaskTaken.STATUS_TAKEN) | Q(status=TaskTaken.STATUS_SCORED))):
 
             if settings.PYTHONTASK_MAX_DAYS_WITHOUT_SCORES and task_taken.status == TaskTaken.STATUS_TAKEN:
-                task_taken.cancel_date = task_taken.added_time + delta
+                task_taken.cancel_date = task_taken.update_time + delta
             task_taken_list.append(task_taken)
 
         if task.has_subtasks():
@@ -123,7 +123,7 @@ def tasks_list(request, course):
                     Q(Q(status=TaskTaken.STATUS_TAKEN) | Q(status=TaskTaken.STATUS_SCORED))))
                 if settings.PYTHONTASK_MAX_DAYS_WITHOUT_SCORES:
                     for subtask_taken in filter(lambda x: x.status == TaskTaken.STATUS_TAKEN, subtask_takens):
-                        subtask_taken.cancel_date = subtask_taken.added_time + delta
+                        subtask_taken.cancel_date = subtask_taken.update_time + delta
                 subtask_and_task_takens.append((subtask, subtask_takens))
             task_and_task_taken.append((task, subtask_and_task_takens))
         else:
