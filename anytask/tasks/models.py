@@ -5,6 +5,7 @@ import sys
 import json
 from datetime import datetime
 from datetime import timedelta
+from django.utils import timezone
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -300,6 +301,7 @@ class TaskTaken(models.Model):
     )
     status_check = models.CharField(db_index=True, max_length=5, choices=STATUS_CHECK_CHOICES, default=EDIT)
 
+    taken_time = models.DateTimeField(blank=True, null=True)
     added_time = models.DateTimeField(auto_now_add=True, default=datetime.now)
     update_time = models.DateTimeField(auto_now=True, default=datetime.now)
 
@@ -312,8 +314,7 @@ class TaskTaken(models.Model):
 
     def update_status(self):
         if self.issue and abs(self.issue.mark) > sys.float_info.epsilon and self.status != self.STATUS_SCORED:
-            self.status = self.STATUS_SCORED
-            self.save()
+            self.scored()
 
         if not self.issue.get_byname('responsible_name'):
             group = self.task.course.get_user_group(self.user)
@@ -321,6 +322,33 @@ class TaskTaken(models.Model):
                 default_teacher = self.task.course.get_default_teacher(group)
                 if default_teacher:
                     self.issue.set_byname('responsible_name', default_teacher, author=None)
+
+    def take(self):
+        self.status = self.STATUS_TAKEN
+        if self.taken_time is None:
+            self.taken_time = timezone.now()
+        self.save()
+
+    def cancel(self):
+        dt_from_taken_delta = timezone.now() - self.taken_time
+        if (dt_from_taken_delta.days) <= settings.PYTHONTASK_MAX_DAYS_TO_FULL_CANCEL:
+            self.taken_time = None
+
+        self.status = self.STATUS_CANCELLED
+        self.save()
+
+    def blacklist(self):
+        self.status = self.STATUS_BLACKLISTED
+        self.save()
+
+    def scored(self):
+        self.status = self.STATUS_SCORED
+        self.save()
+
+    def mark_deleted(self):
+        self.status = self.STATUS_DELETED
+        self.taken_time = None
+        self.save()
 
     class Meta:
         unique_together = (("user", "task"),)

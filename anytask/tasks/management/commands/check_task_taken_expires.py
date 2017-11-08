@@ -29,13 +29,17 @@ class Command(BaseCommand):
         for task in course.task_set.all():
             task_taken_query = TaskTaken.objects.filter(task=task)
             task_taken_query = task_taken_query.filter(
-                Q(Q(status=TaskTaken.STATUS_TAKEN) | Q(status=TaskTaken.STATUS_CANCELLED)))
-            task_taken_query = task_taken_query.filter(update_time__lte=task_expired_date)
+                Q(Q(status=TaskTaken.STATUS_SCORED, issue__mark=0.0) |
+                  Q(status=TaskTaken.STATUS_TAKEN) |
+                  Q(status=TaskTaken.STATUS_CANCELLED)))
+            task_taken_query = task_taken_query.filter(taken_time__lte=task_expired_date)
 
             task_taken_to_delete = []
             task_taken_to_blacklist = []
             for task_taken in task_taken_query:
-                if task_taken.status == TaskTaken.STATUS_TAKEN:
+                if (task_taken.status == TaskTaken.STATUS_TAKEN) or \
+                   (task_taken.status == TaskTaken.STATUS_SCORED and task_taken.issue.mark == 0.0):
+
                     self.out_lines.append(">Blacklisting task_taken : {0}".format(task_taken))
                     self.need_print = True
                     task_taken_to_blacklist.append(task_taken)
@@ -46,14 +50,12 @@ class Command(BaseCommand):
                     task_taken_to_delete.append(task_taken)
 
             for task_taken in task_taken_to_blacklist:
-                task_taken.status = TaskTaken.STATUS_BLACKLISTED
+                task_taken.blacklist()
                 task_taken.issue.add_comment(
                     u"Запись на задачу отменена автоматически в связи с истечением времени сдачи")
-                task_taken.save()
 
             for task_taken in task_taken_to_delete:
-                task_taken.status = TaskTaken.STATUS_DELETED
-                task_taken.save()
+                task_taken.mark_deleted()
 
     @transaction.commit_on_success()
     def check_blacklist_expires(self, course):
@@ -66,7 +68,7 @@ class Command(BaseCommand):
         for task in course.task_set.all():
             task_taken_query = TaskTaken.objects.filter(task=task)
             task_taken_query = task_taken_query.filter(status=TaskTaken.STATUS_BLACKLISTED)
-            task_taken_query = task_taken_query.filter(update_time__lte=blacklist_expired_date)
+            task_taken_query = task_taken_query.filter(taken_time__lte=blacklist_expired_date)
 
             task_taken_to_delete = []
             for task_taken in task_taken_query:
@@ -75,9 +77,8 @@ class Command(BaseCommand):
                 task_taken_to_delete.append(task_taken)
 
             for task_taken in task_taken_to_delete:
-                task_taken.status = TaskTaken.STATUS_DELETED
+                task_taken.mark_deleted()
                 task_taken.issue.add_comment(u"На задачу снова можно записаться")
-                task_taken.save()
 
     def handle(self, *args, **options):
         for course in Course.objects.filter(is_python_task=True):
