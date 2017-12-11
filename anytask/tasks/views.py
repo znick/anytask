@@ -283,7 +283,9 @@ def task_create_or_edit(request, course, task_id=None):
             total_mark = Issue.objects \
                 .filter(task=task, student_id=student_id) \
                 .exclude(task__is_hiddne=True) \
-                .filter(status_field__tag=IssueStatus.STATUS_ACCEPTED_AFTER_DEADLINE) \
+                .exclude(
+                    task__score_after_deadline=False,
+                    status_field__tag=IssueStatus.STATUS_ACCEPTED_AFTER_DEADLINE) \
                 .aggregate(Sum('mark'))['mark__sum'] or 0
             if task.score_after_deadline:
                 parent_issue.mark += total_mark
@@ -298,10 +300,9 @@ def task_create_or_edit(request, course, task_id=None):
             issue.mark = Issue.objects \
                 .filter(task__parent_task=task, student_id=student_id) \
                 .exclude(task__is_hidden=True) \
-                .filter(
-                    Q(status_field__tag=IssueStatus.STATUS_ACCEPTED) |
-                    Q(task__score_after_deadline=True, status_field__tag=IssueStatus.STATUS_ACCEPTED_AFTER_DEADLINE)
-                ) \
+                .exclude(
+                    task__score_after_deadline=False,
+                    status_field__tag=IssueStatus.STATUS_ACCEPTED_AFTER_DEADLINE) \
                 .aggregate(Sum('mark'))['mark__sum'] or 0
             issue.set_status_seminar()
 

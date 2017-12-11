@@ -395,12 +395,6 @@ class Issue(models.Model):
                             parent_task_issue.mark += self.mark
                         elif value.tag == IssueStatus.STATUS_ACCEPTED_AFTER_DEADLINE:
                             parent_task_issue.mark -= self.mark
-                    elif self.is_status_accepted() and \
-                            value.tag not in [IssueStatus.STATUS_ACCEPTED, IssueStatus.STATUS_ACCEPTED_AFTER_DEADLINE]:
-                        parent_task_issue.mark -= self.mark
-                    elif not self.is_status_accepted() and \
-                            value.tag in [IssueStatus.STATUS_ACCEPTED, IssueStatus.STATUS_ACCEPTED_AFTER_DEADLINE]:
-                        parent_task_issue.mark += self.mark
                     parent_task_issue.set_status_seminar()
                 self.status_field = value
             else:
@@ -414,8 +408,8 @@ class Issue(models.Model):
             value = normalize_decimal(value)
             if self.mark != float(value):
                 if self.task.parent_task and \
-                        self.task.score_after_deadline and self.is_status_accepted() or \
-                        not self.task.score_after_deadline and self.is_status_only_accepted():
+                        self.task.score_after_deadline or \
+                        not (not self.task.score_after_deadline and self.is_status_accepted_after_deadline()):
                     parent_task_issue, created = Issue.objects.get_or_create(
                         student=self.student,
                         task=self.task.parent_task

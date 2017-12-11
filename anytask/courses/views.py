@@ -428,8 +428,9 @@ def tasklist_shad_cpp(request, course, seminar=None, group=None):
                 task_x_task_taken[task_taken.task.id] = task_taken
                 if not task_taken.task.is_hidden:
                     if task_taken.task.type == Task.TYPE_SEMINAR or \
-                            task_taken.task.score_after_deadline and task_taken.is_status_accepted() or \
-                            not task_taken.task.score_after_deadline and task_taken.is_status_only_accepted():
+                            task_taken.task.score_after_deadline or \
+                            not (not task_taken.task.score_after_deadline and
+                                 task_taken.is_status_accepted_after_deadline()):
                         student_summ_scores += task_taken.mark
 
             student_x_task_x_task_takens[student] = (task_x_task_taken, student_summ_scores)
