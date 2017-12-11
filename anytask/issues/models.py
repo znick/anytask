@@ -408,8 +408,8 @@ class Issue(models.Model):
             value = normalize_decimal(value)
             if self.mark != float(value):
                 if self.task.parent_task and \
-                        self.task.score_after_deadline or \
-                        not (not self.task.score_after_deadline and self.is_status_accepted_after_deadline()):
+                        (self.task.score_after_deadline or
+                         not (not self.task.score_after_deadline and self.is_status_accepted_after_deadline())):
                     parent_task_issue, created = Issue.objects.get_or_create(
                         student=self.student,
                         task=self.task.parent_task
