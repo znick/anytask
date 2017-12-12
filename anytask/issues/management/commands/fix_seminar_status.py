@@ -8,7 +8,6 @@ from django.core.management.base import BaseCommand
 from django.db.transaction import commit_on_success
 from django.contrib.auth.models import User
 from django.db.models import Sum
-from django.db.models import Q
 
 from issues.models import Issue, IssueStatus
 from tasks.models import Task
@@ -20,13 +19,7 @@ def get_mark(task_id, student_id):
     return Issue.objects \
         .filter(task__parent_task_id=task_id, student_id=student_id) \
         .exclude(task__is_hidden=True) \
-        .filter(
-            Q(status_field__tag=IssueStatus.STATUS_ACCEPTED) |
-            Q(
-                task__score_after_deadline=True,
-                status_field__tag=IssueStatus.STATUS_ACCEPTED_AFTER_DEADLINE
-            )
-        ) \
+        .exclude(task__score_after_deadline=False, status_field__tag=IssueStatus.STATUS_ACCEPTED_AFTER_DEADLINE) \
         .aggregate(Sum('mark'))['mark__sum'] or 0
 
 
