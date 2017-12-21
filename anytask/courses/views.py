@@ -71,8 +71,8 @@ def queue_page(request, course_id):
         request.session[session_key] = f.form.data
     elif session_key in request.session:
         f.form.data = request.session.get(session_key)
-    else:
-        f.form.data = default_choices
+    # else:
+    #    f.form.data = default_choices
 
     f.form.helper = FormHelper(f.form)
     f.form.helper.form_method = 'get'
@@ -128,7 +128,8 @@ def ajax_get_queue(request):
         (
             Q(student__profile__user_status__tag='active') |
             Q(student__profile__user_status__tag=None)
-        )
+        ) &
+        Q(student__group__course=course)
     ).exclude(
         task__type=Task.TYPE_SEMINAR,
     ).exclude(
