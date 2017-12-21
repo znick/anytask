@@ -65,15 +65,12 @@ def queue_page(request, course_id):
         raise PermissionDenied
 
     f = IssueFilter(request.GET, {})
-    default_choices = f.set_course(course, user)
+    f.set_course(course, user)
     session_key = '_'.join([QUEUE_SESSION_PREFIX, str(course_id)])
     if request.GET:
         request.session[session_key] = f.form.data
     elif session_key in request.session:
         f.form.data = request.session.get(session_key)
-    # else:
-    #    f.form.data = default_choices
-
     f.form.helper = FormHelper(f.form)
     f.form.helper.form_method = 'get'
     f.form.helper.layout.append(
