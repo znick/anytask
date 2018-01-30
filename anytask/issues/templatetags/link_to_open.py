@@ -8,6 +8,7 @@ register = template.Library()
 def is_ipynb(path):
     return path.endswith('.ipynb')
 
+
 @register.simple_tag
 def link_to_open(path, teacher_or_staff):
     if is_ipynb(path) and teacher_or_staff:
