@@ -24,6 +24,9 @@
     .mce-tinymce {
         margin-bottom: 1rem;
     }
+    .ipynb-file-link .dropdown-menu{
+        min-width: auto;
+    }
 </style>
 <div class="card card-block">
     <h5 class="card-title">{% get_text_from_json issue.task 'get_title' LANGUAGE_CODE %}
@@ -88,12 +91,24 @@
                             {% endautoescape %}
                             {% if event.file_set.all %}
                                 <div class="files">
-
                                     <i class="fa fa-file-o"></i>
                                     {% for file in event.file_set.all %}
-                                        <a href={% link_to_open file course user %}>{{ file.filename }}</a>
+                                        {% with file_path=file.file.url %}
+                                            {% if teacher_or_staff and file_path|is_ipynb %}
+                                                <div class="btn-group ipynb-file-link">
+                                                    <a class="dropdown-toggle" href="{% link_to_open file_path teacher_or_staff %}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                        {{ file.filename }}
+                                                    </a>
+                                                    <div class="dropdown-menu dropdown-menu-right">
+                                                        <a class="dropdown-item" href="{% link_to_open file_path teacher_or_staff %}" target="_blank">{% trans "otkryt" %}</a>
+                                                        <a class="dropdown-item" href="{{ file_path }}">{% trans "skachat" %}</a>
+                                                    </div>
+                                                </div>
+                                            {% else %}
+                                                <a href="{% link_to_open file_path teacher_or_staff %}">{{ file.filename }}</a>
+                                            {% endif %}
+                                        {% endwith %}
                                     {% endfor %}
-
                                 </div>
                             {% endif %}
                         </div>
