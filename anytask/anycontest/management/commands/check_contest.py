@@ -59,7 +59,7 @@ class Command(BaseCommand):
                             issue.set_status_accepted()
 
                     if contest_submission.verdict == 'ok':
-                        if issue.task.course.id in settings.COURSES_WITH_CONTEST_MARKS:
+                        if issue.task.course.take_mark_from_contest:
                             contest_submission.get_contest_mark()
                             contest_marks_len += 1
 
