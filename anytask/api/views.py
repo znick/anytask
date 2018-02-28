@@ -60,14 +60,14 @@ def unpack_user(user):
     }
 
 
-def unpack_task(task, lang=settings.LANGUAGE_CODE):
+def unpack_task(task, lang=settings.API_LANGUAGE_CODE):
     return {
         "id": task.id,
         "title": task.get_title(lang),
     }
 
 
-def unpack_issue(issue, add_events=False, request=None, lang=settings.LANGUAGE_CODE):
+def unpack_issue(issue, add_events=False, request=None, lang=settings.API_LANGUAGE_CODE):
     task = issue.task
     ret = {
         "id": issue.id,
@@ -76,7 +76,7 @@ def unpack_issue(issue, add_events=False, request=None, lang=settings.LANGUAGE_C
         "update_time": issue.update_time.isoformat() + "Z",
         "responsible": None,
         "followers": map(lambda x: unpack_user(x), issue.followers.all()),
-        "status": unpack_status(issue.status_field),
+        "status": unpack_status(issue.status_field, lang),
         "student": unpack_user(issue.student),
         "task": unpack_task(task)
     }
@@ -127,7 +127,7 @@ def unpack_event(request, event):
     return ret
 
 
-def unpack_status(status, lang=settings.LANGUAGE_CODE):
+def unpack_status(status, lang=settings.API_LANGUAGE_CODE):
     return {
         "id": status.id,
         "name": status.get_name(lang),
@@ -136,7 +136,7 @@ def unpack_status(status, lang=settings.LANGUAGE_CODE):
     }
 
 
-def unpack_statuses(course, lang=settings.LANGUAGE_CODE):
+def unpack_statuses(course, lang=settings.API_LANGUAGE_CODE):
     ret = []
 
     for status in course.issue_status_system.statuses.all():
@@ -174,7 +174,7 @@ def get_issues(request, course_id):
         .filter(task__course=course, **filter_args) \
         .select_related("task") \
         .prefetch_related("followers")
-    lang = request.GET.get('lang', user.get_profile().language)
+    lang = request.GET.get('lang', settings.API_LANGUAGE_CODE)
     for issue in issues:
         ret.append(unpack_issue(issue, add_events=add_events, request=request, lang=lang))
 
@@ -183,9 +183,7 @@ def get_issues(request, course_id):
 
 
 def get_issue(request, issue):
-    user = request.user
-
-    lang = request.GET.get('lang', user.get_profile().language)
+    lang = request.GET.get('lang', settings.API_LANGUAGE_CODE)
     ret = unpack_issue(issue, add_events=True, request=request, lang=lang)
 
     return HttpResponse(json.dumps(ret),
@@ -214,7 +212,7 @@ def post_issue(request, issue):
     if comment:
         issue.add_comment(comment, author=user)
 
-    lang = request.POST.get('lang', user.get_profile().language)
+    lang = request.POST.get('lang', settings.API_LANGUAGE_CODE)
     ret = unpack_issue(get_object_or_404(Issue, id=issue.id), add_events=True, request=request, lang=lang)
 
     return HttpResponse(json.dumps(ret),

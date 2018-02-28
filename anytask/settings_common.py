@@ -273,3 +273,5 @@ USE_LOCAL_GEOBASE = False
 PREMAILER_OPTIONS = {
     'remove_classes': True,
 }
+
+API_LANGUAGE_CODE = 'en'
