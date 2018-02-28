@@ -235,6 +235,7 @@ def get_or_post_issue(request, issue_id):
     return get_issue(request, issue)
 
 
+@csrf_exempt
 @login_required_basic_auth
 @require_http_methods(['POST'])
 def add_comment(request, issue_id):
