@@ -65,15 +65,12 @@ def queue_page(request, course_id):
         raise PermissionDenied
 
     f = IssueFilter(request.GET, {})
-    default_choices = f.set_course(course, user)
+    f.set_course(course, user)
     session_key = '_'.join([QUEUE_SESSION_PREFIX, str(course_id)])
     if request.GET:
         request.session[session_key] = f.form.data
     elif session_key in request.session:
         f.form.data = request.session.get(session_key)
-    else:
-        f.form.data = default_choices
-
     f.form.helper = FormHelper(f.form)
     f.form.helper.form_method = 'get'
     f.form.helper.layout.append(
@@ -128,7 +125,8 @@ def ajax_get_queue(request):
         (
             Q(student__profile__user_status__tag='active') |
             Q(student__profile__user_status__tag=None)
-        )
+        ) &
+        Q(student__group__course=course)
     ).exclude(
         task__type=Task.TYPE_SEMINAR,
     ).exclude(
@@ -428,8 +426,9 @@ def tasklist_shad_cpp(request, course, seminar=None, group=None):
                 task_x_task_taken[task_taken.task.id] = task_taken
                 if not task_taken.task.is_hidden:
                     if task_taken.task.type == Task.TYPE_SEMINAR or \
-                            task_taken.task.score_after_deadline and task_taken.is_status_accepted() or \
-                            not task_taken.task.score_after_deadline and task_taken.is_status_only_accepted():
+                            task_taken.task.score_after_deadline or \
+                            not (not task_taken.task.score_after_deadline and
+                                 task_taken.is_status_accepted_after_deadline()):
                         student_summ_scores += task_taken.mark
 
             student_x_task_x_task_takens[student] = (task_x_task_taken, student_summ_scores)

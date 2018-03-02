@@ -190,7 +190,7 @@
                                                         {% if task_taken.status == STATUS_TAKEN %}
                                                             {{ task_taken.cancel_date|date:"d.m.Y" }}
                                                         {% elif task_taken.status == STATUS_SCORED %}
-                                                            {{ task_taken.update_time|date:"d.m.Y" }}
+                                                            {{ task_taken.issue.update_time|date:"d.m.Y" }}
                                                         {% endif %}
                                                     </td>
                                                     <td style="width:20%"></td>
@@ -226,7 +226,7 @@
                                                 {% if task_taken.status == STATUS_TAKEN %}
                                                     {{ task_taken.cancel_date|date:"d.m.Y" }}
                                                 {% elif task_taken.status == STATUS_SCORED %}
-                                                    {{ task_taken.update_time|date:"d.m.Y" }}
+                                                    {{ task_taken.issue.update_time|date:"d.m.Y" }}
                                                 {% endif %}
                                             </td>
                                             <td style="width:20%"></td>

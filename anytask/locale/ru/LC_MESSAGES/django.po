@@ -2419,3 +2419,9 @@ msgstr "проверяющим"
 
 msgid "nabludatelem"
 msgstr "наблюдателем"
+
+msgid "otkryt"
+msgstr "Открыть"
+
+msgid "skachat"
+msgstr "Скачать"

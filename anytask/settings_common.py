@@ -187,7 +187,7 @@ RB_EXTENSIONS = ['.py', '.py2', '.py3', '.cpp', '.sage', '.m', '.java', '.h', '.
 
 FREEZED_RUN_ID_MINUTES = 30
 CONTEST_API_URL = 'https://api.contest.yandex.net/anytask/'
-CONTEST_V1_API_URL = 'https://api.contest.yandex.net/v1/'
+CONTEST_V1_API_URL = 'https://api.contest.yandex.net/api/public/v2/'
 CONTEST_TIME_ZONE = 'Europe/Moscow'
 CONTEST_URL = "https://contest.yandex.ru/"
 CONTEST_OAUTH = 'OAUTH'
@@ -234,6 +234,7 @@ TEST_EXCLUDE = (
 )
 
 PYTHONTASK_MAX_DAYS_WITHOUT_SCORES = 30
+PYTHONTASK_MAX_DAYS_TO_FULL_CANCEL = 2
 PYTHONTASK_MAX_USERS_PER_TASK = 8
 PYTHONTASK_MAX_TASKS_WITHOUT_SCORE_PER_STUDENT = 2
 PYTHONTASK_DAYS_DROP_FROM_BLACKLIST = 14
