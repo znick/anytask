@@ -44,7 +44,7 @@ def execute(cmd, user="nobody", cwd=None, timeout=None, network='none',
 
     if timeout:
         # timeout docker run
-        command += ['gtimeout', '-k', str(timeout + 3), str(timeout + 2)]
+        command += ['timeout', '-k', str(timeout + 3), str(timeout + 2)]
 
     command += ['docker', 'run', '--rm', '--name', name_prefix + name]
     if network != 'bridge':

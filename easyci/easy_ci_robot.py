@@ -78,7 +78,7 @@ def proccess_task(qtask):
         prepare_dir(qtask, dirname)
 
         run_cmd = [qtask.course["run_cmd"], qtask.task["title"], "/task_dir/task"]
-        ret = docker.execute(run_cmd, cwd="/task_dir/git", timeout=3*60*60,
+        ret = docker.execute(run_cmd, cwd="/task_dir/git", timeout=qtask.course["timeout"],
                              network='bridge', image=qtask.course["docker_image"],
                              volumes=["{}:/task_dir:ro".format(os.path.abspath(dirname))])
 
