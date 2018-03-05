@@ -1,0 +1,10 @@
+[
+    {
+        "host": "https://anytask.org",
+        "course_id": 318,
+        "repo": "git@gitlab.com:znick/imkn_python_checker.git",
+        "run_cmd": "./check.sh",
+        "docker_image": "zhnick/imkn_python_checker:latest",
+        "timeout": 10800
+    }
+]
