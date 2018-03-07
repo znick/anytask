@@ -490,7 +490,7 @@ class ApiTest(TestCase):
                 },
                 {
                     'files': [],
-                    'message': '\u0421\u0442\u0430\u0442\u0443\u0441 \u0438\u0437\u043c\u0435\u043d\u0435\u043d:'
+                    'message': 'status_izmenen'
                                ' \u0417\u0430\u0447\u0442\u0435\u043d\u043e \u043f\u043e\u0441\u043b\u0435'
                                ' \u0434\u0435\u0434\u043b\u0430\u0439\u043d\u0430',
                     'id': 2,
