@@ -39,16 +39,11 @@ class QueueTask(object):
 
 @contextmanager
 def tmp_dir():
-    t = tempfile.mkdtemp(dir="tmp")
+    t = tempfile.mkdtemp()
     try:
         yield t
     finally:
         shutil.rmtree(t)
-
-
-def logreader(fn, logger):
-    for line in fn:
-        logger.info(line)
 
 
 def git_clone(repo, dst_dir):
@@ -135,7 +130,6 @@ def make_queue(config, passwords):
                         queue.pop(done_id, None)
                     continue
 
-                print "\t {} ===".format(event["id"])
                 files = event.get("files")
                 if not files:
                     continue
