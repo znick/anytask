@@ -523,6 +523,68 @@ class ApiTest(TestCase):
         self.assertIn("/media/", path)
         self.assertDictEqual(issue_data, response_data)
 
+    def test_post_issue__mark(self):
+        username = self.teacher
+        password = self.teacher_password
+        issue_data = {
+            'status': {
+                'color': '#818A91',
+                'tag': 'new',
+                'id': 1,
+                'name': 'New'
+            },
+            'task': {
+                'id': 1,
+                'title': 'task_title1'
+            },
+            'responsible': None,
+            'id': 1,
+            'followers': [],
+            'student': {
+                'username': 'student',
+                'first_name': 'student_name',
+                'last_name': 'student_last_name',
+                'middle_name': None,
+                'name': 'student_name student_last_name',
+                'id': 3
+            },
+            'mark': 2.0,
+            'events': [
+                {
+                    'files': [
+                        {
+                            'id': 1,
+                            'filename': 'test_fail_rb.py'
+                        }
+                    ],
+                    'message': '<div class="contest-response-comment not-sanitize">Test comment</div>',
+                    'id': 1,
+                    'author': {
+                        'username': 'anytask',
+                        'first_name': '',
+                        'last_name': '',
+                        'middle_name': None,
+                        'name': '',
+                        'id': 1
+                    }
+                }
+            ]
+        }
+
+        response = self._request(username, password,
+                                 path=reverse("api.views.get_or_post_issue", kwargs={"issue_id": self.issue1.id}),
+                                 method=self.client.post, data={"mark": 2.0})
+        self.assertEqual(response.status_code, 200)
+
+        response_data = json.loads(response.content)
+        self.clean_timestamps(response_data)
+        url = response_data['events'][0]['files'][0].pop("url")
+        path = response_data['events'][0]['files'][0].pop("path")
+        self.assertIn("http", url)
+        self.assertIn("/media/", url)
+        self.assertIn("/media/", path)
+        self.assertDictEqual(issue_data, response_data)
+
     def test_post_issue__status_tag(self):
         self.test_post_issue__status(self.course.issue_status_system.statuses.all().order_by("-id")[0].tag)
 
@@ -541,6 +603,11 @@ class ApiTest(TestCase):
         response = self._request(self.anytask, self.anytask_password,
                                  path=reverse("api.views.get_or_post_issue", kwargs={"issue_id": self.issue1.id}),
                                  method=self.client.post, data={"status": status.tag})
+        self.assertEqual(response.status_code, 403)
+
+        response = self._request(self.anytask, self.anytask_password,
+                                 path=reverse("api.views.get_or_post_issue", kwargs={"issue_id": self.issue1.id}),
+                                 method=self.client.post, data={"mark": 2.0})
         self.assertEqual(response.status_code, 403)
 
         response = self._request(self.teacher, self.teacher_password,
