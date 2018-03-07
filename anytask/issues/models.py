@@ -233,6 +233,14 @@ class Issue(models.Model):
 
         return event
 
+    def set_status_by_id(self, status_id, author=None):
+        if int(status_id) in IssueStatus.HIDDEN_STATUSES.values():
+            return self.set_byname('status', IssueStatus.objects.get(id=status_id))
+        else:
+            status = self.task.course.issue_status_system.statuses.filter(id=status_id)
+            if status:
+                return self.set_byname('status', status[0], author)
+
     def set_status_by_tag(self, tag, author=None):
         if tag in IssueStatus.HIDDEN_STATUSES:
             return self.set_byname('status', IssueStatus.objects.get(id=IssueStatus.HIDDEN_STATUSES[tag]))
@@ -405,7 +413,7 @@ class Issue(models.Model):
         elif name == 'mark':
             if not value:
                 value = 0
-            value = normalize_decimal(value)
+            value = min(normalize_decimal(value), self.task.score_max)
             if self.mark != float(value):
                 if self.task.parent_task and \
                         (self.task.score_after_deadline or

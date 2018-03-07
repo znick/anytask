@@ -166,7 +166,7 @@ class Course(models.Model):
         if user.is_superuser or user.is_staff:
             return True
 
-        return self.teachers.filter(id=user.id).count() > 0
+        return self.teachers.filter(id=user.id).exists()
 
     def user_is_student(self, user):
         return self.groups.filter(students=user).exists()
