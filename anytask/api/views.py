@@ -3,12 +3,12 @@ from __future__ import unicode_literals
 import base64
 import json
 
+from django.conf import settings
+from django.contrib.auth import authenticate, login
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404
-from django.contrib.auth import authenticate, login
-from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
-from django.conf import settings
+from django.views.decorators.http import require_http_methods
 
 from courses.models import Course
 from issues.models import Issue

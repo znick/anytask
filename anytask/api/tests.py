@@ -3,18 +3,17 @@ from __future__ import unicode_literals
 import base64
 import json
 
+from django.contrib.auth.models import User
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.urlresolvers import reverse
+from django.test import TestCase
 
 from courses.models import Course
+from issues.model_issue_status import IssueStatus
 from issues.models import Issue, IssueField, File
 from tasks.models import Task
 from users.models import Group
 from years.models import Year
-
-from django.contrib.auth.models import User
-from django.core.files.uploadedfile import SimpleUploadedFile
-
-from django.test import TestCase
 
 
 class ApiTest(TestCase):
@@ -70,6 +69,7 @@ class ApiTest(TestCase):
         self.course.groups = [self.group]
         self.course.teachers = [self.teacher]
         self.course.issue_fields = IssueField.objects.exclude(id=10).exclude(id=11)
+        self.course.issue_status_system.statuses = IssueStatus.objects.all()
         self.course.save()
 
         self.task1 = Task.objects.create(title='task_title1',
@@ -99,21 +99,66 @@ class ApiTest(TestCase):
         return method(*args, **kwargs)
 
     def test_get_issues(self):
-        issues_list = [{u'status': u'New', u'task': {u'id': 1, u'title': u'task_title1'},
-                        u'followers': [], u'student': {u'username': u'student', u'first_name': u'student_name',
-                                                       u'last_name': u'student_last_name', u'middle_name': None,
-                                                       u'name': u'student_name student_last_name', u'id': 3},
-                        u'responsible': None, u'id': 1, u'mark': 0.0},
-                       {u'status': u'New', u'task': {u'id': 2, u'title': u'task_title2'},
-                        u'followers': [], u'student': {u'username': u'student', u'first_name': u'student_name',
-                                                       u'last_name': u'student_last_name', u'middle_name': None,
-                                                       u'name': u'student_name student_last_name', u'id': 3},
-                        u'responsible': {u'username': u'teacher', u'first_name': u'teacher_name',
-                                         u'last_name': u'teacher_last_name', u'middle_name': None,
-                                         u'name': u'teacher_name teacher_last_name', u'id': 2},
-                        u'id': 2, u'mark': 0.0}]
+        issues_list = [
+            {
+                'status': {
+                    'color': '#818A91',
+                    'tag': 'new',
+                    'id': 1,
+                    'name': 'New'
+                },
+                'task': {
+                    'id': 1,
+                    'title': 'task_title1'
+                },
+                'responsible': None,
+                'mark': 0.0,
+                'followers': [],
+                'student': {
+                    'username': 'student',
+                    'first_name': 'student_name',
+                    'last_name': 'student_last_name',
+                    'middle_name': None,
+                    'name': 'student_name student_last_name',
+                    'id': 3
+                },
+                'id': 1
+            },
+            {
+                'status': {
+                    'color': '#818A91',
+                    'tag': 'new',
+                    'id': 1,
+                    'name': 'New'
+                },
+                'task': {
+                    'id': 2,
+                    'title': 'task_title2'
+                },
+                'responsible': {
+                    'username': 'teacher',
+                    'first_name': 'teacher_name',
+                    'last_name': 'teacher_last_name',
+                    'middle_name': None,
+                    'name': 'teacher_name teacher_last_name',
+                    'id': 2
+                },
+                'mark': 0.0,
+                'followers': [],
+                'student': {
+                    'username': 'student',
+                    'first_name': 'student_name',
+                    'last_name': 'student_last_name',
+                    'middle_name': None,
+                    'name': 'student_name student_last_name',
+                    'id': 3
+                },
+                'id': 2
+            }
+        ]
         response = self._request(self.teacher, self.teacher_password,
                                  path=reverse("api.views.get_issues", kwargs={"course_id": self.course.id}))
+
         self.assertEqual(response.status_code, 200)
 
         response_data = json.loads(response.content)
@@ -121,32 +166,85 @@ class ApiTest(TestCase):
         self.assertListEqual(issues_list, response_data)
 
     def test_get_issues__add_events(self):
-        issues_list = [{u'status': u'New', u'task': {u'id': 1, u'title': u'task_title1'},
-                        u'followers': [], u'student': {u'username': u'student', u'first_name': u'student_name',
-                                                       u'last_name': u'student_last_name', u'middle_name': None,
-                                                       u'name': u'student_name student_last_name', u'id': 3},
-                        u'responsible': None, u'id': 1, u'mark': 0.0,
-                        u'events': [{u'author': {u'first_name': u'',
-                                                 u'id': 1,
-                                                 u'last_name': u'',
-                                                 u'middle_name': None,
-                                                 u'name': u'',
-                                                 u'username': u'anytask'},
-                                     u'files': [{u'filename': u'test_fail_rb.py',
-                                                 u'id': 1}],
-                                     u'id': 1,
-                                     u'message':
-                                         u'<div class="contest-response-comment not-sanitize">Test comment</div>',
-                                     u'timestamp': u'2017-10-26T05:29:33.287393+00:00Z'}]},
-                       {u'status': u'New', u'task': {u'id': 2, u'title': u'task_title2'},
-                        u'events': [],
-                        u'followers': [], u'student': {u'username': u'student', u'first_name': u'student_name',
-                                                       u'last_name': u'student_last_name', u'middle_name': None,
-                                                       u'name': u'student_name student_last_name', u'id': 3},
-                        u'responsible': {u'username': u'teacher', u'first_name': u'teacher_name',
-                                         u'last_name': u'teacher_last_name', u'middle_name': None,
-                                         u'name': u'teacher_name teacher_last_name', u'id': 2},
-                        u'id': 2, u'mark': 0.0}]
+        issues_list = [
+            {
+                'status': {
+                    'color': '#818A91',
+                    'tag': 'new',
+                    'id': 1,
+                    'name': 'New'
+                },
+                'task': {
+                    'id': 1,
+                    'title': 'task_title1'
+                },
+                'responsible': None,
+                'id': 1,
+                'followers': [],
+                'student': {
+                    'username': 'student',
+                    'first_name': 'student_name',
+                    'last_name': 'student_last_name',
+                    'middle_name': None,
+                    'name': 'student_name student_last_name',
+                    'id': 3
+                },
+                'mark': 0.0,
+                'events': [
+                    {
+                        'files': [
+                            {
+                                'id': 1,
+                                'filename': 'test_fail_rb.py'
+                            }
+                        ],
+                        'message': '<div class="contest-response-comment not-sanitize">Test comment</div>',
+                        'id': 1,
+                        'author': {
+                            'username': 'anytask',
+                            'first_name': '',
+                            'last_name': '',
+                            'middle_name': None,
+                            'name': '',
+                            'id': 1
+                        }
+                    }
+                ]
+            },
+            {
+                'status': {
+                    'color': '#818A91',
+                    'tag': 'new',
+                    'id': 1,
+                    'name': 'New'
+                },
+                'task': {
+                    'id': 2,
+                    'title': 'task_title2'
+                },
+                'responsible': {
+                    'username': 'teacher',
+                    'first_name': 'teacher_name',
+                    'last_name': 'teacher_last_name',
+                    'middle_name': None,
+                    'name': 'teacher_name teacher_last_name',
+                    'id': 2
+                },
+                'id': 2,
+                'followers': [],
+                'student': {
+                    'username': 'student',
+                    'first_name': 'student_name',
+                    'last_name': 'student_last_name',
+                    'middle_name': None,
+                    'name': 'student_name student_last_name',
+                    'id': 3
+                },
+                'mark': 0.0,
+                'events': []
+            }
+        ]
+
         response = self._request(self.teacher, self.teacher_password,
                                  path=reverse("api.views.get_issues",
                                               kwargs={"course_id": self.course.id}) + "?add_events=1")
@@ -174,28 +272,53 @@ class ApiTest(TestCase):
             username = self.teacher
             password = self.teacher_password
 
-        issue = {u'status': u'New', u'task': {u'id': 1, u'title': u'task_title1'},
-                 u'followers': [], u'student': {u'username': u'student', u'first_name': u'student_name',
-                                                u'last_name': u'student_last_name', u'middle_name': None,
-                                                u'name': u'student_name student_last_name', u'id': 3},
-                 u'events': [{
-                     u'files': [
-                         {
-                             u'id': 1,
-                             u'filename': u'test_fail_rb.py'}],
-                     u'message': u'<div class="contest-response-comment not-sanitize">Test comment</div>',
-                     u'id': 1,
-                     u'author': {
-                         u'username': u'anytask',
-                         u'first_name': u'',
-                         u'last_name': u'',
-                         u'middle_name': None,
-                         u'name': u'',
-                         u'id': 1}}],
-                 u'responsible': None, u'id': 1, u'mark': 0.0}
+        issue = {
+            'status': {
+                'color': '#818A91',
+                'tag': 'new',
+                'id': 1,
+                'name': 'New'
+            },
+            'task': {
+                'id': 1,
+                'title': 'task_title1'
+            },
+            'responsible': None,
+            'id': 1,
+            'followers': [],
+            'student': {
+                'username': 'student',
+                'first_name': 'student_name',
+                'last_name': 'student_last_name',
+                'middle_name': None,
+                'name': 'student_name student_last_name',
+                'id': 3
+            },
+            'mark': 0.0,
+            'events': [
+                {
+                    'files': [
+                        {
+                            'id': 1,
+                            'filename': 'test_fail_rb.py'
+                        }
+                    ],
+                    'message': '<div class="contest-response-comment not-sanitize">Test comment</div>',
+                    'id': 1,
+                    'author': {
+                        'username': 'anytask',
+                        'first_name': '',
+                        'last_name': '',
+                        'middle_name': None,
+                        'name': '',
+                        'id': 1
+                    }
+                }
+            ]
+        }
 
         response = self._request(username, password,
-                                 path=reverse("api.views.get_issue", kwargs={"issue_id": self.issue1.id}))
+                                 path=reverse("api.views.get_or_post_issue", kwargs={"issue_id": self.issue1.id}))
         self.assertEqual(response.status_code, 200)
 
         response_data = json.loads(response.content)
@@ -230,7 +353,7 @@ class ApiTest(TestCase):
         self.assertEqual(response.status_code, 201)
 
         response = self._request(username, password,
-                                 path=reverse("api.views.get_issue", kwargs={"issue_id": self.issue1.id}))
+                                 path=reverse("api.views.get_or_post_issue", kwargs={"issue_id": self.issue1.id}))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Hello from test")
 
@@ -241,6 +364,251 @@ class ApiTest(TestCase):
         self.assertEqual(response.status_code, 403)
 
         response = self._request(self.teacher, self.teacher_password,
-                                 path=reverse("api.views.get_issue", kwargs={"issue_id": self.issue1.id}))
+                                 path=reverse("api.views.get_or_post_issue", kwargs={"issue_id": self.issue1.id}))
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "No access")
+
+    def test_post_issue__comment(self):
+        username = self.teacher
+        password = self.teacher_password
+        issue_data = {
+            'status': {
+                'color': '#818A91',
+                'tag': 'new',
+                'id': 1,
+                'name': 'New'
+            },
+            'task': {
+                'id': 1,
+                'title': 'task_title1'
+            },
+            'responsible': None,
+            'id': 1,
+            'followers': [],
+            'student': {
+                'username': 'student',
+                'first_name': 'student_name',
+                'last_name': 'student_last_name',
+                'middle_name': None,
+                'name': 'student_name student_last_name',
+                'id': 3
+            },
+            'mark': 0.0,
+            'events': [
+                {
+                    'files': [
+                        {
+                            'id': 1,
+                            'filename': 'test_fail_rb.py'
+                        }
+                    ],
+                    'message': '<div class="contest-response-comment not-sanitize">Test comment</div>',
+                    'id': 1,
+                    'author': {
+                        'username': 'anytask',
+                        'first_name': '',
+                        'last_name': '',
+                        'middle_name': None,
+                        'name': '',
+                        'id': 1
+                    }
+                },
+                {
+                    'files': [],
+                    'message': '<div class="contest-response-comment not-sanitize">Hello from test</div>',
+                    'id': 2,
+                    'author': {
+                        'username': 'teacher',
+                        'first_name': 'teacher_name',
+                        'last_name': 'teacher_last_name',
+                        'middle_name': None,
+                        'name': 'teacher_name teacher_last_name',
+                        'id': 2
+                    }
+                }
+            ]
+        }
+
+        response = self._request(username, password,
+                                 path=reverse("api.views.get_or_post_issue", kwargs={"issue_id": self.issue1.id}),
+                                 method=self.client.post, data={"comment": "Hello from test"})
+        self.assertEqual(response.status_code, 200)
+
+        response_data = json.loads(response.content)
+        self.clean_timestamps(response_data)
+        url = response_data['events'][0]['files'][0].pop("url")
+        path = response_data['events'][0]['files'][0].pop("path")
+        self.assertIn("http", url)
+        self.assertIn("/media/", url)
+        self.assertIn("/media/", path)
+        self.assertDictEqual(issue_data, response_data)
+
+    def test_post_issue__status(self, status=None):
+        username = self.teacher
+        password = self.teacher_password
+        issue_data = {
+            'status': {
+                'color': '#ACCD8C',
+                'tag': 'accepted_after_deadline',
+                'id': 7,
+                'name': 'Accepted after deadline'
+            },
+            'task': {
+                'id': 1,
+                'title': 'task_title1'
+            },
+            'responsible': None,
+            'id': 1,
+            'followers': [],
+            'student': {
+                'username': 'student',
+                'first_name': 'student_name',
+                'last_name': 'student_last_name',
+                'middle_name': None,
+                'name': 'student_name student_last_name',
+                'id': 3
+            },
+            'mark': 0.0,
+            'events': [
+                {
+                    'files': [
+                        {
+                            'id': 1,
+                            'filename': 'test_fail_rb.py'
+                        }
+                    ],
+                    'message': '<div class="contest-response-comment not-sanitize">Test comment</div>',
+                    'id': 1,
+                    'author': {
+                        'username': 'anytask',
+                        'first_name': '',
+                        'last_name': '',
+                        'middle_name': None,
+                        'name': '',
+                        'id': 1
+                    }
+                },
+                {
+                    'files': [],
+                    'message': '\u0421\u0442\u0430\u0442\u0443\u0441 \u0438\u0437\u043c\u0435\u043d\u0435\u043d:'
+                               ' \u0417\u0430\u0447\u0442\u0435\u043d\u043e \u043f\u043e\u0441\u043b\u0435'
+                               ' \u0434\u0435\u0434\u043b\u0430\u0439\u043d\u0430',
+                    'id': 2,
+                    'author': {
+                        'username': 'teacher',
+                        'first_name': 'teacher_name',
+                        'last_name': 'teacher_last_name',
+                        'middle_name': None,
+                        'name': 'teacher_name teacher_last_name',
+                        'id': 2
+                    }
+                }
+            ]
+        }
+
+        if status is None:
+            status = self.course.issue_status_system.statuses.all().order_by("-id")[0].id
+
+        response = self._request(username, password,
+                                 path=reverse("api.views.get_or_post_issue", kwargs={"issue_id": self.issue1.id}),
+                                 method=self.client.post, data={"status": status})
+        self.assertEqual(response.status_code, 200)
+
+        response_data = json.loads(response.content)
+        self.clean_timestamps(response_data)
+        url = response_data['events'][0]['files'][0].pop("url")
+        path = response_data['events'][0]['files'][0].pop("path")
+        self.assertIn("http", url)
+        self.assertIn("/media/", url)
+        self.assertIn("/media/", path)
+        self.assertDictEqual(issue_data, response_data)
+
+    def test_post_issue__status_tag(self):
+        self.test_post_issue__status(self.course.issue_status_system.statuses.all().order_by("-id")[0].tag)
+
+    def test_post_issue__no_access(self):
+        response = self._request(self.anytask, self.anytask_password,
+                                 path=reverse("api.views.get_or_post_issue", kwargs={"issue_id": self.issue1.id}),
+                                 method=self.client.post, data={"comment": "No access"})
+        self.assertEqual(response.status_code, 403)
+
+        status = self.course.issue_status_system.statuses.all().order_by("-id")[0]
+        response = self._request(self.anytask, self.anytask_password,
+                                 path=reverse("api.views.get_or_post_issue", kwargs={"issue_id": self.issue1.id}),
+                                 method=self.client.post, data={"status": status.id})
+        self.assertEqual(response.status_code, 403)
+
+        response = self._request(self.anytask, self.anytask_password,
+                                 path=reverse("api.views.get_or_post_issue", kwargs={"issue_id": self.issue1.id}),
+                                 method=self.client.post, data={"status": status.tag})
+        self.assertEqual(response.status_code, 403)
+
+        response = self._request(self.teacher, self.teacher_password,
+                                 path=reverse("api.views.get_or_post_issue", kwargs={"issue_id": self.issue1.id}))
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "No access")
+
+    def test_get_issue_statuses(self):
+        username = self.teacher
+        password = self.teacher_password
+        statuses = [
+            {
+                "color": "#818A91",
+                "tag": "new",
+                "id": 1,
+                "name": "New"
+            },
+            {
+                "color": "#818A91",
+                "tag": "auto_verification",
+                "id": 2,
+                "name": "Auto-checking"
+            },
+            {
+                "color": "#F0AD4E",
+                "tag": "verification",
+                "id": 3,
+                "name": "Checking"
+            },
+            {
+                "color": "#D9534F",
+                "tag": "rework",
+                "id": 4,
+                "name": "Revising"
+            },
+            {
+                "color": "#5CB85C",
+                "tag": "accepted",
+                "id": 5,
+                "name": "Accepted"
+            },
+            {
+                "color": "#5BC0DE",
+                "tag": "need_info",
+                "id": 6,
+                "name": "Need information"
+            },
+            {
+                "color": "#ACCD8C",
+                "tag": "accepted_after_deadline",
+                "id": 7,
+                "name": "Accepted after deadline"
+            }
+        ]
+
+        response = self._request(username, password,
+                                 path=reverse("api.views.get_issue_statuses", kwargs={"course_id": self.course.id}))
+        self.assertEqual(response.status_code, 200)
+
+        response_data = json.loads(response.content)
+        self.assertListEqual(statuses, response_data)
+
+    def test_get_issue_statuses__no_access(self):
+        response = self._request(self.anytask, self.anytask_password,
+                                 path=reverse("api.views.get_issue_statuses", kwargs={"course_id": self.course.id}))
+        self.assertEqual(response.status_code, 403)
+
+        response = self._request(self.teacher, self.teacher_password,
+                                 path=reverse("api.views.get_issue_statuses", kwargs={"course_id": self.course.id}))
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, "No access")
