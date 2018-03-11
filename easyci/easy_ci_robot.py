@@ -8,6 +8,7 @@ import tempfile
 import shutil
 import subprocess
 import os
+import sys
 import urllib
 
 import docker
@@ -17,7 +18,7 @@ from contextlib import contextmanager
 
 CONFIG = "config.json"
 PASSWORDS = "passwords.json"
-MAX_COMMENT_SIZE = 4096
+MAX_COMMENT_SIZE = 20000
 
 logging.basicConfig(format="%(asctime)-15s %(name)s %(process)d %(message)s", level=logging.DEBUG)
 
@@ -39,7 +40,7 @@ class QueueTask(object):
 
 @contextmanager
 def tmp_dir():
-    t = tempfile.mkdtemp()
+    t = tempfile.mkdtemp(dir="/var/tmp")
     try:
         yield t
     finally:
@@ -73,7 +74,8 @@ def proccess_task(qtask):
         prepare_dir(qtask, dirname)
 
         run_cmd = [qtask.course["run_cmd"], qtask.task["title"], "/task_dir/task"]
-        ret = docker.execute(run_cmd, cwd="/task_dir/git", timeout=qtask.course["timeout"],
+        #run_cmd = ["ls", "/task_dir/task"]
+        ret = docker.execute(run_cmd, cwd="/task_dir/git", timeout=qtask.course["timeout"], user='root',
                              network='bridge', image=qtask.course["docker_image"],
                              volumes=["{}:/task_dir:ro".format(os.path.abspath(dirname))])
 
@@ -87,16 +89,18 @@ def proccess_task(qtask):
             logging.info(line)
         logging.info(" == Task %d output end", qtask.id)
 
-        comment = "[id:{}] Check DONE!<br>\nSubmited on {}<br>\n<pre>{}</pre>\n".format(qtask.id,
+        if len(output) > MAX_COMMENT_SIZE:
+            output = output[:MAX_COMMENT_SIZE]
+            output += "\n...\nTRUNCATED"
+
+        comment = u"[id:{}] Check DONE!<br>\nSubmited on {}<br>\n<pre>{}</pre>\n".format(qtask.id,
                                                                                      qtask.event["timestamp"],
                                                                                      output)
-        if len(comment) > MAX_COMMENT_SIZE:
-            comment = comment[MAX_COMMENT_SIZE:]
-            comment += "\n...\nTRUNCATED"
 
-        response = requests.post("{}/api/v1/issue/{}/add_comment".format(qtask.issue["id"]),
-                                auth=qtask.auth, data={"comment":comment})
+        response = requests.post("{}/api/v1/issue/{}/add_comment".format(qtask.host, qtask.issue["id"]),
+                                auth=qtask.auth, data={"comment":comment.encode("utf-8")})
         response.raise_for_status()
+        logging.info(" == Task %d DONE!, URL: %s/issue/%d", qtask.id, qtask.host, qtask.issue["id"])
 
 
 def load_config(filename=CONFIG):
@@ -109,7 +113,7 @@ def get_auth(passwords, host):
     return (host_auth["username"], host_auth["password"])
 
 
-DONE_MESSAGE_RE = re.compile(r'[id:(\d+)] Check DONE!')
+DONE_MESSAGE_RE = re.compile(r'\[id:(\d+)\] Check DONE!')
 def make_queue(config, passwords):
     queue = OrderedDict()
     for course in config:
@@ -158,7 +162,10 @@ def main():
 
     logging.info("Queue:")
     for qtask in queue.itervalues():
-        logging.info("%s\t%s\t%s\t%s\t%s", qtask.host, qtask.course["course_id"], qtask.id, qtask.task["title"], qtask.issue["student"]["username"])
+        logging.info("%s\t%s\t%s\t%s\t%s\t%s", qtask.host, qtask.course["course_id"], qtask.id, qtask.task["title"],
+                     qtask.issue["student"]["username"], "{}/issue/{}".format(qtask.host, qtask.issue["id"]))
+    if "--only_queue" in sys.argv:
+        sys.exit(0)
 
     for qtask in queue.itervalues():
         proccess_task(qtask)

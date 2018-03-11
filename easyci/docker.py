@@ -65,6 +65,7 @@ def execute(cmd, user="nobody", cwd=None, timeout=None, network='none',
         # timeout in docker run
         command += ['timeout', '-k', str(timeout + 1), str(timeout)]
 
+    logging.info("Will run: %s", command + cmd)
     p = run(command + cmd,
             stderr_to_stdout=True,
             # do_on_read_stdout=None,

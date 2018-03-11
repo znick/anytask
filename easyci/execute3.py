@@ -108,11 +108,11 @@ class ExecuteCommandTimeoutExpired(ExecuteCommandBaseExecutionError,
 
     @property
     def stdout_text(self):
-        return self.stdout.decode(self.encoding)
+        return self.stdout
 
     @property
     def stderr_text(self):
-        return self.stderr.decode(self.encoding)
+        return self.stderr
 
 
 def shlex_split_and_group_by_commands(cmd):
@@ -608,6 +608,7 @@ def _wait_with_timeout(last_process, timeout, cmd, index):
             if timeout and now - start > timeout:
                 log.warning('TIMEOUT uid=%s', index)
                 raise ExecuteCommandTimeoutExpired(cmd, timeout)
+            time.sleep(0.3)
     else:
         try:
             last_process.wait(timeout=timeout)
