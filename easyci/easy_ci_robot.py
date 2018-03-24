@@ -19,7 +19,7 @@ from contextlib import contextmanager
 
 CONFIG = "config.json"
 PASSWORDS = "passwords.json"
-MAX_COMMENT_SIZE = 20000
+MAX_COMMENT_SIZE = 100000
 PROCS = 2
 
 logging.basicConfig(format="%(asctime)-15s %(name)s %(process)d %(message)s", level=logging.DEBUG)
