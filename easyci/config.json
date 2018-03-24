@@ -11,7 +11,7 @@
         "host": "https://anytask.org",
         "course_id": 9,
         "repo": "git@github.com:tswr/imkn_python_method.git",
-        "run_cmd": "_python_task_checke/main.py",
+        "run_cmd": "_python_task_checker/main.py",
         "docker_image": "zhnick/imkn_python_checker:latest",
         "timeout": 300
     }
