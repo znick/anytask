@@ -10,6 +10,7 @@ import subprocess
 import os
 import sys
 import urllib
+from multiprocessing import Pool
 
 import docker
 
@@ -19,6 +20,7 @@ from contextlib import contextmanager
 CONFIG = "config.json"
 PASSWORDS = "passwords.json"
 MAX_COMMENT_SIZE = 20000
+PROCS = 2
 
 logging.basicConfig(format="%(asctime)-15s %(name)s %(process)d %(message)s", level=logging.DEBUG)
 
@@ -101,6 +103,7 @@ def proccess_task(qtask):
                                 auth=qtask.auth, data={"comment":comment.encode("utf-8")})
         response.raise_for_status()
         logging.info(" == Task %d DONE!, URL: %s/issue/%d", qtask.id, qtask.host, qtask.issue["id"])
+        return qtask
 
 
 def load_config(filename=CONFIG):
@@ -155,10 +158,11 @@ def make_queue(config, passwords):
 
 
 def main():
-    logging.info("Start!")
+    logging.info("Start parallel version!")
     config = load_config()
     passwords = load_config(PASSWORDS)
     queue = make_queue(config, passwords)
+    pool = Pool(processes=PROCS)
 
     logging.info("Queue:")
     for qtask in queue.itervalues():
@@ -167,8 +171,10 @@ def main():
     if "--only_queue" in sys.argv:
         sys.exit(0)
 
-    for qtask in queue.itervalues():
-        proccess_task(qtask)
+    for qtask in pool.imap_unordered(proccess_task, queue.itervalues()):
+        logging.info(" == Parralel Task %d DONE!, URL: %s/issue/%d", qtask.id, qtask.host, qtask.issue["id"])
+
+    logging.info("All DONE!")
 
 if __name__ == "__main__":
     main()
