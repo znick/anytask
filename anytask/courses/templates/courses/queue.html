@@ -41,7 +41,7 @@
         </li>
         {% if user_is_teacher %}
             <li class="nav-item">
-                <a class="nav-link" href="{% url courses.views.course_settings course.id %}">{% trans "nastrojki" %}</a>
+                <a class="nav-link" href="{% url "courses.views.course_settings" course.id %}">{% trans "nastrojki" %}</a>
             </li>
         {% endif %}
     </ul>

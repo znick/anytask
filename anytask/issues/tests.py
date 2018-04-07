@@ -820,7 +820,7 @@ class ViewsTest(TestCase):
         client = self.client
         issue = Issue.objects.create(task_id=self.task.id, student_id=self.student.id)
         event_create_file = Event.objects.create(issue=issue, field=IssueField.objects.get(name='file'))
-        File.objects.create(file=SimpleUploadedFile('test_rb.py', 'some text'), event=event_create_file)
+        File.objects.create(file=SimpleUploadedFile('test_rb.py', b'some text'), event=event_create_file)
         User.objects.create_user(username='anytask.monitoring', password='password')
         self.task.rb_integrated = True
         self.task.save()

@@ -1,5 +1,5 @@
 ipykernel==4.5.2
-django==1.4.14
+django==1.5.12
 south
 pillow
 django-recaptcha
@@ -14,7 +14,7 @@ django-bootstrap-breadcrumbs
 pycrypto
 python-magic
 django-filemanager
-requests==2.10.0
+requests==2.18.4
 flup
 mysql
 unidecode

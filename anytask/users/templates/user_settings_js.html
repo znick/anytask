@@ -47,7 +47,7 @@
         });
 
         $('#submit_btn').click(function () {
-            $.post('{% url users.views.profile_settings %}', $('#user_settings').serialize())
+            $.post('{% url "users.views.profile_settings" %}', $('#user_settings').serialize())
                 .done(function(data){
                     $('#submit_error_text').html('<div class="alert alert-success alert-dismissible fade in" role ="alert" id="user_settings_err">' +
                         '                           <button type="button" class="close" data-dismiss="alert" aria-label="{% trans 'zakryt' %}">' +

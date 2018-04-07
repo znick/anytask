@@ -24,7 +24,7 @@
                 $("#modal_score_ok").button('loading');
                 $(form).ajaxSubmit({
                     success: function() {
-{#                        if (location.pathname != "{% url courses.views.queue_tasks_to_check course_id=course.id %}")#}
+{#                        if (location.pathname != "{% url "courses.views.queue_tasks_to_check" course_id=course.id %}")#}
 {#                        {#}
 {#                            window.location.reload();#}
 {#                        }#}
@@ -342,7 +342,7 @@
                     $('#hidden_task').attr('checked', true);
                 }
 
-{#                $('#modal-edite-task-form').attr('action', '{% url courses.views.edit_task %}');#}
+{#                $('#modal-edite-task-form').attr('action', '{% url "courses.views.edit_task" %}');#}
 
 
                 $('#edit_task_descr').show();
@@ -368,7 +368,7 @@
                     $('#hidden_task').attr('checked', true);
                 }
 
-{#                $('#modal-edite-task-form').attr('action', '{% url courses.views.edit_task %}');#}
+{#                $('#modal-edite-task-form').attr('action', '{% url "courses.views.edit_task" %}');#}
 
                 $('#modal_task_desc_edit').show();
 
@@ -385,7 +385,7 @@
         {
             $('#modal_task_desc_text').hide();
 
-{#            $('#modal-edite-task-form').attr('action', '{% url courses.views.add_task %}');#}
+{#            $('#modal-edite-task-form').attr('action', '{% url "courses.views.add_task" %}');#}
 
             $('#modal_edit_task_course_id').val(course_id);
             if (group_id) {
@@ -445,7 +445,7 @@
         var csrf_token = "{{ csrf_token }}";
 
         $("#modal_course_info_ok").button('loading');
-        $.post('{% url courses.views.edit_course_information %}',
+        $.post('{% url "courses.views.edit_course_information" %}',
                 { 'course_id' : course_id, 'course_information' : course_info, 'csrfmiddlewaretoken' : csrf_token, },
                 function (data) {
                     window.location.reload();
@@ -455,7 +455,7 @@
     function set_spectial_course_attend(course_id, action)
     {
         var csrf_token = "{{ csrf_token }}";
-        $.post('{% url courses.views.set_spectial_course_attend %}',
+        $.post('{% url "courses.views.set_spectial_course_attend" %}',
                 { 'course_id' : course_id, 'action' : action, 'csrfmiddlewaretoken' : csrf_token, },
                 function (data) {
                     window.location.reload();

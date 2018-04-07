@@ -60,7 +60,7 @@
 
     <div class="card card-block" >
         <h5 class="card-title">{% trans "sozdanie_invajtov" %}</h5>
-        <form action="{% url invites.views.generate_invites %}" method="post" id="invites-form">
+        <form action="{% url "invites.views.generate_invites" %}" method="post" id="invites-form">
             {% csrf_token %}
             <div class="form-group row" style="display: none;">
                 <label class="form-control-label col-sm-3" for="number_of_invites">{% trans "kolichestvo_invajtov" %}</label>

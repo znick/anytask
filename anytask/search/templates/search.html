@@ -57,7 +57,7 @@
         <div class="card-block">
             <h5 class="card-title">{% trans "rezultaty_poiska" %}</h5>
             <div class="form-search">
-                <form class="navbar-form" role="search" method="get" action="{% url search.views.search_page %}">
+                <form class="navbar-form" role="search" method="get" action="{% url "search.views.search_page" %}">
                     <div class="input-group">
                         <input class="typeahead form-control" id="navbar_search" name="q" type="text" placeholder="{% trans "najti" %}">
                         <div class="input-group-btn">

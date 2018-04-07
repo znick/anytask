@@ -78,7 +78,7 @@
             <div class="card card-block">
                 <h5 class="card-title">{% trans "dostup_ogranichen" %}</h5>
                 <p class="card-text">{% trans "vvedite_invajt" %}</p>
-                <form id="invites_form" action="{% url users.views.activate_invite %}" method="post">
+                <form id="invites_form" action="{% url "users.views.activate_invite" %}" method="post">
                     <div class="row">
                         {% csrf_token %}
                         <input type="hidden" name="course_id" value="{{ course.id }}">

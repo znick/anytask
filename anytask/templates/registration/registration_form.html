@@ -29,7 +29,7 @@
                 rules: {
                     username: {
                         required : true,
-                        remote: "{% url registration.views.ajax_check_username %}",
+                        remote: "{% url "registration.views.ajax_check_username" %}",
                         username_characters : true
                     },
                     first_name: {
@@ -43,7 +43,7 @@
                     email: {
                         required : true,
                         email : true,
-                        remote: "{% url registration.views.ajax_check_email %}"
+                        remote: "{% url "registration.views.ajax_check_email" %}"
                     },
                     password1: {
                         required : true
@@ -82,7 +82,7 @@
                     email: {
                         required : "{% trans 'objazatelnoe_pole' %}",
                         email : "{% trans 'vvedite_korrektnyj_adres' %}",
-                        remote : "{% trans 'polzovatel_s_adresom_sushestvuet' %} <a class='text-muted' href='{% url django.contrib.auth.views.login %}'>{% trans 'vojdite' %}</a>"
+                        remote : "{% trans 'polzovatel_s_adresom_sushestvuet' %} <a class='text-muted' href='{% url "django.contrib.auth.views.login" %}'>{% trans 'vojdite' %}</a>"
                     },
                     password1: {
                         required : "{% trans 'objazatelnoe_pole' %}"

@@ -272,7 +272,7 @@
             $('input', '#modal_change_status').addClass(d).attr(d, d).prop(d, true);
             $('#modal_change_status').data("is_form_submitting", true);
 
-            $.post('{% url staff.views.ajax_change_status %}', post_data)
+            $.post('{% url "staff.views.ajax_change_status" %}', post_data)
                 .always(function () {
                     var d = 'disabled';
 
@@ -288,11 +288,11 @@
                         '                                   </div>');
                     if ($("input[name='send_mail']", '#modal_change_status').is(":checked")) {
                         var user_ids = get_selected_user_info(table_users, 'id_user');
-                        $.post('{% url staff.views.ajax_save_ids %}', {
+                        $.post('{% url "staff.views.ajax_save_ids" %}', {
                             'csrfmiddlewaretoken': "{{ csrf_token }}",
                             'user_ids': user_ids
                         }).done(function (data) {
-                            window.location.href = '{% url mail.views.mail_page %}' + '?from_staff='+ data.index + '#new'
+                            window.location.href = '{% url "mail.views.mail_page" %}' + '?from_staff='+ data.index + '#new'
                         });
                     }
                     else
@@ -333,7 +333,7 @@
             $('button', '#modal_send_mail .modal-footer').addClass(d).attr(d, d).prop(d, true);
             $('#modal_send_mail').data("is_form_submitting", true);
 
-            $.post('{% url staff.views.ajax_save_ids %}', post_data)
+            $.post('{% url "staff.views.ajax_save_ids" %}', post_data)
                 .always(function () {
                     var d = 'disabled';
 
@@ -342,7 +342,7 @@
                     $('#modal_send_mail').data("is_form_submitting", false);
                 })
                 .done(function (data) {
-                    window.location.href = '{% url mail.views.mail_page %}' + '?from_staff='+ data.index + '#new'
+                    window.location.href = '{% url "mail.views.mail_page" %}' + '?from_staff='+ data.index + '#new'
                 })
                 .fail(function (data) {
                     $('#modal_send_mail_error_text').html('<div class="alert alert-danger" role ="alert">' +
@@ -363,7 +363,7 @@
             $('button', '#modal_gen_gradebook .modal-footer').addClass(d).attr(d, d).prop(d, true);
             $('#modal_gen_gradebook').data("is_form_submitting", true);
 
-            $.post('{% url staff.views.ajax_save_ids %}', post_data)
+            $.post('{% url "staff.views.ajax_save_ids" %}', post_data)
                 .always(function () {
                     var d = 'disabled';
                     modal_button_ok.html(modal_button_ok.data('resetText'));
@@ -371,7 +371,7 @@
                     $('#modal_gen_gradebook').data("is_form_submitting", false);
                 })
                 .done(function (data) {
-                    window.location.href = '{% url staff.views.gradebook_page %}' + '?from_staff='+ data.index
+                    window.location.href = '{% url "staff.views.gradebook_page" %}' + '?from_staff='+ data.index
                 })
                 .fail(function (data) {
                     $('#modal_gen_gradebook_error_text').html('<div class="alert alert-danger" role ="alert">' +

@@ -9,10 +9,10 @@
 
 <div class="subnav">
     <ul class="nav nav-pills">
-      <li><a href="{% url courses.views.tasks_list course_id=course.id %}">Список по группам</a></li>
-      <li class="active"><a href="{% url courses.views.tasks_description course.id %}">Описание задач</a></li>
+      <li><a href="{% url "courses.views.tasks_list" course_id=course.id %}">Список по группам</a></li>
+      <li class="active"><a href="{% url "courses.views.tasks_description" course.id %}">Описание задач</a></li>
       {% if visible_queue %}
-      <li><a href="{% url courses.views.queue_tasks_to_check course_id=course.id %}"> "Очередь на проверку </a> </li>
+      <li><a href="{% url "courses.views.queue_tasks_to_check" course_id=course.id %}"> "Очередь на проверку </a> </li>
       {% endif %}
     </ul>
 </div>

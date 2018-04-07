@@ -19,7 +19,7 @@
             <a class="nav-link" href="">{% trans "aktivnye_kursy" %}</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="{% url schools.views.archive_page school.link %}">{% trans "arhiv" %}</a>
+            <a class="nav-link" href="{% url "schools.views.archive_page" school.link %}">{% trans "arhiv" %}</a>
         </li>
     </ul>
 {% endblock navbar %}

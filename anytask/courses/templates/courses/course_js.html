@@ -187,7 +187,7 @@
 
             $('#update_course_info_error_text').hide();
 
-            $.post('{% url courses.views.edit_course_information %}',
+            $.post('{% url "courses.views.edit_course_information" %}',
                     {
                         'csrfmiddlewaretoken': "{{ csrf_token }}",
                         'course_id': {{ course.id }},
@@ -262,7 +262,7 @@
         });
 
         $('#hide_academ_student_btn').click(function () {
-            $.post('{% url courses.views.change_visibility_academ_users %}',
+            $.post('{% url "courses.views.change_visibility_academ_users" %}',
                 {'course_id': {{ course.id }}, 'csrfmiddlewaretoken': "{{ csrf_token }}"},
                 function (data) {
                     window.location.reload();
@@ -494,7 +494,7 @@
             form.validate({
                 submitHandler: function (form) {
                     var mark_value = $(form).closest('td').find('.task-mark-value');
-                    $.post('{% url courses.views.set_task_mark %}', $(form).serialize(), function (data) {
+                    $.post('{% url "courses.views.set_task_mark" %}', $(form).serialize(), function (data) {
                         var mark_diff = parseFloat(data.mark) - parseFloat(mark_value.find('span').text());
                         var sum_mark_span = $(form).closest('td').siblings('.sum-score').find('span');
                         var sum_mark = parseFloat(sum_mark_span.text()) + mark_diff;
@@ -565,7 +565,7 @@
             $form.collapse('hide');
             $form.closest('td').find('.mark-value').collapse('show');
 
-            $.post('{% url courses.views.set_course_mark %}', $form.serialize(), function (data) {
+            $.post('{% url "courses.views.set_course_mark" %}', $form.serialize(), function (data) {
                 $mark_cell.find('.mark-form select').val(data.mark_id);
                 $mark_cell.find('.mark-value span').text(data.mark).data('mark-int', data.mark_int);
             });
@@ -576,7 +576,7 @@
             var form_info = $form.serialize();
             var checkbox = $form.find('input:checkbox');
             checkbox.prop('disabled', true);
-            $.post('{% url courses.views.lesson_visited %}', form_info).done(function (data) {
+            $.post('{% url "courses.views.lesson_visited" %}', form_info).done(function (data) {
                 var val = parseInt(data.visited);
                 var lesson_id = data.lesson_id;
                 var visited_lssns_span = $form.closest('td').siblings('.total-lessons').find('span');
@@ -796,7 +796,7 @@
             if (confirm_delete(show_confirm, delete_all === 'delete_all')) {
                 var lesson_id = $('#lssn_del_button').attr('data_lssn');
                 var group_id = $('#lssn_del_button').attr('data_group');
-                $.post('{% url courses.views.lesson_delete %}', {
+                $.post('{% url "courses.views.lesson_delete" %}', {
                     'csrfmiddlewaretoken': '{{ csrf_token }}',
                     'lesson_id': lesson_id,
                     'group_id': group_id,
@@ -868,7 +868,7 @@
                 var modal_button_ok = $('#modal_table_edit_ok');
                 var div_group_id = $(modal_button_ok.data('div_group_id'));
 
-                $.post('{% url courses.views.change_table_tasks_pos %}',
+                $.post('{% url "courses.views.change_table_tasks_pos" %}',
                         {
                             'csrfmiddlewaretoken': '{{ csrf_token }}',
                             'course_id': {{ course.id }},
@@ -979,7 +979,7 @@
         var csrf_token = "{{ csrf_token }}";
 
         $("#modal_course_info_ok").button('loading');
-        $.post('{% url courses.views.edit_course_information %}',
+        $.post('{% url "courses.views.edit_course_information" %}',
                 {'course_id': course_id, 'course_information': course_info, 'csrfmiddlewaretoken': csrf_token,},
                 function (data) {
                     window.location.reload();
@@ -988,7 +988,7 @@
 
     function set_spectial_course_attend(course_id, action) {
 
-        $.post('{% url courses.views.set_spectial_course_attend %}',
+        $.post('{% url "courses.views.set_spectial_course_attend" %}',
                 {'course_id': course_id, 'action': action, 'csrfmiddlewaretoken': csrf_token,},
                 function (data) {
                     window.location.reload();
@@ -997,7 +997,7 @@
     }
 
     function change_visibility_hidden_tasks(course_id) {
-        $.post('{% url courses.views.change_visibility_hidden_tasks %}',
+        $.post('{% url "courses.views.change_visibility_hidden_tasks" %}',
                 {'course_id': course_id, 'csrfmiddlewaretoken': "{{ csrf_token }}"},
                 function (data) {
                     window.location.reload();

@@ -37,7 +37,7 @@
             <a class="nav-link" href="{{ course.get_absolute_url }}/queue">{% trans "ochered_na_proverku" %}</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="{% url courses.views.course_settings course.id %}">{% trans "nastrojki" %}</a>
+            <a class="nav-link" href="{% url "courses.views.course_settings" course.id %}">{% trans "nastrojki" %}</a>
         </li>
     </ul>
 {% endblock navbar %}

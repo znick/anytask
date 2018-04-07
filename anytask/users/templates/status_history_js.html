@@ -38,7 +38,7 @@
             modal_status_ok.html(modal_status_ok.data('loadingText'));
             modal_status_ok.addClass(d).attr(d, d).prop(d, true);
 
-            $.post('{% url users.views.set_user_statuses user_to_show %}', $('#status_edit_form').serialize(), function (data) {
+            $.post('{% url "users.views.set_user_statuses" user_to_show %}', $('#status_edit_form').serialize(), function (data) {
                 var user_statuses = data.user_statuses;
                 var user_profile_log = data.user_profile_log;
                 var log_entry = '';

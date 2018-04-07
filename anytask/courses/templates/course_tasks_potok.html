@@ -61,11 +61,11 @@
                     <a class="nav-link" href="{{ course.get_absolute_url }}/queue">{% trans "ochered_na_proverku" %}</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url courses.views.course_settings course.id %}">{% trans "nastrojki" %}</a>
+                    <a class="nav-link" href="{% url "courses.views.course_settings" course.id %}">{% trans "nastrojki" %}</a>
                 </li>
             {% endif %}
             <li class="nav-item">
-                <a class="nav-link" href="{% url courses.views.view_statistic course.id %}">Статистика</a>
+                <a class="nav-link" href="{% url "courses.views.view_statistic" course.id %}">Статистика</a>
             </li>
         {% endif %}
     </ul>
@@ -91,7 +91,7 @@
 
 	<dd>Преподаватели:
 		{% for teacher in course.teachers.all %}
-			<a href="{% url users.views.profile teacher.username %}">{{ teacher.last_name }} {{ teacher.first_name }}</a>{% if not forloop.last %},{% endif %}
+			<a href="{% url "users.views.profile" teacher.username %}">{{ teacher.last_name }} {{ teacher.first_name }}</a>{% if not forloop.last %},{% endif %}
 		{% endfor %}
 	</dd>
 
@@ -129,18 +129,18 @@
 								<span class="label label-success">{{ task.score_max }}</span>
 							{% endif %}
 							{% if task.can_score %}
-                                <a href="{% url tasks.views.task_edit_page task.id %}"><span class="fa fa-pencil"></span></a>
+                                <a href="{% url "tasks.views.task_edit_page" task.id %}"><span class="fa fa-pencil"></span></a>
                             {% endif %}
 							{% if task.can_take.0  %}
-								<a href="{% url courses.pythontask.get_task course_id=course.id task_id=task.id %}">Записаться на задачу</a>
+								<a href="{% url "courses.pythontask.get_task" course_id=course.id task_id=task.id %}">Записаться на задачу</a>
 							{% else %}
 								{{ task.can_take.1 }}
 							{% endif %}
 							{% if task.can_cancel  %}
-								<a href="{% url courses.pythontask.cancel_task course_id=course.id task_id=task.id %}">Отказаться от задачи</a>
+								<a href="{% url "courses.pythontask.cancel_task" course_id=course.id task_id=task.id %}">Отказаться от задачи</a>
 							{% endif %}
                             {% if not task.has_subtasks and task.can_pass %}
-                                &nbsp;<a href="{% url issues.views.get_or_create task_id=task.id student_id=user.id %}">{% trans "sdat" %}</a>
+                                &nbsp;<a href="{% url "issues.views.get_or_create" task_id=task.id student_id=user.id %}">{% trans "sdat" %}</a>
                             {% endif %}
 							<br>
 							{% if task.task_text %}
@@ -153,18 +153,18 @@
 									<div id="{{subtask.id}}"></div><font {% if subtask.is_hidden %} color="gray" {% endif %}>{{ subtask.title }}</font>
 									<span class="label label-success">{{ subtask.score_max }}</span>
 									{% if subtask.can_score %}
-                                        <a href="{% url tasks.views.task_edit_page subtask.id %}"><span class="fa fa-pencil"></span></a>
+                                        <a href="{% url "tasks.views.task_edit_page" subtask.id %}"><span class="fa fa-pencil"></span></a>
                                     {% endif %}
 									{% if subtask.can_take.0  %}
-										<a href="{% url courses.pythontask.get_task course_id=course.id task_id=subtask.id %}">Записаться на задачу</a>
+										<a href="{% url "courses.pythontask.get_task" course_id=course.id task_id=subtask.id %}">Записаться на задачу</a>
 									{% else %}
 										{{ subtask.can_take.1 }}
 									{% endif %}
 									{% if subtask.can_cancel  %}
-										<a href="{% url courses.pythontask.cancel_task course_id=course.id task_id=subtask.id %}">Отказаться от задачи</a>
+										<a href="{% url "courses.pythontask.cancel_task" course_id=course.id task_id=subtask.id %}">Отказаться от задачи</a>
 									{% endif %}
                                     {% if subtask.can_pass %}
-                                        &nbsp;<a href="{% url issues.views.get_or_create task_id=subtask.id student_id=user.id %}">{% trans "sdat" %}</a>
+                                        &nbsp;<a href="{% url "issues.views.get_or_create" task_id=subtask.id student_id=user.id %}">{% trans "sdat" %}</a>
                                     {% endif %}
 									<br>
 									{% if subtask.task_text %}
@@ -196,7 +196,7 @@
                                                     <td style="width:20%"></td>
                                                     <td style="width:20%">
                                                         {% if subtask.can_score %}
-                                                            <a href="{% url issues.views.get_or_create task_id=subtask.id student_id=task_taken.user.id %}">Оценить</a>
+                                                            <a href="{% url "issues.views.get_or_create" task_id=subtask.id student_id=task_taken.user.id %}">Оценить</a>
                                                         {% endif %}
                                                     </td>
 												</tr>
@@ -232,7 +232,7 @@
                                             <td style="width:20%"></td>
                                             <td style="width:20%">
                                                 {% if task.can_score %}
-                                                    <a href="{% url issues.views.get_or_create task_id=task.id student_id=task_taken.user.id %}">Оценить</a>
+                                                    <a href="{% url "issues.views.get_or_create" task_id=task.id student_id=task_taken.user.id %}">Оценить</a>
                                                 {% endif %}
                                             </td>
 										</tr>

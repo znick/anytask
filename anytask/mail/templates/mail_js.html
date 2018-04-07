@@ -187,7 +187,7 @@
 
             open_check_fast($("#read"));
 
-            $.get('{% url mail.views.ajax_get_message %}', {'msg_id': $row.data("id"), 'unread_count': unread_count, 'mailbox': $msg_info.data("mailbox")})
+            $.get('{% url "mail.views.ajax_get_message" %}', {'msg_id': $row.data("id"), 'unread_count': unread_count, 'mailbox': $msg_info.data("mailbox")})
                 .always(function () {
                     $("#loading_info").hide();
                 })
@@ -353,7 +353,7 @@
             if (!$table.data("init")) {
                 current_table = $table.DataTable({
                     ajax: {
-                        "url": "{% url mail.views.ajax_get_mailbox %}",
+                        "url": "{% url "mail.views.ajax_get_mailbox" %}",
                         "data": function (d) {
                             d["type"] = table_type;
                             d["make_read"] = make_read;
@@ -480,7 +480,7 @@
             queryTokenizer: Bloodhound.tokenizers.whitespace,
             remote: {
                 wildcard: '%QUERY',
-                url: '{% url search.views.ajax_search_users %}?q=%QUERY&max=' + MAX_SEARCH_SGS,
+                url: '{% url "search.views.ajax_search_users" %}?q=%QUERY&max=' + MAX_SEARCH_SGS,
                 transform: function (response) {
                     $('#navbar_search').data('up_limited', response.is_limited);
                     return $.map(response.result, function (user) {
@@ -697,7 +697,7 @@
                 $("body").prepend('<div id="blockDiv"><div><span class="fa fa-circle-o-notch fa-spin"></span>&nbsp;{% trans "otpravka" %}</div></div>');
                 var $new_recipients = $('#new_recipients');
 
-                $.post('{% url mail.views.ajax_send_message %}', {
+                $.post('{% url "mail.views.ajax_send_message" %}', {
                     'csrfmiddlewaretoken': "{{ csrf_token }}",
                     'new_recipients_user[]': $new_recipients.data('user'),
                     'new_recipients_group[]': $new_recipients.data('group'),

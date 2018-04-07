@@ -15,23 +15,23 @@
     <ul class="nav navbar-nav">
         {% if user_to_show == user %}
             <li class="nav-item">
-                <a class="nav-link" href="{% url users.views.profile %}">{% trans "profil" %}</a>
+                <a class="nav-link" href="{% url "users.views.profile" %}">{% trans "profil" %}</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{% url users.views.my_tasks %}">{% trans "moi_zadachi" %}</a>
+                <a class="nav-link" href="{% url "users.views.my_tasks" %}">{% trans "moi_zadachi" %}</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{% url users.views.user_courses %}">{% trans "moi_kursy" %}</a>
+                <a class="nav-link" href="{% url "users.views.user_courses" %}">{% trans "moi_kursy" %}</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{% url users.views.profile_settings %}">{% trans "nastrojki" %}</a>
+                <a class="nav-link" href="{% url "users.views.profile_settings" %}">{% trans "nastrojki" %}</a>
             </li>
         {% else %}
             <li class="nav-item">
-                <a class="nav-link" href="{% url users.views.profile user_to_show %}">{% trans "profil_studenta" %}</a>
+                <a class="nav-link" href="{% url "users.views.profile" user_to_show %}">{% trans "profil_studenta" %}</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{% url users.views.user_courses user_to_show %}">{% trans "kursy_studenta" %}</a>
+                <a class="nav-link" href="{% url "users.views.user_courses" user_to_show %}">{% trans "kursy_studenta" %}</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link active" href="">{% trans "redaktirovanie_statusov" %}</a>

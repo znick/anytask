@@ -9,7 +9,7 @@
             value="Взять себе" style="display: inline;"/>
         </div>
     </div>
-{#    <form action="{% url courses.views.score_task %}" method="post" id="modal-score-form" class="form-horizontal" style="margin-bottom: 0px;">#}
+{#    <form action="{% url "courses.views.score_task" %}" method="post" id="modal-score-form" class="form-horizontal" style="margin-bottom: 0px;">#}
 {#        {% csrf_token %}#}
 {#        <div class="modal-body" id="modal_score_body">#}
 {#            <div id="review_data" class="row-fluid">#}
@@ -83,7 +83,7 @@
     </div>
     <div class="modal-body">
         <div name="status_body">
-            <form action="{% url tasks.views.update_status_check %}" 
+            <form action="{% url "tasks.views.update_status_check" %}" 
                     method="post" id="modal-score-form" 
                     class="form-horizontal" style="margin-bottom: 0px;">
                 {% csrf_token %}
