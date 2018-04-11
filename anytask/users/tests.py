@@ -1,4 +1,4 @@
-# encoding: utf-8
+﻿# encoding: utf-8
 
 from django.test import TestCase
 from django.contrib.auth.models import User
@@ -35,7 +35,7 @@ class UserLoginTest(TestCase):
         self.assertTemplateUsed(response, 'registration/registration_form.html')
 
         self.assertContains(response, u"Логин")
-        self.assertContains(response, u"Адрес электронной почты")
+        self.assertContains(response, u"E-mail")
 
     def test_login_user__username(self):
         client = self.client
