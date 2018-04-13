@@ -18,7 +18,7 @@ up your own URL patterns for these views instead.
 """
 
 
-from django.conf.urls.defaults import *
+from django.conf.urls import *
 from django.views.generic.base import TemplateView
 
 from registration.backends.default_with_names import AnytaskLoginForm, AnytaskPasswordResetForm, AnytaskSetPasswordForm, AnytaskPasswordChangeForm

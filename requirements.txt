@@ -28,7 +28,7 @@ django-colorfield
 django-haystack==2.4.1
 Whoosh
 sqlparse==0.1.19
-django-reversion==1.6.6
+django-reversion==1.8
 dateutils
 psycopg2
 django_premailer==0.2.0

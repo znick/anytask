@@ -1,6 +1,6 @@
 # coding: utf-8
 
-from datetime import datetime
+from django.utils import timezone
 import os
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
@@ -56,8 +56,8 @@ class Issue(models.Model):
 
     mark = models.FloatField(db_index=False, null=False, blank=False, default=0)
 
-    create_time = models.DateTimeField(auto_now_add=True, default=datetime.now)
-    update_time = models.DateTimeField(default=datetime.now)
+    create_time = models.DateTimeField(auto_now_add=True, default=timezone.now)
+    update_time = models.DateTimeField(default=timezone.now)
 
     responsible = models.ForeignKey(User, db_index=True, null=True, blank=True, related_name='responsible')
     followers = models.ManyToManyField(User, null=True, blank=True)
@@ -357,7 +357,7 @@ class Issue(models.Model):
                     event.delete()
                     return
                 else:
-                    self.update_time = datetime.now()
+                    self.update_time = timezone.now()
                     value = u'<div class="issue-page-comment not-sanitize">' + value['comment'] + u'</div>'
 
                 if not self.is_status_auto_verification() and not self.is_status_accepted():

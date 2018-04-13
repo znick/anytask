@@ -1,4 +1,4 @@
-{% load admin_static %}{% load url from future %}<!DOCTYPE html>
+{% load admin_static %}<!DOCTYPE html>
 <html lang="{{ LANGUAGE_CODE|default:"en-us" }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
 <head>
 <title>{% block title %}{% endblock %}</title>
@@ -33,12 +33,12 @@
             Welcome,
             <strong>{% filter force_escape %}{% firstof user.first_name user.username %}{% endfilter %}</strong>.
             {% block userlinks %}
-                {% url "'django-admindocs-docroot'" as docsroot %}
+                {% url 'django-admindocs-docroot' as docsroot %}
                 {% if docsroot %}
                     <a href="{{ docsroot }}">Documentation</a> /
                 {% endif %}
-                <a href="{% url "'admin:password_change'" %}">Change password</a> /
-                <a href="{% url "'admin:logout'" %}">Log out</a>
+                <a href="{% url 'admin:password_change' %}">Change password</a> /
+                <a href="{% url 'admin:logout' %}">Log out</a>
             {% endblock %}
         </div>
         {% endif %}
@@ -47,7 +47,7 @@
     <!-- END Header -->
     {% block breadcrumbs %}
     <div class="breadcrumbs">
-    <a href="{% url "'admin:index'" %}">Home</a>
+    <a href="{% url 'admin:index' %}">Home</a>
     {% if title %} &rsaquo; {{ title }}{% endif %}
     </div>
     {% endblock %}

@@ -224,7 +224,8 @@ class AnyContestTest(TestCase):
         contest_submition.author = self.student
 
         event_create_file = Event.objects.create(issue=self.issue, field=IssueField.objects.get(name='file'))
-        f = File.objects.create(file=SimpleUploadedFile('test_fail_rb.py', b'print "_failed_"'), event=event_create_file)
+        f = File.objects.create(file=SimpleUploadedFile('test_fail_rb.py', b'print "_failed_"'),
+                                event=event_create_file)
         contest_submition.file = f
 
         contest_submition.save()
@@ -239,7 +240,8 @@ class AnyContestTest(TestCase):
         contest_submition.run_id = "1"
 
         event_create_file = Event.objects.create(issue=self.issue, field=IssueField.objects.get(name='file'))
-        f = File.objects.create(file=SimpleUploadedFile('test_fail_rb.py', b'print "_failed_"'), event=event_create_file)
+        f = File.objects.create(file=SimpleUploadedFile('test_fail_rb.py', b'print "_failed_"'),
+            event=event_create_file)
         contest_submition.file = f
 
         contest_submition.save()
@@ -255,7 +257,8 @@ class AnyContestTest(TestCase):
         contest_submition.run_id = "2"
 
         event_create_file = Event.objects.create(issue=self.issue, field=IssueField.objects.get(name='file'))
-        f = File.objects.create(file=SimpleUploadedFile('test_fail_rb.py', b'print "_failed_"'), event=event_create_file)
+        f = File.objects.create(file=SimpleUploadedFile('test_fail_rb.py', b'print "_failed_"'),
+            event=event_create_file)
         contest_submition.file = f
 
         contest_submition.save()
@@ -274,7 +277,8 @@ class AnyContestTest(TestCase):
         contest_submition.run_id = "3"
 
         event_create_file = Event.objects.create(issue=self.issue, field=IssueField.objects.get(name='file'))
-        f = File.objects.create(file=SimpleUploadedFile('test_fail_rb.py', b'print "_failed_"'), event=event_create_file)
+        f = File.objects.create(file=SimpleUploadedFile('test_fail_rb.py', b'print "_failed_"'),
+            event=event_create_file)
         contest_submition.file = f
 
         contest_submition.save()
@@ -297,7 +301,8 @@ class AnyContestTest(TestCase):
         contest_submition.run_id = "4"
 
         event_create_file = Event.objects.create(issue=self.issue, field=IssueField.objects.get(name='file'))
-        f = File.objects.create(file=SimpleUploadedFile('test_fail_rb.py', b'print "_failed_"'), event=event_create_file)
+        f = File.objects.create(file=SimpleUploadedFile('test_fail_rb.py', b'print "_failed_"'),
+            event=event_create_file)
         contest_submition.file = f
 
         contest_submition.save()
@@ -312,7 +317,8 @@ class AnyContestTest(TestCase):
         contest_submition.run_id = "5"
 
         event_create_file = Event.objects.create(issue=self.issue, field=IssueField.objects.get(name='file'))
-        f = File.objects.create(file=SimpleUploadedFile('test_fail_rb.py', b'print "_failed_"'), event=event_create_file)
+        f = File.objects.create(file=SimpleUploadedFile('test_fail_rb.py', b'print "_failed_"'),
+            event=event_create_file)
         contest_submition.file = f
 
         contest_submition.save()

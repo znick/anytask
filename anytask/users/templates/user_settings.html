@@ -13,13 +13,13 @@
 {% block navbar %}
     <ul class="nav navbar-nav">
         <li class="nav-item">
-            <a class="nav-link" href="{% url "'users.views.profile'" %}">{% trans "profil" %}</a>
+            <a class="nav-link" href="{% url 'users.views.profile' %}">{% trans "profil" %}</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="{% url "'users.views.my_tasks'" %}">{% trans "moi_zadachi" %}</a>
+            <a class="nav-link" href="{% url 'users.views.my_tasks' %}">{% trans "moi_zadachi" %}</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="{% url "'users.views.user_courses'" username=user %}">{% trans "moi_kursy" %}</a>
+            <a class="nav-link" href="{% url 'users.views.user_courses' username=user %}">{% trans "moi_kursy" %}</a>
         </li>
         <li class="nav-item">
             <a class="nav-link active" href="">{% trans "nastrojki" %}</a>
