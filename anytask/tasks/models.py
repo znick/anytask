@@ -3,7 +3,6 @@
 import copy
 import sys
 import json
-from datetime import datetime
 from datetime import timedelta
 from django.utils import timezone
 

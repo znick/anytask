@@ -241,7 +241,7 @@ class AnyContestTest(TestCase):
 
         event_create_file = Event.objects.create(issue=self.issue, field=IssueField.objects.get(name='file'))
         f = File.objects.create(file=SimpleUploadedFile('test_fail_rb.py', b'print "_failed_"'),
-            event=event_create_file)
+                                event=event_create_file)
         contest_submition.file = f
 
         contest_submition.save()
@@ -258,7 +258,7 @@ class AnyContestTest(TestCase):
 
         event_create_file = Event.objects.create(issue=self.issue, field=IssueField.objects.get(name='file'))
         f = File.objects.create(file=SimpleUploadedFile('test_fail_rb.py', b'print "_failed_"'),
-            event=event_create_file)
+                                event=event_create_file)
         contest_submition.file = f
 
         contest_submition.save()
@@ -278,7 +278,7 @@ class AnyContestTest(TestCase):
 
         event_create_file = Event.objects.create(issue=self.issue, field=IssueField.objects.get(name='file'))
         f = File.objects.create(file=SimpleUploadedFile('test_fail_rb.py', b'print "_failed_"'),
-            event=event_create_file)
+                                event=event_create_file)
         contest_submition.file = f
 
         contest_submition.save()
@@ -302,7 +302,7 @@ class AnyContestTest(TestCase):
 
         event_create_file = Event.objects.create(issue=self.issue, field=IssueField.objects.get(name='file'))
         f = File.objects.create(file=SimpleUploadedFile('test_fail_rb.py', b'print "_failed_"'),
-            event=event_create_file)
+                                event=event_create_file)
         contest_submition.file = f
 
         contest_submition.save()
@@ -318,7 +318,7 @@ class AnyContestTest(TestCase):
 
         event_create_file = Event.objects.create(issue=self.issue, field=IssueField.objects.get(name='file'))
         f = File.objects.create(file=SimpleUploadedFile('test_fail_rb.py', b'print "_failed_"'),
-            event=event_create_file)
+                                event=event_create_file)
         contest_submition.file = f
 
         contest_submition.save()
