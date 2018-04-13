@@ -7,7 +7,7 @@ from django.contrib.sites.models import Site
 from django.core import mail
 from django.core import management
 from django.test import TestCase
-from django.utils.hashcompat import sha_constructor
+from hashlib import sha1 as sha_constructor
 
 from registration.models import RegistrationProfile
 
