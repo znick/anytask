@@ -95,6 +95,9 @@ def proccess_task(qtask):
             output = output[:MAX_COMMENT_SIZE]
             output += "\n...\nTRUNCATED"
 
+        if is_timeout:
+            output += "\nTIMEOUT ({} sec)".format(qtask.course["timeout"])
+
         comment = u"[id:{}] Check DONE!<br>\nSubmited on {}<br>\n<pre>{}</pre>\n".format(qtask.id,
                                                                                      qtask.event["timestamp"],
                                                                                      output)
