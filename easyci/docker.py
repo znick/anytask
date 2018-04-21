@@ -20,7 +20,7 @@ def kill_and_remove(ctr_name):
 
 
 def execute(cmd, user="nobody", cwd=None, timeout=None, network='none',
-            memory_limit=str('256m'),
+            memory_limit=str('1024m'),
             image='ubuntu:14.04', volumes=None, name_prefix=''):
     if not isinstance(cmd, list):
         raise TypeError('cmd argument is not a list')
