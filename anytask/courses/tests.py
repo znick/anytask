@@ -1235,6 +1235,7 @@ class PythonTaskTest(TestCase):
     def test_expired(self):
         client = self.client
         user = self.users[0]
+        check_task_taken_expires_command = CheckTastTakenExpiresCommand()
 
         self.assertTrue(client.login(username=user.username, password="password0"))
 
@@ -1248,11 +1249,33 @@ class PythonTaskTest(TestCase):
         task_taken = TaskTaken.objects.get(task=self.task4_expired, user=user)
         self.assertEqual(task_taken.status, TaskTaken.STATUS_TAKEN)
 
-        # expire the task
-        task_taken.taken_time -= datetime.timedelta(days=settings.PYTHONTASK_MAX_DAYS_WITHOUT_SCORES)
+        # just before the dedline
+        task_taken.taken_time -= datetime.timedelta(days=settings.PYTHONTASK_MAX_DAYS_WITHOUT_SCORES + 1)
         task_taken.save()
 
-        check_task_taken_expires_command = CheckTastTakenExpiresCommand()
+        # cancel task
+        response = client.get(reverse('courses.pythontask.cancel_task',
+                                      kwargs={'course_id': self.course.id, 'task_id': self.task4_expired.id}),
+                              follow=True)
+        self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
+        task_taken = TaskTaken.objects.get(task=self.task4_expired, user=user)
+        taken_time = task_taken.taken_time
+        self.assertEqual(task_taken.status, TaskTaken.STATUS_CANCELLED)
+
+        # get the task back
+        response = client.get(
+            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id, 'task_id': self.task4_expired.id}),
+            follow=True)
+        self.assertContains(response, "{} {}".format(user.last_name, user.first_name))
+
+        task_taken = TaskTaken.objects.get(task=self.task4_expired, user=user)
+        self.assertEqual(task_taken.status, TaskTaken.STATUS_TAKEN)
+        self.assertEqual(task_taken.taken_time, taken_time)
+
+        # expire the task
+        task_taken.taken_time -= datetime.timedelta(days=1)
+        task_taken.save()
+
         check_task_taken_expires_command.check_course_task_taken_expires(self.course)
         check_task_taken_expires_command.check_blacklist_expires(self.course)
         task_taken = TaskTaken.objects.get(task=self.task4_expired, user=user)
@@ -1264,11 +1287,20 @@ class PythonTaskTest(TestCase):
             follow=True)
         self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
 
-        # drop from blacklist
-        task_taken.taken_time -= datetime.timedelta(days=settings.PYTHONTASK_DAYS_DROP_FROM_BLACKLIST)
+        # move a little bit in the past
+        task_taken.taken_time -= datetime.timedelta(days=settings.PYTHONTASK_DAYS_DROP_FROM_BLACKLIST/2)
         task_taken.save()
 
-        check_task_taken_expires_command = CheckTastTakenExpiresCommand()
+        # check we stil cant task the task
+        response = client.get(
+            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id, 'task_id': self.task4_expired.id}),
+            follow=True)
+        self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
+
+        # drop from blacklist
+        task_taken.taken_time -= datetime.timedelta(days=settings.PYTHONTASK_DAYS_DROP_FROM_BLACKLIST/2)
+        task_taken.save()
+
         check_task_taken_expires_command.check_course_task_taken_expires(self.course)
         check_task_taken_expires_command.check_blacklist_expires(self.course)
         task_taken = TaskTaken.objects.get(task=self.task4_expired, user=user)
