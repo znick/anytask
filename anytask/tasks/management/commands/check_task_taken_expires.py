@@ -63,7 +63,8 @@ class Command(BaseCommand):
             return
 
         blacklist_expired_date = datetime.datetime.now() - datetime.timedelta(
-            days=settings.PYTHONTASK_DAYS_DROP_FROM_BLACKLIST)
+            days=settings.PYTHONTASK_DAYS_DROP_FROM_BLACKLIST) - datetime.timedelta(
+            days=settings.PYTHONTASK_MAX_DAYS_WITHOUT_SCORES)
 
         for task in course.task_set.all():
             task_taken_query = TaskTaken.objects.filter(task=task)
