@@ -10,6 +10,7 @@
         ],
         {% block JS_OPTS %}
             autoUpload: true,
+            maxFileSize: {{ max_file_size }},
             {% if issue.task.one_file_upload %}
                 maxNumberOfFiles: 1,
                 add: function (e, data) {
@@ -22,7 +23,7 @@
                     $('#fileupload').data('uploaded', false);
                 },
             {% else %}
-                maxNumberOfFiles: 10,
+                maxNumberOfFiles: 5,
             {% endif %}
             dropZone: $(".drop-zone"),
         {% endblock %}
