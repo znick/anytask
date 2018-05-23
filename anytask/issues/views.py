@@ -219,6 +219,10 @@ def issue_page(request, issue_id):
     else:
         seminar_url = None
 
+    accepted_file_types = issue.task.course.get_filename_extensions_re() or getattr(settings, 'ACCEPTED_FILE_TYPES')
+    if user_is_teacher_or_staff(request.user, issue) or not accepted_file_types:
+        accepted_file_types = '.+$'
+
     context = {
         'issue': issue,
         'issue_fields': issue_fields,
@@ -234,7 +238,8 @@ def issue_page(request, issue_id):
         'show_contest_rejudge': show_contest_rejudge,
         'show_contest_rejudge_loading': show_contest_rejudge_loading,
         'show_contest_run_id': issue.task.course.user_can_see_contest_run_id(request.user),
-        'max_file_size': settings.MAX_FILE_SIZE
+        'max_file_size': settings.MAX_FILE_SIZE,
+        'allowed_extensions_re': accepted_file_types
     }
 
     return render_to_response('issues/issue.html', context, context_instance=RequestContext(request))

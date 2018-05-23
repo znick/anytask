@@ -11,19 +11,21 @@
         {% block JS_OPTS %}
             autoUpload: true,
             maxFileSize: {{ max_file_size }},
+            acceptFileTypes: new RegExp('{{ allowed_extensions_re }}', 'i'),
+
             {% if issue.task.one_file_upload %}
-                maxNumberOfFiles: 1,
-                add: function (e, data) {
-                    if (!$('#fileupload').data('uploaded')) {
-                        $('#fileupload').data('uploaded', true);
-                        data.submit();
-                    }
+            maxNumberOfFiles: 1,
+            add: function (e, data) {
+                if (!$('#fileupload').data('uploaded')) {
+                    $('#fileupload').data('uploaded', true);
+                    data.submit();
+                }
                 },
                 always: function() {
                     $('#fileupload').data('uploaded', false);
                 },
             {% else %}
-                maxNumberOfFiles: 5,
+            maxNumberOfFiles: 5,
             {% endif %}
             dropZone: $(".drop-zone"),
         {% endblock %}
@@ -174,7 +176,13 @@
 
 {% block JS_UPLOAD_TEMPLATE %}
 <script id="template-upload" type="text/x-tmpl">
-{{ JQ_OPEN }} for (var i=0, file; file=o.files[i]; i++) { {{ JQ_CLOSE }}
+{{ JQ_OPEN }} var messages = {};
+    messages["Maximum number of files exceeded"] = '{% trans "prevysheno_kolvo_fajlov" %}';
+    messages["Filetype not allowed"] = '{% trans "nedopustimyj_tip_fajla" %}';
+    messages["File is too big"] = '{% trans "fajl_slishkom_bolshoj" %}';
+    messages["File is too small"] = '{% trans "fajl_slishkom_mal" %}';
+
+    for (var i=0, file; file=o.files[i]; i++) { {{ JQ_CLOSE }}
     <tr class="template-upload fade">
         <td class="preview"><span class="fade"></span></td>
         <td class="name"><span>{{ JQ_OPEN }}=file.name{{ JQ_CLOSE }}</span></td>
@@ -183,7 +191,7 @@
         {{ JQ_OPEN }} if (file.error) { {{ JQ_CLOSE }}
             <td class="error" colspan="2">
                 <span class="label label-danger">{% trans "oshibka" %}</span>
-                {{ JQ_OPEN }}=file.error{{ JQ_CLOSE }}
+                {{ JQ_OPEN }}=messages[file.error]{{ JQ_CLOSE }}
             </td>
         {{ JQ_OPEN }} } else if (o.files.valid && !i) { {{ JQ_CLOSE }}
 
