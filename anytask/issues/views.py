@@ -219,9 +219,12 @@ def issue_page(request, issue_id):
     else:
         seminar_url = None
 
-    accepted_file_types = issue.task.course.get_filename_extensions_re() or getattr(settings, 'ACCEPTED_FILE_TYPES')
-    if user_is_teacher_or_staff(request.user, issue) or not accepted_file_types:
+    if user_is_teacher_or_staff(request.user, issue):
         accepted_file_types = '.+$'
+    else:
+        accepted_file_types = issue.task.course.get_filename_extensions_re() or getattr(settings,
+                                                                                        'ACCEPTED_FILE_TYPES',
+                                                                                        '.+$')
 
     context = {
         'issue': issue,
