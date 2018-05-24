@@ -238,7 +238,8 @@ def issue_page(request, issue_id):
         'show_contest_rejudge': show_contest_rejudge,
         'show_contest_rejudge_loading': show_contest_rejudge_loading,
         'show_contest_run_id': issue.task.course.user_can_see_contest_run_id(request.user),
-        'max_file_size': settings.MAX_FILE_SIZE,
+        'max_file_size': getattr(settings, 'MAX_FILE_SIZE', 1024 * 1024 * 100),
+        'max_files_number': getattr(settings, 'MAX_FILES_NUMBER', 10),
         'allowed_extensions_re': accepted_file_types
     }
 
