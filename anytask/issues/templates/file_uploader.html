@@ -14,18 +14,18 @@
             acceptFileTypes: new RegExp('{{ allowed_extensions_re }}', 'i'),
 
             {% if issue.task.one_file_upload %}
-            maxNumberOfFiles: 1,
-            add: function (e, data) {
-                if (!$('#fileupload').data('uploaded')) {
-                    $('#fileupload').data('uploaded', true);
-                    data.submit();
-                }
+                maxNumberOfFiles: 1,
+                add: function (e, data) {
+                    if (!$('#fileupload').data('uploaded')) {
+                        $('#fileupload').data('uploaded', true);
+                        data.submit();
+                    }
                 },
                 always: function() {
                     $('#fileupload').data('uploaded', false);
                 },
             {% else %}
-            maxNumberOfFiles: 5,
+                maxNumberOfFiles: 5,
             {% endif %}
             dropZone: $(".drop-zone"),
         {% endblock %}
