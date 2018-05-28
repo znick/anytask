@@ -258,11 +258,6 @@ class Course(models.Model):
     def is_contest_integrated(self):
         return self.contest_integrated or self.task_set.filter(contest_integrated=True).exists()
 
-    def get_filename_extensions_re(self):
-        if self.filename_extensions.exists():
-            return '\.+({})$'.format('|'.join([f.name.strip('.') for f in self.filename_extensions.all()]))
-        return None
-
 
 class DefaultTeacher(models.Model):
     teacher = models.ForeignKey(User, db_index=False, null=True, blank=True)

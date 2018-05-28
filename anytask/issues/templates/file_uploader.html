@@ -11,8 +11,6 @@
         {% block JS_OPTS %}
             autoUpload: true,
             maxFileSize: {{ max_file_size }},
-            acceptFileTypes: new RegExp('{{ allowed_extensions_re }}', 'i'),
-
             {% if issue.task.one_file_upload %}
                 maxNumberOfFiles: 1,
                 add: function (e, data) {
