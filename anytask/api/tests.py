@@ -86,7 +86,7 @@ class ApiTest(TestCase):
         self.issue2.save()
 
         event = self.issue1.add_comment("Test comment")
-        File.objects.create(file=SimpleUploadedFile('test_fail_rb.py', 'print "_failed_"'), event=event)
+        File.objects.create(file=SimpleUploadedFile('test_fail_rb.py', b'print "_failed_"'), event=event)
 
     def _request(self, username, password, method=None, *args, **kwargs):
         if method is None:

@@ -31,12 +31,12 @@
                                             <li>
                                                 {% if task_info.1 %}
                                                     {% trans 'dobavlena_zadacha' %}
-                                                    <a target="_blank" href="{{ domain }}{% url issues.views.get_or_create task_id=task_info.0.id student_id=user.id %}">
+                                                    <a target="_blank" href="{{ domain }}{% url "issues.views.get_or_create" task_id=task_info.0.id student_id=user.id %}">
                                                         "{% get_text_from_json task_info.0 'get_title' LANGUAGE_CODE %}"
                                                     </a>
                                                 {% else %}
                                                     {% filter lower %}{% trans 'v_zadache' %}{% endfilter %}
-                                                    <a target="_blank" href="{{ domain }}{% url issues.views.get_or_create task_id=task_info.0.id student_id=user.id %}">
+                                                    <a target="_blank" href="{{ domain }}{% url "issues.views.get_or_create" task_id=task_info.0.id student_id=user.id %}">
                                                         "{% get_text_from_json task_info.0 'get_title' LANGUAGE_CODE %}"
                                                     </a>
                                                     {% trans 'izmenilis' %}: {{ task_info|slice:"2:"|join:", " }}

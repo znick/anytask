@@ -29,7 +29,7 @@
         </div>
         {% endif %}
 
-        <form enctype="multipart/form-data" method="post" id="review_form" action="{% url submit_pdf_gr_form task.id %}">
+        <form enctype="multipart/form-data" method="post" id="review_form" action="{% url "submit_pdf_gr_form" task.id %}">
             {% csrf_token %}
             {% if task.course.gr_integrated %}
             <div>

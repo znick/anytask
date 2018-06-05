@@ -32,9 +32,9 @@
 
 <div class="subnav">
     <ul class="nav nav-pills">
-      <li><a href="{% url courses.views.tasks_list course.id %}">Список по группам</a></li>
-      <li><a href="{% url courses.views.tasks_description course_id=course.id %}">Описание задач</a></li>
-      <li class="active"><a href="{% url courses.views.queue_tasks_to_check course_id=course.id %}"> Очередь на проверку </a> </li>
+      <li><a href="{% url "courses.views.tasks_list" course.id %}">Список по группам</a></li>
+      <li><a href="{% url "courses.views.tasks_description" course_id=course.id %}">Описание задач</a></li>
+      <li class="active"><a href="{% url "courses.views.queue_tasks_to_check" course_id=course.id %}"> Очередь на проверку </a> </li>
     </ul>
 </div>
 
@@ -72,7 +72,7 @@
 {% endif %}
 Преподаватели:
 {% for teacher in course.teachers.all %}
-    <a href="{% url users.views.profile teacher.username %}">{{ teacher.last_name }} {{ teacher.first_name }}</a>{% if not forloop.last %},{% endif %}
+    <a href="{% url "users.views.profile" teacher.username %}">{{ teacher.last_name }} {{ teacher.first_name }}</a>{% if not forloop.last %},{% endif %}
 {% endfor %}
 <br />
 

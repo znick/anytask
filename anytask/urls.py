@@ -1,6 +1,6 @@
-from django.conf.urls.defaults import patterns, include, url
+from django.conf.urls import patterns, include, url
 from django.conf import settings
-from django.views.generic.simple import direct_to_template
+from django.views.generic.base import TemplateView
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -25,7 +25,7 @@ urlpatterns = patterns(
     url(r'^accounts/', include('registration.backends.default_with_names.urls')),
     url(r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_ROOT}),
     url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
-    url(r'^about$', direct_to_template, {'template': 'about.html'}),
+    url(r'^about$', TemplateView.as_view(template_name='about.html')),
     url(r'^$', 'index.views.index'),
     url(r'^search/', include('search.urls')),
     url(r'^staff', include('staff.urls')),

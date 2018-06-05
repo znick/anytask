@@ -52,7 +52,7 @@
                     <a class="nav-link" href="{{ course.get_absolute_url }}/queue">{% trans "ochered_na_proverku" %}</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url courses.views.course_settings course.id %}">{% trans "nastrojki" %}</a>
+                    <a class="nav-link" href="{% url "courses.views.course_settings" course.id %}">{% trans "nastrojki" %}</a>
                 </li>
             {% endif %}
         {% endif %}
@@ -86,12 +86,12 @@
                     <p class="card-text course_teachers">
                         {% trans "prepodavateli" %}:
                         {% for teacher in course.get_teachers %}
-                            <a href="{% url users.views.profile teacher.username %}">{{ teacher.last_name }} {{ teacher.first_name }}</a>{% if not forloop.last %},{% endif %}
+                            <a href="{% url "users.views.profile" teacher.username %}">{{ teacher.last_name }} {{ teacher.first_name }}</a>{% if not forloop.last %},{% endif %}
                         {% endfor %}
                     </p>
                     {% if course.can_edit %}
                         {% if seminar %}
-                            <a class="btn btn-secondary btn-sm" href="{% url tasks.views.task_edit_page seminar.id %}">
+                            <a class="btn btn-secondary btn-sm" href="{% url "tasks.views.task_edit_page" seminar.id %}">
                                 {% trans "redaktirovat_seminar" %}
                             </a>
                         {% endif %}
@@ -131,7 +131,7 @@
 
                                 {% if seminar %}
                                     <a class="btn btn-secondary btn-sm btn-square"
-                                       href="{% url tasks.views.task_edit_page seminar.id %}">
+                                       href="{% url "tasks.views.task_edit_page" seminar.id %}">
                                         <span class="fa fa-pencil"></span>
                                     </a>
                                 {% else %}
@@ -268,7 +268,7 @@
                                                             </div>
                                                             <div style="width: 10%;">
                                                                 <a class="btn btn-secondary btn-sm btn-square"
-                                                                   href="{% url tasks.views.task_edit_page task.task.id %}">
+                                                                   href="{% url "tasks.views.task_edit_page" task.task.id %}">
                                                                     <span class="fa fa-pencil"></span>
                                                                 </a>
                                                             </div>
@@ -369,7 +369,7 @@
                                                         </div>
                                                         <div style="width: 10%;">
                                                             <a class="btn btn-secondary btn-sm btn-square"
-                                                               href="{% url tasks.views.task_edit_page task.task.id %}">
+                                                               href="{% url "tasks.views.task_edit_page" task.task.id %}">
                                                                 <span class="fa fa-pencil"></span>
                                                             </a>
                                                         </div>
@@ -475,7 +475,7 @@
                                                             </div>
                                                             <div style="width: 15%;">
                                                                 <a class="btn btn-secondary btn-sm btn-square"
-                                                                   href="{% url tasks.views.task_edit_page task.task.id %}">
+                                                                   href="{% url "tasks.views.task_edit_page" task.task.id %}">
                                                                     <span class="fa fa-pencil"></span>
                                                                 </a>
                                                             </div>
@@ -561,7 +561,7 @@
                                                         </div>
                                                         <div style="width: 15%;">
                                                             <a class="btn btn-secondary btn-sm btn-square"
-                                                               href="{% url tasks.views.task_edit_page task.task.id %}">
+                                                               href="{% url "tasks.views.task_edit_page" task.task.id %}">
                                                                 <span class="fa fa-pencil"></span>
                                                             </a>
                                                         </div>

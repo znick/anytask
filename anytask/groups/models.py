@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from datetime import datetime
+from django.utils import timezone
 
 from years.models import Year
 
@@ -10,8 +10,8 @@ class Group(models.Model):
     name = models.CharField(max_length=191, db_index=True, null=False, blank=True)
     students = models.ManyToManyField(User, null=True, blank=True)
 
-    added_time = models.DateTimeField(auto_now_add=True, default=datetime.now)
-    update_time = models.DateTimeField(auto_now=True, default=datetime.now)
+    added_time = models.DateTimeField(auto_now_add=True, default=timezone.now)
+    update_time = models.DateTimeField(auto_now=True, default=timezone.now)
 
     class Meta:
         unique_together = (("year", "name"),)

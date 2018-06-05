@@ -111,7 +111,7 @@
             $('#task_max_score').attr('readonly', 'readonly');
             $('#task_edit_body').attr('readonly', 'readonly');
             $('#task_edit_datepicker').css("background-color", "#eceeef");
-            $.post('{% url tasks.views.get_contest_problems %}', $('#contest_task_form').serialize(), function (data) {
+            $.post('{% url "tasks.views.get_contest_problems" %}', $('#contest_task_form').serialize(), function (data) {
                 var problems = data.problems;
                 if (data.is_error == false) {
                     for (i = 0; i < problems.length; i++) {
@@ -263,7 +263,7 @@
                     $('#loading_contest_img').show();
                     $('#task_contest_id').attr('readonly', 'readonly');
 
-                    $.post('{% url tasks.views.get_contest_problems %}', $(this).serialize(), function(data){
+                    $.post('{% url "tasks.views.get_contest_problems" %}', $(this).serialize(), function(data){
                         var problems = data.problems;
                         if (data.is_error == false) {
                             for (i = 0; i < problems.length; i++) {
@@ -295,7 +295,7 @@
                     });
                 }
                 else {
-                    $.post('{% url tasks.views.contest_task_import %}', $(this).serialize(), function(data){
+                    $.post('{% url "tasks.views.contest_task_import" %}', $(this).serialize(), function(data){
                         if (data.is_error == true) {
                             $('#get_tasks').show();
                             $('#task_contest_body').hide();

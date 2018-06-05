@@ -2,7 +2,7 @@
 
 from django.core.urlresolvers import reverse
 from django.db import models
-from datetime import datetime
+from django.utils import timezone
 from django.contrib.auth.models import User
 from django.db.models.signals import m2m_changed
 from django.db.models.signals import post_save
@@ -95,7 +95,7 @@ class Course(models.Model):
 
     information = models.TextField(db_index=False, null=True, blank=True)
 
-    year = models.ForeignKey(Year, db_index=True, null=False, blank=False, default=datetime.now().year)
+    year = models.ForeignKey(Year, db_index=True, null=False, blank=False, default=timezone.now().year)
 
     is_active = models.BooleanField(db_index=True, null=False, blank=False, default=False)
 
@@ -120,8 +120,8 @@ class Course(models.Model):
 
     private = models.BooleanField(db_index=False, null=False, blank=False, default=True)
 
-    added_time = models.DateTimeField(auto_now_add=True, default=datetime.now)
-    update_time = models.DateTimeField(auto_now=True, default=datetime.now)
+    added_time = models.DateTimeField(auto_now_add=True, default=timezone.now)
+    update_time = models.DateTimeField(auto_now=True, default=timezone.now)
 
     can_be_chosen_by_extern = models.BooleanField(db_index=False, null=False, blank=False, default=False)
     group_with_extern = models.ForeignKey(
@@ -277,7 +277,7 @@ class StudentCourseMark(models.Model):
     mark = models.ForeignKey(MarkField, db_index=False, null=True, blank=True)
 
     teacher = models.ForeignKey(User, related_name='teacher_change_mark', db_index=False, null=True, blank=True)
-    update_time = models.DateTimeField(auto_now=True, default=datetime.now)
+    update_time = models.DateTimeField(auto_now=True, default=timezone.now)
 
     def __unicode__(self):
         return unicode(self.mark)

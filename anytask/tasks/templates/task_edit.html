@@ -33,7 +33,7 @@
                 $('input', $form).addClass(d).attr(d, d).prop(d, true).closest('label').addClass(d);
                 $('#update_submit_error_text').html('');
 
-                $.post('{% url tasks.views.get_contest_problems %}', req_data, function(data){
+                $.post('{% url "tasks.views.get_contest_problems" %}', req_data, function(data){
                     var problems = data.problems;
                     if (data.is_error == false) {
                         for (i = 0; i < problems.length; i++) {

@@ -167,7 +167,7 @@
             $progress.show();
 
             for(i = 0; i < tasks_keys.length; ++i) {
-                ajax_req.push($.post('{% url courses.views.ajax_update_contest_tasks %}',
+                ajax_req.push($.post('{% url "courses.views.ajax_update_contest_tasks" %}',
                         {   'csrfmiddlewaretoken': '{{ csrf_token }}',
                             'contest_id': tasks_keys[i],
                             'tasks_with_contest[]': tasks[tasks_keys[i]]})
@@ -218,7 +218,7 @@
             $btn_update.html("&nbsp;<i class='fa fa-circle-o-notch fa-spin fa-fw'></i>&nbsp;");
             $('#rejudge_tasks_error').html('');
 
-            $.post('{% url courses.views.ajax_rejudge_contest_tasks %}',
+            $.post('{% url "courses.views.ajax_rejudge_contest_tasks" %}',
                 {   'csrfmiddlewaretoken': '{{ csrf_token }}',
                     'tasks_with_contest[]': $('#tasks_with_contest_rejudge_select').val()})
                 .done(function (data) {

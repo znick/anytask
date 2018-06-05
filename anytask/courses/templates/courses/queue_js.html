@@ -179,7 +179,7 @@
                 }
             },
             ajax: {
-                "url": "{% url courses.views.ajax_get_queue %}",
+                "url": "{% url "courses.views.ajax_get_queue" %}",
                 "type": "POST",
                 "data": function (data) {
                     var $table_queue = $("#table_queue");

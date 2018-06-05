@@ -3,7 +3,7 @@
 
 {% trans "u_vas_soobshenij" %} {{ unread_count }} {{ unread_count_string }}.
 {% trans "posmotret_soobshenija" %}:
-{{ domain }}{% url mail.views.mail_page %}
+{{ domain }}{% url "mail.views.mail_page" %}
 
 
 --

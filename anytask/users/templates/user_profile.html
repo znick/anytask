@@ -19,29 +19,29 @@
                 <a class="nav-link" href="">{% trans "profil" %}</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{% url users.views.my_tasks %}">{% trans "moi_zadachi" %}</a>
+                <a class="nav-link" href="{% url "users.views.my_tasks" %}">{% trans "moi_zadachi" %}</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link"
-                   href="{% url users.views.user_courses username=user_to_show %}">{% trans "moi_kursy" %}</a>
+                   href="{% url "users.views.user_courses" username=user_to_show %}">{% trans "moi_kursy" %}</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{% url users.views.profile_settings %}">{% trans "nastrojki" %}</a>
+                <a class="nav-link" href="{% url "users.views.profile_settings" %}">{% trans "nastrojki" %}</a>
             </li>
         {% else %}
             <li class="nav-item active">
-                <a class="nav-link" href="{% url users.views.profile user_to_show %}">{% trans "profil_studenta" %}</a>
+                <a class="nav-link" href="{% url "users.views.profile" user_to_show %}">{% trans "profil_studenta" %}</a>
             </li>
             {% if user_above_user_to_show %}
                 <li class="nav-item">
                     <a class="nav-link"
-                       href="{% url users.views.user_courses username=user_to_show %}">{% trans "kursy_studenta" %}</a>
+                       href="{% url "users.views.user_courses" username=user_to_show %}">{% trans "kursy_studenta" %}</a>
                 </li>
             {% endif %}
             {% if user.is_staff %}
                 <li class="nav-item">
                     <a class="nav-link"
-                       href="{% url users.views.profile_history user_to_show %}">{% trans "redaktirovanie_statusov" %}</a>
+                       href="{% url "users.views.profile_history" user_to_show %}">{% trans "redaktirovanie_statusov" %}</a>
                 </li>
             {% endif %}
         {% endif %}
@@ -83,7 +83,7 @@
                         <br>
                         <br>
                         <a type="button" class="btn btn-secondary" href="#"
-                           onclick="window.open('{% url invites.views.generate_invites %}','_blank','height=331,width=769,status=yes,toolbar=no,menubar=no,location=no');return false;">{% trans "sgenerirovat_invajty" %}</a>
+                           onclick="window.open('{% url "invites.views.generate_invites" %}','_blank','height=331,width=769,status=yes,toolbar=no,menubar=no,location=no');return false;">{% trans "sgenerirovat_invajty" %}</a>
                     {% endif %}
                 </div>
             </div>
@@ -98,7 +98,7 @@
                                     <strong>{% trans "privjazat_odin_profil" %}</strong> {% trans "otvjazat_svoj_profil" %}
                                     <a href="mailto:anytask@yandex.ru">{% trans "administratoru" %}</a>.
                                 </p>
-                                <a href="{% url users.views.ya_oauth_request type_of_oauth='contest' %}" type="button"
+                                <a href="{% url "users.views.ya_oauth_request" type_of_oauth='contest' %}" type="button"
                                    class="btn btn-secondary">
                                     {% trans "priviazat" %}
                                 </a>
@@ -112,7 +112,7 @@
                                     <strong>{% trans "privjazali_profil" %} {{ user_to_show_profile.ya_contest_login }}.</strong> {% trans "profil_kontesta_priviazan" %}
                                     <a href="mailto:anytask@yandex.ru">{% trans "administratoru" %}</a>.
                                 </p>
-                                <a href="{% url users.views.ya_oauth_request type_of_oauth='contest' %}" type="button"
+                                <a href="{% url "users.views.ya_oauth_request" type_of_oauth='contest' %}" type="button"
                                    class="btn btn-secondary">
                                     {% trans "obnovit_privjazku_profilja" %}
                                 </a>
@@ -131,7 +131,7 @@
                                 class="btn btn-secondary {% if invite_form.errors %}collapse{% else %}in collapse{% endif %}">{% trans "vvesti_invajt" %}</button>
                         <div class="row">
                             <div class="col-md-12">
-                                <form action="{% url users.views.profile %}" method="post" id="invites_form"
+                                <form action="{% url "users.views.profile" %}" method="post" id="invites_form"
                                       class="{% if invite_form.errors %}in collapse{% else %}collapse{% endif %}">
                                     {% csrf_token %}
 
@@ -165,7 +165,7 @@
                                                 {{ user_to_show_profile.ya_passport_login }}
                                             </div>
                                             <div class="social-acc-action">
-                                                <form class="social-acc-form" method="post" action="{% url users.views.ya_oauth_disable type_of_oauth='passport'%}">
+                                                <form class="social-acc-form" method="post" action="{% url "users.views.ya_oauth_disable" type_of_oauth='passport'%}">
                                                     {% csrf_token %}
                                                     <input name="profile_id" type="hidden" value="{{ user_to_show_profile.id }}">
                                                     <button class="btn btn-secondary btn-icon" type="submit"><i class="fa fa-fw fa-trash-o"></i></button>
@@ -184,7 +184,7 @@
                                                 {{ user_to_show_profile.ya_contest_login }}
                                             </div>
                                             <div class="social-acc-action">
-                                                <form class="social-acc-form" method="post" action="{% url users.views.ya_oauth_disable type_of_oauth='contest'%}">
+                                                <form class="social-acc-form" method="post" action="{% url "users.views.ya_oauth_disable" type_of_oauth='contest'%}">
                                                     {% csrf_token %}
                                                     <input name="profile_id" type="hidden" value="{{ user_to_show_profile.id }}">
                                                     <button class="btn btn-secondary btn-icon" type="submit"><i class="fa fa-fw fa-trash-o"></i></button>

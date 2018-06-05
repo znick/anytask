@@ -44,7 +44,7 @@
         {% endif %}
         {% if visible_queue %}
             <li class="nav-item">
-                <a class="nav-link" href="{% url courses.views.queue_page course.id %}">{% trans "ochered_na_proverku" %}</a>
+                <a class="nav-link" href="{% url "courses.views.queue_page" course.id %}">{% trans "ochered_na_proverku" %}</a>
             </li>
         {% endif %}
         {% if user_is_teacher %}

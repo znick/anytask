@@ -71,7 +71,7 @@
                       </span>
                     </a>
                   {% elif user.username == student.username and task.can_pass %}
-                    <a class="btn-small" href="{% url submit_review task.id %}">
+                    <a class="btn-small" href="{% url "submit_review" task.id %}">
                       <span class="label {% if task_x_task_takens|score:task %} {% if task_x_task_takens|score:task == task.score_max %} label-success {% else %} label-info {% endif %} {% endif %}">
                         {{ task_x_task_takens|score:task|floatformat:"-3" }}
                       </span>
@@ -164,7 +164,7 @@
                       </span>
                     </a>
                   {% elif user.username == student.username and task.can_pass %}
-                    <a class="btn-small" href="{% url submit_review task.id %}">
+                    <a class="btn-small" href="{% url "submit_review" task.id %}">
                       <span class="label {% if task_x_task_takens|score:task %} {% if task_x_task_takens|score:task == task.score_max %} label-success {% else %} label-info {% endif %} {% endif %}">
                         {{ task_x_task_takens|score:task }}.
                       </span>

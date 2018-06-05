@@ -166,7 +166,7 @@
 
                 $('#update_user_info_error_text').hide();
 
-                $.post('{% url users.views.ajax_edit_user_info %}', $('#user-info-form').serialize())
+                $.post('{% url "users.views.ajax_edit_user_info" %}', $('#user-info-form').serialize())
                     .always(function () {
                         modal_button_ok.html(modal_button_ok.data('resetText'));
                         modal_button_ok.data('btn_clicked', false);
