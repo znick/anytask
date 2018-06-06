@@ -30,7 +30,7 @@ USE_TZ = True
 LANGUAGE_CODE = 'ru'
 LANGUAGES = (('ru', u'Русский'),)
 #             ('en', 'English'))
-LOCALE_PATHS = (os.path.join(PROJECT_PATH, 'locale'))
+LOCALE_PATHS = (os.path.join(PROJECT_PATH, 'locale'),)
 
 SITE_ID = 1
 
