@@ -12,6 +12,10 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 ALLOWED_HOSTS = ["localhost"]
 
+domain = os.environ.get('DOMAIN')
+if domain is not None: 
+    ALLOWED_HOSTS.extend(domain.split(","))
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
