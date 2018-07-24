@@ -233,7 +233,8 @@ def issue_page(request, issue_id):
         'statuses_accepted': statuses_accepted,
         'show_contest_rejudge': show_contest_rejudge,
         'show_contest_rejudge_loading': show_contest_rejudge_loading,
-        'show_contest_run_id': issue.task.course.user_can_see_contest_run_id(request.user)
+        'show_contest_run_id': issue.task.course.user_can_see_contest_run_id(request.user),
+        'jupyterhub_url': getattr(settings, 'JUPYTERHUB_URL', '')
     }
 
     return render_to_response('issues/issue.html', context, context_instance=RequestContext(request))

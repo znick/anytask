@@ -72,6 +72,15 @@
                             <small class="text-help" id="task_edit_short_header_error_text"></small>
                         </div>
                     </div>
+                    <div id='nb_assignment_name_body' class="collapse form-group row">
+                        <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_nb_assignment_name">{% trans "nb_assignment_name" %}</label>
+                        <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7" >
+                            <input class="form-control" id='task_edit_nb_assignment_name' name='nb_assignment_name' type='text' size='20' value="{{task.nb_assignment_name}}" />
+                            <small class="text-help" id="task_edit_nb_assignment_name_error_text">
+                                <span class="has-danger">{% trans "must be unique for all tasks in jupyter" %}</span>
+                            </small>
+                        </div>
+                    </div>
                     <div id='max_score_body' class="{% if is_create or task.type != task.TYPE_SEMINAR and task.type != task.TYPE_MATERIAL %}in{% endif %} collapse form-group row">
                         <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_max_score">{% trans "max_ball" %}</label>
                         <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">

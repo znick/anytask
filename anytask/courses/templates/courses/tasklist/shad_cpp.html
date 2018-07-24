@@ -85,7 +85,7 @@
                                 <td align="center" class="student_{{ student.id }}">
                                     <div>
                                         {% if not task.is_hidden and user_is_teacher or user.username == student.username %}
-                                            {% if task.type == task.TYPE_FULL %}
+                                            {% if task.type == task.TYPE_FULL or task.type == task.TYPE_IPYNB %}
                                                 <a  href="/issue/get_or_create/{{task.id}}/{{student.id}}">
                                                     {# <span class="label {% if task_x_task_takens|score:task %} {% if task_x_task_takens|score:task == task.score_max %} label-success {% else %} label-info {% endif %} {% endif %}"> #}
                                                     <span class="label

@@ -128,6 +128,8 @@
         $('#task_edit_type').change(function () {
             var $task_edit_type = $('#task_edit_type');
 
+            $("#nb_assignment_name_body").hide();
+
             if ($task_edit_type.val() === 'All') {
                 $('#contest_rb_body').collapse('show');
                 $("#task_edit_contest_integrated").show();
@@ -180,6 +182,9 @@
                 $("#parent_body").hide();
                 $("#children_body").show();
             }
+            else if ($task_edit_type.val() === 'Jupyter Notebook') {
+                $("#nb_assignment_name_body").show();
+            }
         });
 
         $('#task_edit_rb_integrated').change(function () {
@@ -217,6 +222,10 @@
 
         $.validator.addMethod("required_with_disabled", function(value, element) {
             return !!value;
+        });
+
+        $.validator.addMethod("nbassignment", function(value, element) {
+            return this.optional(element) || /^[a-z0-9][a-z0-9\_-]*$/.test(value);
         });
 
         var form_validator = $('#task_edit_form').validate({
@@ -291,6 +300,11 @@
                 },
                 'task_group_id[]': {
                     required_with_disabled: true
+                },
+                'nb_assignment_name': {
+                    required: true,
+                    nbassignment: true,
+                    remote: '/task/validate/nb_assignment_name'
                 }
             },
 
@@ -328,6 +342,11 @@
                 },
                 'task_group_id[]': {
                     required_with_disabled: "{% trans 'neobhodimo_vybrat_gruppu' %}"
+                },
+                nb_assignment_name: {
+                    required: "{% trans 'assignment name is required' %}",
+                    nbassignment: "{% trans 'assignment name cannot contains spaces' %}",
+                    remote: "{% trans 'assignment name already in use' %}"
                 }
             },
 
