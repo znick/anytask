@@ -1,6 +1,6 @@
 import logging
 
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from unidecode import unidecode
@@ -26,21 +26,21 @@ def update_jupyter_task(request):
     student_id = request.POST.get('student')
     score = float(request.POST.get('score', 0))
     max_score = float(request.POST.get('max_score', 0))
-    timestamp = request.POST.get('timestamp')
+    # timestamp = request.POST.get('timestamp')
     logger.debug('REQUEST: %r', request.POST)
 
     if not student_id or not assignment_id:
-        return HttpResponse(status=400)
+        return HttpResponseBadRequest()
 
     try:
         profile = UserProfile.objects.get(ya_passport_login=student_id)
     except UserProfile.DoesNotExist:
-        return HttpResponse('No student found', status=404)
+        return HttpResponseNotFound('No student found')
 
     try:
         task = Task.objects.get(type=Task.TYPE_IPYNB, nb_assignment_name=assignment_id)
     except Task.DoesNotExist:
-        return HttpResponse('No task found', status=404)
+        return HttpResponseNotFound('No task found')
 
     issue, created = Issue.objects.get_or_create(task=task, student=profile.user)
     issue.set_status_accepted(user)
@@ -52,19 +52,19 @@ def update_jupyter_task(request):
         try:
             issue.set_byname('mark', round(score, 2))
         except ValueError:
-            return HttpResponse('Wrong score: {}'.format(score), status=400)
+            return HttpResponseBadRequest('Wrong score: {}'.format(score))
 
     if request.FILES:
         logger.debug('FILES: %r', request.FILES)
         try:
             field = IssueField.objects.get(name='file')
         except IssueField.DoesNotExist:
-            return HttpResponse('No issue field', status=404)
+            return HttpResponseNotFound('No issue field')
 
         event = Event.objects.create(issue_id=issue.id, author=user, field=field)
 
-        for file in request.FILES.getlist('files'):
-            file.name = unidecode(file.name)
-            File.objects.create(file=file, event=event)
+        for obj in request.FILES.getlist('files'):
+            obj.name = unidecode(file.name)
+            File.objects.create(file=obj, event=event)
 
     return HttpResponse(status=200)

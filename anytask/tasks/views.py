@@ -10,12 +10,13 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db.models import Q
-from django.http import HttpResponse, HttpResponseForbidden, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.utils.translation import ugettext as _
 from django.utils.timezone import make_aware
 from django.db.models import Sum
+from django.views.decorators.http import require_http_methods
 
 from anycontest.common import get_contest_info
 from common.timezone import get_datetime_with_tz, convert_datetime
@@ -473,10 +474,8 @@ def get_task_text_popup(request, task_id):
 
 
 @login_required
+@require_http_methods(['POST'])
 def validate_nb_assignment_name(request):
-    if request.method == 'POST':
-        return HttpResponseBadRequest()
-
     name = request.GET['nb_assignment_name']
     task_exists = Task.objects.filter(nb_assignment_name=name).exists()
     if not task_exists:
