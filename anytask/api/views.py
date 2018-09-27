@@ -275,7 +275,7 @@ def check_user(request):
         return HttpResponseBadRequest()
 
     try:
-        profile = UserProfile.objects.get(ya_passport_login=ya_login)
+        profile = UserProfile.objects.select_related('user').get(ya_passport_login=ya_login)
     except UserProfile.DoesNotExist:
         return HttpResponseNotFound('No profile found')
 
