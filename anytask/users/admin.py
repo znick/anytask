@@ -40,8 +40,10 @@ class UserStatusAdmin(admin.ModelAdmin):
 
 
 class UserProfileBaseAdmin(admin.ModelAdmin):
-    list_display = ('user', 'updated_by', 'update_time')
-    filter_horizontal = ('user_status', 'unread_messages', 'deleted_messages', 'send_notify_messages')
+    list_display = ('user', 'update_time')
+    list_select_related = ('user',)
+    filter_horizontal = ('user_status',)
+    raw_id_fields = ('unread_messages', 'deleted_messages', 'send_notify_messages')
     search_fields = ('user__username', 'user_status__name')
 
 
@@ -52,4 +54,8 @@ class UserProfileAdmin(reversion.VersionAdmin, UserProfileBaseAdmin):
 admin.site.register(UserProfile, UserProfileAdmin)
 admin.site.register(UserStatus, UserStatusAdmin)
 
-auth_admin.UserAdmin.list_display += ('last_login',)
+auth_admin.UserAdmin.list_display = (
+    'id', 'username', 'email', 'first_name', 'last_name',
+    'is_active', 'is_staff', 'is_superuser', 'last_login'
+)
+auth_admin.UserAdmin.search_fields += ('id',)

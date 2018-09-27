@@ -3,9 +3,11 @@ from django.contrib import admin
 
 
 class CourseAdmin(admin.ModelAdmin):
-    filter_horizontal = ('teachers', 'groups', 'filename_extensions', 'issue_fields')
     list_display = ('name', 'year',)
-    list_filter = ('name', 'year__start_year', 'is_active')
+    list_select_related = ('year',)
+    list_filter = ('year__start_year', 'is_active')
+    filter_horizontal = ('filename_extensions', 'issue_fields')
+    raw_id_fields = ('teachers', 'groups')
     search_fields = ('name', 'year__start_year', 'teachers__username', 'groups__name')
 
 
