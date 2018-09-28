@@ -41,7 +41,6 @@ class UserStatusAdmin(admin.ModelAdmin):
 
 class UserProfileBaseAdmin(admin.ModelAdmin):
     list_display = ('user', 'update_time')
-    list_select_related = ('user',)
     filter_horizontal = ('user_status',)
     raw_id_fields = ('unread_messages', 'deleted_messages', 'send_notify_messages')
     search_fields = ('user__username', 'user_status__name')
