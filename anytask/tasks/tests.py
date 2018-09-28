@@ -199,7 +199,7 @@ class ViewsTest(TestCase):
                          'form select group 2nd option text wrong')
 
         form_select_type = div_task_id.form.find('select', {'id': 'task_edit_type'})('option')
-        self.assertEqual(len(form_select_type), 3, "form select type len not 3")
+        self.assertEqual(len(form_select_type), 4, "form select type len not 4")
         self.assertEqual(form_select_type[0]['value'], 'All', 'form select type 1st option value wrong')
         self.assertEqual(form_select_type[0].string.strip().strip('\n'),
                          u's_obsuzhdeniem',
@@ -321,7 +321,7 @@ class ViewsTest(TestCase):
                          'form select group 2nd option text wrong')
 
         form_select_type = div_task_id.form.find('select', {'id': 'task_edit_type'})('option')
-        self.assertEqual(len(form_select_type), 3, "form select type len not 3")
+        self.assertEqual(len(form_select_type), 4, "form select type len not 4")
         self.assertEqual(form_select_type[0]['value'], 'All', 'form select type 1st option value wrong')
         self.assertTrue('selected' in dict(form_select_group[0].attrs), 'form select type 1nd option not selected')
         self.assertEqual(form_select_type[0].string.strip().strip('\n'),

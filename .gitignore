@@ -58,6 +58,9 @@ target/
 
 # ...
 anytask/settings_local.py
+anytask/media/
 .env
 .eggs
 sqlite3.db
+venv
+.idea/

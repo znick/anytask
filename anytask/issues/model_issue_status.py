@@ -46,6 +46,10 @@ class IssueStatus(models.Model):
     def __unicode__(self):
         return u'{0}'.format(self.get_name())
 
+    class Meta:
+        verbose_name = _('issue status')
+        verbose_name_plural = _('issue statuses')
+
 
 class IssueStatusSystem(models.Model):
     name = models.CharField(max_length=191, db_index=False, null=False, blank=False)

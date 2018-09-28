@@ -188,10 +188,14 @@
                                             {% if not task.is_hidden and task.type != task.TYPE_MATERIAL %}
                                                 <div class="tasks-list">
                                                     <div style="width: 40%;">
+                                                        {% if task.task_text %}
                                                         <a data-toggle="collapse" aria-expanded="false"
                                                            aria-controls="collapse_{{ task.id }}"
                                                            href="#collapse_{{ task.id }}">
                                                             {% get_text_from_json task 'get_title' LANGUAGE_CODE %}</a>
+                                                        {% else %}
+                                                        <span>{% get_text_from_json task 'get_title' LANGUAGE_CODE %}</span>
+                                                        {% endif %}
                                                     </div>
                                                     <div style="width: 10%">
                                                         {{ task|get_score:user }}
@@ -211,6 +215,10 @@
                                                             <a style="width: 100%"
                                                                class="btn btn-sm btn-primary pull-xs-right"
                                                                href="/issue/get_or_create/{{ task.id }}/{{ user.id }}">{% trans "sdat" %}</a>
+                                                        {% elif task.type == task.TYPE_IPYNB and not user_is_teacher %}
+                                                            <a style="width: 100%"
+                                                               class="btn btn-sm btn-primary pull-xs-right"
+                                                               href="/issue/get_or_create/{{ task.id }}/{{ user.id }}">{% trans "sdat" %}</a>
                                                         {% elif task.type == task.TYPE_SEMINAR %}
                                                             <a style="width: 100%"
                                                                class="btn btn-sm btn-primary pull-xs-right"
@@ -220,6 +228,7 @@
                                                         {% endif %}
                                                     </div>
                                                 </div>
+                                                {% if task.task_text %}
                                                 <div id="collapse_{{ task.id }}" class="collapse">
                                                     <div style="width: 100%" style="border-top: 0;">
                                                         <p class="card-text">
@@ -227,6 +236,7 @@
                                                         </p>
                                                     </div>
                                                 </div>
+                                                {% endif %}
                                             {% endif %}
                                         {% endif %}
                                     {% endfor %}
@@ -287,6 +297,12 @@
                                                                        href="{% if task.task.children.count != 0 %}
                                                             {{ course.id }}/seminar/{{ task.task.id }}{% endif %}">
                                                                         {% trans "perejti" %}</a>
+                                                                {% elif task.task.type == task.task.TYPE_IPYNB %}
+                                                                    <a style="width: 100%"
+                                                                        class="btn btn-sm btn-primary pull-xs-right"
+                                                                        {% if not user.get_profile.ya_passport_login %}disabled{% endif %}
+                                                                        href="{{ jupyterhub_url }}/user/{{ user.get_profile.ya_passport_login }}/tree/source/{{ task.task.nb_assignment_name }}">
+                                                                        {% trans "perejti" %}</a>
                                                                 {% endif %}
                                                             </div>
                                                         </div>
@@ -323,7 +339,12 @@
                                                     {% endif %}
                                                 </div>
                                                 <div style="width: 15%">
-                                                    {% if task.type == task.TYPE_FULL and not user_is_teacher %}
+                                                    {% if task.type in task.TYPE_FULL and not user_is_teacher %}
+                                                        <a style="width: 100%"
+                                                           class="btn btn-sm btn-primary pull-xs-right"
+                                                           href="/issue/get_or_create/{{ task.id }}/{{ user.id }}">{% trans "sdat" %}</a>
+                                                    {% endif %}
+                                                    {% if task.type in task.TYPE_IPYNB and not user_is_teacher %}
                                                         <a style="width: 100%"
                                                            class="btn btn-sm btn-primary pull-xs-right"
                                                            href="/issue/get_or_create/{{ task.id }}/{{ user.id }}">{% trans "sdat" %}</a>
@@ -388,6 +409,7 @@
                                                                    href="{% if task.task.children.count != 0 %}
                                                             {{ course.id }}/seminar/{{ task.task.id }}{% endif %}">
                                                                     {% trans "perejti" %}</a>
+                                                            {
                                                             {% endif %}
                                                         </div>
                                                     </div>
@@ -420,10 +442,14 @@
                                             {% if not task.is_hidden and task.type == task.TYPE_MATERIAL %}
                                                 <div class="tasks-list">
                                                     <div style="width: 65%;">
+                                                        {%  if task.task_text %}
                                                         <a data-toggle="collapse" aria-expanded="false"
                                                            aria-controls="collapse_{{ task.id }}"
                                                            href="#collapse_{{ task.id }}">
                                                            {% get_text_from_json task 'get_title' LANGUAGE_CODE %}</a>
+                                                        {% else %}
+                                                        <span>{% get_text_from_json task 'get_title' LANGUAGE_CODE %}</span>
+                                                        {% endif %}
                                                     </div>
                                                     <div style="width: 20%">
                                                         {% if task.deadline_time %}{% trans "sdat_do" %}
@@ -515,6 +541,11 @@
                                                 </div>
                                                 <div style="width: 15%">
                                                     {% if task.type == task.TYPE_FULL and not user_is_teacher %}
+                                                        <a style="width: 100%"
+                                                           class="btn btn-sm btn-primary pull-xs-right"
+                                                           href="/issue/get_or_create/{{ task.id }}/{{ user.id }}">{% trans "sdat" %}</a>
+                                                    {% endif %}
+                                                    {% if task.type == task.TYPE_IPYNB and not user_is_teacher %}
                                                         <a style="width: 100%"
                                                            class="btn btn-sm btn-primary pull-xs-right"
                                                            href="/issue/get_or_create/{{ task.id }}/{{ user.id }}">{% trans "sdat" %}</a>

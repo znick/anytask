@@ -16,6 +16,7 @@ from django.template import RequestContext
 from django.utils.translation import ugettext as _
 from django.utils.timezone import make_aware
 from django.db.models import Sum
+from django.views.decorators.http import require_http_methods
 
 from anycontest.common import get_contest_info
 from common.timezone import get_datetime_with_tz, convert_datetime
@@ -52,10 +53,14 @@ def task_create_page(request, course_id):
     not_seminar_tasks = Task.objects.filter(~Q(type=Task().TYPE_SEMINAR)).filter(course=course)
     has_seminar = course.issue_status_system.statuses.filter(tag=IssueStatus.STATUS_SEMINAR).count()
 
+    task_types = Task.TASK_TYPE_CHOICES
+    if not has_seminar:
+        task_types = filter(lambda x: not x[0] == Task.TYPE_SEMINAR, task_types)
+
     context = {
         'is_create': True,
         'course': course,
-        'task_types': Task().TASK_TYPE_CHOICES if has_seminar else Task().TASK_TYPE_CHOICES[:-1],
+        'task_types': task_types,
         'seminar_tasks': seminar_tasks,
         'not_seminar_tasks': not_seminar_tasks,
         'contest_integrated': course.contest_integrated,
@@ -143,11 +148,17 @@ def task_edit_page(request, task_id):
     seminar_tasks = Task.objects.filter(type=Task().TYPE_SEMINAR).filter(course=task.course)
     not_seminar_tasks = Task.objects.filter(~Q(type=Task().TYPE_SEMINAR)).filter(course=task.course)
 
+    task_types = task.TASK_TYPE_CHOICES
+    if task.type == task.TYPE_SEMINAR:
+        task_types = filter(lambda x: not x[0] == task.TYPE_FULL, task_types)
+    else:
+        task_types = filter(lambda x: not x[0] == task.TYPE_SEMINAR, task_types)
+
     context = {
         'is_create': False,
         'course': task.course,
         'task': task,
-        'task_types': task.TASK_TYPE_CHOICES[-1:] if task.type == task.TYPE_SEMINAR else task.TASK_TYPE_CHOICES[:-1],
+        'task_types': task_types,
         'groups_required': groups_required,
         'show_help_msg_task_group': True if groups_required else False,
         'seminar_tasks': seminar_tasks,
@@ -207,6 +218,8 @@ def get_task_params(request, check_score_after_deadline=False):
     hidden_task = 'hidden_task' in request.POST
     task_text = request.POST.get('task_text', '').strip()
 
+    nb_assignment_name = request.POST.get('nb_assignment_name')
+
     return {'attrs': {
         'updated_by': user,
         'title': task_title,
@@ -225,7 +238,8 @@ def get_task_params(request, check_score_after_deadline=False):
         'accepted_after_contest_ok': accepted_after_contest_ok,
         'score_after_deadline': score_after_deadline,
         'is_hidden': hidden_task,
-        'task_text': task_text
+        'task_text': task_text,
+        'nb_assignment_name': nb_assignment_name,
     },
         'children': children,
         'groups': task_groups
@@ -247,6 +261,7 @@ def task_create_or_edit(request, course, task_id=None):
             params['attrs']['title'] = json.dumps(task_title, ensure_ascii=False)
             params['attrs']['task_text'] = json.dumps(task_text, ensure_ascii=False)
         changed_score_after_deadline = task.score_after_deadline != params['attrs']['score_after_deadline']
+        params['attrs']['nb_assignment_name'] = task.nb_assignment_name
     else:
         task = Task()
         task.course = course
@@ -456,3 +471,16 @@ def get_task_text_popup(request, task_id):
     }
 
     return render_to_response('task_text_popup.html', context, context_instance=RequestContext(request))
+
+
+@login_required
+@require_http_methods(['POST'])
+def validate_nb_assignment_name(request):
+    name = request.GET['nb_assignment_name']
+    task_exists = Task.objects.filter(nb_assignment_name=name).exists()
+    if not task_exists:
+        return HttpResponse(json.dumps(True))
+    # else:
+    #     return HttpResponse(_('Assignment {} already exists'.format(name)))
+
+    return HttpResponse(json.dumps(False))

@@ -9,4 +9,5 @@ urlpatterns = patterns(
     url(r'^get_contest_problems', 'get_contest_problems'),
     url(r'^contest_task_import', 'contest_task_import'),
     url(r'^popup/(?P<task_id>\d+)$', 'get_task_text_popup'),
+    url(r'^validate/nb_assignment_name', 'validate_nb_assignment_name'),
 )

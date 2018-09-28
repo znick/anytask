@@ -270,6 +270,7 @@ def course_page(request, course_id):
         str(request.user.id) + '_' + str(course.id) + '_show_hidden_tasks', False)
     context['school'] = schools[0] if schools else ''
     context['visible_attendance_log'] = course.user_can_see_attendance_log(request.user)
+    context['jupyterhub_url'] = getattr(settings, 'JUPYTERHUB_URL', '')
 
     return render_to_response('courses/course.html', context, context_instance=RequestContext(request))
 

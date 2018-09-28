@@ -165,6 +165,14 @@
                             <small class="text-help" id="task_edit_short_header_error_text"></small>
                         </div>
                     </div>
+                    {% if task.type == task.TYPE_IPYNB %}
+                    <div class="form-group row">
+                        <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_nb_assignment_name">{% trans "nb_assignment_name" %}</label>
+                        <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
+                            <input class="form-control" id='task_edit_nb_assignment_name' type='text' size='20' value="{% if task.nb_assignment_name %}{{task.nb_assignment_name}}{% endif %}" readonly />
+                        </div>
+                    </div>
+                    {% endif %}
                     {% if is_create or task.type != task.TYPE_SEMINAR and task.type != task.TYPE_MATERIAL %}
                         <div class="form-group row">
                             <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_max_score">{% trans "max_ball" %}</label>
@@ -212,11 +220,15 @@
                     <div class="form-group row">
                         <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_type"> {% trans "tip_zadachi" %}</label>
                         <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
+                            {% if task.type != task.TYPE_IPYNB %}
                             <select class="form-control" id='task_edit_type' name="task_type">
                                 {% for type_id, type in task_types %}
                                     <option value="{{ type_id }}" {% ifequal type_id task.type %}selected{% endifequal %}>{{ type }}</option>
                                 {% endfor %}
                             </select>
+                            {% else %}
+                            <input type="text" class="form-control" name="task_type" value="{{ task.type }}" readonly />
+                            {% endif %}
                         </div>
                     </div>
                     <div id='contest_rb_body' class="{% if is_create or task.type != task.TYPE_SIMPLE and task.type != task.TYPE_SEMINAR and task.type != task.TYPE_MATERIAL%}in{% endif %} collapse">

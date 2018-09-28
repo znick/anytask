@@ -38,6 +38,23 @@
     <div class="collapse" id="task-text">
         {{ issue.task|get_description:LANGUAGE_CODE|safe }}
     </div>
+    {% if issue.task.type == issue.task.TYPE_IPYNB %}
+    {% if user.get_profile.ya_passport_login %}
+    <div>
+{% blocktrans with jupyterhub_url_t=jupyterhub_url assignment_name_t=issue.task.nb_assignment_name %}
+<p>For solving the task you need to go to <a href="{{ jupyterhub_url_t }}" target="_blank">JupyterHub</a>.</p>
+<p>Open Assignments tab and fetch the '{{ assignment_name_t }}'</p>
+{% endblocktrans %}
+    </div>
+    {% else %}
+    <div class="alert alert-danger">
+{% blocktrans with settings_url="/user/settings" %}
+<p>Before solving this task you need to add your Yandex.Passport account.</p>
+<p>In User Menu go to <a href="{{ settings_url }}">Settings</a> and authorize via Yandex</p>
+{% endblocktrans %}
+    </div>
+    {% endif %}
+    {% endif %}
 </div>
 <div class="card card-block">
     <h5 class="card-title">{% trans "obsuzhdenie_zadachi" %}</h5>
@@ -105,7 +122,7 @@
                                                     </div>
                                                 </div>
                                             {% else %}
-                                                <a href="{% link_to_open file_path teacher_or_staff %}">{{ file.filename }}</a>
+                                                <a href="{% link_to_open file_path teacher_or_staff %}">{{ file.filename }}</a><br/>
                                             {% endif %}
                                         {% endwith %}
                                     {% endfor %}

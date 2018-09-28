@@ -1,0 +1,26 @@
+version: '3'
+services:
+  backend:
+    build: .
+    image: anytask:develop
+    command: python anytask/manage.py runserver 0.0.0.0:8000
+    env_file: docker.env
+    depends_on:
+      - postgres
+    volumes:
+      - media:/app/media
+    ports:
+      - 8000:8000
+
+  postgres:
+    image: postgres:9.6
+    logging:
+      driver: none
+    healthcheck:
+      test: 'exit 0'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
+  media:

@@ -234,6 +234,7 @@ def issue_page(request, issue_id):
         'show_contest_rejudge': show_contest_rejudge,
         'show_contest_rejudge_loading': show_contest_rejudge_loading,
         'show_contest_run_id': issue.task.course.user_can_see_contest_run_id(request.user),
+        'jupyterhub_url': getattr(settings, 'JUPYTERHUB_URL', ''),
         'max_file_size': getattr(settings, 'MAX_FILE_SIZE', 1024 * 1024 * 100),
         'max_files_number': getattr(settings, 'MAX_FILES_NUMBER', 10)
     }

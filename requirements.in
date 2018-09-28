@@ -10,7 +10,6 @@ Werkzeug
 django-extensions==1.6.7
 ipython[notebook]==5.3.0
 ipdb==0.10.2
-sqlparse==0.1.15
 django-debug-toolbar==1.3.2
 django-bootstrap-breadcrumbs
 pycrypto
@@ -24,12 +23,12 @@ django-filter==0.10.0
 yandex-oauth-py
 xmltodict
 django-crispy-forms==1.6.0
-mock
+django-htmlmin
 django-colorfield
 django-haystack==2.4.1
 Whoosh
+sqlparse==0.1.19
 django-reversion==1.8
 dateutils
-flake8
+psycopg2
 django_premailer==0.2.0
-django-environ==0.4
