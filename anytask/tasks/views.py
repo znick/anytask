@@ -474,7 +474,7 @@ def get_task_text_popup(request, task_id):
 
 
 @login_required
-@require_http_methods(['POST'])
+@require_http_methods(['GET'])
 def validate_nb_assignment_name(request):
     name = request.GET['nb_assignment_name']
     task_exists = Task.objects.filter(nb_assignment_name=name).exists()
