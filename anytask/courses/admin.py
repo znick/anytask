@@ -4,7 +4,6 @@ from django.contrib import admin
 
 class CourseAdmin(admin.ModelAdmin):
     list_display = ('name', 'year',)
-    list_select_related = ('year',)
     list_filter = ('year__start_year', 'is_active')
     filter_horizontal = ('filename_extensions', 'issue_fields')
     raw_id_fields = ('teachers', 'groups')
