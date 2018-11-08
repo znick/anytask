@@ -64,7 +64,7 @@ def update_jupyter_task(request):
         event = Event.objects.create(issue_id=issue.id, author=user, field=field)
 
         for obj in request.FILES.getlist('files'):
-            obj.name = unidecode(file.name)
+            obj.name = unidecode(obj.name)
             File.objects.create(file=obj, event=event)
 
     return HttpResponse(status=200)
