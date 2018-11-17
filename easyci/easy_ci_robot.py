@@ -104,7 +104,7 @@ def proccess_task(qtask):
                                                                                      output)
 
         response = requests.post("{}/api/v1/issue/{}/add_comment".format(qtask.host, qtask.issue["id"]),
-                                auth=qtask.auth, data={"comment":comment.encode("utf-8")})
+                                 auth=qtask.auth, data={"comment":comment.encode("utf-8")}, timeout=REQUEST_TIMEOUT)
         response.raise_for_status()
         logging.info(" == Task %d DONE!, URL: %s/issue/%d", qtask.id, qtask.host, qtask.issue["id"])
         return qtask
