@@ -21,7 +21,7 @@ CONFIG = "config.json"
 PASSWORDS = "passwords.json"
 MAX_COMMENT_SIZE = 100000
 PROCS = 2
-REQUEST_TIMEOUT=180
+REQUEST_TIMEOUT = 180
 
 logging.basicConfig(format="%(asctime)-15s %(name)s %(process)d %(message)s", level=logging.DEBUG)
 
