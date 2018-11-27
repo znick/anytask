@@ -22,5 +22,13 @@
         "run_cmd": "_python_task_checker/main.py",
         "docker_image": "zhnick/imkn_python_checker:latest",
         "timeout": 900
+    },
+    {
+        "host": "https://anytask.org",
+        "course_id": 426,
+        "repo": "git@bitbucket.org:uzer/c18-tasks.git",
+        "run_cmd": "check_system/main.py",
+        "docker_image": "guerre/c18:latest",
+        "timeout": 900
     }
 ]
