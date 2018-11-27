@@ -29,9 +29,9 @@ class Command(BaseCommand):
         for task in course.task_set.all():
             task_taken_query = TaskTaken.objects.filter(task=task)
             task_taken_query = task_taken_query.filter(
-                Q(Q(status=TaskTaken.STATUS_SCORED, issue__mark=0.0) |
-                  Q(status=TaskTaken.STATUS_TAKEN) |
-                  Q(status=TaskTaken.STATUS_CANCELLED)))
+                Q(Q(status=TaskTaken.STATUS_SCORED, issue__mark=0.0)
+                  | Q(status=TaskTaken.STATUS_TAKEN)
+                  | Q(status=TaskTaken.STATUS_CANCELLED)))
             task_taken_query = task_taken_query.filter(taken_time__lte=task_expired_date)
 
             task_taken_to_delete = []

@@ -556,9 +556,9 @@ def user_courses(request, username=None, year=None):
         student_summ_score = issues \
             .filter(task__parent_task__isnull=True) \
             .filter(
-                Q(task__type=Task.TYPE_SEMINAR) |
-                Q(task__score_after_deadline=True) |
-                ~Q(task__score_after_deadline=False, status_field__tag=IssueStatus.STATUS_ACCEPTED_AFTER_DEADLINE)
+                Q(task__type=Task.TYPE_SEMINAR)
+                | Q(task__score_after_deadline=True)
+                | ~Q(task__score_after_deadline=False, status_field__tag=IssueStatus.STATUS_ACCEPTED_AFTER_DEADLINE)
             ) \
             .distinct() \
             .aggregate(Sum('mark'))['mark__sum'] or 0
