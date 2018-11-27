@@ -37,8 +37,8 @@ def user_register_to_contest(contest_id, ya_contest_uid):
     response_text = ''
     try:
         req = requests.get(
-            settings.CONTEST_API_URL + 'register-user?uidToRegister=' + str(ya_contest_uid) +
-            '&contestId=' + str(contest_id),
+            settings.CONTEST_API_URL + 'register-user?uidToRegister=' + str(ya_contest_uid)
+            + '&contestId=' + str(contest_id),
             headers=HEADERS)
         req_json = req.json()
         if 'error' in req_json:

@@ -1,0 +1,5 @@
+[flake8]
+count = True
+ignore =
+    W503
+    # W503 is deprecated, see https://www.python.org/dev/peps/pep-0008/#id20

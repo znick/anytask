@@ -75,11 +75,11 @@ def prepare_info_fields(info_fields, request, issue):
 def contest_rejudge(issue):
     got_verdict_submissions = issue.contestsubmission_set.filter(got_verdict=True)
 
-    if not (got_verdict_submissions.count() and
-            issue.contestsubmission_set.count() ==
-            (
-                got_verdict_submissions.count() +
-                issue.contestsubmission_set.exclude(send_error__isnull=True).exclude(send_error="").count())
+    if not (got_verdict_submissions.count()
+            and issue.contestsubmission_set.count()
+            == (
+                got_verdict_submissions.count()
+                + issue.contestsubmission_set.exclude(send_error__isnull=True).exclude(send_error="").count())
             ):
         return
 

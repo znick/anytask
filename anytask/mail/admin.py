@@ -5,7 +5,7 @@ from django.contrib import admin
 
 
 class MessageAdmin(admin.ModelAdmin):
-    list_display = ('sender',  'title')
+    list_display = ('sender', 'title')
     filter_horizontal = ('recipients', 'recipients_user', 'recipients_group', 'recipients_course', 'recipients_status')
 
 

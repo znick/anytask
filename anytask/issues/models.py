@@ -416,8 +416,8 @@ class Issue(models.Model):
             value = min(normalize_decimal(value), self.task.score_max)
             if self.mark != float(value):
                 if self.task.parent_task and \
-                        (self.task.score_after_deadline or
-                         not (not self.task.score_after_deadline and self.is_status_accepted_after_deadline())):
+                        (self.task.score_after_deadline
+                         or not (not self.task.score_after_deadline and self.is_status_accepted_after_deadline())):
                     parent_task_issue, created = Issue.objects.get_or_create(
                         student=self.student,
                         task=self.task.parent_task
@@ -460,8 +460,8 @@ class Issue(models.Model):
         """
         :returns event objects
         """
-        events = Event.objects.filter(issue_id=self.id).exclude(Q(author__isnull=True) |
-                                                                Q(field__name='review_id')).order_by('timestamp')
+        events = Event.objects.filter(issue_id=self.id).exclude(Q(author__isnull=True)
+                                                                | Q(field__name='review_id')).order_by('timestamp')
         return events
 
     def __unicode__(self):

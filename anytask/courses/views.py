@@ -121,12 +121,12 @@ def ajax_get_queue(request):
         raise PermissionDenied
 
     issues = Issue.objects.filter(
-        Q(task__course=course) &
-        (
-            Q(student__profile__user_status__tag='active') |
-            Q(student__profile__user_status__tag=None)
-        ) &
-        Q(student__group__course=course)
+        Q(task__course=course)
+        & (
+            Q(student__profile__user_status__tag='active')
+            | Q(student__profile__user_status__tag=None)
+        )
+        & Q(student__group__course=course)
     ).exclude(
         task__type=Task.TYPE_SEMINAR,
     ).exclude(
@@ -404,10 +404,10 @@ def tasklist_shad_cpp(request, course, seminar=None, group=None):
 
         students = group.students.filter(is_active=True)
         not_active_students = UserProfile.objects.filter(
-            Q(user__in=group.students.filter(is_active=True)) &
-            (
-                Q(user_status__tag='not_active') |
-                Q(user_status__tag='academic')
+            Q(user__in=group.students.filter(is_active=True))
+            & (
+                Q(user_status__tag='not_active')
+                | Q(user_status__tag='academic')
             )
         )
         academ_students += [x.user for x in not_active_students]
@@ -428,8 +428,8 @@ def tasklist_shad_cpp(request, course, seminar=None, group=None):
                 if not task_taken.task.is_hidden:
                     if task_taken.task.type == Task.TYPE_SEMINAR or \
                             task_taken.task.score_after_deadline or \
-                            not (not task_taken.task.score_after_deadline and
-                                 task_taken.is_status_accepted_after_deadline()):
+                            not (not task_taken.task.score_after_deadline
+                                 and task_taken.is_status_accepted_after_deadline()):
                         student_summ_scores += task_taken.mark
 
             student_x_task_x_task_takens[student] = (task_x_task_taken, student_summ_scores)
@@ -934,8 +934,8 @@ def attendance_list(request, course, group=None):
         active_lessons_count = len(group_x_lesson_list[group]) - len(group_inactive_lessons[group])
 
         students = group.students.filter(is_active=True)
-        not_active_students = UserProfile.objects.filter(Q(user__in=group.students.filter(is_active=True)) &
-                                                         (Q(user_status__tag='not_active') | Q(
+        not_active_students = UserProfile.objects.filter(Q(user__in=group.students.filter(is_active=True))
+                                                         & (Q(user_status__tag='not_active') | Q(
                                                              user_status__tag='academic')))
         academ_students += [x.user for x in not_active_students]
         if not show_academ_users:
