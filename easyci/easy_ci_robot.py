@@ -19,7 +19,7 @@ from contextlib import contextmanager
 
 CONFIG = "config.json"
 PASSWORDS = "passwords.json"
-MAX_COMMENT_SIZE = 100000
+MAX_COMMENT_SIZE = 5000
 PROCS = 2
 REQUEST_TIMEOUT = 180
 
@@ -94,10 +94,10 @@ def proccess_task(qtask):
 
         if len(output) > MAX_COMMENT_SIZE:
             output = output[:MAX_COMMENT_SIZE]
-            output += "\n...\nTRUNCATED"
+            output += u"\n...\nTRUNCATED"
 
         if is_timeout:
-            output += "\nTIMEOUT ({} sec)".format(qtask.course["timeout"])
+            output += u"\nTIMEOUT ({} sec)".format(qtask.course["timeout"])
 
         comment = u"[id:{}] Check DONE!<br>\nSubmited on {}<br>\n<pre>{}</pre>\n".format(qtask.id,
                                                                                      qtask.event["timestamp"],
@@ -129,7 +129,7 @@ def make_queue(config, passwords):
         response = requests.get("{}/api/v1/course/{}/issues?add_events=1".format(course["host"], course_id),
                                 auth=auth, timeout=REQUEST_TIMEOUT)
         if response.status_code != 200:
-            logging.error("Course %d has non-200 reply. Skipped", course["id"])
+            logging.error("Course %d has non-200 reply. Skipped", course["course_id"])
             continue
 
         for issue in response.json():
