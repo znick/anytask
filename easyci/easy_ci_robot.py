@@ -19,7 +19,7 @@ from contextlib import contextmanager
 
 CONFIG = "config.json"
 PASSWORDS = "passwords.json"
-MAX_COMMENT_SIZE = 5000
+MAX_COMMENT_SIZE = 10000
 PROCS = 2
 REQUEST_TIMEOUT = 180
 
