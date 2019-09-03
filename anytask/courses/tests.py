@@ -1098,7 +1098,8 @@ class PythonTaskTest(TestCase):
             self.assertContains(response, "{} {}".format(user.last_name, user.first_name))
 
             response = client.get(
-                reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id, 'task_id': self.subtask4.id}),
+                reverse('courses.pythontask.get_task',
+                        kwargs={'course_id': self.course.id, 'task_id': self.subtask4.id}),
                 follow=True)
             self.assertContains(response, "{} {}".format(user.last_name, user.first_name))
 
