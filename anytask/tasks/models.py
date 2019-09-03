@@ -116,14 +116,6 @@ class Task(models.Model):
         if not self.course.groups.filter(students=user).count():
             return (False, u'')
 
-        if settings.PYTHONTASK_MAX_USERS_PER_TASK:
-            max_students = self.max_students or settings.PYTHONTASK_MAX_USERS_PER_TASK
-            if TaskTaken.objects.filter(task=self).filter(Q(Q(status=TaskTaken.STATUS_TAKEN) | Q(
-                    status=TaskTaken.STATUS_SCORED))).count() >= max_students:
-                return (
-                    False,
-                    u'Задача не может быть взята более чем %d студентами' % max_students)
-
         if settings.PYTHONTASK_MAX_TASKS_WITHOUT_SCORE_PER_STUDENT:
             if TaskTaken.objects.filter(user=user).filter(
                     status=TaskTaken.STATUS_TAKEN).count() >= settings.PYTHONTASK_MAX_TASKS_WITHOUT_SCORE_PER_STUDENT:
@@ -143,6 +135,14 @@ class Task(models.Model):
                     .exclude(status=TaskTaken.STATUS_DELETED) \
                     .count() > 0:
                 return (False, u'')
+
+        if settings.PYTHONTASK_MAX_USERS_PER_TASK:
+            max_students = self.max_students or settings.PYTHONTASK_MAX_USERS_PER_TASK
+            if TaskTaken.objects.filter(task=self).filter(Q(Q(status=TaskTaken.STATUS_TAKEN) | Q(
+                    status=TaskTaken.STATUS_SCORED))).count() >= max_students:
+                return (
+                    False,
+                    u'Задача не может быть взята более чем %d студентами' % max_students)
 
         try:
             task_taken = TaskTaken.objects.filter(task=self).filter(user=user).get(status=TaskTaken.STATUS_BLACKLISTED)
