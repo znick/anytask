@@ -998,12 +998,19 @@ class PythonTaskTest(TestCase):
         self.task = Task.objects.create(title='task_title', course=self.course, score_max=10)
         self.task2 = Task.objects.create(title='task2_title', course=self.course, score_max=10)
         self.task3 = Task.objects.create(title='task3_title', course=self.course, score_max=10)
+        self.task4 = Task.objects.create(title='task4_title', course=self.course, score_max=10, max_students=2)
         self.seminar = Task.objects.create(title='seminar_title', course=self.course, type=Task.TYPE_SEMINAR)
         self.subtask1 = Task.objects.create(
             title='subtask1_title', course=self.course, parent_task=self.seminar, score_max=10
         )
         self.subtask2 = Task.objects.create(
             title='subtask2_title', course=self.course, parent_task=self.seminar, score_max=10
+        )
+        self.subtask3 = Task.objects.create(
+            title='subtask1_title', course=self.course, parent_task=self.seminar, score_max=10
+        )
+        self.subtask4 = Task.objects.create(
+            title='subtask4_title', course=self.course, parent_task=self.seminar, score_max=10, max_students=2
         )
 
         self.task4_expired = Task.objects.create(title='task4_title', course=self.course, score_max=10)
@@ -1074,6 +1081,37 @@ class PythonTaskTest(TestCase):
         self.assertTrue(client.login(username=user, password="password9"))
         response = client.get(
             reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id, 'task_id': self.task.id}),
+            follow=True)
+        self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
+
+    def test_students_per_task_limit(self):
+        client = self.client
+
+        for i, user in enumerate(self.users[:2]):
+            self.assertTrue(client.login(username=user, password="password{}".format(i)))
+            response = client.get(reverse('courses.views.course_page', kwargs={'course_id': self.course.id}))
+            self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
+
+            response = client.get(
+                reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id, 'task_id': self.task4.id}),
+                follow=True)
+            self.assertContains(response, "{} {}".format(user.last_name, user.first_name))
+
+            response = client.get(
+                reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id, 'task_id': self.subtask4.id}),
+                follow=True)
+            self.assertContains(response, "{} {}".format(user.last_name, user.first_name))
+
+        user = self.users[2]
+        self.assertTrue(client.login(username=user, password="password2"))
+
+        response = client.get(
+            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id, 'task_id': self.task4.id}),
+            follow=True)
+        self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
+
+        response = client.get(
+            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id, 'task_id': self.subtask4.id}),
             follow=True)
         self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
 

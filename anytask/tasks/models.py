@@ -53,6 +53,8 @@ class Task(models.Model):
 
     score_max = models.IntegerField(db_index=True, null=False, blank=False, default=0)
 
+    max_students = models.IntegerField(null=False, blank=False, default=0)
+
     contest_integrated = models.BooleanField(db_index=False, null=False, blank=False, default=False)
     rb_integrated = models.BooleanField(db_index=False, null=False, blank=False, default=False)
 
@@ -115,11 +117,12 @@ class Task(models.Model):
             return (False, u'')
 
         if settings.PYTHONTASK_MAX_USERS_PER_TASK:
+            max_students = self.max_students or settings.PYTHONTASK_MAX_USERS_PER_TASK
             if TaskTaken.objects.filter(task=self).filter(Q(Q(status=TaskTaken.STATUS_TAKEN) | Q(
-                    status=TaskTaken.STATUS_SCORED))).count() >= settings.PYTHONTASK_MAX_USERS_PER_TASK:
+                    status=TaskTaken.STATUS_SCORED))).count() >= max_students:
                 return (
                     False,
-                    u'Задача не может быть взята более чем %d студентами' % settings.PYTHONTASK_MAX_USERS_PER_TASK)
+                    u'Задача не может быть взята более чем %d студентами' % max_students)
 
         if settings.PYTHONTASK_MAX_TASKS_WITHOUT_SCORE_PER_STUDENT:
             if TaskTaken.objects.filter(user=user).filter(
