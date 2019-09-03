@@ -998,7 +998,8 @@ class PythonTaskTest(TestCase):
         self.task = Task.objects.create(title='task_title', course=self.course, score_max=10)
         self.task2 = Task.objects.create(title='task2_title', course=self.course, score_max=10)
         self.task3 = Task.objects.create(title='task3_title', course=self.course, score_max=10)
-        self.task4 = Task.objects.create(title='task4_title', course=self.course, score_max=10, max_students=2)
+        self.task4 = Task.objects.create(title='task4_title', course=self.course, score_max=10,
+                                         max_students=2)
         self.seminar = Task.objects.create(title='seminar_title', course=self.course, type=Task.TYPE_SEMINAR)
         self.subtask1 = Task.objects.create(
             title='subtask1_title', course=self.course, parent_task=self.seminar, score_max=10
