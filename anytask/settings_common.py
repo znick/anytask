@@ -147,7 +147,6 @@ INSTALLED_APPS = (
     'issues',
     'anyrb',
     'django_extensions',
-    'debug_toolbar',
     'django_bootstrap_breadcrumbs',
     'filemanager',
     'schools',
