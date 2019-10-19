@@ -12,8 +12,11 @@ import datetime
 class Migration(DataMigration):
 
     def forwards(self, orm):
-        for tasktaken in orm.TaskTaken.objects.filter(status=TaskTaken.STATUS_BLACKLISTED):
-            if not tasktaken.blacklisted_till:
+        for tasktaken in orm.TaskTaken.objects.all():
+            if tasktaken.status != tasktaken.STATUS_BLACKLISTED:
+                continue
+
+            if tasktaken.blacklisted_till:
                 continue
 
             tasktaken.blacklisted_till = tasktaken.update_time + datetime.timedelta(days=settings.PYTHONTASK_DAYS_DROP_FROM_BLACKLIST)
