@@ -13,7 +13,7 @@ class Migration(DataMigration):
 
     def forwards(self, orm):
         for tasktaken in orm.TaskTaken.objects.all():
-            if tasktaken.status != tasktaken.STATUS_BLACKLISTED:
+            if tasktaken.status != 2:  # 2 == tasktaken.STATUS_BLACKLISTED
                 continue
 
             if tasktaken.blacklisted_till:
