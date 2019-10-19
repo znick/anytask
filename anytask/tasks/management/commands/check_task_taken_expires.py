@@ -6,6 +6,7 @@ import datetime
 from django.db.models import Q
 from django.conf import settings
 from django.db import transaction
+from django.utils import timezone
 
 from courses.models import Course
 from tasks.models import TaskTaken
@@ -62,14 +63,12 @@ class Command(BaseCommand):
         if not settings.PYTHONTASK_DAYS_DROP_FROM_BLACKLIST:
             return
 
-        blacklist_expired_date = datetime.datetime.now() - datetime.timedelta(
-            days=settings.PYTHONTASK_DAYS_DROP_FROM_BLACKLIST) - datetime.timedelta(
-            days=settings.PYTHONTASK_MAX_DAYS_WITHOUT_SCORES)
+        now = timezone.now()
 
         for task in course.task_set.all():
             task_taken_query = TaskTaken.objects.filter(task=task)
             task_taken_query = task_taken_query.filter(status=TaskTaken.STATUS_BLACKLISTED)
-            task_taken_query = task_taken_query.filter(taken_time__lte=blacklist_expired_date)
+            task_taken_query = task_taken_query.filter(blacklisted_till__lte=now)
 
             task_taken_to_delete = []
             for task_taken in task_taken_query:

@@ -1330,8 +1330,10 @@ class PythonTaskTest(TestCase):
         self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
 
         # move a little bit in the past
-        task_taken.taken_time -= datetime.timedelta(days=settings.PYTHONTASK_DAYS_DROP_FROM_BLACKLIST / 2)
+        task_taken.blacklisted_till -= datetime.timedelta(days=settings.PYTHONTASK_DAYS_DROP_FROM_BLACKLIST / 2)
         task_taken.save()
+        check_task_taken_expires_command.check_course_task_taken_expires(self.course)
+        check_task_taken_expires_command.check_blacklist_expires(self.course)
 
         # check we stil cant task the task
         response = client.get(
@@ -1341,7 +1343,7 @@ class PythonTaskTest(TestCase):
         self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
 
         # drop from blacklist
-        task_taken.taken_time -= datetime.timedelta(days=settings.PYTHONTASK_DAYS_DROP_FROM_BLACKLIST / 2)
+        task_taken.blacklisted_till -= datetime.timedelta(days=settings.PYTHONTASK_DAYS_DROP_FROM_BLACKLIST / 2)
         task_taken.save()
 
         check_task_taken_expires_command.check_course_task_taken_expires(self.course)
