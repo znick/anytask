@@ -146,9 +146,9 @@ class Task(models.Model):
 
         try:
             task_taken = TaskTaken.objects.filter(task=self).filter(user=user).get(status=TaskTaken.STATUS_BLACKLISTED)
-            black_list_expired_date = task_taken.update_time + timedelta(
-                days=settings.PYTHONTASK_DAYS_DROP_FROM_BLACKLIST)
-            return (False, u'Вы сможете взять эту задачу с %s' % black_list_expired_date.strftime("%d.%m.%Y"))
+            blacklist_expired_date = task_taken.blacklisted_till
+            if blacklist_expired_date:
+                return (False, u'Вы сможете взять эту задачу с %s' % blacklist_expired_date.strftime("%d.%m.%Y"))
         except TaskTaken.DoesNotExist:
             pass
 
@@ -308,6 +308,7 @@ class TaskTaken(models.Model):
     status_check = models.CharField(db_index=True, max_length=5, choices=STATUS_CHECK_CHOICES, default=EDIT)
 
     taken_time = models.DateTimeField(blank=True, null=True)
+    blacklisted_till = models.DateTimeField(blank=True, null=True)
     added_time = models.DateTimeField(auto_now_add=True, default=timezone.now)
     update_time = models.DateTimeField(auto_now=True, default=timezone.now)
 
@@ -345,6 +346,7 @@ class TaskTaken(models.Model):
 
     def blacklist(self):
         self.status = self.STATUS_BLACKLISTED
+        self.blacklisted_till = timezone.now() + timedelta(days=settings.PYTHONTASK_DAYS_DROP_FROM_BLACKLIST)
         self.save()
 
     def scored(self):
@@ -354,6 +356,7 @@ class TaskTaken(models.Model):
     def mark_deleted(self):
         self.status = self.STATUS_DELETED
         self.taken_time = None
+        self.blacklisted_till = None
         self.save()
 
     class Meta:
