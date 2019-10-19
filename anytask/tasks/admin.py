@@ -31,7 +31,7 @@ class TaskLogAdmin(admin.ModelAdmin):
 
 
 class TaskTakenAdmin(admin.ModelAdmin):
-    list_display = ('task', 'user', 'status', 'added_time', 'update_time')
+    list_display = ('task', 'user', 'status', 'taken_time', 'blacklisted_till', 'added_time', 'update_time')
     list_filter = ('task__course', 'task__course__year__start_year')
     readonly_fields = ('score',)
 
