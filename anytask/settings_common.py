@@ -193,7 +193,8 @@ CONTEST_OAUTH = 'OAUTH'
 CONTEST_OAUTH_ID = 'OAUTH_ID'
 CONTEST_OAUTH_PASSWORD = 'OAUTH_PASSWORD'
 CONTEST_EXTENSIONS = {'.py': 'python2_6', '.py2': 'python2_6', '.py3': 'python3', '.cpp': 'gcc0x', '.java': 'java8',
-                      '.h': 'gcc0x', '.cs': 'mono_csharp', '.c': 'plain_c', '.kt': 'kotlin'}  # Actually python2_6 is python 2.7
+                      '.h': 'gcc0x', '.cs': 'mono_csharp', '.c': 'plain_c',
+                      '.kt': 'kotlin'}  # Actually python2_6 is python 2.7
 CONTEST_EXTENSIONS_COURSE = {
     30: {
         ".py": "python3"
