@@ -974,6 +974,17 @@ class PythonTaskTest(TestCase):
             self.users.append(user)
             self.group.students.add(user)
 
+        self.group2 = Group(name="test_group_2", year=self.year)
+        self.group2.save()
+        self.users2 = []
+        for i in range(10):
+            user = User.objects.create_user(username='test_user2_{}'.format(i), password="password{}".format(i))
+            user.first_name = "test_firstname2_{}".format(i)
+            user.last_name = "test_lastname2_{}".format(i)
+            user.save()
+            self.users2.append(user)
+            self.group2.students.add(user)
+
         self.teacher = User.objects.create_user(username='test_teacher', password='teacher')
 
         seminar_status = IssueStatus(name="seminar", tag=IssueStatus.STATUS_SEMINAR)
@@ -995,7 +1006,20 @@ class PythonTaskTest(TestCase):
         self.course.is_python_task = True
         self.course.save()
 
-        self.task = Task.objects.create(title='task_title', course=self.course, score_max=10)
+        self.course2 = Course()
+        self.course2.name = 'python.task 2'
+        self.course2.is_active = True
+        self.course2.year = self.year
+        self.course2.save()
+        self.course2.teachers.add(self.teacher)
+        self.course2.groups.add(self.group2)
+        self.course2.is_python_task = True
+        self.course2.max_not_scored_tasks = 1
+        self.course2.max_incomplete_tasks = 2
+        self.course2.max_students_per_task = 4
+        self.course2.save()
+
+        self.task1 = Task.objects.create(title='task1_title', course=self.course, score_max=10)
         self.task2 = Task.objects.create(title='task2_title', course=self.course, score_max=10)
         self.task3 = Task.objects.create(title='task3_title', course=self.course, score_max=10)
         self.task4 = Task.objects.create(title='task4_title', course=self.course, score_max=10, max_students=2)
@@ -1015,12 +1039,24 @@ class PythonTaskTest(TestCase):
 
         self.task4_expired = Task.objects.create(title='task4_title', course=self.course, score_max=10)
 
+        self.task1_c2 = Task.objects.create(title='task1_title', course=self.course2, score_max=10)
+        self.task2_c2 = Task.objects.create(title='task2_title', course=self.course2, score_max=10)
+        self.task3_c2 = Task.objects.create(title='task3_title', course=self.course2, score_max=10)
+        self.task4_c2 = Task.objects.create(title='task4_title', course=self.course2, score_max=10, max_students=2)
+        self.seminar_c2 = Task.objects.create(title='seminar_title', course=self.course2, type=Task.TYPE_SEMINAR)
+        self.subtask1_c2 = Task.objects.create(
+            title='subtask1_title', course=self.course2, parent_task=self.seminar_c2, score_max=10
+        )
+        self.subtask4_c2 = Task.objects.create(
+            title='subtask4_title', course=self.course2, parent_task=self.seminar_c2, score_max=10, max_students=2
+        )
+
     def test_list(self):
         client = self.client
         self.assertTrue(client.login(username=self.teacher.username, password="teacher"))
         response = client.get(reverse('courses.views.course_page', kwargs={'course_id': self.course.id}))
         content = str(response.content)
-        self.assertIn("task_title", content)
+        self.assertIn("task1_title", content)
         self.assertIn("seminar_title", content)
         self.assertIn("subtask1_title", content)
         self.assertIn("subtask2_title", content)
@@ -1033,12 +1069,12 @@ class PythonTaskTest(TestCase):
         self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
 
         response = client.get(
-            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id, 'task_id': self.task.id}),
+            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id, 'task_id': self.task1.id}),
             follow=True)
         self.assertContains(response, "{} {}".format(user.last_name, user.first_name))
 
         response = client.get(
-            reverse('courses.pythontask.cancel_task', kwargs={'course_id': self.course.id, 'task_id': self.task.id}),
+            reverse('courses.pythontask.cancel_task', kwargs={'course_id': self.course.id, 'task_id': self.task1.id}),
             follow=True)
         self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
 
@@ -1073,14 +1109,35 @@ class PythonTaskTest(TestCase):
             self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
 
             response = client.get(
-                reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id, 'task_id': self.task.id}),
+                reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id, 'task_id': self.task1.id}),
                 follow=True)
             self.assertContains(response, "{} {}".format(user.last_name, user.first_name))
 
         user = self.users[9]
         self.assertTrue(client.login(username=user, password="password9"))
         response = client.get(
-            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id, 'task_id': self.task.id}),
+            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id, 'task_id': self.task1.id}),
+            follow=True)
+        self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
+
+    def test_take_tasks_limit__course2(self):
+        client = self.client
+
+        for i, user in enumerate(self.users2[:4]):
+            self.assertTrue(client.login(username=user, password="password{}".format(i)))
+            response = client.get(reverse('courses.views.course_page', kwargs={'course_id': self.course2.id}))
+            self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
+
+            response = client.get(
+                reverse('courses.pythontask.get_task',
+                        kwargs={'course_id': self.course2.id, 'task_id': self.task1_c2.id}),
+                follow=True)
+            self.assertContains(response, "{} {}".format(user.last_name, user.first_name))
+
+        user = self.users2[5]
+        self.assertTrue(client.login(username=user, password="password5"))
+        response = client.get(
+            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course2.id, 'task_id': self.task1_c2.id}),
             follow=True)
         self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
 
@@ -1166,8 +1223,8 @@ class PythonTaskTest(TestCase):
 
         client.get(
             reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id,
-                    'task_id': self.task.id}), follow=True)
-        self.set_mark(self.task, user, 1.0)
+                    'task_id': self.task1.id}), follow=True)
+        self.set_mark(self.task1, user, 1.0)
 
         client.get(
             reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id,
@@ -1191,6 +1248,46 @@ class PythonTaskTest(TestCase):
                     'task_id': self.task2.id}), follow=True)
         self.assertContains(response, "{} {}".format(user.last_name, user.first_name), count=4)
 
+    def test_max_incomplete_constraint__course2(self):
+        client = self.client
+        user = self.users2[0]
+        self.assertTrue(client.login(username=user.username, password='password0'))
+
+        response = client.get(
+            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course2.id,
+                    'task_id': self.task1_c2.id}), follow=True)
+        self.assertContains(response, "{} {}".format(user.last_name, user.first_name), count=1)
+
+        response = client.get(
+            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course2.id,
+                    'task_id': self.subtask1_c2.id}), follow=True)
+        self.assertContains(response, "{} {}".format(user.last_name, user.first_name), count=1)
+
+        self.set_mark(self.task1_c2, user, 1.0)
+
+        # Dirty hack for update status
+        for x in TaskTaken.objects.filter(user=user):
+            x.score
+
+        response = client.get(
+            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course2.id,
+                    'task_id': self.subtask1_c2.id}), follow=True)
+        self.assertContains(response, "{} {}".format(user.last_name, user.first_name), count=2)
+
+        self.set_mark(self.subtask1_c2, user, 2.0)
+
+        response = client.get(
+            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course2.id,
+                    'task_id': self.task2_c2.id}), follow=True)
+        self.assertContains(response, "{} {}".format(user.last_name, user.first_name), count=2)
+
+        self.set_mark(self.task1_c2, user, 10)
+
+        response = client.get(
+            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course2.id,
+                    'task_id': self.task2_c2.id}), follow=True)
+        self.assertContains(response, "{} {}".format(user.last_name, user.first_name), count=3)
+
     def test_statistics(self):
         client = self.client
         user1 = self.users[0]
@@ -1202,7 +1299,7 @@ class PythonTaskTest(TestCase):
                     'task_id': self.subtask1.id}), follow=True)
         client.get(
             reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id,
-                    'task_id': self.task.id}), follow=True)
+                    'task_id': self.task1.id}), follow=True)
 
         self.assertTrue(client.login(username=user2.username, password='password1'))
         client.get(
@@ -1210,10 +1307,10 @@ class PythonTaskTest(TestCase):
                     'task_id': self.subtask2.id}), follow=True)
         client.get(
             reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id,
-                    'task_id': self.task.id}), follow=True)
+                    'task_id': self.task1.id}), follow=True)
 
         self.assertTrue(client.login(username=self.teacher.username, password='teacher'))
-        self.set_mark(self.task, user1, 1.5)
+        self.set_mark(self.task1, user1, 1.5)
         self.set_mark(self.subtask1, user1, 2.3)
         self.set_mark(self.subtask2, user2, 1.0)
 
@@ -1233,17 +1330,17 @@ class PythonTaskTest(TestCase):
 
         # cancel task
         client.get(reverse('courses.pythontask.cancel_task',
-                           kwargs={'course_id': self.course.id, 'task_id': self.task.id}),
+                           kwargs={'course_id': self.course.id, 'task_id': self.task1.id}),
                    follow=True)
 
         # get task
         client.get(reverse('courses.pythontask.get_task',
-                           kwargs={'course_id': self.course.id, 'task_id': self.task.id}),
+                           kwargs={'course_id': self.course.id, 'task_id': self.task1.id}),
                    follow=True)
 
         # create issue
         client.get(reverse('issues.views.get_or_create',
-                           kwargs={'student_id': user.id, 'task_id': self.task.id}),
+                           kwargs={'student_id': user.id, 'task_id': self.task1.id}),
                    follow=True)
 
         # get task list
@@ -1254,21 +1351,21 @@ class PythonTaskTest(TestCase):
     def test_set_detault_teacher(self):
         # check no teacher if default teacher not set
         self._test_set_detault_teacher__retake_task()
-        issue = Issue.objects.get(task=self.task)
+        issue = Issue.objects.get(task=self.task1)
         self.assertIsNone(issue.responsible)
 
         # set default teacher
         default_teacher = DefaultTeacher(teacher=self.teacher, course=self.course, group=self.group)
         default_teacher.save()
         self._test_set_detault_teacher__retake_task()
-        issue = Issue.objects.get(task=self.task)
+        issue = Issue.objects.get(task=self.task1)
         self.assertEqual(issue.responsible, self.teacher)
 
         # check default teacher will not be changed if its already set
         default_teacher.teacher = self.users[1]
         default_teacher.save()
         self._test_set_detault_teacher__retake_task()
-        issue = Issue.objects.get(task=self.task)
+        issue = Issue.objects.get(task=self.task1)
         self.assertEqual(issue.responsible, self.teacher)
 
     def test_expired(self):
