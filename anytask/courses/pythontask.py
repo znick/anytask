@@ -96,7 +96,7 @@ def tasks_list(request, course):
     course.can_edit = course.user_can_edit_course(user)
     delta = datetime.timedelta(days=settings.PYTHONTASK_MAX_DAYS_WITHOUT_SCORES)
     task_and_task_taken = []
-    for task in Task.objects.filter(course=course).filter(parent_task=None).order_by('weight'):
+    for task in Task.objects.filter(course=course).filter(parent_task=None).order_by('title'):
         task.add_user_properties(user)
 
         if task.task_text is None:
@@ -112,7 +112,7 @@ def tasks_list(request, course):
 
         if task.has_subtasks():
             subtask_and_task_takens = []
-            for subtask in Task.objects.filter(parent_task=task).order_by('weight'):
+            for subtask in Task.objects.filter(parent_task=task).order_by('title'):
                 subtask.add_user_properties(user)
 
                 if subtask.task_text is None:
