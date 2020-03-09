@@ -126,7 +126,10 @@
 						<td {% if task.is_hidden %} style="color:gray" {% endif %}>
 							<strong><div id="{{task.id}}"></div>{{ task.title }}</strong>
 							{% if not task.has_subtasks %}
-								<span class="label label-success">{{ task.score_max }}</span>
+                                <span class="label label-success">{{ task.score_max }}</span>
+                                <span class="label {% if task_takens|length < task.max_students_on_task %} label-info {% else %} label-danger {% endif %}">
+                                    занято {{ task_takens|length }} из {{ task.max_students_on_task }}
+                                </span>
 							{% endif %}
 							{% if task.can_score %}
                                 <a href="{% url "tasks.views.task_edit_page" task.id %}"><span class="fa fa-pencil"></span></a>
@@ -151,7 +154,10 @@
 								{% for subtask,task_takens_list in task_takens %}
 									<br>
 									<div id="{{subtask.id}}"></div><font {% if subtask.is_hidden %} color="gray" {% endif %}>{{ subtask.title }}</font>
-									<span class="label label-success">{{ subtask.score_max }}</span>
+                                    <span class="label label-success">{{ subtask.score_max }}</span>
+                                    <span class="label {% if task_takens_list|length < subtask.max_students_on_task %} label-info {% else %} label-danger {% endif %}">
+                                        занято {{ task_takens_list|length }} из {{ subtask.max_students_on_task }}
+                                    </span>
 									{% if subtask.can_score %}
                                         <a href="{% url "tasks.views.task_edit_page" subtask.id %}"><span class="fa fa-pencil"></span></a>
                                     {% endif %}

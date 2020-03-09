@@ -103,6 +103,10 @@ class Task(models.Model):
     def is_text_json(self):
         return check_json(self.task_text)
 
+    @property
+    def max_students_on_task(self):
+        return self.max_students or self.course.max_students_per_task or settings.PYTHONTASK_MAX_USERS_PER_TASK
+
     def user_can_take_task(self, user):
         for task_taken in TaskTaken.objects.filter(task=self):
             task_taken.update_status()
@@ -137,8 +141,7 @@ class Task(models.Model):
                 return (False, u'')
 
         if settings.PYTHONTASK_MAX_USERS_PER_TASK:
-            max_students = (self.max_students or self.course.max_students_per_task or
-                            settings.PYTHONTASK_MAX_USERS_PER_TASK)
+            max_students = self.max_students_on_task
             if TaskTaken.objects.filter(task=self).filter(Q(Q(status=TaskTaken.STATUS_TAKEN) | Q(
                     status=TaskTaken.STATUS_SCORED))).count() >= max_students:
                 return (
