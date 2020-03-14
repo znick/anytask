@@ -4,10 +4,16 @@ from __future__ import nested_scopes, generators, division, absolute_import, \
 
 import logging
 from subprocess import Popen, PIPE
-from execute3 import execute as run
 from strings import get_random_string
+from io import StringIO
+import threading
+import subprocess
+
 
 log = logging.getLogger(__name__)
+
+BUF_SIZE = 4096
+LIMIT_BYTES = 10 * 1024 * 1024
 
 
 def kill_and_remove(ctr_name):
@@ -17,6 +23,23 @@ def kill_and_remove(ctr_name):
         if p.wait() != 0:
             log.warning(p.stderr.read())
             # raise RuntimeError()
+
+
+def limited_reader(fn_in, fn_out, limit_bytes):
+    read_bytes = 0
+    truncated = False
+    while True:
+        buf = fn_in.read(BUF_SIZE)
+        if len(buf) == 0:
+            break
+
+        if read_bytes >= limit_bytes and not truncated:
+            fn_out.write("\nTRUNCATED\n")
+            truncated = True
+
+        read_bytes += len(buf)
+        if not truncated:
+            fn_out.write(buf.decode("utf-8"))
 
 
 def execute(cmd, user="nobody", cwd=None, timeout=None, network='none',
@@ -66,16 +89,21 @@ def execute(cmd, user="nobody", cwd=None, timeout=None, network='none',
         command += ['timeout', '-k', str(timeout + 1), str(timeout)]
 
     logging.info("Will run: %s", command + cmd)
-    p = run(command + cmd,
-            stderr_to_stdout=True,
-            # do_on_read_stdout=None,
-            # do_on_read_pipeline_stderr=None,
-            # do_on_read_stderr=None,
-            check_return_code_and_raise_error=False,
-            check_all_return_codes_in_pipeline_and_raise_error=False)
+    p = subprocess.Popen(command + cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+    output = StringIO()
+    t1 = threading.Thread(target=limited_reader, args=(p.stdout, output, LIMIT_BYTES))
+    t2 = threading.Thread(target=limited_reader, args=(p.stderr, output, LIMIT_BYTES))
+
+    t1.start()
+    t2.start()
+
+    t1.join()
+    t2.join()
+    p.wait()
 
     status = p.returncode
-    output = p.stdout_text
+    output = output.getvalue()
     is_timeout = status == -9 or status == 124
 
     if status == -9:  # Happens on timeout
