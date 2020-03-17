@@ -1483,3 +1483,26 @@ class PythonTaskTest(TestCase):
                                                                   'task_id': task.id}),
                    follow=True)
         self.get_issue(task, user)  # will fail on no issue
+
+    def test_max_not_scored_tasks_constraint_2_courses(self):
+        client = self.client
+        user = self.users[10]
+        self.assertTrue(client.login(username=user.username, password="password10"))
+
+        # lets take 2 tasks in course1 (MAX_TASKS_WITHOUT_SCORE_PER_STUDENT == 2)
+        for task in [self.task1, self.task2]:
+            client.get(reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id,
+                                                                      'task_id': task.id}),
+                       follow=True)
+            self.get_issue(task, user)  # will fail on no issue
+
+        # Dirty hack for update status
+        for x in TaskTaken.objects.filter(user=user):
+            x.score
+
+        # And now it should be okay to take a task in course2
+        task = self.task1_c2
+        client.get(reverse('courses.pythontask.get_task', kwargs={'course_id': self.course2.id,
+                                                                  'task_id': task.id}),
+                   follow=True)
+        self.get_issue(task, user)  # will fail on no issue

@@ -120,11 +120,11 @@ class Task(models.Model):
         if not self.course.groups.filter(students=user).count():
             return (False, u'')
 
-        if settings.PYTHONTASK_MAX_TASKS_WITHOUT_SCORE_PER_STUDENT:
-            max_not_scored_tasks = self.course.max_not_scored_tasks or \
-                settings.PYTHONTASK_MAX_TASKS_WITHOUT_SCORE_PER_STUDENT
-
+        max_not_scored_tasks = self.course.max_not_scored_tasks or \
+            settings.PYTHONTASK_MAX_TASKS_WITHOUT_SCORE_PER_STUDENT
+        if max_not_scored_tasks:
             if TaskTaken.objects.filter(user=user) \
+                                .filter(task__course=self.course) \
                                 .filter(status=TaskTaken.STATUS_TAKEN).count() >= max_not_scored_tasks:
                 return (False, u'')
 
