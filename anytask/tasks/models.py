@@ -143,8 +143,8 @@ class Task(models.Model):
                     .count() > 0:
                 return (False, u'')
 
-        if settings.PYTHONTASK_MAX_USERS_PER_TASK:
-            max_students = self.max_students_on_task
+        max_students = self.max_students_on_task or settings.PYTHONTASK_MAX_USERS_PER_TASK
+        if max_students:
             if TaskTaken.objects.filter(task=self).filter(Q(Q(status=TaskTaken.STATUS_TAKEN) | Q(
                     status=TaskTaken.STATUS_SCORED))).count() >= max_students:
                 return (
@@ -162,10 +162,11 @@ class Task(models.Model):
         if TaskTaken.objects.filter(task=self).filter(user=user).filter(status=TaskTaken.STATUS_SCORED).count() != 0:
             return (False, u'')
 
-        if settings.PYTHONTASK_MAX_INCOMPLETE_TASKS:
-            max_incomplete_tasks = self.course.max_incomplete_tasks or settings.PYTHONTASK_MAX_INCOMPLETE_TASKS
-            all_scored = TaskTaken.objects.filter(user=user).filter(Q(Q(status=TaskTaken.STATUS_TAKEN) | Q(
-                status=TaskTaken.STATUS_SCORED)))
+        max_incomplete_tasks = self.course.max_incomplete_tasks or settings.PYTHONTASK_MAX_INCOMPLETE_TASKS
+        if max_incomplete_tasks:
+            all_scored = TaskTaken.objects.filter(user=user).filter(task__course=self.course) \
+                                                            .filter(Q(Q(status=TaskTaken.STATUS_TAKEN) | Q(
+                                                                status=TaskTaken.STATUS_SCORED)))
             if sum(t.score != t.task.score_max for t in all_scored) + 1 > max_incomplete_tasks:
                 return (False, u'')
 
