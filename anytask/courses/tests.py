@@ -966,7 +966,7 @@ class PythonTaskTest(TestCase):
         self.group = Group(name="test_group", year=self.year)
         self.group.save()
         self.users = []
-        for i in range(0, 10):
+        for i in range(11):
             user = User.objects.create_user(username='test_user{}'.format(i), password="password{}".format(i))
             user.first_name = "test_firstname{}".format(i)
             user.last_name = "test_lastname{}".format(i)
@@ -977,13 +977,15 @@ class PythonTaskTest(TestCase):
         self.group2 = Group(name="test_group_2", year=self.year)
         self.group2.save()
         self.users2 = []
-        for i in range(10):
+        for i in range(11):
             user = User.objects.create_user(username='test_user2_{}'.format(i), password="password{}".format(i))
             user.first_name = "test_firstname2_{}".format(i)
             user.last_name = "test_lastname2_{}".format(i)
             user.save()
             self.users2.append(user)
             self.group2.students.add(user)
+
+        self.group2.students.add(self.users[10])  # for test_max_incomplete_constraint_2_courses
 
         self.teacher = User.objects.create_user(username='test_teacher', password='teacher')
 
@@ -1215,6 +1217,9 @@ class PythonTaskTest(TestCase):
         issue, _ = Issue.objects.get_or_create(task_id=task.id, student_id=student.id)
         issue.mark = mark
         issue.save()
+
+    def get_issue(self, task, student):
+        return Issue.objects.get(task_id=task.id, student_id=student.id)
 
     def test_max_incomplete_constraint(self):
         client = self.client
@@ -1454,3 +1459,50 @@ class PythonTaskTest(TestCase):
                                                            'task_id': self.task4_expired.id}),
             follow=True)
         self.assertContains(response, "{} {}".format(user.last_name, user.first_name))
+
+    def test_max_incomplete_constraint_2_courses(self):
+        client = self.client
+        user = self.users[10]
+        self.assertTrue(client.login(username=user.username, password="password10"))
+
+        # lets take 3 tasks in course1 (MAX_INCOMPLETE_TASKS == 3)
+        for task in [self.task1, self.task2, self.task3]:
+            client.get(reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id,
+                                                                      'task_id': task.id}),
+                       follow=True)
+            self.get_issue(task, user)  # will fail on no issue
+            self.set_mark(task, user, 1.0)
+
+        # Dirty hack for update status
+        for x in TaskTaken.objects.filter(user=user):
+            x.score
+
+        # And now it should be okay to take a task in course2
+        task = self.task1_c2
+        client.get(reverse('courses.pythontask.get_task', kwargs={'course_id': self.course2.id,
+                                                                  'task_id': task.id}),
+                   follow=True)
+        self.get_issue(task, user)  # will fail on no issue
+
+    def test_max_not_scored_tasks_constraint_2_courses(self):
+        client = self.client
+        user = self.users[10]
+        self.assertTrue(client.login(username=user.username, password="password10"))
+
+        # lets take 2 tasks in course1 (MAX_TASKS_WITHOUT_SCORE_PER_STUDENT == 2)
+        for task in [self.task1, self.task2]:
+            client.get(reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id,
+                                                                      'task_id': task.id}),
+                       follow=True)
+            self.get_issue(task, user)  # will fail on no issue
+
+        # Dirty hack for update status
+        for x in TaskTaken.objects.filter(user=user):
+            x.score
+
+        # And now it should be okay to take a task in course2
+        task = self.task1_c2
+        client.get(reverse('courses.pythontask.get_task', kwargs={'course_id': self.course2.id,
+                                                                  'task_id': task.id}),
+                   follow=True)
+        self.get_issue(task, user)  # will fail on no issue
