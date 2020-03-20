@@ -112,7 +112,7 @@ class Task(models.Model):
             task_taken.update_status()
 
         if user.is_anonymous():
-            return (False, 'необходимо залогиниться')
+            return (False, 'Необходимо залогиниться')
 
         if self.is_hidden:
             return (False, 'задача скрыта')
