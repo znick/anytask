@@ -137,7 +137,9 @@
 							{% if task.can_take.0  %}
 								<a href="{% url "courses.pythontask.get_task" course_id=course.id task_id=task.id %}">Записаться на задачу</a>
                             {% else %}
-                                <span class="fa fa-minus-circle" style="color:#d9534f" title="{{ task.can_take.1 }}"></span>
+                                {% if task.can_take.1 %}
+                                    <span class="fa fa-minus-circle" style="color:#d9534f" title="{{ task.can_take.1 }}"></span>
+                                {% endif %}
 							{% endif %}
 							{% if task.can_cancel  %}
 								<a href="{% url "courses.pythontask.cancel_task" course_id=course.id task_id=task.id %}">Отказаться от задачи</a>
@@ -164,7 +166,9 @@
 									{% if subtask.can_take.0  %}
 										<a href="{% url "courses.pythontask.get_task" course_id=course.id task_id=subtask.id %}">Записаться на задачу</a>
                                     {% else %}
-                                        <span class="fa fa-minus-circle" style="color:#d9534f" title="{{ subtask.can_take.1 }}"></span>
+                                        {% if subtask.can_take.1 %}
+                                            <span class="fa fa-minus-circle" style="color:#d9534f" title="{{ subtask.can_take.1 }}"></span>
+                                        {% endif %}
 									{% endif %}
 									{% if subtask.can_cancel  %}
 										<a href="{% url "courses.pythontask.cancel_task" course_id=course.id task_id=subtask.id %}">Отказаться от задачи</a>

@@ -120,14 +120,6 @@ class Task(models.Model):
         if not self.course.groups.filter(students=user).count():
             return (False, u'Необходимо числиться в одной из групп курса')
 
-        max_not_scored_tasks = self.course.max_not_scored_tasks or \
-            settings.PYTHONTASK_MAX_TASKS_WITHOUT_SCORE_PER_STUDENT
-        if max_not_scored_tasks:
-            if TaskTaken.objects.filter(user=user) \
-                                .filter(task__course=self.course) \
-                                .filter(status=TaskTaken.STATUS_TAKEN).count() >= max_not_scored_tasks:
-                return (False, u'У вас слишком много неоцененных задач')
-
         if Task.objects.filter(parent_task=self).count() > 0:
             return (False, u'')
 
@@ -142,6 +134,22 @@ class Task(models.Model):
                     .exclude(status=TaskTaken.STATUS_DELETED) \
                     .count() > 0:
                 return (False, u'Вы уже взяли другую подзадачу из этой задачи')
+
+        max_not_scored_tasks = self.course.max_not_scored_tasks or \
+            settings.PYTHONTASK_MAX_TASKS_WITHOUT_SCORE_PER_STUDENT
+        if max_not_scored_tasks:
+            if TaskTaken.objects.filter(user=user) \
+                                .filter(task__course=self.course) \
+                                .filter(status=TaskTaken.STATUS_TAKEN).count() >= max_not_scored_tasks:
+                return (False, u'У вас слишком много неоцененных задач')
+
+        max_incomplete_tasks = self.course.max_incomplete_tasks or settings.PYTHONTASK_MAX_INCOMPLETE_TASKS
+        if max_incomplete_tasks:
+            all_scored = TaskTaken.objects.filter(user=user).filter(task__course=self.course) \
+                                                            .filter(Q(Q(status=TaskTaken.STATUS_TAKEN) | Q(
+                                                                status=TaskTaken.STATUS_SCORED)))
+            if sum(t.score != t.task.score_max for t in all_scored) + 1 > max_incomplete_tasks:
+                return (False, u'У вас слишком много не до конца доделанных задач')
 
         max_students = self.max_students_on_task or settings.PYTHONTASK_MAX_USERS_PER_TASK
         if max_students:
@@ -158,17 +166,6 @@ class Task(models.Model):
                 return (False, u'Вы сможете взять эту задачу с %s' % blacklist_expired_date.strftime("%d.%m.%Y"))
         except TaskTaken.DoesNotExist:
             pass
-
-        if TaskTaken.objects.filter(task=self).filter(user=user).filter(status=TaskTaken.STATUS_SCORED).count() != 0:
-            return (False, u'задача уже оценена')
-
-        max_incomplete_tasks = self.course.max_incomplete_tasks or settings.PYTHONTASK_MAX_INCOMPLETE_TASKS
-        if max_incomplete_tasks:
-            all_scored = TaskTaken.objects.filter(user=user).filter(task__course=self.course) \
-                                                            .filter(Q(Q(status=TaskTaken.STATUS_TAKEN) | Q(
-                                                                status=TaskTaken.STATUS_SCORED)))
-            if sum(t.score != t.task.score_max for t in all_scored) + 1 > max_incomplete_tasks:
-                return (False, u'У вас слишком много не до конца доделанных задач')
 
         return (True, u'')
 
