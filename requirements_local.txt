@@ -19,7 +19,7 @@ django-filemanager
 requests==2.18.4
 flup
 unidecode
-django-jfu==1.0.7
+django-jfu==2.0.9
 django-filter==0.10.0
 yandex-oauth-py
 xmltodict
