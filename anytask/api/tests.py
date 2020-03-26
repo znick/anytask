@@ -16,7 +16,7 @@ from users.models import Group
 from years.models import Year
 from unittest import skip
 
-@skip("")
+# @skip("")
 class ApiTest(TestCase):
     maxDiff = None
 

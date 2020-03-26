@@ -30,7 +30,7 @@ def save_result_html(html):
         f.write(html)
 
 
-@skip("")
+# @skip("")
 class CreateTest(TestCase):
     def test_issue_create_filled(self):
         year = Year.objects.create(start_year=2016)
@@ -818,7 +818,7 @@ class ViewsTest(TestCase):
                          'Wrong deadline end comment color')
 
     @patch('anyrb.common.AnyRB.upload_review')
-    @skip("")
+    # @skip("")
     def test_upload_review_with_student(self, mock_upload_review):
         client = self.client
         issue = Issue.objects.create(task_id=self.task.id, student_id=self.student.id)
