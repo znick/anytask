@@ -25,7 +25,8 @@ from tasks.models import Task, TaskGroupRelations
 from years.models import Year
 from years.common import get_current_year
 from anycontest.common import get_contest_info, FakeResponse
-from issues.models import Issue, IssueFilter
+from issues.models import Issue
+from issues.issueFilter import IssueFilter
 from issues.model_issue_status import IssueStatus
 from issues.views import contest_rejudge
 from users.forms import InviteActivationForm

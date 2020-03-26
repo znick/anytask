@@ -1,11 +1,10 @@
 #!/usr/bin/env python
 
 import locale
-import settings
 import sys
+import os
 import imp
 
-from django.core.management import execute_manager
 
 locale.setlocale(locale.LC_ALL, '')
 
@@ -23,4 +22,8 @@ except ImportError:
 sys.modules['django.contrib.auth.tests'] = None
 
 if __name__ == "__main__":
-    execute_manager(settings)
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "{{ project_name }}.settings")
+
+    from django.core.management import execute_from_command_line
+
+    execute_from_command_line(sys.argv)
