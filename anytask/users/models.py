@@ -23,7 +23,7 @@ def get_upload_path(instance, filename):
 
 
 class UserProfile(models.Model):
-    user = models.ForeignKey(User, db_index=True, null=False, blank=False, unique=True, related_name='profile')
+    user = models.OneToOneField(User, db_index=True, null=False, blank=False, unique=True, related_name='profile')
     middle_name = models.CharField(max_length=128, db_index=True, null=True, blank=True)
     user_status = models.ManyToManyField(UserStatus, db_index=True, null=True, blank=True,
                                          related_name='users_by_status')

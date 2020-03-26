@@ -51,7 +51,7 @@ def set_user_info(user, user_info):
     user.email = user_info['email']
     user.save()
 
-    user_profile = user.get_profile()
+    user_profile = user.profile
     user_profile.set_status(settings.FILIAL_STATUSES[user_info['filial']])
     user_profile.set_status(settings.ENROLLEE_STATUS)
     user_profile.middle_name = user_info['middle_name']
@@ -150,7 +150,7 @@ def register(request):
 def contest_register(user):
     contest_id = settings.ADMISSION_CONTESTS[user.email.__hash__() % len(settings.ADMISSION_CONTESTS)]
 
-    got_info, response_text = user_register_to_contest(contest_id, user.get_profile().ya_contest_uid)
+    got_info, response_text = user_register_to_contest(contest_id, user.profile.ya_contest_uid)
 
     if not got_info:
         if response_text == 'User already registered for contest':

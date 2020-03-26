@@ -90,7 +90,7 @@ class Command(BaseCommand):
             event_value['files'].append(file.file)
             event_value['compilers'].append(chosen_compiler)
 
-            translation.activate(issue.student.get_profile().language)
+            translation.activate(issue.student.profile.language)
             issue.set_byname('comment', event_value, issue.student)
             translation.deactivate()
 

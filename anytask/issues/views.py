@@ -59,7 +59,7 @@ def prepare_info_fields(info_fields, request, issue):
                  }
 
     user = request.user
-    lang = user.get_profile().language
+    lang = user.profile.language
     for field in info_fields:
         field.editable = field.can_edit(user, issue)
         if field.is_visible():
@@ -195,7 +195,7 @@ def issue_page(request, issue_id):
                 show_top_alert = True
             break
 
-    lang = user.get_profile().language
+    lang = user.profile.language
     statuses_accepted = [(status.id, status.get_name(lang))
                          for status in issue.task.course.issue_status_system.get_accepted_statuses()]
 

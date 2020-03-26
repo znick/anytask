@@ -28,5 +28,5 @@ def get_datetime_with_tz(value, geoid, user):
     if geoid:
         tz = get_tz(geoid)
     else:
-        tz = user.get_profile().time_zone or settings.TIME_ZONE
+        tz = user.profile.time_zone or settings.TIME_ZONE
     return convert_datetime(value, tz)

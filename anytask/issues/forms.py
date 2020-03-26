@@ -71,7 +71,7 @@ def status_id2status(status_id):
 
 def get_status_form(field_name, request, issue, data=None, *args, **kwargs):
     class _form(DefaultForm):
-        lang = request.user.get_profile().language
+        lang = request.user.profile.language
         status = forms.TypedChoiceField(get_status_choice(issue, lang),
                                         coerce=status_id2status, label='', required=False)
 

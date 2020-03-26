@@ -97,7 +97,7 @@ def queue_page(request, course_id):
         'filter': f,
         'school': schools[0] if schools else '',
         'full_width_page': True,
-        'timezone': user.get_profile().time_zone
+        'timezone': user.profile.time_zone
     }
     return render_to_response('courses/queue.html', context, context_instance=RequestContext(request))
 
@@ -160,7 +160,7 @@ def gradebook(request, course_id, task_id=None, group_id=None):
     """
     user = request.user
 
-    if not user.get_profile().is_active():
+    if not user.profile.is_active():
         raise PermissionDenied
 
     course = get_object_or_404(Course, id=course_id)
@@ -182,7 +182,7 @@ def gradebook(request, course_id, task_id=None, group_id=None):
                                    'school': schools[0] if schools else '',
                                    'invite_form': InviteActivationForm()},
                                   context_instance=RequestContext(request))
-    lang = request.session.get('django_language', user.get_profile().language)
+    lang = request.session.get('django_language', user.profile.language)
     issue_statuses = []
     seminar_color = IssueStatus.COLOR_DEFAULT
     for status in course.issue_status_system.statuses.all():
@@ -221,7 +221,7 @@ def course_page(request, course_id):
         - tasks_description
     """
     user = request.user
-    if not user.get_profile().is_active():
+    if not user.profile.is_active():
         raise PermissionDenied
 
     course = get_object_or_404(Course, id=course_id)
@@ -285,7 +285,7 @@ def seminar_page(request, course_id, task_id):
     """
 
     user = request.user
-    if not user.get_profile().is_active():
+    if not user.profile.is_active():
         raise PermissionDenied
 
     course = get_object_or_404(Course, id=course_id)
@@ -882,7 +882,7 @@ def ajax_update_contest_tasks(request):
             reversion.set_user(user)
             reversion.set_comment("Update from contest")
 
-            response['tasks_title'][task.id] = task.get_title(user.get_profile().language)
+            response['tasks_title'][task.id] = task.get_title(user.profile.language)
 
     return HttpResponse(json.dumps(response),
                         content_type="application/json")
@@ -908,7 +908,7 @@ def attendance_list(request, course, group=None):
     user_is_attended = False
     user_is_attended_special_course = False
     show_academ_users = request.session.get("%s_%s_show_academ_users" % (request.user.id, course.id), True)
-    msk_time = convert_datetime(localtime(now()), user.get_profile().time_zone)
+    msk_time = convert_datetime(localtime(now()), user.profile.time_zone)
 
     course.can_edit = course.user_can_edit_course(user)
     if course.can_be_chosen_by_extern:
@@ -995,7 +995,7 @@ def attendance_list(request, course, group=None):
 @login_required
 def attendance_page(request, course_id, group_id=None):
     user = request.user
-    if not user.get_profile().is_active():
+    if not user.profile.is_active():
         raise PermissionDenied
 
     course = get_object_or_404(Course, id=course_id)

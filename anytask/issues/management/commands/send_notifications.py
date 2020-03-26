@@ -79,7 +79,7 @@ class Command(BaseCommand):
 
 
 def get_message(user, user_type, issue, events, from_email, domain):
-    user_profile = user.get_profile()
+    user_profile = user.profile
 
     if not user_profile.send_my_own_events:
         events = events.exclude(author_id=user.id)

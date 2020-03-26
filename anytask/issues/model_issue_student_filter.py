@@ -51,7 +51,7 @@ class IssueFilterStudent(django_filters.FilterSet):
         teacher_choices = [(teacher.id, teacher.get_full_name()) for teacher in teacher_set]
         self.filters['responsible'].field.choices = tuple(teacher_choices)
 
-        lang = user.get_profile().language
+        lang = user.profile.language
         status_choices = [(status.id, status.get_name(lang)) for status in status_set]
         for status_id in sorted(IssueStatus.HIDDEN_STATUSES.values(), reverse=True):
             status_field = IssueStatus.objects.get(pk=status_id)
