@@ -30,7 +30,6 @@ def save_result_html(html):
         f.write(html)
 
 
-@skip("")
 class CreateTest(TestCase):
     def test_issue_create_filled(self):
         year = Year.objects.create(start_year=2016)
@@ -274,6 +273,7 @@ class ViewsTest(TestCase):
         self.assertEqual(labels[7].string.strip().strip('\n'), u'data_sdachi:', '8th issue field label wrong')
         self.assertEqual(results[7].string.strip().strip('\n'), '', '8th issue field text wrong')
 
+    @skip("Skipped due to bug in django 1.6. Remove skip after future upgrade")
     def test_post_responsible_name_form_send_button_with_teacher(self):
         client = self.client
 
@@ -467,6 +467,7 @@ class ViewsTest(TestCase):
                          'teacher_name teacher_last_name',
                          '5th issue field select option text wrong')
 
+    @skip("Skipped due to bug in django 1.6. Remove skip after future upgrade")
     def test_post_status_send_button_with_teacher(self):
         client = self.client
 
@@ -818,7 +819,6 @@ class ViewsTest(TestCase):
                          'Wrong deadline end comment color')
 
     @patch('anyrb.common.AnyRB.upload_review')
-    @skip("")
     def test_upload_review_with_student(self, mock_upload_review):
         client = self.client
         issue = Issue.objects.create(task_id=self.task.id, student_id=self.student.id)
