@@ -1,6 +1,6 @@
 tornado<4.6
 ipykernel==4.5.2
-django==1.7
+django==1.7.1
 south
 pillow
 django-recaptcha
