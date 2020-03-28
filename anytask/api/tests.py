@@ -14,7 +14,7 @@ from issues.models import Issue, IssueField, File
 from tasks.models import Task
 from users.models import Group
 from years.models import Year
-from unittest import skip
+
 
 class ApiTest(TestCase):
     maxDiff = None
