@@ -53,7 +53,7 @@ UPLOAD_ROOT = '/var/lib/anytask/upload'
 STATIC_ROOT = '/var/lib/anytask/static'
 
 ABSOLUTE_URL_OVERRIDES = {
-    'auth.user': lambda u: "/users/%s/" % u.username
+    'auth.user': lambda u: "/users/%s/" % u.username,
 }
 
 # local overrides (optional)
