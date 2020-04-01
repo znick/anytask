@@ -1,4 +1,4 @@
-Anytask [![Build Status](https://travis-ci.com/hariton27sy/anytask.svg?branch=update_django_1.7)](https://travis-ci.org/hariton27sy/anytask)
+Anytask [![Build Status](https://travis-ci.org/znick/anytask.svg?branch=master)](https://travis-ci.org/znick/anytask)
 =======
 
 
