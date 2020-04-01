@@ -159,7 +159,7 @@ class ContestServerMock(threading.Thread):
 @override_settings(CONTEST_API_URL='http://127.0.0.1:{}/anytask/'.format(CONTEST_PORT))
 @override_settings(CONTEST_URL="http://127.0.0.1:{}/".format(CONTEST_PORT))
 @override_settings(CONTEST_EXTENSIONS={"py": "python"})
-# @skip("SkipAnycontest")
+
 class AnyContestTest(TestCase):
     @classmethod
     def setUpClass(cls):
