@@ -1,83 +1,137 @@
-# encoding: utf-8
-import datetime
-from south.db import db
-from south.v2 import SchemaMigration
-from django.db import models
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
-class Migration(SchemaMigration):
-
-    def forwards(self, orm):
-        
-        # Adding model 'UserProfile'
-        db.create_table('users_userprofile', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'], unique=True)),
-            ('second_name', self.gf('django.db.models.fields.CharField')(db_index=True, max_length=128, null=True, blank=True)),
-            ('unit', self.gf('django.db.models.fields.CharField')(default='', max_length=128, null=True, blank=True)),
-            ('position', self.gf('django.db.models.fields.CharField')(default='', max_length=128, null=True, blank=True)),
-            ('academic_degree', self.gf('django.db.models.fields.CharField')(default='', max_length=128, null=True, blank=True)),
-            ('academic_title', self.gf('django.db.models.fields.CharField')(default='', max_length=128, null=True, blank=True)),
-            ('added_time', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now, auto_now_add=True, blank=True)),
-            ('update_time', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now, auto_now=True, blank=True)),
-        ))
-        db.send_create_signal('users', ['UserProfile'])
+from django.db import models, migrations
+import users.models
+import anytask.storage
+import colorfield.fields
+import django.utils.timezone
+from django.conf import settings
 
 
-    def backwards(self, orm):
-        
-        # Deleting model 'UserProfile'
-        db.delete_table('users_userprofile')
+class Migration(migrations.Migration):
 
+    dependencies = [
+        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+        ('mail', '0001_initial'),
+    ]
 
-    models = {
-        'auth.group': {
-            'Meta': {'object_name': 'Group'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '80'}),
-            'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'})
-        },
-        'auth.permission': {
-            'Meta': {'ordering': "('content_type__app_label', 'content_type__model', 'codename')", 'unique_together': "(('content_type', 'codename'),)", 'object_name': 'Permission'},
-            'codename': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['contenttypes.ContentType']"}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
-        },
-        'auth.user': {
-            'Meta': {'object_name': 'User'},
-            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
-            'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
-            'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
-            'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Group']", 'symmetrical': 'False', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'is_staff': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'is_superuser': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
-            'last_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
-            'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
-            'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
-            'username': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '30'})
-        },
-        'contenttypes.contenttype': {
-            'Meta': {'ordering': "('name',)", 'unique_together': "(('app_label', 'model'),)", 'object_name': 'ContentType', 'db_table': "'django_content_type'"},
-            'app_label': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
-        },
-        'users.userprofile': {
-            'Meta': {'object_name': 'UserProfile'},
-            'academic_degree': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '128', 'null': 'True', 'blank': 'True'}),
-            'academic_title': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '128', 'null': 'True', 'blank': 'True'}),
-            'added_time': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'auto_now_add': 'True', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'position': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '128', 'null': 'True', 'blank': 'True'}),
-            'second_name': ('django.db.models.fields.CharField', [], {'db_index': 'True', 'max_length': '128', 'null': 'True', 'blank': 'True'}),
-            'unit': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '128', 'null': 'True', 'blank': 'True'}),
-            'update_time': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'auto_now': 'True', 'blank': 'True'}),
-            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']", 'unique': 'True'})
-        }
-    }
-
-    complete_apps = ['users']
+    operations = [
+        migrations.CreateModel(
+            name='UserProfile',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('middle_name', models.CharField(db_index=True, max_length=128, null=True, blank=True)),
+                ('avatar', models.ImageField(storage=anytask.storage.OverwriteStorage(), upload_to=users.models.get_upload_path, null=True, verbose_name=b'profile picture', blank=True)),
+                ('birth_date', models.DateField(null=True, blank=True)),
+                ('info', models.TextField(default=b'', null=True, blank=True)),
+                ('phone', models.CharField(max_length=128, null=True, blank=True)),
+                ('city_of_residence', models.CharField(max_length=191, null=True, blank=True)),
+                ('university', models.CharField(max_length=191, null=True, blank=True)),
+                ('university_in_process', models.BooleanField(default=False)),
+                ('university_class', models.CharField(max_length=191, null=True, blank=True)),
+                ('university_department', models.CharField(max_length=191, null=True, blank=True)),
+                ('university_year_end', models.CharField(max_length=191, null=True, blank=True)),
+                ('additional_info', models.TextField(null=True, blank=True)),
+                ('unit', models.CharField(default=b'', max_length=128, null=True, blank=True)),
+                ('position', models.CharField(default=b'', max_length=128, null=True, blank=True)),
+                ('academic_degree', models.CharField(default=b'', max_length=128, null=True, blank=True)),
+                ('academic_title', models.CharField(default=b'', max_length=128, null=True, blank=True)),
+                ('show_email', models.BooleanField(default=True)),
+                ('send_my_own_events', models.BooleanField(default=False)),
+                ('added_time', models.DateTimeField(default=django.utils.timezone.now, auto_now_add=True)),
+                ('update_time', models.DateTimeField(default=django.utils.timezone.now, auto_now=True)),
+                ('login_via_yandex', models.BooleanField(default=False)),
+                ('ya_uid', models.IntegerField(null=True, blank=True)),
+                ('ya_login', models.CharField(default=b'', max_length=128, null=True, blank=True)),
+                ('ya_contest_uid', models.CharField(max_length=191, null=True, blank=True)),
+                ('ya_contest_oauth', models.CharField(default=b'', max_length=128, null=True, blank=True)),
+                ('ya_contest_login', models.CharField(default=b'', max_length=128, null=True, blank=True)),
+                ('ya_passport_uid', models.CharField(max_length=191, null=True, blank=True)),
+                ('ya_passport_oauth', models.CharField(default=b'', max_length=128, null=True, blank=True)),
+                ('ya_passport_login', models.CharField(default=b'', max_length=128, null=True, blank=True)),
+                ('ya_passport_email', models.CharField(default=b'', max_length=128, null=True, blank=True)),
+                ('language', models.CharField(default=b'ru', max_length=128, null=True, blank=True)),
+                ('time_zone', models.TextField(default=b'Europe/Moscow')),
+                ('location', models.TextField(default=b'', null=True, blank=True)),
+                ('deleted_messages', models.ManyToManyField(related_name=b'deleted_messages', null=True, to='mail.Message', blank=True)),
+                ('send_notify_messages', models.ManyToManyField(related_name=b'send_notify_messages', null=True, to='mail.Message', blank=True)),
+                ('unread_messages', models.ManyToManyField(related_name=b'unread_messages', null=True, to='mail.Message', blank=True)),
+                ('updated_by', models.ForeignKey(to=settings.AUTH_USER_MODEL, blank=True, null=True, db_index=False)),
+                ('user', models.OneToOneField(related_name=b'profile', to=settings.AUTH_USER_MODEL)),
+            ],
+            options={
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='UserProfileLog',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('middle_name', models.CharField(db_index=True, max_length=128, null=True, blank=True)),
+                ('avatar', models.ImageField(storage=anytask.storage.OverwriteStorage(), upload_to=users.models.get_upload_path, null=True, verbose_name=b'profile picture', blank=True)),
+                ('birth_date', models.DateField(null=True, blank=True)),
+                ('info', models.TextField(default=b'', null=True, blank=True)),
+                ('phone', models.CharField(max_length=128, null=True, blank=True)),
+                ('city_of_residence', models.CharField(max_length=191, null=True, blank=True)),
+                ('university', models.CharField(max_length=191, null=True, blank=True)),
+                ('university_in_process', models.BooleanField(default=False)),
+                ('university_class', models.CharField(max_length=50, null=True, blank=True)),
+                ('university_department', models.CharField(max_length=191, null=True, blank=True)),
+                ('university_year_end', models.CharField(max_length=20, null=True, blank=True)),
+                ('additional_info', models.TextField(null=True, blank=True)),
+                ('unit', models.CharField(default=b'', max_length=128, null=True, blank=True)),
+                ('position', models.CharField(default=b'', max_length=128, null=True, blank=True)),
+                ('academic_degree', models.CharField(default=b'', max_length=128, null=True, blank=True)),
+                ('academic_title', models.CharField(default=b'', max_length=128, null=True, blank=True)),
+                ('show_email', models.BooleanField(default=True)),
+                ('send_my_own_events', models.BooleanField(default=False)),
+                ('added_time', models.DateTimeField(default=django.utils.timezone.now, auto_now_add=True)),
+                ('update_time', models.DateTimeField(default=django.utils.timezone.now, auto_now=True)),
+                ('login_via_yandex', models.BooleanField(default=True)),
+                ('ya_uid', models.IntegerField(null=True, blank=True)),
+                ('ya_login', models.CharField(default=b'', max_length=128, null=True, blank=True)),
+                ('ya_contest_uid', models.IntegerField(null=True, blank=True)),
+                ('ya_contest_oauth', models.CharField(default=b'', max_length=128, null=True, blank=True)),
+                ('ya_contest_login', models.CharField(default=b'', max_length=128, null=True, blank=True)),
+                ('ya_passport_uid', models.IntegerField(null=True, blank=True)),
+                ('ya_passport_oauth', models.CharField(default=b'', max_length=128, null=True, blank=True)),
+                ('ya_passport_login', models.CharField(default=b'', max_length=128, null=True, blank=True)),
+                ('ya_passport_email', models.CharField(default=b'', max_length=128, null=True, blank=True)),
+                ('language', models.CharField(default=b'ru', max_length=128, null=True, blank=True)),
+                ('deleted_messages', models.ManyToManyField(related_name=b'log_deleted_messages', null=True, to='mail.Message', blank=True)),
+                ('send_notify_messages', models.ManyToManyField(related_name=b'log_send_notify_messages', null=True, to='mail.Message', blank=True)),
+                ('unread_messages', models.ManyToManyField(related_name=b'log_unread_messages', null=True, to='mail.Message', blank=True)),
+                ('updated_by', models.ForeignKey(to=settings.AUTH_USER_MODEL, blank=True, null=True, db_index=False)),
+                ('user', models.ForeignKey(related_name=b'profiles_logs_by_user', to=settings.AUTH_USER_MODEL)),
+            ],
+            options={
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='UserStatus',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('name', models.CharField(max_length=254, db_index=True)),
+                ('type', models.CharField(blank=True, max_length=191, null=True, choices=[(b'activity', 'status_studenta'), (b'filial', 'filial'), (b'admission', 'status_postupleniya')])),
+                ('tag', models.CharField(blank=True, max_length=254, null=True, choices=[(b'active', 'active'), (b'extramural', 'extramural'), (b'fulltime', 'fulltime'), (b'not_active', 'not_active'), (b'academic', 'academic')])),
+                ('color', colorfield.fields.ColorField(default=b'#818A91', max_length=18)),
+            ],
+            options={
+            },
+            bases=(models.Model,),
+        ),
+        migrations.AddField(
+            model_name='userprofilelog',
+            name='user_status',
+            field=models.ManyToManyField(db_index=True, to='users.UserStatus', null=True, blank=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='userprofile',
+            name='user_status',
+            field=models.ManyToManyField(db_index=True, related_name=b'users_by_status', null=True, to='users.UserStatus', blank=True),
+            preserve_default=True,
+        ),
+    ]

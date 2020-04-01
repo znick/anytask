@@ -131,7 +131,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'whoosh',
     'haystack',
-    'south',
+    # 'south',
     'common',
     'users',
     'years',

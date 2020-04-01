@@ -333,7 +333,7 @@ class ApiTest(TestCase):
         self.assertDictEqual(issue, response_data)
 
         response = self.client.get(url)
-        self.assertEqual('print "_failed_"', response.content)
+        self.assertEqual('print "_failed_"', ''.join(response.streaming_content))
 
     def test_get_issue_no_access(self):
         response = self._request(self.anytask, self.anytask_password,

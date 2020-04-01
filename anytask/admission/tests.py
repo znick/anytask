@@ -137,7 +137,7 @@ class ViewsTest(TestCase):
         self.assertEqual(user.last_name, test_data['last_name'])
         self.assertEqual(user.first_name, test_data['first_name'])
 
-        user_profile = user.get_profile()
+        user_profile = user.profile
         self.assertEqual(user_profile.middle_name, test_data['middle_name'])
         self.assertEqual(user_profile.birth_date, test_birth_date)
         self.assertEqual(user_profile.phone, test_data['phone'])

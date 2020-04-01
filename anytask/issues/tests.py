@@ -819,6 +819,7 @@ class ViewsTest(TestCase):
                          'Wrong deadline end comment color')
 
     @patch('anyrb.common.AnyRB.upload_review')
+
     def test_upload_review_with_student(self, mock_upload_review):
         client = self.client
         issue = Issue.objects.create(task_id=self.task.id, student_id=self.student.id)

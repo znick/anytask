@@ -100,7 +100,7 @@ def send_fulltext(domain, from_email):
             if not user.email:
                 continue
 
-            user_profile = user.get_profile()
+            user_profile = user.profile
             user_profile.send_notify_messages.remove(message)
 
             lang = user_profile.language

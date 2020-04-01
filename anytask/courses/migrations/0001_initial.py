@@ -1,115 +1,141 @@
-# encoding: utf-8
-import datetime
-from south.db import db
-from south.v2 import SchemaMigration
-from django.db import models
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
-class Migration(SchemaMigration):
-
-    def forwards(self, orm):
-        
-        # Adding model 'Course'
-        db.create_table('courses_course', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(db_index=True, max_length=256, blank=True)),
-            ('type', self.gf('django.db.models.fields.IntegerField')(default=0, max_length=1, null=True, db_index=True, blank=True)),
-            ('added_time', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now, auto_now_add=True, blank=True)),
-            ('update_time', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now, auto_now=True, blank=True)),
-        ))
-        db.send_create_signal('courses', ['Course'])
-
-        # Adding M2M table for field students on 'Course'
-        db.create_table('courses_course_students', (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('course', models.ForeignKey(orm['courses.course'], null=False)),
-            ('user', models.ForeignKey(orm['auth.user'], null=False))
-        ))
-        db.create_unique('courses_course_students', ['course_id', 'user_id'])
-
-        # Adding M2M table for field groups on 'Course'
-        db.create_table('courses_course_groups', (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('course', models.ForeignKey(orm['courses.course'], null=False)),
-            ('group', models.ForeignKey(orm['groups.group'], null=False))
-        ))
-        db.create_unique('courses_course_groups', ['course_id', 'group_id'])
+from django.db import models, migrations
+import django.utils.timezone
+from django.conf import settings
 
 
-    def backwards(self, orm):
-        
-        # Deleting model 'Course'
-        db.delete_table('courses_course')
+class Migration(migrations.Migration):
 
-        # Removing M2M table for field students on 'Course'
-        db.delete_table('courses_course_students')
+    dependencies = [
+        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+        ('groups', '0001_initial'),
+    ]
 
-        # Removing M2M table for field groups on 'Course'
-        db.delete_table('courses_course_groups')
-
-
-    models = {
-        'auth.group': {
-            'Meta': {'object_name': 'Group'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '80'}),
-            'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'})
-        },
-        'auth.permission': {
-            'Meta': {'ordering': "('content_type__app_label', 'content_type__model', 'codename')", 'unique_together': "(('content_type', 'codename'),)", 'object_name': 'Permission'},
-            'codename': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['contenttypes.ContentType']"}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
-        },
-        'auth.user': {
-            'Meta': {'object_name': 'User'},
-            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
-            'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
-            'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
-            'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Group']", 'symmetrical': 'False', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'is_staff': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'is_superuser': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
-            'last_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
-            'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
-            'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
-            'username': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '30'})
-        },
-        'contenttypes.contenttype': {
-            'Meta': {'ordering': "('name',)", 'unique_together': "(('app_label', 'model'),)", 'object_name': 'ContentType', 'db_table': "'django_content_type'"},
-            'app_label': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
-        },
-        'courses.course': {
-            'Meta': {'object_name': 'Course'},
-            'added_time': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'auto_now_add': 'True', 'blank': 'True'}),
-            'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['groups.Group']", 'symmetrical': 'False'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'db_index': 'True', 'max_length': '256', 'blank': 'True'}),
-            'students': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.User']", 'symmetrical': 'False'}),
-            'type': ('django.db.models.fields.IntegerField', [], {'default': '0', 'max_length': '1', 'null': 'True', 'db_index': 'True', 'blank': 'True'}),
-            'update_time': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'auto_now': 'True', 'blank': 'True'})
-        },
-        'groups.group': {
-            'Meta': {'unique_together': "(('year', 'name'),)", 'object_name': 'Group'},
-            'added_time': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'auto_now_add': 'True', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'db_index': 'True', 'max_length': '256', 'blank': 'True'}),
-            'students': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.User']", 'symmetrical': 'False'}),
-            'update_time': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'auto_now': 'True', 'blank': 'True'}),
-            'year': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['years.Year']", 'blank': 'True'})
-        },
-        'years.year': {
-            'Meta': {'object_name': 'Year'},
-            'added_time': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'auto_now_add': 'True', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'start_year': ('django.db.models.fields.IntegerField', [], {'unique': 'True', 'db_index': 'True'}),
-            'update_time': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'auto_now': 'True', 'blank': 'True'})
-        }
-    }
-
-    complete_apps = ['courses']
+    operations = [
+        migrations.CreateModel(
+            name='Course',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('name', models.CharField(max_length=191, db_index=True)),
+                ('name_id', models.CharField(db_index=True, max_length=191, null=True, blank=True)),
+                ('information', models.TextField(null=True, blank=True)),
+                ('is_active', models.BooleanField(default=False, db_index=True)),
+                ('contest_integrated', models.BooleanField(default=False)),
+                ('send_rb_and_contest_together', models.BooleanField(default=False)),
+                ('rb_integrated', models.BooleanField(default=False)),
+                ('take_mark_from_contest', models.BooleanField(default=False)),
+                ('send_to_contest_from_users', models.BooleanField(default=False)),
+                ('full_transcript', models.BooleanField(default=True)),
+                ('private', models.BooleanField(default=True)),
+                ('added_time', models.DateTimeField(default=django.utils.timezone.now, auto_now_add=True)),
+                ('update_time', models.DateTimeField(default=django.utils.timezone.now, auto_now=True)),
+                ('can_be_chosen_by_extern', models.BooleanField(default=False)),
+                ('show_accepted_after_contest_ok', models.BooleanField(default=False)),
+                ('default_accepted_after_contest_ok', models.BooleanField(default=False)),
+                ('show_task_one_file_upload', models.BooleanField(default=False)),
+                ('default_task_one_file_upload', models.BooleanField(default=False)),
+                ('default_task_send_to_users', models.BooleanField(default=False)),
+                ('is_python_task', models.BooleanField(default=False)),
+                ('max_students_per_task', models.IntegerField(default=0)),
+                ('max_incomplete_tasks', models.IntegerField(default=0)),
+                ('max_not_scored_tasks', models.IntegerField(default=0)),
+                ('has_attendance_log', models.BooleanField(default=False)),
+                ('show_contest_run_id', models.BooleanField(default=True)),
+            ],
+            options={
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='CourseMarkSystem',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('name', models.CharField(max_length=191)),
+            ],
+            options={
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='DefaultTeacher',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('course', models.ForeignKey(to='courses.Course')),
+                ('group', models.ForeignKey(blank=True, to='groups.Group', null=True)),
+                ('teacher', models.ForeignKey(to=settings.AUTH_USER_MODEL, blank=True, null=True, db_index=False)),
+            ],
+            options={
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='FilenameExtension',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('name', models.CharField(max_length=10)),
+            ],
+            options={
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='MarkField',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('name', models.CharField(max_length=191, db_index=True)),
+                ('name_int', models.IntegerField(default=-1)),
+            ],
+            options={
+                'ordering': ['-name_int'],
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='StudentCourseMark',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('update_time', models.DateTimeField(default=django.utils.timezone.now, auto_now=True)),
+                ('course', models.ForeignKey(to='courses.Course', db_index=False)),
+                ('mark', models.ForeignKey(to='courses.MarkField', blank=True, null=True, db_index=False)),
+                ('student', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('teacher', models.ForeignKey(related_name=b'teacher_change_mark', blank=True, to=settings.AUTH_USER_MODEL, null=True, db_index=False)),
+            ],
+            options={
+            },
+            bases=(models.Model,),
+        ),
+        migrations.AlterUniqueTogether(
+            name='studentcoursemark',
+            unique_together=set([('student', 'course')]),
+        ),
+        migrations.AlterUniqueTogether(
+            name='defaultteacher',
+            unique_together=set([('course', 'group')]),
+        ),
+        migrations.AddField(
+            model_name='coursemarksystem',
+            name='marks',
+            field=models.ManyToManyField(to='courses.MarkField', null=True, blank=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='course',
+            name='filename_extensions',
+            field=models.ManyToManyField(related_name=b'filename_extensions_set', null=True, to='courses.FilenameExtension', blank=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='course',
+            name='group_with_extern',
+            field=models.ForeignKey(related_name=b'course_with_extern', blank=True, to='groups.Group', null=True, db_index=False),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='course',
+            name='groups',
+            field=models.ManyToManyField(to='groups.Group', null=True, blank=True),
+            preserve_default=True,
+        ),
+    ]

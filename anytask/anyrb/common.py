@@ -78,7 +78,7 @@ class AnyRB(object):
 
             draft = review_request.get_or_create_draft()
             issue = self.event.issue
-            task_title = issue.task.get_title(issue.student.get_profile().language)
+            task_title = issue.task.get_title(issue.student.profile.language)
             summary = u'[{0}][{1}] {2}'.format(issue.student.get_full_name(),
                                                issue.task.course.get_user_group(issue.student),
                                                task_title)

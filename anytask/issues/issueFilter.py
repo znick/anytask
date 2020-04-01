@@ -24,7 +24,7 @@ class IssueFilter(django_filters.FilterSet):
 
     def set_course(self, course, user):
         default_choices = {}
-        lang = user.get_profile().language
+        lang = user.profile.language
         for field in self.filters:
             self.filters[field].field.label = u'<strong>{0}</strong>'.format(self.filters[field].field.label)
         teacher_choices = []
