@@ -273,7 +273,6 @@ class ViewsTest(TestCase):
         self.assertEqual(labels[7].string.strip().strip('\n'), u'data_sdachi:', '8th issue field label wrong')
         self.assertEqual(results[7].string.strip().strip('\n'), '', '8th issue field text wrong')
 
-    @skip("Skipped due to bug in django 1.6. Remove skip after future upgrade")
     def test_post_responsible_name_form_send_button_with_teacher(self):
         client = self.client
 
@@ -467,7 +466,6 @@ class ViewsTest(TestCase):
                          'teacher_name teacher_last_name',
                          '5th issue field select option text wrong')
 
-    @skip("Skipped due to bug in django 1.6. Remove skip after future upgrade")
     def test_post_status_send_button_with_teacher(self):
         client = self.client
 
