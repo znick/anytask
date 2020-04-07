@@ -74,7 +74,7 @@ class Command(BaseCommand):
             if task_created or task_changed:
                 for group in task.groups.all():
                     for student in group.students.all():
-                        translation.activate(student.get_profile().language)
+                        translation.activate(student.profile.language)
                         diff_fields_str = {
                             u'title': _(u'nazvanie').lower(),
                             u'task_text': _(u'formulirovka').lower(),
@@ -118,7 +118,7 @@ class Command(BaseCommand):
             if not user.email:
                 continue
 
-            lang = user.get_profile().language
+            lang = user.profile.language
             translation.activate(lang)
 
             subject = u"{0}, ".format(user.first_name) + _(u'proizoshli_izmeneniya_v_kursah')

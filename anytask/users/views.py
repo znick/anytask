@@ -57,7 +57,7 @@ def profile(request, username=None, year=None):
     if username:
         user_to_show = get_object_or_404(User, username=username)
 
-    user_to_show_profile = user_to_show.get_profile()
+    user_to_show_profile = user_to_show.profile
 
     show_email = True
     user_above_user_to_show = True
@@ -123,7 +123,7 @@ def profile(request, username=None, year=None):
     invite_form = InviteActivationForm()
 
     if request.method == 'POST':
-        user_profile = user.get_profile()
+        user_profile = user.profile
         if 'update-avatar' in request.POST:
             filename = 'avatar'
             if 'input-avatar' in request.FILES:
@@ -199,7 +199,7 @@ def group_by_year(objects):
 @login_required
 def profile_settings(request):
     user = request.user
-    user_profile = user.get_profile()
+    user_profile = user.profile
 
     if request.method == 'POST':
         user_profile.show_email = 'show_email' in request.POST
@@ -235,7 +235,7 @@ def profile_history(request, username=None):
     user_to_show = user
     if username:
         user_to_show = get_object_or_404(User, username=username)
-    user_profile = user_to_show.get_profile()
+    user_profile = user_to_show.profile
 
     version_list = reversion.get_for_object(user_profile)
     user_status_prev = None
@@ -277,7 +277,7 @@ def set_user_statuses(request, username=None):
     if username:
         user_to_show = get_object_or_404(User, username=username)
 
-    user_profile = user_to_show.get_profile()
+    user_profile = user_to_show.profile
     is_error = False
     error = ''
 
@@ -295,7 +295,7 @@ def set_user_statuses(request, username=None):
 
     user_profile_log = {
         'update_time': user_profile.update_time.astimezone(
-            timezone_pytz(user.get_profile().time_zone)
+            timezone_pytz(user.profile.time_zone)
         ).strftime("%d-%m-%Y %H:%M"),
         'updated_by': user_profile.updated_by.username,
         'fullname': user_profile.updated_by.get_full_name()
@@ -323,7 +323,7 @@ def ya_oauth_request(request, type_of_oauth):
 
 
 def ya_oauth_contest(user, ya_response, ya_contest_response):
-    user_profile = user.get_profile()
+    user_profile = user.profile
     if not user_profile.ya_contest_oauth:
         users_with_ya_contest_oauth = UserProfile.objects.filter(
             Q(ya_contest_login=ya_contest_response['login']) | Q(ya_contest_uid=ya_contest_response['id'])
@@ -345,7 +345,7 @@ def ya_oauth_contest(user, ya_response, ya_contest_response):
 
 
 def ya_oauth_passport(user, ya_response, ya_passport_response):
-    user_profile = user.get_profile()
+    user_profile = user.profile
 
     if not user_profile.ya_passport_oauth:
         for user_p in UserProfile.objects.exclude(ya_passport_email=''):
@@ -397,7 +397,7 @@ def ya_oauth_response(request, type_of_oauth):
 def ya_oauth_disable(request, type_of_oauth):
     user = request.user
     if request.method == "GET":
-        user_profile = user.get_profile()
+        user_profile = user.profile
         response = redirect('users.views.profile_settings')
     elif user.is_superuser and request.method == "POST" and "profile_id" in request.POST:
         user_profile = get_object_or_404(UserProfile, id=request.POST["profile_id"])
@@ -506,7 +506,7 @@ def my_tasks(request):
 @login_required
 def user_courses(request, username=None, year=None):
     user = request.user
-    lang = user.get_profile().language
+    lang = user.profile.language
 
     user_to_show = user
     if username:
@@ -636,7 +636,7 @@ def ajax_edit_user_info(request):
         return HttpResponseForbidden()
 
     user = request.user
-    user_profile = user.get_profile()
+    user_profile = user.profile
 
     user_info = ''
     if 'user-info' in request.POST:
@@ -672,7 +672,7 @@ def set_user_language(request):
 
         user = request.user
         if user.is_authenticated():
-            user_profile = user.get_profile()
+            user_profile = user.profile
             user_profile.language = lang_code
             user_profile.save()
     return response

@@ -1,7 +1,6 @@
 tornado<4.6
 ipykernel==4.5.2
-django==1.5.12
-south
+django==1.7.1
 pillow
 django-recaptcha
 python-gettext
@@ -19,7 +18,7 @@ django-filemanager
 requests==2.18.4
 flup
 unidecode
-django-jfu==1.0.7
+django-jfu==2.0.9
 django-filter==0.10.0
 yandex-oauth-py
 xmltodict
@@ -28,7 +27,7 @@ mock
 django-colorfield
 django-haystack==2.4.1
 Whoosh
-django-reversion==1.8
+django-reversion==1.9.3
 dateutils
 flake8
 django_premailer==0.2.0

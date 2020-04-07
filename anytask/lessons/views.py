@@ -33,7 +33,7 @@ def schedule_create_page(request, course_id):
         'course': course,
         'period_types': Lesson().PERIOD_CHOICES,
         'school': schools[0] if schools else '',
-        'user_location': request.user.get_profile().location,
+        'user_location': request.user.profile.location,
         'geo_suggest_url': settings.GEO_SUGGEST_URL
     }
 
@@ -58,7 +58,7 @@ def schedule_edit_page(request, lesson_id):
         'lesson': lssn,
         'period_types': lssn.PERIOD_CHOICES,
         'school': schools[0] if schools else '',
-        'user_location': request.user.get_profile().location,
+        'user_location': request.user.profile.location,
         'geo_suggest_url': settings.GEO_SUGGEST_URL
     }
 

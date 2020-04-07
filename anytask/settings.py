@@ -14,6 +14,7 @@ DATABASES = {
         'PASSWORD': '',                  # Not used with sqlite3.
         'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
         'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+        'ATOMIC_REQUESTS': True          # Without it site doesn't work
     }
 }
 
@@ -51,6 +52,9 @@ MEDIA_ROOT = '/var/lib/anytask/media'
 UPLOAD_ROOT = '/var/lib/anytask/upload'
 STATIC_ROOT = '/var/lib/anytask/static'
 
+ABSOLUTE_URL_OVERRIDES = {
+    'auth.user': lambda u: "/users/%s/" % u.username,
+}
 
 # local overrides (optional)
 

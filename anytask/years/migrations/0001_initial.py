@@ -1,33 +1,26 @@
-# encoding: utf-8
-import datetime
-from south.db import db
-from south.v2 import SchemaMigration
-from django.db import models
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
-class Migration(SchemaMigration):
-
-    def forwards(self, orm):
-        
-        # Adding model 'Year'
-        db.create_table('years_year', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('start_year', self.gf('django.db.models.fields.IntegerField')(unique=True, db_index=True)),
-        ))
-        db.send_create_signal('years', ['Year'])
+from django.db import models, migrations
+import django.utils.timezone
 
 
-    def backwards(self, orm):
-        
-        # Deleting model 'Year'
-        db.delete_table('years_year')
+class Migration(migrations.Migration):
 
+    dependencies = [
+    ]
 
-    models = {
-        'years.year': {
-            'Meta': {'object_name': 'Year'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'start_year': ('django.db.models.fields.IntegerField', [], {'unique': 'True', 'db_index': 'True'})
-        }
-    }
-
-    complete_apps = ['years']
+    operations = [
+        migrations.CreateModel(
+            name='Year',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('start_year', models.IntegerField(unique=True, db_index=True)),
+                ('added_time', models.DateTimeField(default=django.utils.timezone.now, auto_now_add=True)),
+                ('update_time', models.DateTimeField(default=django.utils.timezone.now, auto_now=True)),
+            ],
+            options={
+            },
+            bases=(models.Model,),
+        ),
+    ]

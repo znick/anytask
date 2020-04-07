@@ -61,7 +61,7 @@ class ContestSubmission(models.Model):
         try:
             issue = self.issue
             file = self.file
-            student_profile = issue.student.get_profile()
+            student_profile = issue.student.profile
             contest_id = issue.task.contest_id
             course = issue.task.course
             if not compiler_id:
@@ -182,7 +182,7 @@ class ContestSubmission(models.Model):
         run_id = self.run_id
 
         try:
-            student_profile = issue.student.get_profile()
+            student_profile = issue.student.profile
             course = issue.task.course
             if student_profile.ya_contest_oauth and course.send_to_contest_from_users:
                 oauth = student_profile.ya_contest_oauth

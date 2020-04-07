@@ -194,7 +194,7 @@ class ViewsTest(TestCase):
             'unread_count': 0,
             'text': message.text,
             'date': message.create_time.astimezone(
-                timezone_pytz(self.sender.get_profile().time_zone)
+                timezone_pytz(self.sender.profile.time_zone)
             ).strftime("%d.%m.%y %H:%M:%S"),
             'recipients_course': [{
                 'url': self.recipients_course[0].get_absolute_url(),
@@ -291,7 +291,7 @@ class ViewsTest(TestCase):
                 u'0': u'',
                 u'1': u'%s %s' % (message.sender.last_name, message.sender.first_name),
                 u'2': message.title,
-                u'3': format_date(message.create_time.astimezone(timezone_pytz(self.sender.get_profile().time_zone))),
+                u'3': format_date(message.create_time.astimezone(timezone_pytz(self.sender.profile.time_zone))),
                 u'DT_RowClass': u'',
                 u'DT_RowData': {u'id': 1},
                 u'DT_RowId': u'row_msg_sent_' + str(message.id)
@@ -323,7 +323,7 @@ class ViewsTest(TestCase):
                     u'1': u'%s %s' % (message.sender.last_name, message.sender.first_name),
                     u'2': message.title,
                     u'3': format_date(
-                        message.create_time.astimezone(timezone_pytz(recipient.get_profile().time_zone))
+                        message.create_time.astimezone(timezone_pytz(recipient.profile.time_zone))
                     ),
                     u'DT_RowClass': u'unread',
                     u'DT_RowData': {u'id': 1},
@@ -368,7 +368,7 @@ class ViewsTest(TestCase):
 
         # have unread msg
         for recipient in message.recipients.all():
-            self.assertItemsEqual(recipient.get_profile().unread_messages.all(), [message])
+            self.assertItemsEqual(recipient.profile.unread_messages.all(), [message])
 
         # make read
         get_data = {
@@ -386,7 +386,7 @@ class ViewsTest(TestCase):
                 u'0': u'',
                 u'1': u'%s %s' % (message.sender.last_name, message.sender.first_name),
                 u'2': message.title,
-                u'3': format_date(message.create_time.astimezone(timezone_pytz(recipient.get_profile().time_zone))),
+                u'3': format_date(message.create_time.astimezone(timezone_pytz(recipient.profile.time_zone))),
                 u'DT_RowClass': u'',
                 u'DT_RowData': {u'id': 1},
                 u'DT_RowId': u'row_msg_inbox_' + str(message.id)
@@ -422,7 +422,7 @@ class ViewsTest(TestCase):
                 u'1': u'%s %s' % (message.sender.last_name, message.sender.first_name),
                 u'2': message.title,
                 u'3': format_date(
-                    message.create_time.astimezone(timezone_pytz(recipient.get_profile().time_zone))
+                    message.create_time.astimezone(timezone_pytz(recipient.profile.time_zone))
                 ),
                 u'DT_RowClass': u'unread',
                 u'DT_RowData': {u'id': 1},
@@ -455,7 +455,7 @@ class ViewsTest(TestCase):
                 u'1': u'%s %s' % (message.sender.last_name, message.sender.first_name),
                 u'2': message.title,
                 u'3': format_date(
-                    message.create_time.astimezone(timezone_pytz(recipient.get_profile().time_zone))
+                    message.create_time.astimezone(timezone_pytz(recipient.profile.time_zone))
                 ),
                 u'DT_RowClass': u'unread',
                 u'DT_RowData': {u'id': 1},
@@ -491,7 +491,7 @@ class ViewsTest(TestCase):
                 u'1': u'%s %s' % (message.sender.last_name, message.sender.first_name),
                 u'2': message.title,
                 u'3': format_date(
-                    message.create_time.astimezone(timezone_pytz(recipient.get_profile().time_zone))
+                    message.create_time.astimezone(timezone_pytz(recipient.profile.time_zone))
                 ),
                 u'DT_RowClass': u'unread',
                 u'DT_RowData': {u'id': 1},
