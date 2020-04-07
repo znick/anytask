@@ -22,7 +22,6 @@ from mock import patch
 from BeautifulSoup import BeautifulSoup
 from datetime import datetime, timedelta
 from django.core.urlresolvers import reverse
-from unittest import skip
 
 
 def save_result_html(html):
@@ -817,7 +816,6 @@ class ViewsTest(TestCase):
                          'Wrong deadline end comment color')
 
     @patch('anyrb.common.AnyRB.upload_review')
-
     def test_upload_review_with_student(self, mock_upload_review):
         client = self.client
         issue = Issue.objects.create(task_id=self.task.id, student_id=self.student.id)

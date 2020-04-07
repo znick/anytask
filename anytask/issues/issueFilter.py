@@ -113,4 +113,3 @@ class IssueFilter(django_filters.FilterSet):
     class Meta:
         model = Issue
         fields = ['students', 'responsible', 'followers', 'seminars', 'task', 'status_field', 'update_time']
-

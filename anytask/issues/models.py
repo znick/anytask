@@ -555,7 +555,6 @@ class Event(models.Model):
         return ret
 
 
-
 @receiver(models.signals.post_save, sender=Issue)
 def post_create_set_default_teacher(sender, instance, created, *args, **kwargs):
     if created:
