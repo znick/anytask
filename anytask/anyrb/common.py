@@ -222,11 +222,13 @@ class RbReviewGroup(object):
             'name': self.review_group_name,
         }
         r = requests.post(url, auth=(settings.RB_API_USERNAME, settings.RB_API_PASSWORD), data=payload)
+        logger.info("RevewBoard create for '%s' : '%s' : '%s'", self.review_group_name, r.status_code, r.content)
         assert r.status_code in (200, 201, 223, 409)
 
     def list(self):
         url = settings.RB_API_URL + "/api/groups/{0}/users/".format(self.review_group_name)
         r = requests.get(url, auth=(settings.RB_API_USERNAME, settings.RB_API_PASSWORD))
+        logger.info("RevewBoard list for '%s' : '%s'", self.review_group_name, r.content)
         for user in r.json()["users"]:
             yield user["username"]
 
