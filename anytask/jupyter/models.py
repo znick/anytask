@@ -4,7 +4,7 @@ from django.utils.text import slugify
 from django.conf import settings
 
 from django.db.models.signals import post_save, post_delete
-from anytask.tasks.models import Task
+from tasks.models import Task
 
 from .client import get_or_create_assignment, delete_assignment
 
