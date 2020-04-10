@@ -52,10 +52,6 @@ MEDIA_ROOT = '/var/lib/anytask/media'
 UPLOAD_ROOT = '/var/lib/anytask/upload'
 STATIC_ROOT = '/var/lib/anytask/static'
 
-ABSOLUTE_URL_OVERRIDES = {
-    'auth.user': lambda u: "/users/%s/" % u.username,
-}
-
 # local overrides (optional)
 
 _settings_local = os.path.join(os.path.dirname(__file__), 'settings_local.py')

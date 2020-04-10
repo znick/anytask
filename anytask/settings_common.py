@@ -233,6 +233,10 @@ TEST_EXCLUDE = (
     'reversion',
 )
 
+ABSOLUTE_URL_OVERRIDES = {
+    'auth.user': lambda u: "/users/%s/" % u.username,
+}
+
 PYTHONTASK_MAX_DAYS_WITHOUT_SCORES = 30
 PYTHONTASK_MAX_DAYS_TO_FULL_CANCEL = 2
 PYTHONTASK_MAX_USERS_PER_TASK = 8
