@@ -21,8 +21,8 @@ class Invite(models.Model):
 
     key = models.CharField(max_length=10, db_index=True, null=False, blank=False, unique=True)
 
-    added_time = models.DateTimeField(auto_now_add=True, default=timezone.now)
-    update_time = models.DateTimeField(auto_now=True, default=timezone.now)
+    added_time = models.DateTimeField(auto_now_add=True)  # remove default=timezone.now
+    update_time = models.DateTimeField(auto_now=True)  # remove default=timezone.now
 
     def __unicode__(self):
         return u"{0}".format(self.key)

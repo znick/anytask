@@ -26,7 +26,7 @@ class Message(models.Model):
     hidden_copy = models.BooleanField(default=False)
     variable = models.BooleanField(default=False)
 
-    create_time = models.DateTimeField(auto_now_add=True, default=timezone.now)
+    create_time = models.DateTimeField(auto_now_add=True)  # remove default=timezone.now
 
     def __unicode__(self):
         return u'%s %s' % (self.sender.username, self.title)

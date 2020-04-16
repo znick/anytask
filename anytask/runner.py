@@ -1,4 +1,5 @@
-from django.test.simple import DjangoTestSuiteRunner
+# from django.test.simple import DjangoTestSuiteRunner
+from django.test.runner import DiscoverRunner as DjangoTestSuiteRunner
 from django.conf import settings
 
 EXCLUDED_APPS = getattr(settings, 'TEST_EXCLUDE', [])
