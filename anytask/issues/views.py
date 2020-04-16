@@ -14,7 +14,7 @@ from django.utils.translation import ugettext as _
 from django.views.decorators.http import require_POST
 from jfu.http import upload_receive, UploadResponse, JFUResponse
 from unidecode import unidecode
-from django.db.transaction import commit_on_success
+from django.db.transaction import atomic
 
 from anycontest.common import get_problem_compilers
 from anyrb.common import AnyRB
@@ -243,7 +243,7 @@ def issue_page(request, issue_id):
 
 
 @login_required
-@commit_on_success
+@atomic
 def get_or_create(request, task_id, student_id):
     # if not request.is_ajax():
     #    return HttpResponseForbidden()

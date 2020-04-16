@@ -158,7 +158,7 @@ def python_stat(request, course):
 
 
 @login_required
-@transaction.commit_on_success
+@transaction.atomic
 def get_task(request, course_id, task_id):
     user = request.user
 
