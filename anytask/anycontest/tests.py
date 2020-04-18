@@ -1,5 +1,6 @@
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from unittest import skip
+from django.conf import settings
 
 from django.contrib.auth.models import User
 from courses.models import Course, IssueField
@@ -21,8 +22,6 @@ import time
 import json
 import tests_data
 import cgi
-
-from django.test.utils import override_settings
 
 CONTEST_PORT = 8079
 
@@ -156,12 +155,19 @@ class ContestServerMock(threading.Thread):
         self.httpd.shutdown()
 
 
-@override_settings(CONTEST_API_URL='http://127.0.0.1:{}/anytask/'.format(CONTEST_PORT))
-@override_settings(CONTEST_URL="http://127.0.0.1:{}/".format(CONTEST_PORT))
-@override_settings(CONTEST_EXTENSIONS={"py": "python"})
+# @override_settings(CONTEST_API_URL='http://127.0.0.1:{}/anytask/'.format(CONTEST_PORT))
+# @override_settings(CONTEST_URL="http://127.0.0.1:{}/".format(CONTEST_PORT))
+# @override_settings(CONTEST_EXTENSIONS={"py": "python"})
+# Override doesn't work for some reason, so I made it manually in setUp and tearDown
 class AnyContestTest(TestCase):
     @classmethod
     def setUpClass(cls):
+        cls.backed_api = settings.CONTEST_API_URL
+        cls.backed_url = settings.CONTEST_URL
+        cls.backed_extensions = settings.CONTEST_EXTENSIONS
+        settings.CONTEST_API_URL = 'http://127.0.0.1:{}/anytask/'.format(CONTEST_PORT)
+        settings.CONTEST_URL = "http://127.0.0.1:{}/".format(CONTEST_PORT)
+        settings.CONTEST_EXTENSIONS = {"py": "python"}
         cls.contest = ContestServerMock()
         cls.contest.start()
         time.sleep(0.5)
@@ -170,6 +176,9 @@ class AnyContestTest(TestCase):
 
     @classmethod
     def tearDownClass(cls):
+        settings.CONTEST_API_URL = cls.backed_api
+        settings.CONTEST_URL = cls.backed_url
+        settings.CONTEST_EXTENSIONS = cls.backed_extensions
         cls.contest.stop()
 
     def setUp(self):

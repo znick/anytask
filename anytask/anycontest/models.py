@@ -87,7 +87,6 @@ class ContestSubmission(models.Model):
                         return False
             else:
                 oauth = settings.CONTEST_OAUTH
-
             problem_req = requests.get(settings.CONTEST_API_URL + 'problems?contestId=' + str(contest_id),
                                        headers={'Authorization': 'OAuth ' + settings.CONTEST_OAUTH})
             problem_id = None
@@ -150,7 +149,6 @@ class ContestSubmission(models.Model):
                 settings.CONTEST_V1_API_URL + '/contests/' + str(contest_id) + '/submissions/' + str(run_id) + '/full',
                 headers={'Authorization': 'OAuth ' + oauth}
             )
-
             results_req_json = results_req.json()
             issue.set_byname('mark', float(results_req_json['finalScore']))
 
@@ -193,7 +191,6 @@ class ContestSubmission(models.Model):
                 settings.CONTEST_API_URL + 'results?runId=' + str(run_id) + '&contestId=' + str(contest_id),
                 headers={'Authorization': 'OAuth ' + oauth}
             )
-
             results_req_json = results_req.json()
             self.full_response = results_req.content
 
