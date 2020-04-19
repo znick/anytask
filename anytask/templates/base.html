@@ -685,8 +685,8 @@
                                 {% block navbar_mail %}
                                     <li class="nav-item">
                                         <a href="{% url "mail.views.mail_page" %}" class="nav-link" role="button" style="position: relative;"><span class="fa fa-envelope" aria-hidden="true" style="line-height: inherit;"></span>
-                                            {% if user.get_profile.get_unread_count %}
-                                                <span id="top_notify_count" class="label label-pill label-danger top_notify_count">{{ user.get_profile.get_unread_count }}</span>
+                                            {% if user.profile.get_unread_count %}
+                                                <span id="top_notify_count" class="label label-pill label-danger top_notify_count">{{ user.profile.get_unread_count }}</span>
                                                 <span id="top_notify_count_string">{% trans "base_est_novye_soobshenija" %}</span>
                                             {% else %}
                                                 <span id="top_notify_count" class="label label-pill label-danger top_notify_count"></span>

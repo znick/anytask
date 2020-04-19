@@ -76,9 +76,9 @@
                     <tr class="{% if user.username == student.username %}table-info{% endif %}">
                         <td class="sticky-col" align="center"></td>
                         <td class="sticky-col">
-                            {% if not student.get_profile.is_active  %}<del>{% endif %}
+                            {% if not student.profile.is_active  %}<del>{% endif %}
                             <a class="card-link table-link" href="{{ student.get_absolute_url }}">{{ student.last_name }}&nbsp;{{ student.first_name }}</a>
-                            {% if not student.get_profile.is_active  %}</del>{% endif %}
+                            {% if not student.profile.is_active  %}</del>{% endif %}
                         </td>
                         {% for task in group_tasks|key:group %}
                             {% if not task.is_hidden or user_is_teacher %}

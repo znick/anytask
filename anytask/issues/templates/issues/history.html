@@ -39,7 +39,7 @@
         {{ issue.task|get_description:LANGUAGE_CODE|safe }}
     </div>
     {% if issue.task.type == issue.task.TYPE_IPYNB %}
-    {% if user.get_profile.ya_passport_login %}
+    {% if user.profile.ya_passport_login %}
     <div>
 {% blocktrans with jupyterhub_url_t=jupyterhub_url assignment_name_t=issue.task.nb_assignment_name %}
 <p>For solving the task you need to go to <a href="{{ jupyterhub_url_t }}" target="_blank">JupyterHub</a>.</p>
@@ -94,8 +94,8 @@
                     </div>
                     <div class="user_img col-xs-1 {% if event.author == user %}pull-xs-right{% else %}pull-xs-left{% endif %}">
                         <a class="card-link" {% if event.author.username != "anytask" %}href="{{ event.author.get_absolute_url }}"{% endif %}>
-                            <img class="avatar" src="{% if not event.author.get_profile.avatar %}https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mm&f=y
-                        {% else %}{{ event.author.get_profile.avatar.url }}{% endif %}" style="width: 50px; height: 50px;">
+                            <img class="avatar" src="{% if not event.author.profile.avatar %}https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mm&f=y
+                        {% else %}{{ event.author.profile.avatar.url }}{% endif %}" style="width: 50px; height: 50px;">
                         </a>
                         {#                        <i class="fa {% if event.author == user %}fa-empire{% else %}fa-rebel{% endif %} fa-3x" aria-hidden="true"></i>#}
                     </div>
