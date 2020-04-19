@@ -151,7 +151,7 @@
                                                 <div style="width: 0;height: 0;vertical-align: middle;border-top: 6px solid transparent;border-bottom: 6px solid transparent;border-left: 6px solid #add8e6;"></div>
                                             </td>
                                             <td style="vertical-align: top;padding-left: 7px">
-                                                <div style="width: 50px; height: 50px;border-radius: 50%;border: 1px solid #c3c3c3;vertical-align: middle;background-size: cover;background-image: url({{ domain }}{% if not event.author.get_profile.avatar %}{{ STATIC_URL }}default_avatar.png{% else %}{{ event.author.get_profile.avatar.url }}{% endif %});background-position: center center;"></div>
+                                                <div style="width: 50px; height: 50px;border-radius: 50%;border: 1px solid #c3c3c3;vertical-align: middle;background-size: cover;background-image: url({{ domain }}{% if not event.author.profile.avatar %}{{ STATIC_URL }}default_avatar.png{% else %}{{ event.author.profile.avatar.url }}{% endif %});background-position: center center;"></div>
                                             </td>
                                         </tr>
                                         </tbody>
@@ -186,7 +186,7 @@
                                         </tr>
                                         <tr>
                                             <td style="vertical-align: top;padding-right: 7px">
-                                                <div style="width: 50px; height: 50px;border-radius: 50%;border: 1px solid #c3c3c3;vertical-align: middle;background-size: cover;background-image: url({{ domain }}{% if not event.author.get_profile.avatar %}{{ STATIC_URL }}default_avatar.png{% else %}{{ event.author.get_profile.avatar.url }}{% endif %});background-position: center center;"></div>
+                                                <div style="width: 50px; height: 50px;border-radius: 50%;border: 1px solid #c3c3c3;vertical-align: middle;background-size: cover;background-image: url({{ domain }}{% if not event.author.profile.avatar %}{{ STATIC_URL }}default_avatar.png{% else %}{{ event.author.profile.avatar.url }}{% endif %});background-position: center center;"></div>
                                             </td>
                                             <td style="vertical-align: top;padding-top: 20px;">
                                                 <div style="width: 0;height: 0;vertical-align: middle;border-top: 6px solid transparent;border-bottom: 6px solid transparent;border-right: 6px solid #f5f8fa;"></div>

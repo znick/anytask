@@ -300,8 +300,8 @@
                                                                 {% elif task.task.type == task.task.TYPE_IPYNB %}
                                                                     <a style="width: 100%"
                                                                         class="btn btn-sm btn-primary pull-xs-right"
-                                                                        {% if not user.get_profile.ya_passport_login %}disabled{% endif %}
-                                                                        href="{{ jupyterhub_url }}/user/{{ user.get_profile.ya_passport_login }}/tree/source/{{ task.task.nb_assignment_name }}">
+                                                                        {% if not user.profile.ya_passport_login %}disabled{% endif %}
+                                                                        href="{{ jupyterhub_url }}/user/{{ user.profile.ya_passport_login }}/tree/source/{{ task.task.nb_assignment_name }}">
                                                                         {% trans "perejti" %}</a>
                                                                 {% endif %}
                                                             </div>
