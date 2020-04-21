@@ -81,40 +81,10 @@ class AnytaskPasswordResetForm(PasswordResetForm):
                                              </div>
                                            </div>"""))
 
-    def save(self, domain_override=None,
-             subject_template_name='registration/password_reset_subject.txt',
-             email_template_name='registration/password_reset_email.html',
-             use_https=False, token_generator=default_token_generator,
-             from_email=None, request=None):
-
-        email_template_name_plain = 'registration/password_reset_email.txt'
-
-        site = Site.objects.get_current()
-        from_email = settings.DEFAULT_FROM_EMAIL
-        notify_messages = []
-        for user in self.users_cache:
-            # lang = user.get_profile().language
-            # translation.activate(lang)
-
-            context = {
-                'domain': site.domain,
-                'site_name': site.name,
-                'uid': int_to_base36(user.id),
-                'user': user,
-                'token': token_generator.make_token(user),
-            }
-
-            subject = render_to_string(subject_template_name, context)
-            subject = ''.join(subject.splitlines())
-
-            context["title"] = subject
-            plain_text = render_to_string(email_template_name_plain, context)
-            html = render_to_string(email_template_name, context)
-            # translation.deactivate()
-
-            notify_messages.append((subject, plain_text, html, from_email, [user.email]))
-        if notify_messages:
-            send_mass_mail_html(notify_messages)
+    def save(self, *args, **kwargs):
+        kwargs['email_template_name'] = 'registration/password_reset_email.txt'
+        kwargs['html_email_template_name'] = 'registration/password_reset_email.html'
+        PasswordResetForm.save(self, *args, **kwargs)
 
 
 class AnytaskSetPasswordForm(SetPasswordForm):
