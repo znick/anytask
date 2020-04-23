@@ -228,10 +228,11 @@ HAYSTACK_CONNECTIONS = {
     },
 }
 
-# TEST_RUNNER = 'runner.ExcludeAppsTestSuiteRunner'
-# TEST_EXCLUDE = (
-#     'reversion',
-# )
+TEST_RUNNER = 'runner.ExcludeAppsTestSuiteRunner'
+TEST_EXCLUDE = (
+    'reversion',
+    'rbtools'
+)
 
 ABSOLUTE_URL_OVERRIDES = {
     'auth.user': lambda u: "/users/%s/" % u.username,
