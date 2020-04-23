@@ -231,7 +231,8 @@ HAYSTACK_CONNECTIONS = {
 TEST_RUNNER = 'runner.ExcludeAppsTestSuiteRunner'
 TEST_EXCLUDE = (
     'reversion',
-    'rbtools'
+    'rbtools',
+    'dependencies'
 )
 
 ABSOLUTE_URL_OVERRIDES = {
