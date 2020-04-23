@@ -232,7 +232,7 @@ TEST_RUNNER = 'runner.ExcludeAppsTestSuiteRunner'
 TEST_EXCLUDE = (
     'reversion',
     'rbtools',
-    'dependencies'
+    'django_bootstrap'
 )
 
 ABSOLUTE_URL_OVERRIDES = {

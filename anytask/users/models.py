@@ -2,7 +2,6 @@
 
 import logging
 import os
-from django.utils import timezone
 
 from courses.models import Course
 from django.contrib.auth.models import User
