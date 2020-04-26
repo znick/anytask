@@ -29,7 +29,7 @@ django-htmlmin==0.10.0
 django-jfu==2.0.9
 django-recaptcha==1.4.0
 django-reversion==1.9.3
-django==1.8
+django==1.8.19
 django_premailer==0.2.0
 entrypoints==0.2.3        # via nbconvert
 enum34==1.1.6             # via traitlets
