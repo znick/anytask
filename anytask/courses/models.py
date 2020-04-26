@@ -22,9 +22,9 @@ def add_group_with_extern(sender, instance, **kwargs):
 
 
 class DefaultIssueFields(set):
-    _DEFAULT_ISSUE_FIELDS_PKS = set([1, 2, 3, 4, 5, 6, 7, 8, 9])
-    _DEFAULT_RB_ISSUE_FIELDS_PKS = set([10])
-    _DEFAULT_CNTST_ISSUE_FIELDS_PKS = set([11])
+    _DEFAULT_ISSUE_FIELDS_PKS = {1, 2, 3, 4, 5, 6, 7, 8, 9}
+    _DEFAULT_RB_ISSUE_FIELDS_PKS = {10}
+    _DEFAULT_CNTST_ISSUE_FIELDS_PKS = {11}
     _default_issue_fields = set()
     _default_issue_fields_pks = set()
     _course_rb_integrated = False
@@ -120,8 +120,8 @@ class Course(models.Model):
 
     private = models.BooleanField(db_index=False, null=False, blank=False, default=True)
 
-    added_time = models.DateTimeField(auto_now_add=True, default=timezone.now)
-    update_time = models.DateTimeField(auto_now=True, default=timezone.now)
+    added_time = models.DateTimeField(auto_now_add=True)  # remove default=timezone.now
+    update_time = models.DateTimeField(auto_now=True)  # remove default=timezone.now
 
     can_be_chosen_by_extern = models.BooleanField(db_index=False, null=False, blank=False, default=False)
     group_with_extern = models.ForeignKey(
@@ -280,7 +280,7 @@ class StudentCourseMark(models.Model):
     mark = models.ForeignKey(MarkField, db_index=False, null=True, blank=True)
 
     teacher = models.ForeignKey(User, related_name='teacher_change_mark', db_index=False, null=True, blank=True)
-    update_time = models.DateTimeField(auto_now=True, default=timezone.now)
+    update_time = models.DateTimeField(auto_now=True)  # remove default=timezone.now
 
     def __unicode__(self):
         return unicode(self.mark)

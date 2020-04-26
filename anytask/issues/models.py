@@ -52,7 +52,7 @@ class Issue(models.Model):
 
     mark = models.FloatField(db_index=False, null=False, blank=False, default=0)
 
-    create_time = models.DateTimeField(auto_now_add=True, default=timezone.now)
+    create_time = models.DateTimeField(auto_now_add=True)  # remove default=timezone.now
     update_time = models.DateTimeField(default=timezone.now)
 
     responsible = models.ForeignKey(User, db_index=True, null=True, blank=True, related_name='responsible')

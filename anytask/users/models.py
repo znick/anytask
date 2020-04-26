@@ -2,7 +2,6 @@
 
 import logging
 import os
-from django.utils import timezone
 
 from courses.models import Course
 from django.contrib.auth.models import User
@@ -57,8 +56,8 @@ class UserProfile(models.Model):
     deleted_messages = models.ManyToManyField(Message, null=True, blank=True, related_name='deleted_messages')
     send_notify_messages = models.ManyToManyField(Message, null=True, blank=True, related_name='send_notify_messages')
 
-    added_time = models.DateTimeField(auto_now_add=True, default=timezone.now)
-    update_time = models.DateTimeField(auto_now=True, default=timezone.now)
+    added_time = models.DateTimeField(auto_now_add=True)  # remove default=timezone.now
+    update_time = models.DateTimeField(auto_now=True)  # remove default=timezone.now
 
     updated_by = models.ForeignKey(User, db_index=False, null=True, blank=True)
 
@@ -146,8 +145,8 @@ class UserProfileLog(models.Model):
     send_notify_messages = models.ManyToManyField(Message, null=True, blank=True,
                                                   related_name='log_send_notify_messages')
 
-    added_time = models.DateTimeField(auto_now_add=True, default=timezone.now)
-    update_time = models.DateTimeField(auto_now=True, default=timezone.now)
+    added_time = models.DateTimeField(auto_now_add=True)  # remove default=timezone.now
+    update_time = models.DateTimeField(auto_now=True)  # remove default=timezone.now
 
     login_via_yandex = models.BooleanField(db_index=False, null=False, blank=False, default=True)
 

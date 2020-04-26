@@ -20,7 +20,7 @@ class Command(BaseCommand):
         self.out_lines = []
         self.need_print = False
 
-    @transaction.commit_on_success()
+    @transaction.atomic()
     def check_course_task_taken_expires(self, course):
         if not settings.PYTHONTASK_MAX_DAYS_WITHOUT_SCORES:
             return
@@ -58,7 +58,7 @@ class Command(BaseCommand):
             for task_taken in task_taken_to_delete:
                 task_taken.mark_deleted()
 
-    @transaction.commit_on_success()
+    @transaction.atomic()
     def check_blacklist_expires(self, course):
         if not settings.PYTHONTASK_DAYS_DROP_FROM_BLACKLIST:
             return

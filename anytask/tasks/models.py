@@ -72,8 +72,8 @@ class Task(models.Model):
     )
     type = models.CharField(db_index=False, max_length=128, choices=TASK_TYPE_CHOICES, default=TYPE_FULL)
 
-    added_time = models.DateTimeField(auto_now_add=True, default=timezone.now)
-    update_time = models.DateTimeField(auto_now=True, default=timezone.now)
+    added_time = models.DateTimeField(auto_now_add=True)  # remove default=timezone.now
+    update_time = models.DateTimeField(auto_now=True)  # remove default=timezone.now
     deadline_time = models.DateTimeField(auto_now=False, blank=True, null=True, default=None)
 
     updated_by = models.ForeignKey(User, db_index=False, null=True, blank=True)
@@ -268,8 +268,8 @@ class TaskLog(models.Model):
     )
     type = models.CharField(db_index=False, max_length=128, choices=TASK_TYPE_CHOICES, default=TYPE_FULL)
 
-    added_time = models.DateTimeField(auto_now_add=True, default=timezone.now)
-    update_time = models.DateTimeField(auto_now=True, default=timezone.now)
+    added_time = models.DateTimeField(auto_now_add=True)  # remove default=timezone.now
+    update_time = models.DateTimeField(auto_now=True)  # remove default=timezone.now
     deadline_time = models.DateTimeField(auto_now=False, null=True, default=None)
 
     updated_by = models.ForeignKey(User, db_index=False, null=True, blank=True)
@@ -314,8 +314,8 @@ class TaskTaken(models.Model):
 
     taken_time = models.DateTimeField(blank=True, null=True)
     blacklisted_till = models.DateTimeField(blank=True, null=True)
-    added_time = models.DateTimeField(auto_now_add=True, default=timezone.now)
-    update_time = models.DateTimeField(auto_now=True, default=timezone.now)
+    added_time = models.DateTimeField(auto_now_add=True)   # remove default=timezone.now
+    update_time = models.DateTimeField(auto_now=True)  # remove default=timezone.now
 
     @property
     def score(self):

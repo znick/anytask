@@ -101,7 +101,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.transaction.TransactionMiddleware',
+    # 'django.middleware.transaction.TransactionMiddleware',
     'reversion.middleware.RevisionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'anytask.middleware.timezone_middleware.TimezoneMiddleware'
@@ -231,6 +231,8 @@ HAYSTACK_CONNECTIONS = {
 TEST_RUNNER = 'runner.ExcludeAppsTestSuiteRunner'
 TEST_EXCLUDE = (
     'reversion',
+    'rbtools',
+    'django_bootstrap'
 )
 
 ABSOLUTE_URL_OVERRIDES = {

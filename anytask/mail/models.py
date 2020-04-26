@@ -3,7 +3,6 @@
 from django.db import models
 from django.db.models.signals import m2m_changed
 
-from django.utils import timezone
 
 from django.contrib.auth.models import User
 from courses.models import Course
@@ -26,7 +25,7 @@ class Message(models.Model):
     hidden_copy = models.BooleanField(default=False)
     variable = models.BooleanField(default=False)
 
-    create_time = models.DateTimeField(auto_now_add=True, default=timezone.now)
+    create_time = models.DateTimeField(auto_now_add=True)  # remove default=timezone.now
 
     def __unicode__(self):
         return u'%s %s' % (self.sender.username, self.title)
