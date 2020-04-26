@@ -15,7 +15,7 @@ django-bootstrap-breadcrumbs==0.9.1
 pycrypto==2.6.1
 python-magic==0.4.15
 django-filemanager==0.0.5
-requests==2.18.4
+requests==2.20.0
 flup==1.0.3
 unidecode==1.0.22
 django-jfu==2.0.9
