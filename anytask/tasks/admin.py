@@ -1,6 +1,6 @@
 from tasks.models import Task, TaskTaken, TaskLog, TaskGroupRelations
 from django.contrib import admin
-import reversion
+from reversion.admin import VersionAdmin
 
 
 class TaskBaseAdmin(admin.ModelAdmin):
@@ -15,7 +15,7 @@ class TaskBaseAdmin(admin.ModelAdmin):
     get_groups.short_description = 'Groups'
 
 
-class TaskAdmin(reversion.VersionAdmin, TaskBaseAdmin):
+class TaskAdmin(VersionAdmin, TaskBaseAdmin):
     pass
 
 

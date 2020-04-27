@@ -116,10 +116,10 @@ TEMPLATE_DIRS = (
     os.path.join(PROJECT_PATH, 'templates'),
 )
 
-TEMPLATE_CONTEXT_PROCESSORS = TCP + (
+TEMPLATE_CONTEXT_PROCESSORS = TCP + [
     'django.core.context_processors.request',
     'django.core.context_processors.static',
-)
+]
 
 INSTALLED_APPS = (
     'django.contrib.auth',
@@ -131,7 +131,6 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'whoosh',
     'haystack',
-    # 'south',
     'common',
     'users',
     'years',

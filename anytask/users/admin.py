@@ -6,7 +6,7 @@ from django.contrib import admin
 from django.utils.translation import ugettext as _
 from django.contrib.auth import admin as auth_admin
 
-import reversion
+from reversion.admin import VersionAdmin
 
 
 def display_color(obj):
@@ -46,7 +46,7 @@ class UserProfileBaseAdmin(admin.ModelAdmin):
     search_fields = ('user__username', 'user_status__name')
 
 
-class UserProfileAdmin(reversion.VersionAdmin, UserProfileBaseAdmin):
+class UserProfileAdmin(VersionAdmin, UserProfileBaseAdmin):
     pass
 
 
