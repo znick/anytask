@@ -14,7 +14,10 @@ DATABASES = {
         'PASSWORD': '',                  # Not used with sqlite3.
         'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
         'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
-        'ATOMIC_REQUESTS': True          # Without it site doesn't work
+        'ATOMIC_REQUESTS': True,         # Without it site doesn't work
+        # 'TEST': {
+        #     'NAME': 'testdb.sql'
+        # }
     }
 }
 

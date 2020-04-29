@@ -73,6 +73,8 @@ class CreateTest(TestCase):
         self.assertEqual(course.is_active, True)
         self.assertItemsEqual(course.teachers.all(), teachers)
         self.assertItemsEqual(course.groups.all(), groups)
+        actual = list(course.issue_fields.all())
+        expected = list(IssueField.objects.exclude(id=10).exclude(id=11))
         self.assertItemsEqual(course.issue_fields.all(), IssueField.objects.exclude(id=10).exclude(id=11))
         self.assertEqual(course.contest_integrated, False)
         self.assertEqual(course.send_rb_and_contest_together, False)
