@@ -28,7 +28,7 @@ from registration.views import ajax_check_username, ajax_check_email
 
 from django.contrib.auth import views as auth_views
 
-urlpatterns = patterns('',
+urlpatterns = ['',
                        url(r'^activate/complete/$',
                            TemplateView.as_view(template_name='registration/activation_complete.html'),
                            name='registration_activation_complete'),
@@ -71,4 +71,4 @@ urlpatterns = patterns('',
                            {'password_change_form': AnytaskPasswordChangeForm},
                            name='auth_password_change'),
                        (r'', include('registration.auth_urls')),
-        )
+]

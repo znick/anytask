@@ -1,11 +1,35 @@
 # Django settings for anytask project.
 # coding: utf-8
 
-from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
-
 import os
 
 PROJECT_PATH = os.path.dirname(os.path.abspath(__file__))
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [
+            # insert your TEMPLATE_DIRS here
+        ],
+        'OPTIONS': {
+            'context_processors': [
+                # Insert your TEMPLATE_CONTEXT_PROCESSORS here or use this
+                # list if you haven't customized them:
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.debug',
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.media',
+                'django.template.context_processors.static',
+                'django.template.context_processors.tz',
+                'django.contrib.messages.context_processors.messages',
+            ],
+            'loaders': [
+                # insert your TEMPLATE_LOADERS here
+            ]
+        },
+    },
+]
 
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
@@ -116,10 +140,6 @@ TEMPLATE_DIRS = (
     os.path.join(PROJECT_PATH, 'templates'),
 )
 
-TEMPLATE_CONTEXT_PROCESSORS = TCP + [
-    'django.core.context_processors.request',
-    'django.core.context_processors.static',
-]
 
 INSTALLED_APPS = (
     'django.contrib.auth',
