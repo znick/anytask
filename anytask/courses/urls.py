@@ -3,7 +3,7 @@ from courses.pythontask import get_task, cancel_task
 import courses.views
 
 urlpatterns = [
-    url(r'^(?P<course_id>\d+)$', courses.views.course_page),
+    url(r'^(?P<course_id>\d+)$', courses.views.course_page, name='courses-views-course_page'),
     url(r'^(?P<course_id>\d+)/seminar/(?P<task_id>\d+)$', courses.views.seminar_page),
     url(r'^(?P<course_id>\d+)/queue$', courses.views.queue_page),
     url(r'^(?P<course_id>\d+)/gradebook/$', courses.views.gradebook),
