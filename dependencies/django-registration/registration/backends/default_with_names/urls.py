@@ -71,4 +71,4 @@ urlpatterns = patterns('',
                            {'password_change_form': AnytaskPasswordChangeForm},
                            name='auth_password_change'),
                        (r'', include('registration.auth_urls')),
-                       )
+        )
