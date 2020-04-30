@@ -4,7 +4,7 @@ import datetime
 import json
 import uuid
 
-import reversion
+from reversion import revisions as reversion
 from courses.models import Course
 from common.timezone import get_datetime_with_tz
 from django.conf import settings

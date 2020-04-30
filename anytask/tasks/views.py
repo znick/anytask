@@ -4,7 +4,7 @@ import datetime
 import json
 
 import requests
-import reversion
+from reversion import revisions as reversion
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required

@@ -17,7 +17,7 @@ from collections import defaultdict, Counter
 import datetime
 import logging
 import requests
-import reversion
+from reversion import revisions as reversion
 
 from courses.models import Course, DefaultTeacher, StudentCourseMark, MarkField, FilenameExtension
 from groups.models import Group

@@ -41,7 +41,7 @@ import requests
 import json
 import datetime
 import pytz
-import reversion
+from reversion import revisions as reversion
 
 
 @login_required

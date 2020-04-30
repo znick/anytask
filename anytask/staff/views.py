@@ -18,7 +18,7 @@ from users.models import UserProfile
 from users.model_user_profile_filter import UserProfileFilter
 from users.model_user_status import UserStatus, get_statuses
 
-import reversion
+from reversion import revisions as reversion
 import csv
 import logging
 import json
