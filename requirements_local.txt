@@ -1,6 +1,6 @@
 tornado==4.5.3
 ipykernel==4.5.2
-django==1.8.19
+django==1.9.13
 pillow==5.2.0
 django-recaptcha==1.4.0
 python-gettext==3.0
@@ -27,7 +27,7 @@ mock==3.0.5
 django-colorfield==0.1.14
 django-haystack==2.4.1
 Whoosh==2.7.4
-django-reversion==1.9.3
+django-reversion==1.10
 dateutils==0.6.6
 flake8==3.7.9
 django_premailer==0.2.0
