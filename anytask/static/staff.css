@@ -1,0 +1,151 @@
+.table_tasks th {
+    white-space: nowrap
+}
+
+#filters .nav-pills .nav-item {
+    cursor: pointer;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.card-header {
+    background-color: inherit;
+}
+
+.crispy-form {
+    padding-right: .9375rem;
+    padding-left: .9375rem;
+}
+
+#file_filter .file-caption {
+    float: none !important;
+}
+
+#file_filter .file-input-new .file-caption {
+    display: none !important;
+}
+
+#file_filter .file-input-new .btn-file {
+    display: block;
+    width: 100%;
+    border-radius: .25rem;
+}
+
+#error_file_input {
+    margin: 0 0 .5rem 0;
+}
+
+.remove-after-init {
+    display: none;
+}
+
+.loading {
+    text-align: center;
+}
+
+.table-users {
+    table-layout: fixed;
+}
+
+.table-users th.th-checkbox {
+    width: 5%;
+}
+
+.table-users th.th-name {
+    width: 25%;
+}
+
+.table-users th.th-email {
+    width: 20%;
+}
+
+.table-users th.th-status {
+    width: 50%;
+}
+
+.table.table-users td,
+.table.table-users th {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+}
+
+.table-users tr.selected.row-selected {
+    background-color: rgba(2, 133, 255, 0.14);
+    color: inherit;
+}
+
+.table-users tr.selected.row-selected a {
+    color: #0275d8;
+}
+
+.table-users tr.selected.row-selected:hover {
+    background-color: rgba(2, 133, 255, 0.29);
+}
+
+.table-options button .fa{
+    line-height: 1.5;
+}
+
+.main-table .table-search label {
+    width: 100%;
+}
+
+.main-table .table-search input[type="search"] {
+    width: 100%;
+    margin-left: 0;
+}
+
+.modal .status-type-label {
+    font-weight: bold;
+}
+
+#modal_change_status .modal-footer .checkbox-footer{
+    text-align: left;
+    margin-bottom: 1rem;
+}
+
+#modal_change_status_error_text {
+    text-align: left;
+}
+
+
+@media screen and (max-width: 575px), screen and (min-width: 992px) {
+    .nav-pills .nav-item {
+        float: none;
+    }
+
+    #file_filter .input-group {
+        display: block;
+    }
+
+    #file_filter .input-group .form-control {
+        border-radius: .25rem;
+    }
+
+    #file_filter .file-input-new .fileinput-remove-button,
+    #file_filter .file-input-new .fileinput-upload-button {
+        display: none;
+    }
+
+    #file_filter .input-group .form-control,
+    #file_filter .input-group-addon,
+    #file_filter .input-group-btn {
+        display: block;
+        width: 100%;
+
+    }
+
+    #file_filter .fileinput-remove-button,
+    #file_filter .fileinput-remove-button,
+    #file_filter .fileinput-upload-button,
+    #file_filter .btn-file {
+        display: block;
+        width: 100%;
+        border-radius: .25rem;
+        margin-top: .5rem;
+
+    }
+}

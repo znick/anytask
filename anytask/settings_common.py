@@ -1,8 +1,6 @@
 # Django settings for anytask project.
 # coding: utf-8
 
-from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
-
 import os
 
 PROJECT_PATH = os.path.dirname(os.path.abspath(__file__))
@@ -89,11 +87,6 @@ STATICFILES_FINDERS = (
 SECRET_KEY = '3$uum*a)#mnl()ds5em&scsv9gz*!fwbqa&%apz&ccbdukyyku'
 
 # List of callables that know how to import templates from various sources.
-TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
-    # 'django.template.loaders.eggs.Loader',
-)
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
@@ -109,16 +102,34 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'anytask.urls'
 
-TEMPLATE_DIRS = (
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
-    os.path.join(PROJECT_PATH, 'templates'),
-)
-
-TEMPLATE_CONTEXT_PROCESSORS = TCP + [
-    'django.core.context_processors.request',
-    'django.core.context_processors.static',
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [
+            # Always use forward slashes, even on Windows.
+            # Don't forget to use absolute paths, not relative paths.
+            os.path.join(PROJECT_PATH, 'templates')
+        ],
+        'OPTIONS': {
+            'context_processors': [
+                # Insert your TEMPLATE_CONTEXT_PROCESSORS here or use this
+                # list if you haven't customized them:
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.debug',
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.media',
+                'django.template.context_processors.static',
+                'django.template.context_processors.tz',
+                'django.contrib.messages.context_processors.messages',
+            ],
+            'loaders': [
+                'django.template.loaders.filesystem.Loader',
+                'django.template.loaders.app_directories.Loader',
+                # 'django.template.loaders.eggs.Loader'
+            ]
+        },
+    },
 ]
 
 INSTALLED_APPS = (
@@ -228,11 +239,12 @@ HAYSTACK_CONNECTIONS = {
 }
 
 TEST_RUNNER = 'runner.ExcludeAppsTestSuiteRunner'
-TEST_EXCLUDE = (
+
+TEST_EXCLUDE = [
     'reversion',
     'rbtools',
     'django_bootstrap'
-)
+]
 
 ABSOLUTE_URL_OVERRIDES = {
     'auth.user': lambda u: "/users/%s/" % u.username,
