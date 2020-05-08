@@ -17,4 +17,4 @@ class School(models.Model):
         return unicode(self.name)
 
     def get_absolute_url(self):
-        return reverse('schools-views-school_page', args=[str(self.link)])
+        return reverse('schools.views.school_page', args=[str(self.link)])

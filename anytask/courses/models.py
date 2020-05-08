@@ -156,7 +156,7 @@ class Course(models.Model):
         return unicode(self.name)
 
     def get_absolute_url(self):
-        return reverse('courses-views-course_page', args=[str(self.id)])
+        return reverse('courses.views.course_page', args=[str(self.id)])
 
     def user_can_edit_course(self, user):
         if user.is_anonymous():

@@ -1,24 +1,22 @@
 # -*- coding: utf-8 -*-
 
+import json
+
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden, HttpResponse
-from django.shortcuts import render_to_response
-from django.template.context import RequestContext
-from django.utils.translation import ugettext as _
+from django.shortcuts import render
 from django.utils import timezone
+from django.utils.translation import ugettext as _
 from django.views.decorators.http import require_POST, require_GET
-from django.conf import settings
-
-from mail.models import Message
-from courses.models import Course
-from groups.models import Group
-from users.models import UserProfile
-from users.model_user_status import get_statuses
-
-from mail.common import render_mail
 from pytz import timezone as timezone_pytz
 
-import json
+from courses.models import Course
+from groups.models import Group
+from mail.common import render_mail
+from mail.models import Message
+from users.model_user_status import get_statuses
+from users.models import UserProfile
 
 MONTH = {
     1: _(u"january"),
@@ -65,7 +63,7 @@ def mail_page(request):
         "snow_alert_message_fulltext": hasattr(settings, 'SEND_MESSAGE_FULLTEXT') and settings.SEND_MESSAGE_FULLTEXT,
     }
 
-    return render_to_response('mail.html', context, context_instance=RequestContext(request))
+    return render(request, 'mail.html', context)
 
 
 @require_GET

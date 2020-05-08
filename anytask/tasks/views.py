@@ -11,8 +11,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseForbidden
-from django.shortcuts import render_to_response, get_object_or_404
-from django.template import RequestContext
+from django.shortcuts import render, get_object_or_404
 from django.utils.translation import ugettext as _
 from django.utils.timezone import make_aware
 from django.db.models import Sum
@@ -71,7 +70,7 @@ def task_create_page(request, course_id):
         'geo_suggest_url': settings.GEO_SUGGEST_URL
     }
 
-    return render_to_response('task_create.html', context, context_instance=RequestContext(request))
+    return render(request, 'task_create.html', context)
 
 
 @login_required
@@ -95,7 +94,7 @@ def task_import_page(request, course_id):
         'geo_suggest_url': settings.GEO_SUGGEST_URL
     }
 
-    return render_to_response('task_import.html', context, context_instance=RequestContext(request))
+    return render(request, 'task_import.html', context)
 
 
 @login_required
@@ -120,7 +119,7 @@ def contest_import_page(request, course_id):
         'geo_suggest_url': settings.GEO_SUGGEST_URL
     }
 
-    return render_to_response('contest_import.html', context, context_instance=RequestContext(request))
+    return render(request, 'contest_import.html', context)
 
 
 @login_required
@@ -172,7 +171,7 @@ def task_edit_page(request, task_id):
         'geo_suggest_url': settings.GEO_SUGGEST_URL
     }
 
-    return render_to_response('task_edit.html', context, context_instance=RequestContext(request))
+    return render(request, 'task_edit.html', context)
 
 
 def get_task_params(request, check_score_after_deadline=False):
@@ -472,7 +471,7 @@ def get_task_text_popup(request, task_id):
         'task': task,
     }
 
-    return render_to_response('task_text_popup.html', context, context_instance=RequestContext(request))
+    return render(request, 'task_text_popup.html', context)
 
 
 @login_required

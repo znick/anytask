@@ -10,8 +10,7 @@ from common.timezone import get_datetime_with_tz
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseForbidden
-from django.shortcuts import render_to_response, get_object_or_404
-from django.template import RequestContext
+from django.shortcuts import render, get_object_or_404
 from groups.models import Group
 from lessons.models import Lesson
 
@@ -37,7 +36,7 @@ def schedule_create_page(request, course_id):
         'geo_suggest_url': settings.GEO_SUGGEST_URL
     }
 
-    return render_to_response('lesson_create.html', context, context_instance=RequestContext(request))
+    return render(request, 'lesson_create.html', context)
 
 
 @login_required
@@ -62,7 +61,7 @@ def schedule_edit_page(request, lesson_id):
         'geo_suggest_url': settings.GEO_SUGGEST_URL
     }
 
-    return render_to_response('lesson_edit.html', context, context_instance=RequestContext(request))
+    return render(request, 'lesson_edit.html', context)
 
 
 def get_lesson_dates(date_startime, date_endtime, date_end, week_days):

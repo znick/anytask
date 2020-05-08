@@ -1,7 +1,6 @@
 # Create your views here.
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render_to_response, get_object_or_404
-from django.template.context import RequestContext
+from django.shortcuts import render, get_object_or_404
 
 from schools.models import School
 
@@ -16,7 +15,7 @@ def school_page(request, school_link):
         'courses': courses,
     }
 
-    return render_to_response('school_page.html', context, context_instance=RequestContext(request))
+    return render(request, 'school_page.html', context)
 
 
 @login_required
@@ -29,4 +28,4 @@ def archive_page(request, school_link):
         'courses': courses,
     }
 
-    return render_to_response('archive_page.html', context, context_instance=RequestContext(request))
+    return render(request, 'archive_page.html', context)

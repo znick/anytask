@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from django.shortcuts import render_to_response
-from django.template.context import RequestContext
+from django.shortcuts import render
 
 
 def blog_page(request):
     context = {}
 
-    return render_to_response('blog.html', context, context_instance=RequestContext(request))
+    return render(request, 'blog.html', context)
