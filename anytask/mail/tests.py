@@ -12,6 +12,8 @@ from mail.views import format_date
 from pytz import timezone as timezone_pytz
 import json
 
+import mail.views
+
 
 class CreateTest(TestCase):
     def setUp(self):
@@ -104,28 +106,28 @@ class ViewsTest(TestCase):
         client = self.client
 
         # get page
-        response = client.get(reverse('mail.views.mail_page'))
+        response = client.get(reverse(mail.views.mail_page))
         self.assertEqual(response.status_code, 302)
 
     def test_ajax_get_mailbox_anonymously(self):
         client = self.client
 
         # get page
-        response = client.get(reverse('mail.views.ajax_get_mailbox'))
+        response = client.get(reverse(mail.views.ajax_get_mailbox))
         self.assertEqual(response.status_code, 302)
 
     def test_ajax_get_message_anonymously(self):
         client = self.client
 
         # get page
-        response = client.get(reverse('mail.views.ajax_get_message'))
+        response = client.get(reverse(mail.views.ajax_get_message))
         self.assertEqual(response.status_code, 302)
 
     def test_ajax_send_message_anonymously(self):
         client = self.client
 
         # get page
-        response = client.get(reverse('mail.views.ajax_send_message'))
+        response = client.get(reverse(mail.views.ajax_send_message))
         self.assertEqual(response.status_code, 405)
 
     def test_mail_page_with_user(self):
@@ -135,7 +137,7 @@ class ViewsTest(TestCase):
         self.assertTrue(client.login(username=self.sender.username, password=self.sender_password))
 
         # get page
-        response = client.get(reverse('mail.views.mail_page'))
+        response = client.get(reverse(mail.views.mail_page))
         self.assertEqual(response.status_code, 200)
 
     def test_ajax_get_mailbox_user(self):
@@ -161,7 +163,7 @@ class ViewsTest(TestCase):
         self.assertTrue(client.login(username=self.sender.username, password=self.sender_password))
 
         # get page
-        response = client.get(reverse('mail.views.ajax_get_mailbox'), get_data)
+        response = client.get(reverse(mail.views.ajax_get_mailbox), get_data)
         self.assertEqual(response.status_code, 200)
         self.assertDictEqual(json.loads(response.content), response_data)
 
@@ -217,7 +219,7 @@ class ViewsTest(TestCase):
         self.assertTrue(client.login(username=self.sender.username, password=self.sender_password))
 
         # get page
-        response = client.get(reverse('mail.views.ajax_get_message'), get_data)
+        response = client.get(reverse(mail.views.ajax_get_message), get_data)
         self.assertEqual(response.status_code, 200)
 
         self.assertEqual(json.loads(response.content), response_data)
@@ -241,7 +243,7 @@ class ViewsTest(TestCase):
             }
 
             # get page
-            response = self.client.get(reverse('mail.views.ajax_get_mailbox'), get_data)
+            response = self.client.get(reverse(mail.views.ajax_get_mailbox), get_data)
             self.assertEqual(response.status_code, 200)
             self.assertDictEqual(json.loads(response.content), response_data)
 
@@ -260,7 +262,7 @@ class ViewsTest(TestCase):
         self.assertTrue(client.login(username=self.sender.username, password=self.sender_password))
 
         # get page
-        response = client.post(reverse('mail.views.ajax_send_message'), post_data)
+        response = client.post(reverse(mail.views.ajax_send_message), post_data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content, 'OK')
 
@@ -302,7 +304,7 @@ class ViewsTest(TestCase):
         }
 
         # get page
-        response = client.get(reverse('mail.views.ajax_get_mailbox'), get_data)
+        response = client.get(reverse(mail.views.ajax_get_mailbox), get_data)
         self.assertEqual(response.status_code, 200)
         self.assertDictEqual(json.loads(response.content), response_data)
 
@@ -339,7 +341,7 @@ class ViewsTest(TestCase):
                                          password=self.recipients_password[recipient.username]))
 
             # get page
-            response = client.get(reverse('mail.views.ajax_get_mailbox'), get_data)
+            response = client.get(reverse(mail.views.ajax_get_mailbox), get_data)
             self.assertEqual(response.status_code, 200)
             self.assertDictEqual(json.loads(response.content), response_data)
 
@@ -360,7 +362,7 @@ class ViewsTest(TestCase):
         self.assertTrue(client.login(username=self.sender.username, password=self.sender_password))
 
         # get page
-        response = client.post(reverse('mail.views.ajax_send_message'), post_data)
+        response = client.post(reverse(mail.views.ajax_send_message), post_data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content, 'OK')
 
@@ -401,7 +403,7 @@ class ViewsTest(TestCase):
                                      password=self.recipients_password[recipient.username]))
 
         # get page
-        response = client.get(reverse('mail.views.ajax_get_mailbox'), get_data)
+        response = client.get(reverse(mail.views.ajax_get_mailbox), get_data)
         self.assertEqual(response.status_code, 200)
         self.assertDictEqual(json.loads(response.content), response_data)
 
@@ -434,7 +436,7 @@ class ViewsTest(TestCase):
         }
 
         # get page
-        response = client.get(reverse('mail.views.ajax_get_mailbox'), get_data)
+        response = client.get(reverse(mail.views.ajax_get_mailbox), get_data)
         self.assertEqual(response.status_code, 200)
         self.assertDictEqual(json.loads(response.content), response_data)
 
@@ -467,7 +469,7 @@ class ViewsTest(TestCase):
         }
 
         # get page
-        response = client.get(reverse('mail.views.ajax_get_mailbox'), get_data)
+        response = client.get(reverse(mail.views.ajax_get_mailbox), get_data)
         self.assertEqual(response.status_code, 200)
         self.assertDictEqual(json.loads(response.content), response_data)
 
@@ -503,7 +505,7 @@ class ViewsTest(TestCase):
         }
 
         # get page
-        response = client.get(reverse('mail.views.ajax_get_mailbox'), get_data)
+        response = client.get(reverse(mail.views.ajax_get_mailbox), get_data)
         self.assertEqual(response.status_code, 200)
         self.assertDictEqual(json.loads(response.content), response_data)
 

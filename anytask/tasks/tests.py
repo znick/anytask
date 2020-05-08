@@ -20,6 +20,9 @@ from BeautifulSoup import BeautifulSoup
 from datetime import datetime, timedelta
 from django.core.urlresolvers import reverse
 
+import tasks.views
+import courses.views
+
 
 def save_result_html(html):
     with open(r'../test_page.html', 'w') as f:
@@ -123,21 +126,21 @@ class ViewsTest(TestCase):
         client = self.client
 
         # get page
-        response = client.get(reverse('tasks.views.task_create_page', kwargs={'course_id': self.course.id}))
+        response = client.get(reverse(tasks.views.task_create_page, kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 302, "Need login for task_create_page")
 
     def test_task_import_page_anonymously(self):
         client = self.client
 
         # get page
-        response = client.get(reverse('tasks.views.task_import_page', kwargs={'course_id': self.course.id}))
+        response = client.get(reverse(tasks.views.task_import_page, kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 302, "Need login for task_import_page")
 
     def test_task_edit_page_anonymously(self):
         client = self.client
 
         # get page
-        response = client.get(reverse('tasks.views.task_edit_page', kwargs={'task_id': self.task.id}))
+        response = client.get(reverse(tasks.views.task_edit_page, kwargs={'task_id': self.task.id}))
         self.assertEqual(response.status_code, 302, "Need login for task_edit_page")
 
     def test_task_create_or_edit_page_with_teacher(self):
@@ -148,7 +151,7 @@ class ViewsTest(TestCase):
                         "Can't login via teacher")
 
         # get create task page
-        response = client.get(reverse('tasks.views.task_create_page', kwargs={'course_id': self.course.id}))
+        response = client.get(reverse(tasks.views.task_create_page, kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 200, "Can't get task_create_page via teacher")
 
         html = BeautifulSoup(response.content)
@@ -214,7 +217,7 @@ class ViewsTest(TestCase):
         self.assertIsNone(form_textarea.string, "form textarea not empty")
 
         # post create task page
-        response = client.post(reverse('tasks.views.task_create_page', kwargs={'course_id': self.course.id}),
+        response = client.post(reverse(tasks.views.task_create_page, kwargs={'course_id': self.course.id}),
                                {'task_title': 'task_title',
                                 'max_score': '10',
                                 'task_group_id[]': ['1'],
@@ -258,7 +261,7 @@ class ViewsTest(TestCase):
         self.assertFalse(task_pos[0].deleted, 'Created task TaskGroupRelations deleted')
 
         # get edit task page
-        response = client.get(reverse('tasks.views.task_edit_page', kwargs={'task_id': created_task.id}))
+        response = client.get(reverse(tasks.views.task_edit_page, kwargs={'task_id': created_task.id}))
         self.assertEqual(response.status_code, 200, "Can't get task_edit_page via teacher")
 
         html = BeautifulSoup(response.content)
@@ -337,11 +340,11 @@ class ViewsTest(TestCase):
         self.assertEqual(form_textarea.string, 'task_text', "form textarea empty")
 
         # get course and show hidden task page
-        response = client.post(reverse('courses.views.change_visibility_hidden_tasks'),
+        response = client.post(reverse(courses.views.change_visibility_hidden_tasks),
                                {'course_id': self.course.id})
         self.assertEqual(response.status_code, 200, "Can't get change_visibility_hidden_tasks via teacher")
         self.assertEqual(response.content, 'OK')
-        response = client.get(reverse('courses.views.gradebook', kwargs={'course_id': self.course.id}))
+        response = client.get(reverse(courses.views.gradebook, kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 200, "Can't get course_page via teacher")
 
         html = BeautifulSoup(response.content)
@@ -377,7 +380,7 @@ class ViewsTest(TestCase):
                         "Can't login via student")
 
         # get page
-        response = client.get(reverse('tasks.views.task_create_page', kwargs={'course_id': self.course.id}))
+        response = client.get(reverse(tasks.views.task_create_page, kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 403, "Only teacher can get task_create_page")
 
     def test_task_import_page_with_student(self):
@@ -388,7 +391,7 @@ class ViewsTest(TestCase):
                         "Can't login via student")
 
         # get page
-        response = client.get(reverse('tasks.views.task_import_page', kwargs={'course_id': self.course.id}))
+        response = client.get(reverse(tasks.views.task_import_page, kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 403, "Only teacher can get task_import_page")
 
     def test_task_edit_page_with_student(self):
@@ -399,11 +402,12 @@ class ViewsTest(TestCase):
                         "Can't login via student")
 
         # get page
-        response = client.get(reverse('tasks.views.task_edit_page', kwargs={'task_id': self.task.id}))
+        response = client.get(reverse(tasks.views.task_edit_page, kwargs={'task_id': self.task.id}))
         self.assertEqual(response.status_code, 403, "Only teacher can get task_edit_page")
 
     @patch('tasks.views.get_contest_info')
     def test_import_contest(self, mock_get_contest_info):
+        import tasks  # Не знаю почему, но ниже в этом методе он требует чтобы это было
         client = self.client
         post_data = {'contest_id_for_task': '1100',
                      'course_id': '1',
@@ -435,7 +439,7 @@ class ViewsTest(TestCase):
 
         # get contest_task_import page with known error
         mock_get_contest_info.return_value = (False, "You're not allowed to view this contest.")
-        response = client.post(reverse('tasks.views.contest_task_import'), post_data)
+        response = client.post(reverse(tasks.views.contest_task_import), post_data)
         self.assertEqual(response.status_code, 200, "Can't get get_contest_info via teacher")
         self.assertEqual(response.content,
                          '{"is_error": true, "error": "net_prav_na_kontest"}',
@@ -443,12 +447,12 @@ class ViewsTest(TestCase):
 
         # get contest_task_import page with unknown error
         mock_get_contest_info.return_value = (False, "404")
-        response = client.post(reverse('tasks.views.contest_task_import'), post_data)
+        response = client.post(reverse(tasks.views.contest_task_import), post_data)
         self.assertEqual(response.status_code, 403, "Must be forbidden")
 
         # get contest_task_import page with unknown error
         mock_get_contest_info.return_value = (True, {'problems': problems})
-        response = client.post(reverse('tasks.views.contest_task_import'), post_data)
+        response = client.post(reverse(tasks.views.contest_task_import), post_data)
         self.assertEqual(response.status_code, 200, "Can't get get_contest_info via teacher")
         self.assertEqual(response.content, 'OK', 'Wrong response text')
 

@@ -16,7 +16,9 @@ from tasks.management.commands.check_task_taken_expires import Command as CheckT
 
 from BeautifulSoup import BeautifulSoup
 from django.core.urlresolvers import reverse
-
+import courses.pythontask
+import courses.views
+import issues.views
 
 def save_result_html(html):
     with open(r'../test_page.html', 'w') as f:
@@ -124,25 +126,25 @@ class ViewsTest(TestCase):
         client = self.client
 
         # get page
-        response = client.get(reverse('courses.views.gradebook', kwargs={'course_id': self.course.id}))
+        response = client.get(reverse(courses.views.gradebook, kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 302)
 
     def test_queue_page_anonymously(self):
         client = self.client
 
         # get page
-        response = client.get(reverse('courses.views.queue_page', kwargs={'course_id': self.course.id}))
+        response = client.get(reverse(courses.views.queue_page, kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 302)
 
     def test_edit_course_information_anonymously(self):
         client = self.client
 
         # get page
-        response = client.get(reverse('courses.views.edit_course_information'))
+        response = client.get(reverse(courses.views.edit_course_information))
         self.assertEqual(response.status_code, 405)
 
         # post page
-        response = client.post(reverse('courses.views.edit_course_information'),
+        response = client.post(reverse(courses.views.edit_course_information),
                                {'course_id': self.course.id,
                                 'course_information': 'course_information'})
         self.assertEqual(response.status_code, 302)
@@ -151,18 +153,18 @@ class ViewsTest(TestCase):
         client = self.client
 
         # get page
-        response = client.get(reverse('courses.views.course_settings', kwargs={'course_id': self.course.id}))
+        response = client.get(reverse(courses.views.course_settings, kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 302)
 
     def test_change_visibility_hidden_tasks_anonymously(self):
         client = self.client
 
         # get page
-        response = client.get(reverse('courses.views.change_visibility_hidden_tasks'))
+        response = client.get(reverse(courses.views.change_visibility_hidden_tasks))
         self.assertEqual(response.status_code, 405)
 
         # post page
-        response = client.post(reverse('courses.views.change_visibility_hidden_tasks'),
+        response = client.post(reverse(courses.views.change_visibility_hidden_tasks),
                                {'course_id': self.course.id})
         self.assertEqual(response.status_code, 302)
 
@@ -170,11 +172,11 @@ class ViewsTest(TestCase):
         client = self.client
 
         # get page
-        response = client.get(reverse('courses.views.set_course_mark'))
+        response = client.get(reverse(courses.views.set_course_mark))
         self.assertEqual(response.status_code, 405)
 
         # post page
-        response = client.post(reverse('courses.views.set_course_mark'),
+        response = client.post(reverse(courses.views.set_course_mark),
                                {'course_id': self.course.id,
                                 'group_id': self.group.id,
                                 'student_id': self.student.id,
@@ -185,11 +187,11 @@ class ViewsTest(TestCase):
         client = self.client
 
         # get page
-        response = client.get(reverse('courses.views.set_task_mark'))
+        response = client.get(reverse(courses.views.set_task_mark))
         self.assertEqual(response.status_code, 405)
 
         # post page
-        response = client.post(reverse('courses.views.set_task_mark'),
+        response = client.post(reverse(courses.views.set_task_mark),
                                {'task_id': '1',
                                 'student_id': self.student.id,
                                 'mark_max': '10',
@@ -203,7 +205,7 @@ class ViewsTest(TestCase):
         self.assertTrue(client.login(username=self.teacher.username, password=self.teacher_password))
 
         # get page
-        response = client.get(reverse('courses.views.gradebook', kwargs={'course_id': self.course.id}))
+        response = client.get(reverse(courses.views.gradebook, kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 200)
 
         html = BeautifulSoup(response.content)
@@ -277,7 +279,7 @@ class ViewsTest(TestCase):
         self.assertTrue(client.login(username=self.teacher.username, password=self.teacher_password))
 
         # get page
-        response = client.get(reverse('courses.views.queue_page', kwargs={'course_id': self.course.id}))
+        response = client.get(reverse(courses.views.queue_page, kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 200)
 
         html = BeautifulSoup(response.content)
@@ -337,18 +339,18 @@ class ViewsTest(TestCase):
         self.assertTrue(client.login(username=self.teacher.username, password=self.teacher_password))
 
         # get page
-        response = client.get(reverse('courses.views.edit_course_information'))
+        response = client.get(reverse(courses.views.edit_course_information))
         self.assertEqual(response.status_code, 405)
 
         # post page
-        response = client.post(reverse('courses.views.edit_course_information'),
+        response = client.post(reverse(courses.views.edit_course_information),
                                {'course_id': self.course.id,
                                 'course_information': 'course_information'})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content, '{"info": "<div class=\\"not-sanitize\\">course_information</div>"}')
 
         # get course page
-        response = client.get(reverse('courses.views.gradebook', kwargs={'course_id': self.course.id}))
+        response = client.get(reverse(courses.views.gradebook, kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 200)
 
         # # course information
@@ -364,7 +366,7 @@ class ViewsTest(TestCase):
         self.assertTrue(client.login(username=self.teacher.username, password=self.teacher_password))
 
         # get page
-        response = client.get(reverse('courses.views.course_settings', kwargs={'course_id': self.course.id}))
+        response = client.get(reverse(courses.views.course_settings, kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 200)
 
         html = BeautifulSoup(response.content)
@@ -408,12 +410,12 @@ class ViewsTest(TestCase):
         self.assertEqual(form_select[1].string, 'teacher_name teacher_last_name')
 
         # post page
-        response = client.post(reverse('courses.views.course_settings', kwargs={'course_id': self.course.id}),
+        response = client.post(reverse(courses.views.course_settings, kwargs={'course_id': self.course.id}),
                                {'group_1': '1'}, follow=True)
         self.assertEqual(response.status_code, 200)
 
         # get page
-        response = client.get(reverse('courses.views.course_settings', kwargs={'course_id': self.course.id}))
+        response = client.get(reverse(courses.views.course_settings, kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 200)
 
         html = BeautifulSoup(response.content)
@@ -435,7 +437,7 @@ class ViewsTest(TestCase):
         self.assertTrue(client.login(username=self.teacher.username, password=self.teacher_password))
 
         # get page
-        response = client.get(reverse('courses.views.change_visibility_hidden_tasks'))
+        response = client.get(reverse(courses.views.change_visibility_hidden_tasks))
         self.assertEqual(response.status_code, 405)
 
         Task.objects.create(title='task_title',
@@ -443,7 +445,7 @@ class ViewsTest(TestCase):
                             is_hidden=True).set_position_in_new_group()
 
         # get course page
-        response = client.get(reverse('courses.views.gradebook', kwargs={'course_id': self.course.id}))
+        response = client.get(reverse(courses.views.gradebook, kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 200)
 
         html = BeautifulSoup(response.content)
@@ -468,13 +470,13 @@ class ViewsTest(TestCase):
         self.assertEqual(table_body.string.strip().strip('\n'), u'&nbsp;')
 
         # post page
-        response = client.post(reverse('courses.views.change_visibility_hidden_tasks'),
+        response = client.post(reverse(courses.views.change_visibility_hidden_tasks),
                                {'course_id': self.course.id})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content, 'OK')
 
         # get course page
-        response = client.get(reverse('courses.views.gradebook', kwargs={'course_id': self.course.id}))
+        response = client.get(reverse(courses.views.gradebook, kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 200)
 
         html = BeautifulSoup(response.content)
@@ -506,7 +508,7 @@ class ViewsTest(TestCase):
         self.assertTrue(client.login(username=self.teacher.username, password=self.teacher_password))
 
         # get page
-        response = client.get(reverse('courses.views.set_course_mark'))
+        response = client.get(reverse(courses.views.set_course_mark))
         self.assertEqual(response.status_code, 405)
 
         mark_fields = [MarkField.objects.create(name='mark1'), MarkField.objects.create(name='mark2')]
@@ -517,7 +519,7 @@ class ViewsTest(TestCase):
         self.course.save()
 
         # get course page
-        response = client.get(reverse('courses.views.gradebook', kwargs={'course_id': self.course.id}))
+        response = client.get(reverse(courses.views.gradebook, kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 200)
 
         html = BeautifulSoup(response.content)
@@ -550,7 +552,7 @@ class ViewsTest(TestCase):
         self.assertEqual(table_course_mark_select[2].string, 'mark2')
 
         # post page
-        response = client.post(reverse('courses.views.set_course_mark'),
+        response = client.post(reverse(courses.views.set_course_mark),
                                {'course_id': self.course.id,
                                 'group_id': self.group.id,
                                 'student_id': self.student.id,
@@ -559,7 +561,7 @@ class ViewsTest(TestCase):
         self.assertEqual(response.content, '{"mark_int": -1, "mark_id": 1, "mark": "mark1"}')
 
         # get course page
-        response = client.get(reverse('courses.views.gradebook', kwargs={'course_id': self.course.id}))
+        response = client.get(reverse(courses.views.gradebook, kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 200)
 
         html = BeautifulSoup(response.content)
@@ -599,7 +601,7 @@ class ViewsTest(TestCase):
         self.assertTrue(client.login(username=self.teacher.username, password=self.teacher_password))
 
         # get page
-        response = client.get(reverse('courses.views.set_task_mark'))
+        response = client.get(reverse(courses.views.set_task_mark))
         self.assertEqual(response.status_code, 405)
 
         task = Task.objects.create(title='task_title',
@@ -609,7 +611,7 @@ class ViewsTest(TestCase):
         task.set_position_in_new_group()
 
         # get course page
-        response = client.get(reverse('courses.views.gradebook', kwargs={'course_id': self.course.id}))
+        response = client.get(reverse(courses.views.gradebook, kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 200)
 
         html = BeautifulSoup(response.content)
@@ -642,7 +644,7 @@ class ViewsTest(TestCase):
         self.assertEqual(table_body_inputs[3]['value'], '0')
 
         # post page
-        response = client.post(reverse('courses.views.set_task_mark'),
+        response = client.post(reverse(courses.views.set_task_mark),
                                {'task_id': task.id,
                                 'student_id': self.student.id,
                                 'mark_max': task.score_max,
@@ -651,7 +653,7 @@ class ViewsTest(TestCase):
         self.assertEqual(response.content, '{"color": "' + IssueStatus.objects.get(pk=5).color + '", "mark": 3.0}')
 
         # get course page
-        response = client.get(reverse('courses.views.gradebook', kwargs={'course_id': self.course.id}))
+        response = client.get(reverse(courses.views.gradebook, kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 200)
 
         html = BeautifulSoup(response.content)
@@ -690,7 +692,7 @@ class ViewsTest(TestCase):
         self.assertTrue(client.login(username=self.student.username, password=self.student_password))
 
         # get page
-        response = client.get(reverse('courses.views.gradebook', kwargs={'course_id': self.course.id}))
+        response = client.get(reverse(courses.views.gradebook, kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 200)
 
         html = BeautifulSoup(response.content)
@@ -758,7 +760,7 @@ class ViewsTest(TestCase):
         self.assertTrue(client.login(username=self.student.username, password=self.student_password))
 
         # get page
-        response = client.get(reverse('courses.views.queue_page', kwargs={'course_id': self.course.id}))
+        response = client.get(reverse(courses.views.queue_page, kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 403)
 
     def test_edit_course_information_with_student(self):
@@ -768,11 +770,11 @@ class ViewsTest(TestCase):
         self.assertTrue(client.login(username=self.student.username, password=self.student_password))
 
         # get page
-        response = client.get(reverse('courses.views.edit_course_information'))
+        response = client.get(reverse(courses.views.edit_course_information))
         self.assertEqual(response.status_code, 405)
 
         # post page
-        response = client.post(reverse('courses.views.edit_course_information'),
+        response = client.post(reverse(courses.views.edit_course_information),
                                {'course_id': self.course.id,
                                 'course_information': 'course_information'})
         self.assertEqual(response.status_code, 403)
@@ -784,11 +786,11 @@ class ViewsTest(TestCase):
         self.assertTrue(client.login(username=self.student.username, password=self.student_password))
 
         # get page
-        response = client.get(reverse('courses.views.course_settings', kwargs={'course_id': self.course.id}))
+        response = client.get(reverse(courses.views.course_settings, kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 403)
 
         # post page
-        response = client.post(reverse('courses.views.course_settings', kwargs={'course_id': self.course.id}),
+        response = client.post(reverse(courses.views.course_settings, kwargs={'course_id': self.course.id}),
                                {'group_1': '1'}, follow=True)
         self.assertEqual(response.status_code, 403)
 
@@ -799,11 +801,11 @@ class ViewsTest(TestCase):
         self.assertTrue(client.login(username=self.student.username, password=self.student_password))
 
         # get page
-        response = client.get(reverse('courses.views.change_visibility_hidden_tasks'))
+        response = client.get(reverse(courses.views.change_visibility_hidden_tasks))
         self.assertEqual(response.status_code, 405)
 
         # post page
-        response = client.post(reverse('courses.views.change_visibility_hidden_tasks'),
+        response = client.post(reverse(courses.views.change_visibility_hidden_tasks),
                                {'course_id': self.course.id})
         self.assertEqual(response.status_code, 403)
 
@@ -825,7 +827,7 @@ class ViewsTest(TestCase):
         self.course.save()
 
         # get course page
-        response = client.get(reverse('courses.views.gradebook', kwargs={'course_id': self.course.id}))
+        response = client.get(reverse(courses.views.gradebook, kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 200)
 
         html = BeautifulSoup(response.content)
@@ -852,7 +854,7 @@ class ViewsTest(TestCase):
         # post page via teacher
         client.logout()
         self.assertTrue(client.login(username=self.teacher.username, password=self.teacher_password))
-        response = client.post(reverse('courses.views.set_course_mark'),
+        response = client.post(reverse(courses.views.set_course_mark),
                                {'course_id': self.course.id,
                                 'group_id': self.group.id,
                                 'student_id': self.student.id,
@@ -862,7 +864,7 @@ class ViewsTest(TestCase):
 
         # get course page
         self.assertTrue(client.login(username=self.student.username, password=self.student_password))
-        response = client.get(reverse('courses.views.gradebook', kwargs={'course_id': self.course.id}))
+        response = client.get(reverse(courses.views.gradebook, kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 200)
 
         html = BeautifulSoup(response.content)
@@ -894,7 +896,7 @@ class ViewsTest(TestCase):
         task.set_position_in_new_group()
 
         # get course page
-        response = client.get(reverse('courses.views.gradebook', kwargs={'course_id': self.course.id}))
+        response = client.get(reverse(courses.views.gradebook, kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 200)
 
         html = BeautifulSoup(response.content)
@@ -927,7 +929,7 @@ class ViewsTest(TestCase):
         # post page via teacher
         client.logout()
         self.assertTrue(client.login(username=self.teacher.username, password=self.teacher_password))
-        response = client.post(reverse('courses.views.set_task_mark'),
+        response = client.post(reverse(courses.views.set_task_mark),
                                {'task_id': task.id,
                                 'student_id': self.student.id,
                                 'mark_max': task.score_max,
@@ -937,7 +939,7 @@ class ViewsTest(TestCase):
 
         # get course page
         self.assertTrue(client.login(username=self.student.username, password=self.student_password))
-        response = client.get(reverse('courses.views.gradebook', kwargs={'course_id': self.course.id}))
+        response = client.get(reverse(courses.views.gradebook, kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 200)
 
         html = BeautifulSoup(response.content)
@@ -1056,7 +1058,7 @@ class PythonTaskTest(TestCase):
     def test_list(self):
         client = self.client
         self.assertTrue(client.login(username=self.teacher.username, password="teacher"))
-        response = client.get(reverse('courses.views.course_page', kwargs={'course_id': self.course.id}))
+        response = client.get(reverse(courses.views.course_page, kwargs={'course_id': self.course.id}))
         content = str(response.content)
         self.assertIn("task1_title", content)
         self.assertIn("seminar_title", content)
@@ -1067,16 +1069,16 @@ class PythonTaskTest(TestCase):
         client = self.client
         user = self.users[0]
         self.assertTrue(client.login(username=user.username, password="password0"))
-        response = client.get(reverse('courses.views.course_page', kwargs={'course_id': self.course.id}))
+        response = client.get(reverse(courses.views.course_page, kwargs={'course_id': self.course.id}))
         self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
 
         response = client.get(
-            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id, 'task_id': self.task1.id}),
+            reverse(courses.pythontask.get_task, kwargs={'course_id': self.course.id, 'task_id': self.task1.id}),
             follow=True)
         self.assertContains(response, "{} {}".format(user.last_name, user.first_name))
 
         response = client.get(
-            reverse('courses.pythontask.cancel_task', kwargs={'course_id': self.course.id, 'task_id': self.task1.id}),
+            reverse(courses.pythontask.cancel_task, kwargs={'course_id': self.course.id, 'task_id': self.task1.id}),
             follow=True)
         self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
 
@@ -1084,17 +1086,17 @@ class PythonTaskTest(TestCase):
         client = self.client
         user = self.users[0]
         self.assertTrue(client.login(username=user.username, password="password0"))
-        response = client.get(reverse('courses.views.course_page', kwargs={'course_id': self.course.id}))
+        response = client.get(reverse(courses.views.course_page, kwargs={'course_id': self.course.id}))
         self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
 
         response = client.get(
-            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id, 'task_id': self.subtask1.id}),
+            reverse(courses.pythontask.get_task, kwargs={'course_id': self.course.id, 'task_id': self.subtask1.id}),
             follow=True)
         self.assertContains(response, "{} {}".format(user.last_name, user.first_name))
 
         response = client.get(
             reverse(
-                'courses.pythontask.cancel_task',
+                courses.pythontask.cancel_task,
                 kwargs={'course_id': self.course.id, 'task_id': self.subtask1.id}
             ),
             follow=True
@@ -1107,18 +1109,18 @@ class PythonTaskTest(TestCase):
 
         for i, user in enumerate(self.users[:8]):
             self.assertTrue(client.login(username=user, password="password{}".format(i)))
-            response = client.get(reverse('courses.views.course_page', kwargs={'course_id': self.course.id}))
+            response = client.get(reverse(courses.views.course_page, kwargs={'course_id': self.course.id}))
             self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
 
             response = client.get(
-                reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id, 'task_id': self.task1.id}),
+                reverse(courses.pythontask.get_task, kwargs={'course_id': self.course.id, 'task_id': self.task1.id}),
                 follow=True)
             self.assertContains(response, "{} {}".format(user.last_name, user.first_name))
 
         user = self.users[9]
         self.assertTrue(client.login(username=user, password="password9"))
         response = client.get(
-            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id, 'task_id': self.task1.id}),
+            reverse(courses.pythontask.get_task, kwargs={'course_id': self.course.id, 'task_id': self.task1.id}),
             follow=True)
         self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
 
@@ -1127,11 +1129,11 @@ class PythonTaskTest(TestCase):
 
         for i, user in enumerate(self.users2[:4]):
             self.assertTrue(client.login(username=user, password="password{}".format(i)))
-            response = client.get(reverse('courses.views.course_page', kwargs={'course_id': self.course2.id}))
+            response = client.get(reverse(courses.views.course_page, kwargs={'course_id': self.course2.id}))
             self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
 
             response = client.get(
-                reverse('courses.pythontask.get_task',
+                reverse(courses.pythontask.get_task,
                         kwargs={'course_id': self.course2.id, 'task_id': self.task1_c2.id}),
                 follow=True)
             self.assertContains(response, "{} {}".format(user.last_name, user.first_name))
@@ -1139,7 +1141,7 @@ class PythonTaskTest(TestCase):
         user = self.users2[5]
         self.assertTrue(client.login(username=user, password="password5"))
         response = client.get(
-            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course2.id, 'task_id': self.task1_c2.id}),
+            reverse(courses.pythontask.get_task, kwargs={'course_id': self.course2.id, 'task_id': self.task1_c2.id}),
             follow=True)
         self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
 
@@ -1148,16 +1150,16 @@ class PythonTaskTest(TestCase):
 
         for i, user in enumerate(self.users[:2]):
             self.assertTrue(client.login(username=user, password="password{}".format(i)))
-            response = client.get(reverse('courses.views.course_page', kwargs={'course_id': self.course.id}))
+            response = client.get(reverse(courses.views.course_page, kwargs={'course_id': self.course.id}))
             self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
 
             response = client.get(
-                reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id, 'task_id': self.task4.id}),
+                reverse(courses.pythontask.get_task, kwargs={'course_id': self.course.id, 'task_id': self.task4.id}),
                 follow=True)
             self.assertContains(response, "{} {}".format(user.last_name, user.first_name))
 
             response = client.get(
-                reverse('courses.pythontask.get_task',
+                reverse(courses.pythontask.get_task,
                         kwargs={'course_id': self.course.id, 'task_id': self.subtask4.id}),
                 follow=True)
             self.assertContains(response, "{} {}".format(user.last_name, user.first_name))
@@ -1166,12 +1168,12 @@ class PythonTaskTest(TestCase):
         self.assertTrue(client.login(username=user, password="password2"))
 
         response = client.get(
-            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id, 'task_id': self.task4.id}),
+            reverse(courses.pythontask.get_task, kwargs={'course_id': self.course.id, 'task_id': self.task4.id}),
             follow=True)
         self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
 
         response = client.get(
-            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id, 'task_id': self.subtask4.id}),
+            reverse(courses.pythontask.get_task, kwargs={'course_id': self.course.id, 'task_id': self.subtask4.id}),
             follow=True)
         self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
 
@@ -1180,10 +1182,10 @@ class PythonTaskTest(TestCase):
 
         for i, user in enumerate(self.users[:8]):
             self.assertTrue(client.login(username=user, password="password{}".format(i)))
-            response = client.get(reverse('courses.views.course_page', kwargs={'course_id': self.course.id}))
+            response = client.get(reverse(courses.views.course_page, kwargs={'course_id': self.course.id}))
             self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
 
-            response = client.get(reverse('courses.pythontask.get_task',
+            response = client.get(reverse(courses.pythontask.get_task,
                                           kwargs={'course_id': self.course.id, 'task_id': self.subtask1.id}),
                                   follow=True)
             self.assertContains(response, "{} {}".format(user.last_name, user.first_name))
@@ -1191,7 +1193,7 @@ class PythonTaskTest(TestCase):
         user = self.users[9]
         self.assertTrue(client.login(username=user, password="password9"))
         response = client.get(
-            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id, 'task_id': self.subtask1.id}),
+            reverse(courses.pythontask.get_task, kwargs={'course_id': self.course.id, 'task_id': self.subtask1.id}),
             follow=True)
         self.assertNotIn("{} {}".format(user.last_name, user.first_name), response.content)
 
@@ -1200,16 +1202,16 @@ class PythonTaskTest(TestCase):
         user = self.users[0]
 
         self.assertTrue(client.login(username=user.username, password="password0"))
-        response = client.get(reverse('courses.views.course_page', kwargs={'course_id': self.course.id}))
+        response = client.get(reverse(courses.views.course_page, kwargs={'course_id': self.course.id}))
         self.assertNotIn("{} {}".format(user.last_name, user.first_name), response.content)
 
         response = client.get(
-            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id, 'task_id': self.subtask1.id}),
+            reverse(courses.pythontask.get_task, kwargs={'course_id': self.course.id, 'task_id': self.subtask1.id}),
             follow=True)
         self.assertContains(response, "{} {}".format(user.last_name, user.first_name), count=1)
 
         response = client.get(
-            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id, 'task_id': self.subtask2.id}),
+            reverse(courses.pythontask.get_task, kwargs={'course_id': self.course.id, 'task_id': self.subtask2.id}),
             follow=True)
         self.assertContains(response, "{} {}".format(user.last_name, user.first_name), count=1)
 
@@ -1227,29 +1229,29 @@ class PythonTaskTest(TestCase):
         self.assertTrue(client.login(username=user.username, password='password0'))
 
         client.get(
-            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id,
+            reverse(courses.pythontask.get_task, kwargs={'course_id': self.course.id,
                     'task_id': self.task1.id}), follow=True)
         self.set_mark(self.task1, user, 1.0)
 
         client.get(
-            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id,
+            reverse(courses.pythontask.get_task, kwargs={'course_id': self.course.id,
                     'task_id': self.task3.id}), follow=True)
         self.set_mark(self.task3, user, 2.0)
 
         response = client.get(
-            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id,
+            reverse(courses.pythontask.get_task, kwargs={'course_id': self.course.id,
                     'task_id': self.subtask1.id}), follow=True)
 
         self.assertContains(response, "{} {}".format(user.last_name, user.first_name), count=3)
 
         response = client.get(
-            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id,
+            reverse(courses.pythontask.get_task, kwargs={'course_id': self.course.id,
                     'task_id': self.task2.id}), follow=True)
         self.assertContains(response, "{} {}".format(user.last_name, user.first_name), count=3)
 
         self.set_mark(self.task3, user, 10)
         response = client.get(
-            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id,
+            reverse(courses.pythontask.get_task, kwargs={'course_id': self.course.id,
                     'task_id': self.task2.id}), follow=True)
         self.assertContains(response, "{} {}".format(user.last_name, user.first_name), count=4)
 
@@ -1259,12 +1261,12 @@ class PythonTaskTest(TestCase):
         self.assertTrue(client.login(username=user.username, password='password0'))
 
         response = client.get(
-            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course2.id,
+            reverse(courses.pythontask.get_task, kwargs={'course_id': self.course2.id,
                     'task_id': self.task1_c2.id}), follow=True)
         self.assertContains(response, "{} {}".format(user.last_name, user.first_name), count=1)
 
         response = client.get(
-            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course2.id,
+            reverse(courses.pythontask.get_task, kwargs={'course_id': self.course2.id,
                     'task_id': self.subtask1_c2.id}), follow=True)
         self.assertContains(response, "{} {}".format(user.last_name, user.first_name), count=1)
 
@@ -1275,21 +1277,21 @@ class PythonTaskTest(TestCase):
             x.score
 
         response = client.get(
-            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course2.id,
+            reverse(courses.pythontask.get_task, kwargs={'course_id': self.course2.id,
                     'task_id': self.subtask1_c2.id}), follow=True)
         self.assertContains(response, "{} {}".format(user.last_name, user.first_name), count=2)
 
         self.set_mark(self.subtask1_c2, user, 2.0)
 
         response = client.get(
-            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course2.id,
+            reverse(courses.pythontask.get_task, kwargs={'course_id': self.course2.id,
                     'task_id': self.task2_c2.id}), follow=True)
         self.assertContains(response, "{} {}".format(user.last_name, user.first_name), count=2)
 
         self.set_mark(self.task1_c2, user, 10)
 
         response = client.get(
-            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course2.id,
+            reverse(courses.pythontask.get_task, kwargs={'course_id': self.course2.id,
                     'task_id': self.task2_c2.id}), follow=True)
         self.assertContains(response, "{} {}".format(user.last_name, user.first_name), count=3)
 
@@ -1300,18 +1302,18 @@ class PythonTaskTest(TestCase):
 
         self.assertTrue(client.login(username=user1.username, password='password0'))
         client.get(
-            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id,
+            reverse(courses.pythontask.get_task, kwargs={'course_id': self.course.id,
                     'task_id': self.subtask1.id}), follow=True)
         client.get(
-            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id,
+            reverse(courses.pythontask.get_task, kwargs={'course_id': self.course.id,
                     'task_id': self.task1.id}), follow=True)
 
         self.assertTrue(client.login(username=user2.username, password='password1'))
         client.get(
-            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id,
+            reverse(courses.pythontask.get_task, kwargs={'course_id': self.course.id,
                     'task_id': self.subtask2.id}), follow=True)
         client.get(
-            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id,
+            reverse(courses.pythontask.get_task, kwargs={'course_id': self.course.id,
                     'task_id': self.task1.id}), follow=True)
 
         self.assertTrue(client.login(username=self.teacher.username, password='teacher'))
@@ -1321,7 +1323,7 @@ class PythonTaskTest(TestCase):
 
         self.assertTrue(client.login(username=user1.username, password='password0'))
         response = client.get(
-            reverse('courses.views.view_statistic', kwargs={'course_id': self.course.id}), follow=True)
+            reverse(courses.views.view_statistic, kwargs={'course_id': self.course.id}), follow=True)
         self.assertContains(response, "1.5")
         self.assertContains(response, "2.3")
         self.assertContains(response, "1")
@@ -1334,22 +1336,22 @@ class PythonTaskTest(TestCase):
         self.assertTrue(client.login(username=user.username, password="password0"))
 
         # cancel task
-        client.get(reverse('courses.pythontask.cancel_task',
+        client.get(reverse(courses.pythontask.cancel_task,
                            kwargs={'course_id': self.course.id, 'task_id': self.task1.id}),
                    follow=True)
 
         # get task
-        client.get(reverse('courses.pythontask.get_task',
+        client.get(reverse(courses.pythontask.get_task,
                            kwargs={'course_id': self.course.id, 'task_id': self.task1.id}),
                    follow=True)
 
         # create issue
-        client.get(reverse('issues.views.get_or_create',
+        client.get(reverse(issues.views.get_or_create,
                            kwargs={'student_id': user.id, 'task_id': self.task1.id}),
                    follow=True)
 
         # get task list
-        client.get(reverse('courses.views.course_page',
+        client.get(reverse(courses.views.course_page,
                            kwargs={'course_id': self.course.id}),
                    follow=True)
 
@@ -1382,7 +1384,7 @@ class PythonTaskTest(TestCase):
 
         # get the task
         response = client.get(
-            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id,
+            reverse(courses.pythontask.get_task, kwargs={'course_id': self.course.id,
                                                            'task_id': self.task4_expired.id}),
             follow=True)
         self.assertContains(response, "{} {}".format(user.last_name, user.first_name))
@@ -1396,7 +1398,7 @@ class PythonTaskTest(TestCase):
         task_taken.save()
 
         # cancel task
-        response = client.get(reverse('courses.pythontask.cancel_task',
+        response = client.get(reverse(courses.pythontask.cancel_task,
                                       kwargs={'course_id': self.course.id, 'task_id': self.task4_expired.id}),
                               follow=True)
         self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
@@ -1406,7 +1408,7 @@ class PythonTaskTest(TestCase):
 
         # get the task back
         response = client.get(
-            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id,
+            reverse(courses.pythontask.get_task, kwargs={'course_id': self.course.id,
                                                            'task_id': self.task4_expired.id}),
             follow=True)
         self.assertContains(response, "{} {}".format(user.last_name, user.first_name))
@@ -1426,7 +1428,7 @@ class PythonTaskTest(TestCase):
 
         # check we cant task the task
         response = client.get(
-            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id,
+            reverse(courses.pythontask.get_task, kwargs={'course_id': self.course.id,
                                                            'task_id': self.task4_expired.id}),
             follow=True)
         self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
@@ -1439,7 +1441,7 @@ class PythonTaskTest(TestCase):
 
         # check we stil cant task the task
         response = client.get(
-            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id,
+            reverse(courses.pythontask.get_task, kwargs={'course_id': self.course.id,
                                                            'task_id': self.task4_expired.id}),
             follow=True)
         self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
@@ -1455,7 +1457,7 @@ class PythonTaskTest(TestCase):
 
         # check we can task the task again
         response = client.get(
-            reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id,
+            reverse(courses.pythontask.get_task, kwargs={'course_id': self.course.id,
                                                            'task_id': self.task4_expired.id}),
             follow=True)
         self.assertContains(response, "{} {}".format(user.last_name, user.first_name))
@@ -1467,7 +1469,7 @@ class PythonTaskTest(TestCase):
 
         # lets take 3 tasks in course1 (MAX_INCOMPLETE_TASKS == 3)
         for task in [self.task1, self.task2, self.task3]:
-            client.get(reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id,
+            client.get(reverse(courses.pythontask.get_task, kwargs={'course_id': self.course.id,
                                                                       'task_id': task.id}),
                        follow=True)
             self.get_issue(task, user)  # will fail on no issue
@@ -1479,7 +1481,7 @@ class PythonTaskTest(TestCase):
 
         # And now it should be okay to take a task in course2
         task = self.task1_c2
-        client.get(reverse('courses.pythontask.get_task', kwargs={'course_id': self.course2.id,
+        client.get(reverse(courses.pythontask.get_task, kwargs={'course_id': self.course2.id,
                                                                   'task_id': task.id}),
                    follow=True)
         self.get_issue(task, user)  # will fail on no issue
@@ -1491,7 +1493,7 @@ class PythonTaskTest(TestCase):
 
         # lets take 2 tasks in course1 (MAX_TASKS_WITHOUT_SCORE_PER_STUDENT == 2)
         for task in [self.task1, self.task2]:
-            client.get(reverse('courses.pythontask.get_task', kwargs={'course_id': self.course.id,
+            client.get(reverse(courses.pythontask.get_task, kwargs={'course_id': self.course.id,
                                                                       'task_id': task.id}),
                        follow=True)
             self.get_issue(task, user)  # will fail on no issue
@@ -1502,7 +1504,7 @@ class PythonTaskTest(TestCase):
 
         # And now it should be okay to take a task in course2
         task = self.task1_c2
-        client.get(reverse('courses.pythontask.get_task', kwargs={'course_id': self.course2.id,
+        client.get(reverse(courses.pythontask.get_task, kwargs={'course_id': self.course2.id,
                                                                   'task_id': task.id}),
                    follow=True)
         self.get_issue(task, user)  # will fail on no issue

@@ -17,11 +17,11 @@ up your own URL patterns for these views instead.
 
 """
 
-
 from django.conf.urls import *
 from django.views.generic.base import TemplateView
 
-from registration.backends.default_with_names import AnytaskLoginForm, AnytaskPasswordResetForm, AnytaskSetPasswordForm, AnytaskPasswordChangeForm
+from registration.backends.default_with_names import AnytaskLoginForm, AnytaskPasswordResetForm, AnytaskSetPasswordForm, \
+    AnytaskPasswordChangeForm
 from registration.views import activate
 from registration.views import register
 from registration.views import ajax_check_username, ajax_check_email

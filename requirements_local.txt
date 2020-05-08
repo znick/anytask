@@ -18,7 +18,7 @@ django-filemanager==0.0.5
 requests==2.20.0
 flup==1.0.3
 unidecode==1.0.22
-django-jfu==2.0.9
+django-dprog-jfu
 django-filter==0.15.0
 yandex-oauth-py==0.1.1
 xmltodict==0.11.0
@@ -32,3 +32,4 @@ dateutils==0.6.6
 flake8==3.7.9
 django_premailer==0.2.0
 django-environ==0.4
+nose

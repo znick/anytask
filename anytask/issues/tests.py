@@ -23,6 +23,9 @@ from BeautifulSoup import BeautifulSoup
 from datetime import datetime, timedelta
 from django.core.urlresolvers import reverse
 
+import issues.views
+import anyrb.views
+
 
 def save_result_html(html):
     with open(r'../test_page.html', 'w') as f:
@@ -113,7 +116,7 @@ class ViewsTest(TestCase):
         client = self.client
 
         # get get_or_create page
-        response = client.get(reverse('issues.views.get_or_create',
+        response = client.get(reverse(issues.views.get_or_create,
                                       kwargs={'task_id': self.task.id, 'student_id': self.student.id}))
         self.assertEqual(response.status_code, 302, "Need login for get_or_create")
 
@@ -123,7 +126,7 @@ class ViewsTest(TestCase):
         issue.save()
 
         # get issue_page page
-        response = client.get(reverse('issues.views.issue_page',
+        response = client.get(reverse(issues.views.issue_page,
                                       kwargs={'issue_id': issue.id}))
         self.assertEqual(response.status_code, 302, "Need login for issue_page")
 
@@ -135,7 +138,7 @@ class ViewsTest(TestCase):
                         "Can't login via teacher")
 
         # get create task page
-        response = client.get(reverse('issues.views.get_or_create',
+        response = client.get(reverse(issues.views.get_or_create,
                                       kwargs={'task_id': self.task.id, 'student_id': self.student.id}), follow=True)
         self.assertEqual(response.status_code, 200, "Can't get get_or_create via teacher")
         self.assertEqual(len(response.redirect_chain), 1, "Must be redirect from get_or_create")
@@ -281,7 +284,7 @@ class ViewsTest(TestCase):
 
         issue = Issue.objects.create(task_id=self.task.id, student_id=self.student.id)
         # post
-        response = client.post(reverse('issues.views.issue_page', kwargs={'issue_id': issue.id}),
+        response = client.post(reverse(issues.views.issue_page, kwargs={'issue_id': issue.id}),
                                {'form_name': 'responsible_name_form',
                                 'responsible_name': str(self.teacher.id)},
                                follow=True)
@@ -330,7 +333,7 @@ class ViewsTest(TestCase):
 
         issue = Issue.objects.create(task_id=self.task.id, student_id=self.student.id)
         # post
-        response = client.post(reverse('issues.views.issue_page', kwargs={'issue_id': issue.id}),
+        response = client.post(reverse(issues.views.issue_page, kwargs={'issue_id': issue.id}),
                                {'form_name': 'responsible_name_form',
                                 'Me': ''}, follow=True)
         self.assertEqual(response.status_code, 200, "Can't get issue_page via teacher")
@@ -378,7 +381,7 @@ class ViewsTest(TestCase):
 
         issue = Issue.objects.create(task_id=self.task.id, student_id=self.student.id)
         # post
-        response = client.post(reverse('issues.views.issue_page', kwargs={'issue_id': issue.id}),
+        response = client.post(reverse(issues.views.issue_page, kwargs={'issue_id': issue.id}),
                                {'form_name': 'followers_names_form',
                                 'followers_names': [str(self.teacher.id)]}, follow=True)
         self.assertEqual(response.status_code, 200, "Can't get issue_page via teacher")
@@ -426,7 +429,7 @@ class ViewsTest(TestCase):
 
         issue = Issue.objects.create(task_id=self.task.id, student_id=self.student.id)
         # post
-        response = client.post(reverse('issues.views.issue_page', kwargs={'issue_id': issue.id}),
+        response = client.post(reverse(issues.views.issue_page, kwargs={'issue_id': issue.id}),
                                {'form_name': 'followers_names_form',
                                 'Me': ''}, follow=True)
         self.assertEqual(response.status_code, 200, "Can't get issue_page via teacher")
@@ -474,7 +477,7 @@ class ViewsTest(TestCase):
 
         issue = Issue.objects.create(task_id=self.task.id, student_id=self.student.id)
         # post
-        response = client.post(reverse('issues.views.issue_page', kwargs={'issue_id': issue.id}),
+        response = client.post(reverse(issues.views.issue_page, kwargs={'issue_id': issue.id}),
                                {'form_name': 'status_form',
                                 'status': '4'}, follow=True)
 
@@ -511,7 +514,7 @@ class ViewsTest(TestCase):
 
         issue = Issue.objects.create(task_id=self.task.id, student_id=self.student.id)
         # post
-        response = client.post(reverse('issues.views.issue_page', kwargs={'issue_id': issue.id}),
+        response = client.post(reverse(issues.views.issue_page, kwargs={'issue_id': issue.id}),
                                {'form_name': 'mark_form',
                                 'mark': '3'}, follow=True)
         self.assertEqual(response.status_code, 200, "Can't get issue_page via teacher")
@@ -548,7 +551,7 @@ class ViewsTest(TestCase):
 
         issue = Issue.objects.create(task_id=self.task.id, student_id=self.student.id)
         # post
-        response = client.post(reverse('issues.views.issue_page', kwargs={'issue_id': issue.id}),
+        response = client.post(reverse(issues.views.issue_page, kwargs={'issue_id': issue.id}),
                                {'form_name': 'mark_form',
                                 'mark': '3',
                                 'Accepted': ''}, follow=True)
@@ -595,7 +598,7 @@ class ViewsTest(TestCase):
 
         issue = Issue.objects.create(task_id=self.task.id, student_id=self.student.id)
         # post
-        response = client.post(reverse('issues.views.upload'),
+        response = client.post(reverse(issues.views.upload),
                                {'comment': 'test_comment',
                                 'files[]': '',
                                 'issue_id': str(issue.id),
@@ -628,7 +631,7 @@ class ViewsTest(TestCase):
                         "Can't login via student")
 
         # get create task page
-        response = client.get(reverse('issues.views.get_or_create',
+        response = client.get(reverse(issues.views.get_or_create,
                                       kwargs={'task_id': self.task.id, 'student_id': self.student.id}), follow=True)
         self.assertEqual(response.status_code, 200, "Can't get get_or_create via teacher")
         self.assertEqual(len(response.redirect_chain), 1, "Must be redirect from get_or_create")
@@ -705,7 +708,7 @@ class ViewsTest(TestCase):
 
         issue = Issue.objects.create(task_id=self.task.id, student_id=self.student.id)
         # post
-        response = client.post(reverse('issues.views.upload'),
+        response = client.post(reverse(issues.views.upload),
                                {'comment': 'test_comment',
                                 'files[]': '',
                                 'issue_id': str(issue.id),
@@ -741,7 +744,7 @@ class ViewsTest(TestCase):
         # post comment via teacher
         self.task.deadline_time = datetime.now() - timedelta(days=5)
         self.task.save()
-        response = client.post(reverse('issues.views.upload'),
+        response = client.post(reverse(issues.views.upload),
                                {'comment': 'test_comment_teacher',
                                 'files[]': '',
                                 'issue_id': str(issue.id),
@@ -766,7 +769,7 @@ class ViewsTest(TestCase):
                         "Can't login via student")
 
         # post comment via student
-        response = client.post(reverse('issues.views.upload'),
+        response = client.post(reverse(issues.views.upload),
                                {'comment': 'test_comment_student',
                                 'files[]': '',
                                 'issue_id': str(issue.id),
@@ -797,7 +800,7 @@ class ViewsTest(TestCase):
         # get page
         self.task.deadline_time = datetime.now() + timedelta(days=5)
         self.task.save()
-        response = client.get(reverse('issues.views.issue_page',
+        response = client.get(reverse(issues.views.issue_page,
                                       kwargs={'issue_id': issue.id}))
         self.assertEqual(response.status_code, 200, "Can't get issue_page via teacher")
 
@@ -831,7 +834,7 @@ class ViewsTest(TestCase):
 
         # post rb error
         mock_upload_review.return_value = None
-        response = client.post(reverse('issues.views.upload'),
+        response = client.post(reverse(issues.views.upload),
                                {'comment': 'test_comment',
                                 'files[]': '',
                                 'pk_test_rb.py': '1',
@@ -868,7 +871,7 @@ class ViewsTest(TestCase):
 
         # post rb no error
         mock_upload_review.return_value = 1
-        response = client.post(reverse('issues.views.upload'),
+        response = client.post(reverse(issues.views.upload),
                                {'comment': 'test_comment',
                                 'files[]': '',
                                 'pk_test_rb.py': '1',
@@ -903,11 +906,11 @@ class ViewsTest(TestCase):
 
         # changes from rb
         issue.set_byname('review_id', 1)
-        response = client.post(reverse('anyrb.views.message_from_rb', kwargs={'review_id': '1'}),
+        response = client.post(reverse(anyrb.views.message_from_rb, kwargs={'review_id': '1'}),
                                {'author': 'teacher'}, follow=True)
         self.assertEqual(response.status_code, 201, "Can't get message_from_rb via student")
 
-        response = client.get(reverse('issues.views.issue_page',
+        response = client.get(reverse(issues.views.issue_page,
                                       kwargs={'issue_id': issue.id}))
         self.assertEqual(response.status_code, 200, "Can't get upload via student")
 
