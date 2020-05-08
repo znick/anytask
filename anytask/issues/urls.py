@@ -1,10 +1,11 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 
 from issues import views
 
 urlpatterns = [
-    url(r'^(?P<issue_id>\d+)$', views.issue_page),
-    url(r'^get_or_create/(?P<task_id>\d+)/(?P<student_id>\d+)$', views.get_or_create),
+    url(r'^(?P<issue_id>\d+)$', views.issue_page, name="issues_views_issue_page"),
+    url(r'^get_or_create/(?P<task_id>\d+)/(?P<student_id>\d+)$', views.get_or_create,
+        name="issues_views_get_or_create"),
     url(r'^upload/$', views.upload, name='jfu_upload'),
     url(r'^delete/(?P<pk>\d+)$', views.upload_delete, name='jfu_delete'),
 ]
