@@ -305,7 +305,7 @@ YA_FORMS_FIELDS = {
 YA_FORMS_FIELDS_ADDITIONAL = {
     'additional_info': ['field_16', 'field_17', 'field_18', 'field_19'],
 }
-ADMISSION_DATE_END = "10.05.20 15:00"
+ADMISSION_DATE_END = "10.05.26 15:00"
 FILIAL_STATUSES = {}
 ENROLLEE_STATUS = 1
 
