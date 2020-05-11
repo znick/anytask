@@ -89,7 +89,13 @@ def activate(request, backend,
     context = RequestContext(request)
     for key, value in extra_context.items():
         context[key] = callable(value) and value() or value
+<<<<<<< HEAD
     
+=======
+
+    if not kwargs:
+        kwargs = {}
+>>>>>>> 133647ee19c653b892c96f1bcc47a5c199cb9248
     kwargs['context_instance'] = context
     return render(request, template_name,
                               kwargs)
@@ -201,8 +207,13 @@ def register(request, backend, success_url=None, form_class=None,
     context = RequestContext(request)
     for key, value in extra_context.items():
         context[key] = callable(value) and value() or value
+<<<<<<< HEAD
     
     kwargs['context_instance'] = context
+=======
+
+
+>>>>>>> 133647ee19c653b892c96f1bcc47a5c199cb9248
     return render(request, template_name,
                               {'form': form},
                               context)
