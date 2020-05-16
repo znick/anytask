@@ -82,8 +82,7 @@ def queue_page(request, course_id):
             <div class="form-group row">
             <button id="button_filter" class="btn btn-primary" type="button">{1}</button>
             </div>
-            """.
-                format(_(u'ochistit'), _(u'primenit'))
+            """.format(_(u'ochistit'), _(u'primenit'))
         )
     )
 
@@ -122,10 +121,7 @@ def ajax_get_queue(request):
 
     issues = Issue.objects.filter(
         Q(task__course=course)
-        & (
-                Q(student__profile__user_status__tag='active')
-                | Q(student__profile__user_status__tag=None)
-        )
+        & (Q(student__profile__user_status__tag='active') | Q(student__profile__user_status__tag=None))
         & Q(student__group__course=course)
     ).exclude(
         task__type=Task.TYPE_SEMINAR,
@@ -402,10 +398,7 @@ def tasklist_shad_cpp(request, course, seminar=None, group=None):
         students = group.students.filter(is_active=True)
         not_active_students = UserProfile.objects.filter(
             Q(user__in=group.students.filter(is_active=True))
-            & (
-                    Q(user_status__tag='not_active')
-                    | Q(user_status__tag='academic')
-            )
+            & (Q(user_status__tag='not_active') | Q(user_status__tag='academic'))
         )
         academ_students += [x.user for x in not_active_students]
         if not show_academ_users:
@@ -932,8 +925,8 @@ def attendance_list(request, course, group=None):
 
         students = group.students.filter(is_active=True)
         not_active_students = UserProfile.objects.filter(Q(user__in=group.students.filter(is_active=True))
-                                                         & (Q(user_status__tag='not_active') | Q(
-            user_status__tag='academic')))
+                                                         & (Q(user_status__tag='not_active') |
+                                                            Q(user_status__tag='academic')))
         academ_students += [x.user for x in not_active_students]
         if not show_academ_users:
             students = set(students) - set(academ_students)

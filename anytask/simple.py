@@ -136,10 +136,8 @@ def build_test(label):
             # Now iterate over the suite, looking for doctests whose name
             # matches the pattern that was given
             for test in doctests:
-                if test._dt_test.name in (
-                        '%s.%s' % (module.__name__, '.'.join(parts[1:])),
-                        '%s.__test__.%s' % (
-                                module.__name__, '.'.join(parts[1:]))):
+                if test._dt_test.name in ('%s.%s' % (module.__name__, '.'.join(parts[1:])),
+                                          '%s.__test__.%s' % (module.__name__, '.'.join(parts[1:]))):
                     tests.append(test)
         except ValueError:
             # No doctests found.
