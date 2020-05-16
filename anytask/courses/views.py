@@ -925,8 +925,8 @@ def attendance_list(request, course, group=None):
 
         students = group.students.filter(is_active=True)
         not_active_students = UserProfile.objects.filter(Q(user__in=group.students.filter(is_active=True))
-                                                         & (Q(user_status__tag='not_active') |
-                                                            Q(user_status__tag='academic')))
+                                                         & (Q(user_status__tag='not_active')
+                                                            | Q(user_status__tag='academic')))
         academ_students += [x.user for x in not_active_students]
         if not show_academ_users:
             students = set(students) - set(academ_students)
