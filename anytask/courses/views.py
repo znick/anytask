@@ -83,7 +83,7 @@ def queue_page(request, course_id):
             <button id="button_filter" class="btn btn-primary" type="button">{1}</button>
             </div>
             """.
-            format(_(u'ochistit'), _(u'primenit'))
+                format(_(u'ochistit'), _(u'primenit'))
         )
     )
 
@@ -123,8 +123,8 @@ def ajax_get_queue(request):
     issues = Issue.objects.filter(
         Q(task__course=course)
         & (
-            Q(student__profile__user_status__tag='active')
-            | Q(student__profile__user_status__tag=None)
+                Q(student__profile__user_status__tag='active')
+                | Q(student__profile__user_status__tag=None)
         )
         & Q(student__group__course=course)
     ).exclude(
@@ -177,9 +177,9 @@ def gradebook(request, course_id, task_id=None, group_id=None):
 
     if course.private and not course.user_is_attended(request.user):
         return render(request, 'courses/course_forbidden.html',
-                                  {"course": course,
-                                   'school': schools[0] if schools else '',
-                                   'invite_form': InviteActivationForm()})
+                      {"course": course,
+                       'school': schools[0] if schools else '',
+                       'invite_form': InviteActivationForm()})
     lang = request.session.get('django_language', user.profile.language)
     issue_statuses = []
     seminar_color = IssueStatus.COLOR_DEFAULT
@@ -230,9 +230,9 @@ def course_page(request, course_id):
 
     if course.private and not course.user_is_attended(request.user):
         return render(request, 'courses/course_forbidden.html',
-                                  {"course": course,
-                                   'school': schools[0] if schools else '',
-                                   'invite_form': InviteActivationForm()})
+                      {"course": course,
+                       'school': schools[0] if schools else '',
+                       'invite_form': InviteActivationForm()})
     course.can_edit = course.user_can_edit_course(user)
     if course.can_edit:
         groups = course.groups.all().order_by('name')
@@ -291,9 +291,9 @@ def seminar_page(request, course_id, task_id):
 
     if course.private and not course.user_is_attended(request.user):
         return render(request, 'courses/course_forbidden.html',
-                                  {"course": course,
-                                   'school': schools[0] if schools else '',
-                                   'invite_form': InviteActivationForm()})
+                      {"course": course,
+                       'school': schools[0] if schools else '',
+                       'invite_form': InviteActivationForm()})
     course.can_edit = course.user_can_edit_course(user)
 
     if course.can_edit:
@@ -390,8 +390,8 @@ def tasklist_shad_cpp(request, course, seminar=None, group=None):
 
         issues_students_in_group = Issue.objects \
             .filter(task__in=group_x_task_list[group], student__group__in=[group]) \
-            .order_by('student')\
-            .select_related("task")\
+            .order_by('student') \
+            .select_related("task") \
             .prefetch_related('task__groups', 'task')
 
         issues_x_student = defaultdict(list)
@@ -403,8 +403,8 @@ def tasklist_shad_cpp(request, course, seminar=None, group=None):
         not_active_students = UserProfile.objects.filter(
             Q(user__in=group.students.filter(is_active=True))
             & (
-                Q(user_status__tag='not_active')
-                | Q(user_status__tag='academic')
+                    Q(user_status__tag='not_active')
+                    | Q(user_status__tag='academic')
             )
         )
         academ_students += [x.user for x in not_active_students]
@@ -933,7 +933,7 @@ def attendance_list(request, course, group=None):
         students = group.students.filter(is_active=True)
         not_active_students = UserProfile.objects.filter(Q(user__in=group.students.filter(is_active=True))
                                                          & (Q(user_status__tag='not_active') | Q(
-                                                             user_status__tag='academic')))
+            user_status__tag='academic')))
         academ_students += [x.user for x in not_active_students]
         if not show_academ_users:
             students = set(students) - set(academ_students)
