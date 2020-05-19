@@ -13,6 +13,8 @@ from django.contrib.auth.models import User
 import json
 import datetime
 
+import admission.views
+
 
 class ViewsTest(TestCase):
     def setUp(self):
@@ -101,15 +103,15 @@ class ViewsTest(TestCase):
         }
 
         # get register
-        response = client.get(reverse('admission.views.register'), post_data, **test_header)
+        response = client.get(reverse(admission.views.register), post_data, **test_header)
         self.assertEqual(response.status_code, 405)
 
         # post register without header
-        response = client.post(reverse('admission.views.register'), post_data)
+        response = client.post(reverse(admission.views.register), post_data)
         self.assertEqual(response.status_code, 403)
 
         # post register
-        response = client.post(reverse('admission.views.register'), post_data, **test_header)
+        response = client.post(reverse(admission.views.register), post_data, **test_header)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content, "OK")
 
@@ -166,13 +168,13 @@ class ViewsTest(TestCase):
 
         # post activate
         mock_contest_register.return_value = self.contest_id
-        response = client.post(reverse('admission.views.activate',
+        response = client.post(reverse(admission.views.activate,
                                        kwargs={'activation_key': activation_key}))
         self.assertEqual(response.status_code, 405)
 
         # get activate with wrong key
         mock_contest_register.return_value = self.contest_id
-        response = client.get(reverse('admission.views.activate', kwargs={'activation_key': '1'}))
+        response = client.get(reverse(admission.views.activate, kwargs={'activation_key': '1'}))
         self.assertEqual(response.status_code, 200)
         user = User.objects.get(id=user.id)
         self.assertFalse(user.is_active)
@@ -181,7 +183,7 @@ class ViewsTest(TestCase):
 
         # get activate
         mock_contest_register.return_value = self.contest_id
-        response = client.get(reverse('admission.views.activate',
+        response = client.get(reverse(admission.views.activate,
                                       kwargs={'activation_key': activation_key}))
         self.assertEqual(response.status_code, 301)
         self.assertEqual(response['Location'], settings.CONTEST_URL + 'contest/' + self.contest_id)

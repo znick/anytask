@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from django.shortcuts import render_to_response, get_object_or_404, redirect
-from django.template import RequestContext
+from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect
 from django.db.models import Q
 from django.db.models import Sum
@@ -41,7 +40,7 @@ import requests
 import json
 import datetime
 import pytz
-import reversion
+from reversion import revisions as reversion
 
 
 @login_required
@@ -181,7 +180,7 @@ def profile(request, username=None, year=None):
         'age': age,
     }
 
-    return render_to_response('user_profile.html', context, context_instance=RequestContext(request))
+    return render(request, 'user_profile.html', context)
 
 
 def group_by_year(objects):
@@ -219,7 +218,7 @@ def profile_settings(request):
         'geo_suggest_url': settings.GEO_SUGGEST_URL
     }
 
-    return render_to_response('user_settings.html', context, context_instance=RequestContext(request))
+    return render(request, 'user_settings.html', context)
 
 
 @login_required
@@ -260,7 +259,7 @@ def profile_history(request, username=None):
         'user_statuses': UserStatus.objects.all(),
     }
 
-    return render_to_response('status_history.html', context, context_instance=RequestContext(request))
+    return render(request, 'status_history.html', context)
 
 
 @login_required
@@ -435,7 +434,7 @@ def ya_oauth_forbidden(request, type_of_oauth):
         'oauth_error_text': oauth_error_text,
     }
 
-    return render_to_response('oauth_error.html', context, context_instance=RequestContext(request))
+    return render(request, 'oauth_error.html', context)
 
 
 @login_required
@@ -445,7 +444,7 @@ def ya_oauth_changed(request):
         'oauth_error_text': _(u"pereprivjazat_tolko_svoj_profil"),
     }
 
-    return render_to_response('oauth_error.html', context, context_instance=RequestContext(request))
+    return render(request, 'oauth_error.html', context)
 
 
 def add_user_to_group(request):
@@ -500,7 +499,7 @@ def my_tasks(request):
         'filter': f,
     }
 
-    return render_to_response('my_tasks.html', context, context_instance=RequestContext(request))
+    return render(request, 'my_tasks.html', context)
 
 
 @login_required
@@ -595,7 +594,7 @@ def user_courses(request, username=None, year=None):
         'user': user,
     }
 
-    return render_to_response('user_courses.html', context, context_instance=RequestContext(request))
+    return render(request, 'user_courses.html', context)
 
 
 @login_required

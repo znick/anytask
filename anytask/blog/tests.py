@@ -9,6 +9,8 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 
+import blog.views
+
 
 class TestResponse(TestCase):
     def setUp(self):
@@ -20,7 +22,7 @@ class TestResponse(TestCase):
         client = self.client
 
         # get blog page
-        response = client.get(reverse('blog.views.blog_page'))
+        response = client.get(reverse(blog.views.blog_page))
         self.assertEqual(response.status_code, 200)
 
     def test_get_page_via_user(self):
@@ -30,5 +32,5 @@ class TestResponse(TestCase):
         self.assertTrue(client.login(username=self.user.username, password=self.user_password))
 
         # get blog page
-        response = client.get(reverse('blog.views.blog_page'))
+        response = client.get(reverse(blog.views.blog_page))
         self.assertEqual(response.status_code, 200)

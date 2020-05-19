@@ -1,8 +1,7 @@
 # coding: utf-8
 
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render, get_object_or_404
 from django.http import Http404, QueryDict
-from django.template import RequestContext
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
 from django.db.models import Q
@@ -17,7 +16,7 @@ from collections import defaultdict, Counter
 import datetime
 import logging
 import requests
-import reversion
+from reversion import revisions as reversion
 
 from courses.models import Course, DefaultTeacher, StudentCourseMark, MarkField, FilenameExtension
 from groups.models import Group
@@ -83,8 +82,7 @@ def queue_page(request, course_id):
             <div class="form-group row">
             <button id="button_filter" class="btn btn-primary" type="button">{1}</button>
             </div>
-            """.
-            format(_(u'ochistit'), _(u'primenit'))
+            """.format(_(u'ochistit'), _(u'primenit'))
         )
     )
 
@@ -99,7 +97,7 @@ def queue_page(request, course_id):
         'full_width_page': True,
         'timezone': user.profile.time_zone
     }
-    return render_to_response('courses/queue.html', context, context_instance=RequestContext(request))
+    return render(request, 'courses/queue.html', context)
 
 
 def set_order_direction(values, direction):
@@ -123,10 +121,7 @@ def ajax_get_queue(request):
 
     issues = Issue.objects.filter(
         Q(task__course=course)
-        & (
-            Q(student__profile__user_status__tag='active')
-            | Q(student__profile__user_status__tag=None)
-        )
+        & (Q(student__profile__user_status__tag='active') | Q(student__profile__user_status__tag=None))
         & Q(student__group__course=course)
     ).exclude(
         task__type=Task.TYPE_SEMINAR,
@@ -177,11 +172,10 @@ def gradebook(request, course_id, task_id=None, group_id=None):
     schools = course.school_set.all()
 
     if course.private and not course.user_is_attended(request.user):
-        return render_to_response('courses/course_forbidden.html',
-                                  {"course": course,
-                                   'school': schools[0] if schools else '',
-                                   'invite_form': InviteActivationForm()},
-                                  context_instance=RequestContext(request))
+        return render(request, 'courses/course_forbidden.html',
+                      {"course": course,
+                       'school': schools[0] if schools else '',
+                       'invite_form': InviteActivationForm()})
     lang = request.session.get('django_language', user.profile.language)
     issue_statuses = []
     seminar_color = IssueStatus.COLOR_DEFAULT
@@ -209,7 +203,7 @@ def gradebook(request, course_id, task_id=None, group_id=None):
         'seminar_color': seminar_color,
     })
 
-    return render_to_response('courses/gradebook.html', context, context_instance=RequestContext(request))
+    return render(request, 'courses/gradebook.html', context)
 
 
 @require_http_methods(['GET'])
@@ -231,11 +225,10 @@ def course_page(request, course_id):
     schools = course.school_set.all()
 
     if course.private and not course.user_is_attended(request.user):
-        return render_to_response('courses/course_forbidden.html',
-                                  {"course": course,
-                                   'school': schools[0] if schools else '',
-                                   'invite_form': InviteActivationForm()},
-                                  context_instance=RequestContext(request))
+        return render(request, 'courses/course_forbidden.html',
+                      {"course": course,
+                       'school': schools[0] if schools else '',
+                       'invite_form': InviteActivationForm()})
     course.can_edit = course.user_can_edit_course(user)
     if course.can_edit:
         groups = course.groups.all().order_by('name')
@@ -273,7 +266,7 @@ def course_page(request, course_id):
     context['visible_attendance_log'] = course.user_can_see_attendance_log(request.user)
     context['jupyterhub_url'] = getattr(settings, 'JUPYTERHUB_URL', '')
 
-    return render_to_response('courses/course.html', context, context_instance=RequestContext(request))
+    return render(request, 'courses/course.html', context)
 
 
 @login_required
@@ -293,11 +286,10 @@ def seminar_page(request, course_id, task_id):
     schools = course.school_set.all()
 
     if course.private and not course.user_is_attended(request.user):
-        return render_to_response('courses/course_forbidden.html',
-                                  {"course": course,
-                                   'school': schools[0] if schools else '',
-                                   'invite_form': InviteActivationForm()},
-                                  context_instance=RequestContext(request))
+        return render(request, 'courses/course_forbidden.html',
+                      {"course": course,
+                       'school': schools[0] if schools else '',
+                       'invite_form': InviteActivationForm()})
     course.can_edit = course.user_can_edit_course(user)
 
     if course.can_edit:
@@ -335,7 +327,7 @@ def seminar_page(request, course_id, task_id):
     context['school'] = schools[0] if schools else ''
     context['visible_attendance_log'] = course.user_can_see_attendance_log(request.user)
 
-    return render_to_response('courses/course.html', context, context_instance=RequestContext(request))
+    return render(request, 'courses/course.html', context)
 
 
 def tasklist_shad_cpp(request, course, seminar=None, group=None):
@@ -394,8 +386,8 @@ def tasklist_shad_cpp(request, course, seminar=None, group=None):
 
         issues_students_in_group = Issue.objects \
             .filter(task__in=group_x_task_list[group], student__group__in=[group]) \
-            .order_by('student')\
-            .select_related("task")\
+            .order_by('student') \
+            .select_related("task") \
             .prefetch_related('task__groups', 'task')
 
         issues_x_student = defaultdict(list)
@@ -406,10 +398,7 @@ def tasklist_shad_cpp(request, course, seminar=None, group=None):
         students = group.students.filter(is_active=True)
         not_active_students = UserProfile.objects.filter(
             Q(user__in=group.students.filter(is_active=True))
-            & (
-                Q(user_status__tag='not_active')
-                | Q(user_status__tag='academic')
-            )
+            & (Q(user_status__tag='not_active') | Q(user_status__tag='academic'))
         )
         academ_students += [x.user for x in not_active_students]
         if not show_academ_users:
@@ -529,7 +518,7 @@ def courses_list(request, year=None):
         'year': year_object,
     }
 
-    return render_to_response('course_list.html', context, context_instance=RequestContext(request))
+    return render(request, 'course_list.html', context)
 
 
 @require_http_methods(['POST'])
@@ -629,14 +618,14 @@ def course_settings(request, course_id):
         form = DefaultTeacherForm(course)
         context['form'] = form
         context['file_extensions'] = get_filename_extensions(course)
-        return render_to_response('courses/settings.html', context, context_instance=RequestContext(request))
+        return render(request, 'courses/settings.html', context)
 
     form = DefaultTeacherForm(course, request.POST)
     context['form'] = form
 
     if not form.is_valid():
         context['file_extensions'] = get_filename_extensions(course)
-        return render_to_response('courses/settings.html', context, context_instance=RequestContext(request))
+        return render(request, 'courses/settings.html', context)
 
     for group_key, teacher_id in form.cleaned_data.iteritems():
         teacher_id = int(teacher_id)
@@ -936,8 +925,8 @@ def attendance_list(request, course, group=None):
 
         students = group.students.filter(is_active=True)
         not_active_students = UserProfile.objects.filter(Q(user__in=group.students.filter(is_active=True))
-                                                         & (Q(user_status__tag='not_active') | Q(
-                                                             user_status__tag='academic')))
+                                                         & (Q(user_status__tag='not_active')
+                                                            | Q(user_status__tag='academic')))
         academ_students += [x.user for x in not_active_students]
         if not show_academ_users:
             students = set(students) - set(academ_students)
@@ -1019,7 +1008,7 @@ def attendance_page(request, course_id, group_id=None):
         str(request.user.id) + '_' + str(course.id) + '_show_academ_users', True)
     context['full_width_page'] = True
 
-    return render_to_response('courses/attendance.html', context, context_instance=RequestContext(request))
+    return render(request, 'courses/attendance.html', context)
 
 
 @require_http_methods(['POST'])

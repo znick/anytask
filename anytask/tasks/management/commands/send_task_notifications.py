@@ -13,7 +13,7 @@ from tasks.models import Task
 from mail.common import send_mass_mail_html
 
 import time
-import reversion
+from reversion import revisions as reversion
 import pytz
 
 

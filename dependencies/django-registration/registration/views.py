@@ -5,7 +5,7 @@ Views which allow users to create and activate accounts.
 
 
 from django.shortcuts import redirect
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.template import RequestContext
 from django.http import HttpResponse
 
@@ -90,9 +90,12 @@ def activate(request, backend,
     for key, value in extra_context.items():
         context[key] = callable(value) and value() or value
 
-    return render_to_response(template_name,
+    if not kwargs:
+        kwargs = {}
+    kwargs['context_instance'] = context
+    return render(request, template_name,
                               kwargs,
-                              context_instance=context)
+                              context)
 
 
 def register(request, backend, success_url=None, form_class=None,
@@ -128,11 +131,11 @@ def register(request, backend, success_url=None, form_class=None,
        the ``HttpRequest`` and the new ``User``, to determine the URL
        to redirect the user to. To override this, see the list of
        optional arguments for this view (below).
-    
+
     **Required arguments**
-    
+
     None.
-    
+
     **Optional arguments**
 
     ``backend``
@@ -144,11 +147,11 @@ def register(request, backend, success_url=None, form_class=None,
         passed to ``django.shortcuts.redirect``. If not supplied, this
         will be whatever URL corresponds to the named URL pattern
         ``registration_disallowed``.
-    
+
     ``form_class``
         The form class to use for registration. If not supplied, this
         will be retrieved from the registration backend.
-    
+
     ``extra_context``
         A dictionary of variables to add to the template context. Any
         callable object in this dictionary will be called to produce
@@ -159,24 +162,24 @@ def register(request, backend, success_url=None, form_class=None,
         value which can legally be passed to
         ``django.shortcuts.redirect``. If not supplied, this will be
         retrieved from the registration backend.
-    
+
     ``template_name``
         A custom template to use. If not supplied, this will default
         to ``registration/registration_form.html``.
-    
+
     **Context:**
-    
+
     ``form``
         The registration form.
-    
+
     Any extra variables supplied in the ``extra_context`` argument
     (see above).
-    
+
     **Template:**
-    
+
     registration/registration_form.html or ``template_name`` keyword
     argument.
-    
+
     """
     backend = get_backend(backend)
     if not backend.registration_allowed(request):
@@ -195,16 +198,17 @@ def register(request, backend, success_url=None, form_class=None,
                 return redirect(success_url)
     else:
         form = form_class()
-    
+
     if extra_context is None:
         extra_context = {}
     context = RequestContext(request)
     for key, value in extra_context.items():
         context[key] = callable(value) and value() or value
 
-    return render_to_response(template_name,
+
+    return render(request, template_name,
                               {'form': form},
-                              context_instance=context)
+                              context)
 
 
 def ajax_check_username(request):

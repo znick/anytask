@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-from django.shortcuts import render_to_response, get_object_or_404
-from django.template import RequestContext
+from django.shortcuts import render, get_object_or_404
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseForbidden
 from django.core.exceptions import PermissionDenied
@@ -18,7 +17,7 @@ from users.models import UserProfile
 from users.model_user_profile_filter import UserProfileFilter
 from users.model_user_status import UserStatus, get_statuses
 
-import reversion
+from reversion import revisions as reversion
 import csv
 import logging
 import json
@@ -97,7 +96,7 @@ def staff_page(request):
         'empty_filter': empty_filter,
     }
 
-    return render_to_response('staff.html', context, context_instance=RequestContext(request))
+    return render(request, 'staff.html', context)
 
 
 @require_http_methods(['POST'])
@@ -157,7 +156,7 @@ def get_gradebook(request):
         'statuses': statuses,
     }
 
-    return render_to_response('get_gradebook.html', context, context_instance=RequestContext(request))
+    return render(request, 'get_gradebook.html', context)
 
 
 @require_http_methods(['GET'])
@@ -213,4 +212,4 @@ def gradebook_page(request, statuses=None):
         'courses': courses,
     }
 
-    return render_to_response('gradebook.html', context, context_instance=RequestContext(request))
+    return render(request, 'gradebook.html', context)

@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 
-from django.shortcuts import render_to_response
-from django.template import RequestContext
-from django.http import HttpResponse, HttpResponseForbidden
+import json
+
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse, HttpResponseForbidden
+from django.shortcuts import render
 from haystack.query import SearchQuerySet
 
-from users.models import UserProfile
 from courses.models import Course
 from schools.models import School
-import json
+from users.models import UserProfile
 
 
 @login_required()
@@ -24,7 +24,7 @@ def search_page(request):
         'user_profiles': search_users(query, user)[1],
         'courses': search_courses(query, user)[1],
     }
-    return render_to_response('search.html', context, context_instance=RequestContext(request))
+    return render(request, 'search.html', context)
 
 
 @login_required()

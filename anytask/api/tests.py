@@ -15,6 +15,8 @@ from tasks.models import Task
 from users.models import Group
 from years.models import Year
 
+import api.views
+
 
 class ApiTest(TestCase):
     maxDiff = None
@@ -157,7 +159,7 @@ class ApiTest(TestCase):
             }
         ]
         response = self._request(self.teacher, self.teacher_password,
-                                 path=reverse("api.views.get_issues", kwargs={"course_id": self.course.id}))
+                                 path=reverse(api.views.get_issues, kwargs={"course_id": self.course.id}))
 
         self.assertEqual(response.status_code, 200)
 
@@ -246,7 +248,7 @@ class ApiTest(TestCase):
         ]
 
         response = self._request(self.teacher, self.teacher_password,
-                                 path=reverse("api.views.get_issues",
+                                 path=reverse(api.views.get_issues,
                                               kwargs={"course_id": self.course.id}) + "?add_events=1")
         self.assertEqual(response.status_code, 200)
 
@@ -264,7 +266,7 @@ class ApiTest(TestCase):
 
     def test_get_issues__not_teacher(self):
         response = self._request(self.student, self.student_password,
-                                 path=reverse("api.views.get_issues", kwargs={"course_id": self.course.id}))
+                                 path=reverse(api.views.get_issues, kwargs={"course_id": self.course.id}))
         self.assertEqual(response.status_code, 403)
 
     def test_get_issue(self, username=None, password=None):
@@ -316,9 +318,8 @@ class ApiTest(TestCase):
                 }
             ]
         }
-
         response = self._request(username, password,
-                                 path=reverse("api.views.get_or_post_issue", kwargs={"issue_id": self.issue1.id}))
+                                 path=reverse(api.views.get_or_post_issue, kwargs={"issue_id": self.issue1.id}))
         self.assertEqual(response.status_code, 200)
 
         response_data = json.loads(response.content)
@@ -337,7 +338,7 @@ class ApiTest(TestCase):
 
     def test_get_issue_no_access(self):
         response = self._request(self.anytask, self.anytask_password,
-                                 path=reverse("api.views.get_issues", kwargs={"course_id": self.course.id}))
+                                 path=reverse(api.views.get_issues, kwargs={"course_id": self.course.id}))
         self.assertEqual(response.status_code, 403)
 
     def test_get_issue_student_has_access(self):
@@ -348,23 +349,23 @@ class ApiTest(TestCase):
         password = self.teacher_password
 
         response = self._request(username, password,
-                                 path=reverse("api.views.add_comment", kwargs={"issue_id": self.issue1.id}),
+                                 path=reverse(api.views.add_comment, kwargs={"issue_id": self.issue1.id}),
                                  method=self.client.post, data={"comment": "Hello from test"})
         self.assertEqual(response.status_code, 201)
 
         response = self._request(username, password,
-                                 path=reverse("api.views.get_or_post_issue", kwargs={"issue_id": self.issue1.id}))
+                                 path=reverse(api.views.get_or_post_issue, kwargs={"issue_id": self.issue1.id}))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Hello from test")
 
     def test_post_comment__no_access(self):
         response = self._request(self.anytask, self.anytask_password,
-                                 path=reverse("api.views.add_comment", kwargs={"issue_id": self.issue1.id}),
+                                 path=reverse(api.views.add_comment, kwargs={"issue_id": self.issue1.id}),
                                  method=self.client.post, data={"comment": "No access"})
         self.assertEqual(response.status_code, 403)
 
         response = self._request(self.teacher, self.teacher_password,
-                                 path=reverse("api.views.get_or_post_issue", kwargs={"issue_id": self.issue1.id}))
+                                 path=reverse(api.views.get_or_post_issue, kwargs={"issue_id": self.issue1.id}))
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, "No access")
 
@@ -430,7 +431,7 @@ class ApiTest(TestCase):
         }
 
         response = self._request(username, password,
-                                 path=reverse("api.views.get_or_post_issue", kwargs={"issue_id": self.issue1.id}),
+                                 path=reverse(api.views.get_or_post_issue, kwargs={"issue_id": self.issue1.id}),
                                  method=self.client.post, data={"comment": "Hello from test"})
         self.assertEqual(response.status_code, 200)
 
@@ -510,7 +511,7 @@ class ApiTest(TestCase):
             status = self.course.issue_status_system.statuses.all().order_by("-id")[0].id
 
         response = self._request(username, password,
-                                 path=reverse("api.views.get_or_post_issue", kwargs={"issue_id": self.issue1.id}),
+                                 path=reverse(api.views.get_or_post_issue, kwargs={"issue_id": self.issue1.id}),
                                  method=self.client.post, data={"status": status})
         self.assertEqual(response.status_code, 200)
 
@@ -572,7 +573,7 @@ class ApiTest(TestCase):
         }
 
         response = self._request(username, password,
-                                 path=reverse("api.views.get_or_post_issue", kwargs={"issue_id": self.issue1.id}),
+                                 path=reverse(api.views.get_or_post_issue, kwargs={"issue_id": self.issue1.id}),
                                  method=self.client.post, data={"mark": 2.0})
         self.assertEqual(response.status_code, 200)
 
@@ -590,28 +591,28 @@ class ApiTest(TestCase):
 
     def test_post_issue__no_access(self):
         response = self._request(self.anytask, self.anytask_password,
-                                 path=reverse("api.views.get_or_post_issue", kwargs={"issue_id": self.issue1.id}),
+                                 path=reverse(api.views.get_or_post_issue, kwargs={"issue_id": self.issue1.id}),
                                  method=self.client.post, data={"comment": "No access"})
         self.assertEqual(response.status_code, 403)
 
         status = self.course.issue_status_system.statuses.all().order_by("-id")[0]
         response = self._request(self.anytask, self.anytask_password,
-                                 path=reverse("api.views.get_or_post_issue", kwargs={"issue_id": self.issue1.id}),
+                                 path=reverse(api.views.get_or_post_issue, kwargs={"issue_id": self.issue1.id}),
                                  method=self.client.post, data={"status": status.id})
         self.assertEqual(response.status_code, 403)
 
         response = self._request(self.anytask, self.anytask_password,
-                                 path=reverse("api.views.get_or_post_issue", kwargs={"issue_id": self.issue1.id}),
+                                 path=reverse(api.views.get_or_post_issue, kwargs={"issue_id": self.issue1.id}),
                                  method=self.client.post, data={"status": status.tag})
         self.assertEqual(response.status_code, 403)
 
         response = self._request(self.anytask, self.anytask_password,
-                                 path=reverse("api.views.get_or_post_issue", kwargs={"issue_id": self.issue1.id}),
+                                 path=reverse(api.views.get_or_post_issue, kwargs={"issue_id": self.issue1.id}),
                                  method=self.client.post, data={"mark": 2.0})
         self.assertEqual(response.status_code, 403)
 
         response = self._request(self.teacher, self.teacher_password,
-                                 path=reverse("api.views.get_or_post_issue", kwargs={"issue_id": self.issue1.id}))
+                                 path=reverse(api.views.get_or_post_issue, kwargs={"issue_id": self.issue1.id}))
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, "No access")
 
@@ -664,7 +665,7 @@ class ApiTest(TestCase):
         ]
 
         response = self._request(username, password,
-                                 path=reverse("api.views.get_issue_statuses", kwargs={"course_id": self.course.id}))
+                                 path=reverse(api.views.get_issue_statuses, kwargs={"course_id": self.course.id}))
         self.assertEqual(response.status_code, 200)
 
         response_data = json.loads(response.content)
@@ -672,10 +673,10 @@ class ApiTest(TestCase):
 
     def test_get_issue_statuses__no_access(self):
         response = self._request(self.anytask, self.anytask_password,
-                                 path=reverse("api.views.get_issue_statuses", kwargs={"course_id": self.course.id}))
+                                 path=reverse(api.views.get_issue_statuses, kwargs={"course_id": self.course.id}))
         self.assertEqual(response.status_code, 403)
 
         response = self._request(self.teacher, self.teacher_password,
-                                 path=reverse("api.views.get_issue_statuses", kwargs={"course_id": self.course.id}))
+                                 path=reverse(api.views.get_issue_statuses, kwargs={"course_id": self.course.id}))
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, "No access")

@@ -1,7 +1,10 @@
-from django.conf.urls import patterns, url
+import admission.views
+from django.conf.urls import url
 
-urlpatterns = patterns('admission.views',
-                       url(r'^register$', 'register'),
-                       url(r'^activate/(?P<activation_key>\w+)/', 'activate'),
-                       # url(r'^decline/(?P<activation_key>\w+)/', 'decline'),
-                       )
+urlpatterns = [
+    url(r'^register$', admission.views.register,
+        name="admission.views.register"),
+    url(r'^activate/(?P<activation_key>\w+)/', admission.views.activate,
+        name="admission.views.activate"),
+    # url(r'^decline/(?P<activation_key>\w+)/', 'decline'),
+]

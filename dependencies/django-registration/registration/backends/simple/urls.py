@@ -17,21 +17,18 @@ up your own URL patterns for these views instead.
 
 """
 
-
 from django.conf.urls import *
 from django.views.generic.base import TemplateView
 
-from registration.views import activate
 from registration.views import register
 
-
-urlpatterns = patterns('',
-                       url(r'^register/$',
-                           register,
-                           {'backend': 'registration.backends.simple.SimpleBackend'},
-                           name='registration_register'),
-                       url(r'^register/closed/$',
-                           TemplateView.as_view(template_name='registration/registration_closed.html'),
-                           name='registration_disallowed'),
-                       (r'', include('registration.auth_urls')),
-                       )
+urlpatterns = [url(r'^register/$',
+                   register,
+                   {'backend': 'registration.backends.simple.SimpleBackend'},
+                   name='registration_register'),
+               url(r'^register/closed/$',
+                   TemplateView.as_view(
+                       template_name='registration/registration_closed.html'),
+                   name='registration_disallowed'),
+               url(r'', include('registration.auth_urls')),
+]

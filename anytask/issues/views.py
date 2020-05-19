@@ -8,8 +8,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponsePermanentRedirect
-from django.shortcuts import render_to_response, get_object_or_404, redirect
-from django.template.context import RequestContext
+from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.translation import ugettext as _
 from django.views.decorators.http import require_POST
 from jfu.http import upload_receive, UploadResponse, JFUResponse
@@ -239,7 +238,7 @@ def issue_page(request, issue_id):
         'max_files_number': getattr(settings, 'MAX_FILES_NUMBER', 10)
     }
 
-    return render_to_response('issues/issue.html', context, context_instance=RequestContext(request))
+    return render(request, 'issues/issue.html', context)
 
 
 @login_required

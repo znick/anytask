@@ -6,8 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST, require_GET
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponsePermanentRedirect
 from django.conf import settings
-from django.shortcuts import render_to_response
-from django.template import RequestContext
+from django.shortcuts import render
 
 from anycontest.common import user_register_to_contest
 
@@ -182,7 +181,7 @@ def activate(request, activation_key):
     else:
         context['info_text'] = _(u'nevernyy_kod_aktivatsii')
 
-    return render_to_response('info_page.html', context, context_instance=RequestContext(request))
+    return render(request, 'info_page.html', context)
 
 
 @never_cache
@@ -204,4 +203,4 @@ def decline(request, activation_key):
         'info_text': _(u'informatsiya_o_vas_byla_udalena'),
     }
 
-    return render_to_response('info_page.html', context, context_instance=RequestContext(request))
+    return render(request, 'info_page.html', context)

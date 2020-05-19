@@ -5,7 +5,7 @@ import re
 from django.conf import settings
 from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm, SetPasswordForm, PasswordChangeForm
 from django.contrib.auth.models import User
-from django.contrib.sites.models import RequestSite
+from django.contrib.sites.requests import RequestSite
 from django.contrib.sites.models import Site
 from django.utils.translation import ugettext as _
 from django.utils.translation import get_language_from_request

@@ -17,13 +17,13 @@ django-crispy-forms==1.6.0
 django-debug-toolbar==1.3.2
 django-extensions==1.6.7
 django-filemanager==0.0.5
-django-filter==0.10.0
+django-filter==0.15.0
 django-haystack==2.4.1
 django-htmlmin==0.10.0
-django-jfu==2.0.9
+django-dprog-jfu
 django-recaptcha==1.4.0
-django-reversion==1.9.3
-django==1.8.19
+django-reversion==1.10
+django==1.10.8
 django_premailer==0.2.0
 entrypoints==0.2.3        # via nbconvert
 enum34==1.1.6             # via traitlets
@@ -83,3 +83,4 @@ widgetsnbextension==3.2.1  # via ipywidgets
 xmltodict==0.11.0
 yandex-oauth-py==0.1.1
 MySQL-python==1.2.5
+nose

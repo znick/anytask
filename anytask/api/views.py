@@ -143,6 +143,7 @@ def unpack_statuses(course, lang=settings.API_LANGUAGE_CODE):
     for status in course.issue_status_system.statuses.all():
         ret.append(unpack_status(status, lang))
 
+    ret = sorted(ret, key=lambda x: x[u'id'])
     return ret
 
 

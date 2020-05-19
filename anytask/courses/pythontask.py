@@ -4,9 +4,8 @@ from issues.models import Issue
 from django.conf import settings
 from django.db.models import Q
 from django.db import transaction
-from django.shortcuts import render_to_response, get_object_or_404, redirect
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from django.template import RequestContext
 from django.utils.translation import ugettext_lazy as _
 
 import datetime
@@ -138,7 +137,7 @@ def tasks_list(request, course):
         'STATUS_SCORED': TaskTaken.STATUS_SCORED,
     }
 
-    return render_to_response('course_tasks_potok.html', context, context_instance=RequestContext(request))
+    return render(request, 'course_tasks_potok.html', context)
 
 
 def python_stat(request, course):
@@ -154,7 +153,7 @@ def python_stat(request, course):
         'course_stat': stat.get_course_stat()
     }
 
-    return render_to_response('statistics.html', context, context_instance=RequestContext(request))
+    return render(request, 'statistics.html', context)
 
 
 @login_required

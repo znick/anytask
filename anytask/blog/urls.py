@@ -1,6 +1,6 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
+import blog.views
 
-urlpatterns = patterns(
-    'blog.views',
-    url(r'^$', 'blog_page'),
+urlpatterns = (
+    url(r'^$', blog.views.blog_page, name="blog.views.blog_page"),
 )
