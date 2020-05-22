@@ -32,4 +32,4 @@ dateutils==0.6.6
 flake8==3.7.9
 django_premailer==0.2.0
 django-environ==0.4
-nose
+nose==1.3.7
