@@ -18,7 +18,7 @@ django-debug-toolbar==1.3.2
 django-extensions==1.6.7
 django-filemanager==0.0.5
 django-filter==0.15.0
-django-haystack==2.4.1
+django-haystack==2.8.1
 django-htmlmin==0.10.0
 django-dprog-jfu
 django-recaptcha==1.4.0
