@@ -1,6 +1,6 @@
 tornado==4.5.3
 ipykernel==4.5.2
-django==1.10.8
+django==1.11.29
 pillow==6.2.2
 django-recaptcha==1.4.0
 python-gettext==3.0
@@ -19,7 +19,7 @@ requests==2.20.0
 flup==1.0.3
 unidecode==1.0.22
 django-dprog-jfu
-django-filter==0.15.0
+django-filter==1.1.0
 yandex-oauth-py==0.1.1
 xmltodict==0.11.0
 django-crispy-forms==1.6.0
