@@ -33,3 +33,4 @@ flake8==3.7.9
 django_premailer==0.2.0
 django-environ==0.4
 nose==1.3.7
+rbtools==1.0.3
