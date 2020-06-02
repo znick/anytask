@@ -205,7 +205,6 @@ def register(request, backend, success_url=None, form_class=None,
     for key, value in extra_context.items():
         context[key] = callable(value) and value() or value
 
-
     return render(request, template_name,
                               {'form': form},
                               context)

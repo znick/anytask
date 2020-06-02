@@ -16,7 +16,7 @@ import logging
 logger = logging.getLogger('django.request')
 
 
-class CustomMethodFilter(django_filters.MethodFilter):
+class CustomMethodFilter(django_filters.Filter):
     def __init__(self, *args, **kwargs):
         self.field_class = kwargs.pop('field_class', forms.Field)
 
@@ -25,23 +25,23 @@ class CustomMethodFilter(django_filters.MethodFilter):
 
 class UserProfileFilter(django_filters.FilterSet):
     courses = CustomMethodFilter(label=_(u'kurs'),
-                                 action='empty_filter',
+                                 method='empty_filter',
                                  widget=forms.SelectMultiple,
                                  field_class=forms.MultipleChoiceField)
     groups = CustomMethodFilter(label=_(u'gruppa'),
-                                action='empty_filter',
+                                method='empty_filter',
                                 widget=forms.SelectMultiple,
                                 field_class=forms.MultipleChoiceField)
     user_status_activity = CustomMethodFilter(label=_(u'status_studenta'),
-                                              action='empty_filter',
+                                              method='empty_filter',
                                               widget=forms.SelectMultiple,
                                               field_class=forms.MultipleChoiceField)
     user_status_filial = CustomMethodFilter(label=_(u'filial'),
-                                            action='empty_filter',
+                                            method='empty_filter',
                                             widget=forms.SelectMultiple,
                                             field_class=forms.MultipleChoiceField)
     user_status_admission = CustomMethodFilter(label=_(u'status_postupleniya'),
-                                               action='empty_filter',
+                                               method='empty_filter',
                                                widget=forms.SelectMultiple,
                                                field_class=forms.MultipleChoiceField)
 
