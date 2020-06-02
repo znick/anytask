@@ -7,10 +7,10 @@ contains the actual logic for determining which accounts are deleted.
 
 """
 
-from django.core.management.base import NoArgsCommand
+from django.core.management.base import BaseCommand as NoArgsCommand
 from django.contrib.auth.models import User
 
-from xml.dom.minidom import parse
+from xml.etree.ElementTree import parse
 import sys
 import random
 import string

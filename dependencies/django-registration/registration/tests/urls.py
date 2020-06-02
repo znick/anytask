@@ -17,7 +17,7 @@ from registration.views import activate
 from registration.views import register
 
 
-urlpatterns = patterns('',
+urlpatterns = [
                        # Test the 'activate' view with custom template
                        # name.
                        url(r'^activate-with-template-name/(?P<activation_key>\w+)/$',
@@ -85,4 +85,4 @@ urlpatterns = patterns('',
                        url(r'^shad2017/register', 'admission.views.register'),
                        url(r'^shad2017/activate/(?P<activation_key>\w+)/', 'admission.views.activate'),
                        url(r'^shad2017/decline/(?P<activation_key>\w+)/', 'admission.views.decline'),
-                       )
+                       ]

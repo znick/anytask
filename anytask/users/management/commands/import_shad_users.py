@@ -1,4 +1,4 @@
-from django.core.management.base import NoArgsCommand
+from django.core.management.base import BaseCommand as NoArgsCommand
 from django.contrib.auth.models import User
 from groups.models import Group
 from django.contrib.auth.forms import PasswordResetForm

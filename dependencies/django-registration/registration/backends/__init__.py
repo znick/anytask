@@ -6,7 +6,7 @@ from django.core.exceptions import ImproperlyConfigured
 try: # pragma: no cover
     from importlib import import_module # pragma: no cover
 except ImportError: # pragma: no cover
-    from django.utils.importlib import import_module # pragma: no cover
+    from importlib import import_module # pragma: no cover
 
 def get_backend(path):
     """

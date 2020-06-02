@@ -10,7 +10,7 @@ contains the actual logic for determining which accounts are deleted.
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
 
-from xml.dom.minidom import parse
+from xml.etree.ElementTree import parse
 import sys
 import datetime
 from optparse import make_option

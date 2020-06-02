@@ -16,7 +16,7 @@ from schools.models import School
 from years.common import get_or_create_current_year
 from years.models import Year
 
-from xml.dom.minidom import parse
+from xml.etree.ElementTree import parse
 from optparse import make_option
 import sys
 import random

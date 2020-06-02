@@ -4,7 +4,7 @@ from django.db import transaction
 from courses.models import Course
 from tasks.models import Task
 
-from xml.dom.minidom import parse
+from xml.etree.ElementTree import parse
 from optparse import make_option
 import copy
 
@@ -33,7 +33,7 @@ class Command(BaseCommand):
         ),
     )
 
-    @transaction.commit_on_success
+    @transaction.atomic
     def handle(self, **options):
         course_id = options['course_id']
         if course_id:

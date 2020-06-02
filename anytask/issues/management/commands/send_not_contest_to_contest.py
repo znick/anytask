@@ -6,7 +6,7 @@ import os
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
-from django.db.transaction import commit_on_success
+from django.db.transaction import atomic as commit_on_success
 from django.utils import translation
 
 from issues.models import Issue
