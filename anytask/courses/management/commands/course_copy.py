@@ -54,7 +54,7 @@ class Command(BaseCommand):
             if task_src.has_parent():
                 continue
 
-            print "Copy task {0}".format(task_src.title.encode("utf-8"))
+            print("Copy task {0}".format(task_src.title.encode("utf-8")))
             task_dst = Task()
             task_dst.__dict__ = copy.deepcopy(task_src.__dict__)
             task_dst.id = None
@@ -62,7 +62,7 @@ class Command(BaseCommand):
             task_dst.save()
 
             for subtask_src in task_src.get_subtasks():
-                print ">Copy subtask {0}".format(subtask_src.title.encode("utf-8"))
+                print(">Copy subtask {0}".format(subtask_src.title.encode("utf-8")))
                 subtask_dst = Task()
 
                 subtask_dst.__dict__ = copy.deepcopy(subtask_src.__dict__)

@@ -44,7 +44,7 @@ class Command(BaseCommand):
         start_time = time.time()
 
         if len(args) == 0:
-            print "Specify file name"
+            print("Specify file name")
             return
 
         with open(args[0], 'r') as f:
@@ -104,4 +104,4 @@ class Command(BaseCommand):
             time.time() - start_time
         )
 
-        print message
+        print(message)

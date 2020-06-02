@@ -270,7 +270,7 @@ def upload(request):
         event_value = {'files': [], 'comment': '', 'compilers': []}
         event_value['comment'] = request.POST['comment']
         file_counter = 0
-        for field, value in dict(request.POST).iteritems():
+        for field, value in dict(request.POST).items():
             if 'compiler' in field:
                 pk = int(field[13:])
                 file = File.objects.get(pk=pk)

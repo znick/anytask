@@ -34,7 +34,7 @@ class IssueFilterStudent(django_filters.FilterSet):
         status_set = set()
         for course in courses:
             course_choices.add((course.id, course.name))
-            year_choices.add((course.year.id, unicode(course.year)))
+            year_choices.add((course.year.id, str(course.year)))
 
             for teacher in course.get_teachers():
                 teacher_set.add(teacher)

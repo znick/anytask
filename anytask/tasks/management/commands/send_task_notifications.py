@@ -113,7 +113,7 @@ class Command(BaseCommand):
         domain = Site.objects.get_current().domain
         from_email = settings.DEFAULT_FROM_EMAIL
         notify_messages = []
-        for key_user, courses_info in students_tasks_info.iteritems():
+        for key_user, courses_info in students_tasks_info.items():
             user = courses_info['user']
             if not user.email:
                 continue
@@ -139,5 +139,5 @@ class Command(BaseCommand):
             num_sent = send_mass_mail_html(notify_messages)
 
         # logging to cron log
-        print "Command send_task_notifications send {0} email(s) and took {1} seconds"\
-            .format(num_sent, time.time() - start_time)
+        print("Command send_task_notifications send {0} email(s) and took {1} seconds"
+              .format(num_sent, time.time() - start_time))

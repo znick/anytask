@@ -35,7 +35,7 @@ class ApiTest(TestCase):
         x.pop("update_time", None)
         x.pop("timestamp", None)
 
-        for k, v in x.iteritems():
+        for k, v in iter(x.items()):
             cls.clean_timestamps(k)
             cls.clean_timestamps(v)
 
@@ -94,8 +94,8 @@ class ApiTest(TestCase):
         if method is None:
             method = self.client.get
 
-        http_authorization = "basic " + \
-                             base64.b64encode("{}:{}".format(username, password))
+        http_authorization = "basic " + base64.b64encode("{}:{}".format(username, password)
+                                                         .encode('utf8')).decode('utf8')
 
         kwargs.update({"HTTP_AUTHORIZATION": http_authorization})
         return method(*args, **kwargs)

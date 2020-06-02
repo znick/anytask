@@ -40,7 +40,7 @@ class UnpackedFile(object):
 
 
 def get_archiver(filename):
-    for suffix, archiver in ARCHIVERS.iteritems():
+    for suffix, archiver in iter(ARCHIVERS.items()):
         if filename.lower().endswith(suffix):
             return archiver
     return None

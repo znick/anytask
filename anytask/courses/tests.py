@@ -14,7 +14,7 @@ from years.models import Year
 from tasks.models import Task, TaskTaken
 from tasks.management.commands.check_task_taken_expires import Command as CheckTastTakenExpiresCommand
 
-from BeautifulSoup import BeautifulSoup
+from bs4 import BeautifulSoup
 from django.core.urlresolvers import reverse
 import courses.pythontask
 import courses.views
@@ -23,7 +23,7 @@ import issues.views
 
 def save_result_html(html):
     with open(r'../test_page.html', 'w') as f:
-        print html
+        print(html)
         f.write(html)
 
 
@@ -74,14 +74,14 @@ class CreateTest(TestCase):
         self.assertEqual(course.information, 'information')
         self.assertEqual(course.year, year)
         self.assertEqual(course.is_active, True)
-        self.assertItemsEqual(course.teachers.all(), teachers)
-        self.assertItemsEqual(course.groups.all(), groups)
-        self.assertItemsEqual(course.issue_fields.all(), IssueField.objects.exclude(id=10).exclude(id=11))
+        self.assertCountEqual(course.teachers.all(), teachers)
+        self.assertCountEqual(course.groups.all(), groups)
+        self.assertCountEqual(course.issue_fields.all(), IssueField.objects.exclude(id=10).exclude(id=11))
         self.assertEqual(course.contest_integrated, False)
         self.assertEqual(course.send_rb_and_contest_together, False)
         self.assertEqual(course.rb_integrated, False)
         self.assertEqual(course.send_to_contest_from_users, True)
-        self.assertItemsEqual(course.filename_extensions.all(), filename_extensions)
+        self.assertCountEqual(course.filename_extensions.all(), filename_extensions)
         self.assertEqual(course.full_transcript, False)
         self.assertEqual(course.private, True)
         self.assertEqual(course.can_be_chosen_by_extern, True)
@@ -1196,7 +1196,7 @@ class PythonTaskTest(TestCase):
         response = client.get(
             reverse(courses.pythontask.get_task, kwargs={'course_id': self.course.id, 'task_id': self.subtask1.id}),
             follow=True)
-        self.assertNotIn("{} {}".format(user.last_name, user.first_name), response.content)
+        self.assertNotIn("{} {}".format(user.last_name, user.first_name), response.content.decode('utf8'))
 
     def test_take_cant_take_tasks_from_one_subtask(self):
         client = self.client
@@ -1204,7 +1204,7 @@ class PythonTaskTest(TestCase):
 
         self.assertTrue(client.login(username=user.username, password="password0"))
         response = client.get(reverse(courses.views.course_page, kwargs={'course_id': self.course.id}))
-        self.assertNotIn("{} {}".format(user.last_name, user.first_name), response.content)
+        self.assertNotIn("{} {}".format(user.last_name, user.first_name), response.content.decode('utf8'))
 
         response = client.get(
             reverse(courses.pythontask.get_task, kwargs={'course_id': self.course.id, 'task_id': self.subtask1.id}),

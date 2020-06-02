@@ -15,8 +15,8 @@ class Group(models.Model):
     class Meta:
         unique_together = (("year", "name"),)
 
-    def __unicode__(self):
-        return u"{0}|{1}".format(self.year, unicode(self.name))
+    def __str__(self):
+        return u"{0}|{1}".format(self.year, str(self.name))
 
     def get_full_name(self):
-        return unicode(self.name)
+        return str(self.name)

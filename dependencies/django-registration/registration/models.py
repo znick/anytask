@@ -94,9 +94,9 @@ class RegistrationManager(models.Manager):
         username and a random salt.
         
         """
-        salt = hashlib.sha1(str(random.random())).hexdigest()[:5]
+        salt = hashlib.sha1(str(random.random()).encode('utf8')).hexdigest()[:5].encode('utf8')
         username = user.username
-        if isinstance(username, unicode):
+        if isinstance(username, str):
             username = username.encode('utf-8')
         activation_key = hashlib.sha1(salt+username).hexdigest()
         return self.create(user=user,
@@ -179,7 +179,7 @@ class RegistrationProfile(models.Model):
         verbose_name = _('registration profile')
         verbose_name_plural = _('registration profiles')
     
-    def __unicode__(self):
+    def __str__(self):
         return u"Registration information for %s" % self.user
     
     def activation_key_expired(self):

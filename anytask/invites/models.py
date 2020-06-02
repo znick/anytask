@@ -23,7 +23,7 @@ class Invite(models.Model):
     added_time = models.DateTimeField(auto_now_add=True)  # remove default=timezone.now
     update_time = models.DateTimeField(auto_now=True)  # remove default=timezone.now
 
-    def __unicode__(self):
+    def __str__(self):
         return u"{0}".format(self.key)
 
     @staticmethod

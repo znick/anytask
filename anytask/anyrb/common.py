@@ -8,7 +8,7 @@ from django.contrib.sites.models import Site
 from django.utils.translation import ugettext as _
 
 from rbtools.api.client import RBClient
-from unpacker import unpack_files
+from .unpacker import unpack_files
 
 logger = logging.getLogger('django.request')
 

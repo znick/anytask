@@ -432,7 +432,7 @@ def tasklist_shad_cpp(request, course, seminar=None, group=None):
             default_teacher[group] = None
 
     group_x_student_information = OrderedDict()
-    for group, student_x_task_x_task_takens in group_x_student_x_task_takens.iteritems():
+    for group, student_x_task_x_task_takens in group_x_student_x_task_takens.items():
         group_x_student_information.setdefault(group, [])
 
         for student in sorted(student_x_task_x_task_takens.keys(),
@@ -494,7 +494,7 @@ def get_course_mark(course, student):
             student_course_mark = StudentCourseMark.objects.get(course=course, student=student)
             if student_course_mark.mark:
                 mark_id = student_course_mark.mark.id
-                course_mark = unicode(student_course_mark)
+                course_mark = str(student_course_mark)
                 course_mark_int = student_course_mark.mark.name_int
         except StudentCourseMark.DoesNotExist:
             pass
@@ -627,7 +627,7 @@ def course_settings(request, course_id):
         context['file_extensions'] = get_filename_extensions(course)
         return render(request, 'courses/settings.html', context)
 
-    for group_key, teacher_id in form.cleaned_data.iteritems():
+    for group_key, teacher_id in form.cleaned_data.items():
         teacher_id = int(teacher_id)
         group = form.groups[group_key]
         if teacher_id == 0:
@@ -714,7 +714,7 @@ def set_course_mark(request):
     student_course_mark.update_time = datetime.datetime.now()
     student_course_mark.mark = mark
     student_course_mark.save()
-    return HttpResponse(json.dumps({'mark': unicode(mark), 'mark_id': mark.id, 'mark_int': mark.name_int}),
+    return HttpResponse(json.dumps({'mark': str(mark), 'mark_id': mark.id, 'mark_int': mark.name_int}),
                         content_type="application/json")
 
 
@@ -755,7 +755,7 @@ def change_table_tasks_pos(request):
     group = get_object_or_404(Group, id=int(request.POST['group_id']))
     deleting_ids_from_groups = json.loads(request.POST['deleting_ids_from_groups'])
     if deleting_ids_from_groups:
-        for task_id, group_ids in deleting_ids_from_groups.iteritems():
+        for task_id, group_ids in deleting_ids_from_groups.items():
 
             group_ids = list(set(group_ids))
             task = get_object_or_404(Task, id=int(task_id))
@@ -951,7 +951,7 @@ def attendance_list(request, course, group=None):
         except DefaultTeacher.DoesNotExist:
             default_teacher[group] = None
     group_x_student_information = OrderedDict()
-    for group, students_x_lessons in group_x_student_x_lessons.iteritems():
+    for group, students_x_lessons in group_x_student_x_lessons.items():
         group_x_student_information.setdefault(group, [])
 
         for student in sorted(students_x_lessons.keys(),

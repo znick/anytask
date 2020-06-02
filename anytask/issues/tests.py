@@ -19,7 +19,7 @@ from issues.model_issue_status import IssueStatus
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from mock import patch
-from BeautifulSoup import BeautifulSoup
+from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 from django.core.urlresolvers import reverse
 
@@ -239,15 +239,15 @@ class ViewsTest(TestCase):
         self.assertEqual(len(forms[2]('option')), 3, '6th issue field select option len is not 4')
         self.assertIn('value="3"', str(forms[2]('option')[0]), '6th issue field select 1st option value wrong')
         self.assertIn(u'На проверке',
-                      unicode(forms[2]('option')[0]),
+                      str(forms[2]('option')[0]),
                       '6th issue field select 1st option text wrong')
         self.assertIn('value="4"', str(forms[2]('option')[1]), '6th issue field select 2st option value wrong')
         self.assertIn(u'На доработке',
-                      unicode(forms[2]('option')[1]),
+                      str(forms[2]('option')[1]),
                       '6th issue field select 2st option text wrong')
         self.assertIn('value="5"', str(forms[2]('option')[2]), '6th issue field select 3st option value wrong')
         self.assertIn(u'Зачтено',
-                      unicode(forms[2]('option')[2]),
+                      str(forms[2]('option')[2]),
                       '6th issue field select 3st option text wrong')
         self.assertEqual(len(forms[2]('button')), 1, '6th issue field button len is not 1')
         self.assertEqual(forms[2]('button')[0].string.strip().strip('\n'),

@@ -56,12 +56,12 @@ class Command(BaseCommand):
 
         school, created = School.objects.get_or_create(link='shad', name='School of Data Analysis')
         if created:
-            print "WARNING: NEW School created!"
+            print("WARNING: NEW School created!")
             school.save()
 
         course, created = Course.objects.get_or_create(year=year, name='Python')
         if created:
-            print "WARNING: NEW Course created!"
+            print("WARNING: NEW Course created!")
             course.is_active = True
             course.contest_integrated = True
             course.save()
@@ -76,7 +76,7 @@ class Command(BaseCommand):
             try:
                 user = User.objects.get(username__iexact=username)
             except User.DoesNotExist:
-                print "Creating new user! : {0}".format(username.encode("utf-8"))
+                print("Creating new user! : {0}".format(username.encode("utf-8")))
                 user = User.objects.create(username=username)
                 user.last_name = last_name
                 user.first_name = first_name
@@ -88,4 +88,4 @@ class Command(BaseCommand):
             group, _ = Group.objects.get_or_create(year=year, name=group_name)
             course.groups.add(group)
             group.students.add(user)
-            print "{0} {1} {2}".format(user, user.get_full_name().encode("utf-8"), group)
+            print("{0} {1} {2}".format(user, user.get_full_name().encode("utf-8"), group))

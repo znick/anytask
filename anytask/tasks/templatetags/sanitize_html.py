@@ -1,4 +1,4 @@
-from BeautifulSoup import BeautifulSoup, Comment
+from bs4 import BeautifulSoup, Comment
 from django import template
 
 register = template.Library()

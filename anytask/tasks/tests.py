@@ -16,7 +16,7 @@ from years.models import Year
 from tasks.models import Task, TaskGroupRelations
 
 from mock import patch
-from BeautifulSoup import BeautifulSoup
+from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 from django.core.urlresolvers import reverse
 

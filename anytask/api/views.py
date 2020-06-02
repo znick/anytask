@@ -37,7 +37,7 @@ def login_required_basic_auth(view):
         if auth_str_parts[0].lower() != "basic":
             return get_401_response()
 
-        username, password = base64.b64decode(auth_str_parts[1]).split(":", 1)
+        username, password = base64.b64decode(auth_str_parts[1].encode('utf8')).decode('utf8').split(":", 1)
         user = authenticate(username=username, password=password)
         if user is None or not user.is_active:
             return get_401_response()
@@ -153,7 +153,7 @@ def get_issue_filter(data):
         status_arg = data['status']
         filter_args['status_field__id' if status_arg.isdigit() else 'status_field__tag'] = status_arg
 
-    for arg, qs_arg in ISSUE_FILTER.iteritems():
+    for arg, qs_arg in ISSUE_FILTER.items():
         if arg in data:
             filter_args[qs_arg] = data[arg]
 

@@ -36,5 +36,5 @@ class Command(BaseCommand):
         group_dst.save()
 
         for student_src in group_src.students.all():
-            print "Copy student {0}".format(student_src.get_full_name().encode("utf-8"))
+            print("Copy student {0}".format(student_src.get_full_name().encode("utf-8")))
             group_dst.students.add(student_src)

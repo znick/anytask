@@ -33,8 +33,8 @@ class Lesson(models.Model):
     date_end = models.DateTimeField(auto_now=False, null=True, default=None)
     days = models.CharField(max_length=100, db_index=True, null=True, blank=True)
 
-    def __unicode__(self):
-        return unicode(self.title)
+    def __str__(self):
+        return str(self.title)
 
     def set_position(self):
         self.position = int(self.date_starttime.strftime('%y%m%d%H%M'))

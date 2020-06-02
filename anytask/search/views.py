@@ -175,8 +175,8 @@ def search_courses(query, user, max_result=None):
 
         for sg in sgs_name[:max_result]:
             result.append({
-                'name': unicode(sg.object.name),
-                'year': unicode(sg.object.year),
+                'name': str(sg.object.name),
+                'year': str(sg.object.year),
                 'url': sg.object.get_absolute_url(),
                 'schools': [sch.name for sch in sg.object.school_set.all()],
                 'is_active': sg.object.is_active

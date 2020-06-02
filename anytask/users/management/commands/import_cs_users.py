@@ -44,4 +44,4 @@ class Command(NoArgsCommand):
                 user.set_password(''.join(random.choice(string.letters) for i in xrange(20)))
                 user.save()
 
-            print "{0} {1}".format(user, user.get_full_name().encode("utf-8"))
+            print("{0} {1}".format(user, user.get_full_name().encode("utf-8")))

@@ -91,4 +91,4 @@ class Command(BaseCommand):
             self.check_blacklist_expires(course)
 
         if self.need_print:
-            print "\n".join(self.out_lines)
+            print("\n".join(self.out_lines))
