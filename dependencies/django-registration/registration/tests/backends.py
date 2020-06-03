@@ -34,7 +34,7 @@ class _MockRequestClient(Client):
         
         """
         environ = {
-            'HTTP_COOKIE': self.cookies,
+            'HTTP_COOKIE': str(self.cookies),
             'PATH_INFO': '/',
             'QUERY_STRING': '',
             'REMOTE_ADDR': '127.0.0.1',
@@ -43,16 +43,17 @@ class _MockRequestClient(Client):
             'SERVER_NAME': 'testserver',
             'SERVER_PORT': '80',
             'SERVER_PROTOCOL': 'HTTP/1.1',
-            'wsgi.version': (1,0),
+            'wsgi.version': (1, 0),
             'wsgi.url_scheme': 'http',
             'wsgi.errors': self.errors,
-            'wsgi.multiprocess':True,
+            'wsgi.multiprocess': True,
             'wsgi.multithread': False,
             'wsgi.run_once': False,
             'wsgi.input': None,
             }
         environ.update(self.defaults)
         environ.update(request)
+        
         request = WSGIRequest(environ)
 
         # We have to manually add a session since we'll be bypassing
