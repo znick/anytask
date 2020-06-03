@@ -714,7 +714,7 @@ def set_course_mark(request):
     student_course_mark.update_time = datetime.datetime.now()
     student_course_mark.mark = mark
     student_course_mark.save()
-    return HttpResponse(json.dumps({'mark': str(mark), 'mark_id': mark.id, 'mark_int': mark.name_int}),
+    return HttpResponse(json.dumps({'mark_int': mark.name_int, 'mark_id': mark.id, 'mark': str(mark)}),
                         content_type="application/json")
 
 
@@ -740,8 +740,7 @@ def set_task_mark(request):
 
     issue.set_byname('mark', mark)
 
-    return HttpResponse(json.dumps({'mark': mark,
-                                    'color': issue.status_field.color}),
+    return HttpResponse(json.dumps({'color': issue.status_field.color, 'mark': mark}),
                         content_type="application/json")
 
 

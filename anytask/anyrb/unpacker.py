@@ -66,7 +66,7 @@ def unpack_files(files):
                 try:
                     unpacked_filepath = os.path.join(root, unpacked_file)
                     unpacked_filename = unpacked_filepath[len(dst_dir):]
-                    unpacked_filename = unpacked_filename.decode("utf-8", errors="ignore")
+                    unpacked_filename = unpacked_filename
                     unpacked_file = UnpackedFile(unpacked_filepath, f.filename() + unpacked_filename)
                     res.append(unpacked_file)
                 except Exception as e:

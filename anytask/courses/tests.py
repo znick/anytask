@@ -268,8 +268,8 @@ class ViewsTest(TestCase):
         table_body_rows_cells = table_body_rows[0]('td')
         self.assertEqual(len(table_body_rows_cells), 4)
         self.assertEqual(table_body_rows_cells[1].a['href'], u'/users/student/')
-        self.assertEqual(table_body_rows_cells[1].a.string.strip().strip('\n'), u'student_last_name&nbsp;student_name')
-        self.assertEqual(table_body_rows_cells[2].string.strip().strip('\n'), u'&nbsp;')
+        self.assertEqual(table_body_rows_cells[1].a.string.strip().strip('\n'), u'student_last_name\xa0student_name')
+        self.assertEqual(table_body_rows_cells[2].string.strip('\n'), u'\xa0')
         self.assertEqual(table_body_rows_cells[3].span.string.strip().strip('\n'), u'0')
 
     def test_queue_page_with_teacher(self):
@@ -348,7 +348,7 @@ class ViewsTest(TestCase):
                                {'course_id': self.course.id,
                                 'course_information': 'course_information'})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content, '{"info": "<div class=\\"not-sanitize\\">course_information</div>"}')
+        self.assertEqual(response.content, b'{"info": "<div class=\\"not-sanitize\\">course_information</div>"}')
 
         # get course page
         response = client.get(reverse(courses.views.gradebook, kwargs={'course_id': self.course.id}))
@@ -468,13 +468,14 @@ class ViewsTest(TestCase):
         self.assertIsNone(table_head.string)
 
         table_body = table.tbody('td')[2]
-        self.assertEqual(table_body.string.strip().strip('\n'), u'&nbsp;')
+        test = table_body.string
+        self.assertEqual(test.strip('\n'), '\xa0')
 
         # post page
         response = client.post(reverse(courses.views.change_visibility_hidden_tasks),
                                {'course_id': self.course.id})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content, 'OK')
+        self.assertEqual(response.content, b'OK')
 
         # get course page
         response = client.get(reverse(courses.views.gradebook, kwargs={'course_id': self.course.id}))
@@ -559,7 +560,7 @@ class ViewsTest(TestCase):
                                 'student_id': self.student.id,
                                 'mark_id': mark_fields[0].id})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content, '{"mark_int": -1, "mark_id": 1, "mark": "mark1"}')
+        self.assertEqual(response.content, b'{"mark_int": -1, "mark_id": 1, "mark": "mark1"}')
 
         # get course page
         response = client.get(reverse(courses.views.gradebook, kwargs={'course_id': self.course.id}))
@@ -651,7 +652,8 @@ class ViewsTest(TestCase):
                                 'mark_max': task.score_max,
                                 'mark_value': '3'})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content, '{"color": "' + IssueStatus.objects.get(pk=5).color + '", "mark": 3.0}')
+        self.assertEqual(response.content,
+                         b'{"color": "' + IssueStatus.objects.get(pk=5).color.encode('utf8') + b'", "mark": 3.0}')
 
         # get course page
         response = client.get(reverse(courses.views.gradebook, kwargs={'course_id': self.course.id}))
@@ -750,8 +752,8 @@ class ViewsTest(TestCase):
         table_body_rows_cells = table_body_rows[0]('td')
         self.assertEqual(len(table_body_rows_cells), 4)
         self.assertEqual(table_body_rows_cells[1].a['href'], u'/users/student/')
-        self.assertEqual(table_body_rows_cells[1].a.string.strip().strip('\n'), u'student_last_name&nbsp;student_name')
-        self.assertEqual(table_body_rows_cells[2].string.strip().strip('\n'), u'&nbsp;')
+        self.assertEqual(table_body_rows_cells[1].a.string.strip().strip('\n'), u'student_last_name\xa0student_name')
+        self.assertEqual(table_body_rows_cells[2].string.strip('\n'), u'\xa0')
         self.assertEqual(table_body_rows_cells[3].span.string.strip().strip('\n'), u'0')
 
     def test_queue_page_with_student(self):
@@ -861,7 +863,7 @@ class ViewsTest(TestCase):
                                 'student_id': self.student.id,
                                 'mark_id': mark_fields[0].id})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content, '{"mark_int": -1, "mark_id": 1, "mark": "mark1"}')
+        self.assertEqual(response.content, b'{"mark_int": -1, "mark_id": 1, "mark": "mark1"}')
 
         # get course page
         self.assertTrue(client.login(username=self.student.username, password=self.student_password))
@@ -936,7 +938,8 @@ class ViewsTest(TestCase):
                                 'mark_max': task.score_max,
                                 'mark_value': '3'})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content, '{"color": "' + IssueStatus.objects.get(pk=5).color + '", "mark": 3.0}')
+        self.assertEqual(response.content,
+                         b'{"color": "' + IssueStatus.objects.get(pk=5).color.encode('utf8') + b'", "mark": 3.0}')
 
         # get course page
         self.assertTrue(client.login(username=self.student.username, password=self.student_password))
