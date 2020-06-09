@@ -29,7 +29,7 @@ django-haystack==2.8.1
 Whoosh==2.7.4
 django-reversion==1.10
 dateutils==0.6.6
-flake8==3.7.9
+flake8==3.8.3
 django_premailer==0.2.0
 django-environ==0.4
 nose==1.3.7
