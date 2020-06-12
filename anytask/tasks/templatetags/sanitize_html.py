@@ -14,7 +14,7 @@ def sanitize_html(value):
     if not value:
         return ''
 
-    soup = BeautifulSoup(value)
+    soup = BeautifulSoup(value, features="html.parser")
 
     if not (soup.find('div', 'not-sanitize')):
         for comment in soup.findAll(text=lambda text: isinstance(text, Comment)):
