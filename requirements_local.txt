@@ -1,10 +1,10 @@
-tornado==4.5.3
+tornado==5
 ipykernel==4.5.2
 django==1.11.29
 pillow==6.2.2
 django-recaptcha==1.4.0
 python-gettext==3.0
-beautifulsoup==3.2.1
+beautifulsoup4
 Werkzeug==0.15.3
 django-extensions==1.6.7
 ipython[notebook]==5.3.0
