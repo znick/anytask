@@ -350,6 +350,14 @@ msgstr "Введите ваш новый пароль:"
 msgid "Set password"
 msgstr "Установить пароль"
 
+#: forms.py:41
+msgid "Password"
+msgstr "Пароль"
+
+#: forms.py:43
+msgid "Password (again)"
+msgstr "Пароль (снова)"
+
 #: templates/registration/password_reset_done.html:4
 msgid "Password reset"
 msgstr "Сброс пароля"

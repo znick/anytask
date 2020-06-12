@@ -4,12 +4,16 @@ from django.db import models
 from django.conf import settings
 from django.contrib.sites.models import Site
 from registration.models import RegistrationManager
+from registration.users import UserModel
 from django.template.loader import render_to_string
 from django.db.models import Q
 from django.core.mail import send_mail
 from mail.common import send_mass_mail_html
 
 from django.contrib.auth.models import User
+
+from django.utils.timezone import now as datetime_now
+from django.db import transaction
 
 import datetime
 import hashlib
@@ -80,6 +84,24 @@ class AdmissionRegistrationProfileManager(RegistrationManager):
             registration_profile.send_activation_email(Site.objects.get_current())
 
         return new_user, registration_profile
+
+    def create_profile(self, user):
+        """
+        Create a ``RegistrationProfile`` for a given
+        ``User``, and return the ``RegistrationProfile``.
+
+        The activation key for the ``RegistrationProfile`` will be a
+        SHA1 hash, generated from a combination of the ``User``'s
+        username and a random salt.
+
+        """
+        salt = hashlib.sha1(str(random.random()).encode('utf8')).hexdigest()[:5]
+        username = user.username
+        if isinstance(username, str):
+            username = username
+        activation_key = hashlib.sha1((salt + username).encode('utf8')).hexdigest()
+        return self.create(user=user,
+                           activation_key=activation_key)
 
     def send_mail_update_user(self, email):
 

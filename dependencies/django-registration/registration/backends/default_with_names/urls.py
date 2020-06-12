@@ -17,7 +17,7 @@ from django.views.generic.base import TemplateView
 
 from registration.backends.default_with_names import AnytaskLoginForm, \
     AnytaskPasswordResetForm, AnytaskSetPasswordForm, \
-    AnytaskPasswordChangeForm
+    AnytaskPasswordChangeForm, BootStrapRegistrationFormWithNames
 from .views import ActivationView
 from .views import RegistrationView
 from .views import ajax_check_username, ajax_check_email
@@ -39,7 +39,7 @@ urlpatterns = [url(r'^activate/complete/$',
                        'backend': 'registration.backends.default_with_names.DefaultBackend'},
                    name='registration_activate'),
                url(r'^register/$',
-                   RegistrationView.as_view(),
+                   RegistrationView.as_view(form_class=BootStrapRegistrationFormWithNames),
                    {
                        'backend': 'registration.backends.default_with_names.DefaultBackend'},
                    name='registration_register'),
@@ -58,22 +58,21 @@ urlpatterns = [url(r'^activate/complete/$',
                    ajax_check_email,
                    name='registration.views.ajax_check_email'),
                url(r'^login/$',
-                   auth_views.LoginView.as_view(template_name='registration/login.html',
-                                                extra_context={'form': AnytaskLoginForm}),
+                   auth_views.LoginView.as_view(template_name='registration/login.html', form_class=AnytaskLoginForm),
                    name='auth_login'),
                url(r'^password/reset/$', auth_views.PasswordResetView.as_view(
                    success_url=reverse_lazy('auth_password_reset_done'),
-                   extra_context={'password_reset_form': AnytaskPasswordResetForm}),
+                   form_class=AnytaskPasswordResetForm),
                    name='auth_password_reset'),
                url(r'^password/reset/confirm/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>.+)/$',
                    auth_views.PasswordResetConfirmView.as_view(
                        success_url=reverse_lazy('auth_password_reset_complete'),
-                       extra_context={'set_password_form': AnytaskSetPasswordForm}),
+                       form_class=AnytaskSetPasswordForm),
                    name='auth_password_reset_confirm'),
                url(r'^password/change/$',
                    auth_views.PasswordChangeView.as_view(
                        success_url=reverse_lazy('auth_password_change_done'),
-                       extra_context={'password_change_form': AnytaskPasswordChangeForm}),
+                       form_class=AnytaskPasswordChangeForm),
                    name='auth_password_change'),
                url(r'', include('registration.auth_urls')),
 ]

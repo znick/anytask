@@ -117,6 +117,10 @@ class RegistrationFormWithNames(RegistrationForm):
     first_name = forms.CharField(widget=forms.TextInput(attrs=attrs_dict))
     last_name = forms.CharField(widget=forms.TextInput(attrs=attrs_dict))
     show_email = forms.BooleanField(required=False, initial=True)
+    password1 = forms.CharField(widget=forms.PasswordInput(attrs=attrs_dict, render_value=False),
+                                label=_("Password"))
+    password2 = forms.CharField(widget=forms.PasswordInput(attrs=attrs_dict, render_value=False),
+                                label=_("Password (again)"))
     #invite = forms.CharField(widget=forms.TextInput(attrs=attrs_dict), label="Инвайт")
 
     def __init__(self, *args, **kwargs):
