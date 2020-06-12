@@ -4,119 +4,132 @@
 Registration views
 ==================
 
-In order to allow users to register using whatever workflow is
-implemented by the :ref:`registration backend <backend-api>` in use,
-django-registration provides two views. Both are designed to allow
-easy configurability without writing or rewriting view code.
+In order to allow the utmost flexibility in customizing and supporting
+different workflows, |project| makes use of Django's support
+for `class-based views
+<https://docs.djangoproject.com/en/dev/topics/class-based-views/>`_. Included
+in |project| are two base classes which can be subclassed to
+implement whatever workflow is required.
 
-.. function:: activate(request, backend[, template_name[, success_url[, extra_context[, **kwargs]]]])
+.. class:: RegistrationView
 
-   Activate a user's account, for workflows which require a separate
-   activation step.
+   A subclass of Django's `FormView
+   <https://docs.djangoproject.com/en/dev/ref/class-based-views/generic-editing/#formview>`_,
+   which provides the infrastructure for supporting user registration.
 
-   The actual activation of the account will be delegated to the
-   backend specified by the ``backend`` keyword argument; the
-   backend's ``activate()`` method will be called, passing the
-   ``HttpRequest`` and any keyword arguments captured from the URL,
-   and will be assumed to return a ``User`` if activation was
-   successful, or a value which evaluates to ``False`` in boolean
-   context if not.
+   Useful places to override or customize on a ``RegistrationView``
+   subclass are:
 
-   Upon successful activation, the backend's
-   ``post_activation_redirect()`` method will be called, passing the
-   ``HttpRequest`` and the activated ``User`` to determine the URL to
-   redirect the user to. To override this, pass the argument
-   ``success_url`` (see below).
+   .. attribute:: disallowed_url
 
-   On unsuccessful activation, will render the template
-   ``registration/activate.html`` to display an error message; to
-   override thise, pass the argument ``template_name`` (see below).
+      The URL to redirect to when registration is disallowed. Should
+      be a string, `the name of a URL pattern
+      <https://docs.djangoproject.com/en/dev/topics/http/urls/#naming-url-patterns>`_. Default
+      value is ``registration_disallowed``.
 
-   **Context**
+   .. attribute:: form_class
 
-   The context will be populated from the keyword arguments captured
-   in the URL. This view uses ``RequestContext``, so variables
-   populated by context processors will also be present in the
-   context.
+      The form class to use for user registration. Can be overridden
+      on a per-request basis (see below). Should be the actual class
+      object; by default, this class is
+      :class:`registration.forms.RegistrationForm`.
 
-   :param backend: The dotted Python path to the backend class to use.
-   :type backend: string
-   :param extra_context: Optionally, variables to add to the template
-      context. Any callable object in this dictionary will be called
-      to produce the final result which appears in the context.
-   :type extra_context: dict
-   :param template_name: Optional. A custom template name to use. If
-      not specified, this will default to
-      ``registration/activate.html``.
-   :type template_name: string
-   :param **kwargs: Any keyword arguments captured from the URL, such
-      as an activation key, which will be passed to the backend's
-      ``activate()`` method.
+   .. attribute:: success_url
 
+      The URL to redirect to after successful registration. Should be
+      a string, the name of a URL pattern, or a 3-tuple of arguments
+      suitable for passing to Django's `redirect shortcut
+      <https://docs.djangoproject.com/en/dev/topics/http/shortcuts/#redirect>`_. Can
+      be overridden on a per-request basis (see below). Default value
+      is ``None``, so that per-request customization is used instead.
 
-.. function:: register(request, backend[, success_url[, form_class[, disallowed_url[, template_name[, extra_context]]]]])
+   .. attribute:: template_name
 
-   Allow a new user to register an account.
-
-   The actual registration of the account will be delegated to the
-   backend specified by the ``backend`` keyword argument. The backend
-   is used as follows:
-
-   1. The backend's ``registration_allowed()`` method will be called,
-      passing the ``HttpRequest``, to determine whether registration
-      of an account is to be allowed; if not, a redirect is issued to
-      a page indicating that registration is not permitted.
-
-   2. The form to use for account registration will be obtained by
-      calling the backend's ``get_form_class()`` method, passing the
-      ``HttpRequest``. To override this, pass the keyword argument
-      ``form_class``.
-
-   3. If valid, the form's ``cleaned_data`` will be passed (as keyword
-      arguments, and along with the ``HttpRequest``) to the backend's
-      ``register()`` method, which should return a ``User`` object
-      representing the new account.
-
-   4. Upon successful registration, the backend's
-      ``post_registration_redirect()`` method will be called, passing
-      the ``HttpRequest`` and the new ``User``, to determine the URL
-      to redirect to. To override this, pass the keyword argument
-      ``success_url``.
-
-   **Context**
-
-   ``form``
-        The form instance being used to collect registration data.
-
-   This view uses ``RequestContext``, so variables populated by
-   context processors will also be present in the context.
-
-   :param backend: The dotted Python path to the backend class to use.
-   :type backend: string
-   :param disallowed_url: The URL to redirect to if registration is
-      not permitted (e.g., if registration is closed). This should be
-      a string suitable for passing as the ``to`` argument to
-      `Django's "redirect" shortcut
-      <http://docs.djangoproject.com/en/dev/topics/http/shortcuts/#redirect>`_. If
-      not specified, this will default to ``registration_disallowed``.
-   :type disallowed_url: string
-   :param extra_context: Optionally, variables to add to the template
-      context. Any callable object in this dictionary will be called
-      to produce the final result which appears in the context.
-   :type extra_context: dict
-   :param form_class: The form class to use for registration; this
-      should be some subclass of ``django.forms.Form``. If not
-      specified, the backend's ``get_form_class()`` method will be
-      called to obtain the form class.
-   :type form_class: subclass of ``django.forms.Form``
-   :param success_url: The URL to redirect to after successful
-      registration. This should be a string suitable for passing as
-      the ``to`` argument to `Django's "redirect" shortcut
-      <http://docs.djangoproject.com/en/dev/topics/http/shortcuts/#redirect>`_. If
-      not specified, the backend's ``post_registration_redirect()``
-      method will be called to obtain the URL.
-   :type success_url: string
-   :param template_name: Optional. A custom template name to use. If
-      not specified, this will default to
+      The template to use for user registration. Should be a
+      string. Default value is
       ``registration/registration_form.html``.
-   :type template_name: string
+
+   .. method:: get_form_class()
+
+      Select a form class to use on a per-request basis. If not
+      overridden, will use :attr:`~form_class`. Should be the actual
+      class object.
+
+   .. method:: get_success_url(user)
+
+      Return a URL to redirect to after successful registration, on a
+      per-request or per-user basis. If not overridden, will use
+      :attr:`~success_url`. Should be a string, the name of a URL
+      pattern, or a 3-tuple of arguments suitable for passing to
+      Django's ``redirect`` shortcut.
+
+   .. method:: registration_allowed()
+
+      Should return a boolean indicating whether user registration is
+      allowed, either in general or for this specific request.
+
+   .. method:: register(form)
+
+      Actually perform the business of registering a new user. Receives the
+      registration ``form``. Should return the new user who was just
+      registered.
+
+
+.. class:: ActivationView
+
+   A subclass of Django's `TemplateView
+   <https://docs.djangoproject.com/en/dev/ref/class-based-views/base/#templateview>`_
+   which provides support for a separate account-activation step, in
+   workflows which require that.
+
+   Useful places to override or customize on an ``ActivationView``
+   subclass are:
+
+   .. attribute:: template_name
+
+      The template to use for user activation. Should be a
+      string. Default value is ``registration/activate.html``.
+
+   .. method:: activate(*args, **kwargs)
+
+      Actually perform the business of activating a user account. Receives any
+      positional or keyword arguments passed to the view. Should return the
+      activated user account if activation is successful, or any value
+      which evaluates ``False`` in boolean context if activation is
+      unsuccessful.
+
+   .. method:: get_success_url(user)
+
+      Return a URL to redirect to after successful registration, on a
+      per-request or per-user basis. If not overridden, will use
+      :attr:`~success_url`. Should be a string, the name of a URL
+      pattern, or a 3-tuple of arguments suitable for passing to
+      Django's ``redirect`` shortcut.
+
+.. class:: ResendActivationView
+
+   A subclass of Django's FormView`
+   <https://docs.djangoproject.com/en/1.11/ref/class-based-views/generic-editing/#formview>`_
+   which provides support for resending an activation email to a user.
+
+   Useful places to override or customize on an ``ResendActivationView``
+   subclass are:
+
+   .. attribute:: template_name
+
+      The template to use for user activation. Should be a
+      string. Default value is ``registration/resend_activation_form.html``.
+
+   .. method:: resend_activation(self, form)
+
+        Given an email, look up user by email and resend activation key
+        if user is not already activated or previous activation key has
+        not expired. Note that if multiple users exist with the given
+        email, no emails will be sent.  Returns True if activation key
+        was successfully sent, False otherwise.
+
+
+   .. method:: render_form_submitted_template(self, form)
+
+        Renders resend activation complete template with the submitted
+        email.

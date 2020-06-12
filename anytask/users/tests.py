@@ -24,8 +24,11 @@ class UserLoginTest(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'registration/login.html')
-        self.assertContains(response, u"Логин / E-mail")
-        self.assertContains(response, u"Пароль")
+
+        content = response.content.decode('utf8')
+
+        self.assertContains(response, "Логин / E-mail")
+        self.assertContains(response, "Пароль")
 
     def test_register_form(self):
         client = self.client
@@ -91,7 +94,7 @@ class UserLoginTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(
             response,
-            u"Пожалуйста, введите верные имя пользователя / адрес электронной почты  и пароль."
+            "Пожалуйста, введите верные имя пользователя / адрес электронной почты  и пароль."
         )
 
     def test_register_user(self):

@@ -3,116 +3,139 @@
 Upgrade guide
 =============
 
-The |version| release of django-registration represents a complete
-rewrite of the previous codebase, and introduces several new features
-which greatly enhance the customizability and extensibility of
-django-registration. Whenever possible, changes were made in ways
-which preserve backwards compatibility with previous releases, but
-some changes to existing installations will still be required in order
-to upgrade to |version|. This document provides a summary of those
-changes, and of the new features available in the |version| release.
-
+The |version| release of |project| is not compatible with the legacy
+django-registration (previously maintained by James Bennett). Major backwards
+incompatible changes will be recorded here, but for a full list of changes
+between versions you should refer to the `CHANGELOG
+<https://github.com/macropin/django-registration/blob/master/CHANGELOG>`_.
 
 Django version requirement
 --------------------------
 
-As of |version|, django-registration requires Django 1.3 or newer;
-older Django releases may work, but are officially unsupported.
+As of |version|, |project| requires Django 1.11 or newer;
+older Django releases may work, but are officially unsupported. Additionally,
+|project| officially supports Python 2.7, 3.5, 3.6, 3.7 and 3.8.
 
 
 Backwards-incompatible changes
 ------------------------------
 
-If you're upgrading from an older release of django-registration, and
-if you were using the default setup (i.e., the included default
-URLconf and no custom URL patterns or custom arguments to views), most
-things will continue to work as normal (although you will need to
-create one new template; see the section on views below). However, the
-old default URLconf has been deprecated and will be removed in version
-1.0 of django-registration, so it is recommended that you begin
-migrating now. To do so, change any use of ``registration.urls`` to
-``registration.backends.default.urls``. For example, if you had the
-following in your root URLconf::
+Version 2.8
+```````````
 
-    (r'^accounts/', include('registration.urls')),
+- None
 
-you should change it to::
+Version 2.7
+```````````
 
-    (r'^accounts/', include('registration.backends.default.urls')),
+- None
 
-The older include will continue to work until django-registration 1.0;
-in |version| it raises a ``PendingDeprecationWarning`` (which is
-ignored by default in Python), in 0.9 it will raise
-``DeprecationWarning`` (which will begin printing warning messages on
-import) and in 1.0 it will be removed entirely.
+Version 2.6
+```````````
 
+- None
 
-Changes to registration views
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Version 2.5
+```````````
 
-:ref:`The views used to handle user registration <views>` have changed
-significantly as of django-registration |version|. Both views now
-require the keyword argument ``backend``, which specifies the
-:ref:`registration backend <backend-api>` to use, and so any URL
-pattern for these views must supply that argument. The URLconf
-provided with :ref:`the default backend <default-backend>` properly
-passes this argument.
+- None
 
-The ``profile_callback`` argument of the
-:func:`~registration.views.register` view has been removed; the
-functionality it provided can now be implemented easily via a custom
-backend, or by connecting listeners to :ref:`the signals sent during
-the registration process <signals>`.
+Version 2.4
+```````````
 
-The :func:`~registration.views.activate` view now issues a redirect
-upon successful activation; in the default backend this is to the URL
-pattern named ``registration_activation_complete``; in the default
-setup, this will redirect to a view which renders the template
-``registration/activation_complete.html``, and so this template should
-be present when using the default backend and default
-configuration. Other backends can specify the location to redirect to
-through their ``post_activation_redirect()`` method, and this can be
-overridden on a case-by-case basis by passing the (new) keyword
-argument ``success_url`` to the ``activate()`` view. On unsuccessful
-activation, the ``activate()`` view still displays the same template,
-but its context has changed: the context will simply consist of any
-keyword arguments captured in the URL and passed to the view.
+- None
+
+Version 2.3
+```````````
+
+- None
 
 
-Changes to registration forms
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Version 2.2
+```````````
 
-Previously, the form used to collect data during registration was
-expected to implement a ``save()`` method which would create the new
-user account. This is no longer the case; creating the account is
-handled by the backend, and so any custom logic should be moved into a
-custom backend, or by connecting listeners to :ref:`the signals sent
-during the registration process <signals>`.
+- None
 
 
-Changes to the :class:`~registration.models.RegistrationProfile` model
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Version 2.1
+```````````
 
-The
-:meth:`~registration.models.RegistrationManager.create_inactive_user`
-method of :class:`~registration.models.RegistrationManager` now has an
-additional required argument: ``site``. This allows
-django-registration to easily be used regardless of whether
-``django.contrib.sites`` is installed, since a ``RequestSite`` object
-can be passed in place of a regular ``Site`` object.
+- None
 
-The :data:`~registration.signals.user_registered` signal is no longer
-sent by ``create_inactive_user()``, and the
-:data:`~registration.signals.user_activated` signal is no longer sent
-by :meth:`~registration.models.RegistrationManager.activate_user`;
-these signals are now sent by the backend after these methods have
-been called. Note that :ref:`these signals <signals>` were added after
-the django-registration 0.7 release but before the refactoring which
-introduced :ref:`the backend API <backend-api>`, so only installations
-which were tracking the in-development codebase will have made use of
-them.
 
-The sending of activation emails has been factored out of
-``create_inactive_user()``, and now exists as the method
-:meth:`~registration.models.RegistrationProfile.send_activation_email`
-on instances of ``RegistrationProfile``.
+Version 2.0
+```````````
+
+- Removed support for Django < 1.11.
+- Removed `registration/urls.py` in favor of
+  `registration/backends/default/urls.py`
+
+
+Version 1.9
+```````````
+- Change of return signature of
+  ``RegistrationProfileManager.activate_user``. A tuple containing the
+  User instance and a boolean of whether or not said user was activated
+  is now returned.
+
+
+Version 1.8
+```````````
+
+- None
+
+Version 1.7
+```````````
+
+- None
+
+Version 1.6
+```````````
+
+- None
+
+Version 1.5
+```````````
+
+- Support for Django 1.7 is removed, and Django 1.8 or newer is required.
+- Change signature of ``RegistrationProfileManager.activate_user``.
+  ``site`` is now a required positional argument.
+  See `#244 <https://github.com/macropin/django-registration/pull/244>`_.
+
+Version 1.4
+```````````
+
+- Remove unnecessary `_RequestPassingFormView`.
+  See `#56 <https://github.com/macropin/django-registration/pull/56>`_. Please
+  ensure that you update any subclassed views to reference ``self.request``
+  instead of accepting ``request`` as an argument.
+
+Version 1.3
+```````````
+- Django 1.7 or newer is required. Please ensure you upgrade your Django
+  version before upgrading.
+
+Version 1.2
+```````````
+- **Native migration support breaks South compatibility**: An initial native
+  migration for Django > 1.7 has been provided. South users will need to
+  configure a null migration with (`SOUTH_MIGRATION_MODULES`) in
+  `settings.py` as shown below:
+
+  ::
+
+      SOUTH_MIGRATION_MODULES = {
+          'registration': 'registration.south_migrations',
+
+- **register method in RegistrationView has different parameters**: The
+  parameters of the`register` method in RegistrationView have changed.
+
+Version 1.1
+```````````
+
+- **base.html template required**: A `base.html` template is now assumed to
+  exist. Please ensure that your project provides one for |project| to inherit
+  from.
+- **HTML email templates**: |project| now uses HTML email templates. If you
+  previously customized text email templates, you need to do the same with
+  the new HTML templates.
