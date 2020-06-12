@@ -45,7 +45,7 @@ class Invite(models.Model):
         invite.generated_by = generated_by
         invite.group = group
         key = Invite._id_generator(size)
-        for _ in xrange(1000):
+        for _ in range(1000):
             try:
                 if Invite.objects.filter(key=key).count():
                     key = Invite._id_generator(size)
@@ -58,7 +58,7 @@ class Invite(models.Model):
 
     @staticmethod
     def generate_invites(count, generated_by, group, size=7):
-        for _ in xrange(count):
+        for _ in range(count):
             yield Invite.generate_invite(generated_by, group, size)
 
     @staticmethod

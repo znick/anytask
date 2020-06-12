@@ -40,6 +40,7 @@ from courses.forms import default_teacher_forms_factory, DefaultTeacherForm
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML
+from functools import reduce
 
 import json
 

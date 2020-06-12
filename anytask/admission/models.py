@@ -1,26 +1,22 @@
 # -*- coding: utf-8 -*-
 
-from django.db import models
-from django.conf import settings
-from django.contrib.sites.models import Site
-from registration.models import RegistrationManager
-from registration.users import UserModel
-from django.template.loader import render_to_string
-from django.db.models import Q
-from django.core.mail import send_mail
-from mail.common import send_mass_mail_html
-
-from django.contrib.auth.models import User
-
-from django.utils.timezone import now as datetime_now
-from django.db import transaction
-
 import datetime
 import hashlib
-import random
-import logging
-import re
 import json
+import logging
+import random
+import re
+
+from django.conf import settings
+from django.contrib.auth.models import User
+from django.contrib.sites.models import Site
+from django.core.mail import send_mail
+from django.db import models
+from django.db.models import Q
+from django.template.loader import render_to_string
+
+from mail.common import send_mass_mail_html
+from registration.models import RegistrationManager
 
 logger = logging.getLogger('django.request')
 

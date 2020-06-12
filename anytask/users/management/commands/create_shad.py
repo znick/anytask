@@ -82,7 +82,7 @@ class Command(BaseCommand):
                 user.first_name = first_name
 
             if (user.password == "") or (not user.has_usable_password()):
-                user.set_password(''.join(random.choice(string.letters) for i in xrange(20)))
+                user.set_password(''.join(random.choice(string.letters) for i in range(20)))
                 user.save()
 
             group, _ = Group.objects.get_or_create(year=year, name=group_name)

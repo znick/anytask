@@ -134,11 +134,6 @@ class OrderedDict(dict):
         for k in self:
             yield self[k]
 
-    def items(self):
-        'od.iteritems -> an iterator over the (key, value) items in od'
-        for k in self:
-            yield (k, self[k])
-
     def update(*args, **kwds):
         '''od.update(E, **F) -> None.  Update od from dict/iterable E and F.
 

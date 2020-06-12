@@ -16,11 +16,11 @@ logger = logging.getLogger('django.request')
 
 
 def get_mark(task_id, student_id):
-    return Issue.objects \
-               .filter(task__parent_task_id=task_id, student_id=student_id) \
-               .exclude(task__is_hidden=True) \
-               .exclude(task__score_after_deadline=False, status_field__tag=IssueStatus.STATUS_ACCEPTED_AFTER_DEADLINE) \
-               .aggregate(Sum('mark'))['mark__sum'] or 0
+    return (Issue.objects
+            .filter(task__parent_task_id=task_id, student_id=student_id)
+            .exclude(task__is_hidden=True)
+            .exclude(task__score_after_deadline=False, status_field__tag=IssueStatus.STATUS_ACCEPTED_AFTER_DEADLINE)
+            .aggregate(Sum('mark'))['mark__sum'] or 0)
 
 
 class Command(BaseCommand):
