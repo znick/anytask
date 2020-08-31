@@ -22,7 +22,7 @@ django-haystack==2.8.1
 django-htmlmin==0.10.0
 django-dprog-jfu
 django-recaptcha==1.4.0
-django-reversion==1.10
+django-reversion==3.0.8
 django==1.11.29
 django_premailer==0.2.0
 entrypoints==0.2.3        # via nbconvert
