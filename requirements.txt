@@ -68,7 +68,7 @@ send2trash==1.5.0         # via notebook
 simplegeneric==0.8.1      # via ipython
 singledispatch==3.4.0.3   # via tornado
 six==1.11.0               # via bleach, django-bootstrap-breadcrumbs, django-extensions, html5lib, pathlib2, prompt-toolkit, python-dateutil, singledispatch, traitlets
-sqlparse==0.1.19
+sqlparse==0.4.0
 terminado==0.8.3          # via notebook
 testpath==0.3.1           # via nbconvert
 tornado==4.5.3
