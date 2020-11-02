@@ -60,7 +60,7 @@ pygments==2.2.0           # via ipython, nbconvert
 python-dateutil==2.7.3    # via dateutils, jupyter-client
 python-gettext==3.0
 python-magic==0.4.15
-pytz==2018.5              # via dateutils
+pytz==2020.4              # via dateutils
 pyzmq==17.0.0             # via jupyter-client, notebook
 requests==2.20.0
 scandir==1.7              # via pathlib2
