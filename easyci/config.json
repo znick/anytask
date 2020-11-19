@@ -68,7 +68,7 @@
         "course_id": 765,
         "repo": "https://github.com/znick/anytask-ci-example.git",
         "run_cmd": ["./run.sh"],
-        "docker_image": "ubuntu:20.04",
+        "docker_image": "zhnick/imkn_python_checker:latest",
         "timeout": 900
     }
 
