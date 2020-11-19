@@ -67,7 +67,7 @@
         "host": "https://anytask.org",
         "course_id": 765,
         "repo": "https://github.com/znick/anytask-ci-example.git",
-        "run_cmd": ["run.sh"],
+        "run_cmd": ["./run.sh"],
         "docker_image": "ubuntu:20.04",
         "timeout": 900
     }
