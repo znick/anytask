@@ -62,5 +62,14 @@
         "run_cmd": ["build_script/main.py", "-a", "/task_rw"],
         "docker_image": "guerre/c18:latest",
         "timeout": 900
+    },
+    {
+        "host": "https://anytask.org",
+        "course_id": 765,
+        "repo": "https://github.com/znick/anytask-ci-example.git",
+        "run_cmd": ["run.sh"],
+        "docker_image": "guerre/c18:latest",
+        "timeout": 900
     }
+
 ]
