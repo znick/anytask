@@ -34,7 +34,7 @@ idna==2.6                 # via requests
 ipdb==0.10.2
 ipykernel==4.5.2
 ipython-genutils==0.2.0   # via nbformat, notebook, traitlets
-ipython[notebook]==5.3.0
+ipython[notebook]==7.20.0
 ipywidgets==7.2.1         # via ipython
 jinja2==2.10.1              # via nbconvert, notebook
 jsonschema==2.6.0         # via nbformat
