@@ -33,8 +33,6 @@ TEMPLATES = [
 
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
-    ('Anna K', 'voron13e02@gmail.com'),
-    ('Nickolai Zhuravlev', 'znick@znick.ru'),
 )
 
 MANAGERS = ADMINS
