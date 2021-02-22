@@ -4,4 +4,4 @@
 	dh $@ --with quilt --with python-virtualenv
 
 override_dh_virtualenv:
-	dh_virtualenv --preinstall 'pip>10' --preinstall 'setuptools==44.0.0'
+	dh_virtualenv --preinstall 'pip==20.3.4' --preinstall 'setuptools==44.0.0'
