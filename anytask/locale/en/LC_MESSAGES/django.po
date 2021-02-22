@@ -457,7 +457,7 @@ msgstr "Default"
 #: tasks/templates/contest_import.html:152 tasks/templates/task_edit.html:248
 #: tasks/templates/task_import.html:142
 msgid "perevodit_v_zachteno"
-msgstr "Move to "counted""
+msgstr "Move to \"counted\""
 
 #: courses/templates/courses/settings.html:193
 #: issues/templates/issues/issue.html:41 mail/templates/mail_js.html:537
