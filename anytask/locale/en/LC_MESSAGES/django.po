@@ -1386,7 +1386,7 @@ msgstr "Logout"
 
 #: templates/base.html:680 templates/registration/registration_form.html:85
 msgid "vojdite"
-msgstr "Enter"
+msgstr "Sing In"
 
 #: templates/base.html:683
 msgid "zaregistrirujtes"
@@ -1407,7 +1407,7 @@ msgstr "Account is activated"
 #: templates/registration/activation_complete.html:8
 #: templates/registration/password_reset_complete.html:8
 msgid "vojti"
-msgstr "Enter"
+msgstr "Sign In"
 
 #: templates/registration/activation_email.txt:3
 msgid "activacia_akkaunta"
@@ -1423,7 +1423,7 @@ msgstr "Days"
 
 #: templates/registration/login.html:5 templates/registration/login.html:18
 msgid "vhod"
-msgstr "Enter"
+msgstr "Sign In"
 
 #: templates/registration/password_change_done.html:4
 #: templates/registration/password_change_done.html:6
