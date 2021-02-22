@@ -12,7 +12,7 @@ msgstr "Ya.contest verdict"
 
 #: anycontest/models.py:189
 msgid "resursy"
-msgstr "Recursion"
+msgstr "Resources"
 
 #: anycontest/models.py:192
 msgid "vvod"
