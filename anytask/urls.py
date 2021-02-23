@@ -1,4 +1,5 @@
 from django.conf.urls import include, url
+from django.conf.urls.i18n import i18n_patterns
 from django.conf import settings
 from django.views.generic.base import TemplateView
 import users.views
@@ -11,7 +12,7 @@ import admission.views
 from django.contrib import admin
 admin.autodiscover()
 
-urlpatterns = [
+urlpatterns = i18n_patterns(
     url(r'^admin/', include(admin.site.urls)),
     url(r'^course/', include('courses.urls')),
     url(r'^issue/', include('issues.urls')),
@@ -42,4 +43,4 @@ urlpatterns = [
     url(r'^lesson/', include('lessons.urls')),
     url(r'^api/', include('api.urls')),
     url(r'^jupyter/', include('jupyter.urls')),
-]
+)
