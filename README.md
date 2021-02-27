@@ -13,7 +13,7 @@ Development installation commands:
     git submodule update
     virtualenv .env
     . .env/bin/activate
-    pip install pip>=10 setuptools>=30 --upgrade
+    pip install 'pip==20.3.4' 'setuptools==44.0.0' --upgrade
     pip install -r requirements_local.txt
     python setup.py develop
     ./anytask/manage.py  # test it  # TODO: make a setup entry point
