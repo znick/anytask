@@ -150,7 +150,7 @@ def format_date(date):
         if now.day == date.day and now.month == date.month:
             date_str = date.strftime("%H:%M")
         else:
-            date_str = unicode(date.day) + u" " + MONTH[date.month]
+            date_str = str(date.day) + u" " + MONTH[date.month]
     else:
         date_str = date.strftime("%d.%m.%y")
 

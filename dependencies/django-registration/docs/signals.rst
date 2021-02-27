@@ -2,11 +2,11 @@
 .. module:: registration.signals
 
 
-Custom signals used by django-registration
-==========================================
+Custom signals used by |project|
+================================
 
-Much of django-registration's customizability comes through the
-ability to write and use :ref:`registration backends <backend-api>`
+Much of |project|'s customizability comes through the
+ability to write and use registration backends
 implementing different workflows for user registration. However, there
 are many cases where only a small bit of additional logic needs to be
 injected into the registration process, and writing a custom backend

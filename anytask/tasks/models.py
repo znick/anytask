@@ -33,7 +33,7 @@ def get_lang_text(text, lang):
     if text_:
         lang = lang if lang in text_ else settings.LANGUAGE_CODE
         return text_[lang]
-    return unicode(text)
+    return str(text)
 
 
 class Task(models.Model):
@@ -91,8 +91,8 @@ class Task(models.Model):
 
     nb_assignment_name = models.CharField(max_length=255, null=True, blank=True)
 
-    def __unicode__(self):
-        return unicode(self.title)
+    def __str__(self):
+        return str(self.title)
 
     def get_title(self, lang=settings.LANGUAGE_CODE):
         return escape(get_lang_text(self.title, lang))
@@ -277,8 +277,8 @@ class TaskLog(models.Model):
     contest_id = models.IntegerField(db_index=True, null=False, blank=False, default=0)
     problem_id = models.CharField(max_length=128, db_index=True, null=True, blank=True)
 
-    def __unicode__(self):
-        return unicode(self.title)
+    def __str__(self):
+        return str(self.title)
 
 
 class TaskTaken(models.Model):
@@ -367,8 +367,8 @@ class TaskTaken(models.Model):
     class Meta:
         unique_together = (("user", "task"),)
 
-    def __unicode__(self):
-        return unicode(self.task) + " (" + unicode(self.user) + ")"
+    def __str__(self):
+        return str(self.task) + " (" + str(self.user) + ")"
 
 
 class TaskGroupRelations(models.Model):
@@ -382,8 +382,8 @@ class TaskGroupRelations(models.Model):
     class Meta:
         unique_together = ("task", "group")
 
-    def __unicode__(self):
-        return ' '.join([unicode(self.task), unicode(self.group), unicode(self.position)])
+    def __str__(self):
+        return ' '.join([str(self.task), str(self.group), str(self.position)])
 
 
 def task_save_to_log_post_save(sender, instance, created, **kwargs):

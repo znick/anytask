@@ -72,5 +72,5 @@ class Command(BaseCommand):
         #     set_contest_marks(contest_id, students_info)
 
         # logging to cron log
-        print "Command check_contest check {0} submissions ({1} - with marks) took {2} seconds" \
-            .format(len(contest_submissions), contest_marks_len, time.time() - start_time)
+        print("Command check_contest check {0} submissions ({1} - with marks) took {2} seconds"
+              .format(len(contest_submissions), contest_marks_len, time.time() - start_time))

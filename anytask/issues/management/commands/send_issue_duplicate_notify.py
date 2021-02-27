@@ -33,7 +33,7 @@ class Command(BaseCommand):
         subject = "Duplicate issue"
         message = ""
         issues_len = 0
-        for key, issues_ids in issues_duplicates.iteritems():
+        for key, issues_ids in issues_duplicates.items():
             if len(issues_ids) > 1:
                 issues_len += 1
                 for issue_id in issues_ids:
@@ -44,5 +44,5 @@ class Command(BaseCommand):
             send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, ["anytask@yandex.ru"])
 
         # logging to cron log
-        print "Command send_issue_duplicate_notify find {0} issues and took {1} seconds" \
-            .format(issues_len, time.time() - start_time)
+        print("Command send_issue_duplicate_notify find {0} issues and took {1} seconds"
+              .format(issues_len, time.time() - start_time))

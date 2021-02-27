@@ -1,6 +1,7 @@
 Anytask [![Build Status](https://travis-ci.org/znick/anytask.svg?branch=master)](https://travis-ci.org/znick/anytask)
 =======
 
+Used Python3.8
 
 local install
 -------------
@@ -11,7 +12,7 @@ Development installation commands:
     # ... cd ...
     git submodule init
     git submodule update
-    virtualenv .env
+    virtualenv .env -p python3.8
     . .env/bin/activate
     pip install 'pip==20.3.4' 'setuptools==44.0.0' --upgrade
     pip install -r requirements_local.txt

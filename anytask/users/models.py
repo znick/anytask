@@ -82,8 +82,8 @@ class UserProfile(models.Model):
     def is_current_year_student(self):
         return Group.objects.filter(year=get_current_year()).filter(students=self.user).count() > 0
 
-    def __unicode__(self):
-        return unicode(self.user)
+    def __str__(self):
+        return str(self.user)
 
     def is_active(self):
         for status in self.user_status.all():
@@ -169,8 +169,8 @@ class UserProfileLog(models.Model):
     def is_current_year_student(self):
         return Group.objects.filter(year=get_current_year()).filter(students=self.user).count() > 0
 
-    def __unicode__(self):
-        return unicode(self.user)
+    def __str__(self):
+        return str(self.user)
 
 
 def create_user_profile(sender, instance, created, **kwargs):

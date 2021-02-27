@@ -5,7 +5,7 @@ import time
 from optparse import make_option
 
 from django.core.management.base import BaseCommand
-from django.db.transaction import commit_on_success
+from django.db.transaction import atomic as commit_on_success
 from django.contrib.auth.models import User
 from django.db.models import Sum
 
@@ -16,11 +16,11 @@ logger = logging.getLogger('django.request')
 
 
 def get_mark(task_id, student_id):
-    return Issue.objects \
-        .filter(task__parent_task_id=task_id, student_id=student_id) \
-        .exclude(task__is_hidden=True) \
-        .exclude(task__score_after_deadline=False, status_field__tag=IssueStatus.STATUS_ACCEPTED_AFTER_DEADLINE) \
-        .aggregate(Sum('mark'))['mark__sum'] or 0
+    return (Issue.objects
+            .filter(task__parent_task_id=task_id, student_id=student_id)
+            .exclude(task__is_hidden=True)
+            .exclude(task__score_after_deadline=False, status_field__tag=IssueStatus.STATUS_ACCEPTED_AFTER_DEADLINE)
+            .aggregate(Sum('mark'))['mark__sum'] or 0)
 
 
 class Command(BaseCommand):
@@ -86,11 +86,11 @@ class Command(BaseCommand):
                         issues_created += 1
                     issues_synced += 1
 
-                    print "Student: {0}/{1}\tSeminar: {2}/{3}\tCreated: {4}\tChanged: {5}" \
-                        .format(i + 1, len(student_ids), j + 1, len(tasks_ids), created, old_mark != new_mark)
+                    print("Student: {0}/{1}\tSeminar: {2}/{3}\tCreated: {4}\tChanged: {5}"
+                          .format(i + 1, len(student_ids), j + 1, len(tasks_ids), created, old_mark != new_mark))
 
-        print ("Command fix_seminar_status fixed status for {0} issues, synced {1} issues "
-               "(changed mark {2} issues, created {3} issues) for {4} students and took {5} seconds").format(
+        print("Command fix_seminar_status fixed status for {0} issues, synced {1} issues "
+              "(changed mark {2} issues, created {3} issues) for {4} students and took {5} seconds").format(
             len(issues),
             issues_synced,
             issues_changed,

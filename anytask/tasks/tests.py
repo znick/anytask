@@ -16,7 +16,7 @@ from years.models import Year
 from tasks.models import Task, TaskGroupRelations
 
 from mock import patch
-from BeautifulSoup import BeautifulSoup
+from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 from django.core.urlresolvers import reverse
 
@@ -68,7 +68,7 @@ class CreateTest(TestCase):
         self.assertIsInstance(task, Task)
         self.assertEqual(task.title, 'title')
         self.assertEqual(task.course, course)
-        self.assertItemsEqual(task.groups.all(), group)
+        self.assertCountEqual(task.groups.all(), group)
         self.assertEqual(task.weight, 1)
         self.assertEqual(task.is_hidden, True)
         self.assertEqual(task.parent_task, parent_task)
@@ -234,14 +234,14 @@ class ViewsTest(TestCase):
                                 'task_text': 'task_text'})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content,
-                         '{"page_title": "task_title | course_name | 2016-2017", "redirect_page": "/task/edit/2"}')
+                         b'{"page_title": "task_title | course_name | 2016-2017", "redirect_page": "/task/edit/2"}')
 
         # check created task
         self.assertEqual(len(Task.objects.all()), 2, 'Must be 2 tasks')
         created_task = Task.objects.get(id=2)
         self.assertEqual(created_task.title, 'task_title', 'Created task wrong title')
         self.assertEqual(created_task.course, self.course, 'Created task wrong course')
-        self.assertItemsEqual(created_task.groups.all(), [self.group], 'Created task wrong group')
+        self.assertCountEqual(created_task.groups.all(), [self.group], 'Created task wrong group')
         self.assertEqual(created_task.is_hidden, True, 'Created task wrong is_hidden')
         self.assertIsNone(created_task.parent_task, 'Created task wrong parent_task')
         self.assertEqual(created_task.task_text, 'task_text', 'Created task wrong task_text')
@@ -343,7 +343,7 @@ class ViewsTest(TestCase):
         response = client.post(reverse(courses.views.change_visibility_hidden_tasks),
                                {'course_id': self.course.id})
         self.assertEqual(response.status_code, 200, "Can't get change_visibility_hidden_tasks via teacher")
-        self.assertEqual(response.content, 'OK')
+        self.assertEqual(response.content, b'OK')
         response = client.get(reverse(courses.views.gradebook, kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 200, "Can't get course_page via teacher")
 
@@ -362,7 +362,7 @@ class ViewsTest(TestCase):
                          '/issue/get_or_create/1/2',
                          'Wrong link to issue in table for 1st task')
         self.assertEqual(table_body.span.string.strip().strip('\n'), '0', 'Wrong mark in table for 1st task')
-        self.assertIn('no-issue', table_body.span['class'].split(' '), "No 'no-issue' class in table for 1st task")
+        self.assertIn('no-issue', table_body.span['class'], "No 'no-issue' class in table for 1st task")
 
         table_head = table.thead('th')[3]
         self.assertEqual(table_head.a.string.strip().strip('\n'), 'task_title', 'Wrong title 2nd task')
@@ -442,7 +442,7 @@ class ViewsTest(TestCase):
         response = client.post(reverse(tasks.views.contest_task_import), post_data)
         self.assertEqual(response.status_code, 200, "Can't get get_contest_info via teacher")
         self.assertEqual(response.content,
-                         '{"is_error": true, "error": "net_prav_na_kontest"}',
+                         b'{"is_error": true, "error": "net_prav_na_kontest"}',
                          'Wrong response text')
 
         # get contest_task_import page with unknown error
@@ -454,7 +454,7 @@ class ViewsTest(TestCase):
         mock_get_contest_info.return_value = (True, {'problems': problems})
         response = client.post(reverse(tasks.views.contest_task_import), post_data)
         self.assertEqual(response.status_code, 200, "Can't get get_contest_info via teacher")
-        self.assertEqual(response.content, 'OK', 'Wrong response text')
+        self.assertEqual(response.content, b'OK', 'Wrong response text')
 
         tasks = Task.objects.exclude(id=1)
         self.assertEqual(len(tasks), 2, 'Wrong number of tasks')
@@ -462,7 +462,7 @@ class ViewsTest(TestCase):
         for idx, task in enumerate(tasks):
             self.assertEqual(task.title, problems[problems_idx]['problemTitle'], 'Wrong task title')
             self.assertEqual(task.course, self.course)
-            self.assertItemsEqual(task.groups.all(), [self.group])
+            self.assertCountEqual(task.groups.all(), [self.group])
             self.assertEqual(task.is_hidden, True)
             self.assertIsNone(task.parent_task)
             self.assertEqual(task.task_text, problems[problems_idx]['statement'])

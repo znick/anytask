@@ -43,7 +43,7 @@ class IssueStatus(models.Model):
     def get_name(self, lang='ru'):
         return get_value_from_json(self.name, lang)
 
-    def __unicode__(self):
+    def __str__(self):
         return u'{0}'.format(self.get_name())
 
     class Meta:
@@ -55,7 +55,7 @@ class IssueStatusSystem(models.Model):
     name = models.CharField(max_length=191, db_index=False, null=False, blank=False)
     statuses = models.ManyToManyField(IssueStatus, null=True, blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return u'{0}'.format(self.name)
 
     def has_accepted_after_deadline(self):

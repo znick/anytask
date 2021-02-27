@@ -10,11 +10,11 @@ class School(models.Model):
     link = models.CharField(max_length=191, db_index=False, null=False, blank=False)
     courses = models.ManyToManyField(Course, null=True, blank=True)
 
-    def __unicode__(self):
-        return unicode(self.name)
+    def __str__(self):
+        return str(self.name)
 
     def get_full_name(self):
-        return unicode(self.name)
+        return str(self.name)
 
     def get_absolute_url(self):
         return reverse('schools.views.school_page', args=[str(self.link)])

@@ -33,7 +33,7 @@ from years.common import get_current_year
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML
 from dateutil.relativedelta import relativedelta
-from urlparse import urlparse
+from urllib.parse import urlparse
 
 import yandex_oauth
 import requests
@@ -170,7 +170,7 @@ def profile(request, username=None, year=None):
         'groups': group_by_year(groups),
         'teacher_in_courses': group_by_year(teacher_in_courses),
         'teacher_in_courses_archive': group_by_year(teacher_in_courses_archive),
-        'current_year': unicode(current_year) if current_year is not None else '',
+        'current_year': str(current_year) if current_year is not None else '',
         'can_generate_invites': can_generate_invites,
         'invite_form': invite_form,
         'user_to_show_profile': user_to_show_profile,
@@ -186,13 +186,13 @@ def profile(request, username=None, year=None):
 def group_by_year(objects):
     group_dict = {}
     for obj in objects:
-        year = unicode(obj.year)
+        year = str(obj.year)
         if year in group_dict:
             group_dict[year].append(obj)
         else:
             group_dict[year] = [obj]
 
-    return sorted(group_dict.iteritems())
+    return sorted(group_dict.items())
 
 
 @login_required
@@ -288,7 +288,7 @@ def set_user_statuses(request, username=None):
         reversion.set_comment("Change from user profile")
     except Exception as e:
         is_error = True
-        error = unicode(e)
+        error = str(e)
 
     user_statuses = list(user_profile.user_status.all().values("name", "color"))
 
@@ -576,7 +576,7 @@ def user_courses(request, username=None, year=None):
         new_course_statistics['summ_score'] = student_summ_score
 
         is_archive = int(not course.is_active)
-        table_year = unicode(course.year)
+        table_year = str(course.year)
         table_key = course.issue_status_system.id
 
         if table_year not in tables[is_archive]:
@@ -588,8 +588,8 @@ def user_courses(request, username=None, year=None):
             tables[is_archive][table_year][table_key] = [new_course_statistics]
 
     context = {
-        'tables': [sorted(x.iteritems()) for x in tables],
-        'current_year': unicode(current_year) if current_year is not None else '',
+        'tables': [sorted(x.items()) for x in tables],
+        'current_year': str(current_year) if current_year is not None else '',
         'user_to_show': user_to_show,
         'user': user,
     }

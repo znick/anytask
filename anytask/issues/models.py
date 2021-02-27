@@ -460,7 +460,7 @@ class Issue(models.Model):
                                                                 | Q(field__name='review_id')).order_by('timestamp')
         return events
 
-    def __unicode__(self):
+    def __str__(self):
         return u'Issue: {0} {1}'.format(self.id, self.task.get_title())
 
     def get_absolute_url(self):
@@ -544,7 +544,7 @@ class Event(models.Model):
     #        traceback.print_stack()
     #        return super(self.__class__, self).save(*a, **ka)
 
-    def __unicode__(self):
+    def __str__(self):
         if not self.author:
             ret = u'{0} nobody'.format(self.issue.id)
         else:

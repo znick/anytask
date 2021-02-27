@@ -26,12 +26,12 @@ class PythonTaskStat(object):
         self._course_update(group)
 
     def get_group_stat(self):
-        return [(group, stat['student_stat']) for (group, stat) in self.group_stat.iteritems()]
+        return [(group, stat['student_stat']) for (group, stat) in self.group_stat.items()]
 
     def get_course_stat(self):
         stat = [
             (group, stat['total'], stat['active_students'], stat['avg_score'])
-            for (group, stat) in self.group_stat.iteritems()
+            for (group, stat) in self.group_stat.items()
         ]
 
         stat.append(
@@ -172,7 +172,7 @@ def get_task(request, course_id, task_id):
             task_taken.issue = issue
             task_taken.save()
 
-        task_taken.issue.add_comment(unicode(_("zapisalsya_na_task")))
+        task_taken.issue.add_comment(str(_("zapisalsya_na_task")))
 
     return redirect('courses.views.course_page', course_id=course_id)
 

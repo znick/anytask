@@ -9,18 +9,18 @@ from years.models import Year
 from tasks.models import Task
 from issues.models import Issue, File, Event
 from issues.model_issue_status import IssueStatus
-from common import get_contest_info
+from .common import get_contest_info
 from anycontest.models import ContestSubmission
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.utils.translation import ugettext as _
 
 import threading
-import BaseHTTPServer
-import SocketServer
+import http.server as BaseHTTPServer
+import socketserver as SocketServer
 import time
 import json
-import tests_data
+from . import tests_data
 import cgi
 
 CONTEST_PORT = 8079
@@ -39,13 +39,14 @@ class ContestServerMock(threading.Thread):
             if self.path.startswith("/anytask/contest?contestId="):
                 self.send_response(200)
                 self.end_headers()
-                json.dump(tests_data.CONTEST_INFO, self.wfile)
+                self.wfile.write(json.dumps(tests_data.CONTEST_INFO).encode('utf8'))
                 return
 
             if self.path.startswith("/anytask/problems?contestId="):
                 self.send_response(200)
                 self.end_headers()
-                json.dump(tests_data.CONTEST_PROBLEMS, self.wfile)
+                data = json.dumps(tests_data.CONTEST_PROBLEMS).encode('utf8')
+                self.wfile.write(data)
                 return
 
             if self.path == "/anytask/results?runId=1&contestId=0":
@@ -59,7 +60,7 @@ class ContestServerMock(threading.Thread):
                 }
                 self.send_response(200)
                 self.end_headers()
-                json.dump(reply, self.wfile)
+                self.wfile.write(json.dumps(reply).encode('utf8'))
                 return
 
             if self.path == "/anytask/results?runId=2&contestId=0":
@@ -78,7 +79,7 @@ class ContestServerMock(threading.Thread):
                 }
                 self.send_response(200)
                 self.end_headers()
-                json.dump(reply, self.wfile)
+                self.wfile.write(json.dumps(reply).encode('utf8'))
                 return
 
             if self.path == "/anytask/results?runId=3&contestId=0":
@@ -105,25 +106,27 @@ class ContestServerMock(threading.Thread):
                 }
                 self.send_response(200)
                 self.end_headers()
-                json.dump(reply, self.wfile)
+                self.wfile.write(json.dumps(reply).encode('utf8'))
                 return
 
             if self.path == "/anytask/results?runId=5&contestId=0":
                 reply = {"bad_answer": True}
                 self.send_response(200)
                 self.end_headers()
-                json.dump(reply, self.wfile)
+                self.wfile.write(json.dumps(reply).encode('utf8'))
                 return
 
             self.send_response(501)
             self.end_headers()
 
         def do_POST(self):  # NOQA
-            content_type, pdict = cgi.parse_header(self.headers.getheader("content-type"))
+            content_type, pdict = cgi.parse_header(self.headers.get("Content-Type"))
+            pdict['CONTENT-LENGTH'] = int(self.headers.get("Content-Length"))
+            pdict['boundary'] = pdict['boundary'].encode('ascii')
             fields = cgi.parse_multipart(self.rfile, pdict)
 
             if self.path.startswith("/anytask/submit"):
-                if "_failed_" in fields["file"][0]:
+                if b"_failed_" in fields["file"][0]:
                     reply = {
                         'error': {
                             'message': "Submit error in fake server!"
@@ -138,7 +141,7 @@ class ContestServerMock(threading.Thread):
 
                 self.send_response(200)
                 self.end_headers()
-                json.dump(reply, self.wfile)
+                self.wfile.write(json.dumps(reply).encode('utf8'))
                 return
 
             self.send_response(501)

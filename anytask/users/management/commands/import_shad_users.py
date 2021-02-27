@@ -1,4 +1,4 @@
-from django.core.management.base import NoArgsCommand
+from django.core.management.base import BaseCommand as NoArgsCommand
 from django.contrib.auth.models import User
 from groups.models import Group
 from django.contrib.auth.forms import PasswordResetForm
@@ -23,14 +23,14 @@ class Command(NoArgsCommand):
             username = email.split('@')[0]
             last_name = fields[1]
             first_name = fields[2]
-            print email, username, last_name, first_name
+            print(email, username, last_name, first_name)
 
             user, created = User.objects.get_or_create(username=username, first_name=first_name, last_name=last_name,
                                                        email=email)
 
             group.students.add(user)
             reset_form = PasswordResetForm({'email': email})
-            print reset_form
+            print(reset_form)
             reset_form.save()
 
         group.save()

@@ -113,7 +113,7 @@ class ViewsTest(TestCase):
         # post register
         response = client.post(reverse(admission.views.register), post_data, **test_header)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content, "OK")
+        self.assertEqual(response.content, b"OK")
 
         registration_profile = AdmissionRegistrationProfile.objects.all()
         self.assertEqual(len(registration_profile), 1)

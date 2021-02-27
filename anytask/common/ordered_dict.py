@@ -4,7 +4,7 @@
 try:
     from thread import get_ident as _get_ident
 except ImportError:
-    from dummy_thread import get_ident as _get_ident
+    from _dummy_thread import get_ident as _get_ident
 
 try:
     from _abcoll import KeysView, ValuesView, ItemsView
@@ -133,11 +133,6 @@ class OrderedDict(dict):
         'od.itervalues -> an iterator over the values in od'
         for k in self:
             yield self[k]
-
-    def iteritems(self):
-        'od.iteritems -> an iterator over the (key, value) items in od'
-        for k in self:
-            yield (k, self[k])
 
     def update(*args, **kwds):
         '''od.update(E, **F) -> None.  Update od from dict/iterable E and F.

@@ -29,7 +29,7 @@ class CourseStatistics(object):
         )
 
         groups_statistics_list = []
-        for group, statistics in self.groups_statistics.iteritems():
+        for group, statistics in self.groups_statistics.items():
             groups_statistics_list.append((
                 group, statistics['group_summ_scores'],
                 statistics['number_group_students'],
@@ -51,7 +51,7 @@ class CourseStatistics(object):
     def get_groups_statistics(self):
         group_student_list = []
 
-        for group, statistics in self.groups_statistics.iteritems():
+        for group, statistics in self.groups_statistics.items():
             group_student_list.append((group, statistics['students_statistics']))
 
         return group_student_list

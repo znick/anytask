@@ -709,16 +709,16 @@
                                             <a class="dropdown-item" href="{% url "admin:index" %}">{% trans "adminka" %}</a>
                                         {% endif %}
                                         <div class="dropdown-divider"></div>
-                                        <a class="dropdown-item" href="{% url "django.contrib.auth.views.password_change" %}">{% trans "smenit_parol" %}</a>
+                                        <a class="dropdown-item" href="{% url "auth_password_change" %}">{% trans "smenit_parol" %}</a>
                                         <div class="dropdown-divider"></div>
-                                        <a class="dropdown-item" href="{% url "django.contrib.auth.views.logout" %}">{% trans "vyjti" %}</a>
+                                        <a class="dropdown-item" href="{% url "auth_logout" %}">{% trans "vyjti" %}</a>
                                     </div>
                                 </li>
                             </ul>
                         {% else %}
                             <ul class="nav navbar-nav">
                                 <li class="nav-item">
-                                    <a class="nav-link" href="{% url "django.contrib.auth.views.login" %}">{% trans "vojdite" %}</a>
+                                    <a class="nav-link" href="{% url "auth_login" %}">{% trans "vojdite" %}</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" href="/accounts/register/">{% trans "zaregistrirujtes" %}</a>

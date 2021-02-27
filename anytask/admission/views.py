@@ -123,10 +123,10 @@ def register(request):
         if request.META['HTTP_EMAIL'] and request.META['HTTP_EMAIL'] != 'None':
             user_info['ya_email'] = request.META['HTTP_EMAIL']
 
-        for key, post_data_key in settings.YA_FORMS_FIELDS.iteritems():
+        for key, post_data_key in settings.YA_FORMS_FIELDS.items():
             user_info[key] = get_post_value(post_data, post_data_key)
 
-        for key, post_data_keys in settings.YA_FORMS_FIELDS_ADDITIONAL.iteritems():
+        for key, post_data_keys in settings.YA_FORMS_FIELDS_ADDITIONAL.items():
             info_json = []
             for post_data_key in post_data_keys:
                 info_json.append({

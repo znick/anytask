@@ -1,8 +1,7 @@
-from django.test import TestCase
+from registration import admin
+from registration.backends.default import urls
 
-import registration
 
-from registration.tests.backends import *
-from registration.tests.forms import *
-from registration.tests.models import *
-from registration.tests.views import *
+def test():
+    assert admin
+    assert urls

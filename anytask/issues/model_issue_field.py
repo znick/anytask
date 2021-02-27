@@ -155,7 +155,7 @@ class IssueField(models.Model):
     def get_value(self, issue):
         return self.get_plugin().get_value(issue)
 
-    def __unicode__(self):
+    def __str__(self):
         return u'{0}: {1}/{2} - {3}'.format(self.id, self.plugin, self.name, self.title)
 
 

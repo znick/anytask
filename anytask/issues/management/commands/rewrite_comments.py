@@ -42,11 +42,11 @@ class Command(BaseCommand):
             raise Exception("--replace is required!")
 
         for event in Event.objects.all():
-            print "======= {0} =========".format(event.id)
-            print event.value
-            print "-----------------------"
+            print("======= {0} =========".format(event.id))
+            print(event.value)
+            print("-----------------------")
             event.value = re.sub(pattern, replace, event.value)
-            print event.value
-            print "======================="
+            print(event.value)
+            print("=======================")
             if not dry_run:
                 event.save()

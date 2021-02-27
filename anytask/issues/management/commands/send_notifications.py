@@ -74,8 +74,8 @@ class Command(BaseCommand):
                 event.save()
 
         # logging to cron log
-        print "Command send_issue_notifications send {0} email(s) and took {1} seconds (sleep {2} seconds)" \
-            .format(num_sent, time.time() - start_time, sleep_time)
+        print("Command send_issue_notifications send {0} email(s) and took {1} seconds (sleep {2} seconds)"
+              .format(num_sent, time.time() - start_time, sleep_time))
 
 
 def get_message(user, user_type, issue, events, from_email, domain):

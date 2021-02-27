@@ -56,5 +56,5 @@ class Command(BaseCommand):
             send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [email, "anytask@yandex.ru"])
 
         # logging to cron log
-        print "Command send_freezed_run_id_notify check {0} submissions took {1} seconds" \
-            .format(len(contest_submissions), time.time() - start_time)
+        print("Command send_freezed_run_id_notify check {0} submissions took {1} seconds"
+              .format(len(contest_submissions), time.time() - start_time))

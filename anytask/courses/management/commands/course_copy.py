@@ -4,7 +4,7 @@ from django.db import transaction
 from courses.models import Course
 from tasks.models import Task
 
-from xml.dom.minidom import parse
+from xml.etree.ElementTree import parse
 from optparse import make_option
 import copy
 
@@ -33,7 +33,7 @@ class Command(BaseCommand):
         ),
     )
 
-    @transaction.commit_on_success
+    @transaction.atomic
     def handle(self, **options):
         course_id = options['course_id']
         if course_id:
@@ -54,7 +54,7 @@ class Command(BaseCommand):
             if task_src.has_parent():
                 continue
 
-            print "Copy task {0}".format(task_src.title.encode("utf-8"))
+            print("Copy task {0}".format(task_src.title.encode("utf-8")))
             task_dst = Task()
             task_dst.__dict__ = copy.deepcopy(task_src.__dict__)
             task_dst.id = None
@@ -62,7 +62,7 @@ class Command(BaseCommand):
             task_dst.save()
 
             for subtask_src in task_src.get_subtasks():
-                print ">Copy subtask {0}".format(subtask_src.title.encode("utf-8"))
+                print(">Copy subtask {0}".format(subtask_src.title.encode("utf-8")))
                 subtask_dst = Task()
 
                 subtask_dst.__dict__ = copy.deepcopy(subtask_src.__dict__)

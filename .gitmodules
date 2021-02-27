@@ -13,6 +13,3 @@
 [submodule "bootbox"]
 	path = dependencies/bootbox
 	url = https://github.com/makeusabrew/bootbox.git
-[submodule "rbtools"]
-	path = dependencies/rbtools
-	url = https://github.com/reviewboard/rbtools.git

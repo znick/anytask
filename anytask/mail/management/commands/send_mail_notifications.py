@@ -41,8 +41,8 @@ class Command(BaseCommand):
                 sleep_time += 1
 
         # logging to cron log
-        print "Command send_mail_notifications send {0} email(s) and took {1} seconds (sleep {2} seconds)" \
-            .format(num_sent, time.time() - start_time, sleep_time)
+        print("Command send_mail_notifications send {0} email(s) and took {1} seconds (sleep {2} seconds)"
+              .format(num_sent, time.time() - start_time, sleep_time))
 
 
 def send_only_notify(domain, from_email):
