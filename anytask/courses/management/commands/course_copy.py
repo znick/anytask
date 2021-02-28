@@ -23,17 +23,10 @@ def get_users_from_cs_xml(cs_xml_fn):
 class Command(BaseCommand):
     help = "Copy course"
 
-    option_list = BaseCommand.option_list + (
-        make_option(
-            '--course_id',
-            action='store',
-            dest='course_id',
-            default=None,
-            help='Course id'
-        ),
-    )
+    def add_arguments(self, parser):
+        parser.add_argument('--course_id', dest='course_id', help='Course id', type=int)
 
-    @transaction.commit_on_success
+    @transaction.atomic
     def handle(self, **options):
         course_id = options['course_id']
         if course_id:
