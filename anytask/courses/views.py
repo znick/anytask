@@ -140,7 +140,7 @@ def ajax_get_queue(request):
     session_key = '_'.join([QUEUE_SESSION_PREFIX, str(course.id)])
     if f.form.data:
         request.session[session_key] = f.form.data
-    f.count()
+    f.qs.count()
 
     return HttpResponse(json.dumps(f.response), content_type="application/json")
 
