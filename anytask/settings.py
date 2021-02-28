@@ -4,7 +4,8 @@ from settings_common import *  # NOQA
 import os
 
 DEBUG = True
-TEMPLATE_DEBUG = DEBUG
+for backend in TEMPLATES:
+    backend['OPTIONS']['debug'] = DEBUG
 
 DATABASES = {
     'default': {
