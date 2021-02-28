@@ -4,7 +4,6 @@ from django.db import transaction
 from courses.models import Course
 from tasks.models import Task
 
-from xml.dom.minidom import parse
 import copy
 
 
