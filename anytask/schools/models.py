@@ -8,7 +8,7 @@ from courses.models import Course
 class School(models.Model):
     name = models.CharField(max_length=191, db_index=True, null=False, blank=False)
     link = models.CharField(max_length=191, db_index=False, null=False, blank=False)
-    courses = models.ManyToManyField(Course, null=True, blank=True)
+    courses = models.ManyToManyField(Course, blank=True)
 
     def __unicode__(self):
         return unicode(self.name)

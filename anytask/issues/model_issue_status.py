@@ -53,7 +53,7 @@ class IssueStatus(models.Model):
 
 class IssueStatusSystem(models.Model):
     name = models.CharField(max_length=191, db_index=False, null=False, blank=False)
-    statuses = models.ManyToManyField(IssueStatus, null=True, blank=True)
+    statuses = models.ManyToManyField(IssueStatus, blank=True)
 
     def __unicode__(self):
         return u'{0}'.format(self.name)

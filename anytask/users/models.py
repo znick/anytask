@@ -24,8 +24,7 @@ def get_upload_path(instance, filename):
 class UserProfile(models.Model):
     user = models.OneToOneField(User, db_index=True, null=False, blank=False, unique=True, related_name='profile')
     middle_name = models.CharField(max_length=128, db_index=True, null=True, blank=True)
-    user_status = models.ManyToManyField(UserStatus, db_index=True, null=True, blank=True,
-                                         related_name='users_by_status')
+    user_status = models.ManyToManyField(UserStatus, db_index=True, blank=True, related_name='users_by_status')
 
     avatar = models.ImageField('profile picture', upload_to=get_upload_path, blank=True, null=True,
                                storage=OverwriteStorage())
@@ -52,9 +51,9 @@ class UserProfile(models.Model):
     show_email = models.BooleanField(db_index=False, null=False, blank=False, default=True)
     send_my_own_events = models.BooleanField(db_index=False, null=False, blank=False, default=False)
 
-    unread_messages = models.ManyToManyField(Message, null=True, blank=True, related_name='unread_messages')
-    deleted_messages = models.ManyToManyField(Message, null=True, blank=True, related_name='deleted_messages')
-    send_notify_messages = models.ManyToManyField(Message, null=True, blank=True, related_name='send_notify_messages')
+    unread_messages = models.ManyToManyField(Message, blank=True, related_name='unread_messages')
+    deleted_messages = models.ManyToManyField(Message, blank=True, related_name='deleted_messages')
+    send_notify_messages = models.ManyToManyField(Message, blank=True, related_name='send_notify_messages')
 
     added_time = models.DateTimeField(auto_now_add=True)  # remove default=timezone.now
     update_time = models.DateTimeField(auto_now=True)  # remove default=timezone.now
@@ -113,7 +112,7 @@ class UserProfile(models.Model):
 class UserProfileLog(models.Model):
     user = models.ForeignKey(User, db_index=True, null=False, blank=False, related_name='profiles_logs_by_user')
     middle_name = models.CharField(max_length=128, db_index=True, null=True, blank=True)
-    user_status = models.ManyToManyField(UserStatus, db_index=True, null=True, blank=True)
+    user_status = models.ManyToManyField(UserStatus, db_index=True, blank=True)
 
     avatar = models.ImageField('profile picture', upload_to=get_upload_path, blank=True, null=True,
                                storage=OverwriteStorage())
@@ -140,10 +139,9 @@ class UserProfileLog(models.Model):
     show_email = models.BooleanField(db_index=False, null=False, blank=False, default=True)
     send_my_own_events = models.BooleanField(db_index=False, null=False, blank=False, default=False)
 
-    unread_messages = models.ManyToManyField(Message, null=True, blank=True, related_name='log_unread_messages')
-    deleted_messages = models.ManyToManyField(Message, null=True, blank=True, related_name='log_deleted_messages')
-    send_notify_messages = models.ManyToManyField(Message, null=True, blank=True,
-                                                  related_name='log_send_notify_messages')
+    unread_messages = models.ManyToManyField(Message, blank=True, related_name='log_unread_messages')
+    deleted_messages = models.ManyToManyField(Message, blank=True, related_name='log_deleted_messages')
+    send_notify_messages = models.ManyToManyField(Message, blank=True, related_name='log_send_notify_messages')
 
     added_time = models.DateTimeField(auto_now_add=True)  # remove default=timezone.now
     update_time = models.DateTimeField(auto_now=True)  # remove default=timezone.now

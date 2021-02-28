@@ -56,7 +56,7 @@ class Issue(models.Model):
     update_time = models.DateTimeField(default=timezone.now)
 
     responsible = models.ForeignKey(User, db_index=True, null=True, blank=True, related_name='responsible')
-    followers = models.ManyToManyField(User, null=True, blank=True)
+    followers = models.ManyToManyField(User, blank=True)
 
     STATUS_NEW = 'new'
     STATUS_AUTO_VERIFICATION = 'auto_verification'

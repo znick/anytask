@@ -83,7 +83,7 @@ class MarkField(models.Model):
 
 class CourseMarkSystem(models.Model):
     name = models.CharField(max_length=191, db_index=False, null=False, blank=False)
-    marks = models.ManyToManyField(MarkField, null=True, blank=True)
+    marks = models.ManyToManyField(MarkField, blank=True)
 
     def __unicode__(self):
         return unicode(self.name)
@@ -99,10 +99,10 @@ class Course(models.Model):
 
     is_active = models.BooleanField(db_index=True, null=False, blank=False, default=False)
 
-    teachers = models.ManyToManyField(User, related_name='course_teachers_set', null=True, blank=True)
-    groups = models.ManyToManyField(Group, null=True, blank=True)
+    teachers = models.ManyToManyField(User, related_name='course_teachers_set', blank=True)
+    groups = models.ManyToManyField(Group, blank=True)
 
-    issue_fields = models.ManyToManyField(IssueField, null=True, blank=True)
+    issue_fields = models.ManyToManyField(IssueField, blank=True)
 
     contest_integrated = models.BooleanField(db_index=False, null=False, blank=False, default=False)
     send_rb_and_contest_together = models.BooleanField(db_index=False, null=False, blank=False, default=False)
@@ -113,7 +113,7 @@ class Course(models.Model):
     send_to_contest_from_users = models.BooleanField(db_index=False, null=False, blank=False, default=False)
 
     filename_extensions = models.ManyToManyField(
-        FilenameExtension, related_name='filename_extensions_set', null=True, blank=True
+        FilenameExtension, related_name='filename_extensions_set', blank=True
     )
 
     full_transcript = models.BooleanField(db_index=False, null=False, blank=False, default=True)
