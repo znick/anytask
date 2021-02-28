@@ -299,7 +299,7 @@ class TaskTaken(models.Model):
         (STATUS_SCORED, u'Task scored'),
         (STATUS_DELETED, u'TaskTaken deleted')
     )
-    status = models.IntegerField(max_length=1, choices=TASK_TAKEN_STATUSES, db_index=True, blank=False, default=0)
+    status = models.IntegerField(choices=TASK_TAKEN_STATUSES, db_index=True, blank=False, default=0)
 
     EDIT = 'EDIT'
     QUEUE = 'QUEUE'
