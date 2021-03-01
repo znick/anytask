@@ -9,7 +9,7 @@
     },
     {
         "host": "https://anytask.org",
-        "course_id": 634,
+        "course_id": 808,
         "repo": "git@github.com:tswr/imkn_python_method.git",
         "run_cmd": ["_home_task_checker/run_in_anytask_org.sh"],
         "docker_image": "zhnick/imkn_python_checker:latest",
