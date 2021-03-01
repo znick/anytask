@@ -1,10 +1,12 @@
 # Django settings for anytask project.
 
 from settings_common import *  # NOQA
+from settings_common import TEMPLATES
 import os
 
 DEBUG = True
-TEMPLATE_DEBUG = DEBUG
+for backend in TEMPLATES:
+    backend['OPTIONS']['debug'] = DEBUG
 
 DATABASES = {
     'default': {
