@@ -1,0 +1,40 @@
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: Anytask tests
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: true
+    - name: Set up Python 2.7
+      uses: actions/setup-python@v2
+      with:
+        python-version: 2.7
+    - name: Install dependencies
+      run: |
+        pip install pip>=9.0.1
+        pip install --upgrade flake8
+        pip install -r requirements_local.txt
+        sudo apt-get install p7zip-full tar xz-utils bzip2 gzip
+        sudo apt-get install python3
+    - name: Lint with flake8
+      run: |
+        cd anytask
+        flake8 --version
+        flake8
+    - name: Run django tests
+      run: |
+        cd anytask
+        python manage.py test
