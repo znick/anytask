@@ -1,6 +1,7 @@
 # Django settings for anytask project.
 
 from settings_common import *  # NOQA
+from settings_common import TEMPLATES
 import os
 
 DEBUG = True
