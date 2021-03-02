@@ -1,4 +1,4 @@
-Anytask [![Build Status](https://github.com/znick/anytask/workflows/anytask/badge.svg)](https://github.com/znick/anytask/actions)
+Anytask [![Build Status](https://github.com/znick/anytask/actions/workflows/anytask.yml/badge.svg)](https://github.com/znick/anytask/actions)
 =======
 
 
