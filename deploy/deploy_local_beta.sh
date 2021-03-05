@@ -2,14 +2,17 @@
 
 ANYBETA_ROOT=$PWD
 
-ANYBETA_WORKDIR="anytask_workdir"
+ANYBETA_WORKDIR="$ANYBETA_ROOT/anytask_workdir"
 ANYBETA_PYTHON_PATH="/usr/bin/python"
 
-ANYBETA_REPO="https://github.com/znick/anytask"
-ANYBETA_DIR="anytask"
+ANYBETA_GIT_CLONE=1
+
+ANYBETA_REMOTE="https://github.com/znick/anytask"
+ANYBETA_LOCAL="$ANYBETA_WORKDIR/anytask"
 
 ANYBETA_VENV_NAME="anytask_venv"
-ANYBETA_VENV_ACTIVATE="$ANYBETA_VENV_NAME/bin/activate"
+ANYBETA_VENV_DIR="$ANYBETA_LOCAL/$ANYBETA_VENV_NAME"
+ANYBETA_VENV_ACTIVATE="$ANYBETA_VENV_DIR/bin/activate"
 
 ANYBETA_REPORT_PREFIX=">>>"
 ANYBETA_ERROR_PREFIX="ERROR:"
@@ -35,6 +38,7 @@ function ANYBETA_usage() {
   echo ""
 }
 
+function ANYBETA_main() {
 
 # PARSE ARGS
 ############
@@ -54,32 +58,44 @@ while (( "$#" )); do
       shift
       ;;
 
+    --no-git-clone)
+      ANYBETA_GIT_CLONE=0
+      shift
+      ;;
+
     -h|--help)
       ANYBETA_usage
-      exit 0
+      return
       ;;
 
     *)
       echo "Error: unknown parameter $ANYBETA_PARAM"
-      exit 1
+      return
       ;;
   esac
 done
 
 
+# CHECK PYTHON PATH
+###################
+
+if ! test -e $ANYBETA_PYTHON_PATH
+then 
+  ANYBETA_error "Bad python path: $ANYBETA_PYTHON_PATH"
+  return
+fi
+
+
 # CREATE WORKDIR
 ################
 
-if ! test -d $ANYBETA_WORKDIR
+if ! test -e $ANYBETA_WORKDIR
 then
-  if ! test -e $ANYBETA_WORKDIR
-  then
-    ANYBETA_report "Create workdir $ANYBETA_WORKDIR"
-    mkdir $ANYBETA_WORKDIR
-  else
-    ANYBETA_error "$ANYBETA_WORKDIR already exists and is not a directory."
-    exit 1
-  fi
+  ANYBETA_report "Create workdir $ANYBETA_WORKDIR"
+  mkdir $ANYBETA_WORKDIR
+else
+  ANYBETA_error "$ANYBETA_WORKDIR already exists."
+  return
 fi
 
 cd $ANYBETA_WORKDIR
@@ -88,17 +104,19 @@ cd $ANYBETA_WORKDIR
 # CLONE REPOSITORY
 ##################
 
-#ANYBETA_report
-#ANYBETA_report "Clone repository"
-#git clone $ANYTASK_REPO
-#cd $ANYTASK_DIR
-#git submodule init
-#git submodule update
-#cd ..
+if test $ANYBETA_GIT_CLONE -eq 1
+then
+  ANYBETA_report
+  ANYBETA_report "Clone repository"
+  git clone $ANYBETA_REMOTE
+  cd $ANYBETA_LOCAL
+  git submodule init
+  git submodule update
+fi
 
 
-# CONFIGURE PYTHON
-##################
+# CHOOSE RIGHT VERSION
+######################
 
 ANYBETA_PYTHON_VERSION_CHECK="from __future__ import print_function; import sys; print(int(sys.version_info < (3, 3)))"
 
@@ -109,18 +127,28 @@ else
   . $ANYBETA_ROOT/deploy_local_beta_python3.sh
 fi
 
+} # define ANYBETA_main()
+
+
+ANYBETA_main "$@"
+
 
 # CLEANUP
 #########
+
+ANYBETA_report
+ANYBETA_report "Cleanup"
 
 cd $ANYBETA_ROOT
 
 unset ANYBETA_ROOT
 unset ANYBETA_WORKDIR
 unset ANYBETA_PYTHON_PATH
-unset ANYBETA_REPO
-unset ANYBETA_DIR
+unset ANYBETA_GIT_CLONE
+unset ANYBETA_REMOTE
+unset ANYBETA_LOCAL
 unset ANYBETA_VENV_NAME
+unset ANYBETA_VENV_DIR
 unset ANYBETA_VENV_ACTIVATE
 unset ANYBETA_REPORT_PREFIX
 unset ANYBETA_ERROR_PREFIX
@@ -131,3 +159,4 @@ unset ANYBETA_PYTHON_VERSION_CHECK
 unset ANYBETA_report
 unset ANYBETA_error
 unset ANYBETA_usage
+unset ANYBETA_main
