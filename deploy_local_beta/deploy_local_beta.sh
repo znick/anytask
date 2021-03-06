@@ -1,11 +1,11 @@
 # This file must not be run directly.
-# Execute `deploy_local_beta/run.sh` instead.
+# Execute `. deploy_local_beta/run.sh` from repository root instead.
 
 
 if ! test $ANYBETA_ROOT
 then
   echo "ERROR: This file should not be run directly."
-  echo "Execute \`deploy_local_beta/run.sh\` instead."
+  echo "Execute \`. deploy_local_beta/run.sh\` from repository root instead."
   exit 1
 fi
 

@@ -4,12 +4,12 @@ ANYBETA_SAVE_VENV=1
 
 while (( "$#" )); do
   case $1 in
-    -v|--no-save-venv)
+    -v|--rm-venv)
       ANYBETA_SAVE_VENV=0
       shift
       ;;
     -h|--help)
-      echo "With flag -v|--no-save-venv virtual env will be removed."
+      echo "With flag -v|--rm-venv virtual env will be removed."
       ;;
     *)
       echo "Error: unknown parameter $1"
@@ -20,8 +20,6 @@ done
 
 # CLEANUP
 #########
-
-cd $ANYBETA_ROOT
 
 # TODO: cleanup django project
 
