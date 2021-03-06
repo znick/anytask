@@ -24,4 +24,3 @@ def archive_index(request):
     }
 
     return render(request, 'archived_schools_page.html', context)
-
