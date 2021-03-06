@@ -1,14 +1,12 @@
 # This file must not be run directly.
-# Execute `. deploy_local_beta.sh` instead.
+# Execute `deploy_local_beta/run.sh` instead.
 
-# ENABLE VIRTUALENV
-###################
 
 if ! test $ANYBETA_ROOT
 then
   echo "ERROR: This file should not be run directly."
-  echo "Execute \`. deploy_local_beta.sh\` instead."
-  return
+  echo "Execute \`deploy_local_beta/run.sh\` instead."
+  exit 1
 fi
 
 
@@ -38,4 +36,4 @@ ANYBETA_report "Manage django project"
 $ANYBETA_PYTHON_PATH setup.py develop
 ./anytask/manage.py
 ./anytask/manage.py migrate --noinput
-./anytask/manage.py runserver 127.0.0.1:8019 -v 3 --traceback
+#./anytask/manage.py runserver 127.0.0.1:8019 -v 3 --traceback
