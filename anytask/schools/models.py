@@ -8,7 +8,7 @@ from courses.models import Course
 class School(models.Model):
     name = models.CharField(max_length=191, db_index=True, null=False, blank=False)
     link = models.CharField(max_length=191, db_index=False, null=False, blank=False)
-    is_active = models.BooleanField(db_index=True, null=False, blank=False, default=False)
+    is_active = models.BooleanField(db_index=True, null=False, blank=False, default=True)
     courses = models.ManyToManyField(Course, blank=True)
 
     def __unicode__(self):
