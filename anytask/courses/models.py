@@ -221,8 +221,18 @@ class Course(models.Model):
         return self.has_attendance_log and self.user_is_teacher(user)
 
     def save(self, *args, **kwargs):
+        created = self.id is None
         super(Course, self).save(*args, **kwargs)
         self.add_group_with_extern()
+
+        # Hack hack hack
+        # We need to triger add_default_issue_fields (m2m_change)
+        # for new courses
+        if created:
+            fields = IssueField.objects.all()
+            if fields.exists():
+                any_field = fields[0]
+                self.issue_fields.add(any_field)
 
     def add_group_with_extern(self):
         if self.group_with_extern is None and self.can_be_chosen_by_extern:
@@ -292,24 +302,16 @@ class StudentCourseMark(models.Model):
 def add_default_issue_fields(sender, instance, action, **kwargs):
     default_issue_fields = DefaultIssueFields()
     default_issue_fields.set_integrated(instance.rb_integrated, instance.contest_integrated)
-    pk_set = kwargs.get("pk_set", set())
 
-    if action not in ("post_add", "post_remove", "post_clear"):
-        return
+    if action in ("post_add", "post_remove", "post_clear"):
+        current_fields = set(instance.issue_fields.all())
+        default_fields = set(default_issue_fields.get_issue_fields())
 
-    if action in ("post_remove", "post_clear"):
-        if pk_set and set(pk_set) == default_issue_fields.get_deleted_pks():
+        fields_to_add = default_fields - current_fields
+        if not fields_to_add:
             return
 
-        instance.issue_fields.add(*default_issue_fields.get_issue_fields())
-        return
-
-    if action == "post_add":
-        if pk_set and set(pk_set) == default_issue_fields.get_pks():
-            return
-
-        instance.issue_fields.remove(*default_issue_fields.get_deleted_issue_fields())
-        return
+        instance.issue_fields.add(*fields_to_add)
 
 
 def update_rb_review_group(sender, instance, created, **kwargs):
