@@ -3,7 +3,7 @@ from schools.models import School
 
 
 def index(request):
-    schools = School.objects.all().order_by('name')
+    schools = School.objects.all().filter(is_active=True).order_by('name')
 
     # current_year = get_current_year()
     # courses = Course.objects.filter(is_active=True).order_by('name')
@@ -13,4 +13,14 @@ def index(request):
         'schools': schools,
     }
 
-    return render(request, 'index.html', context)
+    return render(request, 'schools_page.html', context)
+
+
+def archive_index(request):
+    schools = School.objects.all().filter(is_active=False).order_by('name')
+
+    context = {
+        'schools': schools,
+    }
+
+    return render(request, 'archived_schools_page.html', context)
