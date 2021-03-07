@@ -15,6 +15,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='school',
             name='is_active',
-            field=models.BooleanField(db_index=True, default=False),
+            field=models.BooleanField(db_index=True, default=True),
         ),
     ]
