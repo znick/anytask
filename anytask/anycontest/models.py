@@ -156,7 +156,7 @@ class ContestSubmission(models.Model):
             got_mark = True
         except Exception as e:
             logger.exception("Exception while request to Contest: '%s' : '%s', Exception: '%s'",
-                             results_req.url, results_req.json(), e)
+                             results_req.url, results_req.text, e)
             got_mark = False
         self.save()
 
