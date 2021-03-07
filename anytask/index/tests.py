@@ -34,3 +34,29 @@ class IndexTest(TestCase):
             response.context['schools'],
             ['<School: archived_school>']
         )
+
+    def test_switch_lang(self):
+        for lang in ('en', 'ru'):
+            response = self.client.post(reverse('set_lang'), {'lang': lang})
+            self.assertEqual(response.status_code, 200)
+
+            response = self.client.get(reverse('get_lang'))
+            self.assertEqual(response.content, lang)
+
+    def test_switch_wrong(self):
+        response = self.client.get(reverse('get_lang'))
+        current_lang = response.content
+
+        # bad language
+        response = self.client.post(reverse('set_lang'), {'lang': 'no_such_lang'})
+        self.assertEqual(response.status_code, 404)
+
+        response = self.client.get(reverse('get_lang'))
+        self.assertEqual(response.content, current_lang)  # language not changed
+
+        # bad request
+        response = self.client.post(reverse('set_lang'), {'lang': ''})
+        self.assertEqual(response.status_code, 400)
+
+        response = self.client.get(reverse('get_lang'))
+        self.assertEqual(response.content, current_lang)  # language not changed

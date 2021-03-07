@@ -25,6 +25,14 @@
         <link href="{{ STATIC_URL }}bootstrap-multiselect.css" rel="stylesheet">
         <link href="{{ STATIC_URL }}typeahead.css" rel="stylesheet">
 
+        <script type="text/javascript">
+            function set_lang(lang) {
+                $.post('{% url "set_lang" %}', {'lang': lang, 'csrfmiddlewaretoken': "{{ csrf_token }}",}).done(function (data) {
+                    location.reload(true);
+                    });
+            }
+        </script>
+
 
         <script type="text/javascript">
             if (!String.prototype.format) {
@@ -713,6 +721,14 @@
                                         <div class="dropdown-divider"></div>
                                         <a class="dropdown-item" href="{% url "django.contrib.auth.views.logout" %}">{% trans "vyjti" %}</a>
                                     </div>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="" OnClick="set_lang('ru'); return false;">RU</a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link" href="" OnClick="set_lang('en'); return false;">EN</a>
+                                </li>
+
                                 </li>
                             </ul>
                         {% else %}
@@ -723,7 +739,18 @@
                                 <li class="nav-item">
                                     <a class="nav-link" href="/accounts/register/">{% trans "zaregistrirujtes" %}</a>
                                 </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link" href="" OnClick="set_lang('ru'); return false;">RU</a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link" href="" OnClick="set_lang('en'); return false;">EN</a>
+                                </li>
+
+
                             </ul>
+
                         {% endif %}
                     </div>
                 {% endblock %}
