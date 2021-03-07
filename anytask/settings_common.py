@@ -121,7 +121,8 @@ MIDDLEWARE_CLASSES = (
     # 'django.middleware.transaction.TransactionMiddleware',
     'reversion.middleware.RevisionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
-    'anytask.middleware.timezone_middleware.TimezoneMiddleware'
+    'anytask.middleware.timezone_middleware.TimezoneMiddleware',
+    'anytask.middleware.lang_middleware.LanguageCookieMiddleware',
 )
 
 ROOT_URLCONF = 'anytask.urls'

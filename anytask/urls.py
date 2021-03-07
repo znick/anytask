@@ -7,6 +7,8 @@ import django.views.static
 import index.views
 import admission.views
 
+from middleware.lang_middleware import set_lang_view, get_lang_view
+
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
 admin.autodiscover()
@@ -43,4 +45,6 @@ urlpatterns = [
     url(r'^lesson/', include('lessons.urls')),
     url(r'^api/', include('api.urls')),
     url(r'^jupyter/', include('jupyter.urls')),
+    url(r'^set_lang/', set_lang_view, name='set_lang'),
+    url(r'^get_lang/', get_lang_view, name='get_lang'),
 ]
