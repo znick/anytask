@@ -37,6 +37,7 @@ unset ANYBETA_VENV_ACTIVATE
 unset ANYBETA_REPORT_PREFIX
 unset ANYBETA_ERROR_PREFIX
 unset ANYBETA_SAVE_VENV
+unset ANYBETA_correct_args
 
 unset ANYBETA_report
 unset ANYBETA_error
