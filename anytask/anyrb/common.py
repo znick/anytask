@@ -103,6 +103,8 @@ class AnyRB(object):
                                  description=description,
                                  description_text_type='markdown',
                                  target=settings.RB_API_USERNAME, public=True,
+                                 target_groups='teachers_{0}'.format(issue.task.course.pk),
+                                 target_people=issue.student.username
                                  )
             return review_request.id
 
