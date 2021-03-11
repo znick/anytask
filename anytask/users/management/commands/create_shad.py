@@ -17,7 +17,6 @@ from years.common import get_or_create_current_year
 from years.models import Year
 
 from xml.dom.minidom import parse
-from optparse import make_option
 import sys
 import random
 import string
@@ -39,11 +38,10 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('--year',
-                action='store',
-                dest='year',
-                default=None,
-                help='Course start year')
-
+                            action='store',
+                            dest='year',
+                            default=None,
+                            help='Course start year')
 
     def handle(self, **options):
         year = options['year']
