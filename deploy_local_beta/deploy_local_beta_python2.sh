@@ -12,8 +12,15 @@ else
 #SETUP VIRTUALENV
 #################
 
+if test -e $ANYBETA_VENV_DIR
+then
+  ANYBETA_report "Remove old virtualenv"
+  rm -r $ANYBETA_VENV_DIR
+fi
+
 ANYBETA_report
 ANYBETA_report "Enable virtualenv"
+
 virtualenv -p $ANYBETA_PYTHON_PATH $ANYBETA_VENV_NAME
 . $ANYBETA_VENV_ACTIVATE
 
