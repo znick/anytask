@@ -75,6 +75,7 @@ function ANYBETA_cleanup() {
   unset ANYBETA_error
   unset ANYBETA_usage
   unset ANYBETA_activate
+  unset ANYBETA_cleanup
 }
 
 export -f ANYBETA_report ANYBETA_error ANYBETA_usage ANYBETA_activate
