@@ -21,7 +21,7 @@ done
 # CLEANUP
 #########
 
-# TODO: cleanup django project
+deactivate
 
 if test $ANYBETA_SAVE_VENV -eq 0
 then
