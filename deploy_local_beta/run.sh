@@ -14,7 +14,7 @@
 # SETTINGS
 ##########
 
-. ./deploy_local_eta/settings.sh
+. ./deploy_local_beta/settings.sh
 
 
 # PARSE ARGS
