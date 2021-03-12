@@ -21,6 +21,7 @@
 ############
 
 ANYBETA_correct_args=1
+ANYBETA_help_requested=0
 
 while (( "$#" )); do
   ANYBETA_PARAM=`echo $1 | awk -F= '{ print $1 }'`
@@ -34,7 +35,8 @@ while (( "$#" )); do
 
     -h|--help)
       ANYBETA_usage
-      shift
+      ANYBETA_help_requested=1
+      shift "$#"
       ;;
 
     *)
@@ -45,7 +47,10 @@ while (( "$#" )); do
   esac
 done
 
-if test $ANYBETA_correct_args = 1
+if test $ANYBETA_help_requested = 0
 then
-  . $ANYBETA_DEPLOY/deploy_local_beta.sh "$@"
+  if test $ANYBETA_correct_args = 1
+  then
+    . $ANYBETA_DEPLOY/deploy_local_beta.sh "$@"
+  fi
 fi

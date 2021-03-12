@@ -70,6 +70,7 @@ function ANYBETA_cleanup() {
   unset ANYBETA_ERROR_PREFIX
   unset ANYBETA_SAVE_VENV
   unset ANYBETA_correct_args
+  unset ANYBETA_help_requested
   
   unset ANYBETA_report
   unset ANYBETA_error
