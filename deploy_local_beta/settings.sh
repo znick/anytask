@@ -31,6 +31,10 @@ function ANYBETA_usage() {
   echo ""
 }
 
+function ANYBETA_activate() {
+  . $ANYBETA_VENV_ACTIVATE
+}
+
 export -f ANYBETA_report ANYBETA_error ANYBETA_usage
 
 

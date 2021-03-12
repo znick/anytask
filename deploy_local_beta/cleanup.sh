@@ -42,3 +42,4 @@ unset ANYBETA_correct_args
 unset ANYBETA_report
 unset ANYBETA_error
 unset ANYBETA_usage
+unset ANYBETA_activate

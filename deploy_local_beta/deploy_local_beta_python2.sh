@@ -16,7 +16,7 @@ ANYBETA_report
 ANYBETA_report "Enable virtualenv"
 
 virtualenv -p $ANYBETA_PYTHON_PATH $ANYBETA_VENV_NAME
-. $ANYBETA_VENV_ACTIVATE
+ANYBETA_activate
 
 
 # REQUIREMENTS
