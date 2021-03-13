@@ -16,7 +16,7 @@ function ANYBETA_report() {
 }
 
 function ANYBETA_error() {
-  echo -e "$ANYBETA_ERROR_PREFIX $1" 
+  echo -e "$ANYBETA_ERROR_PREFIX $1" >&2
 }
 
 function ANYBETA_usage() {
@@ -29,6 +29,19 @@ function ANYBETA_usage() {
   echo "  -p PYTHON_PATH, --python-path PYTHON_PATH"
   echo "                        Path to python interpreter"
   echo ""
+  echo "Should be run from repository root as \`. deploy_local_beta/run.sh\`"
+  echo ""
+  echo "Deploy local anytask beta: set up environment (settings.sh), init submodules, "
+  echo "enable virtualenv, create test db."
+  echo ""
+  echo "settings.sh generates functions ANYBETA_activate and ANYBETA_cleanup."
+  echo ""
+  echo "ANYBETA_activate activates virtualenv if one exists."
+  echo ""
+  echo "ANYBETA_cleanup deactivates virtualenv, unsets environmental variables."
+  echo "With flag -v|--rm-venv virtual environment will be removed."
+  echo ""
+  echo ""
 }
 
 function ANYBETA_activate() {
@@ -37,6 +50,7 @@ function ANYBETA_activate() {
 
 function ANYBETA_cleanup() {
   ANYBETA_SAVE_VENV=1
+  ANYBETA_correct_args=1
   
   while (( "$#" )); do
     case $1 in
@@ -44,41 +58,43 @@ function ANYBETA_cleanup() {
         ANYBETA_SAVE_VENV=0
         shift
         ;;
-      -h|--help)
-        echo "With flag -v|--rm-venv virtual env will be removed."
-        ;;
       *)
         echo "Error: unknown parameter $1"
+        shift
+        ANYBETA_correct_args=0
         ;;
     esac
   done
 
-  deactivate
-
-  if test $ANYBETA_SAVE_VENV -eq 0
+  if test $ANYBETA_correct_args = 1
   then
-    rm -r $ANYBETA_VENV_DIR
-    unset ANYBETA_VENV_DIR
-  fi
+    deactivate
 
-  unset ANYBETA_ROOT
-  unset ANYBETA_DEPLOY
-  unset ANYBETA_PYTHON_PATH
-  unset ANYBETA_VENV_NAME
-  unset ANYBETA_VENV_ACTIVATE
-  unset ANYBETA_REPORT_PREFIX
-  unset ANYBETA_ERROR_PREFIX
-  unset ANYBETA_SAVE_VENV
-  unset ANYBETA_correct_args
-  unset ANYBETA_help_requested
-  
-  unset ANYBETA_report
-  unset ANYBETA_error
-  unset ANYBETA_usage
-  unset ANYBETA_activate
-  unset ANYBETA_cleanup
+    if test $ANYBETA_SAVE_VENV -eq 0
+    then
+      rm -r $ANYBETA_VENV_DIR
+      unset ANYBETA_VENV_DIR
+    fi
+
+    unset ANYBETA_ROOT
+    unset ANYBETA_DEPLOY
+    unset ANYBETA_PYTHON_PATH
+    unset ANYBETA_VENV_NAME
+    unset ANYBETA_VENV_ACTIVATE
+    unset ANYBETA_REPORT_PREFIX
+    unset ANYBETA_ERROR_PREFIX
+    unset ANYBETA_SAVE_VENV
+    unset ANYBETA_correct_args
+    unset ANYBETA_help_requested
+    
+    unset ANYBETA_report
+    unset ANYBETA_error
+    unset ANYBETA_usage
+    unset ANYBETA_activate
+    unset ANYBETA_cleanup
+  fi
 }
 
-export -f ANYBETA_report ANYBETA_error ANYBETA_usage ANYBETA_activate
+export -f ANYBETA_report ANYBETA_error ANYBETA_usage ANYBETA_activate ANYBETA_cleanup
 
 
