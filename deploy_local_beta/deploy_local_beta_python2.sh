@@ -34,7 +34,6 @@ pip install -r requirements_local.txt
 ANYBETA_report
 ANYBETA_report "Manage django project"
 python setup.py develop
-python ./anytask/manage.py migrate --noinput
 
 
 # CREATE DB
@@ -42,13 +41,11 @@ python ./anytask/manage.py migrate --noinput
 
 ANYBETA_report
 ANYBETA_report "Create test database"
-if test -e ./anytask/sqlite3.db
-then
-  rm ./anytask/sqlite3.db
-fi
-./anytask/generate_test_db.sh
-./anytask/manage.py create_test_data.sh
+$ANYBETA_DEPLOY/generate_test_db.sh
+$ANYBETA_ROOT/anytask/manage.py create_test_data
 
-
+ANYBETA_report
+ANYBETA_report "Deploy completed!"
+ANYBETA_report "You can now start django server using ${ANYBETA_ROOT}/anytask/manage.py runserver"
 
 fi
