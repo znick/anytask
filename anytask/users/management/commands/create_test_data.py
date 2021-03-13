@@ -11,7 +11,6 @@ from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
 
 from years.models import Year
-from courses.models import Course, DefaultTeacher
 from schools.models import School
 from groups.models import Group
 
@@ -20,6 +19,7 @@ def parse_name(name):
     last_name, first_name = name.split(' ', 1)
     username = "_".join([first_name.lower(), last_name.lower()])
     return last_name, first_name, username
+
 
 def save_all(collection):
     for item in collection:
@@ -31,9 +31,9 @@ class Command(BaseCommand):
 
     def handle(self, **options):
         years_raw = [2019, 2020]
-        courses_raw = [{"name": "Charms",           "year": 0, 
+        courses_raw = [{"name": "Charms", "year": 0,
                         "groups": (0, 2)},
-                       {"name": "Potions",          "year": 1,
+                       {"name": "Potions", "year": 1,
                         "groups": (1,)},
                        {"name": "Transfigurations", "year": 1,
                         "groups": (3,)}]
@@ -47,44 +47,43 @@ class Command(BaseCommand):
                       {"name": "Hersheba2020", "year": 1},
                       {"name": "Fourecks2019", "year": 0},
                       {"name": "Fourecks2020", "year": 1}]
-        students_raw = [{"name": "Sia Hyde"      , "group": 0},
-                        {"name": "Wasim Klein"   , "group": 0}, 
-                        {"name": "Ella Eastwood" , "group": 0}, 
-                        {"name": "Maha Wilkes"   , "group": 1}, 
-                        {"name": "Meg Sutherland", "group": 1}, 
-                        {"name": "Kya Parsons"   , "group": 1}, 
-                        {"name": "Ferne Huff"    , "group": 2}, 
-                        {"name": "Jethro Higgs"  , "group": 2}, 
-                        {"name": "Prince Knox"   , "group": 2}, 
-                        {"name": "Layla Schmitt" , "group": 3}, 
-                        {"name": "Darci Stark"   , "group": 3}, 
+        students_raw = [{"name": "Sia Hyde", "group": 0},
+                        {"name": "Wasim Klein", "group": 0},
+                        {"name": "Ella Eastwood", "group": 0},
+                        {"name": "Maha Wilkes", "group": 1},
+                        {"name": "Meg Sutherland", "group": 1},
+                        {"name": "Kya Parsons", "group": 1},
+                        {"name": "Ferne Huff", "group": 2},
+                        {"name": "Jethro Higgs", "group": 2},
+                        {"name": "Prince Knox", "group": 2},
+                        {"name": "Layla Schmitt", "group": 3},
+                        {"name": "Darci Stark", "group": 3},
                         {"name": "Ezmae Bradford", "group": 3}]
         teachers_raw = [{"name": "Eira Buckner", "courses": (0,)},
-                        {"name": "Paul Akhtar" , "courses": (1,)},
-                        {"name": "Kristi Todd" , "courses": (2,)}]
+                        {"name": "Paul Akhtar", "courses": (1,)},
+                        {"name": "Kristi Todd", "courses": (2,)}]
 
         years = [Year.objects.create(start_year=start_year)
-                for start_year in years_raw]
+                 for start_year in years_raw]
         save_all(years)
         print("Created years {}".format(years_raw))
 
-        courses = [Course.objects.create(name=course["name"], 
+        courses = [Course.objects.create(name=course["name"],
                                          year=years[course["year"]],
                                          is_active=True)
-                for course in courses_raw]
+                   for course in courses_raw]
         save_all(courses)
         print("Created courses {}".format(courses_raw))
 
-        schools = [School.objects.create(
-            name=school["name"], 
-            link=school["link"])
-            for school in schools_raw]
+        schools = [School.objects.create(name=school["name"], 
+                                         link=school["link"])
+                   for school in schools_raw]
         save_all(schools)
         print("Created schools {}".format(schools_raw))
 
         groups = [Group.objects.create(name=group["name"],
                                        year=years[group["year"]])
-            for group in groups_raw]
+                  for group in groups_raw]
         save_all(groups)
         print("Created groups {}".format(groups_raw))
 
