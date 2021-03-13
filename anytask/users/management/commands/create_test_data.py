@@ -13,6 +13,7 @@ from django.contrib.auth.models import User
 from years.models import Year
 from schools.models import School
 from groups.models import Group
+from course.models import Course
 
 
 def parse_name(name):
@@ -75,7 +76,7 @@ class Command(BaseCommand):
         save_all(courses)
         print("Created courses {}".format(courses_raw))
 
-        schools = [School.objects.create(name=school["name"], 
+        schools = [School.objects.create(name=school["name"],
                                          link=school["link"])
                    for school in schools_raw]
         save_all(schools)
@@ -126,4 +127,3 @@ class Command(BaseCommand):
                 course = courses[course_id]
                 course.teachers.add(user)
         print("Set teachers")
-
