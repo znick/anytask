@@ -46,6 +46,6 @@ $ANYBETA_ROOT/anytask/manage.py create_test_data
 
 ANYBETA_report
 ANYBETA_report "Deploy completed!"
-ANYBETA_report "You can now start django server using ${ANYBETA_ROOT}/anytask/manage.py runserver"
+ANYBETA_report "You can now start django server using \`manage.py runserver\`"
 
 fi
