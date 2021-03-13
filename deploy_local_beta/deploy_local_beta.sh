@@ -8,36 +8,24 @@ then
   echo "Execute \`. deploy_local_beta/run.sh\` from repository root instead."
 else
 
+  # GIT SUBMODULES
+  ################
 
-  # CHECK PYTHON PATH
-  ###################
+  ANYBETA_report
+  ANYBETA_report "Init submodules"
+  git submodule init
+  git submodule update
 
-#  if ! test -e $ANYBETA_PYTHON_PATH
-#  then 
-#    ANYBETA_error "Bad python path: $ANYBETA_PYTHON_PATH"
-#  else
+  # CHOOSE RIGHT VERSION
+  ######################
 
+  ANYBETA_PYTHON_VERSION_CHECK="from __future__ import print_function; import sys; print(int(sys.version_info < (3, 3)))"
 
-    # CLONE REPOSITORY
-    ##################
-
-    ANYBETA_report
-    ANYBETA_report "Init submodules"
-    git submodule init
-    git submodule update
-
-
-    # CHOOSE RIGHT VERSION
-    ######################
-
-    ANYBETA_PYTHON_VERSION_CHECK="from __future__ import print_function; import sys; print(int(sys.version_info < (3, 3)))"
-
-    if test `$ANYBETA_PYTHON_PATH -c "$ANYBETA_PYTHON_VERSION_CHECK"` -eq 1
-    then 
-      . $ANYBETA_DEPLOY/deploy_local_beta_python2.sh
-    else
-      . $ANYBETA_DEPLOY/deploy_local_beta_python3.sh
-    fi
-
+  if test `$ANYBETA_PYTHON_PATH -c "$ANYBETA_PYTHON_VERSION_CHECK"` -eq 1
+  then 
+    . $ANYBETA_DEPLOY/deploy_local_beta_python2.sh
+  else
+    . $ANYBETA_DEPLOY/deploy_local_beta_python3.sh
+  fi
 
 fi
