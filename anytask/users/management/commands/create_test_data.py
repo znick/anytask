@@ -8,96 +8,123 @@ contains the actual logic for determining which accounts are deleted.
 """
 
 from django.core.management.base import BaseCommand
-#from django.contrib.auth.models import User
+from django.contrib.auth.models import User
 
-#from groups.models import Group
-#from courses.models import Course
-#from schools.models import School
-#from years.common import get_or_create_current_year
-#from years.models import Year
+from years.models import Year
+from courses.models import Course, DefaultTeacher
+from schools.models import School
+from groups.models import Group
 
-#from xml.dom.minidom import parse
-#import sys
-#import random
-#import string
+
+def parse_name(name):
+    last_name, first_name = name.split(' ', 1)
+    username = "_".join([first_name.lower(), last_name.lower()])
+    return last_name, first_name, username
+
+def save_all(collection):
+    for item in collection:
+        item.save()
 
 
 class Command(BaseCommand):
     help = "Creating test database."
 
-    # FIXME: is it really useful??
-    def add_argument(self, parser):
-        parser.add_argument()
-
     def handle(self, **options):
-        pass
+        years_raw = [2019, 2020]
+        courses_raw = [{"name": "Charms",           "year": 0, 
+                        "groups": (0, 2)},
+                       {"name": "Potions",          "year": 1,
+                        "groups": (1,)},
+                       {"name": "Transfigurations", "year": 1,
+                        "groups": (3,)}]
+        schools_raw = [{"name": "High School of Hersheba",
+                        "link": "hersheba",
+                        "courses": (0, 1)},
+                       {"name": "Fourecks University",
+                        "link": "fourecks",
+                        "courses": (0, 2)}]
+        groups_raw = [{"name": "Hersheba2019", "year": 0},
+                      {"name": "Hersheba2020", "year": 1},
+                      {"name": "Fourecks2019", "year": 0},
+                      {"name": "Fourecks2020", "year": 1}]
+        students_raw = [{"name": "Sia Hyde"      , "group": 0},
+                        {"name": "Wasim Klein"   , "group": 0}, 
+                        {"name": "Ella Eastwood" , "group": 0}, 
+                        {"name": "Maha Wilkes"   , "group": 1}, 
+                        {"name": "Meg Sutherland", "group": 1}, 
+                        {"name": "Kya Parsons"   , "group": 1}, 
+                        {"name": "Ferne Huff"    , "group": 2}, 
+                        {"name": "Jethro Higgs"  , "group": 2}, 
+                        {"name": "Prince Knox"   , "group": 2}, 
+                        {"name": "Layla Schmitt" , "group": 3}, 
+                        {"name": "Darci Stark"   , "group": 3}, 
+                        {"name": "Ezmae Bradford", "group": 3}]
+        teachers_raw = [{"name": "Eira Buckner", "courses": (0,)},
+                        {"name": "Paul Akhtar" , "courses": (1,)},
+                        {"name": "Kristi Todd" , "courses": (2,)}]
 
+        years = [Year.objects.create(start_year=start_year)
+                for start_year in years_raw]
+        save_all(years)
+        print("Created years {}".format(years_raw))
 
+        courses = [Course.objects.create(name=course["name"], 
+                                         year=years[course["year"]],
+                                         is_active=True)
+                for course in courses_raw]
+        save_all(courses)
+        print("Created courses {}".format(courses_raw))
 
+        schools = [School.objects.create(
+            name=school["name"], 
+            link=school["link"])
+            for school in schools_raw]
+        save_all(schools)
+        print("Created schools {}".format(schools_raw))
 
+        groups = [Group.objects.create(name=group["name"],
+                                       year=years[group["year"]])
+            for group in groups_raw]
+        save_all(groups)
+        print("Created groups {}".format(groups_raw))
 
-def get_users_from_cs_xml(cs_xml_fn):
-    doc = parse(cs_xml_fn)
-    for student_el in doc.getElementsByTagName("student"):
-        student = {
-            'login': student_el.getAttribute('login'),
-            'name': student_el.getAttribute('name'),
-            'grp': student_el.getAttribute('grp'),
-        }
-        yield student
+        students = []
+        teachers = []
+        for user_raw in students_raw + teachers_raw:
+            last_name, first_name, username = parse_name(user_raw["name"])
+            user = User.objects.create(username=username)
+            user.last_name = last_name
+            user.first_name = first_name
+            user.set_password(username)
 
+            if user_raw in students_raw:
+                students.append(user)
+            else:
+                teachers.append(user)
+        save_all(students)
+        save_all(teachers)
+        print("Created users")
 
-class Command(BaseCommand):
-    help = "Creating shad users, python course, shad school."
+        for school_id, school in enumerate(schools_raw):
+            for course_id in school["courses"]:
+                schools[school_id].courses.add(courses[course_id])
+        print("Bound schools and courses")
 
-    def add_arguments(self, parser):
-        parser.add_argument('--year',
-                            action='store',
-                            dest='year',
-                            default=None,
-                            help='Course start year')
+        for course_id, course in enumerate(courses_raw):
+            for group_id in course["groups"]:
+                courses[course_id].groups.add(groups[group_id])
+        print("Bound courses and groups")
 
-    def handle(self, **options):
-        year = options['year']
-        if year:
-            year = int(year)
-            year, _ = Year.objects.get_or_create(start_year=year)
-
-        if not year:
-            year = get_or_create_current_year()
-
-        school, created = School.objects.get_or_create(link='shad', name='School of Data Analysis')
-        if created:
-            print "WARNING: NEW School created!"
-            school.save()
-
-        course, created = Course.objects.get_or_create(year=year, name='Python')
-        if created:
-            print "WARNING: NEW Course created!"
-            course.is_active = True
-            course.contest_integrated = True
-            course.save()
-
-        school.courses.add(course)
-
-        for student in get_users_from_cs_xml(sys.stdin):
-            last_name, first_name = student['name'].split(' ', 1)
-            username = student['login']
-            group_name = student['grp']
-
-            try:
-                user = User.objects.get(username__iexact=username)
-            except User.DoesNotExist:
-                print "Creating new user! : {0}".format(username.encode("utf-8"))
-                user = User.objects.create(username=username)
-                user.last_name = last_name
-                user.first_name = first_name
-
-            if (user.password == "") or (not user.has_usable_password()):
-                user.set_password(''.join(random.choice(string.letters) for i in xrange(20)))
-                user.save()
-
-            group, _ = Group.objects.get_or_create(year=year, name=group_name)
-            course.groups.add(group)
+        for student_id, student in enumerate(students_raw):
+            user = students[student_id]
+            group = groups[student["group"]]
             group.students.add(user)
-            print "{0} {1} {2}".format(user, user.get_full_name().encode("utf-8"), group)
+        print("Bound students and groups")
+
+        for teacher_id, teacher in enumerate(teachers_raw):
+            user = teachers[teacher_id]
+            for course_id in teacher["courses"]:
+                course = courses[course_id]
+                course.teachers.add(user)
+        print("Set teachers")
+

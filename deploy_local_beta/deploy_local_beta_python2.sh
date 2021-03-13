@@ -35,6 +35,20 @@ ANYBETA_report
 ANYBETA_report "Manage django project"
 python setup.py develop
 python ./anytask/manage.py migrate --noinput
-#./anytask/manage.py runserver 127.0.0.1:8019 -v 3 --traceback
+
+
+# CREATE DB
+###########
+
+ANYBETA_report
+ANYBETA_report "Create test database"
+if test -e ./anytask/sqlite3.db
+then
+  rm ./anytask/sqlite3.db
+fi
+./anytask/generate_test_db.sh
+./anytask/manage.py create_test_data.sh
+
+
 
 fi
