@@ -19,12 +19,21 @@ function ANYBETA_error() {
   echo -e "$ANYBETA_ERROR_PREFIX $1" >&2
 }
 
+function ANYBETA_crash_on_error() {
+  exit_code="$?"
+  if ! test $exit_code = 0
+  then
+    exit $exit_code
+  fi
+  unset exit_code
+}
+
 function ANYBETA_usage() {
-  echo "usage: deploy_local_beta.sh [-h] [-p PYTHON_PATH]"
+  echo "usage: deploy_local_beta.sh [-h] [-p=PYTHON_PATH]"
   echo ""
   echo "optional arguments:"
   echo "  -h, --help            show this help message and exit"
-  echo "  -p PYTHON_PATH, --python-path PYTHON_PATH"
+  echo "  -p=PYTHON_PATH, --python-path=PYTHON_PATH"
   echo "                        Path to python interpreter"
   echo ""
   echo "Should be run from repository root as \`. deploy_local_beta/run.sh\`"
@@ -82,17 +91,17 @@ function ANYBETA_cleanup() {
     unset ANYBETA_REPORT_PREFIX
     unset ANYBETA_ERROR_PREFIX
     unset ANYBETA_SAVE_VENV
-    unset ANYBETA_correct_args
-    unset ANYBETA_help_requested
     
     unset ANYBETA_report
     unset ANYBETA_error
+    unset ANYBETA_crash_on_error
     unset ANYBETA_usage
     unset ANYBETA_activate
     unset ANYBETA_cleanup
   fi
 }
 
-export -f ANYBETA_report ANYBETA_error ANYBETA_usage ANYBETA_activate ANYBETA_cleanup
+export -f ANYBETA_report ANYBETA_error ANYBETA_crash_on_error \
+  ANYBETA_usage ANYBETA_activate ANYBETA_cleanup
 
 

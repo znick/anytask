@@ -20,9 +20,6 @@
 # PARSE ARGS
 ############
 
-ANYBETA_correct_args=1
-ANYBETA_help_requested=0
-
 while (( "$#" )); do
   ANYBETA_PARAM=`echo $1 | awk -F= '{ print $1 }'`
   ANYBETA_VALUE=`echo $1 | awk -F= '{ print $2 }'`
@@ -35,22 +32,18 @@ while (( "$#" )); do
 
     -h|--help)
       ANYBETA_usage
-      ANYBETA_help_requested=1
-      shift "$#"
+      exit 0
       ;;
 
     *)
       ANYBETA_error "Error: unknown parameter $ANYBETA_PARAM"
-      shift
-      ANYBETA_correct_args=0
+      exit 1
       ;;
   esac
 done
 
-if test $ANYBETA_help_requested = 0
-then
-  if test $ANYBETA_correct_args = 1
-  then
-    . $ANYBETA_DEPLOY/deploy_local_beta.sh "$@"
-  fi
-fi
+
+$ANYBETA_DEPLOY/deploy_local_beta.sh "$@"
+ANYBETA_crash_on_error
+
+ANYBETA_activate
