@@ -20,12 +20,10 @@ function ANYBETA_error() {
 }
 
 function ANYBETA_usage() {
-  echo "usage: deploy_local_beta.sh [-h] [-w WORKDIR] [-p PYTHON_PATH]"
+  echo "usage: deploy_local_beta.sh [-h] [-p PYTHON_PATH]"
   echo ""
   echo "optional arguments:"
   echo "  -h, --help            show this help message and exit"
-  echo "  -w WORKDIR, --workdir WORKDIR"
-  echo "                        Deploy working directory"
   echo "  -p PYTHON_PATH, --python-path PYTHON_PATH"
   echo "                        Path to python interpreter"
   echo ""
