@@ -1,6 +1,10 @@
-#!/bin/bash
+# This file must be used with "source deploy_local_beta/run.sh" *from bash*
+# you cannot run it directly
 
-# Execute from anytask root
+if [ "${BASH_SOURCE-}" = "$0" ]; then
+    echo "You must source this script: \$ source $0" >&2
+    exit 33
+fi
 
 
 #TODO: check if exist:

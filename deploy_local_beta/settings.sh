@@ -1,3 +1,12 @@
+# This file must be used with "source deploy_local_beta/settings.sh" *from bash*
+# you cannot run it directly
+
+if [ "${BASH_SOURCE-}" = "$0" ]; then
+    echo "You must source this script: \$ source $0" >&2
+    exit 33
+fi
+
+
 export ANYBETA_ROOT=$PWD
 export ANYBETA_DEPLOY="$PWD/deploy_local_beta"
 
