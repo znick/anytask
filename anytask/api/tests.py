@@ -333,7 +333,7 @@ class ApiTest(TestCase):
 
         self.assertDictEqual(issue, response_data)
 
-        response = self.client.get(url)
+        response = self.client.get(url)  # FIXME fails with urls external to testserver
         self.assertEqual('print "_failed_"', ''.join(response.streaming_content))
 
     def test_get_issue_no_access(self):

@@ -4,6 +4,7 @@ from django.db import models
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
+from django.core.files.storage import default_storage
 
 from django.contrib.auth.models import User
 from anycontest.common import FakeResponse, escape, user_register_to_contest
@@ -102,7 +103,7 @@ class ContestSubmission(models.Model):
                 return False
 
             for i in range(3):
-                with open(os.path.join(settings.MEDIA_ROOT, file.file.name), 'rb') as f:
+                with default_storage.open(file.file.name, 'rb') as f:
                     files = {'file': f}
                     submit_req = requests.post(settings.CONTEST_API_URL + 'submit',
                                                data={'compilerId': compiler_id,

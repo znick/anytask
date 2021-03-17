@@ -1,6 +1,7 @@
 from django.core.files.storage import FileSystemStorage, Storage
 from storages.backends.s3boto3 import S3Boto3Storage
-
+from django.conf import settings
+from anyrb import unpacker
 
 class S3OverlayStorage(Storage):
     """
@@ -8,19 +9,52 @@ class S3OverlayStorage(Storage):
     Delegate other paths to local storage
     No extra fields required in models
     See `_dispatch` method
+
+    Some file types (ipynb, archives) currently must be stored locally
+    See `_is_local_only` method
+
+    S3Boto3Storage ignores ("expected behaviour") MEDIA_URL from settings, put in path manually
+    TODO leave a link to issue
+    See `_adjust_path` method
     """
 
     S3_STORED_MAGIC = 'S3_STORED_MAGIC'
+    S3_STORED_PREFIX = S3_STORED_MAGIC + settings.MEDIA_URL
 
     def __init__(self, *args, **kwargs):
         self.local_storage = FileSystemStorage(*args, **kwargs)
         self.s3_storage = S3Boto3Storage(*args, **kwargs)
 
-    def _dispatch(self, name, method_name, *args, **kwargs):
-        if name.lstrip('/').startswith(self.S3_STORED_MAGIC) and self.s3_storage:
-            method = getattr(self.s3_storage, method_name)
+    @staticmethod
+    def _is_local_only(name):
+
+        if name.endswith('.ipynb'):
+            return True
+        elif unpacker.get_archiver(name) is not None:
+            return True
         else:
-            method = getattr(self.local_storage, method_name)
+            return False
+
+    def _adjust_path(self, name, storage):
+        """/S3_STORED_MAGIC/files/solution.py -> /S3_STORED_MAGIC/media/files/solution.py"""
+        S3_SKIP_LEN = len(self.S3_STORED_MAGIC + '/')
+        if storage is self.local_storage:
+            return name
+        else:
+            return '/'.join([
+                self.S3_STORED_MAGIC, settings.MEDIA_URL, name[S3_SKIP_LEN:]
+            ])
+
+    def _dispatch(self, name, method_name, *args, **kwargs):
+        if self.s3_storage is None:
+            storage = self.local_storage
+        elif self._is_local_only(name):
+            storage = self.local_storage
+        elif name.lstrip('/').startswith(self.S3_STORED_MAGIC + '/'):
+           storage = self.s3_storage
+        else:
+           storage = self.local_storage
+        method = getattr(storage, method_name)
         return method(name, *args, **kwargs)
 
     def accessed_time(self, name):
