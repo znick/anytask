@@ -1,3 +1,4 @@
+setuptools-scm==5.0.2     # breaks python2 support
 argparse==1.4.0           # via dateutils
 backports-abc==0.5        # via tornado
 backports.shutil-get-terminal-size==1.0.0  # via ipython
