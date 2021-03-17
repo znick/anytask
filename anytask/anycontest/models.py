@@ -10,7 +10,6 @@ from django.contrib.auth.models import User
 from anycontest.common import FakeResponse, escape, user_register_to_contest
 
 import requests
-import os
 import logging
 import time
 

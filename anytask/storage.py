@@ -3,6 +3,7 @@ from storages.backends.s3boto3 import S3Boto3Storage
 from django.conf import settings
 from anyrb import unpacker
 
+
 class S3OverlayStorage(Storage):
     """
     Delegate paths starting with S3 magic to S3 storage
@@ -51,9 +52,9 @@ class S3OverlayStorage(Storage):
         elif self._is_local_only(name):
             storage = self.local_storage
         elif name.lstrip('/').startswith(self.S3_STORED_MAGIC + '/'):
-           storage = self.s3_storage
+            storage = self.s3_storage
         else:
-           storage = self.local_storage
+            storage = self.local_storage
         method = getattr(storage, method_name)
         return method(name, *args, **kwargs)
 
