@@ -6,10 +6,12 @@ on: [push, pull_request]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
         with:
           submodules: true
       - name: Deploy
-        run: source deploy_local_beta/run.sh
+        run: |
+          chmod +x deploy_local_beta/run.sh
+          source deploy_local_beta/run.sh --python-path=python2
