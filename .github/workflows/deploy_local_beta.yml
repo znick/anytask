@@ -12,4 +12,4 @@ jobs:
         with:
           submodules: true
       - name: Deploy
-        run: source loy_local_beta/run.sh
+        run: source deploy_local_beta/run.sh
