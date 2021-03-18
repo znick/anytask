@@ -50,7 +50,7 @@ pandocfilters==1.4.2      # via nbconvert
 pathlib2==2.3.5           # via ipython, pickleshare
 pexpect==4.6.0            # via ipython
 pickleshare==0.7.4        # via ipython
-pillow==6.2.2
+pillow==8.1.1
 premailer==3.0.0          # via django-premailer
 prompt-toolkit==1.0.15    # via ipython
 psycopg2==2.7.5
