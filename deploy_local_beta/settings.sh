@@ -96,10 +96,12 @@ function ANYBETA_cleanup() {
     unset ANYBETA_DEPLOY
     unset ANYBETA_PYTHON_PATH
     unset ANYBETA_VENV_NAME
+    unset ANYBETA_VENV_DIR
     unset ANYBETA_VENV_ACTIVATE
     unset ANYBETA_REPORT_PREFIX
     unset ANYBETA_ERROR_PREFIX
     unset ANYBETA_SAVE_VENV
+    unset ANYBETA_correct_args
     
     unset ANYBETA_report
     unset ANYBETA_error
