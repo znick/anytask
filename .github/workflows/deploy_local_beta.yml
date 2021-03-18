@@ -13,6 +13,6 @@ jobs:
           submodules: true
       - name: Deploy
         run: |
-          apt-get --install virtualenv
+          apt-get install virtualenv
           chmod +x deploy_local_beta/run.sh
           source deploy_local_beta/run.sh --python-path=python2
