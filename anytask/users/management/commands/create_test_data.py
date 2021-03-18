@@ -13,7 +13,7 @@ from django.contrib.auth.models import User
 from years.models import Year
 from schools.models import School
 from groups.models import Group
-from course.models import Course
+from courses.models import Course
 
 
 def parse_name(name):
