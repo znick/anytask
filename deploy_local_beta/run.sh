@@ -48,6 +48,5 @@ done
 
 
 $ANYBETA_DEPLOY/deploy_local_beta.sh "$@"
-ANYBETA_crash_on_error
 
 ANYBETA_activate
