@@ -39,7 +39,6 @@ class CreateTest(TestCase):
         teachers = [User.objects.create(username='test_teachers', password='password')]
         groups = [Group.objects.create(name='name_groups', year=year)]
         group_with_extern = Group.objects.create(name='name_group_with_extern', year=year)
-        issue_fields = [IssueField.objects.create(name='name_issue_fields')]
         filename_extensions = [FilenameExtension.objects.create(name='name_filename_extensions')]
         mark_system = CourseMarkSystem.objects.create(name='name_mark_system')
 
@@ -52,7 +51,6 @@ class CreateTest(TestCase):
         course.save()
         course.teachers = teachers
         course.groups = groups
-        course.issue_fields.set(issue_fields, clear=True)
         # course.contest_integrated = True
         # course.send_rb_and_contest_together = True
         # course.rb_integrated = True

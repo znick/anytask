@@ -13,6 +13,14 @@
     </script>
 {% endblock %}
 
+{% block navbar %}
+    <ul class="nav navbar-nav">
+        <li class="nav-item">
+            <a class="nav-link" href="{% url "index.views.archive_index" %}">{% trans "arhiv" %}</a>
+        </li>
+    </ul>
+{% endblock navbar %}
+
 {% block content %}
 
     {% index_message %}
