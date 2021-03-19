@@ -135,7 +135,7 @@ def issue_page(request, issue_id):
     if request.method == 'POST':
         if 'contest_rejudge' in request.POST:
             contest_rejudge(issue)
-            return HttpResponseRedirect('')
+            return HttpResponseRedirect(request.path_info)
 
         form_name = request.POST['form_name']
 
@@ -179,7 +179,7 @@ def issue_page(request, issue_id):
                                          {'files': [], 'comment': request.POST['comment_verdict']},
                                          request.user)
 
-                    return HttpResponseRedirect('')
+                    return HttpResponseRedirect(request.path_info)
 
     prepare_info_fields(issue_fields, request, issue)
 
