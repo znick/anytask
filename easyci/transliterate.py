@@ -54,7 +54,9 @@ ru_ascii_translit_map = {}
 ru_ascii_translit_map.update(ascii_translit_map)
 ru_ascii_translit_map.update(ru_lang_translit_map)
 
-do_skip_char = lambda c: ''
+
+def do_skip_char(c):
+    return ''
 
 
 def transliterate(source_str, translit_map=ru_ascii_translit_map,

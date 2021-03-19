@@ -77,7 +77,7 @@ def proccess_task(qtask):
         prepare_dir(qtask, dirname)
 
         run_cmd = qtask.course["run_cmd"] + [qtask.task["title"], "/task_dir/task"]
-        #run_cmd = ["ls", "/task_dir/task"]
+        # run_cmd = ["ls", "/task_dir/task"]
         ret = docker.execute(run_cmd, cwd="/task_dir/git", timeout=qtask.course["timeout"], user='root',
                              network='bridge', image=qtask.course["docker_image"],
                              volumes=["{}:/task_dir:ro".format(os.path.abspath(dirname))])
@@ -100,11 +100,11 @@ def proccess_task(qtask):
             output += u"\nTIMEOUT ({} sec)".format(qtask.course["timeout"])
 
         comment = u"[id:{}] Check DONE!<br>\nSubmited on {}<br>\n<pre>{}</pre>\n".format(qtask.id,
-                                                                                     qtask.event["timestamp"],
-                                                                                     output)
+                                                                                         qtask.event["timestamp"],
+                                                                                         output)
 
         response = requests.post("{}/api/v1/issue/{}/add_comment".format(qtask.host, qtask.issue["id"]),
-                                 auth=qtask.auth, data={"comment":comment.encode("utf-8")}, timeout=REQUEST_TIMEOUT)
+                                 auth=qtask.auth, data={"comment": comment.encode("utf-8")}, timeout=REQUEST_TIMEOUT)
         response.raise_for_status()
         logging.info(" == Task %d DONE!, URL: %s/issue/%d", qtask.id, qtask.host, qtask.issue["id"])
         return qtask
@@ -121,6 +121,8 @@ def get_auth(passwords, host):
 
 
 DONE_MESSAGE_RE = re.compile(r'\[id:(\d+)\] Check DONE!')
+
+
 def make_queue(config, passwords):
     queue = OrderedDict()
     for course in config:
@@ -179,6 +181,7 @@ def main():
         logging.info(" == Parralel Task %d DONE!, URL: %s/issue/%d", qtask.id, qtask.host, qtask.issue["id"])
 
     logging.info("All DONE!")
+
 
 if __name__ == "__main__":
     main()
