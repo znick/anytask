@@ -1,17 +1,34 @@
-FROM python:2.7
+# https://testdriven.io/blog/dockerizing-django-with-postgres-gunicorn-and-nginx/
 
-EXPOSE 8000
+# pull official base image
+FROM python:2.7-alpine
 
-WORKDIR /app
+# set work directory
+WORKDIR /usr/src/app
 
-RUN apt update
-RUN apt install -y gettext curl
+# set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
 
-ADD requirements.txt /app/requirements.txt
+# install dependencies
+RUN pip install --upgrade pip
+# install psycopg2 dependencies
+RUN apk update \
+    && apk add postgresql-dev gcc python-dev musl-dev \
+        libxml2-dev libxslt-dev \
+        freetype-dev libpng-dev libjpeg-turbo-dev \
+        build-base libzmq zeromq-dev
+
+# RUN apt update
+COPY ./requirements.txt .
 RUN pip install -r requirements.txt
-ADD anytask /app/anytask
-ADD dependencies /app/dependencies
-ADD configs/docker/settings_local.py /app/anytask/settings_local.py
-ADD configs/docker/initial_migrate.sh /app/initial_migrate.sh
 
-RUN python anytask/manage.py compilemessages
+# copy entrypoint.sh
+COPY ./entrypoint.sh .
+
+# copy project
+COPY . .
+
+# run entrypoint.sh
+ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
+
