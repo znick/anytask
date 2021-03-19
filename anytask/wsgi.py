@@ -17,7 +17,7 @@ import os
 import sys
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "anytask.settings_production")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "anytask.settings")
 
 sys.path.append('/home/anytask/anytask/src/anytask')
 # This application object is used by any WSGI server configured to use this
