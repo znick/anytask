@@ -16,18 +16,15 @@ from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from issues.model_issue_field import IssueField
 from issues.model_issue_status import IssueStatus
-from storage import S3OverlayStorage
+from storage import maybe_s3_adjust_path
 from tasks.models import Task
 from unidecode import unidecode
 from users.common import get_user_fullname, get_user_link
 
 
 def get_file_path(instance, filename):
-    non_s3_path = '/'.join(['files', str(uuid.uuid4()), filename])
-    if settings.STORAGE_USE_S3:
-        return '/'.join([S3OverlayStorage.S3_STORED_PREFIX, non_s3_path])
-    else:
-        return non_s3_path
+    relative_path = '/'.join(['files', str(uuid.uuid4()), filename])
+    return maybe_s3_adjust_path(relative_path)
 
 
 def normalize_decimal(number):
