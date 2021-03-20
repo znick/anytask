@@ -5,22 +5,19 @@ from anyrb import unpacker
 
 
 class S3OverlayStorage(Storage):
-    """
-    Delegate paths starting with S3 magic to S3 storage
+    """Delegate paths starting with S3 magic to S3 storage
     Delegate other paths to local storage
     No extra fields required in models
     See `_dispatch` method
 
     Some file types (ipynb, archives) currently must be stored locally
     See `_is_local_only` method
-
-    S3Boto3Storage ignores ("expected behaviour") MEDIA_URL from settings, put in path manually
-    TODO leave a link to issue
-    See `_adjust_path` method
     """
 
-    S3_STORED_MAGIC = 'S3_STORED_MAGIC'
+    S3_STORED_MAGIC = 'S3'
     S3_STORED_PREFIX = S3_STORED_MAGIC + settings.MEDIA_URL
+    _S3_SKIP_LEN = len(S3_STORED_MAGIC + '/')
+    _MEDIA_SKIP_LEN = len(settings.MEDIA_URL + '/')
 
     def __init__(self, *args, **kwargs):
         self.local_storage = FileSystemStorage(*args, **kwargs)
@@ -37,14 +34,19 @@ class S3OverlayStorage(Storage):
             return False
 
     def _adjust_path(self, name, storage):
-        """/S3_STORED_MAGIC/files/solution.py -> /S3_STORED_MAGIC/media/files/solution.py"""
-        S3_SKIP_LEN = len(self.S3_STORED_MAGIC + '/')
+        """S3Boto3Storage ignores ("expected behaviour") MEDIA_URL from settings, so we
+        add it to S3_STORAGE_PREFIX manually
+        TODO leave a link to issue
+
+        /<S3_STORED_MAGIC>/rel_path -> /<S3_STORED_MAGIC>/<MEDIA_URL>/rel_path
+        """
         if storage is self.local_storage:
             return name
-        else:
-            return '/'.join([
-                self.S3_STORED_MAGIC, settings.MEDIA_URL, name[S3_SKIP_LEN:]
-            ])
+        if not name.startswith(self.S3_STORED_PREFIX):
+            raise ValueError("S3 path not starting with S3 prefix")
+        return '/'.join([
+            self.S3_STORED_MAGIC, settings.MEDIA_URL, name[self._S3_SKIP_LEN:]
+        ])
 
     def _dispatch(self, name, method_name, *args, **kwargs):
         if self.s3_storage is None:
@@ -57,6 +59,13 @@ class S3OverlayStorage(Storage):
             storage = self.local_storage
         method = getattr(storage, method_name)
         return method(name, *args, **kwargs)
+
+    @classmethod
+    def append_s3_prefix(cls, relative_path):
+        """Adjust relative path so that it maps to S3"""
+        if relative_path.startswith(cls.S3_STORED_MAGIC):
+            raise ValueError("Path already starts with S3 magic, must be relative")
+        return '/'.join([cls.S3_STORED_PREFIX, relative_path])
 
     def accessed_time(self, name):
         return self._dispatch(name, 'accessed_time')
@@ -100,6 +109,9 @@ class S3OverlayStorage(Storage):
                               mode=mode)
 
     def path(self, name):
+        """May fail when called with S3 path: S3Boto3Storage doesn't implement this
+        method
+        """
         return self._dispatch(name, 'path')
 
     def save(self, name, content, max_length=None):
@@ -140,3 +152,11 @@ class OverwriteStorage(S3OverlayStorage):
             return name[:max_length]
         else:
             return name
+
+
+def maybe_s3_adjust_path(relative_path):
+    """Append S3 path prefix if STORAGE_USE_S3"""
+    if settings.STORAGE_USE_S3:
+        return S3OverlayStorage.append_s3_prefix(relative_path)
+    else:
+        return relative_path
