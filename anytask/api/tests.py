@@ -3,9 +3,12 @@ from __future__ import unicode_literals
 import base64
 import json
 
+import requests
+
 from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.urlresolvers import reverse
+from django.conf import settings
 from django.test import TestCase
 
 from courses.models import Course
@@ -333,8 +336,15 @@ class ApiTest(TestCase):
 
         self.assertDictEqual(issue, response_data)
 
-        response = self.client.get(url)  # FIXME fails with urls external to testserver
-        self.assertEqual('print "_failed_"', ''.join(response.streaming_content))
+        # Hack: requests.get can't perform a direct WSGI request to test server,
+        # and self.client can't actually connect to remote S3
+        if settings.STORAGE_USE_S3:
+            response = requests.get(url)
+            content = response.content
+        else:
+            response = self.client.get(url)
+            content = ''.join(response.streaming_content)
+        self.assertEqual('print "_failed_"', content)
 
     def test_get_issue_no_access(self):
         response = self._request(self.anytask, self.anytask_password,
