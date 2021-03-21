@@ -88,6 +88,7 @@ class CourseMarkSystem(models.Model):
     def __unicode__(self):
         return unicode(self.name)
 
+
 """
 class EasyCIParams(models.Model):
     host = models.CharField(max_length=191, db_index=False, null=False, blank=False)
@@ -102,6 +103,7 @@ class EasyCIParams(models.Model):
     class Meta:
         verbose_name = 'EasyCI'
         verbose_name_plural = 'EasyCI'"""
+
 
 class Course(models.Model):
     name = models.CharField(max_length=191, db_index=True, null=False, blank=False)

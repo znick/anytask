@@ -28,10 +28,10 @@ class StudentCourseMarkAdmin(admin.ModelAdmin):
 class MarkFieldAdmin(admin.ModelAdmin):
     list_display = ('name', 'name_int')
 
+
 admin.site.register(Course, CourseAdmin)
 admin.site.register(FilenameExtension)
 admin.site.register(DefaultTeacher, DefaultTeacherAdmin)
 admin.site.register(CourseMarkSystem, CourseMarkSystemAdmin)
 admin.site.register(MarkField, MarkFieldAdmin)
 admin.site.register(StudentCourseMark, StudentCourseMarkAdmin)
-
