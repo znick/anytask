@@ -15,3 +15,6 @@ echo 'from django.contrib.auth.models import User ; user=User.objects.get(userna
 ANYBETA_crash_on_error
 
 ANYBETA_report "Login: anytask\n Password: pass"
+
+$ANYBETA_ROOT/anytask/manage.py create_test_data
+ANYBETA_crash_on_error
