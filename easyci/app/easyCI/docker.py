@@ -4,7 +4,7 @@ from __future__ import nested_scopes, generators, division, absolute_import, \
 
 import logging
 from subprocess import Popen, PIPE
-from strings import get_random_string
+from app.easyCI.strings import get_random_string
 import io
 import threading
 import subprocess

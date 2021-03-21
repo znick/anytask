@@ -5,7 +5,7 @@ from __future__ import nested_scopes, generators, division, absolute_import, \
 import random
 import string
 
-from transliterate import ru_lang_translit_map, en_lang_translit_map, \
+from app.easyCI.transliterate import ru_lang_translit_map, en_lang_translit_map, \
     transliterate, do_skip_char
 
 __author__ = 'pahaz'

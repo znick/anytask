@@ -441,7 +441,7 @@ class Issue(models.Model):
         else:
             event.delete()
 
-        return
+        return event
 
     def set_teacher(self, groups=None, teacher=None, default=False, author=None):
         if default:
