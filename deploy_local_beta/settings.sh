@@ -101,6 +101,7 @@ function ANYBETA_cleanup() {
     unset ANYBETA_REPORT_PREFIX
     unset ANYBETA_ERROR_PREFIX
     unset ANYBETA_SAVE_VENV
+    unset ANYBETA_DEPLOY_FILES_DIR
     unset ANYBETA_correct_args
     
     unset ANYBETA_report

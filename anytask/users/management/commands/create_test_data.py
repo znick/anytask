@@ -15,7 +15,7 @@ from schools.models import School
 from groups.models import Group
 from courses.models import Course
 from tasks.models import Task
-from issues.models import Issue
+from issues.models import Issue, Event, IssueField
 
 
 def parse_name(name):
@@ -68,6 +68,11 @@ class Command(BaseCommand):
                         {"name": "Kristi Todd", "courses": (2,)}]
         tasks_raw = [{"title": "Charms | Task 1", "course": 0, "group": 0}]
         issues_raw = [{"student": 0, "task": 0}]
+
+#        files_prefix = "media/files/deploy_files/"
+#        files_raw = ["file1.py", "file2.txt"]
+        events_raw = [{"issue": 0, "author": 0, "field": "file"}]
+#                       "files": [{"url" : }]}]
 
         # Create object from raw data
 
@@ -122,6 +127,12 @@ class Command(BaseCommand):
                                        task=tasks[issue["task"]])
                  for issue in issues_raw]
         print("Created issues {}".format(issues_raw))
+
+        events = [Event.objects.create(issue=issues[event["issue"]],
+            author=(students + teachers)[event["author"]],
+            field=IssueField.objects.get(name=event["field"]))
+                 for event in events_raw]
+        print("Created events {}".format(events_raw))
 
         # Bind objects
 
