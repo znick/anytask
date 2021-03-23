@@ -19,19 +19,15 @@ class S3OverlayStorage(Storage):
     _S3_SKIP_LEN = len(S3_STORED_MAGIC + '/')
     _MEDIA_SKIP_LEN = len(settings.MEDIA_URL + '/')
 
+    IGNORED_EXTENSIONS = ['.ipynb'] + unpacker.get_supported_extensions()
+
     def __init__(self, *args, **kwargs):
         self.local_storage = FileSystemStorage(*args, **kwargs)
         self.s3_storage = S3Boto3Storage(*args, **kwargs)
 
-    @staticmethod
-    def _is_local_only(name):
-
-        if name.endswith('.ipynb'):
-            return True
-        elif unpacker.get_archiver(name) is not None:
-            return True
-        else:
-            return False
+    @classmethod
+    def _is_local_only(cls, name):
+        return any(map(name.endswith, cls.IGNORED_EXTENSIONS))
 
     def _adjust_path(self, name, storage):
         """S3Boto3Storage ignores ("expected behaviour") MEDIA_URL from settings, so we
@@ -53,12 +49,16 @@ class S3OverlayStorage(Storage):
             storage = self.local_storage
         elif self._is_local_only(name):
             storage = self.local_storage
-        elif name.lstrip('/').startswith(self.S3_STORED_MAGIC + '/'):
+        elif self.is_s3_stored(name):
             storage = self.s3_storage
         else:
             storage = self.local_storage
         method = getattr(storage, method_name)
         return method(name, *args, **kwargs)
+
+    @classmethod
+    def is_s3_stored(cls, name):
+        return name.lstrip('/').startswith(cls.S3_STORED_MAGIC + '/')
 
     @classmethod
     def append_s3_prefix(cls, relative_path):
