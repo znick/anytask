@@ -14,8 +14,17 @@ ANYBETA_crash_on_error
 echo 'from django.contrib.auth.models import User ; user=User.objects.get(username="anytask") ; user.set_password("pass") ; user.save() ; print "Password changed"' | $ANYBETA_ROOT/anytask/manage.py shell --plain
 ANYBETA_crash_on_error
 
+ANYBETA_report "root"
 ANYBETA_report "Login: anytask"
 ANYBETA_report "Password: pass"
+ANYBETA_report
+ANYBETA_report "student"
+ANYBETA_report "Login: hyde_sia"
+ANYBETA_report "Password: hyde_sia"
+ANYBETA_report
+ANYBETA_report "teacher"
+ANYBETA_report "Login: buckner_eira"
+ANYBETA_report "Password: buckner_eira"
 
 ANYBETA_DEPLOY_FILES_DIR=$ANYBETA_ROOT/anytask/media/files/deploy_files
 if ! test -d $ANYBETA_DEPLOY_FILES_DIR

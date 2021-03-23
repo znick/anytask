@@ -14,7 +14,7 @@ from years.models import Year
 from schools.models import School
 from groups.models import Group
 from courses.models import Course
-from tasks.models import Task
+from tasks.models import Task, TaskGroupRelations
 from issues.models import Issue, Event, IssueField
 
 
@@ -66,7 +66,8 @@ class Command(BaseCommand):
         teachers_raw = [{"name": "Eira Buckner", "courses": (0,)},
                         {"name": "Paul Akhtar", "courses": (1,)},
                         {"name": "Kristi Todd", "courses": (2,)}]
-        tasks_raw = [{"title": "Charms | Task 1", "course": 0, "group": 0}]
+        tasks_raw = [{"title": "Charms | Task 1", "course": 0, 
+                      "groups": (0,), "updated_by": 0}]
         issues_raw = [{"student": 0, "task": 0}]
 
 #        files_prefix = "media/files/deploy_files/"
@@ -76,30 +77,31 @@ class Command(BaseCommand):
 
         # Create object from raw data
 
+        print("Create years {}".format(years_raw))
         years = [Year.objects.create(start_year=start_year)
                  for start_year in years_raw]
         save_all(years)
-        print("Created years {}".format(years_raw))
 
+        print("Create courses {}".format(courses_raw))
         courses = [Course.objects.create(name=course["name"],
                                          year=years[course["year"]],
                                          is_active=True)
                    for course in courses_raw]
         save_all(courses)
-        print("Created courses {}".format(courses_raw))
 
+        print("Create schools {}".format(schools_raw))
         schools = [School.objects.create(name=school["name"],
                                          link=school["link"])
                    for school in schools_raw]
         save_all(schools)
-        print("Created schools {}".format(schools_raw))
 
+        print("Create groups {}".format(groups_raw))
         groups = [Group.objects.create(name=group["name"],
                                        year=years[group["year"]])
                   for group in groups_raw]
         save_all(groups)
-        print("Created groups {}".format(groups_raw))
 
+        print("Create users")
         students = []
         teachers = []
         for user_raw in students_raw + teachers_raw:
@@ -115,53 +117,65 @@ class Command(BaseCommand):
                 teachers.append(user)
         save_all(students)
         save_all(teachers)
-        print("Created users")
 
+        print("Create tasks {}".format(tasks_raw))
         tasks = [Task.objects.create(title=task["title"],
-                                     course=courses[task["course"]],
-                                     group=groups[task["group"]])
+                                     course=courses[task["course"]])
                  for task in tasks_raw]
-        print("Created tasks {}".format(tasks_raw))
+        save_all(tasks)
 
+        print("Create issues {}".format(issues_raw))
         issues = [Issue.objects.create(student=students[issue["student"]],
                                        task=tasks[issue["task"]])
                  for issue in issues_raw]
-        print("Created issues {}".format(issues_raw))
+        save_all(issues)
 
+        print("Create events {}".format(events_raw))
         events = [Event.objects.create(issue=issues[event["issue"]],
             author=(students + teachers)[event["author"]],
             field=IssueField.objects.get(name=event["field"]))
                  for event in events_raw]
-        print("Created events {}".format(events_raw))
+        save_all(events)
 
         # Bind objects
 
+        print("Bind schools and courses")
         for school_id, school in enumerate(schools_raw):
             for course_id in school["courses"]:
                 schools[school_id].courses.add(courses[course_id])
-        print("Bound schools and courses")
 
+        print("Bind courses and groups")
         for course_id, course in enumerate(courses_raw):
             for group_id in course["groups"]:
                 courses[course_id].groups.add(groups[group_id])
-        print("Bound courses and groups")
 
+        print("Bind students and groups")
         for student_id, student in enumerate(students_raw):
             user = students[student_id]
             group = groups[student["group"]]
             group.students.add(user)
-        print("Bound students and groups")
 
+        print("Set teachers")
         for teacher_id, teacher in enumerate(teachers_raw):
             user = teachers[teacher_id]
             for course_id in teacher["courses"]:
                 course = courses[course_id]
                 course.teachers.add(user)
-        print("Set teachers")
 
+        print("Bind tasks with courses")
         for task_id, task in enumerate(tasks_raw):
             course = courses[task["course"]]
             task = tasks[task_id]
             course.task_set.add(task)
-        print("Bound tasks with courses")
 
+        print("Bind tasks with groups")
+        for task_id, task in enumerate(tasks_raw):
+            task = tasks[task_id]
+            for group_id in tasks_raw[task_id]["groups"]:
+                group = groups[group_id]
+                relation = TaskGroupRelations.objects.create(
+                    task=task, group=group)
+                relation.save()
+                
+
+        print("Completed creating test data.")
