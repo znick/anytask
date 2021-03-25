@@ -1,3 +1,4 @@
+import os.path
 from django.core.files.storage import FileSystemStorage, Storage
 from storages.backends.s3boto3 import S3Boto3Storage
 from django.conf import settings
@@ -40,7 +41,7 @@ class S3OverlayStorage(Storage):
             return name
         if not name.startswith(self.S3_STORED_PREFIX):
             raise ValueError("S3 path not starting with S3 prefix")
-        return '/'.join([
+        return os.path.join([
             self.S3_STORED_MAGIC, settings.MEDIA_URL, name[self._S3_SKIP_LEN:]
         ])
 
@@ -160,3 +161,29 @@ def maybe_s3_adjust_path(relative_path):
         return S3OverlayStorage.append_s3_prefix(relative_path)
     else:
         return relative_path
+
+
+def migrate_to_s3(file_field, dest_storage, dry_run=True):
+    """Saves content of file_field to S3, adjusting path in database
+
+    :param file_field: django.db.models.FileField
+    :param dest_storage: S3OverlayStorage
+    :param dry_run: boolean, whether should only perform all checks and return
+        new path without uploading
+
+    :return new relative path, or None if given extension is not supported by
+    S3 storage
+
+    :raise ValueError if `dest_storage.is_s3_stored(file_field.name) == True`
+    :raise KeyError if destination path exists, with message=new_path
+    """
+    old_path = file_field.name
+    if S3OverlayStorage.is_s3_stored(old_path):
+        raise ValueError("Path with S3 magic: {}".format(old_path))
+    new_path = dest_storage.append_s3_prefix(old_path)
+    if dest_storage.exists(new_path):
+        raise KeyError(new_path)
+    if not dry_run:
+        with file_field.storage.open(file_field.name, 'rb') as content:
+            dest_storage.save(new_path, content)
+    return new_path
