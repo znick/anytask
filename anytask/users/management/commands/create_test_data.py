@@ -70,11 +70,6 @@ class Command(BaseCommand):
                       "groups": (0,), "updated_by": 0}]
         issues_raw = [{"student": 0, "task": 0}]
 
-#        files_prefix = "media/files/deploy_files/"
-#        files_raw = ["file1.py", "file2.txt"]
-        events_raw = [{"issue": 0, "author": 0, "field": "file"}]
-#                       "files": [{"url" : }]}]
-
         # Create object from raw data
 
         print("Create years {}".format(years_raw))
@@ -129,13 +124,6 @@ class Command(BaseCommand):
                                        task=tasks[issue["task"]])
                  for issue in issues_raw]
         save_all(issues)
-
-        print("Create events {}".format(events_raw))
-        events = [Event.objects.create(issue=issues[event["issue"]],
-            author=(students + teachers)[event["author"]],
-            field=IssueField.objects.get(name=event["field"]))
-                 for event in events_raw]
-        save_all(events)
 
         # Bind objects
 

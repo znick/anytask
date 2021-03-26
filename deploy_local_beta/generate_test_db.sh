@@ -26,7 +26,7 @@ ANYBETA_report "teacher"
 ANYBETA_report "Login: buckner_eira"
 ANYBETA_report "Password: buckner_eira"
 
-ANYBETA_DEPLOY_FILES_DIR=$ANYBETA_ROOT/anytask/media/files/deploy_files
+ANYBETA_DEPLOY_FILES_DIR=$ANYBETA_ROOT/anytask/media/files/deploy_local_beta_files
 if ! test -d $ANYBETA_DEPLOY_FILES_DIR
 then
   mkdir $ANYBETA_DEPLOY_FILES_DIR
