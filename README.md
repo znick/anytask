@@ -12,4 +12,8 @@ Development installation commands:
     . deploy_local_beta/run.sh
     ./anytask/manage.py runserver 127.0.0.1:8019 -v 3 --traceback
 
+To activate environment in already deployed project run
+    
+    . deploy_local_beta/activate.sh
+
 Run deploy_local_beta/run.sh -h for more information.
