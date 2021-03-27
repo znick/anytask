@@ -63,7 +63,10 @@ class S3OverlayStorage(Storage):
 
     @classmethod
     def append_s3_prefix(cls, relative_path):
-        """Adjust relative path so that it maps to S3"""
+        """Adjust relative path so that it maps to S3
+
+        :raise ValueError - if path already starts with S3 prefix
+        """
         if relative_path.startswith(cls.S3_STORED_MAGIC):
             raise ValueError("Path already starts with S3 magic, must be relative")
         return '/'.join([cls.S3_STORED_PREFIX, relative_path])
