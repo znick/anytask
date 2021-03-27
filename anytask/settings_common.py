@@ -324,6 +324,7 @@ AWS_ACCESS_KEY_ID = ''
 AWS_SECRET_ACCESS_KEY = ''
 AWS_S3_ENDPOINT_URL = ''
 AWS_STORAGE_BUCKET_NAME = ''
+AWS_DEFAULT_ACL = 'public-read'  # As when served by Django & FileSystemStorage
 AWS_S3_USE_SSL = True
 
 DEFAULT_FILE_STORAGE = 'anytask.storage.S3OverlayStorage'
