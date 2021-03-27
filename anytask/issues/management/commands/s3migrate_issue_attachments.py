@@ -19,41 +19,57 @@ class Command(BaseCommand):
             dest='execute',
             action='store_true',
             default=False,
-            help='Actually execute migration')
-        '''
+            help='Actually execute migration, else dry run')
         parser.add_argument(
-            '--reverse',
-            dest='reverse',
+            '--ok-if-exists',
+            dest='ok_if_exists',
             action='store_true',
             default=False,
-            help='DEV ONLY')
-        '''
+            help='''If set and destination already exists in S3, just update '''
+                 '''db record. If not set, report error on file. It\'s normal, '''
+                 '''as many File records may reference same path. '''
+                 '''Sensible to set to true. Default is false.'''
+        )
         parser.add_argument(
-            '--ignore-extensions-extra',
-            dest='ignore_extensions',
+            '--ignore-extension-extra',
+            dest='ignore_extension',
             action='append',
             default=[],
-            help='Don\'t migrate files with these extensions')
+            help='''Extra extensions to exclude from migrations (in addition '''
+                 '''to unsupported)''')
 
     def handle(self, **options):
         dry_run = not options['execute']
-        ignored_extensions = options['ignore_extensions']
+        ok_if_exists = options['ok_if_exists']
+        ignored_extensions = options['ignore_extension']
+        ignored_extensions.extend(S3OverlayStorage.IGNORED_EXTENSIONS)
 
-        if any(map(ignored_extensions.count, S3OverlayStorage.IGNORED_EXTENSIONS)):
-            raise ValueError("Won't un-ignore unsupported extensions")
+        dest_storage = S3OverlayStorage()
         if dry_run:
             print("NOTE: Dry run")
-        dest_storage = S3OverlayStorage()
 
         for file_model in File.objects.all():
+            old_path = file_model.file.name
+            if any(map(old_path.endswith, ignored_extensions)):
+                print("Note: skipping: ignored extension: {}".format(old_path))
+                continue
+            if S3OverlayStorage.is_s3_stored(old_path):
+                print("Note: skipping: already stored in S3: {}".format(old_path))
+                continue
             try:
                 new_path = migrate_to_s3(file_model.file, dest_storage, dry_run)
                 print("Note: uploaded: {}".format(new_path))
             except KeyError as e:
                 new_path = e.message
-                print("Note: destination already exists: {}".format(new_path))
+                if ok_if_exists:
+                    print("Warning: destination already exists (will update db record): {}"
+                          .format(new_path))
+                else:
+                    print("Error: destination already exists and --ok-if-exists not present (skipping db record): {}"
+                          .format(new_path))
+                    continue
             except Exception as e:
-                print("Unhandled exception, ignoring: {}".format(e))
+                print("Error: migrate failed: unhandled exception: {}, {}".format(old_path, e))
                 continue
             if not dry_run:
                 file_model.file.name = new_path
