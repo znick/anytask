@@ -1,0 +1,48 @@
+name: run_command
+
+on:
+  workflow_dispatch:
+    inputs:
+      task:
+        description: 'Task title'
+        required: true
+      repo:
+        description: 'Repository with command to be run'
+        required: true
+      run_cmd:
+        description: 'Command in repository to be run'
+        required: true
+      docker_image:
+        description: 'Docker image to run tests in it'
+        required: true
+      timeout:
+        description: 'Timeout of running worker'
+        required: true
+
+
+jobs:
+  wait:
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Prepare dir
+        run: |
+          mkdir task
+          git clone "${{ github.event.inputs.repo }}" git
+          # TODO: fetch files here
+          echo "" >> task/test.py
+          # TODO: end
+
+      - name: Run in docker
+        run: >
+          docker run 
+          -v "${{ github.workspace }}":"/task_dir" 
+          -w /task_dir/git
+          "${{ github.event.inputs.docker_image }}" 
+          "${{ github.event.inputs.run_cmd }}" "${{ github.event.inputs.task }}" "/task_dir/task" 
+          #"${{ github.event.inputs.title }}" "/work/task"
+          #
+          #TODO: add >
+
+      - name: List dir
+        run: ls
+
