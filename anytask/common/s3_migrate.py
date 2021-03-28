@@ -60,7 +60,7 @@ class S3MigrateCommand(BaseCommand):
 
         :return: iterator over all models to migrate
         """
-        raise NotImplemented()
+        raise NotImplementedError()
 
     def get_model_field(self, model, options):
         """
@@ -70,7 +70,7 @@ class S3MigrateCommand(BaseCommand):
 
         :return: django.db.models.FileField of model, None if should be ignored
         """
-        raise NotImplemented()
+        raise NotImplementedError()
 
     def update_model(self, model, new_path, options):
         """Called iff upload was successful
@@ -83,6 +83,7 @@ class S3MigrateCommand(BaseCommand):
 
         :return: True iff model updated successfully
         """
+        raise NotImplementedError()
 
     def __init__(self, stdout=None, stderr=None, no_color=False):
         super(S3MigrateCommand, self).__init__(stdout, stderr, no_color)

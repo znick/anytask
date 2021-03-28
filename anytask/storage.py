@@ -164,5 +164,3 @@ def maybe_s3_adjust_path(relative_path):
         return S3OverlayStorage.append_s3_prefix(relative_path)
     else:
         return relative_path
-
-
