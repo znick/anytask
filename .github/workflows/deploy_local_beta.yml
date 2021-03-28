@@ -12,6 +12,6 @@ jobs:
         with:
           submodules: true
       - name: Install dependencies
-        run: pip install python-virtualenv
+        run: sudo apt-get install python-virtualenv
       - name: Deploy
         run: source deploy_local_beta/run.sh --python-path=python2
