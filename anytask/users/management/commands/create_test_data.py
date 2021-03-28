@@ -15,7 +15,7 @@ from schools.models import School
 from groups.models import Group
 from courses.models import Course
 from tasks.models import Task, TaskGroupRelations
-from issues.models import Issue, Event, IssueField
+from issues.models import Issue
 
 
 def parse_name(name):
@@ -66,7 +66,7 @@ class Command(BaseCommand):
         teachers_raw = [{"name": "Eira Buckner", "courses": (0,)},
                         {"name": "Paul Akhtar", "courses": (1,)},
                         {"name": "Kristi Todd", "courses": (2,)}]
-        tasks_raw = [{"title": "Charms | Task 1", "course": 0, 
+        tasks_raw = [{"title": "Charms | Task 1", "course": 0,
                       "groups": (0,), "updated_by": 0}]
         issues_raw = [{"student": 0, "task": 0}]
 
@@ -122,7 +122,7 @@ class Command(BaseCommand):
         print("Create issues {}".format(issues_raw))
         issues = [Issue.objects.create(student=students[issue["student"]],
                                        task=tasks[issue["task"]])
-                 for issue in issues_raw]
+                  for issue in issues_raw]
         save_all(issues)
 
         # Bind objects
@@ -164,6 +164,5 @@ class Command(BaseCommand):
                 relation = TaskGroupRelations.objects.create(
                     task=task, group=group)
                 relation.save()
-                
 
         print("Completed creating test data.")
