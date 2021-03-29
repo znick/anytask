@@ -55,7 +55,7 @@ RUN mkdir $APP_HOME/anytask/media
 WORKDIR $APP_HOME
 
 # install dependencies
-RUN apk update && apk add libpq libjpeg libxslt
+RUN apk update && apk add libpq libjpeg libxslt git
 COPY --from=builder /usr/src/app/wheels /wheels
 COPY --from=builder /usr/src/app/requirements.prod.txt .
 RUN pip install --no-cache /wheels/*
@@ -65,6 +65,7 @@ COPY ./entrypoint.prod.sh $APP_HOME
 
 # copy project
 COPY . $APP_HOME
+RUN git submodule update --init --recursive
 
 # chown all the files to the app user
 RUN chown -R app:app $APP_HOME

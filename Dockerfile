@@ -18,6 +18,7 @@ RUN apk update \
         libxml2-dev libxslt-dev \
         freetype-dev libpng-dev libjpeg-turbo-dev \
         build-base libzmq zeromq-dev
+        git
 
 # RUN apt update
 COPY ./requirements.txt .
@@ -28,6 +29,7 @@ COPY ./entrypoint.sh .
 
 # copy project
 COPY . .
+RUN git submodule update --init --recursive
 
 # run entrypoint.sh
 ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
