@@ -1,4 +1,4 @@
-name: run_command
+name: run_task
 
 on:
   workflow_dispatch:
@@ -12,6 +12,9 @@ on:
       run_cmd:
         description: 'Command in repository to be run'
         required: true
+      files:
+        description: 'Files urls to be tested'
+        required: true
       docker_image:
         description: 'Docker image to run tests in it'
         required: true
@@ -21,32 +24,21 @@ on:
 
 
 jobs:
-  wait:
+  run_task:
     runs-on: ubuntu-18.04
     steps:
-      - name: Prepare dir
-        run: |
-          mkdir task
-          git clone ${{ github.event.inputs.repo }} git
-          # TODO: fetch files here
-          echo "" >> task/test.py
-          # TODO: end
-
-      - name: Set timeout var
-        run: timeout_n=${{ github.event.inputs.timeout }}
-
-      - name: Run in docker
-        run: >
-          #          timeout -k $(( timeout_n + 3 )) $(( timeout_n + 2 ))
-          docker run 
-          -v "${{ github.workspace }}":"/task_dir" 
-          -w /task_dir/git
-          ${{ github.event.inputs.docker_image }}
-          timeout -k $(( timeout_n + 1)) timeout_n
-          "${{ github.event.inputs.run_cmd }}"
-          "${{ github.event.inputs.task }}"
-          "/task_dir/task"
+      - uses: actions/checkout@v2
 
       - name: List dir
         run: ls
+
+      - name: Run easyci worker
+        run: >
+            ./run_worker.sh 
+            ${{ github.event.inputs.task }} 
+            ${{ github.event.inputs.repo }}
+            ${{ github.event.inputs.run_cmd }}
+            '${{ github.event.inputs.files }}'
+            ${{ github.event.inputs.docker_image }}
+            ${{ github.event.inputs.timeout }}
 
