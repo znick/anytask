@@ -2,7 +2,7 @@ import requests
 import json
 
 from settings_local import GITHUB_TOKEN, \
-    GITHUB_USER, GITHUB_REPO, GITHUB_ORG, GITHUB_WORKER
+    GITHUB_USER, GITHUB_REPO, GITHUB_ORG, GITHUB_WORKFLOW
 
 
 class AbstractWorker:
@@ -32,7 +32,7 @@ class GithubActionsWorker(AbstractWorker):
         data = {"ref" : "master", "inputs" : inputs}
         headers = {"Accept" : "application/vnd.github.v3+json"}
         url = "https://api.github.com/repos/{}/{}/actions/workflows/{}/" \
-              "dispatches".format(GITHUB_ORG, GITHUB_REPO, GITHUB_WORKER)
+              "dispatches".format(GITHUB_ORG, GITHUB_REPO, GITHUB_WORKFLOW)
         auth = (GITHUB_USER, GITHUB_TOKEN)
         r = requests.post(url, data=json.JSONEncoder().encode(data),
                 headers=headers, auth=auth)
