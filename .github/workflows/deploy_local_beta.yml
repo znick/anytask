@@ -1,0 +1,17 @@
+# This workflow deploy beta anytask locally
+
+name: Deploy local beta
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Install dependencies
+        run: sudo apt-get install python-virtualenv
+      - name: Deploy
+        run: source deploy_local_beta/run.sh --python-path=python2
