@@ -27,7 +27,8 @@ jobs:
   run_task:
     runs-on: ubuntu-18.04
     steps:
-      - uses: actions/checkout@v2
+      - name: Fetch run_worker.sh
+        run: wget https://github.com/znick/anytask/blob/easyci/easyci/run_worker.sh
 
       - name: Run easyci worker
         run: >
