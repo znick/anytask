@@ -7,8 +7,7 @@ from settings_local import GITHUB_TOKEN, \
 
 
 class AbstractScheduler:
-    def __init__(self, auth, task, repo, run_cmd, files, docker_image, timeout):
-        self.auth = auth
+    def __init__(self, task, repo, run_cmd, files, docker_image, timeout):
         self.task = task
         self.repo = repo
         self.run_cmd = run_cmd
