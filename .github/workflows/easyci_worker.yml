@@ -1,0 +1,44 @@
+name: run_task
+
+on:
+  workflow_dispatch:
+    inputs:
+      task:
+        description: 'Task title'
+        required: true
+      repo:
+        description: 'Repository with command to be run'
+        required: true
+      run_cmd:
+        description: 'Command in repository to be run'
+        required: true
+      files:
+        description: 'Files urls to be tested'
+        required: true
+      docker_image:
+        description: 'Docker image to run tests in it'
+        required: true
+      timeout:
+        description: 'Timeout of running worker'
+        required: true
+
+
+jobs:
+  run_task:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: List dir
+        run: ls
+
+      - name: Run easyci worker
+        run: >
+            ./run_worker.sh 
+            ${{ github.event.inputs.task }} 
+            ${{ github.event.inputs.repo }}
+            ${{ github.event.inputs.run_cmd }}
+            '${{ github.event.inputs.files }}'
+            ${{ github.event.inputs.docker_image }}
+            ${{ github.event.inputs.timeout }}
+
