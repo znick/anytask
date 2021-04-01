@@ -1,4 +1,4 @@
-name: run_task
+name: Run task
 
 on:
   workflow_dispatch:
@@ -27,8 +27,14 @@ jobs:
   run_task:
     runs-on: ubuntu-18.04
     steps:
-      - name: Fetch run_worker.sh
-        run: wget https://github.com/znick/anytask/blob/easyci/easyci/run_worker.sh
+      - name: Clone anytask/easyci
+        run: |
+          # TODO: remove -b easyci after merge to master
+          git clone --depth 1 --filter=blob:none --sparse -b easyci https://github.com/znick/anytask
+          cd anytask
+          git sparse-checkout init --cone
+          git sparse-checkout set easyci
+          cd easyci
 
       - name: Run easyci worker
         run: >
