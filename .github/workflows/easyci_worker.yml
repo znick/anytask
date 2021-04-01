@@ -35,8 +35,10 @@ jobs:
           git sparse-checkout init --cone
           git sparse-checkout set easyci
           cd easyci
+          chmod +x run_worker.sh
 
       - name: Run easyci worker
+        working-directory: ./anytask/easyci/
         run: >
             ./run_worker.sh 
             ${{ github.event.inputs.task }} 
