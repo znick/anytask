@@ -128,7 +128,7 @@ class S3MigrateCommand(BaseCommand):
 
         self.dest_storage = S3OverlayStorage()
         if self.dry_run:
-            print("Note: Dry run")
+            self.stdout.write("Note: Dry run")
 
         for model in self.all_models(options):
             field = self.get_model_field(model, options)
@@ -136,34 +136,34 @@ class S3MigrateCommand(BaseCommand):
                 continue
             old_path = field.name
             if any(map(old_path.endswith, self.ignored_extensions)):
-                print(self.SKIP_IGNORED_EXT.format(old_path))
+                self.stdout.write(self.SKIP_IGNORED_EXT.format(old_path))
                 continue
             if S3OverlayStorage.is_s3_stored(old_path):
-                print(self.SKIP_ALREADY_S3.format(old_path))
+                self.stdout.write(self.SKIP_ALREADY_S3.format(old_path))
                 continue
             new_path = self.s3_upload(field)
             if new_path and not self.dry_run:
                 try:
                     if not self.update_model(model, new_path, options):
-                        print(self.ERR_UPDATE_MODEL.format(model, new_path))
+                        self.stdout.write(self.ERR_UPDATE_MODEL.format(model, new_path))
                 except Exception as e:
-                    print(self.ERR_UNHANDLED_EXCEPTION.format(new_path, e))
+                    self.stdout.write(self.ERR_UNHANDLED_EXCEPTION.format(new_path, e))
 
     def s3_upload(self, field):
         """:return: new path if model update required, else None"""
         result = None
         try:
             new_path = upload_to_s3(field, self.dest_storage, self.dry_run)
-            print(self.OK_UPLOADED.format(new_path))
+            self.stdout.write(self.OK_UPLOADED.format(new_path))
             result = new_path
         except KeyError as e:
             new_path = e.message
             if self.ok_if_exists:
-                print(self.DEST_EXISTS_OK.format(new_path))
+                self.stdout.write(self.DEST_EXISTS_OK.format(new_path))
                 result = new_path
             else:
-                print(self.DEST_EXISTS_NOT_OK.format(new_path))
+                self.stdout.write(self.DEST_EXISTS_NOT_OK.format(new_path))
         except Exception as e:
-            print(self.ERR_UNHANDLED_EXCEPTION.format(field.name, e))
+            self.stdout.write(self.ERR_UNHANDLED_EXCEPTION.format(field.name, e))
         finally:
             return result
