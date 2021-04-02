@@ -7,10 +7,10 @@ from settings_local import GITHUB_TOKEN, \
 
 
 class AbstractScheduler:
-    def __init__(self):
+    def __init__(self, *args):
         pass
 
-    def schedule(self):
+    def schedule(self, *args):
         raise NotImplementedError("attempt to run abstract worker.")
 
 
