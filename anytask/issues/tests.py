@@ -11,6 +11,8 @@ from StringIO import StringIO
 from django.core.management import call_command
 from django.test import TestCase
 from django.contrib.auth.models import User
+from django.test.testcases import SerializeMixin
+
 from schools.models import School
 from courses.models import Course, IssueField
 from groups.models import Group
@@ -27,6 +29,7 @@ from django.core.urlresolvers import reverse
 
 import issues.views
 import anyrb.views
+import anyrb.unpacker
 from storage import S3OverlayStorage
 
 
@@ -938,7 +941,7 @@ class ViewsTest(TestCase):
                          'Wrong comment text about RB')
 
 
-class S3MigrateIssueAttachments(TestCase):
+class S3MigrateIssueAttachments(TestCase, SerializeMixin):
     def setUp(self):
         self.teacher_password = 'password1'
         self.teacher = User.objects.create_user(username='teacher',
@@ -980,10 +983,68 @@ class S3MigrateIssueAttachments(TestCase):
     def test_upload_py(self):
         issue = Issue.objects.create(task_id=self.task.id, student_id=self.student.id)
         event_create_file = Event.objects.create(issue=issue, field=IssueField.objects.get(name='file'))
-        file = File.objects.create(file=SimpleUploadedFile('test_rb.py', b'some text'), event=event_create_file)
+        file = File.objects.create(file=SimpleUploadedFile('test_s3_issues.py', b'some text'), event=event_create_file)
 
         out = StringIO()
         call_command('s3migrate_issue_attachments', '--execute', stdout=out)
 
         file = File.objects.get(pk=file.pk)
         self.assertTrue(S3OverlayStorage.is_s3_stored(file.file.name))
+        self.assertEqual('Note: uploaded: {}'.format(file.file.name),
+                         out.getvalue().strip())
+
+    def test_upload_py_twice(self):
+        issue = Issue.objects.create(task_id=self.task.id, student_id=self.student.id)
+        event_create_file = Event.objects.create(issue=issue, field=IssueField.objects.get(name='file'))
+        file = File.objects.create(file=SimpleUploadedFile('test_s3_issues.py', b'some text'), event=event_create_file)
+
+        out = StringIO()
+        call_command('s3migrate_issue_attachments', '--execute', stdout=out)
+
+        file = File.objects.get(pk=file.pk)
+        self.assertTrue(S3OverlayStorage.is_s3_stored(file.file.name))
+        self.assertEqual('Note: uploaded: {}'.format(file.file.name),
+                         out.getvalue().strip())
+
+        out = StringIO()
+        call_command('s3migrate_issue_attachments', '--execute', stdout=out)
+
+        file = File.objects.get(pk=file.pk)
+        self.assertTrue(S3OverlayStorage.is_s3_stored(file.file.name))
+        self.assertEqual('Note: skipping: already stored in S3: {}'.format(file.file.name),
+                         out.getvalue().strip())
+
+    def test_upload_archives(self):
+        for ext in anyrb.unpacker.get_supported_extensions():
+            issue = Issue.objects.create(task_id=self.task.id, student_id=self.student.id)
+            event_create_file = Event.objects.create(issue=issue, field=IssueField.objects.get(name='file'))
+            file = File.objects.create(
+                file=SimpleUploadedFile('test_s3_issues.{}'.format(ext), b'some binary archive'),
+                event=event_create_file)
+
+            out = StringIO()
+            call_command('s3migrate_issue_attachments', '--execute', stdout=out)
+
+            file = File.objects.get(pk=file.pk)
+            self.assertTrue(S3OverlayStorage.is_s3_stored(file.file.name),
+                            'Failed for extension: {}'.format(ext))
+            self.assertEqual('Note: uploaded: {}'.format(file.file.name),
+                             out.getvalue().strip(),
+                             'Failed for extension: {}'.format(ext))
+
+            issue.delete()
+            event_create_file.delete()
+            file.delete()
+
+    def test_dont_upload_ipynb(self):
+        issue = Issue.objects.create(task_id=self.task.id, student_id=self.student.id)
+        event_create_file = Event.objects.create(issue=issue, field=IssueField.objects.get(name='file'))
+        file = File.objects.create(file=SimpleUploadedFile('test_s3_issues.ipynb', b'some text'), event=event_create_file)
+
+        out = StringIO()
+        call_command('s3migrate_issue_attachments', '--execute', stdout=out)
+
+        file = File.objects.get(pk=file.pk)
+        self.assertFalse(S3OverlayStorage.is_s3_stored(file.file.name))
+        self.assertEqual('Note: skipping: ignored extension: {}'.format(file.file.name),
+                         out.getvalue().strip())
