@@ -89,22 +89,6 @@ class CourseMarkSystem(models.Model):
         return unicode(self.name)
 
 
-"""
-class EasyCIParams(models.Model):
-    host = models.CharField(max_length=191, db_index=False, null=False, blank=False)
-    repo = models.CharField(max_length=191, db_index=False, null=False, blank=False)
-    command = models.CharField(max_length=191, db_index=False, null=False, blank=False)
-    docker_image = models.CharField(max_length=191, db_index=False, null=False, blank=False)
-    timeout = models.IntegerField(db_index=False, null=False, blank=False)
-
-    def __unicode__(self):
-        return unicode(self.host) + ": " + unicode(self.repo)
-
-    class Meta:
-        verbose_name = 'EasyCI'
-        verbose_name_plural = 'EasyCI'"""
-
-
 class Course(models.Model):
     name = models.CharField(max_length=191, db_index=True, null=False, blank=False)
     name_id = models.CharField(max_length=191, db_index=True, null=True, blank=True)
@@ -119,7 +103,7 @@ class Course(models.Model):
     groups = models.ManyToManyField(Group, blank=True)
 
     issue_fields = models.ManyToManyField(IssueField, blank=True)
-    easyCI = models.CharField(max_length=191, blank=True, null=True)
+    easyCI_url = models.CharField(max_length=191, blank=True, null=True)
 
     contest_integrated = models.BooleanField(db_index=False, null=False, blank=False, default=False)
     send_rb_and_contest_together = models.BooleanField(db_index=False, null=False, blank=False, default=False)

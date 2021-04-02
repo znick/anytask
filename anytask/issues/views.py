@@ -122,6 +122,31 @@ def contest_rejudge(issue):
     event.save()
 
 
+def check_easy_ci(request, issue, event, sent_files):
+    if not(issue.task.course.easyCI_url is None) and issue.task.course.easyCI_url != "":
+        files = []
+        for sent_file in sent_files:
+            files.append(request.build_absolute_uri(sent_file.url))
+
+        if len(files) != 0:
+            check_request_dict = {
+                'files': files,
+                'course_id': issue.task.course_id,
+                'title': issue.task.get_title(),
+                'issue_id': issue.id,
+                'event': {
+                    'id': event.id,
+                    'timestamp': event.timestamp.isoformat()
+                }
+            }
+            try:
+                response = requests.post(issue.task.course.easyCI_url + "/api/add_task", json=check_request_dict)
+                print(response.status_code)
+            except requests.exceptions.RequestException as e:
+                issue.add_comment("Cannot send to easyCI. Time: " + \
+                                  event.timestamp.isoformat())
+
+
 @login_required
 def issue_page(request, issue_id):
     issue = get_object_or_404(Issue, id=issue_id)
@@ -289,26 +314,7 @@ def upload(request):
 
         if not (issue.task.one_file_upload and file_counter > 1):
             event = issue.set_byname('comment', event_value, request.user)
-
-            if not (issue.task.course.easyCI is None or issue.task.course.easyCI == ''):
-                print(issue.task.course.easyCI)
-                files = []
-                for sent_file in event_value['files']:
-                    print(request.build_absolute_uri(sent_file.url))
-                    files.append(request.build_absolute_uri(sent_file.url))
-
-                if len(files) != 0:
-                    check_request_dict = {
-                        'files': files,
-                        'course_id': issue.task.course_id,
-                        'title': issue.task.get_title(),
-                        'issue_id': issue.id,
-                        'event': {
-                            'id': event.id,
-                            'timestamp': event.timestamp.isoformat()
-                        }
-                    }
-                    requests.post(issue.task.course.easyCI + "/api/add_task", json=check_request_dict)
+            check_easy_ci(request, issue, event, event_value['files'])
 
         return redirect(issue_page, issue_id=int(request.POST['issue_id']))
 
