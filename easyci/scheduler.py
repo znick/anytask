@@ -7,13 +7,8 @@ from settings_local import GITHUB_TOKEN, \
 
 
 class AbstractScheduler:
-    def __init__(self, task, repo, run_cmd, files, docker_image, timeout):
-        self.task = task
-        self.repo = repo
-        self.run_cmd = run_cmd
-        self.files = files
-        self.docker_image = docker_image
-        self.timeout = str(timeout)
+    def __init__(self):
+        pass
 
     def schedule(self):
         raise NotImplementedError("attempt to run abstract worker.")
@@ -23,16 +18,13 @@ class GithubActionsScheduler(AbstractScheduler):
     def __init__(self, *args):
         super().__init__(*args)
 
-    def schedule(self):
-        encoder = json.JSONEncoder()
-        self.files = encoder.encode(self.files)
-
-        inputs = {"task" : self.task,
-                  "repo" : self.repo,
-                  "run_cmd" : self.run_cmd,
-                  "files" : self.files,
-                  "docker_image" : self.docker_image,
-                  "timeout" : self.timeout}
+    def schedule(self, task, repo, run_cmd, files, docker_image, timeout):
+        inputs = {"task" : task,
+                  "repo" : repo,
+                  "run_cmd" : run_cmd,
+                  "files" : json.JSONEncoder().encode(files),
+                  "docker_image" : docker_image,
+                  "timeout" : timeout}
         data = {"ref" : "master", "inputs" : inputs}
         headers = {"Accept" : "application/vnd.github.v3+json"}
         url = "https://api.github.com/repos/{}/{}/actions/workflows/{}/" \
