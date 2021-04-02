@@ -2,7 +2,6 @@ import os.path
 from django.core.files.storage import FileSystemStorage, Storage
 from storages.backends.s3boto3 import S3Boto3Storage
 from django.conf import settings
-from anyrb import unpacker
 
 
 class S3OverlayStorage(Storage):
@@ -20,7 +19,7 @@ class S3OverlayStorage(Storage):
     _S3_SKIP_LEN = len(S3_STORED_MAGIC + '/')
     _MEDIA_SKIP_LEN = len(settings.MEDIA_URL + '/')
 
-    IGNORED_EXTENSIONS = ['.ipynb'] + unpacker.get_supported_extensions()
+    IGNORED_EXTENSIONS = ['.ipynb']
 
     def __init__(self, *args, **kwargs):
         self.local_storage = FileSystemStorage(*args, **kwargs)
@@ -129,7 +128,7 @@ class S3OverlayStorage(Storage):
         return self._dispatch(name, 'url')
 
 
-class OverwriteStorage(S3OverlayStorage):
+class OverwriteStorage(FileSystemStorage):
     def get_available_name(self, name, max_length=None):
         """Returns a filename that's free on the target storage system, and
         available for new content to be written to.

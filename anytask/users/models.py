@@ -12,14 +12,13 @@ from mail.models import Message
 from users.model_user_status import UserStatus
 from years.common import get_current_year
 
-from anytask.storage import OverwriteStorage, maybe_s3_adjust_path
+from anytask.storage import OverwriteStorage
 
 logger = logging.getLogger('django.request')
 
 
 def get_upload_path(instance, filename):
-    relative_path = os.path.join('images', 'user_%d' % instance.user.id, filename)
-    return maybe_s3_adjust_path(relative_path)
+    return os.path.join('images', 'user_%d' % instance.user.id, filename)
 
 
 class UserProfile(models.Model):
