@@ -3,12 +3,9 @@ from __future__ import unicode_literals
 import base64
 import json
 
-import requests
-
 from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.urlresolvers import reverse
-from django.conf import settings
 from django.test import TestCase
 
 from courses.models import Course

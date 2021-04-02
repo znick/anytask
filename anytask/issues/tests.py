@@ -1039,7 +1039,9 @@ class S3MigrateIssueAttachments(TestCase, SerializeMixin):
     def test_dont_upload_ipynb(self):
         issue = Issue.objects.create(task_id=self.task.id, student_id=self.student.id)
         event_create_file = Event.objects.create(issue=issue, field=IssueField.objects.get(name='file'))
-        file = File.objects.create(file=SimpleUploadedFile('test_s3_issues.ipynb', b'some text'), event=event_create_file)
+        file = File.objects.create(
+            file=SimpleUploadedFile('test_s3_issues.ipynb', b'some text'),
+            event=event_create_file)
 
         out = StringIO()
         call_command('s3migrate_issue_attachments', '--execute', stdout=out)
