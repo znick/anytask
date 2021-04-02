@@ -336,14 +336,8 @@ class ApiTest(TestCase):
 
         self.assertDictEqual(issue, response_data)
 
-        # Hack: requests.get can't perform a direct WSGI request to test server,
-        # and self.client can't actually connect to remote S3
-        if settings.STORAGE_USE_S3:
-            response = requests.get(url)
-            content = response.content
-        else:
-            response = self.client.get(url)
-            content = ''.join(response.streaming_content)
+        response = self.client.get(url)
+        content = ''.join(response.streaming_content)
         self.assertEqual('print "_failed_"', content)
 
     def test_get_issue_no_access(self):
