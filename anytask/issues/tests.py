@@ -6,7 +6,9 @@ when you run "manage.py test".
 
 Replace this with more appropriate tests for your application.
 """
+from StringIO import StringIO
 
+from django.core.management import call_command
 from django.test import TestCase
 from django.contrib.auth.models import User
 from schools.models import School
@@ -25,6 +27,7 @@ from django.core.urlresolvers import reverse
 
 import issues.views
 import anyrb.views
+from storage import S3OverlayStorage
 
 
 def save_result_html(html):
@@ -933,3 +936,54 @@ class ViewsTest(TestCase):
         self.assertEqual(comment_body.a.string.strip().strip('\n'),
                          u'Review request 1',
                          'Wrong comment text about RB')
+
+
+class S3MigrateIssueAttachments(TestCase):
+    def setUp(self):
+        self.teacher_password = 'password1'
+        self.teacher = User.objects.create_user(username='teacher',
+                                                password=self.teacher_password)
+        self.teacher.first_name = 'teacher_name'
+        self.teacher.last_name = 'teacher_last_name'
+        self.teacher.save()
+
+        self.student_password = 'password2'
+        self.student = User.objects.create_user(username='student',
+                                                password=self.student_password)
+        self.student.first_name = 'student_name'
+        self.student.last_name = 'student_last_name'
+        self.student.save()
+
+        self.year = Year.objects.create(start_year=2016)
+
+        self.group = Group.objects.create(name='group_name',
+                                          year=self.year)
+        self.group.students = [self.student]
+        self.group.save()
+
+        self.course = Course.objects.create(name='course_name',
+                                            year=self.year)
+        self.course.groups = [self.group]
+        self.course.teachers = [self.teacher]
+        self.course.issue_fields = IssueField.objects.exclude(id=10).exclude(id=11)
+        self.course.save()
+
+        self.school = School.objects.create(name='school_name',
+                                            link='school_link')
+        self.school.courses = [self.course]
+        self.school.save()
+
+        self.task = Task.objects.create(title='task_title',
+                                        course=self.course,
+                                        score_max=10)
+
+    def test_upload_py(self):
+        issue = Issue.objects.create(task_id=self.task.id, student_id=self.student.id)
+        event_create_file = Event.objects.create(issue=issue, field=IssueField.objects.get(name='file'))
+        file = File.objects.create(file=SimpleUploadedFile('test_rb.py', b'some text'), event=event_create_file)
+
+        out = StringIO()
+        call_command('s3migrate_issue_attachments', '--execute', stdout=out)
+
+        file = File.objects.get(pk=file.pk)
+        self.assertTrue(S3OverlayStorage.is_s3_stored(file.file.name))
