@@ -29,6 +29,7 @@ django-colorfield==0.1.14
 django-haystack==2.8.1
 django-storages==1.9.1
 boto3==1.17.30
+s3cmd==2.1.0
 Whoosh==2.7.4
 django-reversion==1.10
 dateutils==0.6.6

@@ -320,11 +320,11 @@ API_LANGUAGE_CODE = 'en'
 
 JUPYTER_NBGRADER_API_URL = ''
 
-AWS_ACCESS_KEY_ID = ''
-AWS_SECRET_ACCESS_KEY = ''
-AWS_S3_ENDPOINT_URL = ''
-AWS_STORAGE_BUCKET_NAME = ''
+AWS_ACCESS_KEY_ID = 'minioadmin'
+AWS_SECRET_ACCESS_KEY = 'minioadmin'
+AWS_S3_ENDPOINT_URL = 'http://localhost:9000'
+AWS_STORAGE_BUCKET_NAME = 'anytask-test-s3'
 AWS_DEFAULT_ACL = 'public-read'  # As when served by Django & FileSystemStorage
-AWS_S3_USE_SSL = True
+AWS_S3_USE_SSL = False
 
 STORAGE_USE_S3 = False
