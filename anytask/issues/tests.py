@@ -9,6 +9,7 @@ Replace this with more appropriate tests for your application.
 from StringIO import StringIO
 
 from django.core.management import call_command
+from django.conf import settings
 from django.test import TestCase
 from django.contrib.auth.models import User
 from django.test.testcases import SerializeMixin
@@ -939,6 +940,52 @@ class ViewsTest(TestCase):
         self.assertEqual(comment_body.a.string.strip().strip('\n'),
                          u'Review request 1',
                          'Wrong comment text about RB')
+
+    def test_attached_file_in_s3(self):
+        client = self.client
+        issue = Issue.objects.create(task_id=self.task.id, student_id=self.student.id)
+        event_create_file = Event.objects.create(issue=issue, field=IssueField.objects.get(name='file'))
+        File.objects.create(file=SimpleUploadedFile('test_solution.c', b'main(){}'), event=event_create_file)
+        self.task.rb_integrated = False
+        self.task.save()
+
+        call_command('s3migrate_issue_attachments', '--execute', '--do-rewrite-url')
+
+        # login
+        self.assertTrue(client.login(username=self.student.username, password=self.student_password),
+                        "Can't login via teacher")
+
+        response = client.post(reverse(issues.views.upload),
+                               {'comment': 'test_comment',
+                                'files[]': '',
+                                'pk_test_solution.c': '1',
+                                'issue_id': str(issue.id),
+                                'form_name': 'comment_form',
+                                'update_issue': ''}, follow=True)
+        self.assertEqual(response.status_code, 200, "Can't get upload via student")
+        self.assertEqual(len(response.redirect_chain), 1, "Must be redirect")
+
+        html = BeautifulSoup(response.content)
+        container = html.body.find('div', 'container', recursive=False)
+
+        # history
+        history = container.find('ul', 'history')('li')
+        self.assertEqual(len(history), 1, 'History len is not 1')
+        self.assertEqual(history[0].strong.a['href'],
+                         '/users/student/',
+                         'Wrong comment author link')
+        self.assertEqual(history[0].strong.a.string.strip().strip('\n'),
+                         'student_last_name student_name',
+                         'Wrong comment author name')
+        comment_body = history[0].find('div', 'history-body').find('div', 'not-sanitize').next
+        self.assertEqual(comment_body.string.strip().strip('\n'),
+                         'test_comment',
+                         'Wrong comment text')
+        comment_body = history[0].find('div', 'history-body').find('div', 'files')
+        self.assertEqual(comment_body.a.string.strip().strip('\n'),
+                         'test_solution.c',
+                         'Wrong filename in comment')
+        self.assertTrue(comment_body.a['href'].startswith(settings.AWS_S3_ENDPOINT_URL))
 
 
 class S3MigrateIssueAttachments(TestCase, SerializeMixin):
