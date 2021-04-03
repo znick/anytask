@@ -2,4 +2,4 @@ from flask import Blueprint
 
 bp = Blueprint('api', __name__)
 
-from app.api import addTask, getExecResult, errors
+from app.api import addTask, getExecResult, showDashboard, errors

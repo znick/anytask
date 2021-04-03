@@ -12,6 +12,7 @@ def add_task():
     url = url_for('api.add_task')
 
     data = request.get_json() or {}
+
     keys = ["course_id", "title", "files"]
     for key in keys:
         if not (key in data):
