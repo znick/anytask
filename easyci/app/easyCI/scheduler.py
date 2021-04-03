@@ -12,6 +12,8 @@ GITHUB_USER = os.environ.get("GITHUB_USER")
 GITHUB_REPO = os.environ.get("GITHUB_REPO")
 GITHUB_ORG = os.environ.get("GITHUB_ORG")
 GITHUB_WORKFLOW = os.environ.get("GITHUB_WORKFLOW")
+
+GITLAB_REPO_ID = "25597841"
 GITLAB_TRIGGER_TOKEN = os.environ.get("GITLAB_TRIGGER_TOKEN")
 GITLAB_READ_PIPELINES_TOKEN = os.environ.get("GITLAB_READ_PIPELINES_TOKEN")
 
@@ -47,6 +49,7 @@ class GithubActionsScheduler(AbstractScheduler):
 class GitlabCIScheduler(AbstractScheduler):
     def __init__(self, *args):
         super().__init__(*args)
+        self.prefix = "https://gitlab.com/api/v4/projects/" + GITLAB_REPO_ID
 
     def schedule(self, task, repo, run_cmd, files, docker_image, timeout):
         inputs = {"TASK" : task,
@@ -57,13 +60,18 @@ class GitlabCIScheduler(AbstractScheduler):
                   "TIMEOUT" : timeout}
         variables = "".join(["&variables[{}]={}".format(key, inputs[key])
             for key in inputs])
-        url = "https://gitlab.com/api/v4/projects/25597841/ref/master" \
-        "/trigger/pipeline?token={}&{}".format(GITLAB_TRIGGER_TOKEN, variables)
+        url = self.prefix + "/ref/master/trigger/pipeline?token={}&{}".format(
+                    GITLAB_TRIGGER_TOKEN, variables)
         print(url)
         r = requests.post(url)
 
-    def get_info(self):
-        url = "https://gitlab.com/api/v4/projects/25597841/pipelines"
+    def get_pipelines(self):
+        url = self.prefix + "/pipelines"
+        headers = {"PRIVATE-TOKEN" : GITLAB_READ_PIPELINES_TOKEN }
+        return requests.get(url, headers=headers)
+
+    def get_pipeline_vars(self, pipeline_id):
+        url = self.prefix + "/pipelines/{}/variables".format(pipeline_id)
         headers = {"PRIVATE-TOKEN" : GITLAB_READ_PIPELINES_TOKEN }
         return requests.get(url, headers=headers)
 

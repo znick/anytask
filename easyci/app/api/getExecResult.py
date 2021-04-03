@@ -22,4 +22,3 @@ def gitlabci():
     response.status_code = 204
     return response
 
-
