@@ -155,11 +155,3 @@ class OverwriteStorage(FileSystemStorage):
             return name[:max_length]
         else:
             return name
-
-
-def maybe_s3_adjust_path(relative_path):
-    """Append S3 path prefix if STORAGE_USE_S3"""
-    if settings.STORAGE_USE_S3:
-        return S3OverlayStorage.append_s3_prefix(relative_path)
-    else:
-        return relative_path

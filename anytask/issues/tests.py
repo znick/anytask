@@ -39,7 +39,7 @@ from storage import S3OverlayStorage
 def is_s3_reachable():
     try:
         return S3Boto3Storage().listdir('/') is not None
-    except:
+    except Exception:
         return False
 
 
