@@ -14,7 +14,7 @@ class Command(S3MigrateCommand):
         """.format(', '.join(S3OverlayStorage.IGNORED_EXTENSIONS))
 
     def all_models(self, options):
-        return File.objects.all()
+        return File.objects.all().exclude(file__startswith='S3/')
 
     def get_model_field(self, model, options):
         return model.file

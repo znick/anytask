@@ -11,7 +11,7 @@ class Command(S3MigrateCommand):
         """
 
     def all_models(self, options):
-        return UserProfile.objects.all()
+        return UserProfile.objects.all().exclude(avatar__name__startswith='S3/')
 
     def get_model_field(self, model, options):
         return model.avatar
