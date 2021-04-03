@@ -47,11 +47,13 @@ class S3MigrateCommand(BaseCommand):
         """Error: destination already exists and --ok-if-exists not present"""
         """ (skipping db record): {}""")
     DEST_EXISTS_OK = (
-        """Warning: destination already exists (will update db record): {}""")
+        """Note: destination already exists: {}""")
     SKIP_IGNORED_EXT = "Note: skipping: ignored extension: {}"
-    SKIP_ALREADY_S3 = "Note: skipping: already stored in S3: {}"
+    SKIP_ALREADY_S3 = "Note: skipping: already stored in S3 (by path): {}"
     OK_UPLOADED = "Note: uploaded: {}"
     ERR_UNHANDLED_EXCEPTION = "Error: unhandled exception: {}, {}"
+    NOTE_UPDATING_MODEL = "Note: updating model: {}, {}"
+    OK_UPDATED_MODEL = "Note: updated model: {}, {}"
     ERR_UPDATE_MODEL = "Error: update_model failed: {}, {}"
 
     def all_models(self, options):
@@ -87,29 +89,34 @@ class S3MigrateCommand(BaseCommand):
 
     def __init__(self, stdout=None, stderr=None, no_color=False):
         super(S3MigrateCommand, self).__init__(stdout, stderr, no_color)
+        self.rewrite_url = None
+        self.rewrite_url_only_existing = None
         self.dry_run = None
-        self.ok_if_exists = None
         self.ignored_extensions = None
         self.dest_storage = None
 
     def add_arguments(self, parser):
         """Call super when overriding"""
         parser.add_argument(
+            '--do-rewrite-url',
+            dest='rewrite_url',
+            action='store_true',
+            default=False,
+            help='Rewrite url field for files in DB, else will only upload to S3 (default: false)'
+        )
+        parser.add_argument(
+            '--rewrite-only-existing',
+            dest='rewrite_url_only_existing',
+            action='store_true',
+            default=False,
+            help='Rewrite url field only for files already uploaded to S3 (default: false). Implies --do-rewrite-url.'
+        )
+        parser.add_argument(
             '--execute',
             dest='execute',
             action='store_true',
             default=False,
-            help='Actually execute migration, else will only enumerate changes'
-        )
-        parser.add_argument(
-            '--ok-if-exists',
-            dest='ok_if_exists',
-            action='store_true',
-            default=False,
-            help='''If set and destination already exists in S3, just update '''
-                 '''db record. If not set, report error on file. It\'s normal, '''
-                 '''as many File records may reference same path. '''
-                 '''Sensible to set to true. Default is false.'''
+            help='Actually execute migration, else will only list changes (default: false)'
         )
         parser.add_argument(
             '--ignore-extension-extra',
@@ -121,8 +128,9 @@ class S3MigrateCommand(BaseCommand):
         )
 
     def handle(self, **options):
+        self.rewrite_url_only_existing = options['rewrite_url_only_existing']
+        self.rewrite_url = options['rewrite_url'] or self.rewrite_url_only_existing
         self.dry_run = not options['execute']
-        self.ok_if_exists = options['ok_if_exists']
         self.ignored_extensions = options['ignore_extension']
         self.ignored_extensions.extend(S3OverlayStorage.IGNORED_EXTENSIONS)
 
@@ -142,12 +150,19 @@ class S3MigrateCommand(BaseCommand):
                 self.stdout.write(self.SKIP_ALREADY_S3.format(old_path))
                 continue
             new_path = self.s3_upload(field)
-            if new_path and not self.dry_run:
-                try:
-                    if not self.update_model(model, new_path, options):
-                        self.stdout.write(self.ERR_UPDATE_MODEL.format(model, new_path))
-                except Exception as e:
-                    self.stdout.write(self.ERR_UNHANDLED_EXCEPTION.format(new_path, e))
+            if not (new_path and self.rewrite_url):
+                continue  # Upload failed or model update not required
+            self.stdout.write(self.NOTE_UPDATING_MODEL.format(model, new_path))
+            if self.dry_run:
+                continue
+            try:
+                if self.update_model(model, new_path, options):
+                    msg = self.OK_UPDATED_MODEL.format(model, new_path)
+                else:
+                    msg = self.ERR_UPDATE_MODEL.format(model, new_path)
+                self.stdout.write(msg)
+            except Exception as e:
+                self.stdout.write(self.ERR_UNHANDLED_EXCEPTION.format(new_path, e))
 
     def s3_upload(self, field):
         """:return: new path if model update required, else None"""
@@ -155,15 +170,16 @@ class S3MigrateCommand(BaseCommand):
         try:
             new_path = upload_to_s3(field, self.dest_storage, self.dry_run)
             self.stdout.write(self.OK_UPLOADED.format(new_path))
-            result = new_path
+            if self.rewrite_url_only_existing:
+                result = None  # don't update DB model for newly uploaded files
+            else:
+                result = new_path
         except KeyError as e:
             new_path = e.message
-            if self.ok_if_exists:
-                self.stdout.write(self.DEST_EXISTS_OK.format(new_path))
-                result = new_path
-            else:
-                self.stdout.write(self.DEST_EXISTS_NOT_OK.format(new_path))
+            self.stdout.write(self.DEST_EXISTS_OK.format(new_path))
+            result = new_path
         except Exception as e:
             self.stdout.write(self.ERR_UNHANDLED_EXCEPTION.format(field.name, e))
+            result = None
         finally:
             return result
