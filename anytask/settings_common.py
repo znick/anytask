@@ -108,7 +108,7 @@ STATICFILES_FINDERS = (
 )
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = '3$uum*a)#mnl()ds5em&scsv9gz*!fwbqa&%apz&ccbdukyyku'
+SECRET_KEY = ''
 
 # List of callables that know how to import templates from various sources.
 
@@ -205,7 +205,7 @@ ACCOUNT_ACTIVATION_DAYS = 7
 INVITE_EXPIRED_DAYS = 180
 
 RECAPTCHA_PUBLIC_KEY = "01MgZtfgTcrycDEs4Wdvd06g=="
-RECAPTCHA_PRIVATE_KEY = "18ccfac9d336db9817a893ce45751d5a"
+RECAPTCHA_PRIVATE_KEY = ""
 
 ANYSVN_SVN_URL_PREFIX = "/svn/"
 ANYSVN_REPOS_PATH = "../svn/user_repos"

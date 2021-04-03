@@ -18,14 +18,22 @@ if os.environ.get("DJANGO_ALLOWED_HOSTS") is not None:
     ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
     print "ALLOWED_HOSTS: ", ALLOWED_HOSTS
 
+print "ENGINE", os.environ.get("SQL_ENGINE")
+print "NAME", os.environ.get("SQL_DATABASE")
+print "USER", os.environ.get("SQL_USER")
+print "PASSWORD", os.environ.get("SQL_PASSWORD")
+print "HOST", os.environ.get("SQL_HOST")
+print "PORT", os.environ.get("SQL_PORT")
+
 DATABASES = {
     "default": {
-        "ENGINE": os.environ.get("SQL_ENGINE", "django.db.backends.sqlite3"),
-        "NAME": os.environ.get("SQL_DATABASE", os.path.join(PROJECT_PATH, "db.sqlite3")), # noqa
-        "USER": os.environ.get("SQL_USER", "user"),
-        "PASSWORD": os.environ.get("SQL_PASSWORD", "password"),
-        "HOST": os.environ.get("SQL_HOST", "localhost"),
-        "PORT": os.environ.get("SQL_PORT", "5432"),
+        "ENGINE": os.environ.get("SQL_ENGINE"),
+        "NAME": os.environ.get("SQL_DATABASE"),
+        "USER": os.environ.get("SQL_USER"),
+        "PASSWORD": os.environ.get("SQL_PASSWORD"),
+        "HOST": os.environ.get("SQL_HOST"),
+        "PORT": os.environ.get("SQL_PORT"),
+        "OPTIONS": {"charset": "utf8mb4"},
     }
 }
 
