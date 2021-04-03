@@ -1,16 +1,24 @@
 import json
 import logging
+import os
 import requests
 
-from settings_local import GITHUB_TOKEN, \
-    GITHUB_USER, GITHUB_REPO, GITHUB_ORG, GITHUB_WORKFLOW
+# TODO: move to environment variables
+#from settings_local import GITHUB_TOKEN, \
+#    GITHUB_USER, GITHUB_REPO, GITHUB_ORG, GITHUB_WORKFLOW
+
+GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN")
+GITHUB_USER = os.environ.get("GITHUB_USER")
+GITHUB_REPO = os.environ.get("GITHUB_REPO")
+GITHUB_ORG = os.environ.get("GITHUB_ORG")
+GITHUB_WORKFLOW = os.environ.get("GITHUB_WORKFLOW")
 
 
 class AbstractScheduler:
-    def __init__(self, *args):
+    def __init__(self):
         pass
 
-    def schedule(self, *args):
+    def schedule(self):
         raise NotImplementedError("attempt to run abstract worker.")
 
 
@@ -32,5 +40,22 @@ class GithubActionsScheduler(AbstractScheduler):
         auth = (GITHUB_USER, GITHUB_TOKEN)
         r = requests.post(url, data=json.JSONEncoder().encode(data),
                 headers=headers, auth=auth)
-        return r
+
+
+class GitlabCIScheduler(AbstractScheduler):
+    def __init__(self, *args):
+        super().__init__(*args)
+
+    def schedule(self, task, repo, run_cmd, files, docker_image, timeout):
+        inputs = {"TASK" : task,
+                  "REPO" : repo,
+                  "RUN_CMD" : run_cmd,
+                  "FILES" : json.JSONEncoder().encode(files),
+                  "DOCKER_IMAGE" : docker_image,
+                  "TIMEOUT" : timeout}
+        variables = "".join(["&variables[{}]={}".format(key, inputs[key])
+            for key in inputs])
+        url = "https://gitlab.com/api/v4/projects/25597841/ref/master"
+        "/trigger/pipeline?token={}&{}".format(GITLAB_TRIGGER_TOKEN, variables)
+        r = requests.post(url)
 

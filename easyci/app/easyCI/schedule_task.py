@@ -6,8 +6,10 @@ import subprocess
 import os
 import logging
 import urllib.request
+
 from multiprocessing import Pool
-from app.easyCI.scheduler import GithubActionsScheduler
+
+from app.easyCI.scheduler import GitlabCIScheduler
 import app.easyCI.docker as docker
 
 from contextlib import contextmanager
@@ -19,43 +21,38 @@ MAX_COMMENT_SIZE = 10000
 REQUEST_TIMEOUT = 300
 
 
-#def process_task(qtask):
-#    LOG.info("Proccess task %s", qtask.id)
-#    with tmp_dir() as dirname:
-#        prepare_dir(qtask, dirname)
-#
-#        run_cmd = qtask.course["run_cmd"] + [qtask.task, "/task_dir/task"]
-#        #run_cmd = ["ls", "/task_dir/task"]
-#        ret = docker.execute(run_cmd, cwd="/task_dir/git", timeout=qtask.course["timeout"], user='root',
-#                             network='bridge', image=qtask.course["docker_image"],
-#                             volumes=["{}:/task_dir:ro".format(os.path.abspath(dirname))])
-#
-#        status, retcode, is_timeout, output = ret
-#
-#        LOG.info("Task %d done, status:%s, retcode:%d, is_timeout:%d",
-#                     qtask.id, status, retcode, is_timeout)
-#
-#        LOG.info(" == Task %d output start", qtask.id)
-#        for line in output.split("\n"):
-#            LOG.info(line)
-#        LOG.info(" == Task %d output end", qtask.id)
-#
-#        if len(output) > MAX_COMMENT_SIZE:
-#            output = output[:MAX_COMMENT_SIZE]
-#            output += u"\n...\nTRUNCATED"
-#
-#        if is_timeout:
-#            output += u"\nTIMEOUT ({} sec)".format(qtask.course["timeout"])
-#        comment = u"[id:{}] Check DONE!<br>\nSubmited on {}<br>\n<pre>{}</pre>\n".format(qtask.id,
-#                                                                                     qtask.event_timestamp,
-#                                                                                     output)
-#        LOG.info("{}/api/v1/issue/{}/add_comment".format(qtask.host, qtask.issue_id))
-#        response = requests.post("{}/api/v1/issue/{}/add_comment".format(qtask.host, qtask.issue_id),
-#                                 auth=qtask.auth, data={"comment":comment.encode("utf-8")}, timeout=REQUEST_TIMEOUT)
-#        response.raise_for_status()
-#        LOG.info(" == Task %d DONE!, URL: %s/issue/%d", qtask.id, qtask.host, qtask.issue_id)
-#
-#        return qtask
+# TODO:
+#def send_message(ret, qtask):
+def send_message(ret):
+    print(ret)
+    return
+
+    status, retcode, is_timeout, output = ret
+
+    LOG.info("Task %d done, status:%s, retcode:%d, is_timeout:%d",
+                 qtask.id, status, retcode, is_timeout)
+
+    LOG.info(" == Task %d output start", qtask.id)
+    for line in output.split("\n"):
+        LOG.info(line)
+    LOG.info(" == Task %d output end", qtask.id)
+
+    if len(output) > MAX_COMMENT_SIZE:
+        output = output[:MAX_COMMENT_SIZE]
+        output += u"\n...\nTRUNCATED"
+
+    if is_timeout:
+        output += u"\nTIMEOUT ({} sec)".format(qtask.course["timeout"])
+    comment = u"[id:{}] Check DONE!<br>\nSubmited on {}<br>\n<pre>{}</pre>\n".format(qtask.id,
+                                                                                 qtask.event_timestamp,
+                                                                                 output)
+    LOG.info("{}/api/v1/issue/{}/add_comment".format(qtask.host, qtask.issue_id))
+    response = requests.post("{}/api/v1/issue/{}/add_comment".format(qtask.host, qtask.issue_id),
+                             auth=qtask.auth, data={"comment":comment.encode("utf-8")}, timeout=REQUEST_TIMEOUT)
+    response.raise_for_status()
+    LOG.info(" == Task %d DONE!, URL: %s/issue/%d", qtask.id, qtask.host, qtask.issue_id)
+
+    return qtask
 
 
 def load_passwords(filename=PASSWORDS):
@@ -80,7 +77,9 @@ def get_auth(passwords, host):
 
 config = load_config()
 passwords = load_passwords()
-scheduler = GithubActionsScheduler()
+
+# FIXME: remove GitlabCI hardcoding
+scheduler = GitlabCIScheduler()
 
 
 def course_exists(course_id):

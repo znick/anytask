@@ -1,5 +1,8 @@
-from flask import Flask
+import os
 import logging
+
+from flask import Flask
+from flask_session import Session
 
 
 def configure_logging():
@@ -10,11 +13,20 @@ def configure_logging():
 
 def create_app():
     app = Flask(__name__)
+
+    SECRET_KEY = os.environ.get('FLASK_SECRET_KEY') or 'dev_key'
+    app.config['SESSION_TYPE'] = 'filesystem'
+    app.config['SECRET_KEY'] = SECRET_KEY
+
+    Session(app)
+
     configure_logging()
 
-    from app.main import bp as main_bp
-    app.register_blueprint(main_bp)
+    with app.app_context():
+        from app.main import bp as main_bp
+        app.register_blueprint(main_bp)
+        
+        from app.api import bp as api_bp
+        app.register_blueprint(api_bp, url_prefix='/api')
 
-    from app.api import bp as api_bp
-    app.register_blueprint(api_bp, url_prefix='/api')
     return app
