@@ -1,18 +1,18 @@
 #!/bin/sh
 
-if [ "$DATABASE" = "postgres" ]
+if [ "$DATABASE" = "mysql" ]
 then
-    echo "Waiting for postgres..."
+    echo "Waiting for mysql..."
 
     while ! nc -z $SQL_HOST $SQL_PORT; do
       sleep 0.1
     done
 
-    echo "PostgreSQL started"
+    echo "MySQL started"
 fi
 
-python anytask/manage.py flush --no-input
-python anytask/manage.py migrate
+python manage.py makemigrations
+python manage.py migrate --run-syncdb
 
 exec "$@"
 

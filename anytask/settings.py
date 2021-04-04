@@ -16,14 +16,6 @@ for backend in TEMPLATES:
 # For example: 'DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]'
 if os.environ.get("DJANGO_ALLOWED_HOSTS") is not None:
     ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
-    print "ALLOWED_HOSTS: ", ALLOWED_HOSTS
-
-print "ENGINE", os.environ.get("SQL_ENGINE")
-print "NAME", os.environ.get("SQL_DATABASE")
-print "USER", os.environ.get("SQL_USER")
-print "PASSWORD", os.environ.get("SQL_PASSWORD")
-print "HOST", os.environ.get("SQL_HOST")
-print "PORT", os.environ.get("SQL_PORT")
 
 DATABASES = {
     "default": {
@@ -33,7 +25,7 @@ DATABASES = {
         "PASSWORD": os.environ.get("SQL_PASSWORD"),
         "HOST": os.environ.get("SQL_HOST"),
         "PORT": os.environ.get("SQL_PORT"),
-        "OPTIONS": {"charset": "utf8mb4"},
+        "OPTIONS": {"charset": "utf8mb4"},  # fix Incorrect string value error
     }
 }
 

@@ -13,12 +13,12 @@ ENV PYTHONUNBUFFERED 1
 # install dependencies
 RUN pip install --upgrade pip
 # install psycopg2 dependencies
-RUN apk update \
-    && apk add postgresql-dev gcc python-dev musl-dev \
+RUN apk update alpine-sdk \
+    && apk add gcc postgresql-dev python-dev musl-dev \
         libxml2-dev libxslt-dev \
         freetype-dev libpng-dev libjpeg-turbo-dev \
-        build-base libzmq zeromq-dev
-        git
+        build-base libzmq zeromq-dev \
+    && apk add --no-cache mariadb-dev  # for MySQL
 
 # RUN apt update
 COPY ./requirements.txt .
@@ -29,7 +29,10 @@ COPY ./entrypoint.sh .
 
 # copy project
 COPY . .
-RUN git submodule update --init --recursive
+#RUN git submodule update --init --recursive
+
+# cd to anytask
+WORKDIR /usr/src/app/anytask
 
 # run entrypoint.sh
 ENTRYPOINT ["/usr/src/app/entrypoint.sh"]

@@ -49,6 +49,7 @@ RUN addgroup -S app && adduser -S app -G app
 # create the appropriate directories
 ENV HOME=/home/app
 ENV APP_HOME=/home/app/web
+
 RUN mkdir $APP_HOME
 RUN mkdir $APP_HOME/anytask
 RUN mkdir $APP_HOME/anytask/static
@@ -73,6 +74,11 @@ RUN chown -R app:app $APP_HOME
 
 # change to the app user
 USER app
+
+# used by gunicorn in order to find application
+ENV PYTHONPATH=$APP_HOME/anytask
+# cd to anytask
+WORKDIR $APP_HOME
 
 # run entrypoint.prod.sh
 ENTRYPOINT ["/home/app/web/entrypoint.prod.sh"]
