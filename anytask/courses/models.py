@@ -64,7 +64,7 @@ class DefaultIssueFields(set):
 
 
 class FilenameExtension(models.Model):
-    name = models.CharField(max_length=10, db_index=False, null=False, blank=False)
+    name = models.CharField(max_length=40, db_index=False, null=False, blank=False)
 
     def __unicode__(self):
         return self.name

@@ -33,6 +33,9 @@ dateutils==0.6.6
 flake8==3.8.4
 django_premailer==0.2.0
 django-environ==0.4
+django-mysql==2.5.0
+mysqlclient==1.4.6
+pymysql==0.10.1
 nose==1.3.7
 psycopg2-binary==2.8.5  # needed by Postgres
 
