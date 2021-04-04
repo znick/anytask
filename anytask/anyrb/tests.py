@@ -3,6 +3,9 @@ import os
 from django.test import TestCase
 from unpacker import UnpackedFile, unpack_files
 
+from unittest import skipIf
+from mysql_skipif_cond import is_mysql_db
+
 CUR_DIR = os.path.dirname(os.path.abspath(__file__))
 TEST_DIR = os.path.join(CUR_DIR, "test_data")
 
@@ -31,12 +34,15 @@ class UnpackerTest(TestCase):
             unpacked_filenames = map(lambda x: x.filename(), unpacked_files)
             self.assertListEqual(['1.txt', arcfilename + '/1.py', arcfilename + '/dir/1.pl'], unpacked_filenames)
 
+    @skipIf(is_mysql_db, "Fails after switching to MySQL: No such file or directory")
     def test_unpack_zip(self):
         self._test_unpack("zipfile.zip")
 
+    @skipIf(is_mysql_db, "Fails after switching to MySQL: No such file or directory")
     def test_unpack_7z(self):
         self._test_unpack("7zfile.7z")
 
+    @skipIf(is_mysql_db, "Fails after switching to MySQL: No such file or directory")
     def test_unpack_rar(self):
         self._test_unpack("rarfile.rar")
 
@@ -51,6 +57,7 @@ class UnpackerTest(TestCase):
     def test_unpack_tar_xz(self):
         self._test_unpack("tarfile.tar.xz")
 
+    @skipIf(is_mysql_db, "Fails after switching to MySQL: No such file or directory")
     def test_cleanup(self):
         files = [
             UnpackedFile(os.path.join(TEST_DIR, "zipfile.zip"), "zipfile.zip"),
