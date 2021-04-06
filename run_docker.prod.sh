@@ -6,6 +6,7 @@ docker-compose down -v
 # docker system prune -a
 
 docker-compose -f docker-compose.prod.yml up -d --build
+sleep 10s
 docker-compose -f docker-compose.prod.yml exec web python anytask/manage.py makemigrations
 docker-compose -f docker-compose.prod.yml exec web python anytask/manage.py migrate --noinput
 docker-compose -f docker-compose.prod.yml exec web python anytask/manage.py collectstatic --no-input --clear
