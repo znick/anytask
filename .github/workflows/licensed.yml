@@ -1,0 +1,30 @@
+name: Check licenses of dependencies
+
+on: [push, pull_request]
+
+jobs:
+  licensed_check:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Set up Python 2.7
+        uses: actions/setup-python@v2
+        with:
+          python-version: 2.7
+      - uses: jonabc/setup-licensed@v1
+        with:
+          version: '2.x'
+      - name: Install system dependencies
+        run: |
+          sudo apt-get install python-virtualenv
+      - name: Init virtualenv
+        run: |
+          virtualenv --python=python2 venv-2.7
+          . venv-2.7/bin/activate
+          pip install pip>=9.0.1
+          pip install --upgrade flake8 'setuptools-scm==5.0.2'
+          pip install -r requirements.txt
+      - run: licensed cache
+      - run: licensed list
