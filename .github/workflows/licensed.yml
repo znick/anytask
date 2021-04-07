@@ -15,7 +15,7 @@ jobs:
           python-version: 2.7
       - uses: jonabc/setup-licensed@v1
         with:
-          version: '2.x'
+          version: '2.15.2'
       - name: Install system dependencies
         run: |
           sudo apt-get install python-virtualenv
