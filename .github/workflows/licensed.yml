@@ -26,5 +26,7 @@ jobs:
           pip install pip>=9.0.1
           pip install --upgrade flake8 'setuptools-scm==5.0.2'
           pip install -r requirements.txt
-      - run: licensed cache
-      - run: licensed list
+      - name: Check licenses status
+        run: |
+          licensed cache
+          licensed status
