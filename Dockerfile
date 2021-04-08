@@ -18,6 +18,7 @@ RUN apk update alpine-sdk \
         libxml2-dev libxslt-dev \
         freetype-dev libpng-dev libjpeg-turbo-dev \
         build-base libzmq zeromq-dev \
+        git \
     && apk add --no-cache mariadb-dev  # for MySQL
 
 # RUN apt update
@@ -29,7 +30,7 @@ COPY ./entrypoint.sh .
 
 # copy project
 COPY . .
-#RUN git submodule update --init --recursive
+RUN git submodule update --init --recursive
 
 # cd to anytask
 WORKDIR /usr/src/app/anytask

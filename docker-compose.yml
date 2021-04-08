@@ -1,30 +1,46 @@
 version: '3.7'
 
 services:
-  web:
-    build: .
-    command: python manage.py runserver 0.0.0.0:8000
-    volumes:
-      - ./anytask/:/usr/src/anytask/
-    ports:
-      - 8000:8000
-    env_file:
-      - ./.env.dev
-    depends_on:
-      - db
+
   db:
     image: mysql:5.7
-    command: --character-set-server=utf8 --collation-server=utf8_general_ci
-    restart: always
-    ports:
-      - 3306:3306
+    command: mysqld --character-set-server=utf8 --collation-server=utf8_general_ci
     volumes:
       - mysql_data:/var/lib/mysql
-    environment:
-      - MYSQL_DATABASE=django_db
-      - MYSQL_USER=user
-      - MYSQL_PASSWORD=password
-      - MYSQL_ROOT_PASSWORD=password
+    env_file:
+      - ./.env.dev
+    ports:
+      - 3306:3306
+    restart: 'on-failure'
+
+  anytask:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    depends_on:
+      - db
+    volumes:
+      - ./anytask/:/usr/src/anytask/
+    env_file:
+      - ./.env.dev
+    ports:
+      - 8000:8000
+    restart: 'on-failure'
+
+  reviewboard:
+    image: beanbag/reviewboard:4.0
+    depends_on:
+      - db
+    volumes:
+      - sitedir:/site
+    env_file:
+      - ./.env.dev
+    ports:
+      - 8080:8080
+    restart: 'on-failure'
 
 volumes:
   mysql_data:
+  static_volume:
+  media_volume:
+  sitedir:
+

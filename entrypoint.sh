@@ -11,8 +11,5 @@ then
     echo "MySQL started"
 fi
 
-python manage.py makemigrations
-python manage.py migrate --run-syncdb
-
 exec "$@"
 
