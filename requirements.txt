@@ -25,6 +25,8 @@ django-recaptcha==1.4.0
 django-reversion==1.10
 django==1.11.29
 django_premailer==0.2.0
+django-storages==1.9.1
+boto3==1.17.30
 entrypoints==0.2.3        # via nbconvert
 enum34==1.1.6             # via traitlets
 flup==1.0.3

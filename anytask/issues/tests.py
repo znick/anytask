@@ -6,9 +6,15 @@ when you run "manage.py test".
 
 Replace this with more appropriate tests for your application.
 """
+from StringIO import StringIO
+from unittest import skipIf
 
+from django.core.management import call_command
+from django.conf import settings
 from django.test import TestCase
 from django.contrib.auth.models import User
+from django.test.testcases import SerializeMixin
+
 from schools.models import School
 from courses.models import Course, IssueField
 from groups.models import Group
@@ -22,9 +28,22 @@ from mock import patch
 from BeautifulSoup import BeautifulSoup
 from datetime import datetime, timedelta
 from django.core.urlresolvers import reverse
+from storages.backends.s3boto3 import S3Boto3Storage
 
 import issues.views
 import anyrb.views
+import anyrb.unpacker
+from storage import S3OverlayStorage
+
+
+def is_s3_reachable():
+    try:
+        return S3Boto3Storage().listdir('/') is not None
+    except Exception:
+        return False
+
+
+IS_S3_REACHABLE = is_s3_reachable()
 
 
 def save_result_html(html):
@@ -933,3 +952,240 @@ class ViewsTest(TestCase):
         self.assertEqual(comment_body.a.string.strip().strip('\n'),
                          u'Review request 1',
                          'Wrong comment text about RB')
+
+    @skipIf(not IS_S3_REACHABLE, "S3 seems misconfigured")
+    def test_attached_file_in_s3(self):
+        client = self.client
+        issue = Issue.objects.create(task_id=self.task.id, student_id=self.student.id)
+        event_create_file = Event.objects.create(issue=issue, field=IssueField.objects.get(name='file'))
+        File.objects.create(file=SimpleUploadedFile('test_solution.c', b'main(){}'), event=event_create_file)
+        self.task.rb_integrated = False
+        self.task.save()
+
+        call_command('s3migrate_issue_attachments', '--execute', '--do-rewrite-url')
+
+        # login
+        self.assertTrue(client.login(username=self.student.username, password=self.student_password),
+                        "Can't login via teacher")
+
+        response = client.post(reverse(issues.views.upload),
+                               {'comment': 'test_comment',
+                                'files[]': '',
+                                'pk_test_solution.c': '1',
+                                'issue_id': str(issue.id),
+                                'form_name': 'comment_form',
+                                'update_issue': ''}, follow=True)
+        self.assertEqual(response.status_code, 200, "Can't get upload via student")
+        self.assertEqual(len(response.redirect_chain), 1, "Must be redirect")
+
+        html = BeautifulSoup(response.content)
+        container = html.body.find('div', 'container', recursive=False)
+
+        # history
+        history = container.find('ul', 'history')('li')
+        self.assertEqual(len(history), 1, 'History len is not 1')
+        self.assertEqual(history[0].strong.a['href'],
+                         '/users/student/',
+                         'Wrong comment author link')
+        self.assertEqual(history[0].strong.a.string.strip().strip('\n'),
+                         'student_last_name student_name',
+                         'Wrong comment author name')
+        comment_body = history[0].find('div', 'history-body').find('div', 'not-sanitize').next
+        self.assertEqual(comment_body.string.strip().strip('\n'),
+                         'test_comment',
+                         'Wrong comment text')
+        comment_body = history[0].find('div', 'history-body').find('div', 'files')
+        self.assertEqual(comment_body.a.string.strip().strip('\n'),
+                         'test_solution.c',
+                         'Wrong filename in comment')
+        self.assertTrue(comment_body.a['href'].startswith(settings.AWS_S3_ENDPOINT_URL))
+
+
+@skipIf(not IS_S3_REACHABLE, "S3 seems misconfigured")
+class S3MigrateIssueAttachments(TestCase, SerializeMixin):
+    def setUp(self):
+        self.teacher_password = 'password1'
+        self.teacher = User.objects.create_user(username='teacher',
+                                                password=self.teacher_password)
+        self.teacher.first_name = 'teacher_name'
+        self.teacher.last_name = 'teacher_last_name'
+        self.teacher.save()
+
+        self.student_password = 'password2'
+        self.student = User.objects.create_user(username='student',
+                                                password=self.student_password)
+        self.student.first_name = 'student_name'
+        self.student.last_name = 'student_last_name'
+        self.student.save()
+
+        self.year = Year.objects.create(start_year=2016)
+
+        self.group = Group.objects.create(name='group_name',
+                                          year=self.year)
+        self.group.students = [self.student]
+        self.group.save()
+
+        self.course = Course.objects.create(name='course_name',
+                                            year=self.year)
+        self.course.groups = [self.group]
+        self.course.teachers = [self.teacher]
+        self.course.issue_fields = IssueField.objects.exclude(id=10).exclude(id=11)
+        self.course.save()
+
+        self.school = School.objects.create(name='school_name',
+                                            link='school_link')
+        self.school.courses = [self.course]
+        self.school.save()
+
+        self.task = Task.objects.create(title='task_title',
+                                        course=self.course,
+                                        score_max=10)
+
+        self.s3_storage = S3OverlayStorage()
+
+    def test_dry_run_rewrite_new_no_changes(self):
+        issue = Issue.objects.create(task_id=self.task.id, student_id=self.student.id)
+        event_create_file = Event.objects.create(issue=issue, field=IssueField.objects.get(name='file'))
+        file = File.objects.create(file=SimpleUploadedFile('test_s3_issues.py', b'some text'), event=event_create_file)
+
+        out = StringIO()
+        call_command('s3migrate_issue_attachments', '--do-rewrite-url', stdout=out)
+
+        expected_s3_path = S3OverlayStorage.append_s3_prefix(file.file.name)
+        expected_stdout = ('''Note: Dry run\n'''
+                           '''Note: uploaded: {}\n'''
+                           '''Note: updating model: {}, {}''').format(
+            expected_s3_path, file, expected_s3_path)
+        file = File.objects.get(pk=file.pk)
+        self.assertFalse(S3OverlayStorage.is_s3_stored(file.file.name))
+        self.assertFalse(self.s3_storage.exists(expected_s3_path))
+        self.assertEqual(expected_stdout, out.getvalue().strip())
+
+    def test_dry_run_dont_rewrite_new_no_changes(self):
+        issue = Issue.objects.create(task_id=self.task.id, student_id=self.student.id)
+        event_create_file = Event.objects.create(issue=issue, field=IssueField.objects.get(name='file'))
+        file = File.objects.create(file=SimpleUploadedFile('test_s3_issues.py', b'some text'),
+                                   event=event_create_file)
+
+        out = StringIO()
+        call_command('s3migrate_issue_attachments', '--rewrite-only-existing', stdout=out)
+
+        expected_s3_path = S3OverlayStorage.append_s3_prefix(file.file.name)
+        expected_stdout = ('''Note: Dry run\n'''
+                           '''Note: uploaded: {}''').format(
+            expected_s3_path)
+        file = File.objects.get(pk=file.pk)
+        self.assertFalse(S3OverlayStorage.is_s3_stored(file.file.name))
+        self.assertFalse(self.s3_storage.exists(expected_s3_path))
+        self.assertEqual(expected_stdout, out.getvalue().strip())
+
+    def test_upload_no_rewrite(self):
+        issue = Issue.objects.create(task_id=self.task.id, student_id=self.student.id)
+        event_create_file = Event.objects.create(issue=issue, field=IssueField.objects.get(name='file'))
+        file = File.objects.create(file=SimpleUploadedFile('test_s3_issues.py', b'some text'), event=event_create_file)
+
+        out = StringIO()
+        call_command('s3migrate_issue_attachments', '--execute', stdout=out)
+
+        file = File.objects.get(pk=file.pk)
+        expected_s3_path = S3OverlayStorage.append_s3_prefix(file.file.name)
+        expected_stdout = 'Note: uploaded: {}'.format(expected_s3_path)
+        self.assertFalse(S3OverlayStorage.is_s3_stored(file.file.name))
+        self.assertTrue(self.s3_storage.exists(expected_s3_path))
+        self.assertEqual(expected_stdout, out.getvalue().strip())
+
+    def test_upload_with_rewrite(self):
+        issue = Issue.objects.create(task_id=self.task.id, student_id=self.student.id)
+        event_create_file = Event.objects.create(issue=issue, field=IssueField.objects.get(name='file'))
+        file = File.objects.create(file=SimpleUploadedFile('test_s3_issues.py', b'some text'), event=event_create_file)
+
+        out = StringIO()
+        call_command('s3migrate_issue_attachments', '--execute', '--do-rewrite-url', stdout=out)
+
+        expected_s3_path = S3OverlayStorage.append_s3_prefix(file.file.name)
+        expected_stdout = ('''Note: uploaded: {}\n'''
+                           '''Note: updating model: {}, {}\n'''
+                           '''Note: updated model: {}, {}''').format(
+            expected_s3_path, file, expected_s3_path, file, expected_s3_path)
+        file = File.objects.get(pk=file.pk)
+        self.assertTrue(S3OverlayStorage.is_s3_stored(file.file.name))
+        self.assertTrue(self.s3_storage.exists(expected_s3_path))
+        self.assertEqual(expected_stdout, out.getvalue().strip())
+
+    def test_rewrite_url_only_existing(self):
+        issue = Issue.objects.create(task_id=self.task.id, student_id=self.student.id)
+        event_create_file = Event.objects.create(issue=issue, field=IssueField.objects.get(name='file'))
+        file = File.objects.create(file=SimpleUploadedFile('test_s3_issues.py', b'some text'), event=event_create_file)
+
+        out = StringIO()
+        call_command('s3migrate_issue_attachments', '--execute', '--rewrite-only-existing', stdout=out)
+
+        file = File.objects.get(pk=file.pk)
+        expected_s3_path = S3OverlayStorage.append_s3_prefix(file.file.name)
+        self.assertFalse(S3OverlayStorage.is_s3_stored(file.file.name))
+        self.assertTrue(self.s3_storage.exists(expected_s3_path))
+        self.assertEqual('Note: uploaded: {}'.format(expected_s3_path),
+                         out.getvalue().strip())
+
+        out = StringIO()
+        call_command('s3migrate_issue_attachments', '--execute', '--rewrite-only-existing', stdout=out)
+
+        expected_s3_path = S3OverlayStorage.append_s3_prefix(file.file.name)
+        expected_stdout = ('''Note: destination already exists: {}\n'''
+                           '''Note: updating model: {}, {}\n'''
+                           '''Note: updated model: {}, {}''').format(
+            expected_s3_path, file, expected_s3_path, file, expected_s3_path)
+        file = File.objects.get(pk=file.pk)
+        self.assertTrue(S3OverlayStorage.is_s3_stored(file.file.name))
+        self.assertTrue(self.s3_storage.exists(file.file.name))
+        self.assertEqual(expected_stdout, out.getvalue().strip())
+
+    def test_upload_archives(self):
+        for ext in anyrb.unpacker.get_supported_extensions():
+            fail_msg = 'Failed for extension: {}'.format(ext)
+            issue = Issue.objects.create(task_id=self.task.id, student_id=self.student.id)
+            event_create_file = Event.objects.create(issue=issue, field=IssueField.objects.get(name='file'))
+            file = File.objects.create(
+                file=SimpleUploadedFile('test_s3_issues.{}'.format(ext), b'some binary archive'),
+                event=event_create_file)
+
+            out = StringIO()
+            call_command('s3migrate_issue_attachments', '--execute', '--do-rewrite-url', stdout=out)
+
+            expected_s3_path = S3OverlayStorage.append_s3_prefix(file.file.name)
+            expected_stdout = ('''Note: uploaded: {}\n'''
+                               '''Note: updating model: {}, {}\n'''
+                               '''Note: updated model: {}, {}''').format(
+                expected_s3_path, file, expected_s3_path, file, expected_s3_path)
+            file = File.objects.get(pk=file.pk)
+            self.assertTrue(
+                S3OverlayStorage.is_s3_stored(file.file.name),
+                fail_msg)
+            self.assertTrue(
+                self.s3_storage.exists(expected_s3_path),
+                fail_msg)
+            self.assertEqual(
+                expected_stdout,
+                out.getvalue().strip(),
+                fail_msg + out.getvalue().strip())
+
+            issue.delete()
+            event_create_file.delete()
+            file.delete()
+
+    def test_dont_upload_ipynb(self):
+        issue = Issue.objects.create(task_id=self.task.id, student_id=self.student.id)
+        event_create_file = Event.objects.create(issue=issue, field=IssueField.objects.get(name='file'))
+        file = File.objects.create(
+            file=SimpleUploadedFile('test_s3_issues.ipynb', b'some text'),
+            event=event_create_file)
+
+        out = StringIO()
+        call_command('s3migrate_issue_attachments', '--execute', stdout=out)
+
+        file = File.objects.get(pk=file.pk)
+        expected_s3_path = S3OverlayStorage.append_s3_prefix(file.file.name)
+        self.assertFalse(S3OverlayStorage.is_s3_stored(file.file.name))
+        self.assertFalse(self.s3_storage.exists(expected_s3_path))
+        self.assertEqual('Note: skipping: ignored extension: {}'.format(file.file.name),
+                         out.getvalue().strip())

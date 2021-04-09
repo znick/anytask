@@ -26,6 +26,10 @@ ARCHIVERS = {
 logger = logging.getLogger('django.request')
 
 
+def get_supported_extensions():
+    return list(ARCHIVERS.keys())
+
+
 class UnpackedFile(object):
     def __init__(self, path, filename):
         self.path = path

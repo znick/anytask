@@ -10,6 +10,12 @@ jobs:
 
     runs-on: ubuntu-18.04
 
+    services:
+      minio:
+        image: fclairamb/minio-github-actions
+        ports:
+          - 9000:9000
+
     steps:
     - uses: actions/checkout@v2
       with:
@@ -30,6 +36,11 @@ jobs:
         cd anytask
         flake8 --version
         flake8
+    - name: Create MinIO test bucket
+      run: |
+        s3cmd --no-ssl --access_key minioadmin --secret_key minioadmin \
+          --host localhost:9000 --host-bucket localhost:9000 \
+          mb s3://anytask-test-s3
     - name: Run django tests
       run: |
         cd anytask
