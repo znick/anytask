@@ -8,11 +8,10 @@ import logging
 import urllib.request
 
 from multiprocessing import Pool
+from contextlib import contextmanager
 
 from app.easyCI.scheduler import GitlabCIScheduler
-import app.easyCI.docker as docker
 
-from contextlib import contextmanager
 
 LOG = logging.getLogger(__name__)
 CONFIG = "config.json"
@@ -77,8 +76,6 @@ def get_auth(passwords, host):
 
 config = load_config()
 passwords = load_passwords()
-
-# FIXME: remove GitlabCI hardcoding
 scheduler = GitlabCIScheduler()
 
 
@@ -91,4 +88,5 @@ def add_to_scheduler(task):
     course = config[course_id]
     scheduler.schedule(task["title"], course["repo"],
                        " ".join(course["run_cmd"]),
-                       task["files"], course["docker_image"], course["timeout"])
+                       task["files"], course["docker_image"],
+                       course["timeout"])

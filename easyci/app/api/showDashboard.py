@@ -12,8 +12,7 @@ def dashboard():
     url = url_for('api.dashboard')
 
     scheduler = GitlabCIScheduler()
-    response = scheduler.get_pipelines()
-    data = json.loads(response.content.decode())
+    data = scheduler.get_pipelines()
 
     if not data:
         response = make_response()
@@ -22,10 +21,14 @@ def dashboard():
         return response
 
     info = []
-    for pipeline in data:
-        pipeline_id = pipeline["id"]
-        pipeline_vars_response = scheduler.get_pipeline_vars(pipeline_id)
-        pipeline_vars = json.loads(pipeline_vars_response.content.decode())
+    for (i, pipeline) in enumerate(data):
+        if i > 10:
+            break
+
+        if i == 0:
+            pipeline_id = pipeline["id"]
+            pipeline_vars = scheduler.get_pipeline_vars(pipeline_id)
+            print(pipeline_id, pipeline_vars)
 
         info.append({
             "id" : pipeline["id"],
