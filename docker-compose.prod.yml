@@ -1,0 +1,65 @@
+version: '3.7'
+
+services:
+
+  db:
+    image: mysql:5.7
+    command: mysqld --character-set-server=utf8 --collation-server=utf8_general_ci
+    ports:
+      - 3306:3306
+    volumes:
+      - mysql_data:/var/lib/mysql
+    env_file:
+      - ./.env.prod
+    restart: 'on-failure'
+
+  anytask:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    command: gunicorn anytask.wsgi:application --bind 0.0.0.0:8000
+    depends_on:
+      - db
+    volumes:
+      - static_volume:/home/app/web/anytask/static
+      - media_volume:/home/app/web/anytask/media
+    env_file:
+      - ./.env.prod
+    expose:
+        - 8000
+    restart: 'on-failure'
+
+  memcached:
+    image: memcached:alpine
+    restart: 'on-failure'
+
+  reviewboard:
+    image: beanbag/reviewboard:4.0
+    depends_on:
+      - db
+      - memcached
+    env_file:
+      - ./.env.prod
+    volumes:
+        - sitedir:/site
+    expose:
+        - 8080
+
+  nginx:
+    build: ./nginx
+    depends_on:
+      - anytask
+      - reviewboard
+    volumes:
+      - static_volume:/home/app/web/anytask/static
+      - media_volume:/home/app/web/anytask/media
+      - sitedir:/var/www/reviewboard
+    ports:
+      - 1337:80
+    restart: always
+
+volumes:
+  mysql_data:
+  static_volume:
+  media_volume:
+  sitedir:
