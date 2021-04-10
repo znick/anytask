@@ -140,11 +140,12 @@ def check_easy_ci(request, issue, event, sent_files):
                 }
             }
             try:
-                response = requests.post(issue.task.course.easyCI_url + "/api/add_task", json=check_request_dict)
+                response = requests.post(issue.task.course.easyCI_url
+                        + "/api/add_task", json=check_request_dict)
                 print(response.status_code)
             except requests.exceptions.RequestException:
-                issue.add_comment("Cannot send to easyCI. Time: " +
-                                  event.timestamp.isoformat())
+                issue.add_comment("Cannot send to easyCI. Time: "
+                        + event.timestamp.isoformat())
 
 
 @login_required
