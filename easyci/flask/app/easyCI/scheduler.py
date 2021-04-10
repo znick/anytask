@@ -46,6 +46,12 @@ class GitlabCIScheduler(AbstractScheduler):
         request = requests.get(url, headers=headers)
         return json.loads(request.content.decode())
 
+    def get_pipeline(self, pipeline_id):
+        url = self.prefix + "/pipelines/{}".format(pipeline_id)
+        headers = {"PRIVATE-TOKEN" : GITLAB_READ_PIPELINES_TOKEN }
+        request = requests.get(url, headers=headers)
+        return json.loads(request.content.decode())
+
     def get_pipeline_vars(self, pipeline_id):
         url = self.prefix + "/pipelines/{}/variables".format(pipeline_id)
         headers = {"PRIVATE-TOKEN" : GITLAB_READ_PIPELINES_TOKEN }
