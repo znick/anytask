@@ -11,7 +11,6 @@ from urllib.request import urlretrieve
 
 TASK_DIR = "task"
 GIT_DIR = "git"
-RUN_LOG_FILE = "run.log"
 
 BUF_SIZE = 4096
 LIMIT_BYTES = 10 * 1024 * 1024
@@ -30,7 +29,7 @@ def prepare_dir(repo, files, dirname="./"):
 
     os.mkdir(task_dir)
     for url in files:
-        # FIXME: do it using os
+        # TODO: do it using os
         filename = url.split('/')[-1]
         dst_path = os.path.join(task_dir, filename)
         logging.info("Download '%s' -> '%s'", url, dst_path)
