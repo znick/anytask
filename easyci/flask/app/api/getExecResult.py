@@ -33,6 +33,8 @@ def gitlabci():
 
     scheduler = GitlabCIScheduler()
     run_log = scheduler.get_job_artifact(job_id)
+    run_log["job_id"] = job_id
+    run_log["timestamp"] = job_data["created_at"]
     send_message(run_log)
 
     response = make_response()

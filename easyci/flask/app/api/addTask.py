@@ -13,7 +13,7 @@ def add_task():
 
     data = request.get_json() or {}
 
-    keys = ["course_id", "title", "files"]
+    keys = ["course_id", "title", "issue_id", "files"]
     for key in keys:
         if not (key in data):
             response = make_response("No key in json: " + key)
