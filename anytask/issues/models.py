@@ -282,152 +282,15 @@ class Issue(models.Model):
         delete_event = False
 
         if name == 'responsible_name':
-            new_responsible = value
-
-            if self.responsible != new_responsible:
-                new_followers = list(self.followers.all().exclude(id=new_responsible.id))
-                if self.responsible:
-                    new_followers.append(self.responsible)
-                self.responsible = new_responsible
-                self.followers = new_followers
-            else:
-                delete_event = True
-
-            value = get_user_fullname(value)
-
+            delete_event, value = self.set_field_responsible_name(value)
         elif name == 'followers_names':
-            if self.responsible and str(self.responsible.id) in value:
-                value.remove(str(self.responsible.id))
-            new_followers = User.objects.filter(id__in=value)
-
-            if list(new_followers) == list(self.followers.all()):
-                delete_event = True
-            else:
-                deleted_followers = [get_user_fullname(follower)
-                                     for follower in set(self.followers.all()).difference(set(new_followers))]
-                add_followers = [get_user_fullname(follower) for follower in new_followers.all()]
-                self.followers = value
-                value = ', '.join(add_followers) + '\n' + ', '.join(deleted_followers)
-
+            delete_event, value = self.set_field_followers_names(value)
         elif name == 'comment':
-            if value:
-                sent = True
-                for file_id, file in enumerate(value['files']):
-                    file.name = unidecode(file.name)
-                    uploaded_file = File(file=file, event=event)
-                    uploaded_file.save()
-                    if self.task.contest_integrated:
-                        for ext in settings.CONTEST_EXTENSIONS:
-                            filename, extension = os.path.splitext(file.name)
-                            if ext == extension:
-                                contest_submission = self.contestsubmission_set.create(
-                                    issue=self, author=author, file=uploaded_file
-                                )
-                                sent = contest_submission.upload_contest(ext, compiler_id=value['compilers'][file_id])
-                                if sent:
-                                    value['comment'] += u"<p>{0}</p>".format(_(u'otpravleno_v_kontest'))
-                                    if not self.is_status_accepted():
-                                        self.set_status_auto_verification()
-                                else:
-                                    value['comment'] += u"<p>{0}('{1}')</p>".format(_(u'oshibka_otpravki_v_kontest'),
-                                                                                    contest_submission.send_error)
-                                    self.followers.add(User.objects.get(username='anytask.monitoring'))
-                                break
-
-                    if self.task.rb_integrated \
-                            and (course.send_rb_and_contest_together or not self.task.contest_integrated):
-                        for ext in settings.RB_EXTENSIONS + [str(ext.name) for ext in course.filename_extensions.all()]:
-                            filename, extension = os.path.splitext(file.name)
-                            if ext == extension or ext == '.*':
-                                anyrb = AnyRB(event)
-                                review_request_id = anyrb.upload_review()
-                                if review_request_id is not None:
-                                    value['comment'] += u'<p><a href="{1}/r/{0}">Review request {0}</a></p>'. \
-                                        format(review_request_id, settings.RB_API_URL)
-                                else:
-                                    value['comment'] += u'<p>{0}</p>'.format(_(u'oshibka_otpravki_v_rb'))
-                                    self.followers.add(User.objects.get(username='anytask.monitoring'))
-                                break
-
-                if not value['files'] and not value['comment']:
-                    event.delete()
-                    return
-                else:
-                    self.update_time = timezone.now()
-                    value = u'<div class="issue-page-comment not-sanitize">' + value['comment'] + u'</div>'
-
-                if not self.is_status_auto_verification() and not self.is_status_accepted():
-                    if author == self.student and not self.is_status_need_info() and sent:
-                        self.set_status_verification()
-                    if author == self.responsible:
-                        if self.is_status_need_info():
-                            status_field = IssueField.objects.get(name='status')
-                            status_events = Event.objects \
-                                .filter(issue_id=self.id, field=status_field) \
-                                .exclude(author__isnull=True) \
-                                .order_by('-timestamp')
-
-                            if status_events:
-                                status_prev = self.task.course.issue_status_system.statuses \
-                                    .filter(name=status_events[0].value)
-                                if status_prev:
-                                    self.set_field(status_field, status_prev[0])
-                                else:
-                                    self.set_status_rework()
-                        else:
-                            self.set_status_rework()
-
+            value = self.set_field_comment(author, course, event, value)
         elif name == 'status':
-            try:
-                review_id = self.get_byname('review_id')
-                if review_id != '':
-                    if value.tag in [IssueStatus.STATUS_ACCEPTED, IssueStatus.STATUS_ACCEPTED_AFTER_DEADLINE]:
-                        update_status_review_request(review_id, 'submitted')
-                    elif self.is_status_accepted():
-                        update_status_review_request(review_id, 'pending')
-            except:  # noqa
-                pass
-
-            if self.status_field != value:
-                if self.task.parent_task is not None:
-                    parent_task_issue, created = Issue.objects.get_or_create(
-                        student=self.student,
-                        task=self.task.parent_task
-                    )
-                    if not self.task.score_after_deadline:
-                        if self.is_status_accepted_after_deadline():
-                            parent_task_issue.mark += self.mark
-                        elif value.tag == IssueStatus.STATUS_ACCEPTED_AFTER_DEADLINE:
-                            parent_task_issue.mark -= self.mark
-                    parent_task_issue.set_status_seminar()
-                self.status_field = value
-            else:
-                delete_event = True
-
-            value = self.status_field.get_name()
-
+            delete_event, value = self.set_field_status(value)
         elif name == 'mark':
-            if not value:
-                value = 0
-            value = min(normalize_decimal(value), self.task.score_max)
-            if self.mark != float(value):
-                if self.task.parent_task and \
-                        (self.task.score_after_deadline
-                         or not (not self.task.score_after_deadline and self.is_status_accepted_after_deadline())):
-                    parent_task_issue, created = Issue.objects.get_or_create(
-                        student=self.student,
-                        task=self.task.parent_task
-                    )
-                    parent_task_issue.mark += float(value) - self.mark
-                    parent_task_issue.set_status_seminar()
-
-                self.mark = float(value)
-            else:
-                delete_event = True
-
-            value = str(value)
-            if not from_contest and not self.is_status_accepted() and not self.is_status_new():
-                self.set_status_rework()
+            delete_event, value = self.set_field_mark(from_contest, value)
 
         self.save()
 
@@ -442,6 +305,167 @@ class Issue(models.Model):
             event.delete()
 
         return
+
+    def set_field_mark(self, from_contest, value):
+        delete_event = False
+        if not value:
+            value = 0
+        value = min(normalize_decimal(value), self.task.score_max)
+        if self.mark != float(value):
+            if self.task.parent_task and \
+                    (self.task.score_after_deadline
+                     or not (not self.task.score_after_deadline and self.is_status_accepted_after_deadline())):
+                parent_task_issue, created = Issue.objects.get_or_create(
+                    student=self.student,
+                    task=self.task.parent_task
+                )
+                parent_task_issue.mark += float(value) - self.mark
+                parent_task_issue.set_status_seminar()
+
+            self.mark = float(value)
+        else:
+            delete_event = True
+        value = str(value)
+        if not from_contest and not self.is_status_accepted() and not self.is_status_new():
+            self.set_status_rework()
+        return delete_event, value
+
+    def set_field_status(self, value):
+        delete_event = False
+        try:
+            review_id = self.get_byname('review_id')
+            if review_id != '':
+                if value.tag in [IssueStatus.STATUS_ACCEPTED, IssueStatus.STATUS_ACCEPTED_AFTER_DEADLINE]:
+                    update_status_review_request(review_id, 'submitted')
+                elif self.is_status_accepted():
+                    update_status_review_request(review_id, 'pending')
+        except:  # noqa
+            pass
+        if self.status_field != value:
+            if self.task.parent_task is not None:
+                parent_task_issue, created = Issue.objects.get_or_create(
+                    student=self.student,
+                    task=self.task.parent_task
+                )
+                if not self.task.score_after_deadline:
+                    if self.is_status_accepted_after_deadline():
+                        parent_task_issue.mark += self.mark
+                    elif value.tag == IssueStatus.STATUS_ACCEPTED_AFTER_DEADLINE:
+                        parent_task_issue.mark -= self.mark
+                parent_task_issue.set_status_seminar()
+            self.status_field = value
+        else:
+            delete_event = True
+        value = self.status_field.get_name()
+        return delete_event, value
+
+    def set_field_comment(self, author, course, event, value):
+        if value:
+            sent = True
+            for file_id, file in enumerate(value['files']):
+                file.name = unidecode(file.name)
+                uploaded_file = File(file=file, event=event)
+                uploaded_file.save()
+                if self.task.contest_integrated:
+                    sent = self.set_field_comment_contest_integrated(
+                        author, file, file_id, sent, uploaded_file, value)
+                if self.task.rb_integrated \
+                        and (course.send_rb_and_contest_together or not self.task.contest_integrated):
+                    self.set_field_comment_rb_integrated(course, event, file, value)
+
+            if not value['files'] and not value['comment']:
+                event.delete()
+                return
+            else:
+                self.update_time = timezone.now()
+                value = u'<div class="issue-page-comment not-sanitize">' + value['comment'] + u'</div>'
+
+            if not self.is_status_auto_verification() and not self.is_status_accepted():
+                self.set_field_comment_update_status(author, sent)
+        return value
+
+    def set_field_comment_update_status(self, author, sent):
+        if author == self.student and not self.is_status_need_info() and sent:
+            self.set_status_verification()
+        if author == self.responsible:
+            if self.is_status_need_info():
+                status_field = IssueField.objects.get(name='status')
+                status_events = Event.objects \
+                    .filter(issue_id=self.id, field=status_field) \
+                    .exclude(author__isnull=True) \
+                    .order_by('-timestamp')
+
+                if status_events:
+                    status_prev = self.task.course.issue_status_system.statuses \
+                        .filter(name=status_events[0].value)
+                    if status_prev:
+                        self.set_field(status_field, status_prev[0])
+                    else:
+                        self.set_status_rework()
+            else:
+                self.set_status_rework()
+
+    def set_field_comment_rb_integrated(self, course, event, file, value):
+        for ext in settings.RB_EXTENSIONS + [str(ext.name) for ext in course.filename_extensions.all()]:
+            filename, extension = os.path.splitext(file.name)
+            if ext == extension or ext == '.*':
+                anyrb = AnyRB(event)
+                review_request_id = anyrb.upload_review()
+                if review_request_id is not None:
+                    value['comment'] += u'<p><a href="{1}/r/{0}">Review request {0}</a></p>'. \
+                        format(review_request_id, settings.RB_API_URL)
+                else:
+                    value['comment'] += u'<p>{0}</p>'.format(_(u'oshibka_otpravki_v_rb'))
+                    self.followers.add(User.objects.get(username='anytask.monitoring'))
+                break
+
+    def set_field_comment_contest_integrated(self, author, file, file_id, sent, uploaded_file, value):
+        for ext in settings.CONTEST_EXTENSIONS:
+            filename, extension = os.path.splitext(file.name)
+            if ext == extension:
+                contest_submission = self.contestsubmission_set.create(
+                    issue=self, author=author, file=uploaded_file
+                )
+                sent = contest_submission.upload_contest(ext, compiler_id=value['compilers'][file_id])
+                if sent:
+                    value['comment'] += u"<p>{0}</p>".format(_(u'otpravleno_v_kontest'))
+                    if not self.is_status_accepted():
+                        self.set_status_auto_verification()
+                else:
+                    value['comment'] += u"<p>{0}('{1}')</p>".format(_(u'oshibka_otpravki_v_kontest'),
+                                                                    contest_submission.send_error)
+                    self.followers.add(User.objects.get(username='anytask.monitoring'))
+                break
+        return sent
+
+    def set_field_followers_names(self, value):
+        delete_event = False
+        if self.responsible and str(self.responsible.id) in value:
+            value.remove(str(self.responsible.id))
+        new_followers = User.objects.filter(id__in=value)
+        if list(new_followers) == list(self.followers.all()):
+            delete_event = True
+        else:
+            deleted_followers = [get_user_fullname(follower)
+                                 for follower in set(self.followers.all()).difference(set(new_followers))]
+            add_followers = [get_user_fullname(follower) for follower in new_followers.all()]
+            self.followers = value
+            value = ', '.join(add_followers) + '\n' + ', '.join(deleted_followers)
+        return delete_event, value
+
+    def set_field_responsible_name(self, value):
+        delete_event = False
+        new_responsible = value
+        if self.responsible != new_responsible:
+            new_followers = list(self.followers.all().exclude(id=new_responsible.id))
+            if self.responsible:
+                new_followers.append(self.responsible)
+            self.responsible = new_responsible
+            self.followers = new_followers
+        else:
+            delete_event = True
+        value = get_user_fullname(value)
+        return delete_event, value
 
     def set_teacher(self, groups=None, teacher=None, default=False, author=None):
         if default:
