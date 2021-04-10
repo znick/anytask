@@ -3,6 +3,7 @@ allowed:
   - apache-2.0
   - bsd-2-clause
   - bsd-3-clause
+  - bsd-0-clause
 
 python:
   virtual_env_dir: "./venv-2.7"

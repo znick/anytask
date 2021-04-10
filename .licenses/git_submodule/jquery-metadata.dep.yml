@@ -1,0 +1,10 @@
+---
+name: jquery-metadata
+version: e5a9e4315675bf4d68716872ca754e858088f8ab
+type: git_submodule
+homepage: https://github.com/jquery-archive/jquery-metadata.git
+license: mit
+licenses:
+- source: jquery-metadata/jquery.metadata.js
+  text: "/*\n * Metadata - jQuery plugin for parsing metadata from elements\n *\n * Copyright (c) 2006 John Resig, Yehuda Katz, Jörn Zaefferer, Paul McLanahan\n *\n * Dual licensed under the MIT and GPL licenses:\n *   http://www.opensource.org/licenses/mit-license.php\n *   http://www.gnu.org/licenses/gpl.html\n *\n */"
+notices: []
