@@ -142,7 +142,7 @@ def check_easy_ci(request, issue, event, sent_files):
             }
             try:
                 response = requests.post(issue.task.course.easyCI_url
-                                         + "/api/add_task", 
+                                         + "/api/add_task",
                                          json=check_request_dict)
                 print(response.status_code)
             except requests.exceptions.RequestException:
