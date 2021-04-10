@@ -123,7 +123,8 @@ def contest_rejudge(issue):
 
 
 def check_easy_ci(request, issue, event, sent_files):
-    if not(issue.task.course.easyCI_url is None) and issue.task.course.easyCI_url != "":
+    if not(issue.task.course.easyCI_url is None) \
+            and issue.task.course.easyCI_url != "":
         files = []
         for sent_file in sent_files:
             files.append(request.build_absolute_uri(sent_file.url))
@@ -141,11 +142,12 @@ def check_easy_ci(request, issue, event, sent_files):
             }
             try:
                 response = requests.post(issue.task.course.easyCI_url
-                        + "/api/add_task", json=check_request_dict)
+                                         + "/api/add_task", 
+                                         json=check_request_dict)
                 print(response.status_code)
             except requests.exceptions.RequestException:
                 issue.add_comment("Cannot send to easyCI. Time: "
-                        + event.timestamp.isoformat())
+                                  + event.timestamp.isoformat())
 
 
 @login_required
