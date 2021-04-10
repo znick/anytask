@@ -1,0 +1,11 @@
+---
+name: pexpect
+version: 4.6.0
+type: pip
+summary: Pexpect allows easy control of interactive console applications.
+homepage: https://pexpect.readthedocs.io/
+license: isc
+licenses:
+- sources: LICENSE
+  text: "ISC LICENSE\n\n    This license is approved by the OSI and FSF as GPL-compatible.\n        http://opensource.org/licenses/isc-license.txt\n\n    Copyright (c) 2013-2014, Pexpect development team\n    Copyright (c) 2012, Noah Spurrier <noah@noah.org>\n\n    Permission to use, copy, modify, and/or distribute this software for any\n    purpose with or without fee is hereby granted, provided that the above\n    copyright notice and this permission notice appear in all copies.\n    \n    THE SOFTWARE IS PROVIDED \"AS IS\" AND THE AUTHOR DISCLAIMS ALL WARRANTIES\n    WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF\n    MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR\n    ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES\n    WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN\n    ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF\n    OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.\n\n"
+notices: []

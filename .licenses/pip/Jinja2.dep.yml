@@ -1,15 +1,17 @@
 ---
-name: mock
-version: 3.0.5
+name: Jinja2
+version: 2.10.1
 type: pip
-summary: Rolling backport of unittest.mock for all Pythons
-homepage: http://mock.readthedocs.org/en/latest/
-license: bsd-2-clause
+summary: A small but fast and easy to use stand-alone template engine written in pure
+  python.
+homepage: http://jinja.pocoo.org/
+license: bsd-3-clause
 licenses:
-- sources: LICENSE.txt
+- sources: LICENSE
   text: |
-    Copyright (c) 2003-2013, Michael Foord & the mock team
-    All rights reserved.
+    Copyright (c) 2009 by the Jinja Team, see AUTHORS for more details.
+
+    Some rights reserved.
 
     Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions are
@@ -22,6 +24,10 @@ licenses:
           copyright notice, this list of conditions and the following
           disclaimer in the documentation and/or other materials provided
           with the distribution.
+
+        * The names of the contributors may not be used to endorse or
+          promote products derived from this software without specific
+          prior written permission.
 
     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
     "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT

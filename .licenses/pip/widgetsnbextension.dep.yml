@@ -1,0 +1,11 @@
+---
+name: widgetsnbextension
+version: 3.2.1
+type: pip
+summary: IPython HTML widgets for Jupyter
+homepage: http://ipython.org
+license: BSD
+licenses:
+- sources: setup.py
+  text: (missing)
+notices: []
