@@ -9,11 +9,14 @@ import threading
 from contextlib import contextmanager
 from urllib.request import urlretrieve
 
+logging.basicConfig(level=logging.DEBUG)
+
 TASK_DIR = "task"
 GIT_DIR = "git"
 
 BUF_SIZE = 4096
 LIMIT_BYTES = 10 * 1024 * 1024
+MAX_COMMENT_SIZE = 10000
 
 
 def git_clone(repo, dst_dir):
@@ -73,9 +76,9 @@ class Worker:
         logging.info("Process task %s", self.task)
         prepare_dir(self.repo, self.files)
         run_cmd = [self.run_cmd] + [self.task, "../"+TASK_DIR]
-        output = self.execute(run_cmd, cwd=GIT_DIR)
+        output, ret = self.execute(run_cmd, cwd=GIT_DIR)
         self.make_artifact(output)
-        print(output)
+        self.log_output(ret)
 
     def execute(self, cmd, cwd='./'):
         if self.timeout is not None and \
@@ -121,9 +124,31 @@ class Worker:
         ret["course_id"] = self.course_id
         ret["issue_id"] = self.issue_id
 
-        return json.dumps(ret)
+        return json.dumps(ret), ret
 
     def make_artifact(self, output):
         with open(self.output_file, 'w') as f:
             f.write(output)
 
+    def log_output(self, ret):
+        status = "failure"
+        if ret["status"]:
+            status = "success"
+
+        logging.info(" Task {} done, status: {}, retcode: {}, is_timeout: {}".format(
+            self.task, status, ret["retcode"], ret["is_timeout"]
+        ))
+
+        if len(ret["output"]) > MAX_COMMENT_SIZE:
+            ret["output"] = ret["output"][:MAX_COMMENT_SIZE]
+            ret["output"] += "\n...\nTRUNCATED\n"
+
+        if ret["is_timeout"]:
+            ret["output"] += "\nTIMEOUT ({} sec)\n".format(ret["timeout"])
+
+        message = "\n == Task output start\n"
+        message += ret["output"]
+        message += " == Task output end\n"
+
+        logging.info(message)
+        return message
