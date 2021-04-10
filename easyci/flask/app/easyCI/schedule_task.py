@@ -73,6 +73,7 @@ def send_message(ret):
     output = ret["output"]
     job_id = ret["job_id"]
     timestamp = ret["timestamp"]
+    pipeline_url = ret["pipeline_url"]
 
     course = config[course_id]
     host = course["host"]
@@ -96,7 +97,7 @@ def send_message(ret):
 
     comment = u"[id:{}] Check DONE!<br>\nSubmited on" \
             "{}<br>\n<pre>{}</pre><br>\n<a href={}>Link to pipeline</a>" \
-              .format(job_id, timestamp, output, "link")
+              .format(job_id, timestamp, output, pipeline_url)
     print("comment:", comment)
 #
 #    LOG.info("{}/api/v1/issue/{}/add_comment".format(qtask.host, qtask.issue_id))

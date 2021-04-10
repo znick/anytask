@@ -16,6 +16,15 @@ class AbstractScheduler:
         raise NotImplementedError("attempt to run abstract worker.")
 
 
+def gitlabci_getter(url_constructor):
+    def wrapper(*args, **kwargs):
+        url = url_constructor(*args, **kwargs)
+        headers = {"PRIVATE-TOKEN" : GITLAB_READ_PIPELINES_TOKEN }
+        request = requests.get(url, headers=headers)
+        return json.loads(request.content.decode())
+    return wrapper
+
+
 class GitlabCIScheduler(AbstractScheduler):
     output_file = "run.log"
 
@@ -40,21 +49,20 @@ class GitlabCIScheduler(AbstractScheduler):
                     GITLAB_TRIGGER_TOKEN, variables)
         r = requests.post(url)
 
+    @gitlabci_getter
     def get_pipelines(self):
-        url = self.prefix + "/pipelines"
-        headers = {"PRIVATE-TOKEN" : GITLAB_READ_PIPELINES_TOKEN }
-        request = requests.get(url, headers=headers)
-        return json.loads(request.content.decode())
+        return self.prefix + "/pipelines"
 
+    @gitlabci_getter
+    def get_pipeline(self, pipeline_id):
+        return self.prefix + "/pipelines/{}".format(pipeline_id)
+
+    @gitlabci_getter
     def get_pipeline_vars(self, pipeline_id):
-        url = self.prefix + "/pipelines/{}/variables".format(pipeline_id)
-        headers = {"PRIVATE-TOKEN" : GITLAB_READ_PIPELINES_TOKEN }
-        request = requests.get(url, headers=headers)
-        return json.loads(request.content.decode())
+        return self.prefix + "/pipelines/{}/variables".format(pipeline_id)
 
+    @gitlabci_getter
     def get_job_artifact(self, job_id):
-        url = self.prefix + "/jobs/{}/artifacts/{}".format(
+        return self.prefix + "/jobs/{}/artifacts/{}".format(
                 job_id, self.output_file)
-        headers = {"PRIVATE-TOKEN" : GITLAB_READ_PIPELINES_TOKEN }
-        request = requests.get(url, headers=headers)
-        return json.loads(request.content.decode())
+

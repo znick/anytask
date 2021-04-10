@@ -17,6 +17,8 @@ def gitlabci():
         return make_response("Forbidden", 403)
 
     pipeline_data = request.get_json()
+    pipeline_id = pipeline_data["object_attributes"]["id"]
+
     job_data = pipeline_data['builds'][0]
     job_id = job_data['id']
     status = job_data['status']
@@ -35,6 +37,7 @@ def gitlabci():
     run_log = scheduler.get_job_artifact(job_id)
     run_log["job_id"] = job_id
     run_log["timestamp"] = job_data["created_at"]
+    run_log["pipeline_url"] = scheduler.get_pipeline(pipeline_id)["web_url"]
     send_message(run_log)
 
     response = make_response()
