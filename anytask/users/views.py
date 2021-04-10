@@ -62,49 +62,7 @@ def profile(request, username=None, year=None):
     user_above_user_to_show = True
 
     if user_to_show != user:
-        user_teach_user_to_show = False
-        user_to_show_teach_user = False
-        user_school_user_to_show = False
-        user_school_teach_user_to_show = False
-
-        groups_user_to_show = user_to_show.group_set.all()
-        groups = user.group_set.all()
-
-        courses_user_to_show = Course.objects.filter(groups__in=groups_user_to_show)
-        schools_user_to_show = School.objects.filter(courses__in=courses_user_to_show)
-        courses_user_to_show_teacher = Course.objects.filter(teachers=user_to_show)
-        schools_user_to_show_teacher = School.objects.filter(courses__in=courses_user_to_show_teacher)
-
-        courses = Course.objects.filter(groups__in=groups)
-        schools = School.objects.filter(courses__in=courses)
-        courses_teacher = Course.objects.filter(teachers=user)
-        schools_teacher = School.objects.filter(courses__in=courses_teacher)
-
-        if courses_user_to_show_teacher & courses:
-            user_to_show_teach_user = True
-
-        if courses_teacher & courses_user_to_show:
-            user_teach_user_to_show = True
-
-        if (schools_user_to_show | schools_user_to_show_teacher) & (schools | schools_teacher):
-            user_school_user_to_show = True
-
-        if schools_teacher & schools_user_to_show:
-            user_school_teach_user_to_show = True
-
-        if not (user.is_staff or user_school_user_to_show):
-            if not ((courses_user_to_show | courses_user_to_show_teacher) & (courses | courses_teacher)):
-                if not (groups_user_to_show & groups):
-                    raise PermissionDenied
-
-        show_email = \
-            user.is_staff or \
-            user_to_show_profile.show_email or \
-            user_teach_user_to_show or \
-            user_to_show_teach_user
-        user_above_user_to_show = \
-            user.is_staff or \
-            user_school_teach_user_to_show
+        show_email, user_above_user_to_show = check_view_profile_permission(user, user_to_show, user_to_show_profile)
 
     teacher_in_courses = Course.objects.filter(is_active=True).filter(teachers=user_to_show).distinct()
 
@@ -181,6 +139,47 @@ def profile(request, username=None, year=None):
     }
 
     return render(request, 'user_profile.html', context)
+
+
+def check_view_profile_permission(user, user_to_show, user_to_show_profile):
+    """
+    Raises PermissionDenied
+    """
+    user_teach_user_to_show = False
+    user_to_show_teach_user = False
+    user_school_user_to_show = False
+    user_school_teach_user_to_show = False
+    groups_user_to_show = user_to_show.group_set.all()
+    groups = user.group_set.all()
+    courses_user_to_show = Course.objects.filter(groups__in=groups_user_to_show)
+    schools_user_to_show = School.objects.filter(courses__in=courses_user_to_show)
+    courses_user_to_show_teacher = Course.objects.filter(teachers=user_to_show)
+    schools_user_to_show_teacher = School.objects.filter(courses__in=courses_user_to_show_teacher)
+    courses = Course.objects.filter(groups__in=groups)
+    schools = School.objects.filter(courses__in=courses)
+    courses_teacher = Course.objects.filter(teachers=user)
+    schools_teacher = School.objects.filter(courses__in=courses_teacher)
+    if courses_user_to_show_teacher & courses:
+        user_to_show_teach_user = True
+    if courses_teacher & courses_user_to_show:
+        user_teach_user_to_show = True
+    if (schools_user_to_show | schools_user_to_show_teacher) & (schools | schools_teacher):
+        user_school_user_to_show = True
+    if schools_teacher & schools_user_to_show:
+        user_school_teach_user_to_show = True
+    if not (user.is_staff or user_school_user_to_show):
+        if not ((courses_user_to_show | courses_user_to_show_teacher) & (courses | courses_teacher)):
+            if not (groups_user_to_show & groups):
+                raise PermissionDenied
+    show_email = \
+        user.is_staff or \
+        user_to_show_profile.show_email or \
+        user_teach_user_to_show or \
+        user_to_show_teach_user
+    user_above_user_to_show = \
+        user.is_staff or \
+        user_school_teach_user_to_show
+    return show_email, user_above_user_to_show
 
 
 def group_by_year(objects):
