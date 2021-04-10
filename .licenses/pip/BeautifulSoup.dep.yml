@@ -1,0 +1,13 @@
+---
+name: BeautifulSoup
+version: 3.2.1
+type: pip
+summary: HTML/XML parser for quick-turnaround applications like screen-scraping.
+homepage: http://www.crummy.com/software/BeautifulSoup/
+license: mit
+licenses:
+- source: BeautifulSoup.py
+  text: "Copyright (c) 2004-2019, Leonard Richardson\n\nAll rights reservedn\n\nRedistribution and use in source and binary forms, with or without\nmodification, are permitted provided that the following conditions are
+met:\n\n  * Redistributions of source code must retain the above copyright\n    notice, this list of conditions and the following disclaimer.\n\n  * Redistributions in binary form must reproduce the above\n    copyright notice, this list of conditions and the following\n    disclaimer in the documentation and/or other materials provided
+    with the distribution.\n\n  * Neither the name of the the Beautiful Soup Consortium and All\n    Night Kosher Bakery nor the names of its contributors may be\b    used to\nendorse or promote products derived from this software\n    without specific prior written permission\nTHIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND\n CONTRIBUTORS\n\"AS IS\" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT\nLIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR\nA PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR\nCONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,\nEXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,\nPROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR\nPROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF\nLIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING\nNEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\nSOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE, DAMMIT."
+notices: []
