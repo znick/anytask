@@ -57,8 +57,17 @@ class GitlabCIScheduler(AbstractScheduler):
     def get_pipeline(self, pipeline_id):
         return self.prefix + "/pipelines/{}".format(pipeline_id)
 
-    @gitlabci_getter
     def get_pipeline_vars(self, pipeline_id):
+        vars_raw = self._get_pipeline_vars_raw(pipeline_id)
+        # vars_raw = list of {"key" : <var_name>, "value" : <var_value>, ...}
+        get_var = lambda x: [i for i in vars_raw if i["key"] == x][0]["value"]
+        vars_new = dict()
+        for var in vars_raw:
+            vars_new[var["key"]] = var["value"]
+        return vars_new
+
+    @gitlabci_getter
+    def _get_pipeline_vars_raw(self, pipeline_id):
         return self.prefix + "/pipelines/{}/variables".format(pipeline_id)
 
     @gitlabci_getter

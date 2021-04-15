@@ -16,31 +16,62 @@ def gitlabci():
             gitlab_token_header != GITLAB_WEBHOOKS_TOKEN:
         return make_response("Forbidden", 403)
 
+    # data got via Gitlab Webhooks
     pipeline_data = request.get_json()
     pipeline_id = pipeline_data["object_attributes"]["id"]
 
+    # obtain job data
     job_data = pipeline_data['builds'][0]
+    # get job status
+    job_status = job_data["status"]
     job_id = job_data['id']
-    status = job_data['status']
-    if status != 'success':
-        if status == 'failed':
-            # something in CI went wrong
-            response = make_response()
-            response.status_code = 500
-            return response
-        else:
-            response = make_response()
-            response.status_code = 204
-            return response
 
     scheduler = GitlabCIScheduler()
-    run_log = scheduler.get_job_artifact(job_id)
-    run_log["job_id"] = job_id
-    run_log["timestamp"] = job_data["created_at"]
-    run_log["pipeline_url"] = scheduler.get_pipeline(pipeline_id)["web_url"]
-    send_message(run_log)
+    variables = scheduler.get_pipeline_vars(pipeline_id)
+
+    # init structure for message
+    ret = dict()
+
+    # set job data
+    ret["job_id"] = job_id
+    ret["timestamp"] = job_data["created_at"]
+    ret["pipeline_url"] = scheduler.get_pipeline(pipeline_id)["web_url"]
+    ret["job_status"] = job_data["status"]
+
+    # set task data
+    ret["course_id"] = int(variables["COURSE_ID"])
+    ret["issue_id"] = int(variables["ISSUE_ID"])
+
+    ret["status"] = None
+    ret["retcode"] = None
+    ret["is_timeout"] = None
+    ret["output"] = None
 
     response = make_response()
-    response.status_code = 204
+    if job_status == 'success':
+        run_log = scheduler.get_job_artifact(job_id)
+        print(run_log)
+        ret["status"] = run_log["status"]
+        ret["retcode"] = run_log["retcode"]
+        ret["is_timeout"] = run_log["is_timeout"]
+        ret["output"] = run_log["output"]
+        send_message(ret)
+        response.status_code = 200
+
+    elif job_status == 'running' or job_status == 'pending':
+        send_message(ret)
+        response.status_code = 200
+
+    elif job_status == 'failed':
+        # something in GitlabCI went wrong
+        response = make_response()
+        response.set_data("Something wrong with GitlabCI")
+        response.status_code = 500
+    else:
+        # unknown GitlabCI status
+        response = make_response()
+        response.set_data("Bad GitlabCI status '{}'".format(job_status))
+        response.status_code = 500
+
     return response
 

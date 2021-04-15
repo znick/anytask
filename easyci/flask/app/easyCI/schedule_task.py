@@ -65,16 +65,21 @@ def add_to_scheduler(task):
 
 
 def send_message(ret):
+    job_id = ret["job_id"]
+    timestamp = ret["timestamp"]
+    pipeline_url = ret["pipeline_url"]
+    job_status = ret["job_status"]
+
     course_id = ret["course_id"]
     issue_id = ret["issue_id"]
+
+    # if job_status == "success", we have these 4 fields
     status = ret["status"]
     retcode = ret["retcode"]
     is_timeout = ret["is_timeout"]
     output = ret["output"]
-    job_id = ret["job_id"]
-    timestamp = ret["timestamp"]
-    pipeline_url = ret["pipeline_url"]
 
+    print(config)
     course = config[course_id]
     host = course["host"]
     auth = get_auth(passwords, host)
@@ -88,16 +93,21 @@ def send_message(ret):
 #        LOG.info(line)
 #    LOG.info(" == Task %d output end", qtask.id)
 
-    if len(output) > MAX_COMMENT_SIZE:
-        output = output[:MAX_COMMENT_SIZE]
-        output += u"\n...\nTRUNCATED"
+    if job_status == "success":
+        if len(output) > MAX_COMMENT_SIZE:
+            output = output[:MAX_COMMENT_SIZE]
+            output += u"\n...\nTRUNCATED"
 
-    if is_timeout:
-        output += u"\nTIMEOUT ({} sec)".format(timeout)
+        if is_timeout:
+            output += u"\nTIMEOUT ({} sec)".format(timeout)
 
-    comment = u"[id:{}] Check DONE!<br>\nSubmited on" \
-            "{}<br>\n<pre>{}</pre><br>\n<a href={}>Link to pipeline</a>" \
-              .format(job_id, timestamp, output, pipeline_url)
+    comment = u"[id:{}] Job status: {}. Status: {}<br>\n" \
+               "Submited on {}<br>\n<pre>{}</pre><br>\n" \
+               "<a href={}>Link to pipeline</a>" \
+              .format(job_id, job_status, status,
+                      timestamp, output,
+                      pipeline_url)
+
     print("comment:", comment)
 #
 #    LOG.info("{}/api/v1/issue/{}/add_comment".format(qtask.host, qtask.issue_id))
