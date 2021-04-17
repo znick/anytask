@@ -39,6 +39,11 @@ while (( "$#" )); do
       exit 0
       ;;
 
+    --with-minio)
+      export ANYBETA_WITH_MINIO=1
+      shift
+      ;;
+
     *)
       ANYBETA_error "Error: unknown parameter $ANYBETA_PARAM"
       exit 1

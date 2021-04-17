@@ -16,6 +16,10 @@ export ANYBETA_VENV_NAME="anytask_venv"
 export ANYBETA_VENV_DIR="$ANYBETA_ROOT/$ANYBETA_VENV_NAME"
 export ANYBETA_VENV_ACTIVATE="$ANYBETA_VENV_DIR/bin/activate"
 
+export ANYBETA_MINIO_BUCKET="anytask-test-s3"
+export ANYBETA_MINIO_IMAGE="minio/minio:RELEASE.2021-03-17T02-33-02Z"
+export ANYBETA_MINIO_OPTIONS="--access_key minioadmin --secret_key minioadmin --host localhost:9000 --host-bucket localhost:9000"
+
 export ANYBETA_REPORT_PREFIX=">>>"
 export ANYBETA_ERROR_PREFIX="ERROR:"
 
@@ -94,6 +98,10 @@ function ANYBETA_cleanup() {
 
     unset ANYBETA_ROOT
     unset ANYBETA_DEPLOY
+    unset ANYBETA_WITH_MINIO
+    unset ANYBETA_MINIO_BUCKET
+    unset ANYBETA_MINIO_IMAGE
+    unset ANYBETA_MINIO_OPTIONS
     unset ANYBETA_PYTHON_PATH
     unset ANYBETA_VENV_NAME
     unset ANYBETA_VENV_DIR
