@@ -94,6 +94,7 @@ class S3MigrateCommand(BaseCommand):
         self.dry_run = None
         self.ignored_extensions = None
         self.dest_storage = None
+        self.newly_uploaded = set()
 
     def add_arguments(self, parser):
         """Call super when overriding"""
@@ -170,14 +171,18 @@ class S3MigrateCommand(BaseCommand):
         try:
             new_path = upload_to_s3(field, self.dest_storage, self.dry_run)
             self.stdout.write(self.OK_UPLOADED.format(new_path))
+            self.newly_uploaded.add(new_path)
             if self.rewrite_url_only_existing:
                 result = None  # don't update DB model for newly uploaded files
             else:
                 result = new_path
         except KeyError as e:
             new_path = e.message
-            self.stdout.write(self.DEST_EXISTS_OK.format(new_path))
-            result = new_path
+            if (new_path in self.newly_uploaded) and self.rewrite_url_only_existing:
+                result = None
+            else:
+                self.stdout.write(self.DEST_EXISTS_OK.format(new_path))
+                result = new_path
         except Exception as e:
             self.stdout.write(self.ERR_UNHANDLED_EXCEPTION.format(field.name, e))
             result = None

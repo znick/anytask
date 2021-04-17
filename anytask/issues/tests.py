@@ -1140,6 +1140,43 @@ class S3MigrateIssueAttachments(TestCase, SerializeMixin):
         self.assertTrue(self.s3_storage.exists(file.file.name))
         self.assertEqual(expected_stdout, out.getvalue().strip())
 
+    def test_rewrite_url_only_existing_many_refs(self):
+        issue = Issue.objects.create(task_id=self.task.id, student_id=self.student.id)
+        event_create_file = Event.objects.create(issue=issue, field=IssueField.objects.get(name='file'))
+        file_first = File.objects.create(
+            file=SimpleUploadedFile('test_s3_issues.py', b'some text'), event=event_create_file)
+        file_second = File.objects.get(pk=file_first.pk)
+        file_second.pk = 0x1337
+        file_second.save(force_insert=True)
+
+        out = StringIO()
+        call_command('s3migrate_issue_attachments', '--execute', '--rewrite-only-existing', stdout=out)
+
+        file_first = File.objects.get(pk=file_first.pk)
+        file_second = File.objects.get(pk=file_second.pk)
+        for file in [file_first, file_second]:
+            expected_s3_path = S3OverlayStorage.append_s3_prefix(file.file.name)
+            self.assertFalse(S3OverlayStorage.is_s3_stored(file.file.name))
+            self.assertTrue(self.s3_storage.exists(expected_s3_path))
+            self.assertEqual(('''Note: uploaded: {}'''.format(expected_s3_path)),
+                             out.getvalue().strip())
+
+        out = StringIO()
+        call_command('s3migrate_issue_attachments', '--execute', '--rewrite-only-existing', stdout=out)
+
+        for file in [file_first, file_second]:
+            expected_s3_path = S3OverlayStorage.append_s3_prefix(file.file.name)
+            expected_stdout = ('''Note: destination already exists: {}\n'''
+                               '''Note: updating model: {}, {}\n'''
+                               '''Note: updated model: {}, {}\n'''
+                               ).format(
+                expected_s3_path, file, expected_s3_path, file, expected_s3_path)
+            expected_stdout = (expected_stdout * 2).strip()
+            file = File.objects.get(pk=file.pk)
+            self.assertTrue(S3OverlayStorage.is_s3_stored(file.file.name))
+            self.assertTrue(self.s3_storage.exists(file.file.name))
+            self.assertEqual(expected_stdout, out.getvalue().strip())
+
     def test_upload_archives(self):
         for ext in anyrb.unpacker.get_supported_extensions():
             fail_msg = 'Failed for extension: {}'.format(ext)
