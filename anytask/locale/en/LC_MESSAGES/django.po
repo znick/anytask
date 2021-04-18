@@ -644,7 +644,7 @@ msgstr "Ya.Contest"
 #, fuzzy
 #| msgid "ukazat_nomer_kontesta"
 msgid "nomer_posylki_kontest"
-msgstr "Enter contest id"
+msgstr "Contest submittion id"
 
 #: courses/templates/courses/settings.html:234
 #, fuzzy
@@ -1151,7 +1151,7 @@ msgstr "The messages will be highlighted"
 #, fuzzy
 #| msgid "zakryt"
 msgid "otkryt"
-msgstr "Close"
+msgstr "Open"
 
 #: issues/templates/issues/history.html:121
 msgid "skachat"
