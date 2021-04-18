@@ -486,7 +486,7 @@ msgstr "Drop one task"
 msgid "udalit_posleduushie"
 msgstr ""
 "Drop this and all subsequent classes (including those that "
-"students attended)?""
+"students attended)?"
 
 #: courses/templates/courses/course_js.html:741
 msgid "uvereny_cho_hotite_udalit?"
