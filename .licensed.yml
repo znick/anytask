@@ -12,3 +12,5 @@ python:
 reviewed:
   git_submodule:
     - django-bootstrap
+  pip:
+    - Whoosh
