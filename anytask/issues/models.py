@@ -17,7 +17,7 @@ from django.utils.translation import ugettext_lazy as _
 from issues.model_issue_field import IssueField
 from issues.model_issue_status import IssueStatus
 from tasks.models import Task
-from unidecode import unidecode
+from text_unidecode import unidecode
 from users.common import get_user_fullname, get_user_link
 
 

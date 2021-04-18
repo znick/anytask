@@ -17,7 +17,7 @@ python-magic==0.4.15
 django-filemanager==0.0.5
 requests==2.20.0
 flup==1.0.3
-unidecode==1.0.22
+text-unidecode==1.3
 django-dprog-jfu
 django-filter==1.1.0
 yandex-oauth-py==0.1.1

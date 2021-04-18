@@ -3,7 +3,7 @@ import logging
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
-from unidecode import unidecode
+from text_unidecode import unidecode
 
 from api.views import login_required_basic_auth
 from issues.models import Issue, Event, File
