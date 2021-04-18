@@ -1066,19 +1066,19 @@ msgstr "Отправить"
 
 #: issues/templates/file_uploader.html:185
 msgid "prevysheno_kolvo_fajlov"
-msgstr ""
+msgstr "Превышено количество файлов"
 
 #: issues/templates/file_uploader.html:186
 msgid "nedopustimyj_tip_fajla"
-msgstr ""
+msgstr "Недопустимый тип файла"
 
 #: issues/templates/file_uploader.html:187
 msgid "fajl_slishkom_bolshoj"
-msgstr ""
+msgstr "Файл слишком большой"
 
 #: issues/templates/file_uploader.html:188
 msgid "fajl_slishkom_mal"
-msgstr ""
+msgstr "Файл слишком маленький"
 
 #: issues/templates/file_uploader.html:241
 msgid "vyberite_kompiljator"
@@ -2181,17 +2181,17 @@ msgstr ""
 msgid ""
 "You're receiving this e-mail because you requested a password reset for your "
 "user account at %(site_name)s."
-msgstr ""
+msgstr "Вы получили этот e-mail потомучто запросили изменение пароля на %(site_name)s"
 
 #: templates/registration/password_reset_email.html:28
 #: templates/registration/password_reset_email.txt:5
 msgid "Please go to the following page and choose a new password:"
-msgstr ""
+msgstr "Пожалуйста, перейдите по ссылке и введите новый пароль"
 
 #: templates/registration/password_reset_email.html:53
 #: templates/registration/password_reset_email.txt:8
 msgid "Your username, in case you've forgotten:"
-msgstr ""
+msgstr "Ваш username:"
 
 #: templates/registration/password_reset_form.html:5
 #: templates/registration/password_reset_form.html:14
@@ -2201,7 +2201,7 @@ msgstr "Сброс пароля"
 #: templates/registration/password_reset_subject.txt:2
 #, python-format
 msgid "Password reset on %(site_name)s"
-msgstr ""
+msgstr "Сброс пароля на %(site_name)s"
 
 #: templates/registration/registration_complete.html:4
 #: templates/registration/registration_form.html:5
