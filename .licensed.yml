@@ -1,0 +1,32 @@
+allowed:
+  - mit
+  - apache-2.0
+  - bsd-2-clause
+  - bsd-3-clause
+  - bsd-0-clause
+  - hpnd
+  - python
+  - lgpl-2.1
+  - lgpl-3.0
+  - isc
+  - BSD
+  - zpl-2.1
+
+python:
+  virtual_env_dir: "./venv-2.7"
+
+reviewed:
+  git_submodule:
+    - django-bootstrap
+  pip:
+    - Whoosh
+    - certifi
+    - cssselect
+    - lxml
+    - mysqlclient
+    - psycopg2
+    - pycrypto
+    - python-dateutil
+    - python-magic
+    - text-unidecode
+    - webencodings
