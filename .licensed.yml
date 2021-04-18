@@ -4,7 +4,7 @@ allowed:
   - bsd-2-clause
   - bsd-3-clause
   - bsd-0-clause
-  - hpdn
+  - hpnd
 
 python:
   virtual_env_dir: "./venv-2.7"
