@@ -190,7 +190,6 @@ INSTALLED_APPS = (
     'colorfield',
     'search',
     'staff',
-    'blog',
     'mail',
     'reversion',
     'admission',
