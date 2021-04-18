@@ -4,6 +4,11 @@ allowed:
   - bsd-2-clause
   - bsd-3-clause
   - bsd-0-clause
+  - hpdn
 
 python:
   virtual_env_dir: "./venv-2.7"
+
+reviewed:
+  git_submodule:
+    - django-bootstrap
