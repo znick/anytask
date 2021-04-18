@@ -8,7 +8,7 @@ chardet==3.0.4            # via requests
 configparser==3.5.0       # via entrypoints
 cssselect==1.0.3          # via premailer
 cssutils==1.0.2           # via premailer
-dateutils==0.6.6
+dateutils==0.6.12
 decorator==4.3.0          # via ipython, traitlets
 django-bootstrap-breadcrumbs==0.9.1
 django-colorfield==0.1.14
