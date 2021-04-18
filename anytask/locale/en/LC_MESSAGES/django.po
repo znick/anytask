@@ -19,15 +19,15 @@ msgstr "Error sending to the contest"
 
 #: admission/views.py:182
 msgid "nevernyy_kod_aktivatsii"
-msgstr ""
+msgstr "Wrong activation code"
 
 #: admission/views.py:202
 msgid "spasibo"
-msgstr ""
+msgstr "Thank you"
 
 #: admission/views.py:203
 msgid "informatsiya_o_vas_byla_udalena"
-msgstr ""
+msgstr "Informaton about you was deleted"
 
 #: anycontest/management/commands/check_contest.py:78 issues/models.py:418
 #: issues/views.py:117
@@ -36,7 +36,7 @@ msgstr "Sending to RB failed"
 
 #: anycontest/management/commands/check_contest.py:87
 msgid "bally_ne_uchityvautsia"
-msgstr ""
+msgstr "Marks are not counted"
 
 #: anycontest/models.py:206 anycontest/models.py:212 anycontest/models.py:217
 #: anycontest/tests.py:259 anycontest/tests.py:276 anycontest/tests.py:297
@@ -123,11 +123,11 @@ msgstr "Followed by me"
 
 #: courses/pythontask.py:175
 msgid "zapisalsya_na_task"
-msgstr ""
+msgstr "Signed up for the task"
 
 #: courses/pythontask.py:195
 msgid "otkazalsya_ot_taska"
-msgstr ""
+msgstr "Gave up on the task"
 
 #: courses/templates/course_tasks_potok.html:51
 #: courses/templates/courses/attendance.html:27
@@ -189,7 +189,7 @@ msgstr "Submit"
 #: courses/templates/courses/queue.html:35
 #: courses/templates/courses/settings.html:41
 msgid "zhurnal_poseshaemosti"
-msgstr ""
+msgstr "Attendance log"
 
 #: courses/templates/courses/attendance.html:30
 #: courses/templates/courses/course.html:41
@@ -224,7 +224,7 @@ msgstr "Show my email"
 
 #: courses/templates/courses/attendance_list.html:49
 msgid "poseshennye_uroki"
-msgstr ""
+msgstr "Classes attended"
 
 #: courses/templates/courses/course.html:46
 #: courses/templates/courses/course.html:263
@@ -280,7 +280,7 @@ msgstr "Assignments and groups list"
 #: courses/templates/courses/course.html:120
 #: courses/templates/courses/course.html:425
 msgid "materials"
-msgstr ""
+msgstr "Materials"
 
 #: courses/templates/courses/course.html:161
 #: courses/templates/courses/tasklist/many_tasksets_many_groups.html:27
@@ -334,7 +334,7 @@ msgstr "Add"
 
 #: courses/templates/courses/course.html:429 tasks/models.py:69
 msgid "material"
-msgstr ""
+msgstr "Material"
 
 #: courses/templates/courses/course_forbidden.html:53
 msgid "ukazat_invajt"
@@ -401,7 +401,7 @@ msgstr "No students"
 #: mail/templates/mail_js.html:69 staff/templates/gradebook_js.html:136
 #: staff/templates/staff_js.html:168 staff/templates/staff_js.html:170
 msgid "iz"
-msgstr ""
+msgstr "out of"
 
 #: courses/templates/courses/course_js.html:307
 #: courses/templates/courses/queue_js.html:170 mail/templates/mail_js.html:72
@@ -480,11 +480,13 @@ msgstr "Remove problem from the groups"
 
 #: courses/templates/courses/course_js.html:701
 msgid "udalit_odin"
-msgstr ""
+msgstr "Drop one task"
 
 #: courses/templates/courses/course_js.html:702
 msgid "udalit_posleduushie"
 msgstr ""
+"Drop this and all subsequent classes (including those that "
+"students attended)?""
 
 #: courses/templates/courses/course_js.html:741
 msgid "uvereny_cho_hotite_udalit?"
@@ -505,15 +507,18 @@ msgstr "Submit due"
 #: lessons/templates/lesson_create_or_edit_js.html:503
 #: lessons/templates/lesson_edit.html:77
 msgid "data_zaniatia"
-msgstr ""
+msgstr "Class date"
 
 #: courses/templates/courses/course_js.html:1039
 msgid "udalit_poseshennoe_vse"
 msgstr ""
+"This class was attended by students. Are you sure you want to delete it "
+"and all subsequent classes?"
 
 #: courses/templates/courses/course_js.html:1041
 msgid "udalit_poseshennoe"
 msgstr ""
+"This class was attended by students. Are you sure you want to delete it?"
 
 #: courses/templates/courses/gradebook.html:39
 #, fuzzy
@@ -543,7 +548,7 @@ msgstr "Statuses"
 #: courses/templates/courses/queue.html:64
 #: courses/templates/courses/queue.html:95
 msgid "filtr"
-msgstr ""
+msgstr "Filter"
 
 #: courses/templates/courses/queue.html:78 users/templates/my_tasks.html:142
 msgid "obnovlena"
@@ -589,6 +594,7 @@ msgstr "Assignments settings"
 #: courses/templates/courses/settings.html:173
 msgid "dobavit_zhurnal_poseshaemosti"
 msgstr ""
+"Add an attendance log"
 
 #: courses/templates/courses/settings.html:178
 msgid "nastrojka_zadach"
@@ -809,7 +815,7 @@ msgstr "Course assignments"
 
 #: courses/views.py:85
 msgid "ochistit"
-msgstr ""
+msgstr "Clear"
 
 #: courses/views.py:85 staff/views.py:88 users/views.py:494
 msgid "primenit"
@@ -928,7 +934,7 @@ msgstr "Student"
 
 #: issues/issueFilter.py:21
 msgid "uroki"
-msgstr ""
+msgstr "Classes"
 
 #: issues/model_issue_status.py:50
 #, fuzzy
@@ -1090,19 +1096,19 @@ msgstr "Send"
 
 #: issues/templates/file_uploader.html:185
 msgid "prevysheno_kolvo_fajlov"
-msgstr ""
+msgstr "Number of files exceeded "
 
 #: issues/templates/file_uploader.html:186
 msgid "nedopustimyj_tip_fajla"
-msgstr ""
+msgstr "Invalid file type"
 
 #: issues/templates/file_uploader.html:187
 msgid "fajl_slishkom_bolshoj"
-msgstr ""
+msgstr "The file is too big"
 
 #: issues/templates/file_uploader.html:188
 msgid "fajl_slishkom_mal"
-msgstr ""
+msgstr "The file is too small"
 
 #: issues/templates/file_uploader.html:241
 msgid "vyberite_kompiljator"
@@ -1149,7 +1155,7 @@ msgstr "Close"
 
 #: issues/templates/issues/history.html:121
 msgid "skachat"
-msgstr ""
+msgstr "Download"
 
 #: issues/templates/issues/history.html:149
 #: users/templates/user_profile.html:379
@@ -1202,19 +1208,19 @@ msgstr "Mark should not be greater"
 
 #: issues/views.py:55
 msgid "fajl"
-msgstr ""
+msgstr "File"
 
 #: issues/views.py:56
 msgid "nomer_revju"
-msgstr ""
+msgstr "Review ID"
 
 #: lessons/models.py:28
 msgid "odin_raz"
-msgstr ""
+msgstr "one time"
 
 #: lessons/models.py:29
 msgid "ezhenedelno"
-msgstr ""
+msgstr "every week"
 
 #: lessons/templates/lesson_create.html:8
 #: lessons/templates/lesson_create.html:24
@@ -1245,7 +1251,7 @@ msgstr "Name"
 #: tasks/templates/contest_import.html:145 tasks/templates/task_create.html:148
 #: tasks/templates/task_edit.html:222 tasks/templates/task_import.html:129
 msgid "time_zone"
-msgstr ""
+msgstr "Time zone"
 
 #: lessons/templates/lesson_create.html:73
 #: lessons/templates/lesson_edit.html:103 mail/templates/mail.html:174
@@ -1258,12 +1264,12 @@ msgstr "Group"
 #: lessons/templates/lesson_create.html:84
 #: lessons/templates/lesson_edit.html:114
 msgid "povtoriat"
-msgstr ""
+msgstr "repeated"
 
 #: lessons/templates/lesson_create.html:95
 #: lessons/templates/lesson_edit.html:126
 msgid "dni_nedeli"
-msgstr ""
+msgstr "days of weak"
 
 #: lessons/templates/lesson_create.html:98
 #: lessons/templates/lesson_edit.html:129
@@ -1304,7 +1310,7 @@ msgstr "Submit"
 #, fuzzy
 #| msgid "student"
 msgid "sun"
-msgstr "Student"
+msgstr ""
 
 #: lessons/templates/lesson_create.html:111
 #: lessons/templates/lesson_edit.html:142
@@ -1348,15 +1354,15 @@ msgstr "Assignment must be chosen"
 
 #: lessons/templates/lesson_create_or_edit_js.html:177
 msgid "vybrat_datu_zaniatia"
-msgstr ""
+msgstr "Choose date of the class"
 
 #: lessons/templates/lesson_create_or_edit_js.html:180
 msgid "vybrat_vremia_okonchania"
-msgstr ""
+msgstr "Choose the end time of the class."
 
 #: lessons/templates/lesson_create_or_edit_js.html:183
 msgid "vybrat_poslednuu_datu"
-msgstr ""
+msgstr "Choose date of the last class"
 
 #: lessons/templates/lesson_create_or_edit_js.html:268
 #: lessons/templates/lesson_create_or_edit_js.html:269
@@ -1502,11 +1508,11 @@ msgstr "Add course or group"
 
 #: mail/templates/mail.html:122
 msgid "skrytyye_kopii"
-msgstr ""
+msgstr "Hidden copies"
 
 #: mail/templates/mail.html:125
 msgid "poluchateli_ne_budut_videt_drugikh"
-msgstr ""
+msgstr "Получатели не будут видеть других получателей этого сообщения"
 
 #: mail/templates/mail.html:133
 #, fuzzy
@@ -1517,6 +1523,8 @@ msgstr "Sent"
 #: mail/templates/mail.html:136
 msgid "mozhno_ispolzovat_peremennyye_v_tekste"
 msgstr ""
+"Use variables so that the selected items in the message change in "
+"depending on the recipient. "
 
 #: mail/templates/mail.html:146
 msgid "tema"
@@ -1532,7 +1540,7 @@ msgstr "Add users group"
 
 #: mail/templates/mail.html:196 staff/templates/staff.html:143
 msgid "bez_tipa"
-msgstr ""
+msgstr "Without type"
 
 #: mail/templates/mail.html:226
 msgid "otvetit"
@@ -1580,7 +1588,7 @@ msgstr "Logins"
 
 #: mail/templates/mail_js.html:548 templates/base.html:110
 msgid "yeshcho"
-msgstr ""
+msgstr "More"
 
 #: mail/templates/mail_js.html:563 search/templates/search.html:146
 #: templates/base.html:125
@@ -1593,7 +1601,7 @@ msgstr "Select all"
 
 #: mail/templates/mail_js.html:679
 msgid "familiya"
-msgstr ""
+msgstr "Last name"
 
 #: mail/templates/mail_js.html:680
 #, fuzzy
@@ -1640,7 +1648,7 @@ msgstr "February"
 
 #: mail/views.py:24
 msgid "march"
-msgstr ""
+msgstr "March"
 
 #: mail/views.py:25
 msgid "april"
@@ -1748,7 +1756,7 @@ msgstr "No statuses selected"
 
 #: staff/templates/staff.html:33
 msgid "prostoy_filtr"
-msgstr ""
+msgstr "Simple filter"
 
 #: staff/templates/staff.html:36
 #, fuzzy
@@ -1759,6 +1767,8 @@ msgstr "Run scoring on students submissions again"
 #: staff/templates/staff.html:49
 msgid "fayl_formata_CSV_poisk"
 msgstr ""
+"Upload the file in CSV format. The search is possible by login (login) and mail "
+"(email)."
 
 #: staff/templates/staff.html:61
 #, fuzzy
@@ -1772,7 +1782,7 @@ msgstr "Email"
 
 #: staff/templates/staff.html:115
 msgid "vyberite_znacheniya_dlya_filtratsii"
-msgstr ""
+msgstr "Enter values to filter"
 
 #: staff/templates/staff.html:130 users/templates/status_history.html:37
 #: users/templates/user_courses.html:48 users/templates/user_profile.html:44
@@ -1787,17 +1797,17 @@ msgstr "No statuses selected"
 
 #: staff/templates/staff.html:150
 msgid "ne_menyat"
-msgstr ""
+msgstr "Do not change"
 
 #: staff/templates/staff.html:169
 msgid "sozdat_soobshcheniye_vopros"
-msgstr ""
+msgstr "Create message"
 
 #: staff/templates/staff.html:184
 #, fuzzy
 #| msgid "novyh_soobshenija"
 msgid "otpravka_soobshcheniya"
-msgstr "New messages"
+msgstr "Message sending"
 
 #: staff/templates/staff.html:187
 #, fuzzy
@@ -1826,7 +1836,7 @@ msgstr "User statuses"
 
 #: staff/templates/staff.html:230 staff/templates/staff_js.html:410
 msgid "otpravit_soobshcheniye_vsem_polzovatelyam"
-msgstr ""
+msgstr "Send a message to all users"
 
 #: staff/templates/staff_js.html:50 users/templates/my_tasks.html:46
 msgid "vybrat_vse"
@@ -1852,11 +1862,11 @@ msgstr "Error during loading"
 
 #: staff/templates/staff_js.html:413
 msgid "izmenit_status_dlya_vybrannykh_polzovateley"
-msgstr ""
+msgstr "Change the status for selected users"
 
 #: staff/templates/staff_js.html:414
 msgid "otpravit_soobshcheniye_vybrannym_polzovatelyam"
-msgstr ""
+msgstr "Send a message to selected users"
 
 #: staff/views.py:68
 #, fuzzy
@@ -1866,7 +1876,7 @@ msgstr "No users"
 
 #: staff/views.py:71
 msgid "nevernyy_format_fayla"
-msgstr ""
+msgstr "Invalid file format. Select the file in CSV format."
 
 #: tasks/management/commands/send_task_notifications.py:80
 #: tasks/templates/task_create.html:197 tasks/templates/task_edit.html:354
@@ -1883,7 +1893,7 @@ msgstr "Max score"
 
 #: tasks/management/commands/send_task_notifications.py:124
 msgid "proizoshli_izmeneniya_v_kursah"
-msgstr ""
+msgstr "There have been changes in your courses"
 
 #: tasks/models.py:67 tasks/models.py:266
 msgid "s_obsuzhdeniem"
@@ -1937,7 +1947,7 @@ msgstr "Name and surname will be changes"
 #: tasks/templates/contest_import.html:178 tasks/templates/task_create.html:182
 #: tasks/templates/task_edit.html:308 tasks/templates/task_import.html:162
 msgid "uchityvat_bally_dedlajn"
-msgstr ""
+msgstr "Take into account the marks for the tasks passed after the deadline"
 
 #: tasks/templates/contest_import.html:187
 #, fuzzy
@@ -1973,7 +1983,7 @@ msgstr "Update the assignments"
 #: tasks/templates/email_notification_task.html:42
 #: tasks/templates/email_notification_task.txt:5
 msgid "izmenilis"
-msgstr ""
+msgstr "changed"
 
 #: tasks/templates/email_notification_task.txt:6
 #, fuzzy
@@ -2006,11 +2016,11 @@ msgstr "Name"
 #: tasks/templates/task_create.html:69 tasks/templates/task_edit.html:162
 #: tasks/templates/task_import.html:75
 msgid "kratkoe_nazvanie_help_text"
-msgstr ""
+msgstr "It will be displayed in a table with ratings."
 
 #: tasks/templates/task_create.html:76 tasks/templates/task_edit.html:170
 msgid "nb_assignment_name"
-msgstr ""
+msgstr "Task name in jupiter."
 
 #: tasks/templates/task_create.html:80
 msgid "must be unique for all tasks in jupyter"
@@ -2108,7 +2118,7 @@ msgstr "Update from the contest"
 
 #: tasks/templates/task_edit.html:342
 msgid "uvedomit_ob_izmenenii_v_zadache"
-msgstr ""
+msgstr "Notify students about task change"
 
 #: tasks/templates/task_edit.html:398
 msgid "obnovlenie_dannyh_iz_kontesta"
@@ -2352,7 +2362,7 @@ msgstr "Student status"
 
 #: users/model_user_profile_filter.py:39 users/model_user_status.py:37
 msgid "filial"
-msgstr ""
+msgstr "Branch"
 
 #: users/model_user_profile_filter.py:43 users/model_user_status.py:38
 #, fuzzy
@@ -2494,39 +2504,39 @@ msgstr "Yandex"
 
 #: users/templates/user_profile.html:218
 msgid "data_rozhdeniya"
-msgstr ""
+msgstr "Birth date"
 
 #: users/templates/user_profile.html:225
 msgid "vozrast"
-msgstr ""
+msgstr "Age"
 
 #: users/templates/user_profile.html:237
 msgid "telefon"
-msgstr ""
+msgstr "Phone"
 
 #: users/templates/user_profile.html:253
 msgid "gorod_prozhivaniya"
-msgstr ""
+msgstr "Town"
 
 #: users/templates/user_profile.html:275
 msgid "vuz"
-msgstr ""
+msgstr "University/College"
 
 #: users/templates/user_profile.html:290
 msgid "uchitsya_seychas"
-msgstr ""
+msgstr "Active now"
 
 #: users/templates/user_profile.html:296
 #, fuzzy
 #| msgid "sdat"
 msgid "da"
-msgstr "Submit"
+msgstr "Yes"
 
 #: users/templates/user_profile.html:298
 #, fuzzy
 #| msgid "kontest"
 msgid "net"
-msgstr "Contest"
+msgstr "No"
 
 #: users/templates/user_profile.html:309
 #, fuzzy
@@ -2536,11 +2546,11 @@ msgstr "Courses"
 
 #: users/templates/user_profile.html:325
 msgid "fakultet_kafedra"
-msgstr ""
+msgstr "Department"
 
 #: users/templates/user_profile.html:341
 msgid "god_okonchaniya_vuza"
-msgstr ""
+msgstr "Year of graduation"
 
 #: users/templates/user_profile.html:368 users/templates/user_profile.html:658
 msgid "o_sebe"
@@ -2598,7 +2608,7 @@ msgstr "New message"
 
 #: users/templates/user_settings.html:52
 msgid "dlja_vremeni"
-msgstr ""
+msgstr "Used to determine the time zone. The deadline time is local."
 
 #: users/templates/user_settings.html:108
 msgid "title_otvjazat_svoj_profil"
