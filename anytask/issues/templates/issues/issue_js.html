@@ -221,5 +221,11 @@
         $("#file_field").append('<tr><td>' + files + '</td></tr>');
     }
 
+    function start_edit_msg(event_id, event_msg) {
+        $('#id_comment').val(event_msg);
+        $('#submit_btn').focus();
+        $('#submit_btn').blur();
+    }
+
 
 </script>

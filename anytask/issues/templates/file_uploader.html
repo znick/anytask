@@ -66,6 +66,7 @@
     <input type="hidden" name="form_name" value="comment_form">
     <textarea rows="4" name="comment" id="id_comment" cols="40" class="form-control col-md-12" style="margin-bottom: 10px;"></textarea>
     <input type="hidden" name="issue_id" value="{{ issue.id }}">
+    <input type="hidden" name="event_id" value="{{ event.id }}">
     {% block UPLOAD_FORM_BUTTON_BAR %}
     <div class="fileupload-buttonbar">
     {% comment %}
@@ -138,7 +139,8 @@
                 <button class="btn btn-info pull-xs-right" formaction="#" style="margin-top: 10px; margin-left: 10px;" type="submit">{% trans "zadat_vopros" %}</button>
             {% else %}
                 <input type="hidden" name="update_issue" value="" />
-                <button style="margin-top: 10px;" type="submit" class="btn btn-primary pull-xs-right">
+                <button style="margin-top: 10px;" type="submit"
+                        class="btn btn-primary pull-xs-right" id="submit_btn">
                     <span>{% trans "otpravit" %}</span>
                 </button>
             {% endif %}
