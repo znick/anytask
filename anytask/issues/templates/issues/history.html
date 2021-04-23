@@ -91,9 +91,40 @@
                         <small class="text-muted">
                             <i class="fa fa-clock-o fa-flip-horizontal"></i>{% localtime on %} {{ event.timestamp|date:"d M H:i" }} {% endlocaltime %}
                         </small>
+
+                        {% if event.author == user %} {# start edit message elements #}
                         <small class="edit-message">
-                            <i class="fa fa-pencil"></i>
+                            <a href="javascript:$('#modal_message_edit_{{ event.id }}').modal('show')">
+                                <i class="fa fa-pencil"></i>
+                            </a> 
                         </small>
+
+                        <div class="modal fade" id="modal_message_edit_{{ event.id }}" tabindex="-1"
+                             role="dialog" aria-labelledby="modal-title" aria-hidden="true">
+                            <div class="modal-dialog modal-sm" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                        <h4 class="modal-title"
+                                          id="modal_table_edit_header">{% trans "Edit message" %}</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        {% autoescape off %}
+                                            {{ event.get_message|sanitize }}
+                                        {% endautoescape %}
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button class="btn btn-secondary" data-dismiss="modal">{% trans "zakryt" %}</button>
+                                        <button class="btn btn-primary" id="modal_table_edit_ok" data-dismiss="modal"
+                                                data-loading-text="<span class='fa fa-circle-o-notch fa-spin'></span>
+                                                {% trans "sohranenie" %}">{% trans "sohranit" %}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %} {# end edit message elements #}
+
                     </div>
                     <div class="user_img col-xs-1 {% if event.author == user %}pull-xs-right{% else %}pull-xs-left{% endif %}">
                         <a class="card-link" {% if event.author.username != "anytask" %}href="{{ event.author.get_absolute_url }}"{% endif %}>
