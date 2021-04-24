@@ -74,6 +74,9 @@ class UserProfile(models.Model):
     ya_passport_login = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
     ya_passport_email = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
 
+    telegram_uid = models.IntegerField(default=None, null=True, blank=True)
+    notify_in_telegram = models.BooleanField(default=False, null=False, blank=False)
+
     language = models.CharField(default="ru", max_length=128, unique=False, null=True, blank=True)
     time_zone = models.TextField(null=False, blank=False, default='Europe/Moscow')
     location = models.TextField(null=True, blank=True, default="")
@@ -159,6 +162,9 @@ class UserProfileLog(models.Model):
     ya_passport_oauth = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
     ya_passport_login = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
     ya_passport_email = models.CharField(default="", max_length=128, unique=False, null=True, blank=True)
+
+    telegram_uid = models.IntegerField(default=None, null=True, blank=True)
+    notify_in_telegram = models.BooleanField(default=False, null=False, blank=False)
 
     language = models.CharField(default="ru", max_length=128, unique=False, null=True, blank=True)
 
