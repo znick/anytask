@@ -267,8 +267,23 @@ def upload(request):
     issue = get_object_or_404(Issue, id=int(request.POST['issue_id']))
 
     if 'update_issue' in request.POST:
+
+        # If event_id in POST, edit message and redirect back
+        if 'event_id' in request.POST and request.POST['event_id'].isdigit():
+            user = request.user
+            event_id = int(request.POST['event_id'])
+            event = get_object_or_404(Event, id=event_id)
+            if event.author != user:
+                raise PermissionDenied
+            event.value = request.POST['comment']
+            event.save()
+            print(event.value)
+            print(request.POST)
+            return HttpResponsePermanentRedirect("/issue/" + request.POST['issue_id'])
+
         event_value = {'files': [], 'comment': '', 'compilers': []}
         event_value['comment'] = request.POST['comment']
+
         file_counter = 0
         for field, value in dict(request.POST).iteritems():
             if 'compiler' in field:

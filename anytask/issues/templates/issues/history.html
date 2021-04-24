@@ -94,7 +94,7 @@
 
                         {% if event.author == user %} {# start edit message elements #}
                         <small class="edit-message">
-                          <a href="javascript:start_edit_msg({{ event.id }}, '{{ event.get_message|sanitize }}')">
+                          <a href="javascript:start_edit_msg({{ event.id }})">
                                 <i class="fa fa-pencil"></i>
                             </a> 
                         </small>
@@ -111,7 +111,7 @@
                     <div class="col-xs-11">
                         <div class="{% if event.author == user %}mine{% else %}not_mine{% endif %} history-body
                         {% if issue.task.deadline_time < event.timestamp and event.author.username == issue.student.username %}
-                        after_deadline {% endif %}">
+                        after_deadline {% endif %}" id="message_{{ event.id }}">
                             {% autoescape off %}
                                 {{ event.get_message|sanitize }}
                             {% endautoescape %}

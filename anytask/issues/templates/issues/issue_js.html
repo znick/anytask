@@ -221,10 +221,18 @@
         $("#file_field").append('<tr><td>' + files + '</td></tr>');
     }
 
-    function start_edit_msg(event_id, event_msg) {
-        $('#id_comment').val(event_msg);
-        $('#submit_btn').focus();
-        $('#submit_btn').blur();
+    function start_edit_msg(event_id) {
+        $('#id_comment').val($('#message_' + event_id).html());
+        $('#edit_msg_event_id').val(event_id);
+        $('#cancel-edit-msg-btn').show();
+        $('#submit-btn').focus();
+        $('#submit-btn').blur();
+    }
+
+    function end_edit_msg() {
+        $('#id_comment').val("");
+        $('#edit_msg_event_id').val("");
+        $('#cancel-edit-msg-btn').hide();
     }
 
 
