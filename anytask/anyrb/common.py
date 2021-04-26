@@ -8,6 +8,7 @@ from django.contrib.sites.models import Site
 from django.utils.translation import ugettext as _
 
 from rbtools.api.client import RBClient
+from rbtools.api.errors import APIError, AuthorizationError, BadRequestError, ServerInterfaceError
 from unpacker import unpack_files
 
 logger = logging.getLogger('django.request')
@@ -20,6 +21,16 @@ class AnyRB(object):
         self.event = event
 
     def upload_review(self):
+        try:
+            return self.upload_review_unsafe()
+        except (APIError, AuthorizationError, BadRequestError, ServerInterfaceError) as e:
+            logger.exception("Error communicating to reviewboard", exc_info=e)
+            return None
+        except Exception as e:
+            logger.exception("Unhandled exception", exc_info=e)
+            return None
+
+    def upload_review_unsafe(self):
         if len(self.event.file_set.all()) == 0:
             return None
 
