@@ -4,6 +4,7 @@ import logging
 from flask import Flask
 from flask_session import Session
 
+from app.easyCI.schedule_task import setup_configs
 
 def configure_logging():
     # register root logging
@@ -23,9 +24,10 @@ def create_app():
     configure_logging()
 
     with app.app_context():
+        setup_configs()
         from app.main import bp as main_bp
         app.register_blueprint(main_bp)
-        
+
         from app.api import bp as api_bp
         app.register_blueprint(api_bp, url_prefix='/api')
 

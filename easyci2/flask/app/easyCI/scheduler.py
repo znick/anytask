@@ -3,9 +3,9 @@ import logging
 import os
 import requests
 
-GITLAB_REPO_ID = os.environ.get("GITLAB_REPO_ID")
-GITLAB_TRIGGER_TOKEN = os.environ.get("GITLAB_TRIGGER_TOKEN")
-GITLAB_READ_PIPELINES_TOKEN = os.environ.get("GITLAB_READ_PIPELINES_TOKEN")
+GITLAB_REPO_ID = os.environ.get("GITLAB_REPO_ID") or ""
+GITLAB_TRIGGER_TOKEN = os.environ.get("GITLAB_TRIGGER_TOKEN") or ""
+GITLAB_READ_PIPELINES_TOKEN = os.environ.get("GITLAB_READ_PIPELINES_TOKEN") or ""
 
 
 class AbstractScheduler:

@@ -40,8 +40,16 @@ def get_auth(passwords, host):
     return host_auth["username"], host_auth["password"]
 
 
-config = load_config()
-passwords = load_passwords()
+passwords = {}
+config = {}
+
+
+def setup_configs():
+    global passwords, config
+    config = load_config()
+    passwords = load_passwords()
+
+
 scheduler = GitlabCIScheduler()
 
 

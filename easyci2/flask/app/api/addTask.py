@@ -22,7 +22,7 @@ def add_task():
             return response
 
     if not (course_exists(data["course_id"])):
-        response = make_response("No such course_id: " + data["course_id"])
+        response = make_response("No such course_id: " + str(data["course_id"]))
         response.headers['Location'] = url
         response.status_code = 400
         return response
