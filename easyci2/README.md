@@ -11,11 +11,11 @@ Development installation commands:
     # ... cd ...
     git submodule init
     git submodule update
+    cd flask
     virtualenv venv
     . venv/bin/activate
     pip install 'pip==20.3.4' 'setuptools==44.0.0' --upgrade
     pip install -r requirements_local.txt
-    cd flask
     ./easyCI.py
 
 testing
