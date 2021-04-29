@@ -311,9 +311,10 @@ def upload(request):
         if not (issue.task.one_file_upload and file_counter > 1):
             issue.set_byname('comment', event_value, request.user)
 
-        issue.task.moss.addFile(event_value['files'][0].path, issue.student.username)
-        moss_thread = threading.Thread(target=moss_process, name="Moss", args=[issue.task.moss])
-        moss_thread.start()
+        if file_counter > 1:
+            issue.task.moss.addFile(event_value['files'][0].path, issue.student.username)
+            moss_thread = threading.Thread(target=moss_process, name="Moss", args=[issue.task.moss])
+            moss_thread.start()
 
         return redirect(issue_page, issue_id=int(request.POST['issue_id']))
 
