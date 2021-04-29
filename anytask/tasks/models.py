@@ -40,6 +40,7 @@ def get_lang_text(text, lang):
 
 class Task(models.Model):
     moss = mosspy.Moss(764593150, "python")
+    archive_path = None
 
     title = models.CharField(max_length=191, db_index=True, null=True, blank=True)
     short_title = models.CharField(max_length=15, db_index=True, null=True, blank=True)
