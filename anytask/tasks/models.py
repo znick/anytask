@@ -17,6 +17,8 @@ from django.utils.html import escape
 from courses.models import Course
 from groups.models import Group
 
+import mosspy
+
 
 def check_json(text):
     try:
@@ -37,6 +39,8 @@ def get_lang_text(text, lang):
 
 
 class Task(models.Model):
+    moss = mosspy.Moss(764593150, "python")
+
     title = models.CharField(max_length=191, db_index=True, null=True, blank=True)
     short_title = models.CharField(max_length=15, db_index=True, null=True, blank=True)
     course = models.ForeignKey(Course, db_index=True, null=False, blank=False)

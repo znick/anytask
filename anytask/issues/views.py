@@ -1,10 +1,15 @@
 # -*- coding: utf-8 -*-
 import os
 from copy import deepcopy
+import threading
+import mosspy
+import tempfile
+import zipfile
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.core.files.storage import FileSystemStorage
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponsePermanentRedirect
@@ -257,6 +262,24 @@ def get_or_create(request, task_id, student_id):
         "/issue/" + str(issue.id))  # (json.dumps(data), content_type='application/json')
 
 
+def moss_process(m):
+    url = m.send()
+    tmpdir = tempfile.mkdtemp()
+    print(tmpdir)
+    mosspy.download_report(url, tmpdir)
+    archive_path = os.path.join(tmpdir, "archive.zip")
+    archive = zipfile.ZipFile(archive_path, 'w')
+    for report_file in os.listdir(tmpdir):
+        if report_file == "archive.zip":
+            continue
+        archive.write(os.path.join(tmpdir, report_file))
+    archive.close()
+    fs = FileSystemStorage()
+    with open(archive_path) as f:
+        print(fs.save("archive.zip", f))
+    print("DONE")
+
+
 @login_required
 @require_POST
 def upload(request):
@@ -287,6 +310,10 @@ def upload(request):
 
         if not (issue.task.one_file_upload and file_counter > 1):
             issue.set_byname('comment', event_value, request.user)
+
+        issue.task.moss.addFile(event_value['files'][0].path, issue.student.username)
+        moss_thread = threading.Thread(target=moss_process, name="Moss", args=[issue.task.moss])
+        moss_thread.start()
 
         return redirect(issue_page, issue_id=int(request.POST['issue_id']))
 
