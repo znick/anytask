@@ -222,7 +222,12 @@
     }
 
     function start_edit_msg(event_id) {
-        $('#id_comment').val($('#message_' + event_id).html());
+        tmp = $('#message_' + event_id).clone()[0];
+        files_tag = Array.from(tmp.children)
+          .filter(el => el.className == "files")[0];
+        if (files_tag) tmp.removeChild(files_tag);
+        $('#id_comment').val(tmp.innerHTML);
+
         $('#edit_msg_event_id').val(event_id);
         $('#cancel-edit-msg-btn').show();
         $('#submit-btn').focus();
