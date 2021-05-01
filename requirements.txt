@@ -55,7 +55,7 @@ pillow==6.2.2
 premailer==3.0.0          # via django-premailer
 prompt-toolkit==1.0.15    # via ipython
 psycopg2==2.7.5
-ptyprocess==0.6.0         # via pexpect, terminado
+ptyprocess==0.7.0         # via pexpect, terminado
 pycrypto==2.6.1
 pygments==2.2.0           # via ipython, nbconvert
 python-dateutil==2.7.3    # via dateutils, jupyter-client
