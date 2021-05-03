@@ -11,5 +11,6 @@ then
     echo "MySQL started"
 fi
 
-exec "$@"
+crond
 
+exec "$@"

@@ -25,6 +25,7 @@ RUN apk update alpine-sdk \
 # lint
 RUN pip install --upgrade pip
 RUN pip install flake8
+
 COPY . .
 RUN flake8
 
@@ -40,46 +41,72 @@ RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r requir
 # pull official base image
 FROM python:2.7-alpine
 
-# create directory for the app user
-RUN mkdir -p /home/app
+ENV ANYTASK_HOME=/home/anytask
 
-# create the app user
-RUN addgroup -S app && adduser -S app -G app
+# create directory for the anytask user
+RUN mkdir -p $ANYTASK_HOME
+RUN mkdir -p $ANYTASK_HOME/anytask/static
+RUN mkdir -p $ANYTASK_HOME/anytask/media
 
-# create the appropriate directories
-ENV HOME=/home/app
-ENV APP_HOME=/home/app/web
+# create the anytask user
+RUN addgroup -S anytask && adduser -S anytask -G anytask
 
-RUN mkdir $APP_HOME
-RUN mkdir $APP_HOME/anytask
-RUN mkdir $APP_HOME/anytask/static
-RUN mkdir $APP_HOME/anytask/media
-WORKDIR $APP_HOME
+WORKDIR $ANYTASK_HOME
 
 # install dependencies
-RUN apk update && apk add libpq libjpeg libxslt git
+RUN apk update \
+    && apk add libpq libjpeg libxslt \
+        git \
+        busybox-initscripts\
+    && apk add --update busybox-suid
+
+
 COPY --from=builder /usr/src/app/wheels /wheels
 COPY --from=builder /usr/src/app/requirements.prod.txt .
 RUN pip install --no-cache /wheels/*
 
-# copy entrypoint-prod.sh
-COPY ./entrypoint.prod.sh $APP_HOME
+### Cron
+ENV CRON_DIR=/etc/crontabs
+# Copy cron file to the cron directory
+COPY anytask-cron $CRON_DIR/anytask-cron
+# Give execution rights on the cron job
+RUN chmod 0755 $CRON_DIR/anytask-cron
+# Apply cron job
+RUN crontab $CRON_DIR/anytask-cron
+# Create the log files
+WORKDIR /var/log/cron
+RUN touch \
+    cleanup.log \
+    cleanupregistration.log \
+    check_contest.log \
+    send_freezed_run_id_notify.log \
+    send_notifications.log \
+    send_task_notifications.log \
+    send_mail_notifications.log \
+    update_index.partial.log \
+    update_index.log \
+    check_task_taken_expires.log \
+    healthcheck.log
+
+WORKDIR $ANYTASK_HOME
+### /Cron
+
+# copy entrypoint.prod.sh
+COPY ./entrypoint.prod.sh $ANYTASK_HOME
 
 # copy project
-COPY . $APP_HOME
+COPY . $ANYTASK_HOME
 RUN git submodule update --init --recursive
 
-# chown all the files to the app user
-RUN chown -R app:app $APP_HOME
+# chown all the files to the anytask user
+RUN chown -R anytask:anytask $ANYTASK_HOME
 
-# change to the app user
-USER app
+# change to the anytask user
+# breaks crond
+#USER anytask
 
-# used by gunicorn in order to find application
-ENV PYTHONPATH=$APP_HOME/anytask
-# cd to anytask
-WORKDIR $APP_HOME
+# gunicorn uses this to find application
+ENV PYTHONPATH=$ANYTASK_HOME/anytask
 
 # run entrypoint.prod.sh
-ENTRYPOINT ["/home/app/web/entrypoint.prod.sh"]
-
+ENTRYPOINT ["/home/anytask/entrypoint.prod.sh"]
