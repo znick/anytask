@@ -18,7 +18,8 @@ import time
 class Command(BaseCommand):
     help = "Send notifications via email"
 
-    option_list = BaseCommand.option_list
+    # TODO: should it be replaced or deleted?
+    # option_list = BaseCommand.option_list
 
     def handle(self, **options):
         start_time = time.time()
