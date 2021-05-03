@@ -1,4 +1,8 @@
 #!/bin/bash
 
-/usr/bin/mk-table-sync --execute 'u=anytask,p=P@ssw0rd,h=localhost,D=anytask,t=auth_user' 'u=anytask,p=P@ssw0rd,h=localhost,D=anytask_rb,t=auth_user' --charset utf8
+
+# TODO: fix `Redundant argument in sprintf at /usr/bin/mk-table-sync line 28.` warning?
+/usr/bin/mk-table-sync --charset utf8 --execute \
+    'u=$MYSQL_USER,p=$MYSQL_PASSWORD,h=127.0.0.1,D=$MYSQL_DATABASE,t=auth_user'\
+    'u=$DATABASE_NAME,p=$DATABASE_PASSWORD,h=127.0.0.1,D=DATABASE_NAME,t=auth_user'
 
