@@ -262,8 +262,8 @@ def get_or_create(request, task_id, student_id):
         "/issue/" + str(issue.id))  # (json.dumps(data), content_type='application/json')
 
 
-def moss_process(issue):
-    m = issue.task.moss
+def moss_process(task):
+    m = task.moss
     url = m.send()
     tmpdir = tempfile.mkdtemp()
     mosspy.download_report(url, tmpdir)
@@ -277,7 +277,7 @@ def moss_process(issue):
     fs = FileSystemStorage()
     os.system("rm -r tmpdir")
     with open(archive_path) as f:
-        issue.task.archive_path = fs.save("archive.zip", f)
+        task.archive_path = fs.save("archive.zip", f)
 
 
 @login_required
