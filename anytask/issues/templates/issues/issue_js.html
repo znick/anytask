@@ -222,21 +222,40 @@
     }
 
     function start_edit_msg(event_id) {
+        // set value
         tmp = $('#message_' + event_id).clone()[0];
         files_tag = Array.from(tmp.children)
           .filter(el => el.className == "files")[0];
         if (files_tag) tmp.removeChild(files_tag);
         $('#id_comment').val(tmp.innerHTML);
 
+        // set message edit id
         $('#edit_msg_event_id').val(event_id);
+
+        // hide file upload
+        $('table').last().hide();
+        $('#drop-zone').hide();
+
+        // show cancel button
         $('#cancel-edit-msg-btn').show();
+
+        // scroll to edit field
         $('#submit-btn').focus();
         $('#submit-btn').blur();
     }
 
     function end_edit_msg() {
+        // clean edit field
         $('#id_comment').val("");
+
+        // clean edit message id
         $('#edit_msg_event_id').val("");
+
+        // show file upload
+        $('table').last().show();
+        $('#drop-zone').show();
+
+        // hide cancel button
         $('#cancel-edit-msg-btn').hide();
     }
 
