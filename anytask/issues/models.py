@@ -579,6 +579,17 @@ class Event(models.Model):
         return ret
 
 
+class EventChange(models.Model):
+    event = models.ForeignKey(Event, null=False, blank=False)
+
+    old_value = models.TextField(max_length=2500, blank=True)
+    diff = models.TextField(max_length=2500, blank=True)
+
+    def __unicode__(self):
+        ret = u'Change in event {0}, issue {1}'.format(self.event.id, self.event.issue.id)
+        return ret
+
+
 @receiver(models.signals.post_save, sender=Issue)
 def post_create_set_default_teacher(sender, instance, created, *args, **kwargs):
     if created:
