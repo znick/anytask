@@ -13,7 +13,7 @@ from pytz import timezone as timezone_pytz
 
 from courses.models import Course
 from groups.models import Group
-from mail.common import render_mail
+from mail.common import EmailRenderer
 from mail.models import Message
 from users.model_user_status import get_statuses
 from users.models import UserProfile
@@ -214,7 +214,7 @@ def ajax_get_message(request):
             })
 
     if message.sender != user or request.GET["mailbox"] == 'inbox':
-        text = render_mail(message, user)
+        text = EmailRenderer.fill_name(message, user)
     else:
         text = message.text
 
