@@ -1,12 +1,10 @@
 FROM mysql:5.7
 
 RUN apt-get update \
-    && apt-get install -y wget libdbd-mysql-perl libterm-readkey-perl
+    && apt-get install -y wget\
+        libdbd-mysql-perl libterm-readkey-perl
 
-# download & install maatkit package, containing `mk-table-syn`
-RUN wget https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/maatkit/maatkit_7540-1_all.deb
-RUN dpkg -i maatkit_7540-1_all.deb
-# clear tree
-RUN rm /maatkit_7540-1_all.deb
+RUN wget percona.com/get/pt-table-sync -P /usr/bin/
+RUN chmod +x /usr/bin/pt-table-sync
 
 COPY scripts /usr/src
