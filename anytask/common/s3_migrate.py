@@ -51,10 +51,16 @@ class S3MigrateCommand(BaseCommand):
     SKIP_IGNORED_EXT = "Note: skipping: ignored extension: {}"
     SKIP_ALREADY_S3 = "Note: skipping: already stored in S3 (by path): {}"
     OK_UPLOADED = "Note: uploaded: {}"
+
     ERR_UNHANDLED_EXCEPTION = "Error: unhandled exception: {}, {}"
+
     NOTE_UPDATING_MODEL = "Note: updating model: {}, {}"
     OK_UPDATED_MODEL = "Note: updated model: {}, {}"
     ERR_UPDATE_MODEL = "Error: update_model failed: {}, {}"
+
+    NOTE_DELETING_LOCAL_COPIES = "Note: will delete local copies"
+    OK_DELETE_LOCAL = "Note: deleted local: {}"
+    ERR_DELETE_LOCAL = "Error: delete local: {}: {}"
 
     def all_models(self, options):
         """
@@ -93,8 +99,11 @@ class S3MigrateCommand(BaseCommand):
         self.rewrite_url_only_existing = None
         self.dry_run = None
         self.ignored_extensions = None
+        self.delete_local_copies = None
+
         self.dest_storage = None
         self.newly_uploaded = set()
+        self.newly_routed_to_s3 = set()
 
     def add_arguments(self, parser):
         """Call super when overriding"""
@@ -127,6 +136,13 @@ class S3MigrateCommand(BaseCommand):
             help='''Extra extensions to exclude from migrations (in addition '''
                  '''to unsupported). May be specified multiple times.'''
         )
+        parser.add_argument(
+            '--delete-local-copies',
+            dest='delete_local_copies',
+            action='store_true',
+            default=False,
+            help='Delete local copies of files after resetting url to S3'
+        )
 
     def handle(self, **options):
         self.rewrite_url_only_existing = options['rewrite_url_only_existing']
@@ -134,6 +150,7 @@ class S3MigrateCommand(BaseCommand):
         self.dry_run = not options['execute']
         self.ignored_extensions = options['ignore_extension']
         self.ignored_extensions.extend(S3OverlayStorage.IGNORED_EXTENSIONS)
+        self.delete_local_copies = options['delete_local_copies']
 
         self.dest_storage = S3OverlayStorage()
         if self.dry_run:
@@ -158,12 +175,25 @@ class S3MigrateCommand(BaseCommand):
                 continue
             try:
                 if self.update_model(model, new_path, options):
+                    self.newly_routed_to_s3.add((old_path, new_path))
                     msg = self.OK_UPDATED_MODEL.format(model, new_path)
                 else:
                     msg = self.ERR_UPDATE_MODEL.format(model, new_path)
                 self.stdout.write(msg)
             except Exception as e:
                 self.stdout.write(self.ERR_UNHANDLED_EXCEPTION.format(new_path, e))
+
+        if self.dry_run or not self.delete_local_copies:
+            # Skip deleting
+            return
+
+        self.stdout.write(self.NOTE_DELETING_LOCAL_COPIES)
+        for old_path, new_path in self.newly_routed_to_s3:
+            try:
+                self.delete_local(old_path)
+                self.stdout.write(self.OK_DELETE_LOCAL.format(old_path))
+            except Exception as e:
+                self.stdout.write(self.ERR_DELETE_LOCAL.format(old_path, e))
 
     def s3_upload(self, field):
         """:return: new path if model update required, else None"""
@@ -188,3 +218,6 @@ class S3MigrateCommand(BaseCommand):
             result = None
         finally:
             return result
+
+    def delete_local(self, old_path):
+        self.dest_storage.delete(old_path)
