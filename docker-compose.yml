@@ -16,7 +16,7 @@ services:
 
   anytask:
     build: .
-    command: gunicorn anytask.wsgi:application unix:/tmp/anytask.sock
+    command: gunicorn anytask.wsgi:application --bind unix:/tmp/anytask.sock
     depends_on:
       - db
     volumes:
