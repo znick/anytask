@@ -10,7 +10,7 @@ from django.utils import translation
 from django.utils.translation import ugettext as _
 
 from tasks.models import Task
-from mail.common import send_mass_mail_html
+from mail.common import EmailSender
 
 import time
 from reversion import revisions as reversion
@@ -113,6 +113,7 @@ class Command(BaseCommand):
 
         domain = Site.objects.get_current().domain
         from_email = settings.DEFAULT_FROM_EMAIL
+        email_sender = EmailSender(from_email)
         notify_messages = []
         for key_user, courses_info in students_tasks_info.iteritems():
             user = courses_info['user']
@@ -137,7 +138,7 @@ class Command(BaseCommand):
 
         num_sent = 0
         if notify_messages:
-            num_sent = send_mass_mail_html(notify_messages)
+            num_sent = email_sender(notify_messages)
 
         # logging to cron log
         print "Command send_task_notifications send {0} email(s) and took {1} seconds"\
