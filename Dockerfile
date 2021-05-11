@@ -14,19 +14,17 @@ ENV PYTHONUNBUFFERED 1
 
 # install dependencies
 RUN pip install --upgrade pip
-# install psycopg2 dependencies  #
 RUN apk update alpine-sdk \
-    && apk add gcc python-dev musl-dev \
+    && apk add --no-cache gcc python-dev musl-dev \
         libxml2-dev libxslt-dev \
         freetype-dev libpng-dev libjpeg-turbo-dev \
         build-base libzmq zeromq-dev \
-    && apk add --no-cache mariadb-dev  # for MySQL
-
-# lint
-RUN pip install --upgrade pip
-RUN pip install flake8
+        mariadb-dev # for MySQL
 
 COPY . .
+
+# lint
+RUN pip install flake8
 RUN flake8 anytask
 
 # install dependencies
@@ -55,12 +53,10 @@ WORKDIR $ANYTASK_HOME
 
 # install dependencies
 RUN apk update \
-    && apk add libpq libjpeg libxslt \
+    && apk add --no-cache libpq libjpeg libxslt \
         git \
-        busybox-initscripts \
-    && apk add --no-cache mariadb-dev \
-    && apk add --update busybox-suid
-
+        busybox-initscripts busybox-suid \
+        mariadb-dev
 
 COPY --from=builder /usr/src/app/wheels /wheels
 COPY --from=builder /usr/src/app/requirements.txt .
@@ -86,8 +82,7 @@ RUN touch \
     send_mail_notifications.log \
     update_index.partial.log \
     update_index.log \
-    check_task_taken_expires.log \
-    healthcheck.log
+    check_task_taken_expires.log
 
 WORKDIR $ANYTASK_HOME
 ### /Cron
@@ -102,14 +97,13 @@ RUN git submodule update --init --recursive
 # chown all the files to the anytask user
 RUN chown -R anytask:anytask $ANYTASK_HOME
 
-# change to the anytask user
-# breaks crond
-#USER anytask
+# TODO: change user and not to break cron
+# only root has permissions to run cron jobs,
+# so next line is commented by now
+# USER anytask
 
 # gunicorn uses this to find application
 ENV PYTHONPATH=$ANYTASK_HOME/anytask
-
-WORKDIR $ANYTASK_HOME
 
 # run entrypoint.sh
 ENTRYPOINT ["/home/anytask/entrypoint.sh"]

@@ -6,6 +6,7 @@ while ! nc -z $SQL_HOST $SQL_PORT; do
 done
 echo "MySQL started"
 
+# start cron daemon
 crond
 
 exec "$@"

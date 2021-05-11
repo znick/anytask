@@ -8,5 +8,4 @@
 0  */2   *   *   *  flock -w 30 /tmp/anytask.update_index.lock -c 'cd /home/anytask/anytask && python manage.py update_index -v2 --age=3  >> /var/log/cron/update_index.partial.log 2>&1'
 30  18   *   *   *  flock -w 30 /tmp/anytask.update_index.lock -c 'cd /home/anytask/anytask && python manage.py update_index -v2  >> /var/log/cron/update_index.log 2>&1'
 0   *   *   *   *  cd /home/anytask/anytask && python manage.py check_task_taken_expires  >> /var/log/cron/check_task_taken_expires.log 2>&1
-*   *   *   *   * echo "`date +%Y.%m.%d-%H:%M:%S` alive" >> /var/log/cron/healthcheck.log 2>&1
 # empty line!
