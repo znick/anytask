@@ -1,20 +1,18 @@
-# remove the volumes along with the containers
-docker-compose down -v
-# # clear cache
-# docker system prune -a
-
 docker-compose up -d --build
-sleep 10s
-docker-compose exec anytask python manage.py makemigrations
-docker-compose exec anytask python manage.py migrate --run-syncdb
 
-docker-compose exec db bash -c "mysql --user=root --password=\"\$MYSQL_ROOT_PASSWORD\"\
-    --execute=\"
-    CREATE DATABASE \$DATABASE_NAME;                                            # reviewboard db
-    CREATE USER '\$DATABASE_USERNAME'@'%' IDENTIFIED BY '\$DATABASE_PASSWORD';  # reviewboard user
-    GRANT ALL PRIVILEGES ON \$DATABASE_NAME.* TO '\$DATABASE_USERNAME'@'%';
-    GRANT ALL PRIVILEGES ON test_\$MYSQL_DATABASE.* TO '\$MYSQL_USER'@'%';      # for manage.py test
-    \""
+docker-compose exec db ./usr/src/init.sh
+docker-compose exec anytask sh -c "
+    cd anytask\
+    && python manage.py makemigrations --settings=anytask.settings_production\
+    && python manage.py migrate --noinput --settings=anytask.settings_production\
+    && python manage.py collectstatic --no-input --clear --settings=anytask.settings_production\
+    && crond\
+    && python manage.py test --settings=anytask.settings_production"
 
-docker-compose exec anytask python manage.py test
+sudo nginx -c /etc/nginx/nginx_anytask.conf -s stop
+# to provide script with proxy_params and stuff like this
+sudo cp nginx_anytask.conf /etc/nginx/
+sudo nginx -c /etc/nginx/nginx_anytask.conf
+
+# to stop daemon run: `sudo nginx -c /etc/nginx/nginx_anytask.conf -s stop`
 

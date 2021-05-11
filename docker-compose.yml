@@ -1,46 +1,56 @@
 version: '3.7'
 
 services:
-
   db:
     image: mysql:5.7
     command: mysqld --character-set-server=utf8 --collation-server=utf8_general_ci
-    volumes:
-      - mysql_data:/var/lib/mysql
-    env_file:
-      - ./.env.dev
     ports:
       - 3306:3306
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./db:/usr/src
+      - /etc/localtime:/etc/localtime:ro    # sync time with host
+    env_file:
+      - ./.env.prod
     restart: 'on-failure'
 
   anytask:
     build: .
-    command: python manage.py runserver 0.0.0.0:8000
+    command: gunicorn anytask.wsgi:application unix:/tmp/anytask.sock
     depends_on:
       - db
     volumes:
-      - ./anytask/:/usr/src/anytask/
-    env_file:
-      - ./.env.dev
+      # share static and media with nginx
+      - /var/lib/anytask/static:/home/anytask/anytask/static
+      - /var/lib/anytask/media:/home/anytask/anytask/media
+      - /tmp:/tmp                           # share anytask.sock to host
+      - /etc/localtime:/etc/localtime:ro    # sync time with host
     ports:
       - 8000:8000
+    env_file:
+      - ./.env.prod
+    restart: 'on-failure'
+
+  memcached:
+    image: memcached:alpine
     restart: 'on-failure'
 
   reviewboard:
     image: beanbag/reviewboard:4.0
     depends_on:
       - db
-    volumes:
-      - sitedir:/site
+      - memcached
     env_file:
-      - ./.env.dev
+      - ./.env.prod
     ports:
       - 8080:8080
-    restart: 'on-failure'
+    volumes:
+      # Note: site/htdocs/static/ and site/htdocs/media/ but whole /site
+      # should be mounted here (like in case of anytask target).
+      # However, it somewhat causes 'The directory already contains files'
+      - /var/www/reviewboard:/site          # share static and media with nginx
+      - /tmp:/tmp                           # share rb.sock to host
+      - /etc/localtime:/etc/localtime:ro    # sync time with host
 
 volumes:
   mysql_data:
-  static_volume:
-  media_volume:
-  sitedir:
-
