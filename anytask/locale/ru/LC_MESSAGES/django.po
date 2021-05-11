@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-06 21:56+0300\n"
+"POT-Creation-Date: 2021-04-18 19:02+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -40,12 +40,12 @@ msgstr "Спасибо"
 msgid "informatsiya_o_vas_byla_udalena"
 msgstr "Информация о вас была удалена."
 
-#: anycontest/management/commands/check_contest.py:49 issues/models.py:348
+#: anycontest/management/commands/check_contest.py:78 issues/models.py:418
 #: issues/views.py:117
 msgid "oshibka_otpravki_v_rb"
 msgstr "Ошибка отправки в Review Board"
 
-#: anycontest/management/commands/check_contest.py:57
+#: anycontest/management/commands/check_contest.py:87
 msgid "bally_ne_uchityvautsia"
 msgstr "Баллы за задачу, зачтенную после дедлайна, не учитываются"
 
@@ -107,10 +107,6 @@ msgstr "Обсуждение задачи"
 #: anyrb/views.py:24
 msgid "novyj_kommentarij"
 msgstr "Добавлен новый комментарий в"
-
-#: blog/templates/blog.html:4 blog/templates/blog.html:9
-msgid "blog_anytask"
-msgstr "Блог Anytask"
 
 #: courses/forms.py:25 issues/models.py:74
 msgid "na_dorabotke"
@@ -179,7 +175,7 @@ msgstr "Очередь на проверку"
 #: courses/templates/courses/gradebook.html:56
 #: courses/templates/courses/queue.html:44
 #: courses/templates/courses/settings.html:21
-#: courses/templates/courses/settings.html:52 templates/base.html:706
+#: courses/templates/courses/settings.html:52 templates/base.html:714
 #: users/templates/my_tasks.html:105 users/templates/status_history.html:27
 #: users/templates/user_courses.html:37 users/templates/user_profile.html:29
 #: users/templates/user_settings.html:25 users/templates/user_settings.html:35
@@ -572,7 +568,7 @@ msgstr "Проверяющий"
 #: issues/templates/issues/issue_js.html:65 mail/templates/mail_js.html:76
 #: mail/templates/mail_js.html:604 search/templates/search.html:62
 #: staff/templates/staff_js.html:49 staff/templates/staff_js.html:177
-#: tasks/templates/task_create_or_edit_js.html:70 templates/base.html:675
+#: tasks/templates/task_create_or_edit_js.html:70 templates/base.html:683
 #: users/templates/my_tasks.html:45
 msgid "najti"
 msgstr "Найти..."
@@ -635,7 +631,7 @@ msgstr "Переводить в статус «Зачтено» после по�
 
 #: courses/templates/courses/settings.html:228
 #: issues/templates/issues/issue.html:46 mail/templates/mail_js.html:561
-#: search/templates/search.html:138 templates/base.html:115
+#: search/templates/search.html:138 templates/base.html:123
 #: users/templates/user_profile.html:181 users/templates/user_settings.html:96
 msgid "jakontest"
 msgstr "Я.Контест"
@@ -815,7 +811,7 @@ msgstr "Задачи курса"
 msgid "ochistit"
 msgstr "Очистить"
 
-#: courses/views.py:85 staff/views.py:88 users/views.py:495
+#: courses/views.py:85 staff/views.py:88 users/views.py:494
 msgid "primenit"
 msgstr "Применить"
 
@@ -830,6 +826,18 @@ msgstr "Ошибка Я.Контеста:"
 #: courses/views.py:841 tasks/views.py:357 tasks/views.py:442
 msgid "net_prav_na_kontest"
 msgstr "У Anytask нет прав на данное соревнование"
+
+#: index/templates/archived_schools_page.html:19
+#: index/templates/archived_schools_page.html:27
+#: index/templates/schools_page.html:19 issues/model_issue_student_filter.py:47
+#: schools/templates/archive_page.html:23
+#: schools/templates/archive_page.html:32 schools/templates/school_page.html:22
+#: search/templates/search.html:170 templates/base.html:143
+#: users/templates/user_courses.html:65 users/templates/user_courses.html:72
+#: users/templates/user_profile.html:398 users/templates/user_profile.html:487
+#: users/templates/user_profile.html:529
+msgid "arhiv"
+msgstr "Архив"
 
 #: invites/templates/generate.html:4 invites/templates/generate.html:62
 msgid "sozdanie_invajtov"
@@ -944,16 +952,6 @@ msgstr "Любой"
 msgid "aktivnyj"
 msgstr "Активный"
 
-#: issues/model_issue_student_filter.py:47
-#: schools/templates/archive_page.html:23
-#: schools/templates/archive_page.html:32 schools/templates/school_page.html:22
-#: search/templates/search.html:170 templates/base.html:135
-#: users/templates/user_courses.html:65 users/templates/user_courses.html:72
-#: users/templates/user_profile.html:398 users/templates/user_profile.html:487
-#: users/templates/user_profile.html:529
-msgid "arhiv"
-msgstr "Архив"
-
 #: issues/models.py:76
 msgid "zachteno"
 msgstr "Зачтено"
@@ -962,39 +960,39 @@ msgstr "Зачтено"
 msgid "na_avtomaticheskoj_proverke"
 msgstr "На автоматической проверке"
 
-#: issues/models.py:328 issues/views.py:99
+#: issues/models.py:431 issues/views.py:99
 msgid "otpravleno_v_kontest"
 msgstr "Отправлено на проверку в Я.Контест."
 
-#: issues/models.py:332 issues/views.py:104
+#: issues/models.py:435 issues/views.py:104
 msgid "oshibka_otpravki_v_kontest"
 msgstr "Ошибка отправки в Я.Контест."
 
-#: issues/models.py:499
+#: issues/models.py:523
 msgid "zadachu_proveriaet"
 msgstr "Теперь задачу проверяет"
 
-#: issues/models.py:500
+#: issues/models.py:524
 msgid "status_izmenen"
 msgstr "Статус изменен:"
 
-#: issues/models.py:501
+#: issues/models.py:525
 msgid "ocenka_izmenena"
 msgstr "Оценка изменена на"
 
-#: issues/models.py:502
+#: issues/models.py:526
 msgid "zagruzhen_faij"
 msgstr "Загружен файл:"
 
-#: issues/models.py:508 issues/models.py:511
+#: issues/models.py:532 issues/models.py:535
 msgid "nabludaiut"
 msgstr "За задачей наблюдают:"
 
-#: issues/models.py:508
+#: issues/models.py:532
 msgid "nabludaet_nikto"
 msgstr "За задачей никто не наблюдает."
 
-#: issues/models.py:513
+#: issues/models.py:537
 msgid "ne_nabludaiut"
 msgstr "Удалены из наблюдателей:"
 
@@ -1068,19 +1066,19 @@ msgstr "Отправить"
 
 #: issues/templates/file_uploader.html:185
 msgid "prevysheno_kolvo_fajlov"
-msgstr ""
+msgstr "Превышено количество файлов"
 
 #: issues/templates/file_uploader.html:186
 msgid "nedopustimyj_tip_fajla"
-msgstr ""
+msgstr "Недопустимый тип файла"
 
 #: issues/templates/file_uploader.html:187
 msgid "fajl_slishkom_bolshoj"
-msgstr ""
+msgstr "Файл слишком большой"
 
 #: issues/templates/file_uploader.html:188
 msgid "fajl_slishkom_mal"
-msgstr ""
+msgstr "Файл слишком маленький"
 
 #: issues/templates/file_uploader.html:241
 msgid "vyberite_kompiljator"
@@ -1529,16 +1527,16 @@ msgid "skryt_citirovanie"
 msgstr "Скрыть цитирование"
 
 #: mail/templates/mail_js.html:532 search/templates/search.html:124
-#: templates/base.html:86
+#: templates/base.html:94
 msgid "loginy"
 msgstr "Логины"
 
-#: mail/templates/mail_js.html:548 templates/base.html:102
+#: mail/templates/mail_js.html:548 templates/base.html:110
 msgid "yeshcho"
 msgstr "ещё"
 
 #: mail/templates/mail_js.html:563 search/templates/search.html:146
-#: templates/base.html:117
+#: templates/base.html:125
 msgid "ja.pochta"
 msgstr "Я.Почта"
 
@@ -1656,11 +1654,11 @@ msgid "kursov"
 msgstr "курса(ов)"
 
 #: search/templates/search.html:88 staff/templates/staff.html:78
-#: templates/base.html:80
+#: templates/base.html:88
 msgid "polzovateli"
 msgstr "Пользователи"
 
-#: search/templates/search.html:162 templates/base.html:129
+#: search/templates/search.html:162 templates/base.html:137
 msgid "kursy"
 msgstr "Курсы"
 
@@ -2055,50 +2053,50 @@ msgstr "Что-то пошло не так... Пожалуйста, сообщи
 msgid "nam"
 msgstr "нам"
 
-#: templates/base.html:155
+#: templates/base.html:163
 msgid "vse_resultaty"
 msgstr "Все результаты"
 
-#: templates/base.html:690
+#: templates/base.html:698
 msgid "base_est_novye_soobshenija"
 msgstr "Есть новые сообщения"
 
-#: templates/base.html:693
+#: templates/base.html:701
 msgid "net_novyh_soobshenij"
 msgstr "Новых сообщений нет."
 
-#: templates/base.html:705 users/templates/my_tasks.html:96
+#: templates/base.html:713 users/templates/my_tasks.html:96
 #: users/templates/status_history.html:18 users/templates/user_courses.html:28
 #: users/templates/user_profile.html:19 users/templates/user_settings.html:16
-#: users/views.py:426
+#: users/views.py:425
 msgid "profil"
 msgstr "Профиль"
 
-#: templates/base.html:709
+#: templates/base.html:717
 msgid "adminka"
 msgstr "Админка"
 
-#: templates/base.html:712 templates/registration/password_reset_email.html:42
+#: templates/base.html:720 templates/registration/password_reset_email.html:42
 msgid "smenit_parol"
 msgstr "Сменить пароль"
 
-#: templates/base.html:714
+#: templates/base.html:722
 msgid "vyjti"
 msgstr "Выйти"
 
-#: templates/base.html:721 templates/registration/registration_form.html:85
+#: templates/base.html:737 templates/registration/registration_form.html:85
 msgid "vojdite"
 msgstr "Войдите"
 
-#: templates/base.html:724
+#: templates/base.html:740
 msgid "zaregistrirujtes"
 msgstr "Зарегистрируйтесь"
 
-#: templates/base.html:755
-msgid "blog"
-msgstr "Блог"
+#: templates/base.html:782
+msgid "github"
+msgstr "Github"
 
-#: templates/base.html:774
+#: templates/base.html:801
 msgid "pishite_nam"
 msgstr "Пишите нам на"
 
@@ -2183,17 +2181,17 @@ msgstr ""
 msgid ""
 "You're receiving this e-mail because you requested a password reset for your "
 "user account at %(site_name)s."
-msgstr ""
+msgstr "Вы получили этот e-mail потомучто запросили изменение пароля на %(site_name)s"
 
 #: templates/registration/password_reset_email.html:28
 #: templates/registration/password_reset_email.txt:5
 msgid "Please go to the following page and choose a new password:"
-msgstr ""
+msgstr "Пожалуйста, перейдите по ссылке и введите новый пароль"
 
 #: templates/registration/password_reset_email.html:53
 #: templates/registration/password_reset_email.txt:8
 msgid "Your username, in case you've forgotten:"
-msgstr ""
+msgstr "Ваш username:"
 
 #: templates/registration/password_reset_form.html:5
 #: templates/registration/password_reset_form.html:14
@@ -2203,7 +2201,7 @@ msgstr "Сброс пароля"
 #: templates/registration/password_reset_subject.txt:2
 #, python-format
 msgid "Password reset on %(site_name)s"
-msgstr ""
+msgstr "Сброс пароля на %(site_name)s"
 
 #: templates/registration/registration_complete.html:4
 #: templates/registration/registration_form.html:5
@@ -2361,7 +2359,7 @@ msgid "sgenerirovat_invajty"
 msgstr "Сгенерировать инвайты"
 
 #: users/templates/user_profile.html:96 users/templates/user_profile.html:110
-#: users/views.py:429 users/views.py:443
+#: users/views.py:428 users/views.py:442
 msgid "privjazat_profil_kontesta"
 msgstr "Привязать профиль Яндекс.Контеста"
 
@@ -2511,21 +2509,27 @@ msgstr "Используется для определения часового 
 msgid "title_otvjazat_svoj_profil"
 msgstr "Чтобы отвязать свой профиль, обратитесь к администратору"
 
-#: users/views.py:426
+#: users/views.py:425
 msgid "uzhe_privjazan"
 msgstr "уже привязан к аккаунту другого пользователя на Anytask."
 
-#: users/views.py:431
+#: users/views.py:430
 msgid "privjazat_profil_ja"
 msgstr "Привязать профиль Яндекса"
 
-#: users/views.py:444
+#: users/views.py:443
 msgid "pereprivjazat_tolko_svoj_profil"
 msgstr "Перепривязать можно только профиль, который сейчас привязан"
 
-#: users/views.py:616
+#: users/views.py:615
 msgid "invajt_drugogo_kursa"
 msgstr "Инвайт относится к другому курсу."
+
+#~ msgid "blog_anytask"
+#~ msgstr "Блог Anytask"
+
+#~ msgid "blog"
+#~ msgstr "Блог"
 
 #~ msgid "studentom"
 #~ msgstr "студентом"

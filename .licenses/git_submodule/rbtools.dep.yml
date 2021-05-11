@@ -1,0 +1,52 @@
+---
+name: rbtools
+version: 3d347ad307e3a5075c2379071b6420f2f8d9b377
+type: git_submodule
+homepage: https://github.com/reviewboard/rbtools.git
+license: mit
+licenses:
+- sources: COPYING
+  text: |
+    Copyright (c) 2007-2010  Christian Hammond
+    Copyright (c) 2007-2010  David Trowbridge
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy of
+    this software and associated documentation files (the "Software"), to deal in
+    the Software without restriction, including without limitation the rights to
+    use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+    of the Software, and to permit persons to whom the Software is furnished to do
+    so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+notices:
+- sources: AUTHORS
+  text: "Lead Developers:\n\n\t* Christian Hammond\n\t* David Trowbridge\n\t* Steven
+    MacLeod\n\n\nContributors:\n\n\t* Adam Collard\n\t* Aleksandrs Zdancuks\n\t* Alexander
+    Kouznetsov\n\t* Alexander Solovets\n\t* Alexey Neyman\n\t* Alois Mahdal\n\t* Amber
+    Yust\n\t* Andrew Grigorev\n\t* Andrew Stitcher\n\t* Anselina Chia\n\t* Anthony
+    Cruz\n\t* Azad Salahli\n\t* Barret Rennie\n\t* Ben Hollis\n\t* Bogdana Popa\n\t*
+    Bradley Baetz\n\t* Bruce Cran\n\t* Bryan Halter\n\t* Chris Clark\n\t* Chris Eagan\n\t*
+    Chris Liu\n\t* Craig Silverstein\n\t* Damian\n\t* Dana Lacoste\n\t* Daniel Cestari\n\t*
+    Daniel LaMotte\n\t* Dan Savilonis\n\t* Dave Druska\n\t* David Gardner\n\t* Dick
+    Porter\n\t* Edward Lee\n\t* Eric Huss\n\t* Flavio Castelli\n\t* Frank Murphy\n\t*
+    Garrett Cooper\n\t* Georgy Dyuldin\n\t* Gregory Szorc\n\t* Griffin Myers\n\t*
+    Gyula Faller\n\t* Halvor Lund\n\t* Holden Karau\n\t* Ian Monroe\n\t* Jan Koprowski\n\t*
+    Jason Felice\n\t* Jeremy Bettis\n\t* John Sintal\n\t* Justin Maillet\n\t* Karsten
+    Verelst\n\t* Laurent Nicolas\n\t* Lepton Wu\n\t* Luis Rodriguez\n\t* Luke Lu\n\t*
+    Luke Robison\n\t* Maciej Borzecki\n\t* Manu Cupcic\n\t* Markku Linnoskivi\n\t*
+    Matthew Maclean\n\t* Matthew Woehlke\n\t* Mike Crute\n\t* Nathan Dimmock\n\t*
+    Nathan Heijermans\n\t* Nicolas Dély\n\t* Nicolas Morey\n\t* Nicolas Morey-Chaisemartin\n\t*
+    Noah Kantrowitz\n\t* Paul Scott\n\t* Peter Ward\n\t* Petr Novák\n\t* Raghu Kaippully\n\t*
+    Ravi Kondamuru\n\t* Ryan Oblak\n\t* Ryan Shelley\n\t* Severin Gehwolf\n\t* Stacey
+    Sheldon\n\t* Stefan Ring\n\t* Stephen Gallagher\n\t* Steven Ihde\n\t* Steven Russell\n\t*
+    Theo Belaire\n\t* Thilo-Alexander Ginkel\n\t* Tom Saeger\n\t* Tomasz Moń\n\t*
+    Vaclav Slavik\n\t* Xuanyi Lin"

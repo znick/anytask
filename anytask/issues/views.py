@@ -12,7 +12,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.translation import ugettext as _
 from django.views.decorators.http import require_POST
 from jfu.http import upload_receive, UploadResponse, JFUResponse
-from unidecode import unidecode
+from text_unidecode import unidecode
 from django.db.transaction import atomic
 
 from anycontest.common import get_problem_compilers
@@ -135,7 +135,7 @@ def issue_page(request, issue_id):
     if request.method == 'POST':
         if 'contest_rejudge' in request.POST:
             contest_rejudge(issue)
-            return HttpResponseRedirect('')
+            return HttpResponseRedirect(request.path_info)
 
         form_name = request.POST['form_name']
 
@@ -179,7 +179,7 @@ def issue_page(request, issue_id):
                                          {'files': [], 'comment': request.POST['comment_verdict']},
                                          request.user)
 
-                    return HttpResponseRedirect('')
+                    return HttpResponseRedirect(request.path_info)
 
     prepare_info_fields(issue_fields, request, issue)
 

@@ -36,7 +36,6 @@ urlpatterns = [
     url(r'^archive/', index.views.archive_index, name="index.views.archive_index"),
     url(r'^search/', include('search.urls')),
     url(r'^staff', include('staff.urls')),
-    url(r'^blog/', include('blog.urls')),
     url(r'^mail/', include('mail.urls')),
     url(r'^admission/', include('admission.urls')),
     url(r'^shad2017/register', admission.views.register),

@@ -1,5 +1,3 @@
-setuptools-scm==5.0.2     # breaks python2 support
-argparse==1.4.0           # via dateutils
 backports-abc==0.5        # via tornado
 backports.shutil-get-terminal-size==1.0.0  # via ipython
 beautifulsoup4==4.6.0     # via django-htmlmin
@@ -10,7 +8,7 @@ chardet==3.0.4            # via requests
 configparser==3.5.0       # via entrypoints
 cssselect==1.0.3          # via premailer
 cssutils==1.0.2           # via premailer
-dateutils==0.6.6
+dateutils==0.6.12
 decorator==4.3.0          # via ipython, traitlets
 django-bootstrap-breadcrumbs==0.9.1
 django-colorfield==0.1.14
@@ -26,6 +24,8 @@ django-recaptcha==1.4.0
 django-reversion==1.10
 django==1.11.29
 django_premailer==0.2.0
+django-storages==1.9.1
+boto3==1.17.30
 entrypoints==0.2.3        # via nbconvert
 enum34==1.1.6             # via traitlets
 flup==1.0.3
@@ -75,7 +75,7 @@ terminado==0.8.3          # via notebook
 testpath==0.3.1           # via nbconvert
 tornado==4.5.3
 traitlets==4.3.2          # via ipykernel, ipython, ipywidgets, jupyter-client, jupyter-core, nbconvert, nbformat, notebook
-unidecode==1.0.22
+text-unidecode==1.3
 urllib3==1.24.2             # via requests
 wcwidth==0.1.7            # via prompt-toolkit
 webencodings==0.5.1       # via html5lib
@@ -84,7 +84,5 @@ whoosh==2.7.4
 widgetsnbextension==3.2.1  # via ipywidgets
 xmltodict==0.11.0
 yandex-oauth-py==0.1.1
-django-mysql==2.5.0
 mysqlclient==1.4.6
-pymysql==0.10.1
 nose==1.3.7
