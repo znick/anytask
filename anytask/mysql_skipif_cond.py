@@ -1,5 +1,4 @@
-import settings
+import os
 
 
-def is_mysql_db():
-    return settings.DATABASES['default'] == 'django.db.backends.mysql'
+IS_MYSQL_DATABASE = os.environ.get("SQL_ENGINE") == 'django.db.backends.mysql'

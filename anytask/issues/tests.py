@@ -8,7 +8,7 @@ Replace this with more appropriate tests for your application.
 """
 from StringIO import StringIO
 from unittest import skipIf
-from mysql_skipif_cond import is_mysql_db
+from mysql_skipif_cond import IS_MYSQL_DATABASE
 
 from django.core.management import call_command
 from django.conf import settings
@@ -150,7 +150,7 @@ class ViewsTest(TestCase):
                                       kwargs={'issue_id': issue.id}))
         self.assertEqual(response.status_code, 302, "Need login for issue_page")
 
-    @skipIf(is_mysql_db, "Fails after switching to MySQL: navbar 1st link wrong")
+    @skipIf(IS_MYSQL_DATABASE, "Fails after switching to MySQL: navbar 1st link wrong")
     def test_get_or_create_with_teacher(self):
         client = self.client
 
@@ -644,7 +644,7 @@ class ViewsTest(TestCase):
                          'test_comment',
                          'Wrong comment text')
 
-    @skipIf(is_mysql_db, "Fails after switching to MySQL: navbar 1st link wrong")
+    @skipIf(IS_MYSQL_DATABASE, "Fails after switching to MySQL: navbar 1st link wrong")
     def test_get_or_create_with_student(self):
         client = self.client
 
