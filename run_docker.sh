@@ -9,7 +9,7 @@ docker-compose exec anytask sh -c "
     && crond"
 
 # to provide script with proxy_params and stuff like this
-sudo cp nginx_anytask.conf /etc/nginx/
+sudo cp configs/nginx/nginx_anytask.conf /etc/nginx/
 sudo nginx -c /etc/nginx/nginx_anytask.conf
 
 # to stop daemon run: `sudo nginx -c /etc/nginx/nginx_anytask.conf -s stop`
