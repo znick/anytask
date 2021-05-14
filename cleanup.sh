@@ -5,5 +5,5 @@ docker-compose down -v --remove-orphans
 # clear cache if necessary
 docker system prune -af
 # stop nginx daemon if exists
-sudo nginx -c /etc/nginx/nginx_anytask.conf -s stop &> /dev/null
+sudo nginx -c /etc/nginx/nginx_anytask.conf -s stop
 
