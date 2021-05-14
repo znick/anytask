@@ -1,0 +1,60 @@
+name: CI to Docker Hub
+
+on:
+  push:
+    branches: [ master, docker_prod ]
+
+jobs:
+  test:
+    runs-on: ubuntu-18.04
+    steps:
+    - name: Check out repo
+      uses: actions/checkout@v2
+
+    - name: Install dependencies
+      run: |
+        pip install --upgrade pip
+        pip install flake8
+
+    - name: Lint with flake8
+      run: |
+        flake8 --version
+        flake8 anytask
+
+    - name: Build and start
+      run: ./run_docker.sh
+
+    - name: Run tests
+      run: ./run_tests.sh
+
+  # Based on https://docs.docker.com/ci-cd/github-actions/
+  push:
+    needs: test
+    runs-on: ubuntu-18.04
+
+    steps:
+    - name: Check Out Repo
+      uses: actions/checkout@v2
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKER_HUB_USERNAME }}
+        password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+    - name: Set up Docker Buildx
+      id: buildx
+      uses: docker/setup-buildx-action@v1
+
+    - name: Build and push
+      id: docker_build
+      uses: docker/build-push-action@v2
+      with:
+        context: ./
+        file: ./Dockerfile
+        push: false
+        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/testanytask:latest
+
+    - name: Image digest
+      run: echo ${{ steps.docker_build.outputs.digest }}
+
