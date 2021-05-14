@@ -4,28 +4,22 @@ from settings_common import *  # NOQA
 from settings_common import TEMPLATES
 import os
 
-
 DEBUG = True
-if os.environ.get("DEBUG") is not None:
-    DEBUG = int(os.environ.get("DEBUG"))
-
 for backend in TEMPLATES:
     backend['OPTIONS']['debug'] = DEBUG
 
-# 'DJANGO_ALLOWED_HOSTS' should be a single string of hosts with a space between each.
-# For example: 'DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]'
-if os.environ.get("DJANGO_ALLOWED_HOSTS") is not None:
-    ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
-
 DATABASES = {
-    "default": {
-        "ENGINE": os.environ.get("SQL_ENGINE"),
-        "NAME": os.environ.get("SQL_DATABASE"),
-        "USER": os.environ.get("SQL_USER"),
-        "PASSWORD": os.environ.get("SQL_PASSWORD"),
-        "HOST": os.environ.get("SQL_HOST"),
-        "PORT": os.environ.get("SQL_PORT"),
-        "OPTIONS": {"charset": "utf8mb4"},  # fix Incorrect string value error
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',  # Add 'postgresql_psycopg2','postgresql','mysql','sqlite3' or 'oracle'.
+        'NAME': 'sqlite3.db',            # Or path to database file if using sqlite3.
+        'USER': '',                      # Not used with sqlite3.
+        'PASSWORD': '',                  # Not used with sqlite3.
+        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+        'ATOMIC_REQUESTS': True,         # Without it site doesn't work
+        # 'TEST': {
+        #     'NAME': 'testdb.sql'
+        # }
     }
 }
 
