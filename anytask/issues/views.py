@@ -281,10 +281,7 @@ def upload(request):
             new_value = request.POST['comment']
             history = EventChange.objects.create(
                 event=event,
-                old_value=old_value,
-                diff=''.join(list(Differ().compare(
-                    old_value.splitlines(True),
-                    new_value.splitlines(True)))))
+                old_value=old_value)
             history.save()
             event.value = new_value
             event.save()
