@@ -23,10 +23,6 @@ RUN apk update alpine-sdk \
 
 COPY . .
 
-# lint
-RUN pip install flake8
-RUN flake8 anytask
-
 # install dependencies
 COPY ./requirements.txt .
 RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r requirements.txt

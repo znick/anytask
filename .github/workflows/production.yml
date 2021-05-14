@@ -21,6 +21,9 @@ jobs:
         flake8 --version
         flake8 anytask
 
+    - name: Clean previous state if exists
+      run: ./cleanup.sh
+
     - name: Build and start
       run: ./run_docker.sh
 
