@@ -1,12 +1,12 @@
 ---
-name: Unidecode
-version: 1.0.22
+name: mysqlclient
+version: 1.4.6
 type: pip
-summary: ASCII transliterations of Unicode text
-homepage: UNKNOWN
+summary: Python interface to MySQL
+homepage: https://github.com/PyMySQL/mysqlclient-python
 license: gpl-2.0
 licenses:
-- sources: LICENSE.txt
+- sources: LICENSE
   text: |2
                         GNU GENERAL PUBLIC LICENSE
                            Version 2, June 1991
