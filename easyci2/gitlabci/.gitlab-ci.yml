@@ -1,0 +1,25 @@
+variables:
+  TASK: 'Task title'
+  REPO: 'Repository with command to be run'
+  RUN_CMD: 'Command in repository to be run'
+  FILES: 'Files urls to be tested'
+  DOCKER_IMAGE: 'Docker image to run tests in it'
+  TIMEOUT: 'Timeout of running worker'
+  OUTPUT_FILE: 'Run output' 
+  COURSE_ID: 'Course id' 
+  ISSUE_ID: 'Issue id' 
+
+run:
+  image: $DOCKER_IMAGE
+  stage: build
+  before_script:
+    - apt-get update
+    - apt-get install -y git
+  script:
+    - ./run_worker.sh $TASK $REPO $RUN_CMD $FILES $TIMEOUT $OUTPUT_FILE $COURSE_ID $ISSUE_ID
+  artifacts:
+    paths:
+      - $OUTPUT_FILE
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "trigger"'
+

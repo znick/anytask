@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
+import requests
 from copy import deepcopy
 
 from django.conf import settings
@@ -119,6 +120,34 @@ def contest_rejudge(issue):
                 break
 
     event.save()
+
+
+def check_easy_ci(request, issue, event, sent_files):
+    if not(issue.task.course.easyCI_url is None) \
+            and issue.task.course.easyCI_url != "":
+        files = []
+        for sent_file in sent_files:
+            files.append(request.build_absolute_uri(sent_file.url))
+
+        if len(files) != 0:
+            check_request_dict = {
+                'files': files,
+                'course_id': issue.task.course_id,
+                'title': issue.task.get_title(),
+                'issue_id': issue.id,
+                'event': {
+                    'id': event.id,
+                    'timestamp': event.timestamp.isoformat()
+                }
+            }
+            try:
+                response = requests.post(issue.task.course.easyCI_url
+                                         + "/api/add_task",
+                                         json=check_request_dict)
+                print(response.status_code)
+            except requests.exceptions.RequestException:
+                issue.add_comment("Cannot send to easyCI. Time: "
+                                  + event.timestamp.isoformat())
 
 
 @login_required
@@ -270,6 +299,7 @@ def upload(request):
         event_value = {'files': [], 'comment': '', 'compilers': []}
         event_value['comment'] = request.POST['comment']
         file_counter = 0
+
         for field, value in dict(request.POST).iteritems():
             if 'compiler' in field:
                 pk = int(field[13:])
@@ -286,7 +316,8 @@ def upload(request):
                 event_value['compilers'].append(None)
 
         if not (issue.task.one_file_upload and file_counter > 1):
-            issue.set_byname('comment', event_value, request.user)
+            event = issue.set_byname('comment', event_value, request.user)
+            check_easy_ci(request, issue, event, event_value['files'])
 
         return redirect(issue_page, issue_id=int(request.POST['issue_id']))
 

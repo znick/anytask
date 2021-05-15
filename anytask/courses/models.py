@@ -103,6 +103,7 @@ class Course(models.Model):
     groups = models.ManyToManyField(Group, blank=True)
 
     issue_fields = models.ManyToManyField(IssueField, blank=True)
+    easyCI_url = models.CharField(max_length=191, blank=True, null=True)
 
     contest_integrated = models.BooleanField(db_index=False, null=False, blank=False, default=False)
     send_rb_and_contest_together = models.BooleanField(db_index=False, null=False, blank=False, default=False)

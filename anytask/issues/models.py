@@ -304,7 +304,7 @@ class Issue(models.Model):
         else:
             event.delete()
 
-        return
+        return event
 
     def set_field_mark(self, from_contest, value):
         delete_event = False
