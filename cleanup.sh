@@ -8,5 +8,5 @@ docker system prune -af
 sudo nginx -c /etc/nginx/nginx_anytask.conf -s stop
 # remove previously mounter volumes manually, otherwise get
 # `django.db.utils.ProgrammingError: (1146, "Table 'rb_db.django_site' doesn't exist")`
-# FIXME: too bad, but i haven't come up with a better solution
+# FIXME: bad solution, but i haven't come up with a better one
 sudo rm -rf /var/lib/anytask /var/www/reviewboard

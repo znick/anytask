@@ -13,9 +13,9 @@ docker-compose exec -T anytask sh -c "
     cd anytask\
     && python manage.py test --settings=anytask.settings_production"
 # anytask healthcheck
-curl -sSf 127.0.0.1:1337 > /dev/null
+curl -sS 127.0.0.1:1337 > /dev/null
 # reviewboard healthcheck
-curl -sSf 127.0.0.1:1338 > /dev/null
+curl -sS 127.0.0.1:1338 > /dev/null
 
 # TODO: cron tests
 # TODO: Test DB, db sync

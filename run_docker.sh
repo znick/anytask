@@ -1,9 +1,7 @@
 #!/bin/bash
 
-sudo mkdir /var/lib/anytask /var/www/reviewboard
 # build and run
 docker-compose up -d --build
-sudo chmod 0777 -R /var/lib/anytask /var/www/reviewboard
 # init db
 docker-compose exec -T db ./usr/src/init.sh
 # init anytask
