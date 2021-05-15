@@ -7,18 +7,17 @@ docker-compose exec -T anytask sh -c "
     cd anytask\
     && python manage.py create_shad --settings=anytask.settings_production < ./students.xml"
 
-#echo Test Anytask
-## test django
-#docker-compose exec -T anytask sh -c "
-#    cd anytask\
-#    && python manage.py test --settings=anytask.settings_production"
+echo Test Anytask
+# test django
+docker-compose exec -T anytask sh -c "
+    cd anytask\
+    && python manage.py test --settings=anytask.settings_production"
 # anytask healthcheck
-curl 127.0.0.1:1337
+curl -sSf 127.0.0.1:1337 > /dev/null
 # reviewboard healthcheck
-curl 127.0.0.1:1338
-# TODO: cron tests
+curl -sSf 127.0.0.1:1338 > /dev/null
 
-echo Test DB
-# TODO: test db sync
+# TODO: cron tests
+# TODO: Test DB, db sync
 
 echo Tests completed.
