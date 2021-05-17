@@ -89,7 +89,7 @@
                         <strong><a class="card-link" {% if event.author.username != "anytask" %}href="{{ event.author.get_absolute_url }}"{% endif %} style="color:#373a3c;">
                             {{ event.author.last_name }} {{ event.author.first_name }}</a>&nbsp;</strong>
                         <small class="text-muted">
-                            <i class="fa fa-clock-o fa-flip-horizontal"></i>{% localtime on %} {{ event.timestamp|date:"d M H:i" }} {% endlocaltime %}
+                            <i class="fa fa-clock-o fa-flip-horizontal"></i>{% localtime on %} {{ event.timestamp|date:"d M H:i:s" }} {% endlocaltime %}
                         </small>
 
                         {% if event.author == user %} {# start edit message elements #}
@@ -99,6 +99,14 @@
                             </a> 
                         </small>
                         {% endif %} {# end edit message elements #}
+
+                        {# start message history elements #}
+                        <small class="edit-history">
+                          <a href="javascript:show_edit_history({{ event.id }})">
+                                <i class="fa fa-list"></i>
+                            </a> 
+                        </small>
+                        {# end message history elements #}
 
                     </div>
                     <div class="user_img col-xs-1 {% if event.author == user %}pull-xs-right{% else %}pull-xs-left{% endif %}">
@@ -137,10 +145,33 @@
                                     {% endfor %}
                                 </div>
                             {% endif %}
+
                         </div>
                     </div>
                 </div>
             </li>
+
+            {# message history #}
+            <div id="message_{{ event.id }}_history" style="display: none;">
+            <h6>Message history:</h6>
+            {% for event_change in event.get_history %}
+                <div class="row">
+                    <div class="{% if event.author == user %}col-xs-12{% else %}col-xs-offset-1 col-xs-11{% endif %}">
+                        <small class="text-muted">
+                            <i class="fa fa-clock-o fa-flip-horizontal"></i>{% localtime on %} {{ event_change.timestamp|date:"d M H:i:s" }} {% endlocaltime %}
+                        </small>
+                    </div>
+
+                    <div class="col-xs-11">
+                        <div class="{% if event.author == user %}mine{% else %}not_mine{% endif %} history-body">
+                            {% autoescape off %}
+                                {{ event_change.old_value|sanitize }}
+                            {% endautoescape %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+            </div>
             {% if event.is_omg %}
                 <li class="change">
                     {{ event.field.title }} changed to {{ event.value }} by {{ event.author.last_name }} {{ event.author.first_name }}

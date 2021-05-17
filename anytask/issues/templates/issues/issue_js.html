@@ -259,5 +259,13 @@
         $('#cancel-edit-msg-btn').hide();
     }
 
+    function show_edit_history(event_id) {
+        elem = $('#message_' + event_id + '_history');
+        if (elem[0].style.display == "none") {
+          elem.show();
+        } else {
+          elem.hide();
+        }
+    }
 
 </script>
