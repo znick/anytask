@@ -33,7 +33,7 @@ functools32==3.2.3.post2  # via jsonschema
 html5lib==1.0.1           # via bleach, django-htmlmin
 idna==2.6                 # via requests
 ipdb==0.10.2
-ipykernel==4.5.2
+ipykernel==6.0.3
 ipython-genutils==0.2.0   # via nbformat, notebook, traitlets
 ipython[notebook]==5.3.0
 ipywidgets==7.2.1         # via ipython
