@@ -2679,3 +2679,13 @@ msgstr "Different course invite code"
 
 #~ msgid "izmenenie_sroka_sdachi"
 #~ msgstr "Change submission deadline"
+
+msgid "studentom"
+msgstr "student"
+
+msgid "proverjaushim"
+msgstr "TA"
+
+msgid "nabludatelem"
+msgstr "watcher"
+
