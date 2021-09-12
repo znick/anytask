@@ -2528,14 +2528,14 @@ msgstr "Инвайт относится к другому курсу."
 #~ msgid "blog_anytask"
 #~ msgstr "Блог Anytask"
 
-#~ msgid "blog"
-#~ msgstr "Блог"
+msgid "blog"
+msgstr "Блог"
 
-#~ msgid "studentom"
-#~ msgstr "студентом"
+msgid "studentom"
+msgstr "студентом"
 
-#~ msgid "proverjaushim"
-#~ msgstr "проверяющим"
+msgid "proverjaushim"
+msgstr "проверяющим"
 
-#~ msgid "nabludatelem"
-#~ msgstr "наблюдателем"
+msgid "nabludatelem"
+msgstr "наблюдателем"
