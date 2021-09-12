@@ -2682,10 +2682,3 @@ msgstr "Different course invite code"
 
 msgid "studentom"
 msgstr "student"
-
-msgid "proverjaushim"
-msgstr "TA"
-
-msgid "nabludatelem"
-msgstr "watcher"
-
