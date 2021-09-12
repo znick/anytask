@@ -9,7 +9,7 @@ from django.utils.translation import ugettext as _
 from django.utils.translation import ugettext_noop as _noop
 from django.template.loader import render_to_string
 
-from mail.common import send_mass_mail_html
+from common.mail import send_mass_mail_html
 
 from issues.models import Issue, Event
 import time
@@ -17,8 +17,6 @@ import time
 
 class Command(BaseCommand):
     help = "Send notifications via email"
-
-    option_list = BaseCommand.option_list
 
     def handle(self, **options):
         start_time = time.time()
