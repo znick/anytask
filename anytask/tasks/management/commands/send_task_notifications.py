@@ -10,7 +10,7 @@ from django.utils import translation
 from django.utils.translation import ugettext as _
 
 from tasks.models import Task
-from mail.common import send_mass_mail_html
+from common.mail import send_mass_mail_html
 
 import time
 from reversion import revisions as reversion
@@ -28,8 +28,6 @@ def add_timezone(date):
 
 class Command(BaseCommand):
     help = "Send notifications about task changes via email"
-
-    option_list = BaseCommand.option_list
 
     def handle(self, **options):
         start_time = time.time()
