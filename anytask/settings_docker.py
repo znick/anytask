@@ -61,6 +61,7 @@ CONTEST_EXTENSIONS = {'.py': 'python2_6', '.py2': 'python2_6', '.py3': 'python3'
 
 RB_API_URL = "https://anytask.org/rb"
 RB_API_PASSWORD = os.environ.get('RB_API_PASSWORD')
+RB_SYMLINK_SERVICE_URL = os.environ.get('RB_SYMLINK_SERVICE_URL')
 
 CONTEST_OAUTH = os.environ.get('CONTEST_OAUTH', '')
 CONTEST_OAUTH_ID = os.environ.get('CONTEST_OAUTH_ID')
