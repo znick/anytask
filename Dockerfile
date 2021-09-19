@@ -93,4 +93,4 @@ RUN rm -rf /var/log/anytask/*
 ENTRYPOINT ["/code/docker_entrypoint.sh"]
 
 # Start uWSGI
-CMD ["/venv/bin/uwsgi", "--show-config", "--static-map", "/static/=/var/lib/anytask/static", "--static-map", "/media/=/var/lib/anytask/media"]
+CMD ["/venv/bin/uwsgi", "--show-config", "--static-map", "/static/=/var/lib/anytask/static", "--static-map", "/media/=/var/lib/anytask/media", "--mime-file", "mime.types", "--mime-file", "/etc/mime.types"]
