@@ -82,9 +82,9 @@
     {
         "host": "https://anytask.org",
         "course_id": 852,
-        "repo": "https://github.com/znick/anytask-ci-example.git",
-        "run_cmd": ["./run.sh"],
-        "docker_image": "zhnick/imkn_python_checker:latest",
+        "repo": "git@bitbucket.org:antselevich/cpp20.git",
+        "run_cmd": ["build_script/main.py", "-a", "/task_rw"],
+        "docker_image": "guerre/c18:latest",
         "timeout": 900
     }
 
