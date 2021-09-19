@@ -165,6 +165,14 @@ class AnyRB(object):
             logger.info("Issue '%s' has not RB review_request. Exception: '%s'.", self.event.issue.id, e)
             return None
 
+    def call_symlink_creator(self, repo_id):
+        if not settings.RB_SYMLINK_SERVICE_URL:
+            return
+
+        url = settings.RB_SYMLINK_SERVICE_URL + "/" + str(repo_id)
+        response = requests.get(url)
+        response.raise_for_status()
+
     def create_review_request(self):
         root = self.client.get_root()
 
@@ -172,8 +180,7 @@ class AnyRB(object):
         course_id = self.event.issue.task.course.id
         repository_name = str(self.event.issue.id)
         repository_path = os.path.join(settings.RB_SYMLINK_DIR, repository_name)
-        if not os.path.exists(repository_path):
-            os.symlink(settings.RB_SYMLINK_DIR, repository_path)
+        self.call_symlink_creator(self.event.issue.id)
 
         try:
 
