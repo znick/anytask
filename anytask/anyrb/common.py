@@ -78,6 +78,7 @@ class AnyRB(object):
             if empty:
                 return None
 
+            self.call_symlink_creator(self.event.issue.id)
             review_request = self.get_review_request()
             if review_request is None:
                 review_request = self.create_review_request()
@@ -180,7 +181,6 @@ class AnyRB(object):
         course_id = self.event.issue.task.course.id
         repository_name = str(self.event.issue.id)
         repository_path = os.path.join(settings.RB_SYMLINK_DIR, repository_name)
-        self.call_symlink_creator(self.event.issue.id)
 
         try:
 
