@@ -15,6 +15,8 @@ RUN set -ex \
         tar \
         gzip \
         bzip2 \
+        p7zip-full \
+        xz-utils \
         gettext \
     " \
     && seq 1 8 | xargs -I{} mkdir -p /usr/share/man/man{} \
