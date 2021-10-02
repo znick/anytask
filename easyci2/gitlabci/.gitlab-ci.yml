@@ -20,7 +20,7 @@ run:
     - ./run_worker.sh $TASK $REPO $RUN_CMD $FILES $TIMEOUT $OUTPUT_FILE $COURSE_ID $ISSUE_ID
   artifacts:
     paths:
-      - $OUTPUT_FILE
+      - easyci2/gitlabci/$OUTPUT_FILE
   rules:
     - if: '$CI_PIPELINE_SOURCE == "trigger"'
 
