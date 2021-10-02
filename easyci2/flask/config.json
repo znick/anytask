@@ -41,6 +41,14 @@
     },
     {
         "host": "https://anytask.org",
+        "course_id": 818,
+        "repo": "git@github.com:tswr/imkn_python_method.git",
+        "run_cmd": ["_python_task_checker/main.py"],
+        "docker_image": "zhnick/imkn_python_checker:latest",
+        "timeout": 900
+    },
+    {
+        "host": "https://anytask.org",
         "course_id": 426,
         "repo": "git@bitbucket.org:antselevich/cpp19.git",
         "run_cmd": ["build_script/main.py", "-a", "/task_rw"],
@@ -69,6 +77,14 @@
         "repo": "https://github.com/znick/anytask-ci-example.git",
         "run_cmd": ["./run.sh"],
         "docker_image": "zhnick/imkn_python_checker:latest",
+        "timeout": 900
+    },
+    {
+        "host": "https://anytask.org",
+        "course_id": 852,
+        "repo": "git@bitbucket.org:antselevich/cpp20.git",
+        "run_cmd": ["build_script/main.py", "-a", "/task_rw"],
+        "docker_image": "guerre/c18:latest",
         "timeout": 900
     }
 

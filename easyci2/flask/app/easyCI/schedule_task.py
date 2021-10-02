@@ -113,9 +113,12 @@ def send_message(ret):
         if is_timeout:
             output += u"\nTIMEOUT ({} sec)".format(timeout)
 
+    if output is None:
+        output = ''
+
     comment = u"[id:{}] Job status: {}. Status: {}<br>\n" \
                "Submited on {}<br>\n<pre>{}</pre><br>\n" \
-               "<a href={}>Link to pipeline</a>" \
+               "See <a href={}>your task running</a>" \
               .format(job_id, job_status, status,
                       timestamp, output,
                       pipeline_url)

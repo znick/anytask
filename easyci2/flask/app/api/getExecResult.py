@@ -58,7 +58,10 @@ def gitlabci():
         send_message(ret)
         response.status_code = 200
 
-    elif job_status == 'running' or job_status == 'pending':
+    elif job_status == 'pending':
+        response.status_code = 200
+
+    elif job_status == 'running':
         send_message(ret)
         response.status_code = 200
 

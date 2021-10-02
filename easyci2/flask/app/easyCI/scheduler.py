@@ -72,6 +72,6 @@ class GitlabCIScheduler(AbstractScheduler):
 
     @gitlabci_getter
     def get_job_artifact(self, job_id):
+        output_file = "easyci2/gitlabci/" + self.output_file
         return self.prefix + "/jobs/{}/artifacts/{}".format(
-                job_id, self.output_file)
-
+                job_id, output_file)
