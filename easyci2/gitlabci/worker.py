@@ -28,6 +28,7 @@ def git_clone(repo, dst_dir):
         env["GIT_SSH_COMMAND"] = "ssh -vvv -i '{}'".format(ssh_key)
 
     logging.info("RUN: %s", cmd)
+    logging.info("ENV: %s", env)
     subprocess.check_call(cmd, env=env)
 
 
