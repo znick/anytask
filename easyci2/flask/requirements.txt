@@ -23,7 +23,6 @@ MarkupSafe==1.1.1
 msgpack==0.6.2
 packaging==20.3
 pep517==0.8.2
-pkg-resources==0.0.0
 pluggy==0.13.1
 progress==1.5
 py==1.10.0
