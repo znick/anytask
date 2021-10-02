@@ -2270,7 +2270,7 @@ msgstr "Enter new password twice"
 
 #: templates/registration/password_reset_done.html:7
 msgid "vosstanovlenie_parolja"
-msgstr "Restore password"
+msgstr "We have sent the password recovery instructions to the email address you provided during registration."
 
 #: templates/registration/password_reset_email.html:19
 #: templates/registration/password_reset_email.txt:4
