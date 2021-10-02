@@ -23,10 +23,13 @@ def git_clone(repo, dst_dir):
     cmd = ["git", "clone", repo, dst_dir]
 
     ssh_key = os.environ.get("SSH_KEY")
-    env = os.environ.copy()
+    ssh = "ssh -o StrictHostKeyChecking=no -vvv"
     if ssh_key:
-        env["GIT_SSH_COMMAND"] = "ssh -vvv -i '{}'".format(ssh_key)
         os.chmod(ssh_key, 600)
+        ssh += "-i '{}'".format(ssh_key)
+
+    env = os.environ.copy()
+    env["GIT_SSH_COMMAND"] = ssh
 
     logging.info("RUN: %s", cmd)
     logging.info("ENV: %s", env)
