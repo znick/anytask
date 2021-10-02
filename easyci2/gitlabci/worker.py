@@ -26,7 +26,7 @@ def git_clone(repo, dst_dir):
     ssh = "ssh -o StrictHostKeyChecking=no -vvv"
     if ssh_key:
         os.chmod(ssh_key, 600)
-        ssh += "-i '{}'".format(ssh_key)
+        ssh += " -i '{}'".format(ssh_key)
 
     env = os.environ.copy()
     env["GIT_SSH_COMMAND"] = ssh
