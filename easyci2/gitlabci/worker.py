@@ -21,8 +21,14 @@ MAX_COMMENT_SIZE = 10000
 
 def git_clone(repo, dst_dir):
     cmd = ["git", "clone", repo, dst_dir]
+
+    ssh_key = os.environ.get("SSH_KEY")
+    if ssh_key:
+        env = os.environ.copy()
+        env["GIT_SSH_COMMAND"] = "ssh -i '{}'".format(ssh_key)
+
     logging.info("RUN: %s", cmd)
-    subprocess.check_call(cmd)
+    subprocess.check_call(cmd, env=env)
 
 
 def prepare_dir(repo, files, dirname="./"):

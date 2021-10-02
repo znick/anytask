@@ -19,6 +19,9 @@ def create_app():
     app.config['SESSION_TYPE'] = 'filesystem'
     app.config['SECRET_KEY'] = SECRET_KEY
 
+    if 'SESSION_FILE_DIR' in os.environ:
+        app.config['SESSION_FILE_DIR'] = os.environ.get('SESSION_FILE_DIR')
+
     Session(app)
 
     configure_logging()

@@ -16,11 +16,15 @@ from app.easyCI.scheduler import GitlabCIScheduler
 LOG = logging.getLogger(__name__)
 CONFIG = "config.json"
 PASSWORDS = "passwords.json"
+PASSWORDS_JSON = os.environ.get("PASSWORDS_JSON")
 MAX_COMMENT_SIZE = 10000
 REQUEST_TIMEOUT = 300
 
 
 def load_passwords(filename=PASSWORDS):
+    if PASSWORDS_JSON is not None:
+        return json.loads(PASSWORDS_JSON)
+
     with open(filename) as config_fn:
         return json.load(config_fn)
 
