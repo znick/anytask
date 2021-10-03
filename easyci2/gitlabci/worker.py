@@ -32,7 +32,7 @@ def git_clone(repo, dst_dir):
     env["GIT_SSH_COMMAND"] = ssh
 
     logging.info("RUN: %s", cmd)
-    logging.info("ENV: %s", env)
+    #logging.info("ENV: %s", env)
     subprocess.check_call(cmd, env=env)
 
 
