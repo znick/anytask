@@ -9,6 +9,10 @@ from flask import request, make_response
 from app.api import bp
 from app.easyCI.scheduler import GitlabCIScheduler
 from app.easyCI.schedule_task import send_message
+from flask import current_app
+from werkzeug.local import LocalProxy
+
+logger = LocalProxy(lambda: current_app.logger)
 
 GITLAB_WEBHOOKS_TOKEN = os.environ.get('GITLAB_WEBHOOKS_TOKEN')
 TASK_STATUSES = TTLCache(maxsize=1024, ttl=timedelta(minutes=15), timer=datetime.now)
@@ -24,6 +28,8 @@ def gitlabci():
     # data got via Gitlab Webhooks
     pipeline_data = request.get_json()
     pipeline_id = pipeline_data["object_attributes"]["id"]
+
+    logger.info("Webhook data: %s", pipeline_data)
 
     # obtain job data
     job_data = pipeline_data['builds'][0]
