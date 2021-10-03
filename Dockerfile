@@ -1,5 +1,8 @@
 FROM python:2.7-slim
 
+ENV LANG C.UTF-8
+ENV LC_ALL C.UTF-8
+
 # Install packages needed to run your application (not build deps):
 #   mime-support -- for mime types when serving static files
 #   postgresql-client -- for running database commands
@@ -7,6 +10,7 @@ FROM python:2.7-slim
 # they were clobbered by a parent image.
 RUN set -ex \
     && RUN_DEPS=" \
+        locales \
         libpcre3 \
         mime-support \
         default-mysql-client \
