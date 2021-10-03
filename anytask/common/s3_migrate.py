@@ -44,23 +44,23 @@ class S3MigrateCommand(BaseCommand):
     """
 
     DEST_EXISTS_NOT_OK = (
-        """Error: destination already exists and --ok-if-exists not present"""
-        """ (skipping db record): {}""")
+        u"""Error: destination already exists and --ok-if-exists not present"""
+        u""" (skipping db record): {}""")
     DEST_EXISTS_OK = (
-        """Note: destination already exists: {}""")
-    SKIP_IGNORED_EXT = "Note: skipping: ignored extension: {}"
-    SKIP_ALREADY_S3 = "Note: skipping: already stored in S3 (by path): {}"
-    OK_UPLOADED = "Note: uploaded: {}"
+        u"""Note: destination already exists: {}""")
+    SKIP_IGNORED_EXT = u"Note: skipping: ignored extension: {}"
+    SKIP_ALREADY_S3 = u"Note: skipping: already stored in S3 (by path): {}"
+    OK_UPLOADED = u"Note: uploaded: {}"
 
-    ERR_UNHANDLED_EXCEPTION = "Error: unhandled exception: {}, {}"
+    ERR_UNHANDLED_EXCEPTION = u"Error: unhandled exception: {}, {}"
 
-    NOTE_UPDATING_MODEL = "Note: updating model: {}, {}"
-    OK_UPDATED_MODEL = "Note: updated model: {}, {}"
-    ERR_UPDATE_MODEL = "Error: update_model failed: {}, {}"
+    NOTE_UPDATING_MODEL = u"Note: updating model: {}, {}"
+    OK_UPDATED_MODEL = u"Note: updated model: {}, {}"
+    ERR_UPDATE_MODEL = u"Error: update_model failed: {}, {}"
 
-    NOTE_DELETING_LOCAL_COPIES = "Note: will delete local copies"
-    OK_DELETE_LOCAL = "Note: deleted local: {}"
-    ERR_DELETE_LOCAL = "Error: delete local: {}: {}"
+    NOTE_DELETING_LOCAL_COPIES = u"Note: will delete local copies"
+    OK_DELETE_LOCAL = u"Note: deleted local: {}"
+    ERR_DELETE_LOCAL = u"Error: delete local: {}: {}"
 
     def all_models(self, options):
         """

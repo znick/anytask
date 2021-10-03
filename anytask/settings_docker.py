@@ -106,7 +106,7 @@ FILE_UPLOAD_PERMISSIONS = 0644
 
 
 AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
-AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
 AWS_S3_ENDPOINT_URL = 'https://storage.yandexcloud.net/'
 AWS_STORAGE_BUCKET_NAME = 'anytask'
 AWS_DEFAULT_ACL = 'public-read'  # As when served by Django & FileSystemStorage
