@@ -1,5 +1,9 @@
 import os
 
+from datetime import datetime, timedelta
+
+from cachetools import TTLCache
+
 from flask import request, make_response
 
 from app.api import bp
@@ -7,6 +11,7 @@ from app.easyCI.scheduler import GitlabCIScheduler
 from app.easyCI.schedule_task import send_message
 
 GITLAB_WEBHOOKS_TOKEN = os.environ.get('GITLAB_WEBHOOKS_TOKEN')
+TASK_STATUSES = TTLCache(maxsize=1024, ttl=timedelta(minutes=15), timer=datetime.now)
 
 
 @bp.route('/gitlabci/', methods=['POST'])
@@ -46,6 +51,13 @@ def gitlabci():
     ret["retcode"] = None
     ret["is_timeout"] = None
     ret["output"] = None
+
+    if TASK_STATUSES.get(job_id) == job_status:
+        response = make_response()
+        response.status_code = 200
+        return response
+
+    TASK_STATUSES[job_id] = job_status
 
     response = make_response()
     if job_status == 'success':

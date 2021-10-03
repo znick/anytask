@@ -118,7 +118,7 @@ def send_message(ret):
 
     comment = u"[id:{}] Job status: {}. Status: {}<br>\n" \
                "Submited on {}<br>\n<pre>{}</pre><br>\n" \
-               "See <a href={}>your task running</a>" \
+               "See <a href={}>your task</a> in the CI" \
               .format(job_id, job_status, status,
                       timestamp, output,
                       pipeline_url)

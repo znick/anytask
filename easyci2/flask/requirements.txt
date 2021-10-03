@@ -39,3 +39,4 @@ toml==0.10.2
 urllib3==1.26.5
 webencodings==0.5.1
 Werkzeug==1.0.1
+cachetools==4.2.4

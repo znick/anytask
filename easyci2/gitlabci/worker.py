@@ -23,7 +23,7 @@ def git_clone(repo, dst_dir):
     cmd = ["git", "clone", repo, dst_dir]
 
     ssh_key = os.environ.get("SSH_KEY")
-    ssh = "ssh -o StrictHostKeyChecking=no -vvv"
+    ssh = "ssh -o StrictHostKeyChecking=no"
     if ssh_key:
         subprocess.check_call(["chmod", "0600", ssh_key])
         ssh += " -i '{}'".format(ssh_key)
