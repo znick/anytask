@@ -37,5 +37,4 @@ def dashboard():
             "updated_at": pipeline["updated_at"]
         })
 
-    return json.dumps(info)
-
+    return json.dumps(info), 200, {'Content-Type': 'text/json'}
