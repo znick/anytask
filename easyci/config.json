@@ -25,14 +25,6 @@
     },
     {
         "host": "https://anytask.org",
-        "course_id": 673,
-        "repo": "git@github.com:tswr/imkn_python_method.git",
-        "run_cmd": ["_python_task_checker/main.py"],
-        "docker_image": "zhnick/imkn_python_checker:latest",
-        "timeout": 900
-    },
-    {
-        "host": "https://anytask.org",
         "course_id": 330,
         "repo": "git@github.com:tswr/imkn_python_method.git",
         "run_cmd": ["_python_task_checker/main.py"],
