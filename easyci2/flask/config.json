@@ -34,9 +34,9 @@
     {
         "host": "https://anytask.org",
         "course_id": 330,
-        "repo": "git@github.com:tswr/imkn_python_method.git",
-        "run_cmd": ["_python_task_checker/main.py"],
-        "docker_image": "zhnick/imkn_python_checker:latest",
+        "repo": "git@bitbucket.org:antselevich/cpp20.git",
+        "run_cmd": ["build_script/main.py", "server"],
+        "docker_image": "pmanokhin/shad_checker",
         "timeout": 900
     },
     {
