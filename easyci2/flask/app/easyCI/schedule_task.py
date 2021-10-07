@@ -68,7 +68,7 @@ def add_to_scheduler(task):
     scheduler.schedule(
             task["title"], 
             course["repo"],
-            " ".join(course["run_cmd"]),
+            course["run_cmd"],
             task["files"], 
             course["docker_image"],
             course["timeout"],

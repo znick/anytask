@@ -76,7 +76,7 @@ class Worker:
             course_id, issue_id):
         self.task = task
         self.repo = repo
-        self.run_cmd = run_cmd
+        self.run_cmd = json.loads(run_cmd)
         self.files = files
         self.timeout = timeout
         self.output_file = output_file

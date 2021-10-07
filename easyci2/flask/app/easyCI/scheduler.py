@@ -36,7 +36,7 @@ class GitlabCIScheduler(AbstractScheduler):
             course_id, issue_id):
         inputs = {"TASK" : task,
                   "REPO" : repo,
-                  "RUN_CMD" : run_cmd,
+                  "RUN_CMD" : json.dumps(run_cmd),
                   "FILES" : json.JSONEncoder().encode(files),
                   "DOCKER_IMAGE" : docker_image,
                   "TIMEOUT" : timeout,
