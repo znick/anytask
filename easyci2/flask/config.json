@@ -86,5 +86,13 @@
         "run_cmd": ["build_script/main.py", "server"],
         "docker_image": "pmanokhin/shad_checker",
         "timeout": 900
+    },
+    {
+        "host": "https://anytask.org",
+        "course_id": 866,
+        "repo": "git@github.com:tswr/imkn_python_method.git",
+        "run_cmd": ["_home_task_checker/run_in_anytask_org.sh"],
+        "docker_image": "zhnick/imkn_python_checker:latest",
+        "timeout": 10800
     }
 ]
