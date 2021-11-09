@@ -46,7 +46,7 @@ def prepare_dir(repo, files, dirname="./"):
         # TODO: do it using os
         filename = url.split('/')[-1]
         dst_path = os.path.join(task_dir, filename)
-        logging.info("Download '%s' -> '%s'", url, dst_path)
+        logging.info("Download '%s' -> '%s'", '[hidden]', dst_path)
         urlretrieve(url, dst_path)
 
 
