@@ -155,7 +155,7 @@ class Worker:
             ret["output"] += "\n...\nTRUNCATED\n"
 
         if ret["is_timeout"]:
-            ret["output"] += "\nTIMEOUT ({} sec)\n".format(ret["timeout"])
+            ret["output"] += "\nTIMEOUT ({} sec)\n".format(self.timeout)
 
         message = "\n == Task output start\n"
         message += ret["output"]
