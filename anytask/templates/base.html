@@ -25,6 +25,14 @@
         <link href="{{ STATIC_URL }}bootstrap-multiselect.css" rel="stylesheet">
         <link href="{{ STATIC_URL }}typeahead.css" rel="stylesheet">
 
+        <script type="text/javascript">
+            function set_lang(lang) {
+                $.post('{% url "set_lang" %}', {'lang': lang, 'csrfmiddlewaretoken': "{{ csrf_token }}",}).done(function (data) {
+                    location.reload(true);
+                    });
+            }
+        </script>
+
 
         <script type="text/javascript">
             if (!String.prototype.format) {
@@ -713,6 +721,14 @@
                                         <div class="dropdown-divider"></div>
                                         <a class="dropdown-item" href="{% url "auth_logout" %}">{% trans "vyjti" %}</a>
                                     </div>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="" OnClick="set_lang('ru'); return false;">RU</a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link" href="" OnClick="set_lang('en'); return false;">EN</a>
+                                </li>
+
                                 </li>
                             </ul>
                         {% else %}
@@ -723,7 +739,18 @@
                                 <li class="nav-item">
                                     <a class="nav-link" href="/accounts/register/">{% trans "zaregistrirujtes" %}</a>
                                 </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link" href="" OnClick="set_lang('ru'); return false;">RU</a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link" href="" OnClick="set_lang('en'); return false;">EN</a>
+                                </li>
+
+
                             </ul>
+
                         {% endif %}
                     </div>
                 {% endblock %}
@@ -752,7 +779,7 @@
     <div class="{% if full_width_page %}container-fluid{% else %}container{% endif %}">
         {% block footer %} {% endblock footer %}
         <div style="display: inline-block; width: 100%">
-            <small class="text-muted" ><a href="{% url "blog.views.blog_page" %}">{% trans "blog" %}</a></small>
+            <small class="text-muted" ><a target="_blank"href="https://github.com/znick/anytask/">{% trans "github" %}</a></small>
 {#            <small style="margin-left: 1.5rem" class="text-muted">#}
 {#                <form style="display: inline;" name="setLangRU" action="/setlanguage/" method="POST">#}
 {#                    {% csrf_token %}#}

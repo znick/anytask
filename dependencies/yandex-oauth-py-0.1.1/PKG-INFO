@@ -1,0 +1,11 @@
+Metadata-Version: 1.0
+Name: yandex-oauth-py
+Version: 0.1.1
+Summary: Package for working with Yandex OAuth https://tech.yandex.ru/oauth/
+Home-page: https://bitbucket.org/wa_pis/yandex-oauth-py/oauth
+Author: Anton Grudin
+Author-email: onepis2word@gmail.com
+License: MIT
+Description: UNKNOWN
+Keywords: yandex oauth python
+Platform: UNKNOWN

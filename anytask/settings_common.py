@@ -33,8 +33,6 @@ TEMPLATES = [
 
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
-    ('Anna K', 'voron13e02@gmail.com'),
-    ('Nickolai Zhuravlev', 'znick@znick.ru'),
 )
 
 MANAGERS = ADMINS
@@ -123,7 +121,8 @@ MIDDLEWARE_CLASSES = (
     # 'django.middleware.transaction.TransactionMiddleware',
     'reversion.middleware.RevisionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
-    'anytask.middleware.timezone_middleware.TimezoneMiddleware'
+    'anytask.middleware.timezone_middleware.TimezoneMiddleware',
+    'anytask.middleware.lang_middleware.LanguageCookieMiddleware',
 )
 
 ROOT_URLCONF = 'anytask.urls'
@@ -191,7 +190,6 @@ INSTALLED_APPS = (
     'colorfield',
     'search',
     'staff',
-    'blog',
     'mail',
     'reversion',
     'admission',
@@ -217,6 +215,7 @@ RB_API_USERNAME = "anytask"
 RB_API_PASSWORD = "P@ssw0rd"
 RB_API_DEFAULT_REVIEW_GROUP = 'teachers'
 RB_SYMLINK_DIR = '/var/lib/anytask/repos/'
+RB_SYMLINK_SERVICE_URL = None
 RB_EXTENSIONS = ['.py', '.py2', '.py3', '.cpp', '.sage', '.m', '.java', '.h', '.cs', '.sh', '.c', '.txt', '.fs', '.hpp',
                  '.cc', '.rkt', '.sql']
 
@@ -320,3 +319,12 @@ PREMAILER_OPTIONS = {
 API_LANGUAGE_CODE = 'en'
 
 JUPYTER_NBGRADER_API_URL = ''
+
+AWS_ACCESS_KEY_ID = 'minioadmin'
+AWS_SECRET_ACCESS_KEY = 'minioadmin'
+AWS_S3_ENDPOINT_URL = 'http://localhost:9000'
+AWS_STORAGE_BUCKET_NAME = 'anytask-test-s3'
+AWS_DEFAULT_ACL = 'public-read'  # As when served by Django & FileSystemStorage
+AWS_S3_USE_SSL = False
+
+DEFAULT_FILE_STORAGE = 'anytask.storage.S3OverlayStorage'

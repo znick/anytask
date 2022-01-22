@@ -1,22 +1,33 @@
 ﻿# encoding: utf-8
 
-from django.test import TestCase
+import re
+
 from django.contrib.auth.models import User
+from django.test import TestCase
+from django.contrib.sites.models import Site
 
 from schools.models import School
 from years.models import Year
 from courses.models import Course
 from groups.models import Group
 
+from django.core import mail
 from django.core.urlresolvers import reverse
 
 
 class UserLoginTest(TestCase):
+    RESET_LINK_RE = re.compile(r'http://localhost(.*)$', re.MULTILINE)
+
     def setUp(self):
         self.user = User.objects.create_user(username="test_user0", email="test_user0@example.com", password="qwer0")
         self.user.is_active = True
         self.user.first_name = u"Иван"
         self.user.last_name = u"Кузнецов"
+
+        # for premailer in test_reset_password
+        site = Site.objects.all()[0]
+        site.domain = 'http://localhost'
+        site.save()
 
     def test_login_form(self):
         client = self.client
@@ -158,6 +169,32 @@ class UserLoginTest(TestCase):
         response = client.post('/accounts/register/', form_data)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, u"Два поля с паролями не совпадают.")
+
+    def test_reset_password(self):
+        client = self.client
+        new_password = "qwer"
+
+        # check reset page loads fine
+        response = client.get('/accounts/password/reset/')
+        self.assertEqual(response.status_code, 200)
+
+        # start reseting password, enter email and itiate email with reset link
+        form_data = {"email": u"test_user0@example.com"}
+        response = client.post('/accounts/password/reset/', form_data, follow=True)
+        self.assertEqual(response.status_code, 200)
+
+        # read the email and extract reset link
+        change_password_url_match = self.RESET_LINK_RE.search(mail.outbox[0].body)  # Find link in email
+        self.assert_(change_password_url_match)
+        change_password_url = change_password_url_match.group(1)
+
+        # finnaly set new password
+        form_data = {"new_password1": u"qwer", "new_password2": u"qwer"}
+        response = client.post(change_password_url, form_data, follow=True)
+        self.assertEqual(response.status_code, 200)  # password changed!
+
+        # check new password finally set
+        self.assertTrue(client.login(username="test_user0", password=new_password))  # check its really changed
 
 
 class UserProfileAccess(TestCase):

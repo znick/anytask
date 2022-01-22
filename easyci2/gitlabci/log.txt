@@ -1,0 +1,1 @@
+{"status": false, "retcode": 2, "is_timeout": false, "output": "../task:\nls: cannot access '124': No such file or directory\n", "course_id": 2, "issue_id": 3}

@@ -2,1491 +2,2313 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-21 13:16+0500\n"
+"POT-Creation-Date: 2021-04-18 19:02+0300\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: anycontest/models.py:171 anycontest/models.py:177 anycontest/models.py:182
+#: admission/views.py:170 courses/templates/courses/course_forbidden.html:30
+#: issues/templates/file_uploader.html:198
+msgid "oshibka"
+msgstr "Error"
+
+#: admission/views.py:180
+#, fuzzy
+#| msgid "oshibka_otpravki_v_kontest"
+msgid "oshibka_registracii_v_contest"
+msgstr "Error sending to the contest"
+
+#: admission/views.py:182
+msgid "nevernyy_kod_aktivatsii"
+msgstr "Wrong activation code"
+
+#: admission/views.py:202
+msgid "spasibo"
+msgstr "Thank you"
+
+#: admission/views.py:203
+msgid "informatsiya_o_vas_byla_udalena"
+msgstr "Informaton about you was deleted"
+
+#: anycontest/management/commands/check_contest.py:78 issues/models.py:418
+#: issues/views.py:117
+msgid "oshibka_otpravki_v_rb"
+msgstr "Sending to RB failed"
+
+#: anycontest/management/commands/check_contest.py:87
+msgid "bally_ne_uchityvautsia"
+msgstr "Marks are not counted"
+
+#: anycontest/models.py:206 anycontest/models.py:212 anycontest/models.py:217
+#: anycontest/tests.py:259 anycontest/tests.py:276 anycontest/tests.py:297
 msgid "verdikt_jakontest"
-msgstr ""
-
-#: anycontest/models.py:189
-msgid "resursy"
-msgstr ""
-
-#: anycontest/models.py:192
-msgid "vvod"
-msgstr ""
-
-#: anycontest/models.py:198
-msgid "vyvod_programmy"
-msgstr ""
-
-#: anycontest/models.py:204
-msgid "pravilnyj_otvet"
-msgstr ""
-
-#: anycontest/models.py:218
-msgid "soobshenie_chekera"
-msgstr ""
+msgstr "Ya.contest verdict"
 
 #: anycontest/models.py:224
+msgid "resursy"
+msgstr "Resources"
+
+#: anycontest/models.py:227
+msgid "vvod"
+msgstr "Input"
+
+#: anycontest/models.py:233
+msgid "vyvod_programmy"
+msgstr "Program output"
+
+#: anycontest/models.py:239
+msgid "pravilnyj_otvet"
+msgstr "Correct answer"
+
+#: anycontest/models.py:253
+msgid "soobshenie_chekera"
+msgstr "Checker message"
+
+#: anycontest/models.py:259
 msgid "test"
-msgstr ""
+msgstr "Test"
 
-#: anycontest/management/commands/check_contest.py:41 issues/models.py:298
-#: issues/views.py:104
-msgid "oshibka_otpravki_v_rb"
-msgstr ""
-
-#: anyrb/common.py:83 courses/templates/courses/queue.html:74
-#: issues/models.py:471 users/templates/my_tasks.html:136
+#: anyrb/common.py:87 courses/templates/courses/queue.html:77
+#: issues/issueFilter.py:23 issues/management/commands/send_notifications.py:94
+#: issues/views.py:49 users/templates/my_tasks.html:139
 msgid "zadacha"
-msgstr ""
+msgstr "Problem"
 
-#: anyrb/common.py:84 users/models.py:183 users/templates/my_tasks.html:137
-#: users/templates/user_courses.html:105
+#: anyrb/common.py:88 issues/management/commands/send_notifications.py:94
+#: issues/model_issue_student_filter.py:20 issues/views.py:48
+#: mail/templates/mail.html:174 users/model_user_profile_filter.py:27
+#: users/templates/my_tasks.html:140 users/templates/user_courses.html:91
 msgid "kurs"
-msgstr ""
+msgstr "Year of study"
 
-#: anyrb/common.py:85 courses/templates/courses/queue.html:73
+#: anyrb/common.py:89 courses/templates/courses/attendance_list.html:38
+#: courses/templates/courses/queue.html:76
 #: courses/templates/courses/tasklist/many_tasksets_many_groups.html:35
-#: courses/templates/courses/tasklist/shad_cpp.html:150
+#: courses/templates/courses/tasklist/shad_cpp.html:47
+#: issues/management/commands/send_notifications.py:94 issues/views.py:50
 #: staff/templates/gradebook.html:43
 msgid "student"
-msgstr ""
+msgstr "Student"
 
-#: anyrb/common.py:86
+#: anyrb/common.py:90 issues/templates/issues/history.html:60
 msgid "obsuzhdenie_zadachi"
-msgstr ""
+msgstr "Problem discussion"
 
-#: anyrb/views.py:28
+#: anyrb/views.py:24
 msgid "novyj_kommentarij"
-msgstr ""
+msgstr "New comment"
 
-#: blog/templates/blog.html:4 blog/templates/blog.html.py:9
-msgid "blog_anytask"
-msgstr ""
-
-#: courses/forms.py:18
-msgid "rasshirenia_fajla"
-msgstr ""
-
-#: courses/forms.py:22 issues/models.py:77
+#: courses/forms.py:25 issues/models.py:74
 msgid "na_dorabotke"
-msgstr ""
+msgstr "Refinement stage"
 
-#: courses/forms.py:23 issues/models.py:78
+#: courses/forms.py:26 issues/models.py:75
 msgid "na_proverke"
-msgstr ""
+msgstr "Check up stage"
 
-#: courses/forms.py:24 courses/templates/courses/gradebook.html:131
-#: issues/models.py:81
+#: courses/forms.py:27 courses/templates/courses/gradebook.html:73
+#: issues/models.py:78
 msgid "trebuetsja_informacija"
-msgstr ""
+msgstr "Need info"
 
-#: courses/forms.py:25 users/templates/my_tasks.html:96
-#: users/templates/my_tasks.html.py:131 users/templates/my_tasks.html:173
-#: users/templates/status_history.html:32 users/templates/user_courses.html:30
-#: users/templates/user_profile.html:20 users/templates/user_settings.html:46
+#: courses/forms.py:28 users/templates/my_tasks.html:99
+#: users/templates/my_tasks.html:134 users/templates/my_tasks.html:176
+#: users/templates/status_history.html:21 users/templates/user_courses.html:31
+#: users/templates/user_profile.html:22 users/templates/user_settings.html:19
 msgid "moi_zadachi"
-msgstr ""
+msgstr "My assignments"
 
-#: courses/forms.py:26
+#: courses/forms.py:29
 msgid "nabludaemye_mnoj"
-msgstr ""
+msgstr "Followed by me"
 
-#: courses/views.py:104 staff/views.py:44 users/views.py:453
-msgid "primenit"
-msgstr ""
+#: courses/pythontask.py:175
+msgid "zapisalsya_na_task"
+msgstr "Signed up for the task"
 
-#: courses/views.py:739 courses/views.py:751 tasks/views.py:318
-msgid "kontesta_ne_sushestvuet"
-msgstr ""
+#: courses/pythontask.py:195
+msgid "otkazalsya_ot_taska"
+msgstr "Gave up on the task"
 
-#: courses/views.py:741 courses/views.py:753 tasks/views.py:320
-msgid "oshibka_kontesta"
-msgstr ""
-
-#: courses/views.py:749 tasks/views.py:308 tasks/views.py:435
-msgid "net_prav_na_kontest"
-msgstr ""
-
-#: courses/templates/courses/course.html:33
-#: courses/templates/courses/gradebook.html:28
-#: courses/templates/courses/queue.html:25
-#: courses/templates/courses/settings.html:31
+#: courses/templates/course_tasks_potok.html:51
+#: courses/templates/courses/attendance.html:27
+#: courses/templates/courses/course.html:36
+#: courses/templates/courses/gradebook.html:34
+#: courses/templates/courses/queue.html:27
+#: courses/templates/courses/settings.html:33
+#: courses/templates/statistics.html:51
 msgid "stranica_kursa"
-msgstr ""
+msgstr "Course page"
 
-#: courses/templates/courses/course.html:34
-#: courses/templates/courses/gradebook.html:28
+#: courses/templates/course_tasks_potok.html:52
+#: courses/templates/courses/course.html:37
+#: courses/templates/courses/gradebook.html:34
+#: courses/templates/statistics.html:52
 msgid "stranica_seminara"
-msgstr ""
+msgstr "Seminar/workshop page"
 
-#: courses/templates/courses/course.html:38
-#: courses/templates/courses/gradebook.html:32
-#: courses/templates/courses/queue.html:29
-#: courses/templates/courses/settings.html:35
-#: staff/templates/get_gradebook.html:20 staff/templates/gradebook.html:21
-#: staff/templates/gradebook.html.py:38 staff/templates/staff.html:26
-msgid "obshaja_vedomost"
-msgstr ""
-
-#: courses/templates/courses/course.html:43
-#: courses/templates/courses/gradebook.html:37
-#: courses/templates/courses/queue.html:18
-#: courses/templates/courses/queue.html:32
-#: courses/templates/courses/settings.html:39
-#: issues/templates/issues/issue.html:30
+#: courses/templates/course_tasks_potok.html:61
+#: courses/templates/courses/attendance.html:37
+#: courses/templates/courses/course.html:52
+#: courses/templates/courses/gradebook.html:50
+#: courses/templates/courses/queue.html:20
+#: courses/templates/courses/queue.html:40
+#: courses/templates/courses/queue.html:63
+#: courses/templates/courses/settings.html:47
+#: issues/templates/issues/issue.html:35
 msgid "ochered_na_proverku"
-msgstr ""
+msgstr "Check up queue"
+
+#: courses/templates/course_tasks_potok.html:64
+#: courses/templates/courses/attendance.html:40
+#: courses/templates/courses/course.html:55
+#: courses/templates/courses/gradebook.html:56
+#: courses/templates/courses/queue.html:44
+#: courses/templates/courses/settings.html:21
+#: courses/templates/courses/settings.html:52 templates/base.html:714
+#: users/templates/my_tasks.html:105 users/templates/status_history.html:27
+#: users/templates/user_courses.html:37 users/templates/user_profile.html:29
+#: users/templates/user_settings.html:25 users/templates/user_settings.html:35
+msgid "nastrojki"
+msgstr "Settings"
+
+#: courses/templates/course_tasks_potok.html:148
+#: courses/templates/course_tasks_potok.html:177
+#: courses/templates/courses/course.html:217
+#: courses/templates/courses/course.html:221
+#: courses/templates/courses/course.html:345
+#: courses/templates/courses/course.html:350
+#: courses/templates/courses/course.html:546
+#: courses/templates/courses/course.html:551
+msgid "sdat"
+msgstr "Submit"
+
+#: courses/templates/courses/attendance.html:20
+#: courses/templates/courses/attendance.html:34
+#: courses/templates/courses/course.html:45
+#: courses/templates/courses/gradebook.html:43
+#: courses/templates/courses/queue.html:35
+#: courses/templates/courses/settings.html:41
+msgid "zhurnal_poseshaemosti"
+msgstr "Attendance log"
+
+#: courses/templates/courses/attendance.html:30
+#: courses/templates/courses/course.html:41
+#: courses/templates/courses/gradebook.html:25
+#: courses/templates/courses/gradebook.html:39
+#: courses/templates/courses/queue.html:31
+#: courses/templates/courses/settings.html:37
+#: staff/templates/get_gradebook.html:20 staff/templates/gradebook.html:21
+#: staff/templates/gradebook.html:38
+msgid "obshaja_vedomost"
+msgstr "General marks list"
+
+#: courses/templates/courses/attendance.html:52
+#, fuzzy
+#| msgid "dobavit_zadachu"
+msgid "dobavit_zaniatie"
+msgstr "Add assignment"
+
+#: courses/templates/courses/attendance.html:56
+#: courses/templates/courses/gradebook.html:94
+#, fuzzy
+#| msgid "ne_pokazyvat_skrytye_zadachi"
+msgid "ne_pokazyvat_otchislennyh"
+msgstr "Do not show hidden assignments"
+
+#: courses/templates/courses/attendance.html:58
+#: courses/templates/courses/gradebook.html:96
+#, fuzzy
+#| msgid "pokazyvat_moj_e-mail"
+msgid "pokazyvat_otchislennyh"
+msgstr "Show my email"
+
+#: courses/templates/courses/attendance_list.html:49
+msgid "poseshennye_uroki"
+msgstr "Classes attended"
 
 #: courses/templates/courses/course.html:46
-#: courses/templates/courses/gradebook.html:42
+#: courses/templates/courses/course.html:263
+#: courses/templates/courses/gradebook.html:44
 #: courses/templates/courses/queue.html:36
-#: courses/templates/courses/settings.html:19
-#: courses/templates/courses/settings.html:44 templates/base.html:665
-#: users/templates/my_tasks.html:102 users/templates/status_history.html:38
-#: users/templates/user_courses.html:36 users/templates/user_profile.html:26
-#: users/templates/user_settings.html:52 users/templates/user_settings.html:129
-msgid "nastrojki"
-msgstr ""
+#: courses/templates/courses/settings.html:42
+#, fuzzy
+#| msgid "obshaja_vedomost"
+msgid "poseshaemost"
+msgstr "General marks list"
 
-#: courses/templates/courses/course.html:82
-#: courses/templates/courses/gradebook.html:70
-#: courses/templates/courses/settings.html:133 users/models.py:184
+#: courses/templates/courses/course.html:87
+#: courses/templates/courses/settings.html:145
+#: issues/model_issue_student_filter.py:21
 msgid "prepodavateli"
-msgstr ""
+msgstr "Teachers"
 
-#: courses/templates/courses/course.html:89
+#: courses/templates/courses/course.html:95
 msgid "redaktirovat_seminar"
-msgstr ""
+msgstr "Change seminar/workshop"
 
-#: courses/templates/courses/course.html:96
-#: courses/templates/courses/gradebook.html:102
+#: courses/templates/courses/course.html:102
+#: courses/templates/courses/gradebook.html:85
 msgid "ne_pokazyvat_skrytye_zadachi"
-msgstr ""
+msgstr "Do not show hidden assignments"
 
-#: courses/templates/courses/course.html:98
-#: courses/templates/courses/gradebook.html:104
+#: courses/templates/courses/course.html:104
+#: courses/templates/courses/gradebook.html:87
 msgid "pokazat_skrytye_zadachi"
-msgstr ""
+msgstr "Show hidden assignments"
 
-#: courses/templates/courses/course.html:106
-#: courses/templates/courses/course.html:119
-#: courses/templates/courses/task.html:25
+#: courses/templates/courses/course.html:113
+#: courses/templates/courses/course.html:129
+#: courses/templates/courses/task.html:26
 msgid "opisanie_kursa"
-msgstr ""
+msgstr "Course description"
 
-#: courses/templates/courses/course.html:107
-#: courses/templates/courses/course.html:119
+#: courses/templates/courses/course.html:114
+#: courses/templates/courses/course.html:129
 msgid "opisanie_zanjatija"
-msgstr ""
+msgstr "Class description"
 
-#: courses/templates/courses/course.html:110
+#: courses/templates/courses/course.html:117
+#: courses/templates/courses/course.html:157
 msgid "zadachi"
-msgstr ""
+msgstr "Problems/Assignments"
 
-#: courses/templates/courses/course.html:110
-#: courses/templates/courses/course.html:147
+#: courses/templates/courses/course.html:117
+#: courses/templates/courses/course.html:157
 msgid "spisok_grupp_i_zadach"
-msgstr ""
+msgstr "Assignments and groups list"
 
-#: courses/templates/courses/course.html:151
-#: courses/templates/courses/gradebook.html:81
+#: courses/templates/courses/course.html:120
+#: courses/templates/courses/course.html:425
+msgid "materials"
+msgstr "Materials"
+
+#: courses/templates/courses/course.html:161
 #: courses/templates/courses/tasklist/many_tasksets_many_groups.html:27
 #: courses/templates/courses/tasklist/many_tasksets_many_groups.html:119
 msgid "dobavit_zadachu"
-msgstr ""
+msgstr "Add assignment"
 
-#: courses/templates/courses/course.html:162
-#: courses/templates/courses/gradebook.html:92
-#: tasks/templates/task_import.html:22 tasks/templates/task_import.html:39
+#: courses/templates/courses/course.html:171
+#: tasks/templates/task_import.html:25 tasks/templates/task_import.html:41
 msgid "import_zadachi_iz_kontesta"
-msgstr ""
+msgstr "Import assignment from contest"
 
-#: courses/templates/courses/course.html:164
-#: courses/templates/courses/gradebook.html:94
-#: tasks/templates/contest_import.html:20
-#: tasks/templates/contest_import.html:37
+#: courses/templates/courses/course.html:173
+#: tasks/templates/contest_import.html:23
+#: tasks/templates/contest_import.html:58
 msgid "import_sorevnovanija"
-msgstr ""
+msgstr "Import competition from contest"
 
-#: courses/templates/courses/course.html:194
-#: courses/templates/courses/course.html:262
-#: courses/templates/courses/course.html:302
-#: courses/templates/courses/course.html:361
+#: courses/templates/courses/course.html:209
+#: courses/templates/courses/course.html:289
+#: courses/templates/courses/course.html:337
+#: courses/templates/courses/course.html:401
+#: courses/templates/courses/course.html:455
+#: courses/templates/courses/course.html:538
 msgid "sdat_do"
-msgstr ""
+msgstr "Send due"
 
-#: courses/templates/courses/course.html:202
-#: courses/templates/courses/course.html:310
-msgid "sdat"
-msgstr ""
-
-#: courses/templates/courses/course.html:208
-#: courses/templates/courses/course.html:272
-#: courses/templates/courses/course.html:371
+#: courses/templates/courses/course.html:227
+#: courses/templates/courses/course.html:299
+#: courses/templates/courses/course.html:305
+#: courses/templates/courses/course.html:411
+#: courses/templates/courses/course.html:514
+#: courses/templates/courses/course.html:605
+#: courses/templates/courses/queue_js.html:143
+#: issues/templates/email_issue_notification.html:250
+#: issues/templates/email_issue_notification.txt:6
+#: staff/templates/staff.html:196
 msgid "perejti"
-msgstr ""
+msgstr "Proceed"
 
-#: courses/templates/courses/course.html:241
-#: courses/templates/courses/course.html:341
+#: courses/templates/courses/course.html:268
+#: courses/templates/courses/course.html:381
+#: courses/templates/courses/course.html:491
+#: courses/templates/courses/course.html:582
 msgid "vedomost"
-msgstr ""
+msgstr "General list"
 
-#: courses/templates/courses/course_forbidden.html:30
-msgid "oshibka"
-msgstr ""
+#: courses/templates/courses/course.html:429 mail/templates/mail.html:208
+msgid "dobavit"
+msgstr "Add"
+
+#: courses/templates/courses/course.html:429 tasks/models.py:69
+msgid "material"
+msgstr "Material"
 
 #: courses/templates/courses/course_forbidden.html:53
 msgid "ukazat_invajt"
-msgstr ""
+msgstr "Insert invite code"
 
 #: courses/templates/courses/course_forbidden.html:79
 msgid "dostup_ogranichen"
-msgstr ""
+msgstr "Restricted access"
 
 #: courses/templates/courses/course_forbidden.html:80
 #: courses/templates/courses/course_forbidden.html:88
 msgid "vvedite_invajt"
-msgstr ""
+msgstr "Insert invite"
 
-#: courses/templates/courses/course_js.html:62
+#: courses/templates/courses/course_js.html:69
 msgid "razvernut"
-msgstr ""
+msgstr "Expand"
 
-#: courses/templates/courses/course_js.html:63
+#: courses/templates/courses/course_js.html:70
 msgid "svernut"
-msgstr ""
+msgstr "Collapse"
 
-#: courses/templates/courses/course_js.html:146
-msgid "sohranit_izmenenija?"
-msgstr ""
-
-#: courses/templates/courses/course_js.html:168
-#: courses/templates/courses/task.html:35
-#: courses/templates/courses/tasklist/shad_cpp.html:318
-#: issues/templates/issues/issue_js.html:142
-#: users/templates/status_history.html:160
-#: users/templates/user_profile.html:419 users/templates/user_profile.html:443
-#: users/templates/user_profile_js.html:151
-msgid "sohranenie"
-msgstr ""
-
-#: courses/templates/courses/course_js.html:227
-#: staff/templates/staff_js.html:107
-msgid "skopirovat"
-msgstr ""
-
-#: courses/templates/courses/course_js.html:244
-#: staff/templates/staff_js.html:124
-msgid "pustaja_tablica"
-msgstr ""
-
-#: courses/templates/courses/course_js.html:245
-#: staff/templates/staff_js.html:125
-msgid "_total__studentov"
-msgstr ""
-
-#: courses/templates/courses/course_js.html:246
-#: staff/templates/staff_js.html:126
-msgid "0_studentov"
-msgstr ""
-
-#: courses/templates/courses/course_js.html:247
-#: staff/templates/staff_js.html:127
-msgid "(iz__max_)"
-msgstr ""
-
-#: courses/templates/courses/course_js.html:250
-#: staff/templates/staff_js.html:130
-msgid "pokazat__menu__studentov"
-msgstr ""
-
-#: courses/templates/courses/course_js.html:251 mail/templates/mail.html:5
-#: mail/templates/mail.html.py:42 mail/templates/mail.html:60
-#: mail/templates/mail.html.py:78 mail/templates/mail.html:157
-#: mail/templates/mail_js.html:73 mail/templates/mail_js.html.py:74
-#: staff/templates/staff_js.html:131
-msgid "zagruzka"
-msgstr ""
-
-#: courses/templates/courses/course_js.html:252
-#: staff/templates/staff_js.html:132
-msgid "vychislenie"
-msgstr ""
-
-#: courses/templates/courses/course_js.html:253
-#: courses/templates/courses/settings_js.html:16
-#: staff/templates/staff_js.html:133
-msgid "poisk"
-msgstr ""
-
-#: courses/templates/courses/course_js.html:254 mail/templates/mail_js.html:77
-#: search/templates/search.html:76 staff/templates/staff_js.html:134
-msgid "nichego_ne_najdeno"
-msgstr ""
-
-#: courses/templates/courses/course_js.html:256
-#: staff/templates/staff_js.html:136
-msgid "pervaja"
-msgstr ""
-
-#: courses/templates/courses/course_js.html:257
-#: staff/templates/staff_js.html:137
-msgid "poslednjaja"
-msgstr ""
-
-#: courses/templates/courses/course_js.html:258
-#: staff/templates/staff_js.html:138
-msgid "vpered"
-msgstr ""
-
-#: courses/templates/courses/course_js.html:259
-#: staff/templates/staff_js.html:139
-msgid "nazad"
-msgstr ""
-
-#: courses/templates/courses/course_js.html:266
-#: staff/templates/staff_js.html:146
-msgid "dannye_skopirovany"
-msgstr ""
-
-#: courses/templates/courses/course_js.html:268
-#: staff/templates/staff_js.html:148
-msgid "zapisej_iz_tablicy"
-msgstr ""
-
-#: courses/templates/courses/course_js.html:269
-#: staff/templates/staff_js.html:149
-msgid "1_zapis_iz_tablicy"
-msgstr ""
-
-#: courses/templates/courses/course_js.html:582
-msgid "udalit_zadachu_iz_grupp"
-msgstr ""
-
-#: courses/templates/courses/course_js.html:623
-msgid "uvereny_cho_hotite_udalit?"
-msgstr ""
-
-#: courses/templates/courses/course_js.html:672
-#: users/templates/user_profile_js.html:129
+#: courses/templates/courses/course_js.html:162
+#: courses/templates/courses/course_js.html:840
+#: users/templates/user_profile_js.html:141
 msgid "sohranit_izmenenija"
-msgstr ""
+msgstr "Save changes"
 
-#: courses/templates/courses/course_js.html:765
-#: issues/templates/issues/info.html:131 issues/templates/issues/info.html:151
-#: tasks/templates/contest_import.html:110 tasks/templates/task_create.html:129
-#: tasks/templates/task_create_or_edit_js.html:366
-#: tasks/templates/task_edit.html:167 tasks/templates/task_edit.html.py:357
-#: tasks/templates/task_import.html:108 tasks/templates/task_import_js.html:358
+#: courses/templates/courses/course_js.html:184
+#: courses/templates/courses/task.html:36
+#: courses/templates/courses/tasklist/shad_cpp.html:219
+#: issues/templates/issues/issue_js.html:166 staff/templates/staff.html:173
+#: staff/templates/staff.html:196 users/templates/status_history.html:141
+#: users/templates/user_profile.html:645 users/templates/user_profile.html:674
+#: users/templates/user_profile_js.html:163
+msgid "sohranenie"
+msgstr "Saving"
+
+#: courses/templates/courses/course_js.html:284
+#: staff/templates/gradebook_js.html:110
+msgid "skopirovat"
+msgstr "Copy"
+
+#: courses/templates/courses/course_js.html:301
+#: courses/templates/courses/queue_js.html:164
+#: staff/templates/gradebook_js.html:133 users/templates/status_history.html:95
+msgid "pustaja_tablica"
+msgstr "Empty table"
+
+#: courses/templates/courses/course_js.html:302
+#: courses/templates/courses/course_js.html:303
+#: courses/templates/courses/course_js.html:307
+#: staff/templates/gradebook_js.html:134 staff/templates/gradebook_js.html:135
+#: staff/templates/gradebook_js.html:139
+#, fuzzy
+#| msgid "0_studentov"
+msgid "studentov"
+msgstr "No students"
+
+#: courses/templates/courses/course_js.html:304
+#: courses/templates/courses/queue_js.html:165
+#: courses/templates/courses/queue_js.html:167
+#: issues/templates/issues/info.html:73 mail/templates/mail_js.html:67
+#: mail/templates/mail_js.html:69 staff/templates/gradebook_js.html:136
+#: staff/templates/staff_js.html:168 staff/templates/staff_js.html:170
+msgid "iz"
+msgstr "out of"
+
+#: courses/templates/courses/course_js.html:307
+#: courses/templates/courses/queue_js.html:170 mail/templates/mail_js.html:72
+#: staff/templates/gradebook_js.html:139 staff/templates/staff_js.html:173
+#, fuzzy
+#| msgid "pokazat__menu_"
+msgid "pokazat"
+msgstr "Show _menu_"
+
+#: courses/templates/courses/course_js.html:308
+#: courses/templates/courses/queue_js.html:171
+#: courses/templates/courses/queue_js.html:172 mail/templates/mail.html:5
+#: mail/templates/mail_js.html:73 mail/templates/mail_js.html:74
+#: staff/templates/gradebook_js.html:140 staff/templates/staff_js.html:174
+#: staff/templates/staff_js.html:175
+msgid "zagruzka"
+msgstr "Loading"
+
+#: courses/templates/courses/course_js.html:309
+#: staff/templates/gradebook_js.html:141
+msgid "vychislenie"
+msgstr "Computing"
+
+#: courses/templates/courses/course_js.html:310
+#: courses/templates/courses/settings_js.html:16
+#: courses/templates/courses/settings_js.html:17
+#: staff/templates/gradebook_js.html:142
+msgid "poisk"
+msgstr "Searching"
+
+#: courses/templates/courses/course_js.html:311
+#: courses/templates/courses/queue_js.html:175 mail/templates/mail_js.html:77
+#: search/templates/search.html:76 staff/templates/gradebook_js.html:143
+#: staff/templates/staff_js.html:167 staff/templates/staff_js.html:178
+msgid "nichego_ne_najdeno"
+msgstr "No search results"
+
+#: courses/templates/courses/course_js.html:313
+#: staff/templates/gradebook_js.html:145
+msgid "pervaja"
+msgstr "First"
+
+#: courses/templates/courses/course_js.html:314
+#: staff/templates/gradebook_js.html:146
+msgid "poslednjaja"
+msgstr "Last"
+
+#: courses/templates/courses/course_js.html:315
+#: staff/templates/gradebook_js.html:147
+msgid "vpered"
+msgstr "Next"
+
+#: courses/templates/courses/course_js.html:316
+#: staff/templates/gradebook_js.html:148
+msgid "nazad"
+msgstr "Back"
+
+#: courses/templates/courses/course_js.html:323
+#: staff/templates/gradebook_js.html:155
+msgid "dannye_skopirovany"
+msgstr "Data is copied"
+
+#: courses/templates/courses/course_js.html:325
+#: staff/templates/gradebook_js.html:157
+msgid "zapisej_iz_tablicy"
+msgstr "Entries from table"
+
+#: courses/templates/courses/course_js.html:326
+#: staff/templates/gradebook_js.html:158
+msgid "1_zapis_iz_tablicy"
+msgstr "First entry from the table"
+
+#: courses/templates/courses/course_js.html:686
+msgid "udalit_zadachu_iz_grupp"
+msgstr "Remove problem from the groups"
+
+#: courses/templates/courses/course_js.html:701
+msgid "udalit_odin"
+msgstr "Drop one task"
+
+#: courses/templates/courses/course_js.html:702
+msgid "udalit_posleduushie"
+msgstr ""
+"Drop this and all subsequent classes (including those that "
+"students attended)?"
+
+#: courses/templates/courses/course_js.html:741
+msgid "uvereny_cho_hotite_udalit?"
+msgstr "Are you sure you want to delete it?"
+
+#: courses/templates/courses/course_js.html:938
+#: issues/templates/issues/info.html:136 issues/templates/issues/info.html:156
+#: tasks/management/commands/send_task_notifications.py:82
+#: tasks/templates/contest_import.html:129 tasks/templates/task_create.html:137
+#: tasks/templates/task_create_or_edit_js.html:468
+#: tasks/templates/task_edit.html:211 tasks/templates/task_edit.html:430
+#: tasks/templates/task_import.html:118 tasks/templates/task_import_js.html:418
 msgid "data_sdachi"
-msgstr ""
+msgstr "Submit due"
 
-#: courses/templates/courses/gradebook.html:130
-#: courses/templatetags/course_func.py:33 issues/models.py:76
+#: courses/templates/courses/course_js.html:956
+#: lessons/templates/lesson_create.html:47
+#: lessons/templates/lesson_create_or_edit_js.html:503
+#: lessons/templates/lesson_edit.html:77
+msgid "data_zaniatia"
+msgstr "Class date"
+
+#: courses/templates/courses/course_js.html:1039
+msgid "udalit_poseshennoe_vse"
+msgstr ""
+"This class was attended by students. Are you sure you want to delete it "
+"and all subsequent classes?"
+
+#: courses/templates/courses/course_js.html:1041
+msgid "udalit_poseshennoe"
+msgstr ""
+"This class was attended by students. Are you sure you want to delete it?"
+
+#: courses/templates/courses/gradebook.html:39
+#, fuzzy
+#| msgid "obshaja_vedomost"
+msgid "obshaja_vedomost_seminara"
+msgstr "General marks list"
+
+#: courses/templates/courses/gradebook.html:72
+#: courses/templatetags/course_func.py:32 issues/model_issue_status.py:12
+#: issues/models.py:73
 msgid "novyj"
-msgstr ""
+msgstr "New"
 
-#: courses/templates/courses/gradebook.html:135
+#: courses/templates/courses/gradebook.html:77
 #: courses/templates/courses/tasklist/many_tasksets_many_groups.html:53
 #: courses/templates/courses/tasklist/many_tasksets_many_groups.html:146
-#: courses/templates/courses/tasklist/shad_cpp.html:168
+#: courses/templates/courses/tasklist/shad_cpp.html:65
+#: users/templates/user_courses.html:92
 msgid "summarnyj_ball"
-msgstr ""
+msgstr "Total score"
 
-#: courses/templates/courses/queue.html:75 users/templates/my_tasks.html:139
+#: courses/templates/courses/gradebook.html:78 mail/templates/mail.html:177
+#: users/templates/status_history.html:48
+msgid "statusy"
+msgstr "Statuses"
+
+#: courses/templates/courses/queue.html:64
+#: courses/templates/courses/queue.html:95
+msgid "filtr"
+msgstr "Filter"
+
+#: courses/templates/courses/queue.html:78 users/templates/my_tasks.html:142
 msgid "obnovlena"
-msgstr ""
+msgstr "Updates"
 
-#: courses/templates/courses/queue.html:76 users/templates/my_tasks.html:141
+#: courses/templates/courses/queue.html:79 issues/views.py:54
+#: users/templates/my_tasks.html:144
 msgid "ocenka"
-msgstr ""
+msgstr "Mark"
 
-#: courses/templates/courses/queue.html:77 issues/models.py:469
+#: courses/templates/courses/queue.html:80 issues/issueFilter.py:17
+#: issues/views.py:51
 msgid "proverjaushij"
-msgstr ""
+msgstr "TA"
+
+#: courses/templates/courses/queue_js.html:21
+#: courses/templates/courses/queue_js.html:174
+#: issues/templates/issues/issue_js.html:65 mail/templates/mail_js.html:76
+#: mail/templates/mail_js.html:604 search/templates/search.html:62
+#: staff/templates/staff_js.html:49 staff/templates/staff_js.html:177
+#: tasks/templates/task_create_or_edit_js.html:70 templates/base.html:683
+#: users/templates/my_tasks.html:45
+msgid "najti"
+msgstr "Find"
 
 #: courses/templates/courses/queue_js.html:22
-#: issues/templates/issues/issue_js.html:41 mail/templates/mail_js.html:76
-#: mail/templates/mail_js.html.py:580 search/templates/search.html:62
-#: tasks/templates/task_create_or_edit_js.html:34 templates/base.html:634
-#: users/templates/my_tasks.html:42
-msgid "najti"
-msgstr ""
-
 #: courses/templates/courses/queue_js.html:23
-#: courses/templates/courses/queue_js.html:24
-#: courses/templates/courses/queue_js.html:35
-#: courses/templates/courses/queue_js.html:49
+#: courses/templates/courses/queue_js.html:34
+#: courses/templates/courses/queue_js.html:48
 msgid "vse"
-msgstr ""
+msgstr "All"
 
-#: courses/templates/courses/settings.html:134
+#: courses/templates/courses/settings.html:146
 msgid "prepodavateli_po_umolchaniu"
-msgstr ""
-
-#: courses/templates/courses/settings.html:155
-msgid "nastrojka_zadach"
-msgstr ""
-
-#: courses/templates/courses/settings.html:156
-msgid "skrytie_polej_ustanovka_znachenij"
-msgstr ""
-
-#: courses/templates/courses/settings.html:160
-#: tasks/templates/contest_import.html:142 tasks/templates/task_create.html:69
-#: tasks/templates/task_edit.html:233 tasks/templates/task_import.html:132
-msgid "otpravljat_tolko_odin_fajl"
-msgstr ""
-
-#: courses/templates/courses/settings.html:163
-#: courses/templates/courses/settings.html:176
-msgid "otobrazhat_nastrojku"
-msgstr ""
+msgstr "Default teacher"
 
 #: courses/templates/courses/settings.html:167
-#: courses/templates/courses/settings.html:180
-msgid "po_umolchaniu"
-msgstr ""
+#, fuzzy
+#| msgid "nastrojka_zadach"
+msgid "nastrojka_kursa"
+msgstr "Assignments settings"
 
 #: courses/templates/courses/settings.html:173
-#: tasks/templates/contest_import.html:152 tasks/templates/task_edit.html:248
-#: tasks/templates/task_import.html:142
-msgid "perevodit_v_zachteno"
+msgid "dobavit_zhurnal_poseshaemosti"
 msgstr ""
+"Add an attendance log"
+
+#: courses/templates/courses/settings.html:178
+msgid "nastrojka_zadach"
+msgstr "Assignments settings"
+
+#: courses/templates/courses/settings.html:179
+msgid "skrytie_polej_ustanovka_znachenij"
+msgstr "Hide settings fields"
+
+#: courses/templates/courses/settings.html:183
+#, fuzzy
+#| msgid "izmenenie_udalenie_zadach"
+msgid "izmenenie_v_zadache"
+msgstr "Change or delete the assignment"
+
+#: courses/templates/courses/settings.html:186
+#: courses/templates/courses/settings.html:200
+#: courses/templates/courses/settings.html:214
+msgid "po_umolchaniu"
+msgstr "Default"
 
 #: courses/templates/courses/settings.html:193
-#: issues/templates/issues/issue.html:41 mail/templates/mail_js.html:537
-#: search/templates/search.html:138 templates/base.html:115
-#: users/templates/user_settings.html:181
+#: tasks/templates/contest_import.html:159 tasks/templates/task_create.html:164
+#: tasks/templates/task_edit.html:281 tasks/templates/task_import.html:143
+msgid "otpravljat_tolko_odin_fajl"
+msgstr "Send single file"
+
+#: courses/templates/courses/settings.html:196
+#: courses/templates/courses/settings.html:210
+msgid "otobrazhat_nastrojku"
+msgstr "Show settings"
+
+#: courses/templates/courses/settings.html:207
+#: tasks/templates/contest_import.html:169 tasks/templates/task_edit.html:296
+#: tasks/templates/task_import.html:153
+msgid "perevodit_v_zachteno"
+msgstr "Move to \"counted\""
+
+#: courses/templates/courses/settings.html:228
+#: issues/templates/issues/issue.html:46 mail/templates/mail_js.html:561
+#: search/templates/search.html:138 templates/base.html:123
+#: users/templates/user_profile.html:181 users/templates/user_settings.html:96
 msgid "jakontest"
-msgstr ""
+msgstr "Ya.Contest"
 
-#: courses/templates/courses/settings.html:195
+#: courses/templates/courses/settings.html:230 issues/views.py:57
+#, fuzzy
+#| msgid "ukazat_nomer_kontesta"
+msgid "nomer_posylki_kontest"
+msgstr "Contest submittion id"
+
+#: courses/templates/courses/settings.html:234
+#, fuzzy
+#| msgid "studentom"
+msgid "student_vidit_nomer"
+msgstr "By student"
+
+#: courses/templates/courses/settings.html:239
 msgid "peresudit_reshenija_studentov"
-msgstr ""
+msgstr "Run scoring on students submissions again"
 
-#: courses/templates/courses/settings.html:209
-#: issues/templates/issues/info.html:64
+#: courses/templates/courses/settings.html:253
+#: issues/templates/issues/info.html:67
 msgid "peresudit"
-msgstr ""
+msgstr "Run scoring again"
 
-#: courses/templates/courses/settings.html:216
+#: courses/templates/courses/settings.html:260
 msgid "obnovit_dannie_zadach"
-msgstr ""
+msgstr "Update assignments info"
 
-#: courses/templates/courses/settings.html:230
-#: tasks/templates/task_edit.html:369
+#: courses/templates/courses/settings.html:274
+#: tasks/templates/task_edit.html:442
 msgid "obnovit"
-msgstr ""
+msgstr "Update"
 
-#: courses/templates/courses/settings.html:247
+#: courses/templates/courses/settings.html:291
 msgid "rasshirenija_fajlov"
-msgstr ""
+msgstr "File extensions"
 
-#: courses/templates/courses/settings.html:261
-#: tasks/templates/contest_import.html:167 tasks/templates/task_create.html:162
-#: tasks/templates/task_edit.html:299 tasks/templates/task_import.html:167
+#: courses/templates/courses/settings.html:305
+#: lessons/templates/lesson_create.html:135
+#: lessons/templates/lesson_edit.html:166
+#: tasks/templates/contest_import.html:202 tasks/templates/task_create.html:210
+#: tasks/templates/task_edit.html:367 tasks/templates/task_import.html:196
 msgid "otmenit_i_vyjti"
-msgstr ""
+msgstr "Discard and exit"
 
-#: courses/templates/courses/settings.html:262
-#: tasks/templates/task_create.html:163 tasks/templates/task_edit.html:300
+#: courses/templates/courses/settings.html:306
+#: tasks/templates/task_create.html:211 tasks/templates/task_edit.html:368
 msgid "sohranit_i_prodolzhit"
-msgstr ""
+msgstr "Save and continue"
 
-#: courses/templates/courses/settings.html:263
-#: tasks/templates/contest_import.html:168 tasks/templates/task_create.html:164
-#: tasks/templates/task_edit.html:301 tasks/templates/task_import.html:168
+#: courses/templates/courses/settings.html:307
+#: lessons/templates/lesson_create.html:136
+#: lessons/templates/lesson_edit.html:167
+#: tasks/templates/contest_import.html:203 tasks/templates/task_create.html:212
+#: tasks/templates/task_edit.html:369 tasks/templates/task_import.html:197
 msgid "sohranit_i_vyjti"
-msgstr ""
+msgstr "Save and exit"
 
 #: courses/templates/courses/settings_js.html:82
 #: courses/templates/courses/settings_js.html:83
 #: courses/templates/courses/settings_js.html:95
 #: courses/templates/courses/settings_js.html:109
-#: tasks/templates/task_create_or_edit_js.html:37
-#: tasks/templates/task_create_or_edit_js.html:38
-#: tasks/templates/task_create_or_edit_js.html:50
+#: tasks/templates/task_create_or_edit_js.html:73
+#: tasks/templates/task_create_or_edit_js.html:74
+#: tasks/templates/task_create_or_edit_js.html:86
 msgid "vse_zadachi"
-msgstr ""
+msgstr "All assignments"
 
 #: courses/templates/courses/settings_js.html:92
 #: courses/templates/courses/settings_js.html:106
-#: tasks/templates/task_create_or_edit_js.html:47
+#: tasks/templates/task_create_or_edit_js.html:83
 msgid "ne_vybrano_zadach"
-msgstr ""
+msgstr "No assignments are selected"
 
 #: courses/templates/courses/settings_js.html:112
-#: tasks/templates/task_create_or_edit_js.html:53
+#: tasks/templates/task_create_or_edit_js.html:89
 msgid "vybrano_neskolko_zadach"
-msgstr ""
+msgstr "Several assignments selected"
 
 #: courses/templates/courses/settings_js.html:164
 msgid "obnovlenie_zadach"
-msgstr ""
+msgstr "Update the assignments"
 
 #: courses/templates/courses/settings_js.html:175
 msgid "kontest"
-msgstr ""
+msgstr "Contest"
 
 #: courses/templates/courses/settings_js.html:177
 msgid "zadachi_obnovleny"
-msgstr ""
+msgstr "Assignments are updated"
 
 #: courses/templates/courses/settings_js.html:186
-#: tasks/templates/task_edit.html:70 tasks/templates/task_edit.html.py:84
+#: tasks/templates/task_edit.html:78 tasks/templates/task_edit.html:92
 msgid "oshibka_pri_poluchenii"
-msgstr ""
+msgstr "Error during loading"
 
 #: courses/templates/courses/settings_js.html:226
 #: courses/templates/courses/settings_js.html:234
-#: courses/templates/courses/task.html:34
-#: courses/templates/courses/tasklist/shad_cpp.html:317
-#: mail/templates/mail.html:147 tasks/templates/task_create_or_edit_js.html:167
-#: tasks/templates/task_create_or_edit_js.html:182
-#: tasks/templates/task_create_or_edit_js.html:193
-#: tasks/templates/task_edit.html:72 tasks/templates/task_edit.html.py:81
-#: users/templates/status_history.html:158
-#: users/templates/user_profile.html:418 users/templates/user_profile.html:442
-#: users/templates/user_profile.html:467 users/templates/user_settings.html:13
-#: users/templates/user_settings.html:21
+#: courses/templates/courses/task.html:35
+#: courses/templates/courses/tasklist/shad_cpp.html:218
+#: lessons/templates/lesson_create_or_edit_js.html:94
+#: lessons/templates/lesson_create_or_edit_js.html:110
+#: lessons/templates/lesson_create_or_edit_js.html:120
+#: mail/templates/mail.html:207 staff/templates/staff.html:172
+#: staff/templates/staff.html:195 staff/templates/staff.html:218
+#: tasks/templates/task_create_or_edit_js.html:239
+#: tasks/templates/task_create_or_edit_js.html:257
+#: tasks/templates/task_create_or_edit_js.html:268
+#: tasks/templates/task_edit.html:80 tasks/templates/task_edit.html:89
+#: users/templates/status_history.html:139
+#: users/templates/user_profile.html:642 users/templates/user_profile.html:672
+#: users/templates/user_profile.html:699
+#: users/templates/user_settings_js.html:53
+#: users/templates/user_settings_js.html:61
 msgid "zakryt"
-msgstr ""
+msgstr "Close"
 
 #: courses/templates/courses/settings_js.html:229
 msgid "otpravleno_na_proverku"
-msgstr ""
+msgstr "Sent to be scored"
 
 #: courses/templates/courses/settings_js.html:237
 msgid "oshibka_otpravki"
-msgstr ""
+msgstr "Sending error"
 
 #: courses/templates/courses/settings_js.html:262
-#: users/templates/user_settings.html:16
+#: staff/templates/staff_js.html:287 users/templates/user_settings_js.html:56
 msgid "sohraneno_uspeshno"
-msgstr ""
+msgstr "Saved successfully"
 
-#: courses/templates/courses/settings_js.html:272
-#: tasks/templates/task_create_or_edit_js.html:185
-#: users/templates/user_settings.html:24
+#: courses/templates/courses/settings_js.html:276
+#: lessons/templates/lesson_create_or_edit_js.html:111
+#: staff/templates/staff_js.html:304 staff/templates/staff_js.html:350
+#: tasks/templates/task_create_or_edit_js.html:260
+#: users/templates/user_settings_js.html:64
 msgid "oshibka_pri_sohranenii"
-msgstr ""
+msgstr "Saving error"
 
-#: courses/templates/courses/task.html:30 users/templates/user_profile.html:438
+#: courses/templates/courses/task.html:31 users/templates/user_profile.html:667
 msgid "oshibka_poprobujte_eshe"
-msgstr ""
+msgstr "Error. Try once again"
 
-#: courses/templates/courses/task.html:35
-#: courses/templates/courses/tasklist/shad_cpp.html:318
-#: users/templates/status_history.html:160
-#: users/templates/user_profile.html:419 users/templates/user_profile.html:443
-#: users/templates/user_settings.html:145
+#: courses/templates/courses/task.html:36
+#: courses/templates/courses/tasklist/shad_cpp.html:219
+#: issues/templates/issues/info.html:105 staff/templates/staff.html:173
+#: users/templates/status_history.html:141
+#: users/templates/user_profile.html:645 users/templates/user_profile.html:674
+#: users/templates/user_settings.html:60
 msgid "sohranit"
-msgstr ""
-
-#: courses/templates/courses/tasks_description.html:20
-msgid "zadachi_kursa"
-msgstr ""
+msgstr "Save"
 
 #: courses/templates/courses/tasklist/many_tasksets_many_groups.html:116
 msgid "slushateli_kursa"
-msgstr ""
+msgstr "Course students"
 
-#: courses/templates/courses/tasklist/shad_cpp.html:172
-#: users/templates/user_courses.html:110
+#: courses/templates/courses/tasklist/shad_cpp.html:69
+#: users/templates/user_courses.html:93
 msgid "itogovaja_ocenka"
-msgstr ""
+msgstr "Final mark"
 
-#: courses/templates/courses/tasklist/shad_cpp.html:294
+#: courses/templates/courses/tasklist/shad_cpp.html:192
 msgid "itogovaja_tablica"
-msgstr ""
+msgstr "Final table"
 
-#: courses/templates/courses/tasklist/shad_cpp.html:297
+#: courses/templates/courses/tasklist/shad_cpp.html:195
 msgid "izmenenie_udalenie_zadach"
-msgstr ""
+msgstr "Change or delete the assignment"
 
-#: courses/templates/courses/tasklist/shad_cpp.html:308
+#: courses/templates/courses/tasklist/shad_cpp.html:207
 msgid "snachala_udalit_podzadchi"
-msgstr ""
+msgstr "Delete the sub-assignment first"
 
-#: invites/templates/generate.html:4 invites/templates/generate.html.py:62
+#: courses/templates/courses/tasks_description.html:20
+msgid "zadachi_kursa"
+msgstr "Course assignments"
+
+#: courses/views.py:85
+msgid "ochistit"
+msgstr "Clear"
+
+#: courses/views.py:85 staff/views.py:88 users/views.py:494
+msgid "primenit"
+msgstr "Apply"
+
+#: courses/views.py:831 courses/views.py:843 tasks/views.py:367
+msgid "kontesta_ne_sushestvuet"
+msgstr "The contest does not exist"
+
+#: courses/views.py:833 courses/views.py:845 tasks/views.py:369
+msgid "oshibka_kontesta"
+msgstr "Contest error"
+
+#: courses/views.py:841 tasks/views.py:357 tasks/views.py:442
+msgid "net_prav_na_kontest"
+msgstr "Contest: Permission denied"
+
+#: index/templates/archived_schools_page.html:19
+#: index/templates/archived_schools_page.html:27
+#: index/templates/schools_page.html:19 issues/model_issue_student_filter.py:47
+#: schools/templates/archive_page.html:23
+#: schools/templates/archive_page.html:32 schools/templates/school_page.html:22
+#: search/templates/search.html:170 templates/base.html:143
+#: users/templates/user_courses.html:65 users/templates/user_courses.html:72
+#: users/templates/user_profile.html:398 users/templates/user_profile.html:487
+#: users/templates/user_profile.html:529
+msgid "arhiv"
+msgstr "Archive"
+
+#: invites/templates/generate.html:4 invites/templates/generate.html:62
 msgid "sozdanie_invajtov"
-msgstr ""
+msgstr "Create the invite code"
 
 #: invites/templates/generate.html:41
 msgid "ukazat_chislo_invajtov"
-msgstr ""
+msgstr "Enter number of the invite codes"
 
 #: invites/templates/generate.html:42
 msgid "invajtov_ot_0_do_50"
-msgstr ""
+msgstr "Number of the invite codes: from 0 to 50"
 
 #: invites/templates/generate.html:43
 msgid "kolichestvo_invajtov_celoe"
-msgstr ""
+msgstr "Invites number must be integer"
 
 #: invites/templates/generate.html:46
-#: tasks/templates/task_create_or_edit_js.html:256
-#: tasks/templates/task_import_js.html:197
+#: lessons/templates/lesson_create_or_edit_js.html:171
+#: tasks/templates/task_create_or_edit_js.html:344
+#: tasks/templates/task_import_js.html:246
 msgid "neobhodimo_vybrat_gruppu"
-msgstr ""
+msgstr "Please select group"
 
 #: invites/templates/generate.html:66
 msgid "kolichestvo_invajtov"
-msgstr ""
+msgstr "Number of the invite codes"
 
 #: invites/templates/generate.html:73
 msgid "invajt_dlia_gruppi"
-msgstr ""
+msgstr "Group invite code"
 
 #: invites/templates/generate.html:85
 msgid "sozdat"
-msgstr ""
+msgstr "Create"
 
 #: invites/templates/generate.html:91
 msgid "gruppy_net_v_spiske"
-msgstr ""
+msgstr "Group is not on the list"
 
 #: invites/templates/generate.html:91 users/templates/oauth_error.html:37
-#: users/templates/user_profile.html:128 users/templates/user_profile.html:140
-#: users/templates/user_profile.html:476
+#: users/templates/user_profile.html:99 users/templates/user_profile.html:113
+#: users/templates/user_profile.html:708
 msgid "administratoru"
-msgstr ""
+msgstr "Administrators"
 
 #: invites/templates/invites_list.html:5
 msgid "invajty"
-msgstr ""
+msgstr "Invite codes"
 
 #: invites/templates/invites_list.html:8
 msgid "invajt_na_anytask"
-msgstr ""
+msgstr "Anytask invite code"
 
 #: invites/templates/invites_list.html:10
 msgid "dlja"
-msgstr ""
+msgstr "For"
 
 #: invites/templates/invites_list.html:13
 msgid "dejstvitelen_do"
-msgstr ""
+msgstr "Valid till"
 
-#: issues/admin.py:23 issues/models.py:467
-#: issues/templates/issues/info.html:108 staff/templates/staff.html:59
-#: users/admin.py:20 users/models.py:185 users/templates/my_tasks.html:140
+#: issues/admin.py:25 issues/issueFilter.py:15
+#: issues/model_issue_student_filter.py:22
+#: issues/templates/issues/info.html:113 issues/views.py:53
+#: staff/templates/staff.html:90 users/admin.py:27
+#: users/templates/my_tasks.html:143
 msgid "status"
-msgstr ""
+msgstr "Status"
 
-#: issues/forms.py:145
+#: issues/forms.py:152
 msgid "format14"
-msgstr ""
+msgstr "Format 14"
 
-#: issues/models.py:79
-msgid "zachteno"
-msgstr ""
-
-#: issues/models.py:80
-msgid "na_avtomaticheskoj_proverke"
-msgstr ""
-
-#: issues/models.py:279 issues/views.py:86
-msgid "otpravleno_v_kontest"
-msgstr ""
-
-#: issues/models.py:283 issues/views.py:91
-msgid "oshibka_otpravki_v_kontest"
-msgstr ""
-
-#: issues/models.py:468 users/models.py:186
+#: issues/issueFilter.py:16 issues/model_issue_student_filter.py:23
 msgid "data_poslednego_izmenenija"
-msgstr ""
+msgstr "Last change data"
 
-#: issues/models.py:470
+#: issues/issueFilter.py:18 issues/views.py:52
 msgid "nabludateli"
-msgstr ""
+msgstr "Viewers"
 
-#: issues/models.py:475 users/models.py:169 users/models.py:206
+#: issues/issueFilter.py:19
+#, fuzzy
+#| msgid "student"
+msgid "studenty"
+msgstr "Student"
+
+#: issues/issueFilter.py:21
+msgid "uroki"
+msgstr "Classes"
+
+#: issues/model_issue_status.py:50
+#, fuzzy
+#| msgid "vse_statusy"
+msgid "issue status"
+msgstr "All statuses"
+
+#: issues/model_issue_status.py:51
+#, fuzzy
+#| msgid "vse_statusy"
+msgid "issue statuses"
+msgstr "All statuses"
+
+#: issues/model_issue_student_filter.py:14
+msgid "tip_kursa"
+msgstr "Course type"
+
+#: issues/model_issue_student_filter.py:16
+msgid "god_kursa"
+msgstr "Course year"
+
+#: issues/model_issue_student_filter.py:45
 msgid "luboj"
-msgstr ""
+msgstr "Any"
 
-#: issues/models.py:482
-msgid "lubaja"
-msgstr ""
+#: issues/model_issue_student_filter.py:46
+msgid "aktivnyj"
+msgstr "Active"
 
-#: issues/management/commands/send_notifications.py:29
-#: mail/management/commands/send_mail_notifications.py:34
-#: tasks/management/commands/send_deadline_notifications.py:28
+#: issues/models.py:76
+msgid "zachteno"
+msgstr "Accepted"
+
+#: issues/models.py:77
+msgid "na_avtomaticheskoj_proverke"
+msgstr "Automatic scoring"
+
+#: issues/models.py:431 issues/views.py:99
+msgid "otpravleno_v_kontest"
+msgstr "Sent to the contest"
+
+#: issues/models.py:435 issues/views.py:104
+msgid "oshibka_otpravki_v_kontest"
+msgstr "Error sending to the contest"
+
+#: issues/models.py:523
+#, fuzzy
+#| msgid "na_proverke"
+msgid "zadachu_proveriaet"
+msgstr "Check up stage"
+
+#: issues/models.py:524
+#, fuzzy
+#| msgid "istorija_izmenenij"
+msgid "status_izmenen"
+msgstr "Change history"
+
+#: issues/models.py:525
+#, fuzzy
+#| msgid "sohranit_izmenenija"
+msgid "ocenka_izmenena"
+msgstr "Save changes"
+
+#: issues/models.py:526
+#, fuzzy
+#| msgid "zagruzka"
+msgid "zagruzhen_faij"
+msgstr "Loading"
+
+#: issues/models.py:532 issues/models.py:535
+#, fuzzy
+#| msgid "nabludateli"
+msgid "nabludaiut"
+msgstr "Viewers"
+
+#: issues/models.py:532
+#, fuzzy
+#| msgid "nabludaemye_mnoj"
+msgid "nabludaet_nikto"
+msgstr "Followed by me"
+
+#: issues/models.py:537
+#, fuzzy
+#| msgid "nabludateli"
+msgid "ne_nabludaiut"
+msgstr "Viewers"
+
+#: issues/templates/email_issue_notification.html:76
+#: issues/templates/email_issue_notification.txt:3
+#: mail/templates/email_notification_mail.html:9
+#: mail/templates/email_notification_mail.txt:2
+#: tasks/templates/email_notification_task.html:12
+#: tasks/templates/email_notification_task.txt:2
+#: templates/registration/password_reset_email.html:10
+#: templates/registration/password_reset_email.txt:2
 msgid "zdravstvujte"
-msgstr ""
+msgstr "Hello"
 
-#: issues/management/commands/send_notifications.py:30
-msgid "v_zadache_vy_javljaetes"
-msgstr ""
+#: issues/templates/email_issue_notification.html:79
+#: issues/templates/email_issue_notification.txt:5
+#: tasks/templates/email_notification_task.html:38
+#: tasks/templates/email_notification_task.txt:5
+#, fuzzy
+#| msgid "vse_zadachi"
+msgid "v_zadache"
+msgstr "All assignments"
 
-#: issues/management/commands/send_notifications.py:31
+#: issues/templates/email_issue_notification.html:79
+#: issues/templates/email_issue_notification.txt:5
+#, fuzzy
+#| msgid "v_zadache_vy_javljaetes"
+msgid "vy_javljaetes"
+msgstr "In this assignment you are"
+
+#: issues/templates/email_issue_notification.html:79
+#: issues/templates/email_issue_notification.txt:5
 msgid "pojavilis_novye_kommentarii"
-msgstr ""
+msgstr "New comments available"
 
-#: issues/management/commands/send_notifications.py:53
-#: mail/management/commands/send_mail_notifications.py:39
-#: tasks/management/commands/send_deadline_notifications.py:50
+#: issues/templates/email_issue_notification.txt:11
+#: mail/templates/email_notification_mail.txt:10
+#: tasks/templates/email_notification_task.txt:10
 #: templates/registration/activation_email.txt:10
+#: templates/registration/password_reset_email.txt:11
 msgid "s_uvazheniem"
-msgstr ""
+msgstr "Sincerely"
 
-#: issues/management/commands/send_notifications.py:54
-#: mail/management/commands/send_mail_notifications.py:40
-#: tasks/management/commands/send_deadline_notifications.py:51
+#: issues/templates/email_issue_notification.txt:12
+#: mail/templates/email_notification_mail.txt:11
+#: tasks/templates/email_notification_task.txt:11
 #: templates/registration/activation_email.txt:11
+#: templates/registration/password_reset_email.txt:12
 msgid "komanda_anytask"
-msgstr ""
+msgstr "Anytask team"
 
-#: issues/management/commands/send_notifications.py:57
-#: tasks/management/commands/send_deadline_notifications.py:58
-msgid "kurs_zadacha_student"
-msgstr ""
-
-#: issues/management/commands/send_notifications.py:76
-msgid "studentom"
-msgstr ""
-
-#: issues/management/commands/send_notifications.py:89
-msgid "proverjaushim"
-msgstr ""
-
-#: issues/management/commands/send_notifications.py:102
-msgid "nabludatelem"
-msgstr ""
-
-#: issues/templates/file_uploader.html:104
+#: issues/templates/file_uploader.html:105
 msgid "otpravljat_odin_fajl"
-msgstr ""
+msgstr "Send only one file"
 
-#: issues/templates/file_uploader.html:113
+#: issues/templates/file_uploader.html:114
 msgid "vyberite_fajl"
-msgstr ""
+msgstr "Select file"
 
-#: issues/templates/file_uploader.html:113
+#: issues/templates/file_uploader.html:114
 msgid "vyberite_fajly"
-msgstr ""
+msgstr "Select files"
 
-#: issues/templates/file_uploader.html:133
+#: issues/templates/file_uploader.html:134
 msgid "ili_peretashite_suda"
-msgstr ""
+msgstr "Or drag and drop"
 
-#: issues/templates/file_uploader.html:141
+#: issues/templates/file_uploader.html:142
 msgid "zadat_vopros"
-msgstr ""
+msgstr "Ask a question"
 
-#: issues/templates/file_uploader.html:145
-#: issues/templates/issues/info.html:100 mail/templates/mail.html:123
+#: issues/templates/file_uploader.html:146 mail/templates/mail.html:158
 msgid "otpravit"
-msgstr ""
+msgstr "Send"
 
-#: issues/templates/file_uploader.html:234
+#: issues/templates/file_uploader.html:185
+msgid "prevysheno_kolvo_fajlov"
+msgstr "Number of files exceeded "
+
+#: issues/templates/file_uploader.html:186
+msgid "nedopustimyj_tip_fajla"
+msgstr "Invalid file type"
+
+#: issues/templates/file_uploader.html:187
+msgid "fajl_slishkom_bolshoj"
+msgstr "The file is too big"
+
+#: issues/templates/file_uploader.html:188
+msgid "fajl_slishkom_mal"
+msgstr "The file is too small"
+
+#: issues/templates/file_uploader.html:241
 msgid "vyberite_kompiljator"
+msgstr "Select compilator"
+
+#: issues/templates/issues/history.html:44
+#, python-format
+msgid ""
+"\n"
+"<p>For solving the task you need to go to <a href=\"%(jupyterhub_url_t)s\" "
+"target=\"_blank\">JupyterHub</a>.</p>\n"
+"<p>Open Assignments tab and fetch the '%(assignment_name_t)s'</p>\n"
 msgstr ""
 
-#: issues/templates/issues/history.html:31
+#: issues/templates/issues/history.html:51
+#, python-format
+msgid ""
+"\n"
+"<p>Before solving this task you need to add your Yandex.Passport account.</"
+"p>\n"
+"<p>In User Menu go to <a href=\"%(settings_url)s\">Settings</a> and "
+"authorize via Yandex</p>\n"
+msgstr ""
+
+#: issues/templates/issues/history.html:65
 msgid "predydushie_soobshenija"
-msgstr ""
+msgstr "Previous messages"
 
-#: issues/templates/issues/history.html:37
-#: issues/templates/issues/history.html:47
+#: issues/templates/issues/history.html:71
+#: issues/templates/issues/history.html:81
 msgid "srok_sdachi_istek"
-msgstr ""
+msgstr "Deadline has passed"
 
-#: issues/templates/issues/history.html:37
-#: issues/templates/issues/history.html:47
+#: issues/templates/issues/history.html:71
+#: issues/templates/issues/history.html:81
 msgid "soobshenija_budut_vydeljatsja"
-msgstr ""
+msgstr "The messages will be highlighted"
 
-#: issues/templates/issues/info.html:96
+#: issues/templates/issues/history.html:120
+#, fuzzy
+#| msgid "zakryt"
+msgid "otkryt"
+msgstr "Open"
+
+#: issues/templates/issues/history.html:121
+msgid "skachat"
+msgstr "Download"
+
+#: issues/templates/issues/history.html:149
+#: users/templates/user_profile.html:379
+msgid "zdes_nichego_net"
+msgstr "Nothing here"
+
+#: issues/templates/issues/info.html:101 issues/views.py:47
 msgid "kommentarij"
-msgstr ""
+msgstr "Comments"
 
-#: issues/templates/issues/info.html:102
+#: issues/templates/issues/info.html:107
 msgid "ja"
-msgstr ""
+msgstr "Me"
 
-#: issues/templates/issues/issue.html:26 tasks/templates/contest_import.html:26
-#: tasks/templates/task_create.html:32 tasks/templates/task_edit.html:117
-#: tasks/templates/task_import.html:28
+#: issues/templates/issues/issue.html:31 tasks/templates/contest_import.html:29
+#: tasks/templates/task_create.html:34 tasks/templates/task_edit.html:125
+#: tasks/templates/task_import.html:31
 msgid "spisok_zadach"
-msgstr ""
+msgstr "Assignments list"
 
-#: issues/templates/issues/issue.html:40
+#: issues/templates/issues/issue.html:45
 msgid "otpravljajte_ot_svoego_akkaunta"
-msgstr ""
+msgstr "Send from your account"
 
-#: issues/templates/issues/issue.html:41
-msgid "nuzhno_privjazat_k_profilu_kontest"
-msgstr ""
+#: issues/templates/issues/issue.html:46
+#, fuzzy
+#| msgid "privjazat_profil_kontesta"
+msgid "privjazat_k_profilu_kontest"
+msgstr "Link contest profile"
 
-#: issues/templates/issues/issue.html:41
+#: issues/templates/issues/issue.html:46
 msgid "profilu"
-msgstr ""
+msgstr "Profile"
 
-#: issues/templates/issues/issue_js.html:182
+#: issues/templates/issues/issue_js.html:206
 msgid "neobhodimo_ukazat_ocenku"
-msgstr ""
+msgstr "Please enter mark"
 
-#: issues/templates/issues/issue_js.html:183
+#: issues/templates/issues/issue_js.html:207
 msgid "naturalnoe_chislo"
-msgstr ""
+msgstr "Natural number"
 
-#: issues/templates/issues/issue_js.html:184
+#: issues/templates/issues/issue_js.html:208
 msgid "ocenka_bolshe_ili_ravna_0"
-msgstr ""
+msgstr "Mark should be greater or equal to 0"
 
-#: issues/templates/issues/issue_js.html:185
+#: issues/templates/issues/issue_js.html:209
 msgid "ocenka_ne_bolshe"
+msgstr "Mark should not be greater"
+
+#: issues/views.py:55
+msgid "fajl"
+msgstr "File"
+
+#: issues/views.py:56
+msgid "nomer_revju"
+msgstr "Review ID"
+
+#: lessons/models.py:28
+msgid "odin_raz"
+msgstr "one time"
+
+#: lessons/models.py:29
+msgid "ezhenedelno"
+msgstr "every week"
+
+#: lessons/templates/lesson_create.html:8
+#: lessons/templates/lesson_create.html:24
+#: lessons/templates/lesson_create.html:36
+#: lessons/templates/lesson_edit.html:32
+#, fuzzy
+#| msgid "sozdanie_zadachi"
+msgid "sozdanie_zaniatia"
+msgstr "Create assignment"
+
+#: lessons/templates/lesson_create.html:26
+#: lessons/templates/lesson_edit.html:36 lessons/templates/lesson_edit.html:65
+#, fuzzy
+#| msgid "redaktirovanie_zadachi"
+msgid "redaktirovanie_zaniatia"
+msgstr "Change assignment"
+
+#: lessons/templates/lesson_create.html:40
+#: lessons/templates/lesson_edit.html:70
+#: tasks/management/commands/send_task_notifications.py:79
+#: tasks/templates/task_create.html:61 tasks/templates/task_edit.html:154
+#: tasks/templates/task_edit.html:412
+msgid "nazvanie"
+msgstr "Name"
+
+#: lessons/templates/lesson_create.html:65
+#: lessons/templates/lesson_edit.html:95
+#: tasks/templates/contest_import.html:145 tasks/templates/task_create.html:148
+#: tasks/templates/task_edit.html:222 tasks/templates/task_import.html:129
+msgid "time_zone"
+msgstr "Time zone"
+
+#: lessons/templates/lesson_create.html:73
+#: lessons/templates/lesson_edit.html:103 mail/templates/mail.html:174
+#: tasks/templates/contest_import.html:104 tasks/templates/task_create.html:101
+#: tasks/templates/task_edit.html:195 tasks/templates/task_import.html:92
+#: users/model_user_profile_filter.py:31
+msgid "gruppa"
+msgstr "Group"
+
+#: lessons/templates/lesson_create.html:84
+#: lessons/templates/lesson_edit.html:114
+msgid "povtoriat"
+msgstr "repeated"
+
+#: lessons/templates/lesson_create.html:95
+#: lessons/templates/lesson_edit.html:126
+msgid "dni_nedeli"
+msgstr "days of weak"
+
+#: lessons/templates/lesson_create.html:98
+#: lessons/templates/lesson_edit.html:129
+msgid "mon"
 msgstr ""
 
-#: mail/views.py:18
-msgid "january"
+#: lessons/templates/lesson_create.html:99
+#: lessons/templates/lesson_edit.html:130
+#, fuzzy
+#| msgid "student"
+msgid "tue"
+msgstr "Student"
+
+#: lessons/templates/lesson_create.html:100
+#: lessons/templates/lesson_edit.html:131
+msgid "wed"
 msgstr ""
 
-#: mail/views.py:19
-msgid "february"
+#: lessons/templates/lesson_create.html:101
+#: lessons/templates/lesson_edit.html:132
+msgid "thu"
 msgstr ""
 
-#: mail/views.py:20 mail/views.py:22
-msgid "may"
+#: lessons/templates/lesson_create.html:102
+#: lessons/templates/lesson_edit.html:133
+msgid "fri"
 msgstr ""
 
-#: mail/views.py:21
-msgid "april"
+#: lessons/templates/lesson_create.html:103
+#: lessons/templates/lesson_edit.html:134
+#, fuzzy
+#| msgid "sdat"
+msgid "sat"
+msgstr "Submit"
+
+#: lessons/templates/lesson_create.html:104
+#: lessons/templates/lesson_edit.html:135
+#, fuzzy
+#| msgid "student"
+msgid "sun"
 msgstr ""
 
-#: mail/views.py:23
-msgid "june"
-msgstr ""
+#: lessons/templates/lesson_create.html:111
+#: lessons/templates/lesson_edit.html:142
+#, fuzzy
+#| msgid "data_sdachi"
+msgid "data_okonchania"
+msgstr "Submit due"
 
-#: mail/views.py:24
-msgid "july"
-msgstr ""
+#: lessons/templates/lesson_create.html:122
+#: lessons/templates/lesson_edit.html:153
+#, fuzzy
+#| msgid "opisanie_kursa"
+msgid "opisanie"
+msgstr "Course description"
 
-#: mail/views.py:25
-msgid "august"
-msgstr ""
+#: lessons/templates/lesson_create.html:131
+#: lessons/templates/lesson_edit.html:162 tasks/templates/task_create.html:206
+#: tasks/templates/task_edit.html:363 tasks/templates/task_import.html:192
+msgid "predprosmotr"
+msgstr "Preview"
 
-#: mail/views.py:26
-msgid "september"
-msgstr ""
+#: lessons/templates/lesson_create_or_edit_js.html:96
+#: lessons/templates/lesson_create_or_edit_js.html:122
+#, fuzzy
+#| msgid "sohraneno_uspeshno"
+msgid "raspisanie_sohraneno_uspeshno"
+msgstr "Saved successfully"
 
-#: mail/views.py:27
-msgid "october"
-msgstr ""
+#: lessons/templates/lesson_create_or_edit_js.html:168
+#: tasks/templates/task_create_or_edit_js.html:331
+#: tasks/templates/task_create_or_edit_js.html:334
+#: tasks/templates/task_import_js.html:229
+msgid "ne_tak_mnogo"
+msgstr "Too much"
 
-#: mail/views.py:28
-msgid "november"
-msgstr ""
+#: lessons/templates/lesson_create_or_edit_js.html:174
+#, fuzzy
+#| msgid "neobhodimo_vybrat_zadachu"
+msgid "neobhodimo_vybrat_den_nedeli"
+msgstr "Assignment must be chosen"
 
-#: mail/views.py:29
-msgid "december"
-msgstr ""
+#: lessons/templates/lesson_create_or_edit_js.html:177
+msgid "vybrat_datu_zaniatia"
+msgstr "Choose date of the class"
 
-#: mail/management/commands/send_mail_notifications.py:28
-#: templates/base.html:649
+#: lessons/templates/lesson_create_or_edit_js.html:180
+msgid "vybrat_vremia_okonchania"
+msgstr "Choose the end time of the class."
+
+#: lessons/templates/lesson_create_or_edit_js.html:183
+msgid "vybrat_poslednuu_datu"
+msgstr "Choose date of the last class"
+
+#: lessons/templates/lesson_create_or_edit_js.html:268
+#: lessons/templates/lesson_create_or_edit_js.html:269
+#: lessons/templates/lesson_create_or_edit_js.html:282
+#: lessons/templates/lesson_create_or_edit_js.html:296
+#, fuzzy
+#| msgid "vse_zadachi"
+msgid "vse_dni"
+msgstr "All assignments"
+
+#: lessons/templates/lesson_create_or_edit_js.html:279
+#: lessons/templates/lesson_create_or_edit_js.html:293
+#, fuzzy
+#| msgid "ne_vybrano_ni_odnoj_gruppy"
+msgid "ne_vybrano_ni_odnogo_dnia"
+msgstr "No groups selected"
+
+#: lessons/templates/lesson_create_or_edit_js.html:299
+#, fuzzy
+#| msgid "vybrano_neskolko_zadach"
+msgid "vybrano_neskolko_dnej"
+msgstr "Several assignments selected"
+
+#: lessons/templates/lesson_create_or_edit_js.html:340
+#: lessons/templates/lesson_create_or_edit_js.html:341
+#: lessons/templates/lesson_create_or_edit_js.html:354
+#: lessons/templates/lesson_create_or_edit_js.html:368
+#: tasks/templates/task_create_or_edit_js.html:365
+#: tasks/templates/task_create_or_edit_js.html:366
+#: tasks/templates/task_create_or_edit_js.html:379
+#: tasks/templates/task_create_or_edit_js.html:393
+#: tasks/templates/task_import_js.html:328
+#: tasks/templates/task_import_js.html:329
+#: tasks/templates/task_import_js.html:342
+#: tasks/templates/task_import_js.html:356
+msgid "dlja_vseh_grupp"
+msgstr "For all groups"
+
+#: lessons/templates/lesson_create_or_edit_js.html:351
+#: lessons/templates/lesson_create_or_edit_js.html:365
+#: tasks/templates/task_create_or_edit_js.html:376
+#: tasks/templates/task_create_or_edit_js.html:390
+#: tasks/templates/task_import_js.html:339
+#: tasks/templates/task_import_js.html:353
+msgid "ne_vybrano_ni_odnoj_gruppy"
+msgstr "No groups selected"
+
+#: lessons/templates/lesson_create_or_edit_js.html:371
+#: tasks/templates/task_create_or_edit_js.html:396
+#: tasks/templates/task_import_js.html:359
+msgid "vybrano_neskolko_grupp"
+msgstr "Several groups selected"
+
+#: lessons/templates/lesson_create_or_edit_js.html:432
+#, fuzzy
+#| msgid "sohranit_izmenenija"
+msgid "podtverdit_izmenenia"
+msgstr "Save changes"
+
+#: lessons/templates/lesson_edit.html:195 mail/templates/mail.html:159
+msgid "otmena"
+msgstr "Cancel"
+
+#: lessons/templates/lesson_edit.html:196
+#, fuzzy
+#| msgid "primenit"
+msgid "primenit_ko_vsem"
+msgstr "Apply"
+
+#: lessons/templates/lesson_edit.html:197
+#, fuzzy
+#| msgid "primenit"
+msgid "primenit_k_sobitiu"
+msgstr "Apply"
+
+#: mail/management/commands/send_mail_notifications.py:67
 msgid "est_novye_soobshenija"
-msgstr ""
+msgstr "New messages available"
 
-#: mail/management/commands/send_mail_notifications.py:35
-msgid "u_vas_soobshenij"
-msgstr ""
-
-#: mail/management/commands/send_mail_notifications.py:36
-msgid "posmotret_soobshenija"
-msgstr ""
-
-#: mail/management/commands/send_mail_notifications.py:62
-#: mail/management/commands/send_mail_notifications.py:68
+#: mail/management/commands/send_mail_notifications.py:130
+#: mail/management/commands/send_mail_notifications.py:136
 msgid "novyh_soobshenij"
-msgstr ""
+msgstr "New messages"
 
-#: mail/management/commands/send_mail_notifications.py:64
-#: mail/templates/mail.html:95
+#: mail/management/commands/send_mail_notifications.py:132
+#: mail/templates/mail.html:95 mail/templates/mail_js.html:443
 msgid "novoe_soobshenie"
-msgstr ""
+msgstr "New message"
 
-#: mail/management/commands/send_mail_notifications.py:66
+#: mail/management/commands/send_mail_notifications.py:134
 msgid "novyh_soobshenija"
-msgstr ""
+msgstr "New messages"
 
-#: mail/templates/email_notification_mail.html:40
+#: mail/templates/email_notification_mail.html:12
 msgid "u_vas"
-msgstr ""
+msgstr "You"
 
 #: mail/templates/email_notification_mail.html:49
 msgid "perejti_k_soobshenijam"
-msgstr ""
+msgstr "Go to the messages"
+
+#: mail/templates/email_notification_mail.txt:4
+msgid "u_vas_soobshenij"
+msgstr "Your messages"
+
+#: mail/templates/email_notification_mail.txt:5
+msgid "posmotret_soobshenija"
+msgstr "Check the messages"
 
 #: mail/templates/mail.html:16
 msgid "napisat"
-msgstr ""
+msgstr "Write"
 
-#: mail/templates/mail.html:21 mail/templates/mail.html.py:40
-#: mail/templates/mail_js.html:196 mail/templates/mail_js.html.py:201
-#: mail/templates/mail_js.html:395 mail/templates/mail_js.html.py:404
+#: mail/templates/mail.html:21 mail/templates/mail.html:40
+#: mail/templates/mail_js.html:204 mail/templates/mail_js.html:209
+#: mail/templates/mail_js.html:411 mail/templates/mail_js.html:420
 msgid "vhodjashie"
-msgstr ""
+msgstr "Inbox"
 
-#: mail/templates/mail.html:25 mail/templates/mail.html.py:58
-#: mail/templates/mail_js.html:411
+#: mail/templates/mail.html:25 mail/templates/mail.html:58
+#: mail/templates/mail_js.html:427
 msgid "otpravlennye"
-msgstr ""
+msgstr "Sent"
 
-#: mail/templates/mail.html:29 mail/templates/mail.html.py:76
-#: mail/templates/mail_js.html:414
+#: mail/templates/mail.html:29 mail/templates/mail.html:76
+#: mail/templates/mail_js.html:430
 msgid "udalennye"
-msgstr ""
+msgstr "Deleted"
 
-#: mail/templates/mail.html:99 mail/templates/mail.html.py:193
+#: mail/templates/mail.html:108 mail/templates/mail.html:253
 msgid "komu"
-msgstr ""
+msgstr "To"
 
-#: mail/templates/mail.html:101
+#: mail/templates/mail.html:110
 msgid "nachnite_vvodit_imja"
-msgstr ""
+msgstr "Start entering the name"
 
-#: mail/templates/mail.html:103
-msgid "dobavit_kurs_ili_gruppu"
-msgstr ""
+#: mail/templates/mail.html:112
+#, fuzzy
+#| msgid "dobavit_kurs_ili_gruppu"
+msgid "dobavit_kurs_gruppu_ili_status"
+msgstr "Add course or group"
 
-#: mail/templates/mail.html:111
-msgid "tema"
-msgstr ""
+#: mail/templates/mail.html:122
+msgid "skrytyye_kopii"
+msgstr "Hidden copies"
 
-#: mail/templates/mail.html:118
-msgid "tekst"
-msgstr ""
-
-#: mail/templates/mail.html:124
-msgid "otmena"
-msgstr ""
+#: mail/templates/mail.html:125
+msgid "poluchateli_ne_budut_videt_drugikh"
+msgstr "Получатели не будут видеть других получателей этого сообщения"
 
 #: mail/templates/mail.html:133
+#, fuzzy
+#| msgid "otpravlennye"
+msgid "peremennyye"
+msgstr "Sent"
+
+#: mail/templates/mail.html:136
+msgid "mozhno_ispolzovat_peremennyye_v_tekste"
+msgstr ""
+"Use variables so that the selected items in the message change in "
+"depending on the recipient. "
+
+#: mail/templates/mail.html:146
+msgid "tema"
+msgstr "Subject"
+
+#: mail/templates/mail.html:153
+msgid "tekst"
+msgstr "Text"
+
+#: mail/templates/mail.html:169
 msgid "dobavit_gruppu_polzovatelej"
-msgstr ""
+msgstr "Add users group"
 
-#: mail/templates/mail.html:148
-msgid "dobavit"
-msgstr ""
+#: mail/templates/mail.html:196 staff/templates/staff.html:143
+msgid "bez_tipa"
+msgstr "Without type"
 
-#: mail/templates/mail.html:166
+#: mail/templates/mail.html:226
 msgid "otvetit"
-msgstr ""
+msgstr "Answer"
 
-#: mail/templates/mail.html:170
+#: mail/templates/mail.html:230
 msgid "otvetit_vsem"
-msgstr ""
+msgstr "Answer all"
 
-#: mail/templates/mail.html:178 mail/templates/mail.html.py:235
+#: mail/templates/mail.html:238 mail/templates/mail.html:295
 msgid "vosstanovit"
-msgstr ""
+msgstr "Restore"
 
-#: mail/templates/mail.html:227 mail/templates/mail_js.html:152
-#: mail/templates/mail_js.html.py:324 mail/templates/mail_js.html:361
-#: mail/templates/mail_js.html.py:377
+#: mail/templates/mail.html:287 mail/templates/mail_js.html:160
+#: mail/templates/mail_js.html:340 mail/templates/mail_js.html:377
+#: mail/templates/mail_js.html:393
 msgid "otmetit_vse_kak_prochitannoe"
-msgstr ""
+msgstr "Mark as read"
 
 #: mail/templates/mail_js.html:66
 msgid "soobshenij_net"
-msgstr ""
+msgstr "No messages"
 
-#: mail/templates/mail_js.html:67
-msgid "_start_-_end__iz__total_"
-msgstr ""
-
-#: mail/templates/mail_js.html:72
-msgid "pokazat__menu_"
-msgstr ""
-
-#: mail/templates/mail_js.html:157 mail/templates/mail_js.html.py:382
+#: mail/templates/mail_js.html:165 mail/templates/mail_js.html:398
 msgid "kak_neprochitannoe"
-msgstr ""
+msgstr "As unread"
 
-#: mail/templates/mail_js.html:159 mail/templates/mail_js.html.py:365
-#: mail/templates/mail_js.html:384
+#: mail/templates/mail_js.html:167 mail/templates/mail_js.html:381
+#: mail/templates/mail_js.html:400
 msgid "otmetit_kak_prochitannoe"
-msgstr ""
+msgstr "Mark as read"
 
-#: mail/templates/mail_js.html:262 mail/templates/mail_js.html.py:275
+#: mail/templates/mail_js.html:278 mail/templates/mail_js.html:291
 msgid "pokazat_citirovanie"
-msgstr ""
+msgstr "Show citing"
 
-#: mail/templates/mail_js.html:279
+#: mail/templates/mail_js.html:295
 msgid "skryt_citirovanie"
-msgstr ""
+msgstr "Hide citing"
 
-#: mail/templates/mail_js.html:508 search/templates/search.html:124
-#: templates/base.html:86
+#: mail/templates/mail_js.html:532 search/templates/search.html:124
+#: templates/base.html:94
 msgid "loginy"
-msgstr ""
+msgstr "Logins"
 
-#: mail/templates/mail_js.html:539 search/templates/search.html:146
-#: templates/base.html:117
+#: mail/templates/mail_js.html:548 templates/base.html:110
+msgid "yeshcho"
+msgstr "More"
+
+#: mail/templates/mail_js.html:563 search/templates/search.html:146
+#: templates/base.html:125
 msgid "ja.pochta"
-msgstr ""
+msgstr "Yandex mail"
 
-#: mail/templates/mail_js.html:581
+#: mail/templates/mail_js.html:605
 msgid "vydelit_vse"
-msgstr ""
+msgstr "Select all"
 
-#: mail/templates/mail_js.html:650
+#: mail/templates/mail_js.html:679
+msgid "familiya"
+msgstr "Last name"
+
+#: mail/templates/mail_js.html:680
+#, fuzzy
+#| msgid "ukazat_poluchatelja"
+msgid "familiya_poluchatelya"
+msgstr "Enter recipient"
+
+#: mail/templates/mail_js.html:684 staff/templates/staff.html:88
+msgid "imja"
+msgstr "Name"
+
+#: mail/templates/mail_js.html:685
+#, fuzzy
+#| msgid "ukazat_poluchatelja"
+msgid "imja_poluchatelya"
+msgstr "Enter recipient"
+
+#: mail/templates/mail_js.html:697
 msgid "otpravka"
-msgstr ""
+msgstr "Sending"
 
-#: mail/templates/mail_js.html:689
+#: mail/templates/mail_js.html:740
 msgid "ukazat_poluchatelja"
-msgstr ""
+msgstr "Enter recipient"
 
-#: mail/templates/mail_js.html:692
+#: mail/templates/mail_js.html:743
 msgid "neobhodimo_ukazat_temu"
-msgstr ""
+msgstr "Subject must be specified"
+
+#: mail/templates/mail_js.html:851 staff/templates/staff.html:134
+#: staff/templates/staff.html:188 staff/templates/staff.html:211
+#, fuzzy
+#| msgid "net_polzovatelej"
+msgid "vybrano_polzovateley"
+msgstr "No users"
+
+#: mail/views.py:22
+msgid "january"
+msgstr "January"
+
+#: mail/views.py:23
+msgid "february"
+msgstr "February"
+
+#: mail/views.py:24
+msgid "march"
+msgstr "March"
+
+#: mail/views.py:25
+msgid "april"
+msgstr "April"
+
+#: mail/views.py:26
+msgid "may"
+msgstr "May"
+
+#: mail/views.py:27
+msgid "june"
+msgstr "June"
+
+#: mail/views.py:28
+msgid "july"
+msgstr "July"
+
+#: mail/views.py:29
+msgid "august"
+msgstr "August"
+
+#: mail/views.py:30
+msgid "september"
+msgstr "September"
+
+#: mail/views.py:31
+msgid "october"
+msgstr "October"
+
+#: mail/views.py:32
+msgid "november"
+msgstr "November"
+
+#: mail/views.py:33
+msgid "december"
+msgstr "December"
 
 #: schools/templates/archive_page.html:20 schools/templates/school_page.html:19
 msgid "aktivnye_kursy"
-msgstr ""
+msgstr "Active courses"
 
-#: schools/templates/archive_page.html:23
-#: schools/templates/archive_page.html:32 schools/templates/school_page.html:22
-#: search/templates/search.html:170 templates/base.html:135 users/models.py:208
-#: users/templates/user_courses.html:80 users/templates/user_courses.html:87
-#: users/templates/user_profile.html:210 users/templates/user_profile.html:283
-#: users/templates/user_profile.html:317
-msgid "arhiv"
-msgstr ""
-
-#: search/templates/search.html:4 search/templates/search.html.py:58
+#: search/templates/search.html:4 search/templates/search.html:58
 msgid "rezultaty_poiska"
-msgstr ""
+msgstr "Search results"
 
 #: search/templates/search.html:71
 msgid "min_dlina_zaprosa"
-msgstr ""
+msgstr "Minimal query length"
 
-#: search/templates/search.html:74 search/templates/search.html.py:76
+#: search/templates/search.html:74 search/templates/search.html:76
 msgid "po_zaprosu"
-msgstr ""
+msgstr "By request"
 
 #: search/templates/search.html:74
 msgid "najdeno"
-msgstr ""
+msgstr "Found"
 
 #: search/templates/search.html:74
 msgid "polzovatelej"
-msgstr ""
+msgstr "Users"
 
 #: search/templates/search.html:74
 msgid "kursov"
-msgstr ""
+msgstr "Courses"
 
-#: search/templates/search.html:88 staff/templates/staff.html:52
-#: staff/templates/staff.html.py:88 templates/base.html:80
+#: search/templates/search.html:88 staff/templates/staff.html:78
+#: templates/base.html:88
 msgid "polzovateli"
-msgstr ""
+msgstr "Users"
 
-#: search/templates/search.html:162 templates/base.html:129
+#: search/templates/search.html:162 templates/base.html:137
 msgid "kursy"
-msgstr ""
+msgstr "Courses"
 
 #: staff/templates/get_gradebook.html:17 staff/templates/gradebook.html:18
-#: staff/templates/staff.html:23
+#: staff/templates/staff.html:20
 msgid "filtry_po_statusam"
-msgstr ""
+msgstr "Filter by status"
 
-#: staff/templates/get_gradebook.html:42
+#: staff/templates/get_gradebook.html:42 staff/templates/staff.html:207
+#: staff/templates/staff.html:234
 msgid "sgenerirovat_obshuu_vedomost"
-msgstr ""
+msgstr "Generate general list"
 
-#: staff/templates/get_gradebook.html:49
+#: staff/templates/get_gradebook.html:49 staff/templates/staff.html:219
 msgid "sgenerirovat"
-msgstr ""
+msgstr "Generate"
 
 #: staff/templates/get_gradebook.html:51
 msgid "ne_najdeno_kursov"
-msgstr ""
+msgstr "No courses found"
 
-#: staff/templates/gradebook.html:61 staff/templates/staff.html:79
+#: staff/templates/gradebook.html:62 staff/templates/staff.html:117
 msgid "ne_najdeno_polzovatelej"
-msgstr ""
+msgstr "No users found"
 
-#: staff/templates/staff.html:57
-msgid "imja"
-msgstr ""
+#: staff/templates/gradebook_js.html:42 staff/templates/gradebook_js.html:43
+#: staff/templates/gradebook_js.html:55
+msgid "vse_statusy"
+msgstr "All statuses"
 
-#: staff/templates/staff.html:58
-msgid "pochta"
+#: staff/templates/gradebook_js.html:52
+msgid "ne_vybrano_statusov"
+msgstr "No statuses selected"
+
+#: staff/templates/staff.html:33
+msgid "prostoy_filtr"
+msgstr "Simple filter"
+
+#: staff/templates/staff.html:36
+#, fuzzy
+#| msgid "peresudit_reshenija_studentov"
+msgid "zagruzit_spisok_studentov"
+msgstr "Run scoring on students submissions again"
+
+#: staff/templates/staff.html:49
+msgid "fayl_formata_CSV_poisk"
 msgstr ""
+"Upload the file in CSV format. The search is possible by login (login) and mail "
+"(email)."
+
+#: staff/templates/staff.html:61
+#, fuzzy
+#| msgid "ne_najdeno_polzovatelej"
+msgid "naydeno_polzovateley"
+msgstr "No users found"
 
 #: staff/templates/staff.html:89
-msgid "net_polzovatelej"
-msgstr ""
+msgid "pochta"
+msgstr "Email"
 
-#: staff/templates/staff_js.html:39 staff/templates/staff_js.html.py:40
-#: staff/templates/staff_js.html:52
-msgid "vse_statusy"
-msgstr ""
+#: staff/templates/staff.html:115
+msgid "vyberite_znacheniya_dlya_filtratsii"
+msgstr "Enter values to filter"
 
-#: staff/templates/staff_js.html:49
-msgid "ne_vybrano_statusov"
-msgstr ""
+#: staff/templates/staff.html:130 users/templates/status_history.html:37
+#: users/templates/user_courses.html:48 users/templates/user_profile.html:44
+msgid "redaktirovanie_statusov"
+msgstr "Update statuses"
 
-#: tasks/models.py:41 tasks/models.py:199
+#: staff/templates/staff.html:133
+#, fuzzy
+#| msgid "ne_vybrano_statusov"
+msgid "vyberite_novyye_statusy"
+msgstr "No statuses selected"
+
+#: staff/templates/staff.html:150
+msgid "ne_menyat"
+msgstr "Do not change"
+
+#: staff/templates/staff.html:169
+msgid "sozdat_soobshcheniye_vopros"
+msgstr "Create message"
+
+#: staff/templates/staff.html:184
+#, fuzzy
+#| msgid "novyh_soobshenija"
+msgid "otpravka_soobshcheniya"
+msgstr "Message sending"
+
+#: staff/templates/staff.html:187
+#, fuzzy
+#| msgid "perejti_k_soobshenijam"
+msgid "pereyti_k_sozdaniyu_soobshcheniya_vopros"
+msgstr "Go to the messages"
+
+#: staff/templates/staff.html:210
+#, fuzzy
+#| msgid "sgenerirovat_obshuu_vedomost"
+msgid "sgenerirovat_obshuu_vedomost_vopros"
+msgstr "Generate general list"
+
+#: staff/templates/staff.html:219
+#, fuzzy
+#| msgid "sgenerirovat"
+msgid "generacia"
+msgstr "Generate"
+
+#: staff/templates/staff.html:227 staff/templates/staff.html:241
+#: staff/templates/staff.html:242 staff/templates/staff_js.html:409
+#, fuzzy
+#| msgid "statusy_polzovatelja"
+msgid "izmenit_status_dlya_vsekh_polzovateley"
+msgstr "User statuses"
+
+#: staff/templates/staff.html:230 staff/templates/staff_js.html:410
+msgid "otpravit_soobshcheniye_vsem_polzovatelyam"
+msgstr "Send a message to all users"
+
+#: staff/templates/staff_js.html:50 users/templates/my_tasks.html:46
+msgid "vybrat_vse"
+msgstr "Select all"
+
+#: staff/templates/staff_js.html:51 staff/templates/staff_js.html:62
+#: staff/templates/staff_js.html:76 users/templates/my_tasks.html:47
+#: users/templates/my_tasks.html:58 users/templates/my_tasks.html:72
+msgid "vse_vybrano"
+msgstr "Everything is selected"
+
+#: staff/templates/staff_js.html:185
+#, fuzzy
+#| msgid "vse_vybrano"
+msgid "vybrano"
+msgstr "Everything is selected"
+
+#: staff/templates/staff_js.html:379
+#, fuzzy
+#| msgid "oshibka_pri_poluchenii"
+msgid "oshibka_pri_generacii"
+msgstr "Error during loading"
+
+#: staff/templates/staff_js.html:413
+msgid "izmenit_status_dlya_vybrannykh_polzovateley"
+msgstr "Change the status for selected users"
+
+#: staff/templates/staff_js.html:414
+msgid "otpravit_soobshcheniye_vybrannym_polzovatelyam"
+msgstr "Send a message to selected users"
+
+#: staff/views.py:68
+#, fuzzy
+#| msgid "net_polzovatelej"
+msgid "dannyye_polzovateli_ne_naydeny"
+msgstr "No users"
+
+#: staff/views.py:71
+msgid "nevernyy_format_fayla"
+msgstr "Invalid file format. Select the file in CSV format."
+
+#: tasks/management/commands/send_task_notifications.py:80
+#: tasks/templates/task_create.html:197 tasks/templates/task_edit.html:354
+#: tasks/templates/task_edit.html:436 tasks/templates/task_import.html:183
+msgid "formulirovka"
+msgstr "Description"
+
+#: tasks/management/commands/send_task_notifications.py:81
+#: tasks/templates/contest_import.html:91 tasks/templates/task_create.html:85
+#: tasks/templates/task_edit.html:178 tasks/templates/task_edit.html:424
+#: tasks/templates/task_import.html:82
+msgid "max_ball"
+msgstr "Max score"
+
+#: tasks/management/commands/send_task_notifications.py:124
+msgid "proizoshli_izmeneniya_v_kursah"
+msgstr "There have been changes in your courses"
+
+#: tasks/models.py:67 tasks/models.py:266
 msgid "s_obsuzhdeniem"
-msgstr ""
+msgstr "With discussion"
 
-#: tasks/models.py:42 tasks/models.py:200
+#: tasks/models.py:68 tasks/models.py:267
 msgid "tolko_ocenka"
-msgstr ""
+msgstr "Mark only"
 
-#: tasks/models.py:43
+#: tasks/models.py:70
 msgid "seminar"
-msgstr ""
+msgstr "Seminar/workshop"
 
-#: tasks/management/commands/send_deadline_notifications.py:29
-msgid "v_zadache_kursa"
-msgstr ""
-
-#: tasks/management/commands/send_deadline_notifications.py:30
-msgid "novaja_data_sdachi"
+#: tasks/models.py:71
+msgid "jupyter notebook"
 msgstr ""
 
 #: tasks/templates/contest_import.html:8 tasks/templates/task_import.html:9
 msgid "import"
-msgstr ""
+msgstr "Import"
 
-#: tasks/templates/contest_import.html:43 tasks/templates/task_edit.html:203
-#: tasks/templates/task_import.html:45
+#: tasks/templates/contest_import.html:64 tasks/templates/task_edit.html:252
+#: tasks/templates/task_import.html:47
 msgid "id_kontesta"
-msgstr ""
+msgstr "Contest id"
 
-#: tasks/templates/contest_import.html:55 tasks/templates/task_import.html:57
+#: tasks/templates/contest_import.html:76 tasks/templates/task_import.html:59
 msgid "poluchit_spisok_zadach"
-msgstr ""
+msgstr "Get assignments list"
 
-#: tasks/templates/contest_import.html:70 tasks/templates/task_create.html:86
-#: tasks/templates/task_edit.html:143 tasks/templates/task_edit.html.py:351
-#: tasks/templates/task_import.html:72
-msgid "max_ball"
-msgstr ""
-
-#: tasks/templates/contest_import.html:78
-#: tasks/templates/contest_import.html:123
+#: tasks/templates/contest_import.html:97
+#: tasks/templates/contest_import.html:140
 msgid "brat_iz_kontesta"
-msgstr ""
+msgstr "Load from contest"
 
-#: tasks/templates/contest_import.html:85 tasks/templates/task_create.html:93
-#: tasks/templates/task_edit.html:151 tasks/templates/task_import.html:82
-msgid "gruppa"
-msgstr ""
-
-#: tasks/templates/contest_import.html:97 tasks/templates/task_create.html:105
-#: tasks/templates/task_edit.html:259 tasks/templates/task_import.html:95
+#: tasks/templates/contest_import.html:116 tasks/templates/task_create.html:113
+#: tasks/templates/task_edit.html:318 tasks/templates/task_import.html:105
 msgid "roditelskaja_zadacha"
-msgstr ""
+msgstr "Parent assignment"
 
-#: tasks/templates/contest_import.html:129 tasks/templates/task_create.html:140
-#: tasks/templates/task_edit.html:178 tasks/templates/task_import.html:119
-msgid "izmenenie_sroka_sdachi"
-msgstr ""
-
-#: tasks/templates/contest_import.html:135 tasks/templates/task_create.html:61
-#: tasks/templates/task_edit.html:225 tasks/templates/task_import.html:125
+#: tasks/templates/contest_import.html:152 tasks/templates/task_create.html:156
+#: tasks/templates/task_edit.html:274 tasks/templates/task_import.html:136
 msgid "integracija_s_rb"
-msgstr ""
+msgstr "Integrate with RB"
 
-#: tasks/templates/contest_import.html:143 tasks/templates/task_create.html:70
-#: tasks/templates/task_edit.html:235 tasks/templates/task_import.html:133
+#: tasks/templates/contest_import.html:160 tasks/templates/task_create.html:165
+#: tasks/templates/task_edit.html:283 tasks/templates/task_import.html:144
 msgid "imja_fajla_budet_izmeneno"
-msgstr ""
+msgstr "Name and surname will be changes"
 
-#: tasks/templates/contest_import.html:159
+#: tasks/templates/contest_import.html:178 tasks/templates/task_create.html:182
+#: tasks/templates/task_edit.html:308 tasks/templates/task_import.html:162
+msgid "uchityvat_bally_dedlajn"
+msgstr "Take into account the marks for the tasks passed after the deadline"
+
+#: tasks/templates/contest_import.html:187
+#, fuzzy
+#| msgid "sozdanie_zadachi"
+msgid "uvedomit_o_sozdanii_zadach"
+msgstr "Create assignment"
+
+#: tasks/templates/contest_import.html:193
 msgid "skryt_zadachi"
-msgstr ""
+msgstr "Hide assignments"
 
-#: tasks/templates/task_create.html:9 tasks/templates/task_create.html.py:23
-#: tasks/templates/task_create.html:45 tasks/templates/task_edit.html:8
-#: tasks/templates/task_edit.html.py:105
+#: tasks/templates/email_notification_task.html:22
+#: tasks/templates/email_notification_task.txt:4
+#, fuzzy
+#| msgid "kurs"
+msgid "v_kurse"
+msgstr "Year of study"
+
+#: tasks/templates/email_notification_task.html:27
+#: tasks/templates/email_notification_task.txt:4
+#, fuzzy
+#| msgid "sohranit_izmenenija"
+msgid "proizoshli_izmeneniya"
+msgstr "Save changes"
+
+#: tasks/templates/email_notification_task.html:33
+#: tasks/templates/email_notification_task.txt:5
+#, fuzzy
+#| msgid "obnovlenie_zadach"
+msgid "dobavlena_zadacha"
+msgstr "Update the assignments"
+
+#: tasks/templates/email_notification_task.html:42
+#: tasks/templates/email_notification_task.txt:5
+msgid "izmenilis"
+msgstr "changed"
+
+#: tasks/templates/email_notification_task.txt:6
+#, fuzzy
+#| msgid "prepodavatel_v_kursah"
+msgid "pereyti_v_kurs"
+msgstr "Teaching the courses:"
+
+#: tasks/templates/task_create.html:9 tasks/templates/task_create.html:25
+#: tasks/templates/task_create.html:46 tasks/templates/task_edit.html:11
+#: tasks/templates/task_edit.html:113
 msgid "sozdanie_zadachi"
-msgstr ""
+msgstr "Create assignment"
 
-#: tasks/templates/task_create.html:25 tasks/templates/task_edit.html:109
-#: tasks/templates/task_edit.html.py:130
+#: tasks/templates/task_create.html:27 tasks/templates/task_edit.html:117
+#: tasks/templates/task_edit.html:149
 msgid "redaktirovanie_zadachi"
-msgstr ""
+msgstr "Change assignment"
 
-#: tasks/templates/task_create.html:50 tasks/templates/task_edit.html:185
+#: tasks/templates/task_create.html:51 tasks/templates/task_edit.html:230
 msgid "tip_zadachi"
+msgstr "Assignment type"
+
+#: tasks/templates/task_create.html:68 tasks/templates/task_edit.html:161
+#: tasks/templates/task_edit.html:418 tasks/templates/task_import.html:74
+#, fuzzy
+#| msgid "nazvanie"
+msgid "kratkoe_nazvanie"
+msgstr "Name"
+
+#: tasks/templates/task_create.html:69 tasks/templates/task_edit.html:162
+#: tasks/templates/task_import.html:75
+msgid "kratkoe_nazvanie_help_text"
+msgstr "It will be displayed in a table with ratings."
+
+#: tasks/templates/task_create.html:76 tasks/templates/task_edit.html:170
+msgid "nb_assignment_name"
+msgstr "Task name in jupiter."
+
+#: tasks/templates/task_create.html:80
+msgid "must be unique for all tasks in jupyter"
 msgstr ""
 
-#: tasks/templates/task_create.html:79 tasks/templates/task_edit.html:135
-#: tasks/templates/task_edit.html.py:345
-msgid "nazvanie"
-msgstr ""
+#: tasks/templates/task_create.html:93 tasks/templates/task_edit.html:186
+#, fuzzy
+#| msgid "student"
+msgid "max_students"
+msgstr "Student"
 
-#: tasks/templates/task_create.html:118 tasks/templates/task_edit.html:272
+#: tasks/templates/task_create.html:126 tasks/templates/task_edit.html:331
 msgid "podzadachi"
-msgstr ""
+msgstr "Sub-assignments"
 
-#: tasks/templates/task_create.html:146 tasks/templates/task_edit.html:283
-#: tasks/templates/task_import.html:149
+#: tasks/templates/task_create.html:174 tasks/templates/task_import.html:171
+#, fuzzy
+#| msgid "sozdanie_zadachi"
+msgid "uvedomit_o_sozdanii_zadachi"
+msgstr "Create assignment"
+
+#: tasks/templates/task_create.html:191 tasks/templates/task_edit.html:348
+#: tasks/templates/task_import.html:177
 msgid "skryt_zadachu"
-msgstr ""
+msgstr "Hide assignments"
 
-#: tasks/templates/task_create.html:152 tasks/templates/task_edit.html:289
-#: tasks/templates/task_edit.html.py:363 tasks/templates/task_import.html:155
-msgid "formulirovka"
-msgstr ""
-
-#: tasks/templates/task_create.html:160 tasks/templates/task_edit.html:297
-#: tasks/templates/task_import.html:164
-msgid "predprosmotr"
-msgstr ""
-
-#: tasks/templates/task_create_or_edit_js.html:170
-#: tasks/templates/task_create_or_edit_js.html:196
-msgid "zadacha_sohranena_uspeshno"
-msgstr ""
-
-#: tasks/templates/task_create_or_edit_js.html:239
-#: tasks/templates/task_import_js.html:183
-msgid "ukazat_maxball"
-msgstr ""
-
-#: tasks/templates/task_create_or_edit_js.html:240
 #: tasks/templates/task_create_or_edit_js.html:242
-#: tasks/templates/task_import_js.html:184
-#: tasks/templates/task_import_js.html:186
+#: tasks/templates/task_create_or_edit_js.html:271
+msgid "zadacha_sohranena_uspeshno"
+msgstr "Assignment saved successfully"
+
+#: tasks/templates/task_create_or_edit_js.html:324
+#: tasks/templates/task_import_js.html:232
+msgid "ukazat_maxball"
+msgstr "Enter max score"
+
+#: tasks/templates/task_create_or_edit_js.html:325
+#: tasks/templates/task_create_or_edit_js.html:327
+#: tasks/templates/task_import_js.html:233
+#: tasks/templates/task_import_js.html:235
 msgid "maxball_naturalnoe_chislo"
-msgstr ""
+msgstr "Max score should be natural number"
 
-#: tasks/templates/task_create_or_edit_js.html:241
-#: tasks/templates/task_import_js.html:185
+#: tasks/templates/task_create_or_edit_js.html:326
+#: tasks/templates/task_import_js.html:234
 msgid "maxball_bolshe_0"
-msgstr ""
+msgstr "Max score should be greater than 0"
 
-#: tasks/templates/task_create_or_edit_js.html:245
+#: tasks/templates/task_create_or_edit_js.html:330
 msgid "nazvanie_neobhodimo"
-msgstr ""
+msgstr "Name is required"
 
-#: tasks/templates/task_create_or_edit_js.html:246
-msgid "ne_tak_mnogo"
-msgstr ""
-
-#: tasks/templates/task_create_or_edit_js.html:249
-#: tasks/templates/task_import_js.html:189
+#: tasks/templates/task_create_or_edit_js.html:337
+#: tasks/templates/task_import_js.html:238
 msgid "ukazat_nomer_kontesta"
-msgstr ""
+msgstr "Enter contest id"
 
-#: tasks/templates/task_create_or_edit_js.html:250
-#: tasks/templates/task_import_js.html:190
-#: tasks/templates/task_import_js.html:191
+#: tasks/templates/task_create_or_edit_js.html:338
+#: tasks/templates/task_import_js.html:239
+#: tasks/templates/task_import_js.html:240
 msgid "nomer_kontesta_naturalnoe_chislo"
-msgstr ""
+msgstr "Contest id must be a natural number"
 
-#: tasks/templates/task_create_or_edit_js.html:253
+#: tasks/templates/task_create_or_edit_js.html:341
 msgid "ukazat_literu_zadachi"
+msgstr "Enter assignment litera"
+
+#: tasks/templates/task_create_or_edit_js.html:347
+msgid "assignment name is required"
 msgstr ""
 
-#: tasks/templates/task_create_or_edit_js.html:272
-#: tasks/templates/task_create_or_edit_js.html:273
-#: tasks/templates/task_create_or_edit_js.html:286
-#: tasks/templates/task_create_or_edit_js.html:300
-#: tasks/templates/task_import_js.html:279
-#: tasks/templates/task_import_js.html:280
-#: tasks/templates/task_import_js.html:293
-#: tasks/templates/task_import_js.html:307
-msgid "dlja_vseh_grupp"
+#: tasks/templates/task_create_or_edit_js.html:348
+msgid "assignment name cannot contains spaces"
 msgstr ""
 
-#: tasks/templates/task_create_or_edit_js.html:283
-#: tasks/templates/task_create_or_edit_js.html:297
-#: tasks/templates/task_import_js.html:290
-#: tasks/templates/task_import_js.html:304
-msgid "ne_vybrano_ni_odnoj_gruppy"
+#: tasks/templates/task_create_or_edit_js.html:349
+msgid "assignment name already in use"
 msgstr ""
 
-#: tasks/templates/task_create_or_edit_js.html:303
-#: tasks/templates/task_import_js.html:310
-msgid "vybrano_neskolko_grupp"
-msgstr ""
-
-#: tasks/templates/task_edit.html:153
+#: tasks/templates/task_edit.html:197
 msgid "vybor_grupp_zavisit_ot_zadach"
-msgstr ""
+msgstr "Group selection depends on the problem"
 
-#: tasks/templates/task_edit.html:196
+#: tasks/templates/task_edit.html:245
 msgid "integracija_s_kontestom"
-msgstr ""
+msgstr "Contest integration"
 
-#: tasks/templates/task_edit.html:210
+#: tasks/templates/task_edit.html:259
 msgid "litera_zadachi"
-msgstr ""
+msgstr "Assignment integration"
 
-#: tasks/templates/task_edit.html:218 tasks/templates/task_edit.html.py:219
+#: tasks/templates/task_edit.html:267 tasks/templates/task_edit.html:268
 msgid "obnovit_iz_kontesta"
-msgstr ""
+msgstr "Update from the contest"
 
-#: tasks/templates/task_edit.html:329
+#: tasks/templates/task_edit.html:342
+msgid "uvedomit_ob_izmenenii_v_zadache"
+msgstr "Notify students about task change"
+
+#: tasks/templates/task_edit.html:398
 msgid "obnovlenie_dannyh_iz_kontesta"
-msgstr ""
+msgstr "Updating data from the contest"
 
-#: tasks/templates/task_edit.html:333
+#: tasks/templates/task_edit.html:402
 msgid "importirovat_polja_iz_kontesta"
-msgstr ""
+msgstr "Import fields from the contest"
 
-#: tasks/templates/task_import_js.html:194
+#: tasks/templates/task_import_js.html:243
 msgid "neobhodimo_vybrat_zadachu"
-msgstr ""
+msgstr "Assignment must be chosen"
 
 #: templates/403.html:11
 msgid "oshibka_403"
-msgstr ""
+msgstr "403 error"
 
 #: templates/404.html:11
 msgid "oshibka_404"
-msgstr ""
+msgstr "404 error"
 
-#: templates/500.html:13
+#: templates/500.html:14
 msgid "oshibka_500"
-msgstr ""
+msgstr "500 error"
 
-#: templates/500.html:13
+#: templates/500.html:14
 msgid "nam"
-msgstr ""
+msgstr "Us"
 
-#: templates/base.html:652
+#: templates/base.html:163
+#, fuzzy
+#| msgid "vse_statusy"
+msgid "vse_resultaty"
+msgstr "All statuses"
+
+#: templates/base.html:698
+#, fuzzy
+#| msgid "est_novye_soobshenija"
+msgid "base_est_novye_soobshenija"
+msgstr "New messages available"
+
+#: templates/base.html:701
 msgid "net_novyh_soobshenij"
-msgstr ""
+msgstr "No new messages"
 
-#: templates/base.html:664 users/templates/my_tasks.html:93
-#: users/templates/status_history.html:29 users/templates/user_courses.html:27
-#: users/templates/user_profile.html:17 users/templates/user_settings.html:43
+#: templates/base.html:713 users/templates/my_tasks.html:96
+#: users/templates/status_history.html:18 users/templates/user_courses.html:28
+#: users/templates/user_profile.html:19 users/templates/user_settings.html:16
+#: users/views.py:425
 msgid "profil"
-msgstr ""
+msgstr "Profile"
 
-#: templates/base.html:668
+#: templates/base.html:717
 msgid "adminka"
-msgstr ""
+msgstr "Admin panel"
 
-#: templates/base.html:671
+#: templates/base.html:720 templates/registration/password_reset_email.html:42
 msgid "smenit_parol"
-msgstr ""
+msgstr "Change password"
 
-#: templates/base.html:673
+#: templates/base.html:722
 msgid "vyjti"
-msgstr ""
+msgstr "Logout"
 
-#: templates/base.html:680 templates/registration/registration_form.html:85
+#: templates/base.html:737 templates/registration/registration_form.html:85
 msgid "vojdite"
-msgstr ""
+msgstr "Sing In"
 
-#: templates/base.html:683
+#: templates/base.html:740
 msgid "zaregistrirujtes"
-msgstr ""
+msgstr "Sign up"
 
-#: templates/base.html:712
-msgid "blog"
-msgstr ""
+#: templates/base.html:782
+msgid "github"
+msgstr "Github"
 
-#: templates/base.html:727
+#: templates/base.html:801
 msgid "pishite_nam"
-msgstr ""
+msgstr "Contact us"
 
 #: templates/registration/activation_complete.html:6
 msgid "akkaunt_aktivirovan"
-msgstr ""
+msgstr "Account is activated"
 
 #: templates/registration/activation_complete.html:8
 #: templates/registration/password_reset_complete.html:8
 msgid "vojti"
-msgstr ""
+msgstr "Sign In"
 
 #: templates/registration/activation_email.txt:3
 msgid "activacia_akkaunta"
-msgstr ""
+msgstr "Activate account"
 
 #: templates/registration/activation_email.txt:7
 msgid "ssilka_dejstvitelna"
-msgstr ""
+msgstr "Link is active"
 
 #: templates/registration/activation_email.txt:7
 msgid "dnej"
-msgstr ""
+msgstr "Days"
 
 #: templates/registration/login.html:5 templates/registration/login.html:18
 msgid "vhod"
-msgstr ""
+msgstr "Sign In"
 
 #: templates/registration/password_change_done.html:4
 #: templates/registration/password_change_done.html:6
 msgid "parol_uspeshno_izmenen"
-msgstr ""
+msgstr "Password changed successfully"
 
 #: templates/registration/password_change_done.html:7
 msgid "u_vas_novyj_parol"
-msgstr ""
+msgstr "You have updated password"
 
 #: templates/registration/password_change_form.html:5
 #: templates/registration/password_change_form.html:14
 msgid "izmenenie_parolja"
-msgstr ""
+msgstr "Update password"
 
 #: templates/registration/password_change_form.html:15
 msgid "smena_parolia"
-msgstr ""
+msgstr "Change password"
 
 #: templates/registration/password_reset_complete.html:4
 #: templates/registration/password_reset_done.html:4
 #: templates/registration/password_reset_done.html:6
 msgid "parol_uspeshno_vosstanovlen"
-msgstr ""
+msgstr "Password restored successfully"
 
 #: templates/registration/password_reset_complete.html:6
 msgid "vosstanovlenie_parolja_zaversheno"
-msgstr ""
+msgstr "Password restoration completed"
 
 #: templates/registration/password_reset_complete.html:7
 msgid "teper_novij_parol"
-msgstr ""
+msgstr "Now you have a new password"
 
 #: templates/registration/password_reset_confirm.html:5
 msgid "novyj_parol"
-msgstr ""
+msgstr "New password"
 
 #: templates/registration/password_reset_confirm.html:14
 msgid "vvedite_novyj_parol"
-msgstr ""
+msgstr "Enter new password"
 
 #: templates/registration/password_reset_confirm.html:15
 msgid "vvedite_parol_dvazhdy"
-msgstr ""
+msgstr "Enter new password twice"
 
 #: templates/registration/password_reset_done.html:7
 msgid "vosstanovlenie_parolja"
+msgstr "We have sent the password recovery instructions to the email address you provided during registration."
+
+#: templates/registration/password_reset_email.html:19
+#: templates/registration/password_reset_email.txt:4
+#, python-format
+msgid ""
+"You're receiving this e-mail because you requested a password reset for your "
+"user account at %(site_name)s."
+msgstr ""
+
+#: templates/registration/password_reset_email.html:28
+#: templates/registration/password_reset_email.txt:5
+msgid "Please go to the following page and choose a new password:"
+msgstr ""
+
+#: templates/registration/password_reset_email.html:53
+#: templates/registration/password_reset_email.txt:8
+msgid "Your username, in case you've forgotten:"
 msgstr ""
 
 #: templates/registration/password_reset_form.html:5
 #: templates/registration/password_reset_form.html:14
 msgid "sbros_parolja"
+msgstr "Reset password"
+
+#: templates/registration/password_reset_subject.txt:2
+#, python-format
+msgid "Password reset on %(site_name)s"
 msgstr ""
 
 #: templates/registration/registration_complete.html:4
 #: templates/registration/registration_form.html:5
 #: templates/registration/registration_form.html:119
 msgid "registracija"
-msgstr ""
+msgstr "Register"
 
 #: templates/registration/registration_complete.html:8
 msgid "vyslano_pismo"
-msgstr ""
+msgstr "Email sent"
 
 #: templates/registration/registration_form.html:70
 #: templates/registration/registration_form.html:75
@@ -1495,279 +2317,368 @@ msgstr ""
 #: templates/registration/registration_form.html:88
 #: templates/registration/registration_form.html:91
 msgid "objazatelnoe_pole"
-msgstr ""
+msgstr "Required field"
 
 #: templates/registration/registration_form.html:71
 msgid "polzovatel_s_imenem_sushestvuet"
-msgstr ""
+msgstr "Username exists"
 
 #: templates/registration/registration_form.html:72
 msgid "tolko_bukvy_cifry_punc"
-msgstr ""
+msgstr "Only alphanumeric input and punctuation"
 
 #: templates/registration/registration_form.html:76
 #: templates/registration/registration_form.html:80
 msgid "tolko_bukvy"
-msgstr ""
+msgstr "Only letters"
 
 #: templates/registration/registration_form.html:84
 msgid "vvedite_korrektnyj_adres"
-msgstr ""
+msgstr "Enter correct email"
 
 #: templates/registration/registration_form.html:85
 msgid "polzovatel_s_adresom_sushestvuet"
-msgstr ""
+msgstr "User with such email exists"
 
 #: templates/registration/registration_form.html:92
 msgid "paroli_ne_sovpadaut"
-msgstr ""
+msgstr "Passwords do not match"
 
 #: templates/registration/registration_form.html:165
 msgid "zaregistrirovatsja"
-msgstr ""
+msgstr "Register"
 
-#: users/forms.py:23
+#: users/forms.py:25
 msgid "invajta_ne_sushestvuet"
-msgstr ""
+msgstr "Invite does not exist"
 
-#: users/forms.py:26
+#: users/forms.py:28
 msgid "srok_dejstvija_invajta_istek"
-msgstr ""
+msgstr "Invite is outdated"
 
-#: users/models.py:53 users/models.py:165
+#: users/model_user_profile_filter.py:35 users/model_user_status.py:36
 msgid "status_studenta"
-msgstr ""
+msgstr "Student status"
 
-#: users/models.py:181
-msgid "tip_kursa"
-msgstr ""
+#: users/model_user_profile_filter.py:39 users/model_user_status.py:37
+msgid "filial"
+msgstr "Branch"
 
-#: users/models.py:182
-msgid "god_kursa"
-msgstr ""
+#: users/model_user_profile_filter.py:43 users/model_user_status.py:38
+#, fuzzy
+#| msgid "status_studenta"
+msgid "status_postupleniya"
+msgstr "Student status"
 
-#: users/models.py:207
-msgid "aktivnyj"
-msgstr ""
-
-#: users/views.py:389
-msgid "profil_uzhe_privjazan"
-msgstr ""
-
-#: users/views.py:392 users/views.py:406 users/templates/user_profile.html:126
-#: users/templates/user_profile.html:138
-msgid "privjazat_profil_kontesta"
-msgstr ""
-
-#: users/views.py:394
-msgid "privjazat_profil_ja"
-msgstr ""
-
-#: users/views.py:407
-msgid "pereprivjazat_tolko_svoj_profil"
-msgstr ""
-
-#: users/views.py:557
-msgid "invajt_drugogo_kursa"
-msgstr ""
-
-#: users/templates/my_tasks.html:43
-msgid "vybrat_vse"
-msgstr ""
-
-#: users/templates/my_tasks.html:44 users/templates/my_tasks.html.py:55
-#: users/templates/my_tasks.html:69
-msgid "vse_vybrano"
-msgstr ""
-
-#: users/templates/my_tasks.html:99 users/templates/status_history.html:35
-#: users/templates/user_courses.html:33 users/templates/user_courses.html:86
-#: users/templates/user_courses.html:142 users/templates/user_profile.html:23
-#: users/templates/user_settings.html:49
+#: users/templates/my_tasks.html:102 users/templates/status_history.html:24
+#: users/templates/user_courses.html:34 users/templates/user_courses.html:71
+#: users/templates/user_courses.html:131 users/templates/user_profile.html:26
+#: users/templates/user_settings.html:22
 msgid "moi_kursy"
-msgstr ""
+msgstr "My courses"
 
-#: users/templates/my_tasks.html:138
+#: users/templates/my_tasks.html:141
 msgid "prepodavatel"
-msgstr ""
+msgstr "Teacher"
 
-#: users/templates/my_tasks.html:164
+#: users/templates/my_tasks.html:167
 msgid "ne_najdeno_zadach"
-msgstr ""
+msgstr "No assignments found"
 
-#: users/templates/my_tasks.html:174
+#: users/templates/my_tasks.html:177
 msgid "ne_sdaval_zadach"
-msgstr ""
+msgstr "No assignments submitted"
 
 #: users/templates/oauth_error.html:37
 msgid "chtoby_otvjazat_profil"
-msgstr ""
+msgstr "To unlink profile"
 
-#: users/templates/status_history.html:42 users/templates/user_courses.html:40
-#: users/templates/user_profile.html:30
+#: users/templates/status_history.html:31 users/templates/user_courses.html:41
+#: users/templates/user_profile.html:33
 msgid "profil_studenta"
-msgstr ""
+msgstr "Student profile"
 
-#: users/templates/status_history.html:45 users/templates/user_courses.html:43
-#: users/templates/user_profile.html:34
+#: users/templates/status_history.html:34 users/templates/user_courses.html:44
+#: users/templates/user_profile.html:38
 msgid "kursy_studenta"
-msgstr ""
+msgstr "Student courses"
 
-#: users/templates/status_history.html:48 users/templates/user_courses.html:47
-#: users/templates/user_profile.html:39
-msgid "redaktirovanie_statusov"
-msgstr ""
-
-#: users/templates/status_history.html:70
-msgid "statusy"
-msgstr ""
-
-#: users/templates/status_history.html:79
-#: users/templates/user_profile_js.html:190
+#: users/templates/status_history.html:58
+#: users/templates/status_history_js.html:49
 msgid "net_statusov"
-msgstr ""
+msgstr "No statuses"
 
-#: users/templates/status_history.html:84
+#: users/templates/status_history.html:64
 msgid "redaktirovat"
-msgstr ""
+msgstr "Edit"
 
-#: users/templates/status_history.html:92
+#: users/templates/status_history.html:72
 msgid "istorija_izmenenij"
-msgstr ""
+msgstr "Change history"
 
-#: users/templates/status_history.html:97
+#: users/templates/status_history.html:76
 msgid "kogda_byl_izmenen"
-msgstr ""
+msgstr "Last change"
 
-#: users/templates/status_history.html:98
+#: users/templates/status_history.html:77
 msgid "kem"
-msgstr ""
+msgstr "By"
 
-#: users/templates/status_history.html:99
-#: users/templates/status_history.html:130
+#: users/templates/status_history.html:78
+#: users/templates/status_history.html:112
 msgid "statusy_polzovatelja"
-msgstr ""
+msgstr "User statuses"
 
-#: users/templates/status_history.html:133
+#: users/templates/status_history.html:115
 msgid "dobavlenie_udalenie_statusov_polzovatelja"
-msgstr ""
+msgstr "Add user status"
 
-#: users/templates/user_courses.html:80 users/templates/user_profile.html:244
+#: users/templates/user_courses.html:65 users/templates/user_profile.html:440
 msgid "aktivnye"
-msgstr ""
+msgstr "Active"
 
-#: users/templates/user_courses.html:85 users/templates/user_courses.html:141
+#: users/templates/user_courses.html:70 users/templates/user_courses.html:130
 msgid "tekushaja_uspevaemost"
-msgstr ""
+msgstr "Current academic performance"
 
-#: users/templates/user_courses.html:109
+#: users/templates/user_courses.html:97
 msgid "vsego_zadach"
-msgstr ""
+msgstr "Total number of assignments"
 
-#: users/templates/user_courses.html:143
+#: users/templates/user_courses.html:132
 msgid "net_kursov"
-msgstr ""
+msgstr "No courses"
+
+#: users/templates/user_profile.html:72
+msgid "japochta"
+msgstr "Yandex mail"
+
+#: users/templates/user_profile.html:86
+msgid "sgenerirovat_invajty"
+msgstr "Generate invite codes"
+
+#: users/templates/user_profile.html:96 users/templates/user_profile.html:110
+#: users/views.py:428 users/views.py:442
+msgid "privjazat_profil_kontesta"
+msgstr "Link contest profile"
+
+#: users/templates/user_profile.html:98
+msgid "privjazat_odin_profil"
+msgstr "Link one profile"
+
+#: users/templates/user_profile.html:98
+msgid "otvjazat_svoj_profil"
+msgstr "Unlink my profile"
 
 #: users/templates/user_profile.html:103
-msgid "japochta"
-msgstr ""
+msgid "priviazat"
+msgstr "Link"
 
-#: users/templates/user_profile.html:116
-msgid "sgenerirovat_invajty"
-msgstr ""
+#: users/templates/user_profile.html:112
+msgid "privjazali_profil"
+msgstr "Link profile"
 
-#: users/templates/user_profile.html:128
-msgid "privjazat_odin_profil"
-msgstr ""
+#: users/templates/user_profile.html:112
+msgid "profil_kontesta_priviazan"
+msgstr "Contest profile is linked"
 
-#: users/templates/user_profile.html:128
-msgid "otvjazat_svoj_profil"
-msgstr ""
+#: users/templates/user_profile.html:117
+msgid "obnovit_privjazku_profilja"
+msgstr "Update linked profile"
+
+#: users/templates/user_profile.html:129
+msgid "aktivacija_invajtov"
+msgstr "Activate invite code"
 
 #: users/templates/user_profile.html:131
-msgid "priviazat"
-msgstr ""
-
-#: users/templates/user_profile.html:140
-msgid "privjazali_profil"
-msgstr ""
-
-#: users/templates/user_profile.html:140
-msgid "profil_kontesta_priviazan"
-msgstr ""
-
-#: users/templates/user_profile.html:143
-msgid "obnovit_privjazku_profilja"
-msgstr ""
-
-#: users/templates/user_profile.html:155
-msgid "aktivacija_invajtov"
-msgstr ""
-
-#: users/templates/user_profile.html:156
 msgid "vvesti_invajt"
-msgstr ""
+msgstr "Enter invite code"
 
-#: users/templates/user_profile.html:185 users/templates/user_profile.html:430
+#: users/templates/user_profile.html:156 users/templates/user_settings.html:68
+msgid "privjazka_akkauntov"
+msgstr "Link accounts"
+
+#: users/templates/user_profile.html:162 users/templates/user_settings.html:73
+msgid "jandeks"
+msgstr "Yandex"
+
+#: users/templates/user_profile.html:218
+msgid "data_rozhdeniya"
+msgstr "Birth date"
+
+#: users/templates/user_profile.html:225
+msgid "vozrast"
+msgstr "Age"
+
+#: users/templates/user_profile.html:237
+msgid "telefon"
+msgstr "Phone"
+
+#: users/templates/user_profile.html:253
+msgid "gorod_prozhivaniya"
+msgstr "Town"
+
+#: users/templates/user_profile.html:275
+msgid "vuz"
+msgstr "University/College"
+
+#: users/templates/user_profile.html:290
+msgid "uchitsya_seychas"
+msgstr "Active now"
+
+#: users/templates/user_profile.html:296
+#, fuzzy
+#| msgid "sdat"
+msgid "da"
+msgstr "Yes"
+
+#: users/templates/user_profile.html:298
+#, fuzzy
+#| msgid "kontest"
+msgid "net"
+msgstr "No"
+
+#: users/templates/user_profile.html:309
+#, fuzzy
+#| msgid "kursov"
+msgid "kurs_vuza"
+msgstr "Courses"
+
+#: users/templates/user_profile.html:325
+msgid "fakultet_kafedra"
+msgstr "Department"
+
+#: users/templates/user_profile.html:341
+msgid "god_okonchaniya_vuza"
+msgstr "Year of graduation"
+
+#: users/templates/user_profile.html:368 users/templates/user_profile.html:658
 msgid "o_sebe"
-msgstr ""
+msgstr "About"
 
-#: users/templates/user_profile.html:194
-msgid "zdes_nichego_net"
-msgstr ""
-
-#: users/templates/user_profile.html:212
+#: users/templates/user_profile.html:401
 msgid "prepodavatel_v_kursah"
-msgstr ""
+msgstr "Teaching the courses:"
 
-#: users/templates/user_profile.html:246
+#: users/templates/user_profile.html:443
 msgid "prepodavatel_v_kursah_arhiv"
-msgstr ""
+msgstr "Teaching courses (archive)"
 
-#: users/templates/user_profile.html:285
+#: users/templates/user_profile.html:490
 msgid "sostoit_v_kursah"
-msgstr ""
+msgstr "Member of the courses"
 
-#: users/templates/user_profile.html:319
+#: users/templates/user_profile.html:532
 msgid "sostoit_v_kursah_arhiv"
-msgstr ""
+msgstr "Member of the courses (archive)"
 
-#: users/templates/user_profile.html:352
+#: users/templates/user_profile.html:570
 msgid "sostoit_v_gruppah"
-msgstr ""
+msgstr "Groups member"
 
-#: users/templates/user_profile.html:385
+#: users/templates/user_profile.html:607
 msgid "vybor_avatara"
-msgstr ""
+msgstr "Select avatar"
 
-#: users/templates/user_profile.html:454
+#: users/templates/user_profile.html:687
 msgid "prosmotr_avatara"
-msgstr ""
+msgstr "View avatar"
 
-#: users/templates/user_profile.html:476
+#: users/templates/user_profile.html:708
 msgid "esli_dannye_neverny"
-msgstr ""
+msgstr "If data is incorrect"
 
 #: users/templates/user_settings.html:4
 msgid "nastrojki_profilja"
-msgstr ""
+msgstr "Profile settings"
 
-#: users/templates/user_settings.html:135
+#: users/templates/user_settings.html:41
 msgid "pokazyvat_moj_e-mail"
-msgstr ""
+msgstr "Show my email"
 
-#: users/templates/user_settings.html:141
+#: users/templates/user_settings.html:47
 msgid "otpravljat_mne_kommentarii"
-msgstr ""
+msgstr "Send comments to me"
 
-#: users/templates/user_settings.html:153
-msgid "privjazka_akkauntov"
-msgstr ""
+#: users/templates/user_settings.html:51
+#, fuzzy
+#| msgid "novoe_soobshenie"
+msgid "moe_mestopozhenie"
+msgstr "New message"
 
-#: users/templates/user_settings.html:158
-msgid "jandeks"
-msgstr ""
+#: users/templates/user_settings.html:52
+msgid "dlja_vremeni"
+msgstr "Used to determine the time zone. The deadline time is local."
 
-#: users/templates/user_settings.html:193
+#: users/templates/user_settings.html:108
 msgid "title_otvjazat_svoj_profil"
-msgstr ""
+msgstr "Title unlink my account"
+
+#: users/views.py:425
+#, fuzzy
+#| msgid "profil_uzhe_privjazan"
+msgid "uzhe_privjazan"
+msgstr "Profile is already linked"
+
+#: users/views.py:430
+msgid "privjazat_profil_ja"
+msgstr "Link yandex profile"
+
+#: users/views.py:443
+msgid "pereprivjazat_tolko_svoj_profil"
+msgstr "Link only my profile"
+
+#: users/views.py:615
+msgid "invajt_drugogo_kursa"
+msgstr "Different course invite code"
+
+#~ msgid "blog_anytask"
+#~ msgstr "Anytask blog"
+
+#~ msgid "blog"
+#~ msgstr "Blog"
+
+#~ msgid "rasshirenia_fajla"
+#~ msgstr "File extension"
+
+#~ msgid "sohranit_izmenenija?"
+#~ msgstr "Save changes?"
+
+#~ msgid "_total__studentov"
+#~ msgstr "_total_ number of students"
+
+#~ msgid "(iz__max_)"
+#~ msgstr "(iz__max_)"
+
+#~ msgid "pokazat__menu__studentov"
+#~ msgstr "Show students menu"
+
+#~ msgid "lubaja"
+#~ msgstr "Any"
+
+#~ msgid "kurs_zadacha_student"
+#~ msgstr "Course assignment student"
+
+#~ msgid "proverjaushim"
+#~ msgstr "TA"
+
+#~ msgid "nabludatelem"
+#~ msgstr "Vievew"
+
+#~ msgid "nuzhno_privjazat_k_profilu_kontest"
+#~ msgstr "Contest profile must be linked"
+
+#~ msgid "_start_-_end__iz__total_"
+#~ msgstr "_start_ - _end_ is _total_"
+
+#~ msgid "v_zadache_kursa"
+#~ msgstr "In course assignment"
+
+#~ msgid "novaja_data_sdachi"
+#~ msgstr "New submission deadline"
+
+#~ msgid "izmenenie_sroka_sdachi"
+#~ msgstr "Change submission deadline"
+
+msgid "studentom"
+msgstr "student"

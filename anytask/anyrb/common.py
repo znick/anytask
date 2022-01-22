@@ -8,6 +8,7 @@ from django.contrib.sites.models import Site
 from django.utils.translation import ugettext as _
 
 from rbtools.api.client import RBClient
+from rbtools.api.errors import APIError, AuthorizationError, BadRequestError, ServerInterfaceError
 from .unpacker import unpack_files
 
 logger = logging.getLogger('django.request')
@@ -20,6 +21,16 @@ class AnyRB(object):
         self.event = event
 
     def upload_review(self):
+        try:
+            return self.upload_review_unsafe()
+        except (APIError, AuthorizationError, BadRequestError, ServerInterfaceError) as e:
+            logger.exception("Error communicating to reviewboard", exc_info=e)
+            return None
+        except Exception as e:
+            logger.exception("Unhandled exception", exc_info=e)
+            return None
+
+    def upload_review_unsafe(self):
         if len(self.event.file_set.all()) == 0:
             return None
 
@@ -67,6 +78,7 @@ class AnyRB(object):
             if empty:
                 return None
 
+            self.call_symlink_creator(self.event.issue.id)
             review_request = self.get_review_request()
             if review_request is None:
                 review_request = self.create_review_request()
@@ -103,6 +115,8 @@ class AnyRB(object):
                                  description=description,
                                  description_text_type='markdown',
                                  target=settings.RB_API_USERNAME, public=True,
+                                 target_groups='teachers_{0}'.format(issue.task.course.pk),
+                                 target_people=issue.student.username
                                  )
             return review_request.id
 
@@ -152,6 +166,14 @@ class AnyRB(object):
             logger.info("Issue '%s' has not RB review_request. Exception: '%s'.", self.event.issue.id, e)
             return None
 
+    def call_symlink_creator(self, repo_id):
+        if not settings.RB_SYMLINK_SERVICE_URL:
+            return
+
+        url = settings.RB_SYMLINK_SERVICE_URL + "/" + str(repo_id)
+        response = requests.get(url)
+        response.raise_for_status()
+
     def create_review_request(self):
         root = self.client.get_root()
 
@@ -159,8 +181,6 @@ class AnyRB(object):
         course_id = self.event.issue.task.course.id
         repository_name = str(self.event.issue.id)
         repository_path = os.path.join(settings.RB_SYMLINK_DIR, repository_name)
-        if not os.path.exists(repository_path):
-            os.symlink(settings.RB_SYMLINK_DIR, repository_path)
 
         try:
 

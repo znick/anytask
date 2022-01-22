@@ -9,29 +9,11 @@ from optparse import make_option
 import copy
 
 
-def get_users_from_cs_xml(cs_xml_fn):
-    doc = parse(cs_xml_fn)
-    for student_el in doc.getElementsByTagName("student"):
-        student = {
-            'login': student_el.getAttribute('login'),
-            'name': student_el.getAttribute('name'),
-            'grp': student_el.getAttribute('grp'),
-        }
-        yield student
-
-
 class Command(BaseCommand):
     help = "Copy course"
 
-    option_list = BaseCommand.option_list + (
-        make_option(
-            '--course_id',
-            action='store',
-            dest='course_id',
-            default=None,
-            help='Course id'
-        ),
-    )
+    def add_arguments(self, parser):
+        parser.add_argument('--course_id', dest='course_id', help='Course id', type=int)
 
     @transaction.atomic
     def handle(self, **options):

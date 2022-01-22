@@ -1,0 +1,11 @@
+---
+name: beautifulsoup4
+version: 4.6.0
+type: pip
+summary: Screen-scraping library
+homepage: http://www.crummy.com/software/BeautifulSoup/bs4/
+license: mit
+licenses:
+- sources: COPYING.txt
+  text: "Beautiful Soup is made available under the MIT license:\n\n Copyright (c) 2004-2017 Leonard Richardson\n\n Permission is hereby granted, free of charge, to any person obtaining\n a copy of this software and associated documentation files (the\n \"Software\"), to deal in the Software without restriction, including\n without limitation the rights to use, copy, modify, merge, publish,\n distribute, sublicense, and/or sell copies of the Software, and to\n permit persons to whom the Software is furnished to do so, subject to\n the following conditions:\n\n The above copyright notice and this permission notice shall be\n included in all copies or substantial portions of the Software.\n\n THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND,\n EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF\n MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND\n NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS\n BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN\n ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN\n CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\n SOFTWARE.\n\nBeautiful Soup incorporates code from the html5lib library, which is\nalso made available under the MIT license. Copyright (c) 2006-2013\nJames Graham and other contributors\n"
+notices: []

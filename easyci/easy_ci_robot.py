@@ -20,8 +20,8 @@ from contextlib import contextmanager
 CONFIG = "config.json"
 PASSWORDS = "passwords.json"
 MAX_COMMENT_SIZE = 10000
-PROCS = 2
-REQUEST_TIMEOUT = 180
+PROCS = 1
+REQUEST_TIMEOUT = 300
 
 logging.basicConfig(format="%(asctime)-15s %(name)s %(process)d %(message)s", level=logging.DEBUG)
 

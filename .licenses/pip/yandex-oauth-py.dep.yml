@@ -1,0 +1,11 @@
+---
+name: yandex-oauth-py
+version: 0.1.1
+type: pip
+summary: Package for working with Yandex OAuth https://tech.yandex.ru/oauth/
+homepage: https://bitbucket.org/wa_pis/yandex-oauth-py/oauth
+license: mit
+licenses:
+- source: yandex_oauth_py.py
+  text: "Copyright (c) 2015, Grudin wa_pis Anton.\nLicense: MIT (see LICENSE for details)"
+notices: []

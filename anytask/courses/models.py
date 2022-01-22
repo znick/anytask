@@ -83,7 +83,7 @@ class MarkField(models.Model):
 
 class CourseMarkSystem(models.Model):
     name = models.CharField(max_length=191, db_index=False, null=False, blank=False)
-    marks = models.ManyToManyField(MarkField, null=True, blank=True)
+    marks = models.ManyToManyField(MarkField, blank=True)
 
     def __str__(self):
         return str(self.name)
@@ -99,10 +99,11 @@ class Course(models.Model):
 
     is_active = models.BooleanField(db_index=True, null=False, blank=False, default=False)
 
-    teachers = models.ManyToManyField(User, related_name='course_teachers_set', null=True, blank=True)
-    groups = models.ManyToManyField(Group, null=True, blank=True)
+    teachers = models.ManyToManyField(User, related_name='course_teachers_set', blank=True)
+    groups = models.ManyToManyField(Group, blank=True)
 
-    issue_fields = models.ManyToManyField(IssueField, null=True, blank=True)
+    issue_fields = models.ManyToManyField(IssueField, blank=True)
+    easyCI_url = models.CharField(max_length=191, blank=True, null=True)
 
     contest_integrated = models.BooleanField(db_index=False, null=False, blank=False, default=False)
     send_rb_and_contest_together = models.BooleanField(db_index=False, null=False, blank=False, default=False)
@@ -113,7 +114,7 @@ class Course(models.Model):
     send_to_contest_from_users = models.BooleanField(db_index=False, null=False, blank=False, default=False)
 
     filename_extensions = models.ManyToManyField(
-        FilenameExtension, related_name='filename_extensions_set', null=True, blank=True
+        FilenameExtension, related_name='filename_extensions_set', blank=True
     )
 
     full_transcript = models.BooleanField(db_index=False, null=False, blank=False, default=True)
@@ -221,8 +222,18 @@ class Course(models.Model):
         return self.has_attendance_log and self.user_is_teacher(user)
 
     def save(self, *args, **kwargs):
+        created = self.id is None
         super(Course, self).save(*args, **kwargs)
         self.add_group_with_extern()
+
+        # Hack hack hack
+        # We need to triger add_default_issue_fields (m2m_change)
+        # for new courses
+        if created:
+            fields = IssueField.objects.all()
+            if fields.exists():
+                any_field = fields[0]
+                self.issue_fields.add(any_field)
 
     def add_group_with_extern(self):
         if self.group_with_extern is None and self.can_be_chosen_by_extern:
@@ -292,24 +303,16 @@ class StudentCourseMark(models.Model):
 def add_default_issue_fields(sender, instance, action, **kwargs):
     default_issue_fields = DefaultIssueFields()
     default_issue_fields.set_integrated(instance.rb_integrated, instance.contest_integrated)
-    pk_set = kwargs.get("pk_set", set())
 
-    if action not in ("post_add", "post_remove", "post_clear"):
-        return
+    if action in ("post_add", "post_remove", "post_clear"):
+        current_fields = set(instance.issue_fields.all())
+        default_fields = set(default_issue_fields.get_issue_fields())
 
-    if action in ("post_remove", "post_clear"):
-        if pk_set and set(pk_set) == default_issue_fields.get_deleted_pks():
+        fields_to_add = default_fields - current_fields
+        if not fields_to_add:
             return
 
-        instance.issue_fields.add(*default_issue_fields.get_issue_fields())
-        return
-
-    if action == "post_add":
-        if pk_set and set(pk_set) == default_issue_fields.get_pks():
-            return
-
-        instance.issue_fields.remove(*default_issue_fields.get_deleted_issue_fields())
-        return
+        instance.issue_fields.add(*fields_to_add)
 
 
 def update_rb_review_group(sender, instance, created, **kwargs):

@@ -4,12 +4,12 @@ from django.db import models
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
+from django.core.files.storage import default_storage
 
 from django.contrib.auth.models import User
 from anycontest.common import FakeResponse, escape, user_register_to_contest
 
 import requests
-import os
 import logging
 import time
 
@@ -102,7 +102,7 @@ class ContestSubmission(models.Model):
                 return False
 
             for i in range(3):
-                with open(os.path.join(settings.MEDIA_ROOT, file.file.name), 'rb') as f:
+                with default_storage.open(file.file.name, 'rb') as f:
                     files = {'file': f}
                     submit_req = requests.post(settings.CONTEST_API_URL + 'submit',
                                                data={'compilerId': compiler_id,
@@ -156,7 +156,7 @@ class ContestSubmission(models.Model):
             got_mark = True
         except Exception as e:
             logger.exception("Exception while request to Contest: '%s' : '%s', Exception: '%s'",
-                             results_req.url, results_req.json(), e)
+                             results_req.url, results_req.text, e)
             got_mark = False
         self.save()
 

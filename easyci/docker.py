@@ -5,7 +5,7 @@ from __future__ import nested_scopes, generators, division, absolute_import, \
 import logging
 from subprocess import Popen, PIPE
 from strings import get_random_string
-from io import StringIO
+import io
 import threading
 import subprocess
 
@@ -26,20 +26,24 @@ def kill_and_remove(ctr_name):
 
 
 def limited_reader(fn_in, fn_out, limit_bytes):
+    fn = io.open(fn_in.fileno(), encoding="utf-8")
     read_bytes = 0
     truncated = False
-    while True:
-        buf = fn_in.read(BUF_SIZE)
-        if len(buf) == 0:
-            break
+    try:
+        while True:
+            buf = fn.read(BUF_SIZE)
+            if len(buf) == 0:
+                break
 
-        if read_bytes >= limit_bytes and not truncated:
-            fn_out.write("\nTRUNCATED\n")
-            truncated = True
+            if read_bytes >= limit_bytes and not truncated:
+                fn_out.write("\nTRUNCATED\n")
+                truncated = True
 
-        read_bytes += len(buf)
-        if not truncated:
-            fn_out.write(buf.decode("utf-8"))
+            read_bytes += len(buf)
+            if not truncated:
+                fn_out.write(buf)
+    except Exception as e:
+        fn_out.write("Error while read or write proccess output: {}".format(e))
 
 
 def execute(cmd, user="nobody", cwd=None, timeout=None, network='none',
@@ -91,7 +95,7 @@ def execute(cmd, user="nobody", cwd=None, timeout=None, network='none',
     logging.info("Will run: %s", command + cmd)
     p = subprocess.Popen(command + cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-    output = StringIO()
+    output = io.StringIO()
     t1 = threading.Thread(target=limited_reader, args=(p.stdout, output, LIMIT_BYTES))
     t2 = threading.Thread(target=limited_reader, args=(p.stderr, output, LIMIT_BYTES))
 

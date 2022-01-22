@@ -18,6 +18,7 @@ from years.models import Year
 
 from xml.etree.ElementTree import parse
 from optparse import make_option
+from xml.dom.minidom import parse
 import sys
 import random
 import string
@@ -37,13 +38,12 @@ def get_users_from_cs_xml(cs_xml_fn):
 class Command(BaseCommand):
     help = "Creating shad users, python course, shad school."
 
-    option_list = BaseCommand.option_list + (
-        make_option('--year',
-                    action='store',
-                    dest='year',
-                    default=None,
-                    help='Course start year'),
-    )
+    def add_arguments(self, parser):
+        parser.add_argument('--year',
+                            action='store',
+                            dest='year',
+                            default=None,
+                            help='Course start year')
 
     def handle(self, **options):
         year = options['year']

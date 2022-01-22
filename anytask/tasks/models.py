@@ -41,7 +41,7 @@ class Task(models.Model):
     short_title = models.CharField(max_length=15, db_index=True, null=True, blank=True)
     course = models.ForeignKey(Course, db_index=True, null=False, blank=False)
     group = models.ForeignKey(Group, db_index=False, null=True, blank=True, default=None)
-    groups = models.ManyToManyField(Group, null=False, blank=False, related_name='groups_set')
+    groups = models.ManyToManyField(Group, blank=False, related_name='groups_set')
 
     weight = models.IntegerField(db_index=True, null=False, blank=False, default=0)
 
@@ -247,7 +247,7 @@ class TaskLog(models.Model):
     title = models.CharField(max_length=191, db_index=True, null=True, blank=True)
     course = models.ForeignKey(Course, db_index=False, null=False, blank=False)
     group = models.ForeignKey(Group, db_index=False, null=True, blank=True, default=None)
-    groups = models.ManyToManyField(Group, null=False, blank=False, related_name='groups_log_set')
+    groups = models.ManyToManyField(Group, blank=False, related_name='groups_log_set')
 
     weight = models.IntegerField(db_index=False, null=False, blank=False, default=0)
 
@@ -299,8 +299,7 @@ class TaskTaken(models.Model):
         (STATUS_SCORED, u'Task scored'),
         (STATUS_DELETED, u'TaskTaken deleted')
     )
-    status = models.IntegerField(max_length=1, choices=TASK_TAKEN_STATUSES, db_index=True, null=False, blank=False,
-                                 default=0)
+    status = models.IntegerField(choices=TASK_TAKEN_STATUSES, db_index=True, blank=False, default=0)
 
     EDIT = 'EDIT'
     QUEUE = 'QUEUE'

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
+import requests
 from copy import deepcopy
 
 from django.conf import settings
@@ -12,7 +13,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.translation import ugettext as _
 from django.views.decorators.http import require_POST
 from jfu.http import upload_receive, UploadResponse, JFUResponse
-from unidecode import unidecode
+from text_unidecode import unidecode
 from django.db.transaction import atomic
 
 from anycontest.common import get_problem_compilers
@@ -121,6 +122,34 @@ def contest_rejudge(issue):
     event.save()
 
 
+def check_easy_ci(request, issue, event, sent_files):
+    if not(issue.task.course.easyCI_url is None) \
+            and issue.task.course.easyCI_url != "":
+        files = []
+        for sent_file in sent_files:
+            files.append(request.build_absolute_uri(sent_file.url))
+
+        if len(files) != 0:
+            check_request_dict = {
+                'files': files,
+                'course_id': issue.task.course_id,
+                'title': issue.task.get_title(),
+                'issue_id': issue.id,
+                'event': {
+                    'id': event.id,
+                    'timestamp': event.timestamp.isoformat()
+                }
+            }
+            try:
+                response = requests.post(issue.task.course.easyCI_url
+                                         + "/api/add_task",
+                                         json=check_request_dict)
+                print(response.status_code)
+            except requests.exceptions.RequestException:
+                issue.add_comment("Cannot send to easyCI. Time: "
+                                  + event.timestamp.isoformat())
+
+
 @login_required
 def issue_page(request, issue_id):
     issue = get_object_or_404(Issue, id=issue_id)
@@ -135,7 +164,7 @@ def issue_page(request, issue_id):
     if request.method == 'POST':
         if 'contest_rejudge' in request.POST:
             contest_rejudge(issue)
-            return HttpResponseRedirect('')
+            return HttpResponseRedirect(request.path_info)
 
         form_name = request.POST['form_name']
 
@@ -179,7 +208,7 @@ def issue_page(request, issue_id):
                                          {'files': [], 'comment': request.POST['comment_verdict']},
                                          request.user)
 
-                    return HttpResponseRedirect('')
+                    return HttpResponseRedirect(request.path_info)
 
     prepare_info_fields(issue_fields, request, issue)
 
@@ -270,6 +299,7 @@ def upload(request):
         event_value = {'files': [], 'comment': '', 'compilers': []}
         event_value['comment'] = request.POST['comment']
         file_counter = 0
+
         for field, value in dict(request.POST).items():
             if 'compiler' in field:
                 pk = int(field[13:])
@@ -286,7 +316,8 @@ def upload(request):
                 event_value['compilers'].append(None)
 
         if not (issue.task.one_file_upload and file_counter > 1):
-            issue.set_byname('comment', event_value, request.user)
+            event = issue.set_byname('comment', event_value, request.user)
+            check_easy_ci(request, issue, event, event_value['files'])
 
         return redirect(issue_page, issue_id=int(request.POST['issue_id']))
 

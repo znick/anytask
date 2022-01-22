@@ -20,8 +20,6 @@ from registration import signals
 from registration.forms import RegistrationForm, RegistrationFormUniqueEmail
 from registration.models import RegistrationProfile
 
-from mail.common import send_mass_mail_html
-
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, HTML
 

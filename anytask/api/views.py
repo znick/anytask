@@ -73,8 +73,8 @@ def unpack_issue(issue, add_events=False, request=None, lang=settings.API_LANGUA
     ret = {
         "id": issue.id,
         "mark": issue.mark,
-        "create_time": issue.create_time.isoformat() + "Z",
-        "update_time": issue.update_time.isoformat() + "Z",
+        "create_time": issue.create_time.isoformat(),
+        "update_time": issue.update_time.isoformat(),
         "responsible": None,
         "followers": list(map(lambda x: unpack_user(x), issue.followers.all())),
         "status": unpack_status(issue.status_field, lang),
@@ -118,7 +118,7 @@ def has_access(user, issue):
 def unpack_event(request, event):
     ret = {
         "id": event.id,
-        "timestamp": event.timestamp.isoformat() + "Z",
+        "timestamp": event.timestamp.isoformat(),
         "author": unpack_user(event.author),
         "message": event.get_message(),
         # "files": list(event.file_set.all())

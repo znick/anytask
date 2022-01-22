@@ -1,0 +1,38 @@
+---
+name: psycopg2
+version: 2.7.5
+type: pip
+summary: psycopg2 - Python-PostgreSQL Database Adapter
+homepage: http://initd.org/psycopg/
+license: other
+licenses:
+- sources: LICENSE.txt
+  text: "psycopg2 and the LGPL\n---------------------\n\npsycopg2 is free software:
+    you can redistribute it and/or modify it\nunder the terms of the GNU Lesser General
+    Public License as published\nby the Free Software Foundation, either version 3
+    of the License, or\n(at your option) any later version.\n\npsycopg2 is distributed
+    in the hope that it will be useful, but WITHOUT\nANY WARRANTY; without even the
+    implied warranty of MERCHANTABILITY or\nFITNESS FOR A PARTICULAR PURPOSE.  See
+    the GNU Lesser General Public\nLicense for more details.\n\nIn addition, as a
+    special exception, the copyright holders give\npermission to link this program
+    with the OpenSSL library (or with\nmodified versions of OpenSSL that use the same
+    license as OpenSSL),\nand distribute linked combinations including the two.\n\nYou
+    must obey the GNU Lesser General Public License in all respects for\nall of the
+    code used other than OpenSSL. If you modify file(s) with this\nexception, you
+    may extend this exception to your version of the file(s),\nbut you are not obligated
+    to do so. If you do not wish to do so, delete\nthis exception statement from your
+    version. If you delete this exception\nstatement from all source files in the
+    program, then also delete it here.\n\nYou should have received a copy of the GNU
+    Lesser General Public License\nalong with psycopg2 (see the doc/ directory.)\nIf
+    not, see <http://www.gnu.org/licenses/>.\n\n\nAlternative licenses\n--------------------\n\nThe
+    following BSD-like license applies (at your option) to the files following\nthe
+    pattern ``psycopg/adapter*.{h,c}`` and ``psycopg/microprotocol*.{h,c}``:\n\n Permission
+    is granted to anyone to use this software for any purpose,\n including commercial
+    applications, and to alter it and redistribute it\n freely, subject to the following
+    restrictions:\n\n 1. The origin of this software must not be misrepresented; you
+    must not\n    claim that you wrote the original software. If you use this\n    software
+    in a product, an acknowledgment in the product documentation\n    would be appreciated
+    but is not required.\n \n 2. Altered source versions must be plainly marked as
+    such, and must not\n    be misrepresented as being the original software.\n \n
+    3. This notice may not be removed or altered from any source distribution.\n"
+notices: []

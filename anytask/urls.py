@@ -7,6 +7,8 @@ import django.views.static
 import index.views
 import admission.views
 
+from middleware.lang_middleware import set_lang_view, get_lang_view
+
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
 admin.autodiscover()
@@ -30,10 +32,10 @@ urlpatterns = [
     url(r'^static/(?P<path>.*)$', django.views.static.serve, {'document_root': settings.STATIC_ROOT}),
     url(r'^media/(?P<path>.*)$', django.views.static.serve, {'document_root': settings.MEDIA_ROOT}),
     url(r'^about$', TemplateView.as_view(template_name='about.html')),
-    url(r'^$', index.views.index),
+    url(r'^$', index.views.index, name="index.views.index"),
+    url(r'^archive/', index.views.archive_index, name="index.views.archive_index"),
     url(r'^search/', include('search.urls')),
     url(r'^staff', include('staff.urls')),
-    url(r'^blog/', include('blog.urls')),
     url(r'^mail/', include('mail.urls')),
     url(r'^admission/', include('admission.urls')),
     url(r'^shad2017/register', admission.views.register),
@@ -42,4 +44,6 @@ urlpatterns = [
     url(r'^lesson/', include('lessons.urls')),
     url(r'^api/', include('api.urls')),
     url(r'^jupyter/', include('jupyter.urls')),
+    url(r'^set_lang/', set_lang_view, name='set_lang'),
+    url(r'^get_lang/', get_lang_view, name='get_lang'),
 ]

@@ -15,7 +15,7 @@ class Lesson(models.Model):
     date_endtime = models.DateTimeField(auto_now=False, null=True, default=None)
     course = models.ForeignKey(Course, db_index=True, null=False, blank=False)
     group = models.ForeignKey(Group, null=False, blank=False)
-    not_visited_students = models.ManyToManyField(User, null=True, blank=True)
+    not_visited_students = models.ManyToManyField(User, blank=True)
     updated_by = models.ForeignKey(User, db_index=False, null=True, blank=True, related_name='authors')
     schedule_id = models.CharField(max_length=100, db_index=True, null=True, blank=True)
     position = models.IntegerField(db_index=True, null=True, blank=True)

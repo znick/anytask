@@ -15,7 +15,7 @@ from django.db import models
 from django.db.models import Q
 from django.template.loader import render_to_string
 
-from mail.common import send_mass_mail_html
+from mail.common import EmailSender
 from registration.models import RegistrationManager
 
 logger = logging.getLogger('django.request')
@@ -109,7 +109,11 @@ class AdmissionRegistrationProfileManager(RegistrationManager):
         plain_text = render_to_string('email_update.txt', context)
         html = render_to_string('email_update.html', context)
 
-        send_mass_mail_html([(subject, plain_text, html, settings.DEFAULT_FROM_EMAIL, [email])])
+        from_email = settings.DEFAULT_FROM_EMAIL
+        prepared_email = (subject, plain_text, html, from_email, [email])
+
+        email_sender = EmailSender(from_email)
+        email_sender.mass_send([prepared_email])
 
     def update_user(self, user, send_email=False):
         registration_profile = self.create_profile(user)
@@ -204,4 +208,8 @@ class AdmissionRegistrationProfile(models.Model):
         plain_text = render_to_string('email_activate.txt', context)
         html = render_to_string('email_activate.html', context)
 
-        send_mass_mail_html([(subject, plain_text, html, settings.DEFAULT_FROM_EMAIL, [self.user.email])])
+        from_email = settings.DEFAULT_FROM_EMAIL
+        prepared_email = (subject, plain_text, html, from_email, [self.user.email])
+
+        email_sender = EmailSender(from_email)
+        email_sender.mass_send([prepared_email])
