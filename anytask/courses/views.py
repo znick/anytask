@@ -12,7 +12,7 @@ from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.views.decorators.http import require_http_methods
 
-from collections import defaultdict, Counter
+from collections import defaultdict, Counter, OrderedDict
 import datetime
 import logging
 import requests
@@ -33,7 +33,6 @@ from users.models import UserProfile
 from courses import pythontask
 from lessons.models import Lesson
 
-from common.ordered_dict import OrderedDict
 from common.timezone import convert_datetime
 
 from courses.forms import default_teacher_forms_factory, DefaultTeacherForm
