@@ -20,17 +20,16 @@ jobs:
     - uses: actions/checkout@v2
       with:
         submodules: true
-    - name: Set up Python 2.7
+    - name: Set up Python 3.8
       uses: actions/setup-python@v2
       with:
-        python-version: 2.7
+        python-version: 3.8
     - name: Install dependencies
       run: |
         pip install pip>=9.0.1
         pip install --upgrade flake8 'setuptools-scm==5.0.2'
         pip install -r requirements_local.txt
         sudo apt-get install p7zip-full tar xz-utils bzip2 gzip
-        sudo apt-get install python3
     - name: Lint with flake8
       run: |
         cd anytask
