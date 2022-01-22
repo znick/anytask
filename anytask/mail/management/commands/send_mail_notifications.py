@@ -56,9 +56,9 @@ class Command(BaseCommand):
                 sleep_time += 1
 
         # logging to cron log
-        print("Command send_mail_notifications send {0} email(s), {1} tg message(s) " \
-              "and took {2} seconds (sleep {3} seconds)"
-              .format(num_sent_email, num_sent_tg, time.time() - start_time, sleep_time))
+        time_spent = time.time() - start_time
+        print(f"Command send_mail_notifications send {num_sent_email} email(s), {num_sent_tg} tg message(s) and took"
+              f"{time_spent} seconds (sleep {sleep_time} seconds)")
 
 
 def extract_only_notify():

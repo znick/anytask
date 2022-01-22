@@ -17,8 +17,6 @@ from years.common import get_or_create_current_year
 from years.models import Year
 
 from xml.etree.ElementTree import parse
-from optparse import make_option
-from xml.dom.minidom import parse
 import sys
 import random
 import string

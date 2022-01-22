@@ -82,5 +82,5 @@ class OAuthYandex(object):
         input pair login / password OR client_id / client_secret
         make string for basic https authorization join
         """
-        token = "{0}:{1}".format( path1, path2 ).encode('utf-8')
-        return "Basic {0}".format( base64.b64encode( token ).decode('ascii') )
+        token = "{0}:{1}".format(path1, path2).encode('utf-8')
+        return "Basic {0}".format(base64.b64encode(token).decode('ascii'))

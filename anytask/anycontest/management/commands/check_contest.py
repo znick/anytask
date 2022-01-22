@@ -38,7 +38,9 @@ class Command(BaseCommand):
         #     set_contest_marks(contest_id, students_info)
 
         # logging to cron log
-        print("Command check_contest check {0} submissions ({1} - with marks) took {2} seconds".format(len(contest_submissions), contest_marks_len, time.time() - start_time))
+        duration = time.time() - start_time
+        print(f"Command check_contest check {len(contest_submissions)} submissions ({contest_marks_len} - with marks) "
+              f"took {duration} seconds")
 
     @staticmethod
     def handle_submission(contest_marks_len, contest_submission):
