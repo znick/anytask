@@ -1,4 +1,4 @@
-FROM python:2.7-slim
+FROM python:3.8-slim
 
 ENV LANG C.UTF-8
 ENV LC_ALL C.UTF-8
@@ -46,7 +46,7 @@ RUN set -ex \
     " \
     && apt-get update && apt-get install -y --no-install-recommends $BUILD_DEPS \
     && pip install -U virtualenv \
-    && python2.7 -m virtualenv /venv \
+    && python3 -m virtualenv /venv \
     && /venv/bin/pip install -U pip \
     && /venv/bin/pip install --no-cache-dir -r /requirements.txt \
     && /venv/bin/pip install --no-cache-dir dj_database_url \
