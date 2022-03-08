@@ -59,7 +59,7 @@ if not os.environ.get("ANYTASK_BETA", False):
 CONTEST_EXTENSIONS = {'.py': 'python2_6', '.py2': 'python2_6', '.py3': 'python3', '.cpp': 'gcc0x', '.java': 'java8',
                       '.h': 'gcc0x', '.cs': 'mono_csharp', '.c': 'plain_c', '.go': 'gccgo'}
 
-RB_API_URL = "https://anytask.org/rb"
+RB_API_URL = os.environ.get('RB_API_URL', 'https://anytask.org/rb')
 RB_API_PASSWORD = os.environ.get('RB_API_PASSWORD')
 RB_SYMLINK_SERVICE_URL = os.environ.get('RB_SYMLINK_SERVICE_URL')
 
