@@ -10,7 +10,7 @@ import os
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['anytask.org', 'www.anytask.org', "docker.anytask.org"]
+ALLOWED_HOSTS = ['anytask.org', 'www.anytask.org', "docker.anytask.org", "beta.anytask.org"]
 
 DATABASES = {'default': dj_database_url.config(conn_max_age=600)}  # noqa: F405
 
