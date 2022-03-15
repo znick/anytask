@@ -44,7 +44,7 @@ markupsafe==1.0           # via jinja2
 mistune==0.8.3            # via nbconvert
 nbconvert==5.3.1          # via notebook
 nbformat==4.4.0           # via ipywidgets, nbconvert, notebook
-notebook==5.5.0           # via ipython, widgetsnbextension
+notebook==6.4.9           # via ipython, widgetsnbextension
 pandocfilters==1.4.2      # via nbconvert
 pathlib2==2.3.5           # via ipython, pickleshare
 pexpect==4.6.0            # via ipython
