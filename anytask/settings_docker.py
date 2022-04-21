@@ -70,7 +70,7 @@ CONTEST_OAUTH_PASSWORD = os.environ.get('CONTEST_OAUTH_PASSWORD')
 PASSPORT_OAUTH_ID = os.environ.get('PASSPORT_OAUTH_ID')
 PASSPORT_OAUTH_PASSWORD = os.environ.get('PASSPORT_OAUTH_PASSWORD')
 
-IPYTHON_URL = "http://anytask.org:8888/notebooks"
+IPYTHON_URL = os.environ.get("IPYTHON_URL", "http://anytask.org:8888/notebooks")
 
 EMAIL_BACKEND = 'common.email_bcc.BCCEmailBackend'
 EMAIL_HOST = os.environ.get('EMAIL_HOST')
