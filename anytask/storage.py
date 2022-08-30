@@ -58,6 +58,9 @@ class S3OverlayStorage(Storage):
 
     @classmethod
     def is_s3_stored(cls, name):
+        ret = name.lstrip('/').startswith(cls.S3_STORED_MAGIC + '/')
+        name_stripped = name.lstrip('/')
+        print(f"!!!!!!!!!! NAMAE:{name} {name_stripped} {ret}")
         return name.lstrip('/').startswith(cls.S3_STORED_MAGIC + '/')
 
     @classmethod

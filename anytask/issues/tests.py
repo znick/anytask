@@ -1003,6 +1003,8 @@ class ViewsTest(TestCase):
 
 @skipIf(not IS_S3_REACHABLE, "S3 seems misconfigured")
 class S3MigrateIssueAttachments(TestCase, SerializeMixin):
+    maxDiff = None
+
     def setUp(self):
         self.teacher_password = 'password1'
         self.teacher = User.objects.create_user(username='teacher',
@@ -1162,7 +1164,8 @@ class S3MigrateIssueAttachments(TestCase, SerializeMixin):
                              out.getvalue().strip())
 
         out = StringIO()
-        call_command('s3migrate_issue_attachments', '--execute', '--rewrite-only-existing', stdout=out)
+        err = StringIO()
+        call_command('s3migrate_issue_attachments', '--execute', '--rewrite-only-existing', stdout=out, stderr=err)
 
         for file in [file_first, file_second]:
             expected_s3_path = S3OverlayStorage.append_s3_prefix(file.file.name)
@@ -1173,9 +1176,12 @@ class S3MigrateIssueAttachments(TestCase, SerializeMixin):
                 expected_s3_path, file, expected_s3_path, file, expected_s3_path)
             expected_stdout = (expected_stdout * 2).strip()
             file = File.objects.get(pk=file.pk)
+            cmd_out = out.getvalue().strip()
+            print(f">>>>>>>>>>>>>>>>>>>filename:{file.file.name} {S3OverlayStorage.is_s3_stored(file.file.name)}")
+            print(f"==============\n{expected_stdout}\n!=\n{cmd_out}\n======\n{err.getvalue().strip()}\n!!!!!!\n")
+            self.assertEqual(expected_stdout, cmd_out)
             self.assertTrue(S3OverlayStorage.is_s3_stored(file.file.name))
             self.assertTrue(self.s3_storage.exists(file.file.name))
-            self.assertEqual(expected_stdout, out.getvalue().strip())
 
     def test_upload_archives(self):
         for ext in anyrb.unpacker.get_supported_extensions():
