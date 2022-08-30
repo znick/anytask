@@ -188,9 +188,13 @@ class UserLoginTest(TestCase):
         self.assert_(change_password_url_match)
         change_password_url = change_password_url_match.group(1)
 
+        # change_password_url redirects to real change password form
+        response = client.get(change_password_url, follow=True)
+        change_password_url_post = response.redirect_chain[-1][0]
+
         # finnaly set new password
-        form_data = {"new_password1": u"qwer", "new_password2": u"qwer"}
-        response = client.post(change_password_url, form_data, follow=True)
+        form_data = {"new_password1": new_password, "new_password2": new_password}
+        response = client.post(change_password_url_post, form_data, follow=True)
         self.assertEqual(response.status_code, 200)  # password changed!
 
         # check new password finally set

@@ -6,7 +6,7 @@ when you run "manage.py test".
 
 Replace this with more appropriate tests for your application.
 """
-from StringIO import StringIO
+from io import StringIO
 from unittest import skipIf
 
 from django.core.management import call_command

@@ -41,7 +41,7 @@ class IndexTest(TestCase):
             self.assertEqual(response.status_code, 200)
 
             response = self.client.get(reverse('get_lang'))
-            self.assertEqual(response.content, lang)
+            self.assertEqual(response.content.decode("utf-8"), lang)
 
     def test_switch_wrong(self):
         response = self.client.get(reverse('get_lang'))
