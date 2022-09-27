@@ -49,7 +49,7 @@ RUN set -ex \
     && python2.7 -m virtualenv /venv \
     && /venv/bin/pip install -U pip \
     && /venv/bin/pip install --no-cache-dir -r /requirements.txt \
-    && /venv/bin/pip install --no-cache-dir dj_database_url \
+    && /venv/bin/pip install --no-cache-dir dj_database_url==0.5.0 \
     && /venv/bin/pip install --no-cache-dir uwsgi \
 #    && /venv/bin/pip install --no-cache-dir -r /requirements_prod.txt \
     \
