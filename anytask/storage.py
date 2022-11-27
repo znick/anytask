@@ -19,7 +19,7 @@ class S3OverlayStorage(Storage):
     _S3_SKIP_LEN = len(S3_STORED_MAGIC + '/')
     _MEDIA_SKIP_LEN = len(settings.MEDIA_URL + '/')
 
-    IGNORED_EXTENSIONS = ['.ipynb']
+    IGNORED_EXTENSIONS = []
 
     def __init__(self, *args, **kwargs):
         self.local_storage = FileSystemStorage(*args, **kwargs)
