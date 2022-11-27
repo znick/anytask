@@ -1209,20 +1209,3 @@ class S3MigrateIssueAttachments(TestCase, SerializeMixin):
             issue.delete()
             event_create_file.delete()
             file.delete()
-
-    def test_dont_upload_ipynb(self):
-        issue = Issue.objects.create(task_id=self.task.id, student_id=self.student.id)
-        event_create_file = Event.objects.create(issue=issue, field=IssueField.objects.get(name='file'))
-        file = File.objects.create(
-            file=SimpleUploadedFile('test_s3_issues.ipynb', b'some text'),
-            event=event_create_file)
-
-        out = StringIO()
-        call_command('s3migrate_issue_attachments', '--execute', stdout=out)
-
-        file = File.objects.get(pk=file.pk)
-        expected_s3_path = S3OverlayStorage.append_s3_prefix(file.file.name)
-        self.assertFalse(S3OverlayStorage.is_s3_stored(file.file.name))
-        self.assertFalse(self.s3_storage.exists(expected_s3_path))
-        self.assertEqual('Note: skipping: ignored extension: {}'.format(file.file.name),
-                         out.getvalue().strip())
