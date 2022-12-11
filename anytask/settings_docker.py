@@ -10,7 +10,7 @@ import os
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['anytask.org', 'www.anytask.org', "docker.anytask.org"]
+ALLOWED_HOSTS = ['anytask.org', 'www.anytask.org', "docker.anytask.org", "beta.anytask.org"]
 
 DATABASES = {'default': dj_database_url.config(conn_max_age=600)}  # noqa: F405
 
@@ -59,7 +59,7 @@ if not os.environ.get("ANYTASK_BETA", False):
 CONTEST_EXTENSIONS = {'.py': 'python2_6', '.py2': 'python2_6', '.py3': 'python3', '.cpp': 'gcc0x', '.java': 'java8',
                       '.h': 'gcc0x', '.cs': 'mono_csharp', '.c': 'plain_c', '.go': 'gccgo'}
 
-RB_API_URL = "https://anytask.org/rb"
+RB_API_URL = os.environ.get('RB_API_URL', 'https://anytask.org/rb')
 RB_API_PASSWORD = os.environ.get('RB_API_PASSWORD')
 RB_SYMLINK_SERVICE_URL = os.environ.get('RB_SYMLINK_SERVICE_URL')
 
@@ -70,7 +70,7 @@ CONTEST_OAUTH_PASSWORD = os.environ.get('CONTEST_OAUTH_PASSWORD')
 PASSPORT_OAUTH_ID = os.environ.get('PASSPORT_OAUTH_ID')
 PASSPORT_OAUTH_PASSWORD = os.environ.get('PASSPORT_OAUTH_PASSWORD')
 
-IPYTHON_URL = "http://anytask.org:8888/notebooks"
+IPYTHON_URL = os.environ.get("IPYTHON_URL", "http://anytask.org:8888/notebooks")
 
 EMAIL_BACKEND = 'common.email_bcc.BCCEmailBackend'
 EMAIL_HOST = os.environ.get('EMAIL_HOST')
