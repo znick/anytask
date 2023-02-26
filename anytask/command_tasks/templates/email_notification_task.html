@@ -1,0 +1,56 @@
+{% extends "base_email.html" %}
+{% load i18n %}
+{% load dict_func %}
+{% load info %}
+
+{% block content %}
+    <table cellspacing="0" cellpadding="0" width="100%" style="color:#373a3c;border-collapse:separate">
+        <tbody>
+        <tr>
+            <td>
+                <p style="line-height:20px;margin:0 0 15px 0">
+                    {% trans "zdravstvujte" %},&nbsp;{{ user.get_full_name }}!
+                </p>
+            </td>
+        </tr>
+        {% for key_course, tasks_info in courses_info.iteritems %}
+            {% if key_course != 'user' %}
+                <tr>
+                    <td>
+                        {% with course=tasks_info|key:"course" %}
+                            <div style="color:#373a3c;line-height:20px;margin:0 0 15px 0;">
+                                {% trans "v_kurse" %}
+                                <a href="{{ domain }}{{ course.get_absolute_url }}"
+                                   style="font-weight:bold;"
+                                   target="_blank"
+                                >"{{ course.name }}"</a>
+                                {% trans "proizoshli_izmeneniya" %}:
+                                <ul style="margin:0;text-align: justify">
+                                    {% for key_task, task_info in tasks_info.iteritems %}
+                                        {% if key_task != 'course' %}
+                                            <li>
+                                                {% if task_info.1 %}
+                                                    {% trans 'dobavlena_zadacha' %}
+                                                    <a target="_blank" href="{{ domain }}{% url "issues.views.get_or_create" task_id=task_info.0.id student_id=user.id %}">
+                                                        "{% get_text_from_json task_info.0 'get_title' LANGUAGE_CODE %}"
+                                                    </a>
+                                                {% else %}
+                                                    {% filter lower %}{% trans 'v_zadache' %}{% endfilter %}
+                                                    <a target="_blank" href="{{ domain }}{% url "issues.views.get_or_create" task_id=task_info.0.id student_id=user.id %}">
+                                                        "{% get_text_from_json task_info.0 'get_title' LANGUAGE_CODE %}"
+                                                    </a>
+                                                    {% trans 'izmenilis' %}: {{ task_info|slice:"2:"|join:", " }}
+                                                {% endif %}
+                                            </li>
+                                        {% endif %}
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endwith %}
+                    </td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

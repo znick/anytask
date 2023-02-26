@@ -19,6 +19,7 @@ urlpatterns = [
     url(r'^issue/', include('issues.urls')),
     url(r'^school/', include('schools.urls')),
     url(r'^task/', include('tasks.urls')),
+    url(r'^new_task/', include('command_tasks.urls')),
     url(r'^user/', include('users.urls')),
     url(r'^users/(?P<username>.*)/', users.views.users_redirect),
     url(r'^setlanguage/', users.views.set_user_language),

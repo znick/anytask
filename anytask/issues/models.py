@@ -17,6 +17,7 @@ from django.utils.translation import ugettext_lazy as _
 from issues.model_issue_field import IssueField
 from issues.model_issue_status import IssueStatus
 from tasks.models import Task
+from command_tasks.models import CommandTask
 from text_unidecode import unidecode
 from users.common import get_user_fullname, get_user_link
 
@@ -48,7 +49,11 @@ class File(models.Model):
 
 class Issue(models.Model):
     student = models.ForeignKey(User, db_index=True, null=False, blank=False, related_name='student')
+    second_student = models.ForeignKey(User, db_index=True, null=True, blank=False, default=None, related_name='second_student')
+    third_student = models.ForeignKey(User, db_index=True, null=True, blank=False, default=None, related_name='third_student')
+
     task = models.ForeignKey(Task, db_index=True, null=True, blank=False)
+    command_task = models.ForeignKey(CommandTask, db_index=True, null=True, blank=False)
 
     mark = models.FloatField(db_index=False, null=False, blank=False, default=0)
 
@@ -141,10 +146,14 @@ class Issue(models.Model):
             )
             return ', '.join(followers)
         if name == 'course_name':
-            course = self.task.course
-            return u'<a href="{0}">{1}</a>'.format(course.get_absolute_url(), course.name)
+            if self.task:
+                course = self.task.course
+                return u'<a href="{0}">{1}</a>'.format(course.get_absolute_url(), course.name)
+            else:
+                course = self.command_task.course
+                return u'<a href="{0}">{1}</a>'.format(course.get_absolute_url(), course.name)
         if name == 'task_name':
-            task = self.task
+            task = self.task if self.task else self.command_task
             return task.get_title(lang)
         if name == 'comment':
             return None
@@ -152,16 +161,29 @@ class Issue(models.Model):
             return self.status_field.get_name(lang)
         if name == 'mark':
             return self.score()
-        if name == 'review_id' and self.task.rb_integrated:
-            return u'<a href="{1}/r/{0}">{0}</a>'.format(
-                self.get_byname('review_id'),
-                settings.RB_API_URL,
-            )
-        if name == 'run_id' and self.task.contest_integrated:
-            return u'<a href="https://contest.yandex.ru/contest/{1}/run-report/{0}">{0}</a>'.format(
-                self.get_byname('run_id'),
-                self.task.contest_id,
-            )
+
+        if self.task:
+            if name == 'review_id' and self.task.rb_integrated:
+                return u'<a href="{1}/r/{0}">{0}</a>'.format(
+                    self.get_byname('review_id'),
+                    settings.RB_API_URL,
+                )
+            if name == 'run_id' and self.task.contest_integrated:
+                return u'<a href="https://contest.yandex.ru/contest/{1}/run-report/{0}">{0}</a>'.format(
+                    self.get_byname('run_id'),
+                    self.task.contest_id,
+                )
+        else:
+            if name == 'review_id' and self.command_task.rb_integrated:
+                return u'<a href="{1}/r/{0}">{0}</a>'.format(
+                    self.get_byname('review_id'),
+                    settings.RB_API_URL,
+                )
+            if name == 'run_id' and self.command_task.contest_integrated:
+                return u'<a href="https://contest.yandex.ru/contest/{1}/run-report/{0}">{0}</a>'.format(
+                    self.get_byname('run_id'),
+                    self.task.contest_id,
+                )
 
         return self.get_field_value(field)
 
@@ -183,19 +205,29 @@ class Issue(models.Model):
                 ret.append(user.id)
             return ret
         if name == 'course_name':
-            return self.task.course
+            if self.task:
+                return self.task.course
+            else:
+                return self.command_task.course
         if name == 'task_name':
-            return self.task
+            return self.task if self.task else self.command_task
         if name == 'status':
             return self.status_field
         if name == 'max_mark':
-            return self.task.score_max
+            if self.task:
+                return self.task.score_max
+            else:
+                return self.command_task.score_max
         if name == 'mark':
             return self.mark
 
         events = Event.objects.filter(issue_id=self.id, field_id=field.id).order_by('-timestamp')[:1]
         if not events:
-            fields_count = self.task.course.issue_fields.filter(id=field.id).count()
+            if self.task:
+                fields_count = self.task.course.issue_fields.filter(id=field.id).count()
+            else:
+                fields_count = self.command_task.course.issue_fields.filter(id=field.id).count()
+
             if fields_count:
                 self.set_field(field, field.get_default_value())
                 if field.get_default_value() is not None:
@@ -233,7 +265,10 @@ class Issue(models.Model):
         if int(status_id) in IssueStatus.HIDDEN_STATUSES.values():
             return self.set_byname('status', IssueStatus.objects.get(id=status_id))
         else:
-            status = self.task.course.issue_status_system.statuses.filter(id=status_id)
+            if self.task:
+                status = self.task.course.issue_status_system.statuses.filter(id=status_id)
+            else:
+                status = self.command_task.course.issue_status_system.statuses.filter(id=status_id)
             if status:
                 return self.set_byname('status', status[0], author)
 
@@ -241,9 +276,14 @@ class Issue(models.Model):
         if tag in IssueStatus.HIDDEN_STATUSES:
             return self.set_byname('status', IssueStatus.objects.get(id=IssueStatus.HIDDEN_STATUSES[tag]))
         else:
-            status = self.task.course.issue_status_system.statuses.filter(tag=tag)
-            if status:
-                return self.set_byname('status', status[0], author)
+            if self.task:
+                status = self.task.course.issue_status_system.statuses.filter(tag=tag)
+                if status:
+                    return self.set_byname('status', status[0], author)
+            else:
+                status = self.command_task.course.issue_status_system.statuses.filter(tag=tag)
+                if status:
+                    return self.set_byname('status', status[0], author)
         return
 
     def set_status_accepted(self, author=None):
@@ -277,7 +317,10 @@ class Issue(models.Model):
     def set_field(self, field, value, author=None, from_contest=False):
         event = self.create_event(field, author)
         name = field.name
-        course = self.task.course
+        if self.task:
+            course = self.task.course
+        else:
+            course = self.command_task.course
 
         delete_event = False
 
@@ -307,17 +350,41 @@ class Issue(models.Model):
         return event
 
     def set_field_mark(self, from_contest, value):
+        if self.task:
+            delete_event = False
+            if not value:
+                value = 0
+            value = min(normalize_decimal(value), self.task.score_max)
+            if self.mark != float(value):
+                if self.task.parent_task and \
+                        (self.task.score_after_deadline
+                         or not (not self.task.score_after_deadline and self.is_status_accepted_after_deadline())):
+                    parent_task_issue, created = Issue.objects.get_or_create(
+                        student=self.student,
+                        task=self.task.parent_task
+                    )
+                    parent_task_issue.mark += float(value) - self.mark
+                    parent_task_issue.set_status_seminar()
+
+                self.mark = float(value)
+            else:
+                delete_event = True
+            value = str(value)
+            if not from_contest and not self.is_status_accepted() and not self.is_status_new():
+                self.set_status_rework()
+            return delete_event, value
+
         delete_event = False
         if not value:
             value = 0
-        value = min(normalize_decimal(value), self.task.score_max)
+        value = min(normalize_decimal(value), self.command_task.score_max)
         if self.mark != float(value):
-            if self.task.parent_task and \
-                    (self.task.score_after_deadline
-                     or not (not self.task.score_after_deadline and self.is_status_accepted_after_deadline())):
+            if self.command_task.parent_task and \
+                    (self.command_task.score_after_deadline
+                     or not (not self.command_task.score_after_deadline and self.is_status_accepted_after_deadline())):
                 parent_task_issue, created = Issue.objects.get_or_create(
                     student=self.student,
-                    task=self.task.parent_task
+                    task=self.command_task.parent_task
                 )
                 parent_task_issue.mark += float(value) - self.mark
                 parent_task_issue.set_status_seminar()
@@ -342,18 +409,32 @@ class Issue(models.Model):
         except:  # noqa
             pass
         if self.status_field != value:
-            if self.task.parent_task is not None:
-                parent_task_issue, created = Issue.objects.get_or_create(
-                    student=self.student,
-                    task=self.task.parent_task
-                )
-                if not self.task.score_after_deadline:
-                    if self.is_status_accepted_after_deadline():
-                        parent_task_issue.mark += self.mark
-                    elif value.tag == IssueStatus.STATUS_ACCEPTED_AFTER_DEADLINE:
-                        parent_task_issue.mark -= self.mark
-                parent_task_issue.set_status_seminar()
-            self.status_field = value
+            if self.task:
+                if self.task.parent_task is not None:
+                    parent_task_issue, created = Issue.objects.get_or_create(
+                        student=self.student,
+                        task=self.task.parent_task
+                    )
+                    if not self.task.score_after_deadline:
+                        if self.is_status_accepted_after_deadline():
+                            parent_task_issue.mark += self.mark
+                        elif value.tag == IssueStatus.STATUS_ACCEPTED_AFTER_DEADLINE:
+                            parent_task_issue.mark -= self.mark
+                    parent_task_issue.set_status_seminar()
+                self.status_field = value
+            else:
+                if self.command_task.parent_task is not None:
+                    parent_task_issue, created = Issue.objects.get_or_create(
+                        student=self.student,
+                        task=self.command_task.parent_task
+                    )
+                    if not self.command_task.score_after_deadline:
+                        if self.is_status_accepted_after_deadline():
+                            parent_task_issue.mark += self.mark
+                        elif value.tag == IssueStatus.STATUS_ACCEPTED_AFTER_DEADLINE:
+                            parent_task_issue.mark -= self.mark
+                    parent_task_issue.set_status_seminar()
+                self.status_field = value
         else:
             delete_event = True
         value = self.status_field.get_name()
@@ -366,12 +447,20 @@ class Issue(models.Model):
                 file.name = unidecode(file.name)
                 uploaded_file = File(file=file, event=event)
                 uploaded_file.save()
-                if self.task.contest_integrated:
-                    sent = self.set_field_comment_contest_integrated(
-                        author, file, file_id, sent, uploaded_file, value)
-                if self.task.rb_integrated \
-                        and (course.send_rb_and_contest_together or not self.task.contest_integrated):
-                    self.set_field_comment_rb_integrated(course, event, file, value)
+                if self.task:
+                    if self.task.contest_integrated:
+                        sent = self.set_field_comment_contest_integrated(
+                            author, file, file_id, sent, uploaded_file, value)
+                    if self.task.rb_integrated \
+                            and (course.send_rb_and_contest_together or not self.task.contest_integrated):
+                        self.set_field_comment_rb_integrated(course, event, file, value)
+                else:
+                    if self.command_task.contest_integrated:
+                        sent = self.set_field_comment_contest_integrated(
+                            author, file, file_id, sent, uploaded_file, value)
+                    if self.command_task.rb_integrated \
+                            and (course.send_rb_and_contest_together or not self.command_task.contest_integrated):
+                        self.set_field_comment_rb_integrated(course, event, file, value)
 
             if not value['files'] and not value['comment']:
                 event.delete()
@@ -396,8 +485,12 @@ class Issue(models.Model):
                     .order_by('-timestamp')
 
                 if status_events:
-                    status_prev = self.task.course.issue_status_system.statuses \
-                        .filter(name=status_events[0].value)
+                    if self.task:
+                        status_prev = self.task.course.issue_status_system.statuses \
+                            .filter(name=status_events[0].value)
+                    else:
+                        status_prev = self.command_task.course.issue_status_system.statuses \
+                            .filter(name=status_events[0].value)
                     if status_prev:
                         self.set_field(status_field, status_prev[0])
                     else:
@@ -468,13 +561,22 @@ class Issue(models.Model):
         return delete_event, value
 
     def set_teacher(self, groups=None, teacher=None, default=False, author=None):
-        if default:
-            for group in groups if groups else self.task.groups.filter(students=self.student):
-                default_teacher = self.task.course.get_default_teacher(group)
-                if default_teacher and (not self.get_byname('responsible_name')):
-                    self.set_byname('responsible_name', default_teacher, author)
+        if self.task:
+            if default:
+                for group in groups if groups else self.task.groups.filter(students=self.student):
+                    default_teacher = self.task.course.get_default_teacher(group)
+                    if default_teacher and (not self.get_byname('responsible_name')):
+                        self.set_byname('responsible_name', default_teacher, author)
+            else:
+                self.set_byname('responsible_name', teacher, author)
         else:
-            self.set_byname('responsible_name', teacher, author)
+            if default:
+                for group in groups if groups else self.command_task.groups.filter(students=self.student):
+                    default_teacher = self.command_task.course.get_default_teacher(group)
+                    if default_teacher and (not self.get_byname('responsible_name')):
+                        self.set_byname('responsible_name', default_teacher, author)
+            else:
+                self.set_byname('responsible_name', teacher, author)
 
     def get_history(self):
         """
@@ -485,7 +587,9 @@ class Issue(models.Model):
         return events
 
     def __unicode__(self):
-        return u'Issue: {0} {1}'.format(self.id, self.task.get_title())
+        if self.task:
+            return u'Issue: {0} {1}'.format(self.id, self.task.get_title())
+        return u'Issue: {0} {1}'.format(self.id, self.command_task.get_title())
 
     def get_absolute_url(self):
         return reverse('issues.views.issue_page', args=[str(self.id)])

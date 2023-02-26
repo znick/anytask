@@ -1,0 +1,11 @@
+{% load i18n %}{% load dict_func %}{% load info %}
+{% trans "zdravstvujte" %}, {{ user.get_full_name }}!
+{% for key_course, tasks_info in courses_info.iteritems %}{% if key_course != 'user' %}{% with course=tasks_info|key:"course" %}
+{% trans "v_kurse" %} "{{ course.name }}" {% trans "proizoshli_izmeneniya" %}:{% for key_task, task_info in tasks_info.iteritems %}{% if key_task != 'course' %}
+    - {% if task_info.1 %}{% trans 'dobavlena_zadacha' %} "{% get_text_from_json task_info.0 'get_title' LANGUAGE_CODE %}"{% else %}{% filter lower %}{% trans 'v_zadache' %}{% endfilter %} "{% get_text_from_json task_info.0 'get_title' LANGUAGE_CODE %}" {% trans 'izmenilis' %}: {{ task_info|slice:"2:"|join:", " }}{% endif %}{% endif %}{% endfor %}
+{% trans 'pereyti_v_kurs' %}: {{ domain }}{{ course.get_absolute_url }}{% endwith %}
+{% endif %}{% endfor %}
+
+--
+{% trans "s_uvazheniem" %},
+{% trans "komanda_anytask" %}.

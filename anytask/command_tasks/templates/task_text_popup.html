@@ -1,0 +1,12 @@
+{% load sanitize_html %}
+<html>
+<head>
+<title>{{ task.title }} | {{ task.course }}</title>
+</head>
+<html>
+
+<h1>{{ task.title }}</h1>
+<p>
+	{{ task.task_text|sanitize|safe }}
+</p>
+</html>

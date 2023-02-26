@@ -2539,3 +2539,15 @@ msgstr "проверяющим"
 
 msgid "nabludatelem"
 msgstr "наблюдателем"
+
+msgid "max_chislo_studentov"
+msgstr "Максимальное число студентов в команде"
+
+msgid "max_chislo_komand"
+msgstr "Максимальное число команд"
+
+msgid "sozdat_komandu"
+msgstr "Создать команду"
+
+msgid "vstupit_v_komandu"
+msgstr "Вступить в команду"

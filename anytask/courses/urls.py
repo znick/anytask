@@ -1,5 +1,6 @@
 from django.conf.urls import url
 from courses.pythontask import get_task, cancel_task
+from courses.new_pythontask import get_task as new_get_task, cancel_task as new_cancel_task, join_team, score_task, get_or_create_issue
 import courses.views
 
 urlpatterns = [
@@ -42,4 +43,14 @@ urlpatterns = [
     url(r'^lesson_delete$', courses.views.lesson_delete, name="courses.views.lesson_delete"),
     url(r'^(?P<course_id>\d+)/statistic$', courses.views.view_statistic, name="courses.views.view_statistic"),
     url(r'^ajax_get_queue$', courses.views.ajax_get_queue, name="courses.views.ajax_get_queue"),
+    url(r'^new_pythontask/get_task/(?P<course_id>\d+)/(?P<task_id>\d+)$', new_get_task,
+        name="courses.new_pythontask.get_task"),
+    url(r'^new_pythontask/cancel_task/(?P<course_id>\d+)/(?P<task_id>\d+)$', new_cancel_task,
+        name="courses.new_pythontask.cancel_task"),
+    url(r'^new_pythontask/join_team/(?P<course_id>\d+)/(?P<task_id>\d+)/(?P<task_taken_id>\d+)$', join_team,
+        name="courses.new_pythontask.join_team"),
+    url(r'^new_pythontask/get_or_create_issue/(?P<task_id>\d+)/(?P<task_taken_id>\d+)$', get_or_create_issue,
+        name="courses.new_pythontask.get_or_create_issue"),
+    url(r'^new_pythontask/score_task/', score_task,
+        name="courses.new_pythontask.score_task"),
 ]

@@ -1,0 +1,501 @@
+{% load i18n %}
+<script src="{{ STATIC_URL }}jquery.validate.min.js"></script>
+<script src="https://malsup.github.io/jquery.form.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('[data-toggle="popover"]').popover({
+            trigger: 'hover',
+            template: '<div class="popover" role="tooltip">' +
+            '<div class="popover-arrow"></div>' +
+            '<div class="popover-content"></div>' +
+            '</div>'
+        });
+
+        var maps_suggest_api = '{{ geo_suggest_url|safe }}';
+        var location_bloodhound = new Bloodhound({
+            datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+            queryTokenizer: Bloodhound.tokenizers.whitespace,
+            remote: {
+                prepare: function(query, settings) {
+                    settings.dataType = "jsonp";
+                    settings.url = settings.url.replace('%QUERY', query);
+                    return settings;
+                },
+                url: maps_suggest_api + '&part=%QUERY',
+                transform: function(response) {
+                    var locations = [];
+                    for (var i=0; i < response[1].length; i++) {
+                        if ('geoid' in response[1][i])
+                            locations.push(response[1][i]);
+                    }
+                    return locations;
+                }
+            }
+        });
+
+        $('#location_search').typeahead({
+                highlight: true,
+                hint: false,
+                minLength: 3
+            },
+            {
+                name: 'locations',
+                displayKey: 'name',
+                source: location_bloodhound
+            }
+        ).on('typeahead:select', function(ev, suggestion) {
+            $('#geoid').val(suggestion.geoid);
+        });
+
+        {#        $('select:not([multiple])').multiselect({#}
+        {#            buttonClass: 'btn btn-secondary btn-block',#}
+        {#            templates: {#}
+        {#                ul: '<ul class="multiselect-container dropdown-menu" style="left:inherit;top: inherit;"></ul>',#}
+        {#                li: '<li><a tabindex="0" class="dropdown-item"><label></label></a></li>'#}
+        {#            },#}
+        {#            maxHeight: 200,#}
+        {#            buttonContainer: '<div style="width:100%;" class="multiselect-dropdown" />',#}
+        {#            buttonWidth: '100%',#}
+        {#        });#}
+
+        $("#task_edit_children").multiselect({
+            buttonClass: 'btn btn-secondary btn-block',
+            templates: {
+                ul: '<ul class="multiselect-container dropdown-menu" style="left:inherit;top: inherit;"></ul>',
+                li: '<li><a tabindex="0" class="dropdown-item"><label></label></a></li>',
+                filter: '<li class="multiselect-item filter"><div class="input-group"><span class="input-group-addon"><i class="fa fa-search"></i></span><input class="form-control multiselect-search" type="text"></div></li>',
+                filterClearBtn: '<span class="input-group-btn"><button class="btn btn-secondary btn-block multiselect-clear-filter" type="button"><i class="fa fa-times"></i></button></span>'
+            },
+            includeSelectAllOption: true,
+            filterPlaceholder: "{% trans "najti" %}",
+            selectAllJustVisible: false,
+            enableCaseInsensitiveFiltering: true,
+            selectAllText: '{% trans "vse_zadachi" %}',
+            allSelectedText: '{% trans "vse_zadachi" %}',
+            maxHeight: 200,
+            buttonContainer: '<div style="width:100%;" class="multiselect-dropdown"/>',
+            buttonWidth: '100%',
+            checkboxName: function(option) {
+                return 'children[]';
+            },
+            buttonText: function (options, select) {
+                if (options.length === 0) {
+                    return '{% trans "ne_vybrano_zadach" %}';
+                }
+                else if (options.length === $('option', select).length) {
+                    return '{% trans "vse_zadachi" %}';
+                }
+                else if (options.length > 1) {
+                    return '{% trans "vybrano_neskolko_zadach" %} - ' + options.length;
+                }
+                else {
+                    var labels = [];
+                    options.each(function () {
+                        var $this =$(this);
+                        if ($this.attr('label') !== undefined) {
+                            labels.push($this.attr('label'));
+                        }
+                        else {
+                            labels.push($this.text());
+                        }
+                    });
+                    return labels.join(', ') + '';
+                }
+            }
+        });
+
+        $('.task_datetime').datetimepicker({
+            bootcssVer: 3,
+            format: 'dd-mm-yyyy hh:ii',
+            language: '{{ user.profile.language }}',
+            todayBtn: true,
+            autoclose: true,
+            todayHighlight: true,
+            pickerPosition: "bottom-left",
+            startDate: null,
+            minuteStep: 30
+        });
+
+        {% if is_create %}
+            $("#task_edit_hidden_task").change(function () {
+                var $task_edit_label_for_changed_task = $('#task_edit_label_for_changed_task');
+
+                $task_edit_label_for_changed_task.toggle();
+                toggle_inputs($task_edit_label_for_changed_task);
+            });
+        {% endif %}
+
+        $('#task_edit_type').change(function () {
+            var $task_edit_type = $('#task_edit_type');
+
+            $("#nb_assignment_name_body").hide();
+
+            if ($task_edit_type.val() === 'All') {
+                $('#contest_rb_body').collapse('show');
+                $("#task_edit_contest_integrated").show();
+                $("#task_edit_contest_id").show();
+                $("#task_edit_problem_id").show();
+                $("#task_edit_rb_integrated").show();
+                $("#max_score_body").collapse('show');
+                $("#deadline_body").collapse('show');
+                $("#task_time_zone").collapse('show');
+                $("#accepted_after_deadline_body").collapse('show');
+                $("#parent_body").show();
+                $("#children_body").hide();
+            }
+            else if ($task_edit_type.val() === 'Only mark') {
+                $('#contest_rb_body').collapse('hide');
+                $("#task_edit_contest_integrated").hide();
+                $("#task_edit_contest_id").hide();
+                $("#task_edit_problem_id").hide();
+                $("#task_edit_rb_integrated").hide();
+                $("#max_score_body").collapse('show');
+                $("#deadline_body").collapse('show');
+                $("#task_time_zone").collapse('show');
+                $("#accepted_after_deadline_body").collapse('hide');
+                $("#parent_body").show();
+                $("#children_body").hide();
+            }
+            else if ($('#task_edit_type').val() === 'Material') {
+                $('#contest_rb_body').collapse('hide');
+                $("#task_edit_contest_integrated").hide();
+                $("#task_edit_contest_id").hide();
+                $("#task_edit_problem_id").hide();
+                $("#task_edit_rb_integrated").hide();
+                $("#max_score_body").collapse('hide');
+                $("#deadline_body").collapse('hide');
+                $("#task_time_zone").collapse('hide');
+                $("#accepted_after_deadline_body").collapse('hide');
+                $("#parent_body").show();
+                $("#children_body").hide();
+            }
+            else if ($task_edit_type.val() === 'Seminar') {
+                $('#contest_rb_body').collapse('hide');
+                $("#task_edit_contest_integrated").hide();
+                $("#task_edit_contest_id").hide();
+                $("#task_edit_problem_id").hide();
+                $("#task_edit_rb_integrated").hide();
+                $("#max_score_body").collapse('hide');
+                $("#deadline_body").collapse('hide');
+                $("#task_time_zone").collapse('hide');
+                $("#accepted_after_deadline_body").collapse('hide');
+                $("#parent_body").hide();
+                $("#children_body").show();
+            }
+            else if ($task_edit_type.val() === 'Jupyter Notebook') {
+                $("#nb_assignment_name_body").show();
+            }
+        });
+
+        $('#task_edit_rb_integrated').change(function () {
+            if ($(this).is(':checked')) {
+                $("#task_edit_one_file_upload").show().closest('div.form-group').collapse('show');
+            }
+            else {
+                $("#task_edit_one_file_upload").hide().closest('div.form-group').collapse('hide');
+            }
+        });
+
+        $("#task_edit_one_file_upload").closest('div.form-group').on('show.bs.collapse hide.bs.collapse', function (e) {
+            $('#task_edit_rb_integrated').attr('disabled', 'disabled').css('cursor', 'default');
+        }).on('shown.bs.collapse hidden.bs.collapse', function (e) {
+            $('#task_edit_rb_integrated').removeAttr('disabled');
+        });
+
+        $('#task_edit_contest_integrated').change(function () {
+            if ($('#task_edit_contest_integrated').is(':checked')) {
+                $('#contest_integrated_body').collapse('show');
+                $("#task_edit_contest_id").show();
+                $("#task_edit_problem_id").show();
+            }
+            else {
+                $('#contest_integrated_body').collapse('hide');
+                $("#task_edit_contest_id").hide();
+                $("#task_edit_problem_id").hide();
+            }
+        });
+
+        $('#task_edit_form').change(function () {
+            $('#task_submit_error_text').empty();
+            $('#task_edit_form').data('changed', true);
+        });
+
+        $.validator.addMethod("required_with_disabled", function(value, element) {
+            return !!value;
+        });
+
+        $.validator.addMethod("nbassignment", function(value, element) {
+            return this.optional(element) || /^[a-z0-9][a-z0-9\_-]*$/.test(value);
+        });
+
+        var form_validator = $('#task_edit_form').validate({
+            submitHandler: function (form) {
+                var $task_edit_form = $(form);
+                if ($task_edit_form.data('changed')) {
+                    $('#task_edit_form').ajaxSubmit({
+                        success: function (data) {
+                            $task_edit_form.data('changed', false);
+                            $('#task_submit_error_text').html('<div class="alert alert-success alert-dismissible" role ="alert" id="edit_task_err">' +
+                                    '                            <button type="button" class="close" data-dismiss="alert" aria-label="{% trans "zakryt" %}">' +
+                                    '                               <span aria-hidden="true">&times;</span>' +
+                                    '                            </button>' +
+                                    '                            <span>{% trans "zadacha_sohranena_uspeshno" %}</span>' +
+                                    '                          </div>');
+                            if ($task_edit_form.data('quit'))
+                                redirect();
+                            else if (data.redirect_page)
+                                window.location.replace(data.redirect_page);
+                            else
+                                $("#task_edit_changed_task").prop('checked', !!$("#task_edit_changed_task").data("default"));
+
+                            $(document).prop('title', data.page_title);
+                            if ($('#task_edit_contest_integrated').is(':checked'))
+                                $('#update_contest_block').show();
+                        },
+                        error: function (data) {
+                            $('#task_submit_error_text').html('<div  class="alert alert-danger alert-dismissible" role ="alert" id="edit_task_err">' +
+                                    '                            <button type="button" class="close" data-dismiss="alert" aria-label="{% trans "zakryt" %}">' +
+                                    '                               <span aria-hidden="true">&times;</span>' +
+                                    '                            </button>' +
+                                    '                            <span>{% trans "oshibka_pri_sohranenii" %}</span>' +
+                                    '                          </div>');
+                            remove_disabled();
+                        }
+                    });
+                }
+                else {
+                    $('#task_submit_error_text').html('<div class="alert alert-success alert-dismissible" role ="alert" id="edit_task_err">' +
+                            '                            <button type="button" class="close" data-dismiss="alert" aria-label="{% trans "zakryt" %}">' +
+                            '                               <span aria-hidden="true">&times;</span>' +
+                            '                            </button>' +
+                            '                            <span>{% trans "zadacha_sohranena_uspeshno" %}</span>' +
+                            '                          </div>');
+                    if ($('#task_edit_form').data('quit'))
+                        redirect();
+                    else
+                        $("#task_edit_changed_task").prop('checked', !!$("#task_edit_changed_task").data("default"));
+                }
+            },
+            ignore: ':hidden:not("#task_edit_group")',
+            rules: {
+                max_score: {
+                    required: true,
+                    number: true,
+                    min: 0,
+                    digits: true
+                },
+                task_title: {
+                    required: true,
+                    maxlength: 254
+                },
+                task_short_title: {
+                    maxlength: 15
+                },
+                contest_id: {
+                    required: true,
+                    number: true
+                },
+                problem_id: {
+                    required: true
+                },
+                'task_group_id[]': {
+                    required_with_disabled: true
+                },
+                'nb_assignment_name': {
+                    required: true,
+                    nbassignment: true,
+                    remote: '/task/validate/nb_assignment_name'
+                }
+            },
+
+            highlight: function (input) {
+                $(input).removeClass('form-control-success').addClass('form-control-danger');
+                $(input).closest('.form-group').removeClass('has-success').addClass('has-danger');
+            },
+
+            success: function (label) {
+                label.addClass('valid');
+                label.closest('.text-help').siblings('.form-control').removeClass('form-control-danger').addClass('form-control-success');
+                label.closest('.form-group').removeClass('has-danger').addClass('has-success');
+            },
+
+            messages: {
+                max_score: {
+                    required: "{% trans 'ukazat_maxball' %}",
+                    number: "{% trans 'maxball_naturalnoe_chislo' %}",
+                    min: "{% trans 'maxball_bolshe_0' %}",
+                    digits: "{% trans 'maxball_naturalnoe_chislo' %}"
+                },
+                task_title: {
+                    required: "{% trans 'nazvanie_neobhodimo' %}",
+                    maxlength: "{% trans 'ne_tak_mnogo' %}"
+                },
+                task_short_title: {
+                    maxlength: "{% trans 'ne_tak_mnogo' %}"
+                },
+                contest_id: {
+                    required: "{% trans 'ukazat_nomer_kontesta' %}",
+                    number: "{% trans 'nomer_kontesta_naturalnoe_chislo' %}"
+                },
+                problem_id: {
+                    required: "{% trans 'ukazat_literu_zadachi' %}"
+                },
+                'task_group_id[]': {
+                    required_with_disabled: "{% trans 'neobhodimo_vybrat_gruppu' %}"
+                },
+                nb_assignment_name: {
+                    required: "{% trans 'assignment name is required' %}",
+                    nbassignment: "{% trans 'assignment name cannot contains spaces' %}",
+                    remote: "{% trans 'assignment name already in use' %}"
+                }
+            },
+
+            errorPlacement: function (error, element) {
+                $(element).closest("div.controls").find('small.text-help').empty().append(error);
+            }
+        });
+
+        $('#task_edit_group').multiselect({
+            buttonClass: 'btn btn-secondary btn-block',
+            templates: {
+                ul: '<ul class="multiselect-container dropdown-menu" style="left:inherit;top: inherit;"></ul>',
+                li: '<li><a tabindex="0" class="dropdown-item"><label></label></a></li>'
+            },
+            includeSelectAllOption: true,
+            selectAllText: '{% trans "dlja_vseh_grupp" %}',
+            allSelectedText: '{% trans "dlja_vseh_grupp" %}',
+            selectAllName: 'task_group_id_all',
+            selectAllValue: 'on',
+            maxHeight: 200,
+            buttonContainer: '<div style="width:100%;" class="multiselect-dropdown"/>',
+            buttonWidth: '100%',
+            buttonTitle: function(options, select) {
+                var labels = [];
+
+                if (options.length === 0) {
+                    return '{% trans "ne_vybrano_ni_odnoj_gruppy" %}';
+                }
+                else if (options.length === $('option', select).length) {
+                    return '{% trans "dlja_vseh_grupp" %}';
+                }
+                else {
+                    options.each(function () {
+                        labels.push($(this).text());
+                    });
+                }
+                return labels.join(', ');
+            },
+            buttonText: function(options, select) {
+                if (options.length === 0) {
+                    return '{% trans "ne_vybrano_ni_odnoj_gruppy" %}';
+                }
+                else if (options.length === $('option', select).length) {
+                    return '{% trans "dlja_vseh_grupp" %}';
+                }
+                else if (options.length > 1) {
+                    return '{% trans "vybrano_neskolko_grupp" %} - ' + options.length;
+                }
+                else {
+                    var labels = [];
+                    options.each(function() {
+                        var $this = $(this);
+                        if ($this.attr('label') !== undefined) {
+                            labels.push($this.attr('label'));
+                        }
+                        else {
+                            labels.push($this.text());
+                        }
+                    });
+                    return labels.join(', ') + '';
+                }
+            },
+            onInitialized: function(option, checked, select) {
+                $('#task_edit').closest('.row').collapse('show');
+                var input = $('#task_edit_group');
+                $('label.error', input).removeClass('valid');
+                input.removeClass('form-control-success');
+                input.closest('.form-group').removeClass('has-success');
+            },
+            onChange: function(option, checked, select) {
+                form_validator.element('#task_edit_group');
+            },
+            onSelectAll: function() {
+                form_validator.element('#task_edit_group');
+            },
+            onDeselectAll: function() {
+                form_validator.element('#task_edit_group');
+            }
+
+        });
+
+        $('#button_preview').click(function () {
+            description_preview();
+        });
+
+        $('#button_cancel_quit').click(function () {
+            redirect();
+        });
+
+        $('#button_save').click(function () {
+            set_disabled();
+            $('#task_edit_form').data('quit', false).submit();
+            remove_disabled();
+        });
+
+        $('#button_save_quit').click(function () {
+            set_disabled();
+            $('#task_edit_form').data('quit', true).submit();
+            remove_disabled();
+        });
+    });
+
+    function toggle_inputs($div) {
+        $("input, select, textarea", $div).each(function () {
+            var $this = $(this);
+            if ($this.is(':disabled'))
+                $this.prop('disabled', false);
+            else
+                $this.prop('disabled', true);
+        });
+    }
+
+    function description_preview() {
+        var description_html = $('#task_edit_body').val();
+        var deadline = $('#task_edit_datepicker').val();
+        var task_name = $('#task_edit_header').val();
+        $('#modal_task_header').show().text(task_name);
+        if (deadline) {
+            $('#modal_task_deadline').html('<strong>{% trans "data_sdachi" %}: ' + deadline + ' MSK UTC+3</strong>');
+        }
+        else {
+            $('#modal_task_deadline').empty();
+        }
+        $('#modal_task_body').html(description_html);
+
+        var codesample = $('pre[class*="language-"]', '#modal_task_body')[0];
+        if (codesample)
+            Prism.highlightElement(codesample);
+
+        $('#modal_task_preview').modal('show');
+    }
+
+    function set_disabled() {
+        $('#button_cancel_quit').attr('disabled', 'disabled');
+        $('#button_save').attr('disabled', 'disabled');
+        $('#button_save_quit').attr('disabled', 'disabled');
+    }
+
+    function remove_disabled() {
+        $('#button_cancel_quit').removeAttr('disabled');
+        $('#button_save').removeAttr('disabled');
+        $('#button_save_quit').removeAttr('disabled');
+    }
+
+    function redirect() {
+        var page = decodeURIComponent(window.location.search.substring(1));
+        if (page && page.indexOf("ref") === 0)
+             window.location.href = page.substr(4) + '#tasks-tab';
+        else
+            window.location.href = document.referrer + '#tasks-tab';
+    }
+</script>
