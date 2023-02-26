@@ -20,7 +20,10 @@ class FieldDefaultPlugin(DefaultPlugin):
 
     @staticmethod
     def can_edit(field_name, user, issue):
-        return issue.task.course.user_is_teacher(user)
+        if issue.task:
+            return issue.task.course.user_is_teacher(user)
+        else:
+            return issue.command_task.course.user_is_teacher(user)
 
     @classmethod
     def get_form(cls, *args, **kwargs):

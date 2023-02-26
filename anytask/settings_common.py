@@ -196,6 +196,7 @@ INSTALLED_APPS = (
     'lessons',
     'api',
     'django_premailer',
+    'command_tasks',
 )
 
 AUTH_PROFILE_MODULE = "users.UserProfile"

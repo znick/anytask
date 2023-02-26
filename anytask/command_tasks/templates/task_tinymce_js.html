@@ -1,0 +1,100 @@
+<script src="{{ STATIC_URL }}tinymce/tinymce.min.js"></script>
+<script src="{{ STATIC_URL }}tinymce/jquery.tinymce.min.js"></script>
+<script src="{{ STATIC_URL }}prism.js"></script>
+
+<link href="{{ STATIC_URL }}prism.css" rel='stylesheet' />
+<link href="{{ STATIC_URL }}tinymce-style-task.css" rel='stylesheet' />
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#task_edit_body").tinymce({
+            language: '{{ user.profile.language }}',
+            skin: 'bootstrap4',
+            resize: false,
+            content_css: [
+                'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css',
+                '{{ STATIC_URL }}tinymce-style-task.css',
+                '{{ STATIC_URL }}prism.css'
+            ],
+            setup: function(editor) {
+                editor.addMenuItem('codesample', {
+                    icon: 'codesample',
+                    text: 'Insert/Edit code sample',
+                    cmd: 'codesample'
+                });
+                {% if task %}
+                    editor.on('init', function() {
+                        var $task_edit_body = $("#task_edit_body");
+                        $task_edit_body.data("value",  $task_edit_body.val());
+                    });
+                {% endif %}
+                editor.on('change', function(e) {
+                    $('#task_edit_form').data('changed', true);
+                    {% if task %}
+                        check_changed($("#task_edit_body"));
+                    {% endif %}
+                });
+                if ($('#' + editor.id).is(':disabled')) {
+                    editor.settings.readonly = true;
+                }
+            },
+            plugins: [
+                'autoresize advlist autolink lists link image charmap hr',
+                'searchreplace wordcount visualblocks visualchars code',
+                'media nonbreaking table contextmenu directionality',
+                'textcolor colorpicker textpattern imagetools codesample'
+            ],
+            toolbar: 'undo redo | bold italic underline | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | image link hr codesample',
+            autoresize_bottom_margin: 10,
+            autoresize_overflow_padding: 10,
+            autoresize_min_height: 300,
+            image_description: false,
+            link_assume_external_targets: true,
+            default_link_target: "_blank",
+            table_default_attributes: {
+                "class": 'table table-bordered table-comment'
+            },
+            textpattern_patterns: [
+                {start: '1. ', cmd: 'InsertOrderedList'}
+            ],
+            contextmenu: "link image codesample",
+        });
+
+        {% if task %}
+            $("#task_edit_header, #task_edit_max_score, #task_edit_datepicker").change(function () {
+                check_changed($(this));
+            });
+            $("#task_edit_hidden_task").change(function () {
+                var $this = $(this);
+                if ($this.data("value") && !$this.is(':checked'))
+                    $this.data("changed", true);
+                else
+                    $this.data("changed", false);
+                show_notify();
+            });
+        {% endif %}
+    });
+
+    {% if task %}
+        function check_changed($elem) {
+            if ($elem.val() != $elem.data("value"))
+                $elem.data("changed", true);
+            else
+                $elem.data("changed", false);
+            show_notify();
+        }
+
+        function show_notify() {
+            var $task_edit_hidden_task = $("#task_edit_hidden_task");
+
+            if (($("#task_edit_header").data("changed") ||
+                $("#task_edit_max_score").data("changed") ||
+                $("#task_edit_datepicker").data("changed") ||
+                $("#task_edit_body").data("changed") ||
+                $task_edit_hidden_task.data("changed")) && !$task_edit_hidden_task.is(':checked'))
+
+                $("#task_edit_label_for_changed_task").show().find("input").prop('disabled', false);
+            else
+                $("#task_edit_label_for_changed_task").hide().find("input").prop('disabled', true);
+        }
+    {% endif %}
+</script>

@@ -35,8 +35,14 @@ def get_users_choise(issue, field=None):
     elif field == 'followers':
         qs_filter = Q(id__in=issue.followers.all().values_list("id", flat=True))
 
-    for user in User.objects.filter(Q(is_staff=True) | Q(course_teachers_set=issue.task.course) | qs_filter).distinct():
-        users.append((user.id, user.get_full_name()))
+    if issue.task:
+        for user in User.objects.filter(
+                Q(is_staff=True) | Q(course_teachers_set=issue.task.course) | qs_filter).distinct():
+            users.append((user.id, user.get_full_name()))
+    else:
+        for user in User.objects.filter(
+                Q(is_staff=True) | Q(course_teachers_set=issue.command_task.course) | qs_filter).distinct():
+            users.append((user.id, user.get_full_name()))
 
     return users
 
@@ -60,8 +66,13 @@ def get_followers_form(field_name, request, issue, data=None, *args, **kwargs):
 
 def get_status_choice(issue, lang):
     statuses = []
-    for status in issue.task.course.issue_status_system.statuses.all().exclude(tag=IssueStatus.STATUS_SEMINAR):
-        statuses.append((status.id, status.get_name(lang)))
+    if issue.task:
+        for status in issue.task.course.issue_status_system.statuses.all().exclude(tag=IssueStatus.STATUS_SEMINAR):
+            statuses.append((status.id, status.get_name(lang)))
+    else:
+        for status in issue.command_task.course.issue_status_system.statuses.all().exclude(
+                tag=IssueStatus.STATUS_SEMINAR):
+            statuses.append((status.id, status.get_name(lang)))
     return statuses
 
 

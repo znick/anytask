@@ -26,36 +26,58 @@ from issues.models import Issue, Event, File
 def user_is_teacher_or_staff(user, issue):
     if user.is_staff:
         return True
-    if issue.task.course.user_is_teacher(user):
-        return True
+    if issue.task:
+        if issue.task.course.user_is_teacher(user):
+            return True
+    else:
+        if issue.command_task.course.user_is_teacher(user):
+            return True
     return False
 
 
 def user_can_read(user, issue):
-    if not issue.task.has_issue_access():
-        return False
-    if user.is_staff:
-        return True
-    if user == issue.student:
-        return True
-    if issue.task.course.user_is_teacher(user):
-        return True
+    if issue.task:
+        if not issue.task.has_issue_access():
+            return False
+        if user.is_staff:
+            return True
+        if user == issue.student:
+            return True
+        if issue.task.course.user_is_teacher(user):
+            return True
+    else:
+        print issue.student
+        print issue.second_student
+        print issue.third_student
+
+        if not issue.command_task.has_issue_access():
+            return False
+        if user.is_staff:
+            return True
+        if user == issue.student:
+            return True
+        if user == issue.second_student:
+            return True
+        if user == issue.third_student:
+            return True
+        if issue.command_task.course.user_is_teacher(user):
+            return True
 
     return False
 
 
 def prepare_info_fields(info_fields, request, issue):
-    title_map = {'comment': _('kommentarij'),
-                 'course_name': _('kurs'),
-                 'task_name': _('zadacha'),
-                 'student_name': _('student'),
-                 'responsible_name': _('proverjaushij'),
-                 'followers_names': _('nabludateli'),
-                 'status': _('status'),
-                 'mark': _('ocenka'),
-                 'file': _('fajl'),
-                 'review_id': _('nomer_revju'),
-                 'run_id': _('nomer_posylki_kontest')
+    title_map = {'comment': _(u'Комментарии'),
+                 'course_name': _(u'Курс'),
+                 'task_name': _(u'Задача'),
+                 'student_name': _(u'Студент'),
+                 'responsible_name': _(u'Проверяющий'),
+                 'followers_names': _(u'Наблюдатели'),
+                 'status': _(u'Статус'),
+                 'mark': _(u'Оценка'),
+                 'file': _(u'Файл'),
+                 'review_id': _(u'Номер ревью'),
+                 'run_id': _(u'Номер посылки контест')
                  }
 
     user = request.user
@@ -105,49 +127,91 @@ def contest_rejudge(issue):
             contest_submission.send_error, _(u'oshibka_otpravki_v_kontest'))
         issue.followers.add(User.objects.get(username='anytask.monitoring'))
 
-    if issue.task.rb_integrated and issue.task.course.send_rb_and_contest_together:
-        for ext in settings.RB_EXTENSIONS + [str(ext.name) for ext in issue.task.course.filename_extensions.all()]:
-            filename, extension = os.path.splitext(file_copy.file.name)
-            if ext == extension or ext == '.*':
-                anyrb = AnyRB(event)
-                review_request_id = anyrb.upload_review()
-                if review_request_id is not None:
-                    event.value += u'<p><a href="{1}/r/{0}">Review request {0}</a></p>'. \
-                        format(review_request_id, settings.RB_API_URL)
-                else:
-                    event.value += u'<p>{0}.</p>'.format(_(u'oshibka_otpravki_v_rb'))
-                    issue.followers.add(User.objects.get(username='anytask.monitoring'))
-                break
+    if issue.task:
+        if issue.task.rb_integrated and issue.task.course.send_rb_and_contest_together:
+            for ext in settings.RB_EXTENSIONS + [str(ext.name) for ext in issue.task.course.filename_extensions.all()]:
+                filename, extension = os.path.splitext(file_copy.file.name)
+                if ext == extension or ext == '.*':
+                    anyrb = AnyRB(event)
+                    review_request_id = anyrb.upload_review()
+                    if review_request_id is not None:
+                        event.value += u'<p><a href="{1}/r/{0}">Review request {0}</a></p>'. \
+                            format(review_request_id, settings.RB_API_URL)
+                    else:
+                        event.value += u'<p>{0}.</p>'.format(_(u'oshibka_otpravki_v_rb'))
+                        issue.followers.add(User.objects.get(username='anytask.monitoring'))
+                    break
+    else:
+        if issue.command_task.rb_integrated and issue.command_task.course.send_rb_and_contest_together:
+            for ext in settings.RB_EXTENSIONS + [str(ext.name) for ext in issue.task.course.filename_extensions.all()]:
+                filename, extension = os.path.splitext(file_copy.file.name)
+                if ext == extension or ext == '.*':
+                    anyrb = AnyRB(event)
+                    review_request_id = anyrb.upload_review()
+                    if review_request_id is not None:
+                        event.value += u'<p><a href="{1}/r/{0}">Review request {0}</a></p>'. \
+                            format(review_request_id, settings.RB_API_URL)
+                    else:
+                        event.value += u'<p>{0}.</p>'.format(_(u'oshibka_otpravki_v_rb'))
+                        issue.followers.add(User.objects.get(username='anytask.monitoring'))
+                    break
 
     event.save()
 
 
 def check_easy_ci(request, issue, event, sent_files):
-    if not(issue.task.course.easyCI_url is None) \
-            and issue.task.course.easyCI_url != "":
-        files = []
-        for sent_file in sent_files:
-            files.append(request.build_absolute_uri(sent_file.url))
+    if issue.task:
+        if not(issue.task.course.easyCI_url is None) \
+                and issue.task.course.easyCI_url != "":
+            files = []
+            for sent_file in sent_files:
+                files.append(request.build_absolute_uri(sent_file.url))
 
-        if len(files) != 0:
-            check_request_dict = {
-                'files': files,
-                'course_id': issue.task.course_id,
-                'title': issue.task.get_title(),
-                'issue_id': issue.id,
-                'event': {
-                    'id': event.id,
-                    'timestamp': event.timestamp.isoformat()
+            if len(files) != 0:
+                check_request_dict = {
+                    'files': files,
+                    'course_id': issue.task.course_id,
+                    'title': issue.task.get_title(),
+                    'issue_id': issue.id,
+                    'event': {
+                        'id': event.id,
+                        'timestamp': event.timestamp.isoformat()
+                    }
                 }
-            }
-            try:
-                response = requests.post(issue.task.course.easyCI_url
-                                         + "/api/add_task",
-                                         json=check_request_dict)
-                print(response.status_code)
-            except requests.exceptions.RequestException:
-                issue.add_comment("Cannot send to easyCI. Time: "
-                                  + event.timestamp.isoformat())
+                try:
+                    response = requests.post(issue.task.course.easyCI_url
+                                             + "/api/add_task",
+                                             json=check_request_dict)
+                    print(response.status_code)
+                except requests.exceptions.RequestException:
+                    issue.add_comment("Cannot send to easyCI. Time: "
+                                      + event.timestamp.isoformat())
+    else:
+        if not (issue.command_task.course.easyCI_url is None) \
+                and issue.command_task.course.easyCI_url != "":
+            files = []
+            for sent_file in sent_files:
+                files.append(request.build_absolute_uri(sent_file.url))
+
+            if len(files) != 0:
+                check_request_dict = {
+                    'files': files,
+                    'course_id': issue.command_task.course_id,
+                    'title': issue.command_task.get_title(),
+                    'issue_id': issue.id,
+                    'event': {
+                        'id': event.id,
+                        'timestamp': event.timestamp.isoformat()
+                    }
+                }
+                try:
+                    response = requests.post(issue.command_task.course.easyCI_url
+                                             + "/api/add_task",
+                                             json=check_request_dict)
+                    print(response.status_code)
+                except requests.exceptions.RequestException:
+                    issue.add_comment("Cannot send to easyCI. Time: "
+                                      + event.timestamp.isoformat())
 
 
 @login_required
@@ -157,9 +221,14 @@ def issue_page(request, issue_id):
     if not user_can_read(user, issue):
         raise PermissionDenied
 
-    issue_fields = issue.task.course.issue_fields.all()
-
-    seminar = issue.task.parent_task
+    if issue.task:
+        issue_fields = issue.task.course.issue_fields.all()
+        seminar = issue.task.parent_task
+    else:
+        issue_fields = issue.command_task.course.issue_fields.all()
+        print issue_fields
+        issue_fields = [issue_fields[0], issue_fields[1], issue_fields[2], issue_fields[4], issue_fields[5], issue_fields[8]]
+        seminar = issue.command_task.parent_task
 
     if request.method == 'POST':
         if 'contest_rejudge' in request.POST:
@@ -217,17 +286,29 @@ def issue_page(request, issue_id):
     show_top_alert = False
 
     for event_id, event in enumerate(issue.get_history()):
-        if issue.task.deadline_time and event.timestamp > issue.task.deadline_time:
-            first_event_after_deadline = event
-            if event_id < len(issue.get_history()) - events_to_show:
-                show_top_alert = True
-            break
+        if issue.task:
+            if issue.task.deadline_time and event.timestamp > issue.task.deadline_time:
+                first_event_after_deadline = event
+                if event_id < len(issue.get_history()) - events_to_show:
+                    show_top_alert = True
+                break
+        else:
+            if issue.command_task.deadline_time and event.timestamp > issue.command_task.deadline_time:
+                first_event_after_deadline = event
+                if event_id < len(issue.get_history()) - events_to_show:
+                    show_top_alert = True
+                break
 
     lang = user.profile.language
-    statuses_accepted = [(status.id, status.get_name(lang))
-                         for status in issue.task.course.issue_status_system.get_accepted_statuses()]
 
-    schools = issue.task.course.school_set.all()
+    if issue.task:
+        statuses_accepted = [(status.id, status.get_name(lang))
+                             for status in issue.task.course.issue_status_system.get_accepted_statuses()]
+        schools = issue.task.course.school_set.all()
+    else:
+        statuses_accepted = [(status.id, status.get_name(lang))
+                             for status in issue.command_task.course.issue_status_system.get_accepted_statuses()]
+        schools = issue.command_task.course.school_set.all()
 
     show_contest_rejudge_loading = False
     if issue.contestsubmission_set \
@@ -243,25 +324,37 @@ def issue_page(request, issue_id):
         show_contest_rejudge = True
 
     if seminar:
-        seminar_url = issue.task.course.get_absolute_url() + "/seminar/" + str(seminar.id)
+        if issue.task:
+            seminar_url = issue.task.course.get_absolute_url() + "/seminar/" + str(seminar.id)
+        else:
+            seminar_url = issue.command_task.course.get_absolute_url() + "/seminar/" + str(seminar.id)
     else:
         seminar_url = None
+
+    if issue.task:
+        course = issue.task.course
+        visible_queue = issue.task.course.user_can_see_queue(request.user)
+        show_contest_run_id = issue.task.course.user_can_see_contest_run_id(request.user)
+    else:
+        course = issue.command_task.course
+        visible_queue = issue.command_task.course.user_can_see_queue(request.user)
+        show_contest_run_id = issue.command_task.course.user_can_see_contest_run_id(request.user)
 
     context = {
         'issue': issue,
         'issue_fields': issue_fields,
-        'course': issue.task.course,
+        'course': course,
         'seminar_url': seminar_url,
         'events_to_show': events_to_show,
         'first_event_after_deadline': first_event_after_deadline,
         'show_top_alert': show_top_alert,
         'teacher_or_staff': user_is_teacher_or_staff(request.user, issue),
         'school': schools[0] if schools else '',
-        'visible_queue': issue.task.course.user_can_see_queue(request.user),
+        'visible_queue': visible_queue,
         'statuses_accepted': statuses_accepted,
         'show_contest_rejudge': show_contest_rejudge,
         'show_contest_rejudge_loading': show_contest_rejudge_loading,
-        'show_contest_run_id': issue.task.course.user_can_see_contest_run_id(request.user),
+        'show_contest_run_id': show_contest_run_id,
         'jupyterhub_url': getattr(settings, 'JUPYTERHUB_URL', ''),
         'max_file_size': getattr(settings, 'MAX_FILE_SIZE', 1024 * 1024 * 100),
         'max_files_number': getattr(settings, 'MAX_FILES_NUMBER', 10)
@@ -315,9 +408,14 @@ def upload(request):
                 event_value['files'].append(file.file)
                 event_value['compilers'].append(None)
 
-        if not (issue.task.one_file_upload and file_counter > 1):
-            event = issue.set_byname('comment', event_value, request.user)
-            check_easy_ci(request, issue, event, event_value['files'])
+        if issue.task:
+            if not (issue.task.one_file_upload and file_counter > 1):
+                event = issue.set_byname('comment', event_value, request.user)
+                check_easy_ci(request, issue, event, event_value['files'])
+        else:
+            if not (issue.command_task.one_file_upload and file_counter > 1):
+                event = issue.set_byname('comment', event_value, request.user)
+                check_easy_ci(request, issue, event, event_value['files'])
 
         return redirect(issue_page, issue_id=int(request.POST['issue_id']))
 
@@ -329,20 +427,33 @@ def upload(request):
     chosen_compiler = None
     send_to_contest = False
 
-    if issue.task.contest_integrated:
-        problem_compilers = get_problem_compilers(issue.task.problem_id, issue.task.contest_id)
-        for ext in settings.CONTEST_EXTENSIONS:
-            filename, extension = os.path.splitext(file.name)
-            if ext == extension:
-                send_to_contest = True
-                if not problem_compilers:
-                    chosen_compiler = settings.CONTEST_EXTENSIONS[ext]
-                if settings.CONTEST_EXTENSIONS[ext] in problem_compilers:
-                    chosen_compiler = settings.CONTEST_EXTENSIONS[ext]
-                    problem_compilers.remove(chosen_compiler)
+    if issue.task:
+        if issue.task.contest_integrated:
+            problem_compilers = get_problem_compilers(issue.task.problem_id, issue.task.contest_id)
+            for ext in settings.CONTEST_EXTENSIONS:
+                filename, extension = os.path.splitext(file.name)
+                if ext == extension:
+                    send_to_contest = True
+                    if not problem_compilers:
+                        chosen_compiler = settings.CONTEST_EXTENSIONS[ext]
+                    if settings.CONTEST_EXTENSIONS[ext] in problem_compilers:
+                        chosen_compiler = settings.CONTEST_EXTENSIONS[ext]
+                        problem_compilers.remove(chosen_compiler)
+    else:
+        if issue.command_task.contest_integrated:
+            problem_compilers = get_problem_compilers(issue.command_task.problem_id, issue.command_task.contest_id)
+            for ext in settings.CONTEST_EXTENSIONS:
+                filename, extension = os.path.splitext(file.name)
+                if ext == extension:
+                    send_to_contest = True
+                    if not problem_compilers:
+                        chosen_compiler = settings.CONTEST_EXTENSIONS[ext]
+                    if settings.CONTEST_EXTENSIONS[ext] in problem_compilers:
+                        chosen_compiler = settings.CONTEST_EXTENSIONS[ext]
+                        problem_compilers.remove(chosen_compiler)
 
     one_file_upload = False
-    if issue.task.one_file_upload:
+    if (issue.task and issue.task.one_file_upload) or (issue.command_task and issue.command_task.one_file_upload):
         filename, extension = os.path.splitext(file.name)
         file.name = 'upload' + extension
         one_file_upload = True

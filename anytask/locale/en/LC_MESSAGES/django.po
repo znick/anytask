@@ -2682,3 +2682,15 @@ msgstr "Different course invite code"
 
 msgid "studentom"
 msgstr "student"
+
+msgid "max_chislo_studentov"
+msgstr "Max number of students in one team"
+
+msgid "max_chislo_komand"
+msgstr "Max team number"
+
+msgid "sozdat_komandu"
+msgstr "Create team"
+
+msgid "vstupit_v_komandu"
+msgstr "Join team"

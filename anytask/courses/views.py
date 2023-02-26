@@ -30,7 +30,7 @@ from issues.model_issue_status import IssueStatus
 from issues.views import contest_rejudge
 from users.forms import InviteActivationForm
 from users.models import UserProfile
-from courses import pythontask
+from courses import pythontask, new_pythontask
 from lessons.models import Lesson
 
 from common.ordered_dict import OrderedDict
@@ -221,6 +221,9 @@ def course_page(request, course_id):
     course = get_object_or_404(Course, id=course_id)
     if course.is_python_task:
         return pythontask.tasks_list(request, course)
+
+    if course.is_new_python_task:
+        return new_pythontask.tasks_list(request, course)
 
     schools = course.school_set.all()
 
@@ -1085,3 +1088,6 @@ def view_statistic(request, course_id):
 
     if course.is_python_task:
         return pythontask.python_stat(request, course)
+
+    elif course.is_new_python_task:
+        return new_pythontask.python_stat(request, course)

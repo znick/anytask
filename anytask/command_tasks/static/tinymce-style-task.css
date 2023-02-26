@@ -1,0 +1,27 @@
+.mce-content-body p,
+#modal_task_body p,
+#modal_body_task_descr p{
+    margin-bottom: 0 !important;
+}
+.mce-content-body blockquote,
+#modal_task_body blockquote,
+#modal_body_task_descr blockquote {
+    margin: 0 0 0 1rem !important;
+    font-style: italic;
+    color: #555;
+}
+.mce-content-body li,
+#modal_task_body li,
+#modal_body_task_descr li {
+    padding: 0;
+}
+.mce-content-body img,
+#modal_task_body img,
+#modal_body_task_descr img {
+    max-width: 100%;
+    height: auto;
+}
+
+.mce-content-body table.table-from-contest {
+    table-layout: fixed;
+}

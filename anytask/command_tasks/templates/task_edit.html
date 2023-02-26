@@ -1,0 +1,232 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load sanitize_html icon %}
+{% load dict_func %}
+{% load task_taken_func %}
+{% load django_bootstrap_breadcrumbs %}
+{% load tz %}
+{% load info %}
+{% get_current_language as LANGUAGE_CODE %}
+
+{% block title %}{% if is_create %}{% trans "sozdanie_zadachi" %}{% else %}{{ task.title }}{% endif %} | {{ course.name }} | {{ course.year }}{% endblock %}
+
+{% block scripts %}
+    <link href="{{ STATIC_URL }}task.css" rel='stylesheet'/>
+
+    {% include "task_create_or_edit_js.html" %}
+    {% include "task_tinymce_js.html" %}
+{% endblock scripts %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    {% if school %}
+        {% breadcrumb school.name school.get_absolute_url %}
+    {% endif %}
+    {% breadcrumb course.name course.get_absolute_url %}
+    {% if is_create %}
+        {% breadcrumb_for "" %}
+            {% trans "sozdanie_zadachi" %}
+        {% endbreadcrumb_for  %}
+    {% else %}
+        {% breadcrumb_for "" %}
+            {% trans "redaktirovanie_zadachi" %}
+        {% endbreadcrumb_for %}
+    {% endif %}
+{% endblock breadcrumbs %}
+
+{% block navbar %}
+    <ul class="nav navbar-nav">
+        <li class="nav-item">
+            <a class="nav-link" id="course_url" href="{{ course.get_absolute_url }}#tasks-tab">{% trans "spisok_zadach" %}</a>
+        </li>
+    </ul>
+{% endblock navbar %}
+
+
+{% block content %}
+    {{ block.super }}
+
+    <style>
+        #update_contest_block button.btn div {
+            overflow: hidden;
+        }
+        #task_edit_label_for_changed_task {
+            display: none;
+        }
+        #modal_task_update .modal-body p {
+            margin-bottom: 0;
+        }
+    </style>
+
+    <div class="row collapse">
+        <div class="col-md-12">
+            <div id="task_edit" class="card card-block">
+                <h5 class="card-title">{% trans "redaktirovanie_zadachi" %}</h5>
+
+                <form method="post" id="task_edit_form" >
+                    {% csrf_token %}
+                    <div class="form-group row">
+                        <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_header">{% trans "nazvanie" %}</label>
+                        <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
+                            <input class="form-control" id='task_edit_header' name='task_title' type='text' size='20' data-value="{% get_text_from_json task 'get_title' LANGUAGE_CODE %}" value="{% get_text_from_json task 'get_title' LANGUAGE_CODE %}" />
+                            <small class="text-help" id="task_edit_header_error_text"></small>
+                        </div>
+                    </div>
+                    {% if task.type == task.TYPE_IPYNB %}
+                    <div class="form-group row">
+                        <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_nb_assignment_name">{% trans "nb_assignment_name" %}</label>
+                        <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
+                            <input class="form-control" id='task_edit_nb_assignment_name' type='text' size='20' value="{% if task.nb_assignment_name %}{{task.nb_assignment_name}}{% endif %}" readonly />
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if is_create or task.type != task.TYPE_SEMINAR and task.type != task.TYPE_MATERIAL %}
+                        <div class="form-group row">
+                            <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_max_score">{% trans "max_ball" %}</label>
+                            <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
+                                <input class="form-control" id='task_edit_max_score' name='max_score' type='text' maxlength='25' size='20' data-value="{{ task.score_max }}" value="{{ task.score_max }}">
+                                <small class="text-help" id="task_edit_max_score_error_text"></small>
+                            </div>
+                        </div>
+                        {% if course.is_new_python_task %}
+                        <div class="form-group row">
+                            <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_max_students">{% trans "max_chislo_studentov" %}</label>
+                            <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
+                                <input class="form-control" id='task_edit_max_students' name='max_students' type='text' maxlength='25' size='20' data-value="{{ task.max_students }}" value="{{ task.max_students }}">
+                                <small class="text-help" id="task_edit_max_students_error_text"></small>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_max_commands">{% trans "max_chislo_komand" %}</label>
+                            <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
+                                <input class="form-control" id='task_edit_max_commands' name='max_commands' type='text' maxlength='25' size='20' data-value="{{ task.max_commands }}" value="{{ task.max_commands }}">
+                                <small class="text-help" id="task_edit_max_commands_error_text"></small>
+                            </div>
+                        </div>
+                        {% endif %}
+                    {% endif %}
+                    <div class="form-group row">
+                        <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_group">{% trans "gruppa" %}
+                            {% if show_help_msg_task_group %}
+                                <a tabindex="0" data-toggle="popover" data-trigger="hover" data-content="{% trans "vybor_grupp_zavisit_ot_zadach" %}" type="button"><i class="fa fa-question-circle help-button" aria-hidden="true"></i></a>
+                            {% endif %}
+                        </label>
+                        <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
+                            <select class="form-control" id='task_edit_group' name="task_group_id[]" multiple="multiple">
+                                {% for group in course.groups.all %}
+                                    <option value="{{ group.id }}" {% if group in task.groups.all %}selected {% if group in groups_required %}disabled{% endif %}{% endif %} >{{ group.name }}</option>
+                                {% endfor %}
+                            </select>
+                            <small class="text-help" id="task_group_id_error_text"></small>
+                        </div>
+                    </div>
+                    {% if is_create or task.type != task.TYPE_SEMINAR and task.type != task.TYPE_MATERIAL %}
+                        <div class="form-group row">
+                            <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_datepicker">{% trans "data_sdachi" %}</label>
+                            <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
+                                <div class="input-group date task_datetime">
+                                    <input class="form-control" id='task_edit_datepicker' name='deadline' type='text'  readonly data-value="{{task.deadline_time|date:'d-m-Y H:i'}}" value="{{task.deadline_time|date:'d-m-Y H:i'}}">
+                                    <span class="input-group-addon"><i class="fa fa-times fa-lg"></i></span>
+                                    <span class="input-group-addon"><i class="fa fa-calendar fa-lg"></i></span>
+                                </div>
+                                <small class="text-help" id="task_edit_datepicker_error_text"></small>
+                            </div>
+                        </div>
+                        <div class="form-group row" id="task_time_zone">
+                            <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="location_search">{% trans "time_zone" %}</label>
+                            <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
+                                <input type="text" class="typeahead form-control" id="location_search" name="location" value="{{ user_location }}">
+                                <input type="hidden" id="geoid" name="geoid" value="">
+                            </div>
+                        </div>
+                    {% endif %}
+                    <div class="form-group row">
+                        <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_type"> {% trans "tip_zadachi" %}</label>
+                        <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
+                            {% if task.type != task.TYPE_IPYNB %}
+                            <select class="form-control" id='task_edit_type' name="task_type">
+                                {% for type_id, type in task_types %}
+                                    <option value="{{ type_id }}" {% ifequal type_id task.type %}selected{% endifequal %}>{{ type }}</option>
+                                {% endfor %}
+                            </select>
+                            {% else %}
+                            <input type="text" class="form-control" name="task_type" value="{{ task.type }}" readonly />
+                            {% endif %}
+                        </div>
+                        {% if course.show_task_one_file_upload %}
+                            <div class="form-group row collapse {% if rb_integrated %}in{% endif %}">
+                                <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_one_file_upload">{% trans "otpravljat_tolko_odin_fajl" %}
+                                    <a tabindex="0" data-toggle="popover" data-trigger="hover"
+                                       data-content="{% trans "imja_fajla_budet_izmeneno" %}"
+                                       type="button"><i class="fa fa-question-circle help-button"
+                                                        aria-hidden="true"></i></a>
+                                </label>
+                                <div class="controls no-validate col-lg-4 col-md-6 col-sm-7 col-xs-7">
+                                    <input type="checkbox" name="one_file_upload" id="task_edit_one_file_upload"
+                                           {% if task.one_file_upload or is_create and course.default_task_one_file_upload %}checked{% endif %}>
+                                </div>
+                            </div>
+                        {% endif %}
+                        {% if course.show_accepted_after_contest_ok %}
+                            <div class="form-group row collapse {% if contest_integrated %}in{% endif %}">
+                                <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_accepted_after_contest_ok">
+                                    {% trans "perevodit_v_zachteno" %}</label>
+                                <div class="controls no-validate col-lg-4 col-md-6 col-sm-7 col-xs-7">
+                                    <input type="checkbox" name="accepted_after_contest_ok"
+                                           id="task_edit_accepted_after_contest_ok"
+                                           {% if task.accepted_after_contest_ok or is_create and course.default_accepted_after_contest_ok %}checked{% endif %}>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group row" id="task_edit_label_for_changed_task">
+                        <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_changed_task">{% trans "uvedomit_ob_izmenenii_v_zadache" %}</label>
+                        <div class="controls no-validate col-lg-4 col-md-6 col-sm-7 col-xs-7">
+                            <input type="checkbox" name="changed_task" id="task_edit_changed_task" {% if course.default_task_send_to_users %}data-default="true" checked{% endif %} disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_hidden_task">{% trans "skryt_zadachu" %}</label>
+                        <div class="controls no-validate col-lg-4 col-md-6 col-sm-7 col-xs-7">
+                            <input type="checkbox" name="hidden_task" id="task_edit_hidden_task"  {% if task.is_hidden %}data-value="true" checked{% endif %}>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_body">{% trans "formulirovka" %}</label>
+                        <br>
+                        <div class="controls col-xs-12">
+                            <textarea class='input-xlarge form-control'id='task_edit_body' name='task_text'>{% get_text_from_json task 'get_description' LANGUAGE_CODE %}</textarea>
+                        </div>
+                    </div>
+                    <div class="form-group row footer-buttons">
+                        <div id="task_submit_error_text" class="col-xs-12"></div>
+                        <div class="col-sm-12 col-lg-10">
+                            <div class="btn-group pull-xs-right" role="group">
+                                <button type="button" id="button_cancel_quit" class="btn btn-secondary">{% trans "otmenit_i_vyjti" %}</button>
+                                <button type="button" id="button_save" class="btn btn-secondary">{% trans "sohranit_i_prodolzhit" %}</button>
+                                <button type="button" id="button_save_quit" class="btn btn-primary">{% trans "sohranit_i_vyjti" %}</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal_task_preview" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modal_task_header" aria-hidden="true">
+        <div class="modal-dialog modal-lg"  role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">×</button>
+                    <h5 class="modal-title" id="modal_task_header"></h5>
+                    <div id="modal_task_deadline"></div>
+                </div>
+                <div class="modal-body">
+                    <div id="modal_task_body"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
