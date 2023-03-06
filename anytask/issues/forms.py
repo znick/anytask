@@ -37,6 +37,7 @@ def get_users_choise(issue, field=None):
     elif field == 'costudents':
         for user in issue.task.course.get_students():
             users.append((user.id, user.get_full_name()))
+        return users
 
     for user in User.objects.filter(Q(is_staff=True) | Q(course_teachers_set=issue.task.course) | qs_filter).distinct():
         users.append((user.id, user.get_full_name()))
