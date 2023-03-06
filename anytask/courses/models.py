@@ -150,6 +150,8 @@ class Course(models.Model):
 
     show_contest_run_id = models.BooleanField(db_index=False, null=False, blank=False, default=True)
 
+    allow_costudents = models.BooleanField(db_index=False, null=False, blank=False, default=False)
+
     def __unicode__(self):
         return unicode(self.name)
 

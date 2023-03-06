@@ -34,6 +34,10 @@ def get_users_choise(issue, field=None):
         qs_filter = Q(id=issue.responsible_id)
     elif field == 'followers':
         qs_filter = Q(id__in=issue.followers.all().values_list("id", flat=True))
+    elif field == 'costudents':
+        for user in issue.task.course.get_students():
+            users.append((user.id, user.get_full_name()))
+        return users
 
     for user in User.objects.filter(Q(is_staff=True) | Q(course_teachers_set=issue.task.course) | qs_filter).distinct():
         users.append((user.id, user.get_full_name()))
@@ -54,6 +58,20 @@ def get_followers_form(field_name, request, issue, data=None, *args, **kwargs):
         followers_names = forms.MultipleChoiceField(get_users_choise(issue, 'followers'), required=False,
                                                     label='')  # we dont need coerce function here
         # because add user id to m2m field is ok.
+
+    return _form(field_name, request, issue, data, *args, **kwargs)
+
+
+def get_costudents_form(field_name, request, issue, data=None, *args, **kwargs):
+    class _form(DefaultForm):
+        costudents_names = forms.MultipleChoiceField(get_users_choise(issue, 'costudents'), required=False,
+                                                     label='')  # we dont need coerce function here
+        # because add user id to m2m field is ok.
+
+        def clean_costudents_names(self):
+            costudents_names = self.cleaned_data.get('costudents_names', [])
+            if len(costudents_names) > issue.task.max_costudents:
+                raise ValidationError('Students count > {}'.format(issue.task.max_costudents))
 
     return _form(field_name, request, issue, data, *args, **kwargs)
 
