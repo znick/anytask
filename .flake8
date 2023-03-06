@@ -1,6 +1,6 @@
 [flake8]
 count = True
-exclude = .git,__pycache__,build,dist,anytask/media,debian,migrations
+exclude = .git,__pycache__,build,dist,anytask/media,debian,migrations,yandex_oauth.py
 ignore =
     W503
     # W503 is deprecated, see https://www.python.org/dev/peps/pep-0008/#id20

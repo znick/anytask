@@ -200,8 +200,8 @@ def issue_page(request, issue_id):
                 if 'Accepted' in request.POST:
                     if request.POST['Accepted']:
                         issue.set_byname('status',
-                                            IssueStatus.objects.get(pk=request.POST['Accepted']),
-                                            request.user)
+                                         IssueStatus.objects.get(pk=request.POST['Accepted']),
+                                         request.user)
                     else:
                         issue.set_status_accepted(request.user)
 
@@ -217,8 +217,8 @@ def issue_page(request, issue_id):
 
                 if 'comment_verdict' in request.POST:
                     issue.set_byname('comment',
-                                        {'files': [], 'comment': request.POST['comment_verdict']},
-                                        request.user)
+                                     {'files': [], 'comment': request.POST['comment_verdict']},
+                                     request.user)
 
                 return HttpResponseRedirect(request.path_info)
 

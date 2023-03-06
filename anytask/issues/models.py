@@ -477,11 +477,11 @@ class Issue(models.Model):
             delete_event = True
         else:
             deleted_costudents = [get_user_fullname(costudent)
-                                 for costudent in set(self.costudents.all()).difference(set(new_costudents))]
+                                  for costudent in set(self.costudents.all()).difference(set(new_costudents))]
             add_costudents = [get_user_fullname(costudent) for costudent in new_costudents.all()]
             self.costudents = value
             value = ', '.join(add_costudents) + '\n' + ', '.join(deleted_costudents)
-        return deleted_costudents, value
+        return delete_event, value
 
     def set_field_responsible_name(self, value):
         delete_event = False
