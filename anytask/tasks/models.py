@@ -54,6 +54,7 @@ class Task(models.Model):
     score_max = models.IntegerField(db_index=True, null=False, blank=False, default=0)
 
     max_students = models.IntegerField(null=False, blank=False, default=0)
+    max_costudents = models.IntegerField(null=False, blank=False, default=0)
 
     contest_integrated = models.BooleanField(db_index=False, null=False, blank=False, default=False)
     rb_integrated = models.BooleanField(db_index=False, null=False, blank=False, default=False)

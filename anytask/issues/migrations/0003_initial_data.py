@@ -75,6 +75,13 @@ def add_data_to_issue_status(apps, schema_editor):
                       'plugin': 'FieldReadOnlyPlugin',
                       'title': u'Номер посылки в контест'}).save()
 
+    # pk 12
+    IssueField(**{'history_message': 'Студенты:',
+                      'plugin_version': '0.1',
+                      'name': 'run_id',
+                      'plugin': 'FieldCostudentsPlugin',
+                      'title': u'Номер посылки в контест'}).save()
+
 
 class Migration(migrations.Migration):
 

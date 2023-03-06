@@ -48,6 +48,8 @@ class File(models.Model):
 
 class Issue(models.Model):
     student = models.ForeignKey(User, db_index=True, null=False, blank=False, related_name='student')
+    costudents = models.ManyToManyField(User, blank=True, null=True, db_index=True, related_name='costudents')
+
     task = models.ForeignKey(Task, db_index=True, null=True, blank=False)
 
     mark = models.FloatField(db_index=False, null=False, blank=False, default=0)
@@ -140,6 +142,14 @@ class Issue(models.Model):
                 self.followers.all()
             )
             return ', '.join(followers)
+        if name == 'costudents_names':
+            costudents = map(
+                lambda x: u'<a class="user" href="{0}">{1}</a>'.format(
+                    x.get_absolute_url(), get_user_fullname(x)
+                ),
+                self.costudents.all()
+            )
+            return ', '.join(costudents)
         if name == 'course_name':
             course = self.task.course
             return u'<a href="{0}">{1}</a>'.format(course.get_absolute_url(), course.name)
@@ -180,6 +190,11 @@ class Issue(models.Model):
         if name == 'followers_names':
             ret = []
             for user in self.followers.all():
+                ret.append(user.id)
+            return ret
+        if name == 'costudents_names':
+            ret = []
+            for user in self.costudents.all():
                 ret.append(user.id)
             return ret
         if name == 'course_name':
@@ -285,6 +300,8 @@ class Issue(models.Model):
             delete_event, value = self.set_field_responsible_name(value)
         elif name == 'followers_names':
             delete_event, value = self.set_field_followers_names(value)
+        elif name == 'costudents_names':
+            delete_event, value = self.set_field_costudents_names(value)
         elif name == 'comment':
             value = self.set_field_comment(author, course, event, value)
         elif name == 'status':
@@ -452,6 +469,19 @@ class Issue(models.Model):
             self.followers = value
             value = ', '.join(add_followers) + '\n' + ', '.join(deleted_followers)
         return delete_event, value
+
+    def set_field_costudents_names(self, value):
+        delete_event = False
+        new_costudents = User.objects.filter(id__in=value)
+        if list(new_costudents) == list(self.costudents.all()):
+            delete_event = True
+        else:
+            deleted_costudents = [get_user_fullname(costudent)
+                                 for costudent in set(self.costudents.all()).difference(set(new_costudents))]
+            add_costudents = [get_user_fullname(costudent) for costudent in new_costudents.all()]
+            self.costudents = value
+            value = ', '.join(add_costudents) + '\n' + ', '.join(deleted_costudents)
+        return deleted_costudents, value
 
     def set_field_responsible_name(self, value):
         delete_event = False

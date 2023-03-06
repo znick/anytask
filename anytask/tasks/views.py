@@ -180,6 +180,7 @@ def get_task_params(request, check_score_after_deadline=False):
     task_short_title = request.POST.get('task_short_title', task_title).strip()
     max_score = int(request.POST.get('max_score') or 0)
     max_students = int(request.POST.get('max_students') or 0)
+    max_constudents = int(request.POST.get('max_costudents') or 0)
     task_groups = Group.objects.filter(id__in=dict(request.POST)['task_group_id[]'])
 
     parent_id = request.POST.get('parent_id')
@@ -226,6 +227,7 @@ def get_task_params(request, check_score_after_deadline=False):
         'short_title': task_short_title,
         'score_max': max_score,
         'max_students': max_students,
+        'max_costudents': max_constudents,
         'parent_task': parent,
         'deadline_time': task_deadline,
         'send_to_users': changed_task,

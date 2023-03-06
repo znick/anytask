@@ -5,7 +5,7 @@ import sys
 
 from django.db import models
 from issues.forms import IntForm, MarkForm, FileForm, CommentForm, get_responsible_form, get_followers_form, \
-    get_status_form
+    get_status_form, get_costudents_form
 
 
 class DefaultPlugin(object):
@@ -92,6 +92,22 @@ class FieldFollowersPlugin(FieldDefaultPlugin):
     @classmethod
     def get_form(cls, *args, **kwargs):
         return get_followers_form(*args, **kwargs)
+
+
+class FieldCostudentsPlugin(FieldDefaultPlugin):
+    PLUGIN_NAME = "FieldCostudentsPlugin"
+    PLUGIN_VERSION = "1.0"
+
+    @classmethod
+    def get_form(cls, *args, **kwargs):
+        return get_costudents_form(*args, **kwargs)
+
+    @staticmethod
+    def can_edit(field_name, user, issue):
+        if issue.student == user and self.score() == 0:
+            return True
+
+        return issue.task.course.user_is_teacher(user)
 
 
 class FieldFilePlugin(FieldDefaultPlugin):

@@ -38,6 +38,8 @@ def user_can_read(user, issue):
         return True
     if user == issue.student:
         return True
+    if issue.costudents.filter(id=user.id).exists():
+        return True
     if issue.task.course.user_is_teacher(user):
         return True
 
