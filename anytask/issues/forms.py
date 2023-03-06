@@ -68,6 +68,11 @@ def get_costudents_form(field_name, request, issue, data=None, *args, **kwargs):
                                                     label='')  # we dont need coerce function here
         # because add user id to m2m field is ok.
 
+        def clean_costudents_names(self):
+            costudents_names = self.cleaned_data.get('costudents_names', [])
+            if len(costudents_names) > issue.task.max_costudents:
+                raise ValidationError('Students count > {}'.format(issue.task.max_costudents))
+
     return _form(field_name, request, issue, data, *args, **kwargs)
 
 

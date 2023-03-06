@@ -15,6 +15,7 @@ from django.views.decorators.http import require_POST
 from jfu.http import upload_receive, UploadResponse, JFUResponse
 from text_unidecode import unidecode
 from django.db.transaction import atomic
+from django.contrib import messages
 
 from anycontest.common import get_problem_compilers
 from anyrb.common import AnyRB
@@ -174,43 +175,52 @@ def issue_page(request, issue_id):
             if form_name == u'{0}_form'.format(field.name):
                 form = field.get_form(request, issue)
 
-                if form.is_valid():
-                    value = form.cleaned_data[field.name]
+                if not form.is_valid():
+                    for field, errors in form.errors.items():
+                        for error in errors:
+                            messages.add_message(request, messages.ERROR, error)
+                    continue
 
-                    if field.name in ['mark', 'status', 'responsible_name', 'followers_names']:
-                        if not user_is_teacher_or_staff(request.user, issue):
-                            raise PermissionDenied
+                value = form.cleaned_data[field.name]
 
-                    if 'Me' in request.POST:
-                        if field.name == 'responsible_name':
-                            value = request.user
-                        else:
-                            if request.user not in value:
-                                value.append(str(request.user.id))
-                    if 'Accepted' in request.POST:
-                        if request.POST['Accepted']:
-                            issue.set_byname('status',
-                                             IssueStatus.objects.get(pk=request.POST['Accepted']),
-                                             request.user)
-                        else:
-                            issue.set_status_accepted(request.user)
+                if field.name in ['mark', 'status', 'responsible_name', 'followers_names']:
+                    if not user_is_teacher_or_staff(request.user, issue):
+                        raise PermissionDenied
 
-                    if field.name == 'comment':
-                        value = {
-                            'comment': value,
-                            'files': request.FILES.getlist('files')
-                        }
-                        if 'need_info' in request.POST and any(value.itervalues()):
-                            issue.set_status_need_info()
+                if field.name == 'costudents_names':
+                    if not field.can_edit(user, issue):  # should we check it for all fields?
+                        raise PermissionDenied
 
-                    issue.set_field(field, value, request.user)
+                if 'Me' in request.POST:
+                    if field.name == 'responsible_name':
+                        value = request.user
+                    else:
+                        if request.user not in value:
+                            value.append(str(request.user.id))
+                if 'Accepted' in request.POST:
+                    if request.POST['Accepted']:
+                        issue.set_byname('status',
+                                            IssueStatus.objects.get(pk=request.POST['Accepted']),
+                                            request.user)
+                    else:
+                        issue.set_status_accepted(request.user)
 
-                    if 'comment_verdict' in request.POST:
-                        issue.set_byname('comment',
-                                         {'files': [], 'comment': request.POST['comment_verdict']},
-                                         request.user)
+                if field.name == 'comment':
+                    value = {
+                        'comment': value,
+                        'files': request.FILES.getlist('files')
+                    }
+                    if 'need_info' in request.POST and any(value.itervalues()):
+                        issue.set_status_need_info()
 
-                    return HttpResponseRedirect(request.path_info)
+                issue.set_field(field, value, request.user)
+
+                if 'comment_verdict' in request.POST:
+                    issue.set_byname('comment',
+                                        {'files': [], 'comment': request.POST['comment_verdict']},
+                                        request.user)
+
+                return HttpResponseRedirect(request.path_info)
 
     prepare_info_fields(issue_fields, request, issue)
 

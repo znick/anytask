@@ -104,7 +104,7 @@ class FieldCostudentsPlugin(FieldDefaultPlugin):
 
     @staticmethod
     def can_edit(field_name, user, issue):
-        if issue.student == user and self.score() == 0:
+        if issue.student == user and issue.score() == 0:
             return True
 
         return issue.task.course.user_is_teacher(user)
