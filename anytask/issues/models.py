@@ -48,7 +48,7 @@ class File(models.Model):
 
 class Issue(models.Model):
     student = models.ForeignKey(User, db_index=True, null=False, blank=False, related_name='student')
-    costudents = models.ManyToManyField(User, blank=True, null=True, db_index=True, related_name='costudents')
+    costudents = models.ManyToManyField(User, blank=True, db_index=True, related_name='costudents')
 
     task = models.ForeignKey(Task, db_index=True, null=True, blank=False)
 
