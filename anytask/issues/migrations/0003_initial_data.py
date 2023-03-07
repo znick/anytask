@@ -78,7 +78,7 @@ def add_data_to_issue_status(apps, schema_editor):
     # pk 12
     IssueField(**{'history_message': 'Студенты:',
                       'plugin_version': '0.1',
-                      'name': 'costudent_names',
+                      'name': 'costudents_names',
                       'plugin': 'FieldCostudentsPlugin',
                       'title': u'Номер посылки в контест'}).save()
 
