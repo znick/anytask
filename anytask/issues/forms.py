@@ -72,6 +72,7 @@ def get_costudents_form(field_name, request, issue, data=None, *args, **kwargs):
             costudents_names = self.cleaned_data.get('costudents_names', [])
             if len(costudents_names) > issue.task.max_costudents:
                 raise ValidationError('Students count > {}'.format(issue.task.max_costudents))
+            return costudents_names
 
     return _form(field_name, request, issue, data, *args, **kwargs)
 
