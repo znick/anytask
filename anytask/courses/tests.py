@@ -1070,29 +1070,29 @@ class PythonTaskTest(TestCase):
         user = self.users[0]
         self.assertTrue(client.login(username=user.username, password="password0"))
         response = client.get(reverse(courses.views.course_page, kwargs={'course_id': self.course.id}))
-        self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
+        self.assertNotContains(response, "{}&nbsp;{}".format(user.last_name, user.first_name))
 
         response = client.get(
             reverse(courses.pythontask.get_task, kwargs={'course_id': self.course.id, 'task_id': self.task1.id}),
             follow=True)
-        self.assertContains(response, "{} {}".format(user.last_name, user.first_name))
+        self.assertContains(response, "{}&nbsp;{}".format(user.last_name, user.first_name))
 
         response = client.get(
             reverse(courses.pythontask.cancel_task, kwargs={'course_id': self.course.id, 'task_id': self.task1.id}),
             follow=True)
-        self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
+        self.assertNotContains(response, "{}&nbsp;{}".format(user.last_name, user.first_name))
 
     def test_take_and_cancel_subtask(self):
         client = self.client
         user = self.users[0]
         self.assertTrue(client.login(username=user.username, password="password0"))
         response = client.get(reverse(courses.views.course_page, kwargs={'course_id': self.course.id}))
-        self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
+        self.assertNotContains(response, "{}&nbsp;{}".format(user.last_name, user.first_name))
 
         response = client.get(
             reverse(courses.pythontask.get_task, kwargs={'course_id': self.course.id, 'task_id': self.subtask1.id}),
             follow=True)
-        self.assertContains(response, "{} {}".format(user.last_name, user.first_name))
+        self.assertContains(response, "{}&nbsp;{}".format(user.last_name, user.first_name))
 
         response = client.get(
             reverse(
@@ -1102,7 +1102,7 @@ class PythonTaskTest(TestCase):
             follow=True
         )
 
-        self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
+        self.assertNotContains(response, "{}&nbsp;{}".format(user.last_name, user.first_name))
 
     def test_take_tasks_limit(self):
         client = self.client
@@ -1110,19 +1110,19 @@ class PythonTaskTest(TestCase):
         for i, user in enumerate(self.users[:8]):
             self.assertTrue(client.login(username=user, password="password{}".format(i)))
             response = client.get(reverse(courses.views.course_page, kwargs={'course_id': self.course.id}))
-            self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
+            self.assertNotContains(response, "{}&nbsp;{}".format(user.last_name, user.first_name))
 
             response = client.get(
                 reverse(courses.pythontask.get_task, kwargs={'course_id': self.course.id, 'task_id': self.task1.id}),
                 follow=True)
-            self.assertContains(response, "{} {}".format(user.last_name, user.first_name))
+            self.assertContains(response, "{}&nbsp;{}".format(user.last_name, user.first_name))
 
         user = self.users[9]
         self.assertTrue(client.login(username=user, password="password9"))
         response = client.get(
             reverse(courses.pythontask.get_task, kwargs={'course_id': self.course.id, 'task_id': self.task1.id}),
             follow=True)
-        self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
+        self.assertNotContains(response, "{}&nbsp;{}".format(user.last_name, user.first_name))
 
     def test_take_tasks_limit__course2(self):
         client = self.client
@@ -1130,20 +1130,20 @@ class PythonTaskTest(TestCase):
         for i, user in enumerate(self.users2[:4]):
             self.assertTrue(client.login(username=user, password="password{}".format(i)))
             response = client.get(reverse(courses.views.course_page, kwargs={'course_id': self.course2.id}))
-            self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
+            self.assertNotContains(response, "{}&nbsp;{}".format(user.last_name, user.first_name))
 
             response = client.get(
                 reverse(courses.pythontask.get_task,
                         kwargs={'course_id': self.course2.id, 'task_id': self.task1_c2.id}),
                 follow=True)
-            self.assertContains(response, "{} {}".format(user.last_name, user.first_name))
+            self.assertContains(response, "{}&nbsp;{}".format(user.last_name, user.first_name))
 
         user = self.users2[5]
         self.assertTrue(client.login(username=user, password="password5"))
         response = client.get(
             reverse(courses.pythontask.get_task, kwargs={'course_id': self.course2.id, 'task_id': self.task1_c2.id}),
             follow=True)
-        self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
+        self.assertNotContains(response, "{}&nbsp;{}".format(user.last_name, user.first_name))
 
     def test_students_per_task_limit(self):
         client = self.client
@@ -1151,18 +1151,18 @@ class PythonTaskTest(TestCase):
         for i, user in enumerate(self.users[:2]):
             self.assertTrue(client.login(username=user, password="password{}".format(i)))
             response = client.get(reverse(courses.views.course_page, kwargs={'course_id': self.course.id}))
-            self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
+            self.assertNotContains(response, "{}&nbsp;{}".format(user.last_name, user.first_name))
 
             response = client.get(
                 reverse(courses.pythontask.get_task, kwargs={'course_id': self.course.id, 'task_id': self.task4.id}),
                 follow=True)
-            self.assertContains(response, "{} {}".format(user.last_name, user.first_name))
+            self.assertContains(response, "{}&nbsp;{}".format(user.last_name, user.first_name))
 
             response = client.get(
                 reverse(courses.pythontask.get_task,
                         kwargs={'course_id': self.course.id, 'task_id': self.subtask4.id}),
                 follow=True)
-            self.assertContains(response, "{} {}".format(user.last_name, user.first_name))
+            self.assertContains(response, "{}&nbsp;{}".format(user.last_name, user.first_name))
 
         user = self.users[2]
         self.assertTrue(client.login(username=user, password="password2"))
@@ -1170,12 +1170,12 @@ class PythonTaskTest(TestCase):
         response = client.get(
             reverse(courses.pythontask.get_task, kwargs={'course_id': self.course.id, 'task_id': self.task4.id}),
             follow=True)
-        self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
+        self.assertNotContains(response, "{}&nbsp;{}".format(user.last_name, user.first_name))
 
         response = client.get(
             reverse(courses.pythontask.get_task, kwargs={'course_id': self.course.id, 'task_id': self.subtask4.id}),
             follow=True)
-        self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
+        self.assertNotContains(response, "{}&nbsp;{}".format(user.last_name, user.first_name))
 
     def test_take_subtasks_limit(self):
         client = self.client
@@ -1183,19 +1183,19 @@ class PythonTaskTest(TestCase):
         for i, user in enumerate(self.users[:8]):
             self.assertTrue(client.login(username=user, password="password{}".format(i)))
             response = client.get(reverse(courses.views.course_page, kwargs={'course_id': self.course.id}))
-            self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
+            self.assertNotContains(response, "{}&nbsp;{}".format(user.last_name, user.first_name))
 
             response = client.get(reverse(courses.pythontask.get_task,
                                           kwargs={'course_id': self.course.id, 'task_id': self.subtask1.id}),
                                   follow=True)
-            self.assertContains(response, "{} {}".format(user.last_name, user.first_name))
+            self.assertContains(response, "{}&nbsp;{}".format(user.last_name, user.first_name))
 
         user = self.users[9]
         self.assertTrue(client.login(username=user, password="password9"))
         response = client.get(
             reverse(courses.pythontask.get_task, kwargs={'course_id': self.course.id, 'task_id': self.subtask1.id}),
             follow=True)
-        self.assertNotIn("{} {}".format(user.last_name, user.first_name), response.content)
+        self.assertNotIn("{}&nbsp;{}".format(user.last_name, user.first_name), response.content)
 
     def test_take_cant_take_tasks_from_one_subtask(self):
         client = self.client
@@ -1203,17 +1203,17 @@ class PythonTaskTest(TestCase):
 
         self.assertTrue(client.login(username=user.username, password="password0"))
         response = client.get(reverse(courses.views.course_page, kwargs={'course_id': self.course.id}))
-        self.assertNotIn("{} {}".format(user.last_name, user.first_name), response.content)
+        self.assertNotIn("{}&nbsp;{}".format(user.last_name, user.first_name), response.content)
 
         response = client.get(
             reverse(courses.pythontask.get_task, kwargs={'course_id': self.course.id, 'task_id': self.subtask1.id}),
             follow=True)
-        self.assertContains(response, "{} {}".format(user.last_name, user.first_name), count=1)
+        self.assertContains(response, "{}&nbsp;{}".format(user.last_name, user.first_name), count=1)
 
         response = client.get(
             reverse(courses.pythontask.get_task, kwargs={'course_id': self.course.id, 'task_id': self.subtask2.id}),
             follow=True)
-        self.assertContains(response, "{} {}".format(user.last_name, user.first_name), count=1)
+        self.assertContains(response, "{}&nbsp;{}".format(user.last_name, user.first_name), count=1)
 
     def set_mark(self, task, student, mark):
         issue, _ = Issue.objects.get_or_create(task_id=task.id, student_id=student.id)
@@ -1242,18 +1242,18 @@ class PythonTaskTest(TestCase):
             reverse(courses.pythontask.get_task, kwargs={'course_id': self.course.id,
                                                          'task_id': self.subtask1.id}), follow=True)
 
-        self.assertContains(response, "{} {}".format(user.last_name, user.first_name), count=3)
+        self.assertContains(response, "{}&nbsp;{}".format(user.last_name, user.first_name), count=3)
 
         response = client.get(
             reverse(courses.pythontask.get_task, kwargs={'course_id': self.course.id,
                                                          'task_id': self.task2.id}), follow=True)
-        self.assertContains(response, "{} {}".format(user.last_name, user.first_name), count=3)
+        self.assertContains(response, "{}&nbsp;{}".format(user.last_name, user.first_name), count=3)
 
         self.set_mark(self.task3, user, 10)
         response = client.get(
             reverse(courses.pythontask.get_task, kwargs={'course_id': self.course.id,
                                                          'task_id': self.task2.id}), follow=True)
-        self.assertContains(response, "{} {}".format(user.last_name, user.first_name), count=4)
+        self.assertContains(response, "{}&nbsp;{}".format(user.last_name, user.first_name), count=4)
 
     def test_max_incomplete_constraint__course2(self):
         client = self.client
@@ -1263,12 +1263,12 @@ class PythonTaskTest(TestCase):
         response = client.get(
             reverse(courses.pythontask.get_task, kwargs={'course_id': self.course2.id,
                                                          'task_id': self.task1_c2.id}), follow=True)
-        self.assertContains(response, "{} {}".format(user.last_name, user.first_name), count=1)
+        self.assertContains(response, "{}&nbsp;{}".format(user.last_name, user.first_name), count=1)
 
         response = client.get(
             reverse(courses.pythontask.get_task, kwargs={'course_id': self.course2.id,
                                                          'task_id': self.subtask1_c2.id}), follow=True)
-        self.assertContains(response, "{} {}".format(user.last_name, user.first_name), count=1)
+        self.assertContains(response, "{}&nbsp;{}".format(user.last_name, user.first_name), count=1)
 
         self.set_mark(self.task1_c2, user, 1.0)
 
@@ -1279,21 +1279,21 @@ class PythonTaskTest(TestCase):
         response = client.get(
             reverse(courses.pythontask.get_task, kwargs={'course_id': self.course2.id,
                                                          'task_id': self.subtask1_c2.id}), follow=True)
-        self.assertContains(response, "{} {}".format(user.last_name, user.first_name), count=2)
+        self.assertContains(response, "{}&nbsp;{}".format(user.last_name, user.first_name), count=2)
 
         self.set_mark(self.subtask1_c2, user, 2.0)
 
         response = client.get(
             reverse(courses.pythontask.get_task, kwargs={'course_id': self.course2.id,
                                                          'task_id': self.task2_c2.id}), follow=True)
-        self.assertContains(response, "{} {}".format(user.last_name, user.first_name), count=2)
+        self.assertContains(response, "{}&nbsp;{}".format(user.last_name, user.first_name), count=2)
 
         self.set_mark(self.task1_c2, user, 10)
 
         response = client.get(
             reverse(courses.pythontask.get_task, kwargs={'course_id': self.course2.id,
                                                          'task_id': self.task2_c2.id}), follow=True)
-        self.assertContains(response, "{} {}".format(user.last_name, user.first_name), count=3)
+        self.assertContains(response, "{}&nbsp;{}".format(user.last_name, user.first_name), count=3)
 
     def test_statistics(self):
         client = self.client
@@ -1387,7 +1387,7 @@ class PythonTaskTest(TestCase):
             reverse(courses.pythontask.get_task, kwargs={'course_id': self.course.id,
                                                          'task_id': self.task4_expired.id}),
             follow=True)
-        self.assertContains(response, "{} {}".format(user.last_name, user.first_name))
+        self.assertContains(response, "{}&nbsp;{}".format(user.last_name, user.first_name))
 
         # check its taken
         task_taken = TaskTaken.objects.get(task=self.task4_expired, user=user)
@@ -1401,7 +1401,7 @@ class PythonTaskTest(TestCase):
         response = client.get(reverse(courses.pythontask.cancel_task,
                                       kwargs={'course_id': self.course.id, 'task_id': self.task4_expired.id}),
                               follow=True)
-        self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
+        self.assertNotContains(response, "{}&nbsp;{}".format(user.last_name, user.first_name))
         task_taken = TaskTaken.objects.get(task=self.task4_expired, user=user)
         taken_time = task_taken.taken_time
         self.assertEqual(task_taken.status, TaskTaken.STATUS_CANCELLED)
@@ -1411,7 +1411,7 @@ class PythonTaskTest(TestCase):
             reverse(courses.pythontask.get_task, kwargs={'course_id': self.course.id,
                                                          'task_id': self.task4_expired.id}),
             follow=True)
-        self.assertContains(response, "{} {}".format(user.last_name, user.first_name))
+        self.assertContains(response, "{}&nbsp;{}".format(user.last_name, user.first_name))
 
         task_taken = TaskTaken.objects.get(task=self.task4_expired, user=user)
         self.assertEqual(task_taken.status, TaskTaken.STATUS_TAKEN)
@@ -1431,7 +1431,7 @@ class PythonTaskTest(TestCase):
             reverse(courses.pythontask.get_task, kwargs={'course_id': self.course.id,
                                                          'task_id': self.task4_expired.id}),
             follow=True)
-        self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
+        self.assertNotContains(response, "{}&nbsp;{}".format(user.last_name, user.first_name))
 
         # move a little bit in the past
         task_taken.blacklisted_till -= datetime.timedelta(days=settings.PYTHONTASK_DAYS_DROP_FROM_BLACKLIST / 2)
@@ -1444,7 +1444,7 @@ class PythonTaskTest(TestCase):
             reverse(courses.pythontask.get_task, kwargs={'course_id': self.course.id,
                                                          'task_id': self.task4_expired.id}),
             follow=True)
-        self.assertNotContains(response, "{} {}".format(user.last_name, user.first_name))
+        self.assertNotContains(response, "{}&nbsp;{}".format(user.last_name, user.first_name))
 
         # drop from blacklist
         task_taken.blacklisted_till -= datetime.timedelta(days=settings.PYTHONTASK_DAYS_DROP_FROM_BLACKLIST / 2)
@@ -1460,7 +1460,7 @@ class PythonTaskTest(TestCase):
             reverse(courses.pythontask.get_task, kwargs={'course_id': self.course.id,
                                                          'task_id': self.task4_expired.id}),
             follow=True)
-        self.assertContains(response, "{} {}".format(user.last_name, user.first_name))
+        self.assertContains(response, "{}&nbsp;{}".format(user.last_name, user.first_name))
 
     def test_max_incomplete_constraint_2_courses(self):
         client = self.client

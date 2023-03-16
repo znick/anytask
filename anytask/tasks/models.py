@@ -12,6 +12,7 @@ from django.db import models
 from django.db.models import Q, Max
 from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
+from django.core.exceptions import ObjectDoesNotExist
 from django.utils.html import escape
 
 from courses.models import Course
@@ -168,6 +169,9 @@ class Task(models.Model):
         except TaskTaken.DoesNotExist:
             pass
 
+        if self.user_can_pass_task(user):
+            return (False, u'')
+
         return (True, u'')
 
     def user_can_cancel_task(self, user):
@@ -193,9 +197,19 @@ class Task(models.Model):
 
         try:
             task_taken = self.get_task_takens().get(user=user)
-            return (task_taken.status == TaskTaken.STATUS_TAKEN or task_taken.status == TaskTaken.STATUS_SCORED)
+            if task_taken.status == TaskTaken.STATUS_TAKEN or task_taken.status == TaskTaken.STATUS_SCORED:
+                return True
         except TaskTaken.DoesNotExist:
+            pass
+
+        try:
+            for issue in self.issue_set.filter(costudents=user):
+                can_pass = self.user_can_pass_task(issue.student)
+                if can_pass:
+                    return True
+        except ObjectDoesNotExist:
             return False
+
         return False
 
     def has_parent(self):

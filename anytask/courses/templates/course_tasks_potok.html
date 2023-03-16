@@ -186,10 +186,12 @@
 											{% for task_taken in task_takens_list %}
 												<tr>
 													<td style="width:30%">
-														{{ task_taken.user.last_name }} {{ task_taken.user.first_name }}
+                                                        {{ task_taken.user.last_name }}&nbsp;{{ task_taken.user.first_name }}{% for costudent in task_taken.issue.costudents.all %}{% if forloop.first %},{% endif %}
+                                                        {{ costudent.last_name }}&nbsp;{{ costudent.first_name }}{% if not forloop.last %},{% endif %}
+                                                    {% endfor %}
 													</td>
 													<td style="width:20%">
-														<small>{{ task_taken.added_time|date:"d.m.Y" }}</small>
+														{{ task_taken.added_time|date:"d.m.Y" }}
 													</td>
                                                     <td style="width:10%">
                                                         {% if task_taken.status == STATUS_SCORED %}
@@ -221,13 +223,15 @@
 									<tbody>
 									{% for task_taken in task_takens %}
 										<tr>
-											<td style="width:30%">
-												{{ task_taken.user.last_name }} {{ task_taken.user.first_name }}
+											<td style="width:50%">
+												{{ task_taken.user.last_name }}&nbsp;{{ task_taken.user.first_name }}{% for costudent in task_taken.issue.costudents.all %}{% if forloop.first %},{% endif %}
+                                                    {{ costudent.last_name }}&nbsp;{{ costudent.first_name }}{% if not forloop.last %},{% endif %}
+                                                {% endfor %}
 											</td>
 											<td style="width:20%">
-												<small>{{ task_taken.added_time|date:"d.m.Y" }}</small>
+												{{ task_taken.added_time|date:"d.m.Y" }}
 											</td>
-                                            <td style="width:10%">
+                                            <td style="width:5%">
                                                 {% if task_taken.status == STATUS_SCORED %}
                                                     <span class="label {% if task_taken.score == task.score_max %} label-success {% else %} label-warning {% endif %}">{{ task_taken.score|floatformat }}</span>
                                                 {% endif %}
@@ -240,7 +244,7 @@
                                                 {% endif %}
                                             </td>
                                             <td style="width:20%"></td>
-                                            <td style="width:20%">
+                                            <td style="width:5%">
                                                 {% if task.can_score %}
                                                     <a href="{% url "issues.views.get_or_create" task_id=task.id student_id=task_taken.user.id %}">Оценить</a>
                                                 {% endif %}
