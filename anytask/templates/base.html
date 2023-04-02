@@ -655,6 +655,7 @@
 </head>
 
 <body>
+
 {% block navbar_all %}
     <nav class="navbar navbar-fixed-top navbar-dark navbar-blue">
         <div class="{% if full_width_page %}container-fluid{% else %}container{% endif %}">
@@ -767,6 +768,16 @@
         {% breadcrumb "Home" "/" %}
     {% endblock %}
     {% all_pages_message %}
+
+    {% block messages %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert {{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endblock messages %}
 
     {% block content %}
         {% render_breadcrumbs "django_bootstrap_breadcrumbs/bootstrap3.html" %}

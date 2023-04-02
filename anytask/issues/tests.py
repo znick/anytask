@@ -119,7 +119,7 @@ class ViewsTest(TestCase):
                                             year=self.year)
         self.course.groups = [self.group]
         self.course.teachers = [self.teacher]
-        self.course.issue_fields = IssueField.objects.exclude(id=10).exclude(id=11)
+        self.course.issue_fields = IssueField.objects.exclude(id=10).exclude(id=11).exclude(id=12)
         self.course.save()
 
         self.school = School.objects.create(name='school_name',

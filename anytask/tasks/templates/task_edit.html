@@ -190,6 +190,15 @@
                             </div>
                         </div>
                         {% endif %}
+                        {% if course.allow_costudents %}
+                        <div id='max_costudents_body' class="{% if is_create or task.type != task.TYPE_SEMINAR and task.type != task.TYPE_MATERIAL %}in{% endif %} collapse form-group row">
+                            <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_max_students">{% trans "max_costudents" %}</label>
+                            <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
+                                <input class="form-control" id='task_edit_max_costudents' name='max_costudents' type='text' maxlength='25' size='20' value="{{ task.max_costudents }}">
+                                <small class="text-help" id="task_edit_max_costudents_error_text"></small>
+                            </div>
+                        </div>
+                        {% endif %}
                     {% endif %}
                     <div class="form-group row">
                         <label class="col-lg-3 col-md-3 col-sm-4 col-xs-5 form-control-label" for="task_edit_group">{% trans "gruppa" %}
