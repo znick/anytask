@@ -6,12 +6,16 @@ on: [push, pull_request]
 
 jobs:
   build:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
         with:
           submodules: true
-      - name: Install dependencies
-        run: sudo apt-get install python-virtualenv
+      - name: Set up Python 2.7
+        uses: actions/setup-python@v2
+        with:
+          python-version: 2.7
+      - name: Install virtualenv
+        run: pip2 install virtualenv
       - name: Deploy
         run: source deploy_local_beta/run.sh --python-path=python2
