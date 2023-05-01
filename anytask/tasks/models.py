@@ -204,9 +204,13 @@ class Task(models.Model):
 
         try:
             for issue in self.issue_set.filter(costudents=user):
+                if issue.student == user:
+                    continue
+
                 can_pass = self.user_can_pass_task(issue.student)
                 if can_pass:
                     return True
+
         except ObjectDoesNotExist:
             return False
 
