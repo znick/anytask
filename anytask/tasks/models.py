@@ -187,7 +187,7 @@ class Task(models.Model):
 
         return self.course.user_is_teacher(user)
 
-    def user_can_pass_task(self, user):
+    def user_can_pass_task(self, user, follow_costudents=True):
         if user.is_anonymous():
             return False
 
@@ -202,17 +202,18 @@ class Task(models.Model):
         except TaskTaken.DoesNotExist:
             pass
 
-        try:
-            for issue in self.issue_set.filter(costudents=user):
-                if issue.student == user:
-                    continue
+        if follow_costudents:
+            try:
+                for issue in self.issue_set.filter(costudents=user):
+                    if issue.student == user:
+                        continue
 
-                can_pass = self.user_can_pass_task(issue.student)
-                if can_pass:
-                    return True
+                    can_pass = self.user_can_pass_task(issue.student, follow_costudents=False)
+                    if can_pass:
+                        return True
 
-        except ObjectDoesNotExist:
-            return False
+            except ObjectDoesNotExist:
+                return False
 
         return False
 
