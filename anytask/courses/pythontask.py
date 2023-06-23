@@ -61,8 +61,8 @@ class PythonTaskStat(object):
         group_students = []
 
         for student in group.students.filter(is_active=True).order_by('last_name', 'first_name'):
-            tasks = TaskTaken.objects.filter(user=student).filter(task__in=self.tasks) \
-                .filter(Q(Q(status=TaskTaken.STATUS_TAKEN) | Q(status=TaskTaken.STATUS_SCORED)))
+            tasks = TaskTaken.objects.filter(Q(Q(user=student) | Q(issue__costudents=student))).filter(task__in=self.tasks) \
+                .filter(Q(Q(status=TaskTaken.STATUS_TAKEN) | Q(status=TaskTaken.STATUS_SCORED))).distinct()
             if tasks.count() > 0:
                 stat['active_students'] += 1
 
