@@ -7,8 +7,11 @@ from django.db import transaction
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext_lazy as _
+from django.http import HttpResponse
 
+import csv
 import datetime
+import StringIO
 
 
 class PythonTaskStat(object):
@@ -61,8 +64,8 @@ class PythonTaskStat(object):
         group_students = []
 
         for student in group.students.filter(is_active=True).order_by('last_name', 'first_name'):
-            tasks = TaskTaken.objects.filter(user=student).filter(task__in=self.tasks) \
-                .filter(Q(Q(status=TaskTaken.STATUS_TAKEN) | Q(status=TaskTaken.STATUS_SCORED)))
+            tasks = TaskTaken.objects.filter(Q(Q(user=student) | Q(issue__costudents=student))).filter(task__in=self.tasks) \
+                .filter(Q(Q(status=TaskTaken.STATUS_TAKEN) | Q(status=TaskTaken.STATUS_SCORED))).distinct()
             if tasks.count() > 0:
                 stat['active_students'] += 1
 
@@ -140,12 +143,32 @@ def tasks_list(request, course):
     return render(request, 'course_tasks_potok.html', context)
 
 
+def _conver_group_stat_to_cvs(group_stat):
+    fn = StringIO.StringIO()
+    fieldnames = ['group', 'name', 'score']
+    writer = csv.DictWriter(fn, fieldnames=fieldnames)
+
+    writer.writeheader()
+    for group, user_data in group_stat:
+        for user, score, _ in user_data:
+            writer.writerow({'group': group.name.encode('utf-8'),
+                             'name': "{} {}".format(user.last_name.encode('utf-8'), user.first_name.encode('utf-8')),
+                             'score':score})
+
+    return fn.getvalue()
+
+
 def python_stat(request, course):
     tasks = Task.objects.filter(course=course)
     stat = PythonTaskStat(tasks)
 
     for group in course.groups.all().order_by('name'):
         stat.update(group)
+
+    if request.GET.get('format') == 'csv':
+        csv = _conver_group_stat_to_cvs(stat.get_group_stat())
+
+        return HttpResponse(csv, content_type="text/csv")
 
     context = {
         'course': course,
