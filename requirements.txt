@@ -8,7 +8,7 @@ django-filemanager==0.0.5
 django-filter==1.1.0
 django-haystack==2.8.1
 django-htmlmin==0.10.0
-django-dprog-jfu
+django-dprog-jfu==2.2.3
 django-recaptcha==1.4.0
 django-reversion==1.10
 django==1.11.29

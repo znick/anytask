@@ -4,7 +4,7 @@ on: [push, pull_request]
 
 jobs:
   licensed_check:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
         with:
@@ -16,10 +16,9 @@ jobs:
       - uses: jonabc/setup-licensed@v1
         with:
           version: '2.15.2'
-      - name: Install system dependencies
-        run: |
-          sudo apt-get install python-virtualenv
-      - name: Init virtualenv
+      - name: Install virtualenv
+        run: pip2 install virtualenv
+      - name: Init virtualenv and install dependencies
         run: |
           virtualenv --python=python3 venv
           . venv/bin/activate
