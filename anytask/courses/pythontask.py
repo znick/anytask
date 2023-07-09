@@ -64,8 +64,10 @@ class PythonTaskStat(object):
         group_students = []
 
         for student in group.students.filter(is_active=True).order_by('last_name', 'first_name'):
-            tasks = TaskTaken.objects.filter(Q(Q(user=student) | Q(issue__costudents=student))).filter(task__in=self.tasks) \
-                .filter(Q(Q(status=TaskTaken.STATUS_TAKEN) | Q(status=TaskTaken.STATUS_SCORED))).distinct()
+            tasks = TaskTaken.objects.filter(Q(Q(user=student) | Q(issue__costudents=student))) \
+                .filter(task__in=self.tasks) \
+                .filter(Q(Q(status=TaskTaken.STATUS_TAKEN) | Q(status=TaskTaken.STATUS_SCORED))) \
+                .distinct()
             if tasks.count() > 0:
                 stat['active_students'] += 1
 
@@ -150,10 +152,10 @@ def _conver_group_stat_to_cvs(group_stat):
 
     writer.writeheader()
     for group, user_data in group_stat:
-        for user, score, _ in user_data:
+        for user, score, __ in user_data:
             writer.writerow({'group': group.name.encode('utf-8'),
                              'name': "{} {}".format(user.last_name.encode('utf-8'), user.first_name.encode('utf-8')),
-                             'score':score})
+                             'score': score})
 
     return fn.getvalue()
 
