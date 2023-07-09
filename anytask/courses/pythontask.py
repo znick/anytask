@@ -11,7 +11,7 @@ from django.http import HttpResponse
 
 import csv
 import datetime
-import StringIO
+from io import StringIO
 
 
 class PythonTaskStat(object):
@@ -146,7 +146,7 @@ def tasks_list(request, course):
 
 
 def _conver_group_stat_to_cvs(group_stat):
-    fn = StringIO.StringIO()
+    fn = StringIO()
     fieldnames = ['group', 'name', 'score']
     writer = csv.DictWriter(fn, fieldnames=fieldnames)
 
