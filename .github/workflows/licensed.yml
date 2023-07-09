@@ -17,7 +17,7 @@ jobs:
         with:
           version: '2.15.2'
       - name: Install virtualenv
-        run: pip2 install virtualenv
+        run: pip3 install virtualenv
       - name: Init virtualenv and install dependencies
         run: |
           virtualenv --python=python3 venv
