@@ -1177,8 +1177,6 @@ class S3MigrateIssueAttachments(TestCase, SerializeMixin):
             expected_stdout = (expected_stdout * 2).strip()
             file = File.objects.get(pk=file.pk)
             cmd_out = out.getvalue().strip()
-            print(f">>>>>>>>>>>>>>>>>>>filename:{file.file.name} {S3OverlayStorage.is_s3_stored(file.file.name)}")
-            print(f"==============\n{expected_stdout}\n!=\n{cmd_out}\n======\n{err.getvalue().strip()}\n!!!!!!\n")
             self.assertEqual(expected_stdout, cmd_out)
             self.assertTrue(S3OverlayStorage.is_s3_stored(file.file.name))
             self.assertTrue(self.s3_storage.exists(file.file.name))
