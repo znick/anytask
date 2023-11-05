@@ -5,6 +5,12 @@ from django.core.management.base import BaseCommand
 from storage import S3OverlayStorage
 
 
+class S3NotFound(Exception):
+    def __init__(self, name, *args, **kwargs):
+        self.name = name
+        super().__init__(*args, **kwargs)
+
+
 def upload_to_s3(file_field, dest_storage, dry_run=True):
     """Saves content of file_field to S3, adjusting path in database
 
@@ -26,7 +32,7 @@ def upload_to_s3(file_field, dest_storage, dry_run=True):
         raise ValueError("Path with S3 magic: {}".format(old_path))
     new_path = dest_storage.append_s3_prefix(old_path)
     if dest_storage.exists(new_path):
-        raise KeyError(new_path)
+        raise S3NotFound(new_path)
     if not dry_run:
         with file_field.storage.open(file_field.name, 'rb') as content:
             dest_storage.save(new_path, content)
@@ -206,8 +212,8 @@ class S3MigrateCommand(BaseCommand):
                 result = None  # don't update DB model for newly uploaded files
             else:
                 result = new_path
-        except KeyError as e:
-            new_path = e.message
+        except S3NotFound as e:
+            new_path = e.name
             if (new_path in self.newly_uploaded) and self.rewrite_url_only_existing:
                 result = None
             else:
@@ -216,8 +222,7 @@ class S3MigrateCommand(BaseCommand):
         except Exception as e:
             self.stdout.write(self.ERR_UNHANDLED_EXCEPTION.format(field.name, e))
             result = None
-        finally:
-            return result
+        return result
 
     def delete_local(self, old_path):
         self.dest_storage.delete(old_path)
