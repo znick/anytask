@@ -75,7 +75,8 @@ class CreateTest(TestCase):
 
         self.assertCountEqual(course.teachers.all(), teachers)
         self.assertCountEqual(course.groups.all(), groups)
-        self.assertCountEqual(course.issue_fields.all(), IssueField.objects.exclude(id=11).exclude(id=12))
+        self.assertCountEqual(course.issue_fields.all(),
+                              IssueField.objects.exclude(id=10).exclude(id=11).exclude(id=12))
 
         self.assertEqual(course.contest_integrated, False)
         self.assertEqual(course.send_rb_and_contest_together, False)
