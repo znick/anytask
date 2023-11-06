@@ -64,3 +64,4 @@ anytask/media/
 sqlite3.db
 venv
 .idea/
+.vscode/

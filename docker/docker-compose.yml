@@ -1,11 +1,77 @@
-version: '3'
+version: '2'
+
 services:
-  web:
-    image: anytask
-    environment:
-      - DJANGO_SETTINGS_MODULE=anytask.settings_docker
+  app:
+    env_file: env.app
     restart: always
+    image: ghcr.io/znick/anytask:python3.8
+    links:
+      - "mariadb:mariadb"
+      - "rb_symlink:rb_symlink"
     ports:
-      - 80:80
+      - "8000:8000"
+      - "3031:3031"
     volumes:
-      - ./data:/app/data
+      - "/var/lib/anytask/media:/var/lib/anytask/media"
+      - "/var/log/anytask:/var/log/anytask"
+    mem_limit: 6GB
+    ulimits:
+        nproc: 65535
+        nofile:
+           soft: 40000
+           hard: 50000
+  ipython:
+    restart: always
+    env_file: env.ipython
+    image: ghcr.io/anytask-org/jupiter_notebook_docker:latest
+    mem_limit: 600M
+    ports:
+      - "5555:5555"
+      - "8888:8888"
+  mariadb:
+    restart: always
+    env_file: env.mariadb
+    image: mariadb:10.7.3
+    expose:
+      - "3306"
+    volumes:
+      - "/var/lib/anytask/mariadb:/var/lib/mysql"
+      - "/var/lib/anytask/mariadb_cfg:/etc/mysql/conf.d"
+  rb:
+    restart: always
+    env_file: env.rb
+    image: ghcr.io/znick/reviewboard:latest
+    links:
+      - "mariadb:mariadb"
+    ports:
+      - "8181:8000"
+    volumes:
+      - "/var/lib/anytask/repos:/var/lib/anytask/repos"
+      - "/var/lib/anytask/rb:/var/www"
+    ulimits:
+        nproc: 65535
+        nofile:
+           soft: 40000
+           hard: 50000
+
+  easyCI2:
+    restart: always
+    image: ghcr.io/znick/easyci2:latest
+    env_file: env.easyCI2
+    ports:
+      - "8001:8000"
+      - "3032:3031"
+
+  rb_symlink:
+    restart: always
+    image: ghcr.io/znick/rb_fake_repo_creator:latest
+    expose:
+      - "4444"
+    volumes:
+      - "/var/lib/anytask/repos:/var/lib/anytask/repos"
+
+  mysql-db-sync:
+    image: ghcr.io/znick/mysql-db-sync:latest
+    env_file: env.mysql-db-sync
+    links:
+      - "mariadb:mariadb"
