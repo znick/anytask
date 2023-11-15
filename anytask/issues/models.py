@@ -303,7 +303,7 @@ class Issue(models.Model):
         elif name == 'costudents_names':
             delete_event, value = self.set_field_costudents_names(value)
         elif name == 'comment':
-            value = self.set_field_comment(author, course, event, value)
+            delete_event, value = self.set_field_comment(author, course, event, value)
         elif name == 'status':
             delete_event, value = self.set_field_status(value)
         elif name == 'mark':
@@ -389,17 +389,17 @@ class Issue(models.Model):
                 if self.task.rb_integrated \
                         and (course.send_rb_and_contest_together or not self.task.contest_integrated):
                     self.set_field_comment_rb_integrated(course, event, file, value)
-
+                    
             if not value['files'] and not value['comment']:
-                event.delete()
-                return
+                return True, None # Do not include empty comments
             else:
                 self.update_time = timezone.now()
                 value = u'<div class="issue-page-comment not-sanitize">' + value['comment'] + u'</div>'
 
             if not self.is_status_auto_verification() and not self.is_status_accepted():
                 self.set_field_comment_update_status(author, sent)
-        return value
+
+        return False, value
 
     def set_field_comment_update_status(self, author, sent):
         if author == self.student and not self.is_status_need_info() and sent:
