@@ -2185,7 +2185,7 @@ msgstr "Logout"
 
 #: templates/base.html:737 templates/registration/registration_form.html:85
 msgid "vojdite"
-msgstr "Sing In"
+msgstr "Sign In"
 
 #: templates/base.html:740
 msgid "zaregistrirujtes"
