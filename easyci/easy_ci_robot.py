@@ -169,13 +169,13 @@ def main():
     pool = Pool(processes=PROCS)
 
     logging.info("Queue:")
-    for qtask in queue.itervalues():
+    for qtask in queue.values():
         logging.info("%s\t%s\t%s\t%s\t%s\t%s", qtask.host, qtask.course["course_id"], qtask.id, qtask.task["title"],
                      qtask.issue["student"]["username"], "{}/issue/{}".format(qtask.host, qtask.issue["id"]))
     if "--only_queue" in sys.argv:
         sys.exit(0)
 
-    for qtask in pool.imap_unordered(proccess_task, queue.itervalues()):
+    for qtask in pool.imap_unordered(proccess_task, queue.values()):
         logging.info(" == Parralel Task %d DONE!, URL: %s/issue/%d", qtask.id, qtask.host, qtask.issue["id"])
 
     logging.info("All DONE!")

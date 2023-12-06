@@ -83,7 +83,7 @@
                                 {% for year, courses_in_year in table %}
                                     <div class="tab-pane fade {% if year == current_year or forloop.last and not table|has_item:current_year  %}in active{% endif %}" id="{% if forloop.parentloop.first %}courses_{% else %}courses_archive_{% endif %}{{ forloop.counter }}" role="tabpanel">
                                         <div class="card-block">
-                                            {% for table_id, course_statistics in courses_in_year.iteritems %}
+                                            {% for table_id, course_statistics in courses_in_year.items %}
                                                 <div class="card-table">
                                                     <table class="table table_courses">
                                                         <thead>

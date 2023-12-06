@@ -192,7 +192,7 @@
                                             </div>
                                             <div class="tab-pane fade" id="statuses" role="tabpanel">
                                                 <select id="modal_add_status_select" multiple>
-                                                    {% for status_type, status_values in user_statuses.iteritems %}
+                                                    {% for status_type, status_values in user_statuses.items %}
                                                         <optgroup data-not_selectable="1" label="{% if status_type %}{{ status_values.type_name }}{% else %}{% trans "bez_tipa" %}{% endif %}">
                                                             {% for status_info in status_values.values %}
                                                                 <option value="{{ status_info.id }}" data-id="{{ status_info.id }}" data-type="status">{{ status_info.name }}</option>

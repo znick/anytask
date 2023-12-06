@@ -34,7 +34,7 @@ class Command(BaseCommand):
             except Exception as e:
                 logger.exception(e)
 
-        # for contest_id, students_info in contest_marks.iteritems():
+        # for contest_id, students_info in contest_marks.items():
         #     set_contest_marks(contest_id, students_info)
 
         # logging to cron log

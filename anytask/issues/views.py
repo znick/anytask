@@ -210,7 +210,7 @@ def issue_page(request, issue_id):
                         'comment': value,
                         'files': request.FILES.getlist('files')
                     }
-                    if 'need_info' in request.POST and any(value.itervalues()):
+                    if 'need_info' in request.POST and any(value.values()):
                         issue.set_status_need_info()
 
                 issue.set_field(field, value, request.user)
