@@ -751,13 +751,13 @@ class ViewsTest(TestCase):
         self.assertEqual(history[0].find('div', 'history-body').find('div', 'not-sanitize').string.strip().strip('\n'),
                          'test_comment',
                          'Wrong comment text')
-    
+
     def _extract_history_from_response(self, issue_page_response):
         html = BeautifulSoup(issue_page_response.content)
         container = html.body.find('div', 'container', recursive=False)
         history = container.find('ul', 'history')('li')
         return history
-    
+
     def test_empty_comment_with_student(self):
         client = self.client
 
@@ -769,20 +769,19 @@ class ViewsTest(TestCase):
 
         # Get page before comment
         response_before = client.get(reverse(issues.views.issue_page,
-                                      kwargs={'issue_id': issue.id}))
-        
+                                             kwargs={'issue_id': issue.id}))
+
         # post
         response_after = client.post(reverse(issues.views.upload),
-                               {'comment': '',
-                                'files[]': '',
-                                'issue_id': str(issue.id),
-                                'form_name': 'comment_form',
-                                'update_issue': ''}, follow=True)
-        
+                                     {'comment': '',
+                                      'files[]': '',
+                                      'issue_id': str(issue.id),
+                                      'form_name': 'comment_form',
+                                      'update_issue': ''}, follow=True)
 
         history_before = self._extract_history_from_response(response_before)
         history_after = self._extract_history_from_response(response_after)
-        
+
         self.assertEqual(history_before, history_after, 'History changed after empty comment')
 
     def test_deadline(self):

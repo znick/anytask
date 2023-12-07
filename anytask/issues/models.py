@@ -389,9 +389,9 @@ class Issue(models.Model):
                 if self.task.rb_integrated \
                         and (course.send_rb_and_contest_together or not self.task.contest_integrated):
                     self.set_field_comment_rb_integrated(course, event, file, value)
-                    
+
             if not value['files'] and not value['comment']:
-                return True, None # Do not include empty comments
+                return True, None  # Do not include empty comments
             else:
                 self.update_time = timezone.now()
                 value = u'<div class="issue-page-comment not-sanitize">' + value['comment'] + u'</div>'
