@@ -7,10 +7,10 @@ contains the actual logic for determining which accounts are deleted.
 
 """
 
-from django.core.management.base import NoArgsCommand
+from django.core.management.base import BaseCommand as NoArgsCommand
 from django.contrib.auth.models import User
 
-from xml.dom.minidom import parse
+from xml.etree.ElementTree import parse
 import sys
 import random
 import string
@@ -41,7 +41,7 @@ class Command(NoArgsCommand):
                                                        email=email)
 
             if (user.password == "") or (user.has_usable_password() is False):
-                user.set_password(''.join(random.choice(string.letters) for i in xrange(20)))
+                user.set_password(''.join(random.choice(string.letters) for i in range(20)))
                 user.save()
 
-            print "{0} {1}".format(user, user.get_full_name().encode("utf-8"))
+            print("{0} {1}".format(user, user.get_full_name().encode("utf-8")))

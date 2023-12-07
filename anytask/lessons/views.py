@@ -67,7 +67,7 @@ def schedule_edit_page(request, lesson_id):
 def get_lesson_dates(date_startime, date_endtime, date_end, week_days):
     lesson_dates = []
     delta_days = (date_end - date_startime).days
-    for i in xrange(delta_days + 1):
+    for i in range(delta_days + 1):
         curr_date_start = date_startime + datetime.timedelta(days=i)
         curr_date_end = date_endtime + datetime.timedelta(days=i)
         if curr_date_start.weekday() in week_days:

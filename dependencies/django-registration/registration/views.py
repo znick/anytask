@@ -3,227 +3,176 @@ Views which allow users to create and activate accounts.
 
 """
 
-
+from django.conf import settings
 from django.shortcuts import redirect
-from django.shortcuts import render
-from django.template import RequestContext
-from django.http import HttpResponse
+from django.utils.decorators import method_decorator
+from django.utils.module_loading import import_string
+from django.views.decorators.debug import sensitive_post_parameters
+from django.views.generic.base import TemplateView
+from django.views.generic.edit import FormView
 
-from registration.backends import get_backend
+from registration.forms import ResendActivationForm
 
-from django.contrib.auth.models import User
+REGISTRATION_FORM_PATH = getattr(settings, 'REGISTRATION_FORM',
+                                 'registration.forms.RegistrationForm')
+REGISTRATION_FORM = import_string(REGISTRATION_FORM_PATH)
+ACCOUNT_AUTHENTICATED_REGISTRATION_REDIRECTS = getattr(
+    settings, 'ACCOUNT_AUTHENTICATED_REGISTRATION_REDIRECTS', True)
 
 
-def activate(request, backend,
-             template_name='registration/activate.html',
-             success_url=None, extra_context=None, **kwargs):
+class RegistrationView(FormView):
     """
-    Activate a user's account.
+    Base class for user registration views.
 
-    The actual activation of the account will be delegated to the
-    backend specified by the ``backend`` keyword argument (see below);
-    the backend's ``activate()`` method will be called, passing any
-    keyword arguments captured from the URL, and will be assumed to
-    return a ``User`` if activation was successful, or a value which
-    evaluates to ``False`` in boolean context if not.
-
-    Upon successful activation, the backend's
-    ``post_activation_redirect()`` method will be called, passing the
-    ``HttpRequest`` and the activated ``User`` to determine the URL to
-    redirect the user to. To override this, pass the argument
-    ``success_url`` (see below).
-
-    On unsuccessful activation, will render the template
-    ``registration/activate.html`` to display an error message; to
-    override thise, pass the argument ``template_name`` (see below).
-
-    **Arguments**
-
-    ``backend``
-        The dotted Python import path to the backend class to
-        use. Required.
-
-    ``extra_context``
-        A dictionary of variables to add to the template context. Any
-        callable object in this dictionary will be called to produce
-        the end result which appears in the context. Optional.
-
-    ``success_url``
-        The name of a URL pattern to redirect to on successful
-        acivation. This is optional; if not specified, this will be
-        obtained by calling the backend's
-        ``post_activation_redirect()`` method.
-    
-    ``template_name``
-        A custom template to use. This is optional; if not specified,
-        this will default to ``registration/activate.html``.
-
-    ``\*\*kwargs``
-        Any keyword arguments captured from the URL, such as an
-        activation key, which will be passed to the backend's
-        ``activate()`` method.
-    
-    **Context:**
-    
-    The context will be populated from the keyword arguments captured
-    in the URL, and any extra variables supplied in the
-    ``extra_context`` argument (see above).
-    
-    **Template:**
-    
-    registration/activate.html or ``template_name`` keyword argument.
-    
     """
-    backend = get_backend(backend)
-    account = backend.activate(request, **kwargs)
+    disallowed_url = 'registration_disallowed'
+    form_class = REGISTRATION_FORM
+    http_method_names = ['get', 'post', 'head', 'options', 'trace']
+    success_url = None
+    template_name = 'registration/registration_form.html'
 
-    if account:
-        if success_url is None:
-            to, args, kwargs = backend.post_activation_redirect(request, account)
-            return redirect(to, *args, **kwargs)
-        else:
+    @method_decorator(sensitive_post_parameters('password1', 'password2'))
+    def dispatch(self, request, *args, **kwargs):
+        """
+        Check that user signup is allowed and if user is logged in before even bothering to
+        dispatch or do other processing.
+
+        """
+        if ACCOUNT_AUTHENTICATED_REGISTRATION_REDIRECTS:
+            if self.request.user.is_authenticated:
+                if settings.LOGIN_REDIRECT_URL is not None:
+                    return redirect(settings.LOGIN_REDIRECT_URL)
+                else:
+                    raise Exception((
+                        'You must set a URL with LOGIN_REDIRECT_URL in '
+                        'settings.py or set '
+                        'ACCOUNT_AUTHENTICATED_REGISTRATION_REDIRECTS=False'))
+
+        if not self.registration_allowed():
+            return redirect(self.disallowed_url)
+        return super(RegistrationView, self).dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        new_user = self.register(form)
+        success_url = self.get_success_url(new_user)
+
+        # success_url may be a simple string, or a tuple providing the
+        # full argument set for redirect(). Attempting to unpack it
+        # tells us which one it is.
+        try:
+            to, args, kwargs = success_url
+        except ValueError:
             return redirect(success_url)
+        else:
+            return redirect(to, *args, **kwargs)
 
-    if extra_context is None:
-        extra_context = {}
-    context = RequestContext(request)
-    for key, value in extra_context.items():
-        context[key] = callable(value) and value() or value
+    def registration_allowed(self):
+        """
+        Override this to enable/disable user registration, either
+        globally or on a per-request basis.
 
-    if not kwargs:
-        kwargs = {}
-    kwargs['context_instance'] = context
-    return render(request, template_name,
-                              kwargs,
-                              context)
+        """
+        return True
+
+    def register(self, form):
+        """
+        Implement user-registration logic here.
+
+        """
+        raise NotImplementedError
+
+    def get_success_url(self, user=None):
+        """
+        Use the new user when constructing success_url.
+
+        """
+        return super(RegistrationView, self).get_success_url()
 
 
-def register(request, backend, success_url=None, form_class=None,
-             disallowed_url='registration_disallowed',
-             template_name='registration/registration_form.html',
-             extra_context=None):
+class ActivationView(TemplateView):
     """
-    Allow a new user to register an account.
-
-    The actual registration of the account will be delegated to the
-    backend specified by the ``backend`` keyword argument (see below);
-    it will be used as follows:
-
-    1. The backend's ``registration_allowed()`` method will be called,
-       passing the ``HttpRequest``, to determine whether registration
-       of an account is to be allowed; if not, a redirect is issued to
-       the view corresponding to the named URL pattern
-       ``registration_disallowed``. To override this, see the list of
-       optional arguments for this view (below).
-
-    2. The form to use for account registration will be obtained by
-       calling the backend's ``get_form_class()`` method, passing the
-       ``HttpRequest``. To override this, see the list of optional
-       arguments for this view (below).
-
-    3. If valid, the form's ``cleaned_data`` will be passed (as
-       keyword arguments, and along with the ``HttpRequest``) to the
-       backend's ``register()`` method, which should return the new
-       ``User`` object.
-
-    4. Upon successful registration, the backend's
-       ``post_registration_redirect()`` method will be called, passing
-       the ``HttpRequest`` and the new ``User``, to determine the URL
-       to redirect the user to. To override this, see the list of
-       optional arguments for this view (below).
-
-    **Required arguments**
-
-    None.
-
-    **Optional arguments**
-
-    ``backend``
-        The dotted Python import path to the backend class to use.
-
-    ``disallowed_url``
-        URL to redirect to if registration is not permitted for the
-        current ``HttpRequest``. Must be a value which can legally be
-        passed to ``django.shortcuts.redirect``. If not supplied, this
-        will be whatever URL corresponds to the named URL pattern
-        ``registration_disallowed``.
-
-    ``form_class``
-        The form class to use for registration. If not supplied, this
-        will be retrieved from the registration backend.
-
-    ``extra_context``
-        A dictionary of variables to add to the template context. Any
-        callable object in this dictionary will be called to produce
-        the end result which appears in the context.
-
-    ``success_url``
-        URL to redirect to after successful registration. Must be a
-        value which can legally be passed to
-        ``django.shortcuts.redirect``. If not supplied, this will be
-        retrieved from the registration backend.
-
-    ``template_name``
-        A custom template to use. If not supplied, this will default
-        to ``registration/registration_form.html``.
-
-    **Context:**
-
-    ``form``
-        The registration form.
-
-    Any extra variables supplied in the ``extra_context`` argument
-    (see above).
-
-    **Template:**
-
-    registration/registration_form.html or ``template_name`` keyword
-    argument.
+    Base class for user activation views.
 
     """
-    backend = get_backend(backend)
-    if not backend.registration_allowed(request):
-        return redirect(disallowed_url)
-    if form_class is None:
-        form_class = backend.get_form_class(request)
+    http_method_names = ['get']
+    template_name = 'registration/activate.html'
 
-    if request.method == 'POST':
-        form = form_class(data=request.POST, files=request.FILES)
-        if form.is_valid():
-            new_user = backend.register(request, **form.cleaned_data)
-            if success_url is None:
-                to, args, kwargs = backend.post_registration_redirect(request, new_user)
-                return redirect(to, *args, **kwargs)
-            else:
+    def get(self, request, *args, **kwargs):
+        activated_user = self.activate(*args, **kwargs)
+        if activated_user:
+            success_url = self.get_success_url(activated_user)
+            try:
+                to, args, kwargs = success_url
+            except ValueError:
                 return redirect(success_url)
-    else:
-        form = form_class()
+            else:
+                return redirect(to, *args, **kwargs)
+        return super(ActivationView, self).get(request, *args, **kwargs)
 
-    if extra_context is None:
-        extra_context = {}
-    context = RequestContext(request)
-    for key, value in extra_context.items():
-        context[key] = callable(value) and value() or value
+    def activate(self, *args, **kwargs):
+        """
+        Implement account-activation logic here.
 
-    return render(request, template_name,
-                              {'form': form},
-                              context)
+        """
+        raise NotImplementedError
 
-
-def ajax_check_username(request):
-    response = 'false'
-    if request.is_ajax() and request.method == 'GET' and request.GET['username']:
-        existing = User.objects.filter(username__iexact=request.GET['username'])
-        if not existing.exists():
-            response = 'true'
-
-    return HttpResponse(response)
+    def get_success_url(self, user):
+        raise NotImplementedError
 
 
-def ajax_check_email(request):
-    response = 'false'
-    if request.is_ajax() and request.method == 'GET' and request.GET['email']:
-        if not User.objects.filter(email__iexact=request.GET['email']):
-            response = 'true'
+class ResendActivationView(FormView):
+    """
+    Base class for resending activation views.
+    """
+    form_class = ResendActivationForm
+    template_name = 'registration/resend_activation_form.html'
 
-    return HttpResponse(response)
+    def form_valid(self, form):
+        """
+        Regardless if resend_activation is successful, display the same
+        confirmation template.
+
+        """
+        self.resend_activation(form)
+        return self.render_form_submitted_template(form)
+
+    def resend_activation(self, form):
+        """
+        Implement resend activation key logic here.
+        """
+        raise NotImplementedError
+
+    def render_form_submitted_template(self, form):
+        """
+        Implement rendering of confirmation template here.
+
+        """
+        raise NotImplementedError
+
+
+class ApprovalView(TemplateView):
+
+    http_method_names = ['get']
+    template_name = 'registration/admin_approve.html'
+
+    def get(self, request, *args, **kwargs):
+        approved_user = self.approve(*args, **kwargs)
+        if approved_user:
+            success_url = self.get_success_url(approved_user)
+            try:
+                to, args, kwargs = success_url
+            except ValueError:
+                return redirect(success_url)
+            else:
+                return redirect(to, *args, **kwargs)
+        return super(ApprovalView, self).get(request, *args, **kwargs)
+
+    def approve(self, *args, **kwargs):
+        """
+        Implement admin-approval logic here.
+
+        """
+        raise NotImplementedError
+
+    def get_success_url(self, user):
+        raise NotImplementedError

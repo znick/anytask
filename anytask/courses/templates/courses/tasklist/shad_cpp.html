@@ -193,7 +193,7 @@
                 </div>
                 <div class="modal-body">
                     <p>{% trans "izmenenie_udalenie_zadach" %}</p>
-                    {% for group, tasks in group_tasks.iteritems %}
+                    {% for group, tasks in group_tasks.items %}
                         <div id="group_sort_{{ group.id }}" data-group="{{ group.id }}" data-table="#table_results_{{ group.id }}" data-marksystem="{% if course_mark_system_vals %}true{% endif %}" class="collapse">
                             <p  class="modal-group-name">{{ group.name }}</p>
                             <ul class="group-sortable" name="group_sort_{{ group.id }}">

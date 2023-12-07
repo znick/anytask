@@ -37,7 +37,7 @@ def login_required_basic_auth(view):
         if auth_str_parts[0].lower() != "basic":
             return get_401_response()
 
-        username, password = base64.b64decode(auth_str_parts[1]).split(":", 1)
+        username, password = base64.b64decode(auth_str_parts[1].encode('utf8')).decode('utf8').split(":", 1)
         user = authenticate(username=username, password=password)
         if user is None or not user.is_active:
             return get_401_response()
@@ -76,7 +76,7 @@ def unpack_issue(issue, add_events=False, request=None, lang=settings.API_LANGUA
         "create_time": issue.create_time.isoformat(),
         "update_time": issue.update_time.isoformat(),
         "responsible": None,
-        "followers": map(lambda x: unpack_user(x), issue.followers.all()),
+        "followers": list(map(lambda x: unpack_user(x), issue.followers.all())),
         "status": unpack_status(issue.status_field, lang),
         "student": unpack_user(issue.student),
         "task": unpack_task(task)
@@ -86,7 +86,7 @@ def unpack_issue(issue, add_events=False, request=None, lang=settings.API_LANGUA
         ret["responsible"] = unpack_user(issue.responsible)
 
     if add_events and request:
-        ret["events"] = map(lambda x: unpack_event(request, x), issue.get_history())
+        ret["events"] = list(map(lambda x: unpack_event(request, x), issue.get_history()))
 
     return ret
 
@@ -122,7 +122,7 @@ def unpack_event(request, event):
         "author": unpack_user(event.author),
         "message": event.get_message(),
         # "files": list(event.file_set.all())
-        "files": map(lambda x: unpack_file(request, x), event.file_set.filter(deleted=False)),
+        "files": list(map(lambda x: unpack_file(request, x), event.file_set.filter(deleted=False))),
     }
 
     return ret
@@ -153,7 +153,7 @@ def get_issue_filter(data):
         status_arg = data['status']
         filter_args['status_field__id' if status_arg.isdigit() else 'status_field__tag'] = status_arg
 
-    for arg, qs_arg in ISSUE_FILTER.iteritems():
+    for arg, qs_arg in ISSUE_FILTER.items():
         if arg in data:
             filter_args[qs_arg] = data[arg]
 

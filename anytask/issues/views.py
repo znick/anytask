@@ -210,7 +210,7 @@ def issue_page(request, issue_id):
                         'comment': value,
                         'files': request.FILES.getlist('files')
                     }
-                    if 'need_info' in request.POST and any(value.itervalues()):
+                    if 'need_info' in request.POST and any(value.values()):
                         issue.set_status_need_info()
 
                 issue.set_field(field, value, request.user)
@@ -312,7 +312,7 @@ def upload(request):
         event_value['comment'] = request.POST['comment']
         file_counter = 0
 
-        for field, value in dict(request.POST).iteritems():
+        for field, value in dict(request.POST).items():
             if 'compiler' in field:
                 pk = int(field[13:])
                 file = File.objects.get(pk=pk)

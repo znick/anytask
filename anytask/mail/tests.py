@@ -55,10 +55,10 @@ class CreateTest(TestCase):
         self.assertEqual(message.sender, self.sender)
         self.assertEqual(message.title, u"title")
         self.assertEqual(message.text, u"text")
-        self.assertItemsEqual(message.recipients.all(), self.recipients)
-        self.assertItemsEqual(message.recipients_user.all(), self.recipients)
-        self.assertItemsEqual(message.recipients_course.all(), self.recipients_course)
-        self.assertItemsEqual(message.recipients_group.all(), self.recipients_group)
+        self.assertCountEqual(message.recipients.all(), self.recipients)
+        self.assertCountEqual(message.recipients_user.all(), self.recipients)
+        self.assertCountEqual(message.recipients_course.all(), self.recipients_course)
+        self.assertCountEqual(message.recipients_group.all(), self.recipients_group)
 
 
 class ViewsTest(TestCase):
@@ -264,7 +264,7 @@ class ViewsTest(TestCase):
         # get page
         response = client.post(reverse(mail.views.ajax_send_message), post_data)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content, 'OK')
+        self.assertEqual(response.content, b'OK')
 
         # check msg creation
         messages_count = Message.objects.count()
@@ -273,10 +273,10 @@ class ViewsTest(TestCase):
         self.assertEqual(message.sender, self.sender)
         self.assertEqual(message.title, u"title")
         self.assertEqual(message.text, u"text")
-        self.assertItemsEqual(message.recipients.all(), self.recipients)
-        self.assertItemsEqual(message.recipients_user.all(), self.recipients_user)
-        self.assertItemsEqual(message.recipients_course.all(), self.recipients_course)
-        self.assertItemsEqual(message.recipients_group.all(), self.recipients_group)
+        self.assertCountEqual(message.recipients.all(), self.recipients)
+        self.assertCountEqual(message.recipients_user.all(), self.recipients_user)
+        self.assertCountEqual(message.recipients_course.all(), self.recipients_course)
+        self.assertCountEqual(message.recipients_group.all(), self.recipients_group)
 
         # check sent sender
         get_data = {
@@ -364,13 +364,13 @@ class ViewsTest(TestCase):
         # get page
         response = client.post(reverse(mail.views.ajax_send_message), post_data)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content, 'OK')
+        self.assertEqual(response.content, b'OK')
 
         message = Message.objects.get(id=1)
 
         # have unread msg
         for recipient in message.recipients.all():
-            self.assertItemsEqual(recipient.profile.unread_messages.all(), [message])
+            self.assertCountEqual(recipient.profile.unread_messages.all(), [message])
 
         # make read
         get_data = {

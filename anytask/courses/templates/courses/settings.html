@@ -240,7 +240,7 @@
                                 <div class="form-group row" style="display: none;" >
                                     <div class="controls col-lg-8 col-md-12">
                                         <select name="tasks_with_contest_rejudge[]" id="tasks_with_contest_rejudge_select" class="form-control" multiple="multiple">
-                                            {% for contest_id, tasks in tasks_with_contest.iteritems %}
+                                            {% for contest_id, tasks in tasks_with_contest.items %}
                                                 <optgroup label="{{ contest_id }}">
                                                     {% for task in tasks %}
                                                         <option value="{{ task.id }}" selected>{% get_text_from_json task 'get_title' LANGUAGE_CODE %}</option>
@@ -261,7 +261,7 @@
                                 <div class="form-group row" style="display: none;" >
                                     <div class="controls col-lg-8 col-md-12">
                                         <select name="tasks_with_contest[]" id="tasks_with_contest_select" class="form-control" multiple="multiple">
-                                            {% for contest_id, tasks in tasks_with_contest.iteritems %}
+                                            {% for contest_id, tasks in tasks_with_contest.items %}
                                                 <optgroup label="{{ contest_id }}">
                                                     {% for task in tasks %}
                                                         <option value="{{ task.id }}" selected>{% get_text_from_json task 'get_title' LANGUAGE_CODE %}</option>

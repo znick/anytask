@@ -44,11 +44,11 @@ class UserStatus(models.Model):
     tag = models.CharField(max_length=254, db_index=False, null=True, blank=True, choices=USER_STATUSES)
     color = ColorField(default=COLOR_DEFAULT)
 
-    def __unicode__(self):
+    def __str__(self):
         return u'{0}'.format(self.name)
 
     def get_full_name(self):
-        return unicode(self.name)
+        return str(self.name)
 
 
 def get_statuses():

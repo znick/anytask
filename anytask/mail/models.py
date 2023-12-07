@@ -27,7 +27,7 @@ class Message(models.Model):
 
     create_time = models.DateTimeField(auto_now_add=True)  # remove default=timezone.now
 
-    def __unicode__(self):
+    def __str__(self):
         return u'%s %s' % (self.sender.username, self.title)
 
     def read_message(self, user):

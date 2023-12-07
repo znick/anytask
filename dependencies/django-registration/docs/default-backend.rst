@@ -4,9 +4,8 @@
 The default backend
 ===================
 
-A default :ref:`registration backend <backend-api>` is bundled with
-django-registration, as the class
-``registration.backends.default.DefaultBackend``, and implements a
+A default registration backend is bundled with |project|,
+as the module ``registration.backends.default``, and implements a
 simple two-step workflow in which a new user first registers, then
 confirms and activates the new account by following a link sent to the
 email address supplied during registration.
@@ -14,6 +13,10 @@ email address supplied during registration.
 
 Default behavior and configuration
 ----------------------------------
+
+To make use of this backend, simply include the URLConf
+``registration.backends.default.urls`` at whatever location you choose
+in your URL hierarchy.
 
 This backend makes use of the following settings:
 
@@ -29,21 +32,53 @@ This backend makes use of the following settings:
     is optional, and a default of ``True`` will be assumed if it is
     not supplied.
 
+``INCLUDE_AUTH_URLS``
+    A boolean (either ``True`` or ``False``) indicating whether auth urls
+    (mapped to ``django.contrib.auth.views``) should be included in the
+    ``urlpatterns`` of the application backend.
+
+``INCLUDE_REGISTER_URL``
+    A boolean (either ``True`` or ``False``) indicating whether the view
+    for registering accounts should be included in the ``urlpatterns``
+    of the application backend.
+
+``REGISTRATION_FORM``
+    A string dotted path to the desired registration form.
+
+``ACTIVATION_EMAIL_SUBJECT``
+    A string slashed path to the desired template for the activation email subject.
+    
+``ACTIVATION_EMAIL_BODY``
+    A string slashed path to the desired template for the activation email body.
+    
+``ACTIVATION_EMAIL_HTML``
+    A string slashed path tot the desired template for the activation email html.
+
 By default, this backend uses
 :class:`registration.forms.RegistrationForm` as its form class for
 user registration; this can be overridden by passing the keyword
 argument ``form_class`` to the :func:`~registration.views.register`
 view.
 
+Two views are provided:
+``registration.backends.default.views.RegistrationView`` and
+``registration.backends.default.views.ActivationView``. These views
+subclass |project|'s base
+:class:`~registration.views.RegistrationView` and
+:class:`~registration.views.ActivationView`, respectively, and
+implement the two-step registration/activation process.
+
 Upon successful registration -- not activation -- the default redirect
 is to the URL pattern named ``registration_complete``; this can be
-overridden by passing the keyword argument ``success_url`` to the
-:func:`~registration.views.register` view.
+overridden in subclasses by changing
+:attr:`~registration.views.RegistrationView.success_url` or
+implementing
+:meth:`~registration.views.RegistrationView.get_success_url()`
 
 Upon successful activation, the default redirect is to the URL pattern
-named ``registration_activation_complete``; this can be overridden by
-passing the keyword argument ``success_url`` to the
-:func:`~registration.views.activate` view.
+named ``registration_activation_complete``; this can be overridden in
+subclasses by implementing
+:meth:`~registration.views.ActivationView.get_success_url()`.
 
 
 How account data is stored for activation
@@ -80,16 +115,15 @@ the database, using the following model:
 
    .. attribute:: activation_key
 
-      A 40-character ``CharField``, storing the activation key for the
-      account. Initially, the activation key is the hexdigest of a
-      SHA1 hash; after activation, this is reset to :attr:`ACTIVATED`.
+      A 64-character ``CharField``, storing the activation key for the
+      account. The activation key is the hexdigest of a SHA256 hash.
 
-   Additionally, one class attribute exists:
+   .. attribute:: activated
 
-   .. attribute:: ACTIVATED
-
-      A constant string used as the value of :attr:`activation_key`
-      for accounts which have been activated.
+      A ``BooleanField``, storing whether or not the the User has activated
+      their account. Storing this independent from ``self.user.is_active``
+      allows accounts to be deactivated and prevent being reactivated without
+      authorization.
 
    And the following methods:
 
@@ -99,7 +133,7 @@ the database, using the following model:
       and returns a boolean (``True`` if expired, ``False``
       otherwise). Uses the following algorithm:
 
-      1. If :attr:`activation_key` is :attr:`ACTIVATED`, the account
+      1. If :attr:`activated` is ``True``, the account
          has already been activated and so the key is considered to
          have expired.
 
@@ -111,7 +145,7 @@ the database, using the following model:
 
       :rtype: bool
 
-   .. method:: send_activation_email(site)
+   .. method:: send_activation_email(site[, request])
 
       Sends an activation email to the address of the account.
 
@@ -140,6 +174,14 @@ the database, using the following model:
           <http://docs.djangoproject.com/en/dev/ref/contrib/sites/>`_
           for details regarding these objects' interfaces.
 
+      ``request``
+          Django's ``HttpRequest`` object for better flexibility.
+          When provided, it will also provide all the data via
+          installed template context processors which can provide
+          even more flexibility by using many Django's provided
+          and custom template context processors to provide more
+          variables to the template.
+
       Because email subjects must be a single line of text, the
       rendered output of ``registration/activation_email_subject.txt``
       will be forcibly condensed to a single line.
@@ -148,6 +190,12 @@ the database, using the following model:
          was registered.
       :type site: ``django.contrib.sites.models.Site`` or
         ``django.contrib.sites.models.RequestSite``
+      :param request: Optional Django's ``HttpRequest`` object
+         from view which if supplied will be passed to the template
+         via ``RequestContext``. As a consequence, all installed
+         ``TEMPLATE_CONTEXT_PROCESSORS`` will be used to populate
+         context.
+      :type request: ``django.http.request.HttpRequest``
       :rtype: ``None``
 
 
@@ -160,23 +208,24 @@ Additionally, :class:`RegistrationProfile` has a custom manager
    This manager provides several convenience methods for creating and
    working with instances of :class:`RegistrationProfile`:
 
-   .. method:: activate_user(activation_key)
+   .. method:: activate_user(activation_key, site)
 
       Validates ``activation_key`` and, if valid, activates the
       associated account by setting its ``is_active`` field to
       ``True``. To prevent re-activation of accounts, the
-      :attr:`~RegistrationProfile.activation_key` of the
+      :attr:`~RegistrationProfile.activated` of the
       :class:`RegistrationProfile` for the account will be set to
-      :attr:`RegistrationProfile.ACTIVATED` after successful
-      activation.
+      ``True`` after successful activation.
 
-      Returns the ``User`` instance representing the account if
-      activation is successful, ``False`` otherwise.
+      Returns a tuple of (``User``, ``activated``) representing the account if
+      activation is successful and whether the ``User`` was activated or not.
 
       :param activation_key: The activation key to use for the
          activation.
-      :type activation_key: string, a 40-character SHA1 hexdigest
-      :rtype: ``User`` or bool
+      :type activation_key: string, a 64-character SHA256 hexdigest
+      :type site: ``django.contrib.sites.models.Site`` or
+        ``django.contrib.sites.models.RequestSite``
+      :rtype: (``User``, ``bool)
 
    .. method:: delete_expired_users
 
@@ -199,18 +248,16 @@ Additionally, :class:`RegistrationProfile` has a custom manager
 
       :rtype: ``None``
 
-   .. method:: create_inactive_user(username, email, password, site[, send_email])
+   .. method:: create_inactive_user(site, [new_user=None, send_email=True, request=None, **user_info])
 
       Creates a new, inactive user account and an associated instance
       of :class:`RegistrationProfile`, sends the activation email and
       returns the new ``User`` object representing the account.
 
-      :param username: The username to use for the new account.
-      :type username: string
-      :param email: The email address to use for the new account.
-      :type email: string
-      :param password: The password to use for the new account.
-      :type password: string
+      :param new_user: The user instance.
+      :type new_user: ``django.contrib.auth.models.AbstractBaseUser```
+      :param user_info: The fields to use for the new account.
+      :type user_info: dict
       :param site: An object representing the site on which the
          account is being registered.
       :type site: ``django.contrib.sites.models.Site`` or
@@ -221,6 +268,12 @@ Additionally, :class:`RegistrationProfile` has a custom manager
          ``False``, no email will be sent (but the account will still
          be inactive)
       :type send_email: bool
+      :param request: If ``send_email`` parameter is ``True``
+         and if ``request`` is supplied, it will be passed to the
+         email templates for better flexibility.
+         Please take a look at the sample email templates
+         for better explanation how it can be used.
+      :type request: ``django.http.request.HttpRequest``
       :rtype: ``User``
 
    .. method:: create_profile(user)
@@ -229,7 +282,7 @@ Additionally, :class:`RegistrationProfile` has a custom manager
       the account represented by ``user``.
 
       The ``RegistrationProfile`` created by this method will have its
-      :attr:`~RegistrationProfile.activation_key` set to a SHA1 hash
+      :attr:`~RegistrationProfile.activation_key` set to a SHA256 hash
       generated from a combination of the account's username and a
       random salt.
 

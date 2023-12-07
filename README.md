@@ -1,6 +1,7 @@
 Anytask [![Build Status](https://github.com/znick/anytask/actions/workflows/anytask.yml/badge.svg)](https://github.com/znick/anytask/actions)
 =======
 
+Used Python3.8
 
 local install
 -------------

@@ -20,17 +20,9 @@ ANYBETA_crash_on_error
 git submodule update
 ANYBETA_crash_on_error
 
-# CHOOSE RIGHT VERSION
-######################
-
-ANYBETA_PYTHON_VERSION_CHECK="from __future__ import print_function; import sys; print(int(sys.version_info < (3, 3)))"
-
-if test `$ANYBETA_PYTHON_PATH -c "$ANYBETA_PYTHON_VERSION_CHECK"` -eq 1
-then 
-  . $ANYBETA_DEPLOY/deploy_local_beta_python2.sh
-else
-  . $ANYBETA_DEPLOY/deploy_local_beta_python3.sh
-fi
+# DEPLOY
+################ 
+. $ANYBETA_DEPLOY/deploy_local_beta_python.sh
 
 # MINIO
 ################

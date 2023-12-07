@@ -66,7 +66,7 @@ class DefaultIssueFields(set):
 class FilenameExtension(models.Model):
     name = models.CharField(max_length=10, db_index=False, null=False, blank=False)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -74,7 +74,7 @@ class MarkField(models.Model):
     name = models.CharField(max_length=191, db_index=True, null=False, blank=False)
     name_int = models.IntegerField(db_index=False, null=False, blank=False, default=-1)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name if self.name else '--'
 
     class Meta:
@@ -85,8 +85,8 @@ class CourseMarkSystem(models.Model):
     name = models.CharField(max_length=191, db_index=False, null=False, blank=False)
     marks = models.ManyToManyField(MarkField, blank=True)
 
-    def __unicode__(self):
-        return unicode(self.name)
+    def __str__(self):
+        return str(self.name)
 
 
 class Course(models.Model):
@@ -152,11 +152,11 @@ class Course(models.Model):
 
     allow_costudents = models.BooleanField(db_index=False, null=False, blank=False, default=False)
 
-    def __unicode__(self):
-        return unicode(self.name)
+    def __str__(self):
+        return str(self.name)
 
     def get_full_name(self):
-        return unicode(self.name)
+        return str(self.name)
 
     def get_absolute_url(self):
         return reverse('courses.views.course_page', args=[str(self.id)])
@@ -280,7 +280,7 @@ class DefaultTeacher(models.Model):
     course = models.ForeignKey(Course, db_index=True, null=False, blank=False)
     group = models.ForeignKey(Group, db_index=True, null=True, blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return u"|".join((self.course.name, self.group.name, self.teacher.username))
 
     class Meta:
@@ -295,8 +295,8 @@ class StudentCourseMark(models.Model):
     teacher = models.ForeignKey(User, related_name='teacher_change_mark', db_index=False, null=True, blank=True)
     update_time = models.DateTimeField(auto_now=True)  # remove default=timezone.now
 
-    def __unicode__(self):
-        return unicode(self.mark)
+    def __str__(self):
+        return str(self.mark)
 
     class Meta:
         unique_together = (("student", "course"),)

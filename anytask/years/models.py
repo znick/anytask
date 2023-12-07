@@ -8,7 +8,7 @@ class Year(models.Model):
     added_time = models.DateTimeField(auto_now_add=True)  # remove default=timezone.now
     update_time = models.DateTimeField(auto_now=True)  # remove default=timezone.now
 
-    def __unicode__(self):
+    def __str__(self):
         return u"{0}-{1}".format(self.start_year, self.start_year + 1)
 
     def get_absolute_url(self):

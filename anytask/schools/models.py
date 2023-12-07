@@ -11,11 +11,11 @@ class School(models.Model):
     is_active = models.BooleanField(db_index=True, null=False, blank=False, default=True)
     courses = models.ManyToManyField(Course, blank=True)
 
-    def __unicode__(self):
-        return unicode(self.name)
+    def __str__(self):
+        return str(self.name)
 
     def get_full_name(self):
-        return unicode(self.name)
+        return str(self.name)
 
     def get_absolute_url(self):
         return reverse('schools.views.school_page', args=[str(self.link)])

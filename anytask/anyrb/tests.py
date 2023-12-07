@@ -1,7 +1,7 @@
 import os
 
 from django.test import TestCase
-from unpacker import UnpackedFile, unpack_files
+from .unpacker import UnpackedFile, unpack_files
 
 CUR_DIR = os.path.dirname(os.path.abspath(__file__))
 TEST_DIR = os.path.join(CUR_DIR, "test_data")
@@ -28,7 +28,7 @@ class UnpackerTest(TestCase):
         ]
 
         with unpack_files(files) as unpacked_files:
-            unpacked_filenames = map(lambda x: x.filename(), unpacked_files)
+            unpacked_filenames = list(map(lambda x: x.filename(), unpacked_files))
             self.assertListEqual(['1.txt', arcfilename + '/1.py', arcfilename + '/dir/1.pl'], unpacked_filenames)
 
     def test_unpack_zip(self):

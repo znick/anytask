@@ -11,7 +11,7 @@ from django.http import HttpResponse
 
 import csv
 import datetime
-import StringIO
+from io import StringIO
 
 
 class PythonTaskStat(object):
@@ -29,12 +29,12 @@ class PythonTaskStat(object):
         self._course_update(group)
 
     def get_group_stat(self):
-        return [(group, stat['student_stat']) for (group, stat) in self.group_stat.iteritems()]
+        return [(group, stat['student_stat']) for (group, stat) in self.group_stat.items()]
 
     def get_course_stat(self):
         stat = [
             (group, stat['total'], stat['active_students'], stat['avg_score'])
-            for (group, stat) in self.group_stat.iteritems()
+            for (group, stat) in self.group_stat.items()
         ]
 
         stat.append(
@@ -64,8 +64,10 @@ class PythonTaskStat(object):
         group_students = []
 
         for student in group.students.filter(is_active=True).order_by('last_name', 'first_name'):
-            tasks = TaskTaken.objects.filter(Q(Q(user=student) | Q(issue__costudents=student))).filter(task__in=self.tasks) \
-                .filter(Q(Q(status=TaskTaken.STATUS_TAKEN) | Q(status=TaskTaken.STATUS_SCORED))).distinct()
+            tasks = TaskTaken.objects.filter(Q(Q(user=student) | Q(issue__costudents=student))) \
+                .filter(task__in=self.tasks) \
+                .filter(Q(Q(status=TaskTaken.STATUS_TAKEN) | Q(status=TaskTaken.STATUS_SCORED))) \
+                .distinct()
             if tasks.count() > 0:
                 stat['active_students'] += 1
 
@@ -144,16 +146,16 @@ def tasks_list(request, course):
 
 
 def _conver_group_stat_to_cvs(group_stat):
-    fn = StringIO.StringIO()
+    fn = StringIO()
     fieldnames = ['group', 'name', 'score']
     writer = csv.DictWriter(fn, fieldnames=fieldnames)
 
     writer.writeheader()
     for group, user_data in group_stat:
-        for user, score, _ in user_data:
+        for user, score, __ in user_data:
             writer.writerow({'group': group.name.encode('utf-8'),
                              'name': "{} {}".format(user.last_name.encode('utf-8'), user.first_name.encode('utf-8')),
-                             'score':score})
+                             'score': score})
 
     return fn.getvalue()
 
@@ -195,7 +197,7 @@ def get_task(request, course_id, task_id):
             task_taken.issue = issue
             task_taken.save()
 
-        task_taken.issue.add_comment(unicode(_("zapisalsya_na_task")))
+        task_taken.issue.add_comment(str(_("zapisalsya_na_task")))
 
     return redirect('courses.views.course_page', course_id=course_id)
 

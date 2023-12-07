@@ -2,7 +2,7 @@
 import requests
 import logging
 import xmltodict
-from BeautifulSoup import BeautifulStoneSoup
+from bs4 import BeautifulStoneSoup
 
 from django.conf import settings
 

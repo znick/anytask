@@ -26,6 +26,7 @@ from issues.models import Issue
 from tasks.models import Task
 
 from pytz import timezone
+from functools import reduce
 
 HEADERS = {'Authorization': 'OAuth ' + settings.CONTEST_OAUTH}
 PROBLEMS_API = settings.CONTEST_API_URL + 'problems?locale={lang}&contestId={cont_id}'

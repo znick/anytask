@@ -35,8 +35,9 @@ class UserLoginTest(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'registration/login.html')
-        self.assertContains(response, u"Логин / E-mail")
-        self.assertContains(response, u"Пароль")
+
+        self.assertContains(response, "Логин / E-mail")
+        self.assertContains(response, "Пароль")
 
     def test_register_form(self):
         client = self.client
@@ -44,9 +45,8 @@ class UserLoginTest(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'registration/registration_form.html')
-
-        self.assertContains(response, u"Логин")
-        self.assertContains(response, u"E-mail")
+        self.assertContains(response, "Логин", html=True)
+        self.assertContains(response, "E-mail", html=True)
 
     def test_login_user__username(self):
         client = self.client
@@ -76,7 +76,7 @@ class UserLoginTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(
             response,
-            u"Пожалуйста, введите верные имя пользователя / адрес электронной почты  и пароль."
+            "Пожалуйста, введите верные имя пользователя / адрес электронной почты  и пароль.", html=True
         )
 
     def test_login_user__bad_password(self):
@@ -89,7 +89,7 @@ class UserLoginTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(
             response,
-            u"Пожалуйста, введите верные имя пользователя / адрес электронной почты  и пароль."
+            "Пожалуйста, введите верные имя пользователя / адрес электронной почты  и пароль.", html=True
         )
 
     def test_login_user__bad_email(self):
@@ -102,7 +102,7 @@ class UserLoginTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(
             response,
-            u"Пожалуйста, введите верные имя пользователя / адрес электронной почты  и пароль."
+            "Пожалуйста, введите верные имя пользователя / адрес электронной почты и пароль.".encode('utf8')
         )
 
     def test_register_user(self):
@@ -154,7 +154,7 @@ class UserLoginTest(TestCase):
         response = client.post('/accounts/register/', form_data)
         self.assertEqual(response.status_code, 200)
         self.assertFormError(response, 'form', 'email',
-                             u"This email address is already in use. Please supply a different email address.")
+                             "This email address is already in use. Please supply a different email address.")
 
     def test_register_user__wrong_passwords(self):
         client = self.client
@@ -188,9 +188,13 @@ class UserLoginTest(TestCase):
         self.assert_(change_password_url_match)
         change_password_url = change_password_url_match.group(1)
 
+        # change_password_url redirects to real change password form
+        response = client.get(change_password_url, follow=True)
+        change_password_url_post = response.redirect_chain[-1][0]
+
         # finnaly set new password
-        form_data = {"new_password1": u"qwer", "new_password2": u"qwer"}
-        response = client.post(change_password_url, form_data, follow=True)
+        form_data = {"new_password1": new_password, "new_password2": new_password}
+        response = client.post(change_password_url_post, form_data, follow=True)
         self.assertEqual(response.status_code, 200)  # password changed!
 
         # check new password finally set

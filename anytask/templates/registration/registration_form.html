@@ -82,7 +82,7 @@
                     email: {
                         required : "{% trans 'objazatelnoe_pole' %}",
                         email : "{% trans 'vvedite_korrektnyj_adres' %}",
-                        remote : "{% trans 'polzovatel_s_adresom_sushestvuet' %} <a class='text-muted' href='{% url "django.contrib.auth.views.login" %}'>{% trans 'vojdite' %}</a>"
+                        remote : "{% trans 'polzovatel_s_adresom_sushestvuet' %} <a class='text-muted' href='{% url "auth_login" %}'>{% trans 'vojdite' %}</a>"
                     },
                     password1: {
                         required : "{% trans 'objazatelnoe_pole' %}"

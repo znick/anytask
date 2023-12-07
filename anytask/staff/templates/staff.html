@@ -91,7 +91,7 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {% for id_user, user_info in filter.users_info.iteritems %}
+                                {% for id_user, user_info in filter.users_info.items %}
                                     <tr data-id_user="{{ id_user }}" data-id_profile="{{ user_info.id_profile }}">
                                         <td>
                                             <input type='checkbox' class='table-checkbox'>
@@ -101,7 +101,7 @@
                                         </td>
                                         <td title="{{ user_info.email }}">{{ user_info.email }}</td>
                                         <td>
-                                            {% for id_status, status_info in user_info.statuses.iteritems %}
+                                            {% for id_status, status_info in user_info.statuses.items %}
                                                 <span class="label" title="{{ status_info.name }}" style="background-color: {{ status_info.color }}">{{ status_info.name }}</span>
                                             {% endfor %}
                                         </td>
@@ -134,7 +134,7 @@
                     <p>{% trans "vybrano_polzovateley" %}&nbsp;<span class="selected_users_count"></span>.</p>
                     <form id="form_change_status">
                         {% csrf_token %}
-                        {% for status_type, status_values in statuses.iteritems %}
+                        {% for status_type, status_values in statuses.items %}
                             <fieldset class="form-group">
                                 <label class="status-type-label" data-type="{{ status_type }}">
                                     {% if status_type %}

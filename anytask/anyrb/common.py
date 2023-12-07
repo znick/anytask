@@ -9,7 +9,7 @@ from django.utils.translation import ugettext as _
 
 from rbtools.api.client import RBClient
 from rbtools.api.errors import APIError, AuthorizationError, BadRequestError, ServerInterfaceError
-from unpacker import unpack_files
+from .unpacker import unpack_files
 
 logger = logging.getLogger('django.request')
 
@@ -191,7 +191,7 @@ class AnyRB(object):
                     path=os.path.join(repository_path, '.git'),
                     tool='Git',
                     public=False)
-            except Exception as e:
+            except Exception:
                 logger.warning("Cant create repository '%s', trying to find it", repository_name)
                 repository = self.get_repository(repository_name)
 

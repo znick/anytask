@@ -9,11 +9,13 @@ contains the actual logic for determining which accounts are deleted.
 
 from django.core.management.base import BaseCommand
 
-from registration.models import RegistrationProfile
+from ...models import RegistrationProfile
 
 
 class Command(BaseCommand):
     help = "Delete expired user registrations from the database"
 
-    def handle(self, **options):
+    def handle(self, *args, **options):
+        self.stdout.write('Running cleanupregistration.')
         RegistrationProfile.objects.delete_expired_users()
+        self.stdout.write('cleanupregistration completed.')

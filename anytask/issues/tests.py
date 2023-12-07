@@ -6,7 +6,7 @@ when you run "manage.py test".
 
 Replace this with more appropriate tests for your application.
 """
-from StringIO import StringIO
+from io import StringIO
 from unittest import skipIf
 
 from django.core.management import call_command
@@ -25,7 +25,7 @@ from issues.model_issue_status import IssueStatus
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from mock import patch
-from BeautifulSoup import BeautifulSoup
+from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 from django.core.urlresolvers import reverse
 from storages.backends.s3boto3 import S3Boto3Storage
@@ -89,7 +89,7 @@ class CreateTest(TestCase):
         self.assertEqual(issue.mark, 3)
         self.assertEqual(issue.responsible, responsible)
         self.assertEqual(issue.status_field, status)
-        self.assertItemsEqual(issue.followers.all(), followers)
+        self.assertCountEqual(issue.followers.all(), followers)
 
 
 class ViewsTest(TestCase):
@@ -258,15 +258,15 @@ class ViewsTest(TestCase):
         self.assertEqual(len(forms[2]('option')), 3, '6th issue field select option len is not 4')
         self.assertIn('value="3"', str(forms[2]('option')[0]), '6th issue field select 1st option value wrong')
         self.assertIn(u'На проверке',
-                      unicode(forms[2]('option')[0]),
+                      str(forms[2]('option')[0]),
                       '6th issue field select 1st option text wrong')
         self.assertIn('value="4"', str(forms[2]('option')[1]), '6th issue field select 2st option value wrong')
         self.assertIn(u'На доработке',
-                      unicode(forms[2]('option')[1]),
+                      str(forms[2]('option')[1]),
                       '6th issue field select 2st option text wrong')
         self.assertIn('value="5"', str(forms[2]('option')[2]), '6th issue field select 3st option value wrong')
         self.assertIn(u'Зачтено',
-                      unicode(forms[2]('option')[2]),
+                      str(forms[2]('option')[2]),
                       '6th issue field select 3st option text wrong')
         self.assertEqual(len(forms[2]('button')), 1, '6th issue field button len is not 1')
         self.assertEqual(forms[2]('button')[0].string.strip().strip('\n'),
@@ -780,7 +780,7 @@ class ViewsTest(TestCase):
         self.assertEqual(len(history), 2, 'History len is not 2')
         self.assertIsNotNone(history[0].find('div', {'id': 'event_alert'}), 'No info message for deadline')
         self.assertNotIn('after_deadline',
-                         history[1].find('div', 'history-body')['class'].split(' '),
+                         history[1].find('div', 'history-body')['class'],
                          'Wrong deadline end comment color')
 
         # login via student
@@ -805,10 +805,10 @@ class ViewsTest(TestCase):
         self.assertEqual(len(history), 3, 'History len is not 3')
         self.assertIsNotNone(history[0].find('div', {'id': 'event_alert'}), 'No info messege for deadline')
         self.assertNotIn('after_deadline',
-                         history[1].find('div', 'history-body')['class'].split(' '),
+                         history[1].find('div', 'history-body')['class'],
                          'Wrong deadline end comment color')
         self.assertIn('after_deadline',
-                      history[2].find('div', 'history-body')['class'].split(' '),
+                      history[2].find('div', 'history-body')['class'],
                       'Wrong deadline end comment color')
 
         # check if deadline greater
@@ -831,10 +831,10 @@ class ViewsTest(TestCase):
         self.assertEqual(len(history), 2, 'History len is not 2')
         self.assertIsNone(history[0].find('div', {'id': 'event_alert'}), 'No info messege for deadline')
         self.assertNotIn('after_deadline',
-                         history[0].find('div', 'history-body')['class'].split(' '),
+                         history[0].find('div', 'history-body')['class'],
                          'Wrong deadline end comment color')
         self.assertNotIn('after_deadline',
-                         history[1].find('div', 'history-body')['class'].split(' '),
+                         history[1].find('div', 'history-body')['class'],
                          'Wrong deadline end comment color')
 
     @patch('anyrb.common.AnyRB.upload_review')
@@ -1003,6 +1003,8 @@ class ViewsTest(TestCase):
 
 @skipIf(not IS_S3_REACHABLE, "S3 seems misconfigured")
 class S3MigrateIssueAttachments(TestCase, SerializeMixin):
+    maxDiff = None
+
     def setUp(self):
         self.teacher_password = 'password1'
         self.teacher = User.objects.create_user(username='teacher',
@@ -1162,7 +1164,8 @@ class S3MigrateIssueAttachments(TestCase, SerializeMixin):
                              out.getvalue().strip())
 
         out = StringIO()
-        call_command('s3migrate_issue_attachments', '--execute', '--rewrite-only-existing', stdout=out)
+        err = StringIO()
+        call_command('s3migrate_issue_attachments', '--execute', '--rewrite-only-existing', stdout=out, stderr=err)
 
         for file in [file_first, file_second]:
             expected_s3_path = S3OverlayStorage.append_s3_prefix(file.file.name)
@@ -1173,9 +1176,10 @@ class S3MigrateIssueAttachments(TestCase, SerializeMixin):
                 expected_s3_path, file, expected_s3_path, file, expected_s3_path)
             expected_stdout = (expected_stdout * 2).strip()
             file = File.objects.get(pk=file.pk)
+            cmd_out = out.getvalue().strip()
+            self.assertEqual(expected_stdout, cmd_out)
             self.assertTrue(S3OverlayStorage.is_s3_stored(file.file.name))
             self.assertTrue(self.s3_storage.exists(file.file.name))
-            self.assertEqual(expected_stdout, out.getvalue().strip())
 
     def test_upload_archives(self):
         for ext in anyrb.unpacker.get_supported_extensions():
