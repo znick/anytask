@@ -40,7 +40,7 @@ class AnyRB(object):
 
         with unpack_files(self.event.file_set.all()) as files:
             for f in files:
-                mime_type = magic.from_buffer(f.file.read(1024), mime=True)
+                mime_type = magic.from_buffer(f.file.read(2048), mime=True)
                 if mime_type[:4] != 'text':
                     continue
 
@@ -54,8 +54,8 @@ class AnyRB(object):
 
                 from difflib import unified_diff
                 fname = f.filename()
-                from_name = u'a/{0}'.format(fname)
-                to_name = u'b/{0}'.format(fname)
+                from_name = 'a/{0}'.format(fname)
+                to_name = 'b/{0}'.format(fname)
 
                 diff = [(u'diff --git {0} {1}'.format(from_name, to_name))]
                 from_name = u'/dev/null'
@@ -63,13 +63,11 @@ class AnyRB(object):
                 diff_content = unified_diff('',
                                             file_content,
                                             fromfile=from_name,
-                                            tofile=to_name.encode('utf-8'))
+                                            tofile=to_name)
+
                 for line in diff_content:
                     line = line.strip()
-                    if isinstance(line, str):
-                        diff.append(line.decode('utf-8'))
-                    else:
-                        diff.append(line)
+                    diff.append(line)
 
                 files_diff.append(u'\n'.join(diff))
 

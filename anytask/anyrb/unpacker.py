@@ -37,7 +37,7 @@ class UnpackedFile(object):
 
     @property
     def file(self):
-        return open(self.path)
+        return open(self.path, 'rb')
 
     def filename(self):
         return self._filename
