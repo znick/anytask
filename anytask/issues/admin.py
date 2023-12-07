@@ -2,7 +2,7 @@
 
 from issues.model_issue_field import IssueField
 from issues.model_issue_status import IssueStatus, IssueStatusSystem
-from issues.models import Issue, Event
+from issues.models import Issue, Event, EventChange
 from django.contrib import admin
 from django.utils.translation import ugettext as _
 
@@ -58,8 +58,14 @@ class EventAdmin(admin.ModelAdmin):
     readonly_fields = ('timestamp',)
 
 
+class EventChangeAdmin(admin.ModelAdmin):
+    raw_id_fields = ['event']
+    search_fields = ('event__id', )
+
+
 admin.site.register(Issue)
 admin.site.register(Event, EventAdmin)
+admin.site.register(EventChange, EventChangeAdmin)
 admin.site.register(IssueField)
 admin.site.register(IssueStatus, IssueStatusAdmin)
 admin.site.register(IssueStatusSystem, IssueStatusSystemAdmin)
