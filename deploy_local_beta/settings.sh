@@ -10,7 +10,7 @@ fi
 export ANYBETA_ROOT=$PWD
 export ANYBETA_DEPLOY="$PWD/deploy_local_beta"
 
-export ANYBETA_PYTHON_PATH="/Users/zhnick/.pyenv/versions/3.8.18/bin/python3"
+export ANYBETA_PYTHON_PATH="`which python3`"
 
 export ANYBETA_VENV_NAME="anytask_venv"
 export ANYBETA_VENV_DIR="$ANYBETA_ROOT/$ANYBETA_VENV_NAME"
