@@ -5,21 +5,3 @@ updates:
   schedule:
     interval: daily
   open-pull-requests-limit: 10
-  ignore:
-  - dependency-name: ipython[notebook]
-    versions:
-    - 7.19.0
-    - 7.20.0
-    - 7.21.0
-  - dependency-name: lxml
-    versions:
-    - 4.6.2
-  - dependency-name: pytz
-    versions:
-    - "2020.5"
-  - dependency-name: jupyter-core
-    versions:
-    - 4.7.0
-  - dependency-name: jinja2
-    versions:
-    - 2.11.2

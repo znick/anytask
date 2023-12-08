@@ -102,7 +102,7 @@ JUPYTERHUB_URL = 'https://jupyter.anytask.ru'
 LANGUAGES = (('ru', u'Русский'),
              ('en', 'English'))
 
-FILE_UPLOAD_PERMISSIONS = 644  # 0644
+# FILE_UPLOAD_PERMISSIONS = 644  # 0644
 
 
 AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
