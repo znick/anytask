@@ -1,6 +1,9 @@
 from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
 from django.shortcuts import render
+from django.utils.translation import get_language_from_request
+
+from users.models import UserProfile
 
 from ... import signals
 from ...models import RegistrationProfile
@@ -102,6 +105,17 @@ class RegistrationView(BaseRegistrationView):
             send_email=self.SEND_ACTIVATION_EMAIL,
             request=self.request,
         )
+
+        new_user.first_name = form.cleaned_data['first_name']
+        new_user.last_name = form.cleaned_data['last_name']
+        new_user.save()
+
+        new_user_profile = UserProfile.objects.get(user=new_user)
+        new_user_profile.show_email = form.cleaned_data['show_email']
+        new_user_profile.language = get_language_from_request(self.request)
+        new_user_profile.save()
+
+
         signals.user_registered.send(sender=self.__class__,
                                      user=new_user,
                                      request=self.request)
