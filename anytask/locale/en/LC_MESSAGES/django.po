@@ -78,7 +78,7 @@ msgstr "Problem"
 #: mail/templates/mail.html:174 users/model_user_profile_filter.py:27
 #: users/templates/my_tasks.html:140 users/templates/user_courses.html:91
 msgid "kurs"
-msgstr "Year of study"
+msgstr "Course"
 
 #: anyrb/common.py:89 courses/templates/courses/attendance_list.html:38
 #: courses/templates/courses/queue.html:76
@@ -1964,7 +1964,7 @@ msgstr "Hide assignments"
 #, fuzzy
 #| msgid "kurs"
 msgid "v_kurse"
-msgstr "Year of study"
+msgstr "Course"
 
 #: tasks/templates/email_notification_task.html:27
 #: tasks/templates/email_notification_task.txt:4
