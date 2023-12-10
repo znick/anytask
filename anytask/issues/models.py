@@ -13,7 +13,7 @@ from django.db import models
 from django.db.models import Q
 from django.dispatch import receiver
 from django.utils import timezone
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext as _
 from issues.model_issue_field import IssueField
 from issues.model_issue_status import IssueStatus
 from tasks.models import Task

@@ -12,8 +12,6 @@ msgid "oshibka"
 msgstr "Error"
 
 #: admission/views.py:180
-#, fuzzy
-#| msgid "oshibka_otpravki_v_kontest"
 msgid "oshibka_registracii_v_contest"
 msgstr "Error sending to the contest"
 
@@ -203,22 +201,16 @@ msgid "obshaja_vedomost"
 msgstr "General marks list"
 
 #: courses/templates/courses/attendance.html:52
-#, fuzzy
-#| msgid "dobavit_zadachu"
 msgid "dobavit_zaniatie"
 msgstr "Add assignment"
 
 #: courses/templates/courses/attendance.html:56
 #: courses/templates/courses/gradebook.html:94
-#, fuzzy
-#| msgid "ne_pokazyvat_skrytye_zadachi"
 msgid "ne_pokazyvat_otchislennyh"
 msgstr "Do not show hidden assignments"
 
 #: courses/templates/courses/attendance.html:58
 #: courses/templates/courses/gradebook.html:96
-#, fuzzy
-#| msgid "pokazyvat_moj_e-mail"
 msgid "pokazyvat_otchislennyh"
 msgstr "Show my email"
 
@@ -231,8 +223,6 @@ msgstr "Classes attended"
 #: courses/templates/courses/gradebook.html:44
 #: courses/templates/courses/queue.html:36
 #: courses/templates/courses/settings.html:42
-#, fuzzy
-#| msgid "obshaja_vedomost"
 msgid "poseshaemost"
 msgstr "General marks list"
 
@@ -389,10 +379,8 @@ msgstr "Empty table"
 #: courses/templates/courses/course_js.html:307
 #: staff/templates/gradebook_js.html:134 staff/templates/gradebook_js.html:135
 #: staff/templates/gradebook_js.html:139
-#, fuzzy
-#| msgid "0_studentov"
 msgid "studentov"
-msgstr "No students"
+msgstr "students"
 
 #: courses/templates/courses/course_js.html:304
 #: courses/templates/courses/queue_js.html:165
@@ -406,10 +394,8 @@ msgstr "out of"
 #: courses/templates/courses/course_js.html:307
 #: courses/templates/courses/queue_js.html:170 mail/templates/mail_js.html:72
 #: staff/templates/gradebook_js.html:139 staff/templates/staff_js.html:173
-#, fuzzy
-#| msgid "pokazat__menu_"
 msgid "pokazat"
-msgstr "Show _menu_"
+msgstr "Show"
 
 #: courses/templates/courses/course_js.html:308
 #: courses/templates/courses/queue_js.html:171
@@ -521,8 +507,6 @@ msgstr ""
 "This class was attended by students. Are you sure you want to delete it?"
 
 #: courses/templates/courses/gradebook.html:39
-#, fuzzy
-#| msgid "obshaja_vedomost"
 msgid "obshaja_vedomost_seminara"
 msgstr "General marks list"
 
@@ -586,8 +570,6 @@ msgid "prepodavateli_po_umolchaniu"
 msgstr "Default teacher"
 
 #: courses/templates/courses/settings.html:167
-#, fuzzy
-#| msgid "nastrojka_zadach"
 msgid "nastrojka_kursa"
 msgstr "Assignments settings"
 
@@ -605,8 +587,6 @@ msgid "skrytie_polej_ustanovka_znachenij"
 msgstr "Hide settings fields"
 
 #: courses/templates/courses/settings.html:183
-#, fuzzy
-#| msgid "izmenenie_udalenie_zadach"
 msgid "izmenenie_v_zadache"
 msgstr "Change or delete the assignment"
 
@@ -641,16 +621,12 @@ msgid "jakontest"
 msgstr "Ya.Contest"
 
 #: courses/templates/courses/settings.html:230 issues/views.py:57
-#, fuzzy
-#| msgid "ukazat_nomer_kontesta"
 msgid "nomer_posylki_kontest"
 msgstr "Contest submittion id"
 
 #: courses/templates/courses/settings.html:234
-#, fuzzy
-#| msgid "studentom"
 msgid "student_vidit_nomer"
-msgstr "By student"
+msgstr "Student can see the number of the contest submission ID"
 
 #: courses/templates/courses/settings.html:239
 msgid "peresudit_reshenija_studentov"
@@ -927,24 +903,18 @@ msgid "nabludateli"
 msgstr "Viewers"
 
 #: issues/issueFilter.py:19
-#, fuzzy
-#| msgid "student"
 msgid "studenty"
-msgstr "Student"
+msgstr "Students"
 
 #: issues/issueFilter.py:21
 msgid "uroki"
 msgstr "Classes"
 
 #: issues/model_issue_status.py:50
-#, fuzzy
-#| msgid "vse_statusy"
 msgid "issue status"
-msgstr "All statuses"
+msgstr "Issue statuses"
 
 #: issues/model_issue_status.py:51
-#, fuzzy
-#| msgid "vse_statusy"
 msgid "issue statuses"
 msgstr "All statuses"
 
@@ -981,44 +951,30 @@ msgid "oshibka_otpravki_v_kontest"
 msgstr "Error sending to the contest"
 
 #: issues/models.py:523
-#, fuzzy
-#| msgid "na_proverke"
 msgid "zadachu_proveriaet"
-msgstr "Check up stage"
+msgstr "Task reviewer changed:"
 
 #: issues/models.py:524
-#, fuzzy
-#| msgid "istorija_izmenenij"
 msgid "status_izmenen"
-msgstr "Change history"
+msgstr "Status uodated:"
 
 #: issues/models.py:525
-#, fuzzy
-#| msgid "sohranit_izmenenija"
 msgid "ocenka_izmenena"
-msgstr "Save changes"
+msgstr "Grade mark changed to"
 
 #: issues/models.py:526
-#, fuzzy
-#| msgid "zagruzka"
 msgid "zagruzhen_faij"
 msgstr "Loading"
 
 #: issues/models.py:532 issues/models.py:535
-#, fuzzy
-#| msgid "nabludateli"
 msgid "nabludaiut"
 msgstr "Viewers"
 
 #: issues/models.py:532
-#, fuzzy
-#| msgid "nabludaemye_mnoj"
 msgid "nabludaet_nikto"
 msgstr "Followed by me"
 
 #: issues/models.py:537
-#, fuzzy
-#| msgid "nabludateli"
 msgid "ne_nabludaiut"
 msgstr "Viewers"
 
@@ -1037,15 +993,11 @@ msgstr "Hello"
 #: issues/templates/email_issue_notification.txt:5
 #: tasks/templates/email_notification_task.html:38
 #: tasks/templates/email_notification_task.txt:5
-#, fuzzy
-#| msgid "vse_zadachi"
 msgid "v_zadache"
 msgstr "All assignments"
 
 #: issues/templates/email_issue_notification.html:79
 #: issues/templates/email_issue_notification.txt:5
-#, fuzzy
-#| msgid "v_zadache_vy_javljaetes"
 msgid "vy_javljaetes"
 msgstr "In this assignment you are"
 
@@ -1148,8 +1100,6 @@ msgid "soobshenija_budut_vydeljatsja"
 msgstr "The messages will be highlighted"
 
 #: issues/templates/issues/history.html:120
-#, fuzzy
-#| msgid "zakryt"
 msgid "otkryt"
 msgstr "Open"
 
@@ -1181,8 +1131,6 @@ msgid "otpravljajte_ot_svoego_akkaunta"
 msgstr "Send from your account"
 
 #: issues/templates/issues/issue.html:46
-#, fuzzy
-#| msgid "privjazat_profil_kontesta"
 msgid "privjazat_k_profilu_kontest"
 msgstr "Link contest profile"
 
@@ -1226,15 +1174,11 @@ msgstr "every week"
 #: lessons/templates/lesson_create.html:24
 #: lessons/templates/lesson_create.html:36
 #: lessons/templates/lesson_edit.html:32
-#, fuzzy
-#| msgid "sozdanie_zadachi"
 msgid "sozdanie_zaniatia"
 msgstr "Create assignment"
 
 #: lessons/templates/lesson_create.html:26
 #: lessons/templates/lesson_edit.html:36 lessons/templates/lesson_edit.html:65
-#, fuzzy
-#| msgid "redaktirovanie_zadachi"
 msgid "redaktirovanie_zaniatia"
 msgstr "Change assignment"
 
@@ -1274,55 +1218,45 @@ msgstr "days of weak"
 #: lessons/templates/lesson_create.html:98
 #: lessons/templates/lesson_edit.html:129
 msgid "mon"
-msgstr ""
+msgstr "mon"
 
 #: lessons/templates/lesson_create.html:99
 #: lessons/templates/lesson_edit.html:130
-#, fuzzy
-#| msgid "student"
 msgid "tue"
-msgstr "Student"
+msgstr "tue"
 
 #: lessons/templates/lesson_create.html:100
 #: lessons/templates/lesson_edit.html:131
 msgid "wed"
-msgstr ""
+msgstr "wed"
 
 #: lessons/templates/lesson_create.html:101
 #: lessons/templates/lesson_edit.html:132
 msgid "thu"
-msgstr ""
+msgstr "thu"
 
 #: lessons/templates/lesson_create.html:102
 #: lessons/templates/lesson_edit.html:133
 msgid "fri"
-msgstr ""
+msgstr "fri"
 
 #: lessons/templates/lesson_create.html:103
 #: lessons/templates/lesson_edit.html:134
-#, fuzzy
-#| msgid "sdat"
 msgid "sat"
-msgstr "Submit"
+msgstr "sat"
 
 #: lessons/templates/lesson_create.html:104
 #: lessons/templates/lesson_edit.html:135
-#, fuzzy
-#| msgid "student"
 msgid "sun"
-msgstr ""
+msgstr "sun"
 
 #: lessons/templates/lesson_create.html:111
 #: lessons/templates/lesson_edit.html:142
-#, fuzzy
-#| msgid "data_sdachi"
 msgid "data_okonchania"
 msgstr "Submit due"
 
 #: lessons/templates/lesson_create.html:122
 #: lessons/templates/lesson_edit.html:153
-#, fuzzy
-#| msgid "opisanie_kursa"
 msgid "opisanie"
 msgstr "Course description"
 
@@ -1334,8 +1268,6 @@ msgstr "Preview"
 
 #: lessons/templates/lesson_create_or_edit_js.html:96
 #: lessons/templates/lesson_create_or_edit_js.html:122
-#, fuzzy
-#| msgid "sohraneno_uspeshno"
 msgid "raspisanie_sohraneno_uspeshno"
 msgstr "Saved successfully"
 
@@ -1347,8 +1279,6 @@ msgid "ne_tak_mnogo"
 msgstr "Too much"
 
 #: lessons/templates/lesson_create_or_edit_js.html:174
-#, fuzzy
-#| msgid "neobhodimo_vybrat_zadachu"
 msgid "neobhodimo_vybrat_den_nedeli"
 msgstr "Assignment must be chosen"
 
@@ -1368,21 +1298,15 @@ msgstr "Choose date of the last class"
 #: lessons/templates/lesson_create_or_edit_js.html:269
 #: lessons/templates/lesson_create_or_edit_js.html:282
 #: lessons/templates/lesson_create_or_edit_js.html:296
-#, fuzzy
-#| msgid "vse_zadachi"
 msgid "vse_dni"
 msgstr "All assignments"
 
 #: lessons/templates/lesson_create_or_edit_js.html:279
 #: lessons/templates/lesson_create_or_edit_js.html:293
-#, fuzzy
-#| msgid "ne_vybrano_ni_odnoj_gruppy"
 msgid "ne_vybrano_ni_odnogo_dnia"
 msgstr "No groups selected"
 
 #: lessons/templates/lesson_create_or_edit_js.html:299
-#, fuzzy
-#| msgid "vybrano_neskolko_zadach"
 msgid "vybrano_neskolko_dnej"
 msgstr "Several assignments selected"
 
@@ -1417,8 +1341,6 @@ msgid "vybrano_neskolko_grupp"
 msgstr "Several groups selected"
 
 #: lessons/templates/lesson_create_or_edit_js.html:432
-#, fuzzy
-#| msgid "sohranit_izmenenija"
 msgid "podtverdit_izmenenia"
 msgstr "Save changes"
 
@@ -1427,14 +1349,10 @@ msgid "otmena"
 msgstr "Cancel"
 
 #: lessons/templates/lesson_edit.html:196
-#, fuzzy
-#| msgid "primenit"
 msgid "primenit_ko_vsem"
 msgstr "Apply"
 
 #: lessons/templates/lesson_edit.html:197
-#, fuzzy
-#| msgid "primenit"
 msgid "primenit_k_sobitiu"
 msgstr "Apply"
 
@@ -1501,8 +1419,6 @@ msgid "nachnite_vvodit_imja"
 msgstr "Start entering the name"
 
 #: mail/templates/mail.html:112
-#, fuzzy
-#| msgid "dobavit_kurs_ili_gruppu"
 msgid "dobavit_kurs_gruppu_ili_status"
 msgstr "Add course or group"
 
@@ -1515,10 +1431,8 @@ msgid "poluchateli_ne_budut_videt_drugikh"
 msgstr "Получатели не будут видеть других получателей этого сообщения"
 
 #: mail/templates/mail.html:133
-#, fuzzy
-#| msgid "otpravlennye"
 msgid "peremennyye"
-msgstr "Sent"
+msgstr "Variables"
 
 #: mail/templates/mail.html:136
 msgid "mozhno_ispolzovat_peremennyye_v_tekste"
@@ -1604,8 +1518,6 @@ msgid "familiya"
 msgstr "Last name"
 
 #: mail/templates/mail_js.html:680
-#, fuzzy
-#| msgid "ukazat_poluchatelja"
 msgid "familiya_poluchatelya"
 msgstr "Enter recipient"
 
@@ -1614,8 +1526,6 @@ msgid "imja"
 msgstr "Name"
 
 #: mail/templates/mail_js.html:685
-#, fuzzy
-#| msgid "ukazat_poluchatelja"
 msgid "imja_poluchatelya"
 msgstr "Enter recipient"
 
@@ -1633,10 +1543,8 @@ msgstr "Subject must be specified"
 
 #: mail/templates/mail_js.html:851 staff/templates/staff.html:134
 #: staff/templates/staff.html:188 staff/templates/staff.html:211
-#, fuzzy
-#| msgid "net_polzovatelej"
 msgid "vybrano_polzovateley"
-msgstr "No users"
+msgstr "Users"
 
 #: mail/views.py:22
 msgid "january"
@@ -1759,8 +1667,6 @@ msgid "prostoy_filtr"
 msgstr "Simple filter"
 
 #: staff/templates/staff.html:36
-#, fuzzy
-#| msgid "peresudit_reshenija_studentov"
 msgid "zagruzit_spisok_studentov"
 msgstr "Run scoring on students submissions again"
 
@@ -1771,8 +1677,6 @@ msgstr ""
 "(email)."
 
 #: staff/templates/staff.html:61
-#, fuzzy
-#| msgid "ne_najdeno_polzovatelej"
 msgid "naydeno_polzovateley"
 msgstr "No users found"
 
@@ -1790,8 +1694,6 @@ msgid "redaktirovanie_statusov"
 msgstr "Update statuses"
 
 #: staff/templates/staff.html:133
-#, fuzzy
-#| msgid "ne_vybrano_statusov"
 msgid "vyberite_novyye_statusy"
 msgstr "No statuses selected"
 
@@ -1804,35 +1706,25 @@ msgid "sozdat_soobshcheniye_vopros"
 msgstr "Create message"
 
 #: staff/templates/staff.html:184
-#, fuzzy
-#| msgid "novyh_soobshenija"
 msgid "otpravka_soobshcheniya"
 msgstr "Message sending"
 
 #: staff/templates/staff.html:187
-#, fuzzy
-#| msgid "perejti_k_soobshenijam"
 msgid "pereyti_k_sozdaniyu_soobshcheniya_vopros"
 msgstr "Go to the messages"
 
 #: staff/templates/staff.html:210
-#, fuzzy
-#| msgid "sgenerirovat_obshuu_vedomost"
 msgid "sgenerirovat_obshuu_vedomost_vopros"
 msgstr "Generate general list"
 
 #: staff/templates/staff.html:219
-#, fuzzy
-#| msgid "sgenerirovat"
 msgid "generacia"
 msgstr "Generate"
 
 #: staff/templates/staff.html:227 staff/templates/staff.html:241
 #: staff/templates/staff.html:242 staff/templates/staff_js.html:409
-#, fuzzy
-#| msgid "statusy_polzovatelja"
 msgid "izmenit_status_dlya_vsekh_polzovateley"
-msgstr "User statuses"
+msgstr "Change status for all users"
 
 #: staff/templates/staff.html:230 staff/templates/staff_js.html:410
 msgid "otpravit_soobshcheniye_vsem_polzovatelyam"
@@ -1849,14 +1741,10 @@ msgid "vse_vybrano"
 msgstr "Everything is selected"
 
 #: staff/templates/staff_js.html:185
-#, fuzzy
-#| msgid "vse_vybrano"
 msgid "vybrano"
-msgstr "Everything is selected"
+msgstr "Selected"
 
 #: staff/templates/staff_js.html:379
-#, fuzzy
-#| msgid "oshibka_pri_poluchenii"
 msgid "oshibka_pri_generacii"
 msgstr "Error during loading"
 
@@ -1869,8 +1757,6 @@ msgid "otpravit_soobshcheniye_vybrannym_polzovatelyam"
 msgstr "Send a message to selected users"
 
 #: staff/views.py:68
-#, fuzzy
-#| msgid "net_polzovatelej"
 msgid "dannyye_polzovateli_ne_naydeny"
 msgstr "No users"
 
@@ -1909,7 +1795,7 @@ msgstr "Seminar/workshop"
 
 #: tasks/models.py:71
 msgid "jupyter notebook"
-msgstr ""
+msgstr "jupiter notebook"
 
 #: tasks/templates/contest_import.html:8 tasks/templates/task_import.html:9
 msgid "import"
@@ -1950,10 +1836,8 @@ msgid "uchityvat_bally_dedlajn"
 msgstr "Take into account the marks for the tasks passed after the deadline"
 
 #: tasks/templates/contest_import.html:187
-#, fuzzy
-#| msgid "sozdanie_zadachi"
 msgid "uvedomit_o_sozdanii_zadach"
-msgstr "Create assignment"
+msgstr "Notify students about task creation"
 
 #: tasks/templates/contest_import.html:193
 msgid "skryt_zadachi"
@@ -1961,24 +1845,18 @@ msgstr "Hide assignments"
 
 #: tasks/templates/email_notification_task.html:22
 #: tasks/templates/email_notification_task.txt:4
-#, fuzzy
-#| msgid "kurs"
 msgid "v_kurse"
 msgstr "Course"
 
 #: tasks/templates/email_notification_task.html:27
 #: tasks/templates/email_notification_task.txt:4
-#, fuzzy
-#| msgid "sohranit_izmenenija"
 msgid "proizoshli_izmeneniya"
-msgstr "Save changes"
+msgstr "there have been changes"
 
 #: tasks/templates/email_notification_task.html:33
 #: tasks/templates/email_notification_task.txt:5
-#, fuzzy
-#| msgid "obnovlenie_zadach"
 msgid "dobavlena_zadacha"
-msgstr "Update the assignments"
+msgstr "Task added"
 
 #: tasks/templates/email_notification_task.html:42
 #: tasks/templates/email_notification_task.txt:5
@@ -1986,10 +1864,8 @@ msgid "izmenilis"
 msgstr "changed"
 
 #: tasks/templates/email_notification_task.txt:6
-#, fuzzy
-#| msgid "prepodavatel_v_kursah"
 msgid "pereyti_v_kurs"
-msgstr "Teaching the courses:"
+msgstr "Go to the course"
 
 #: tasks/templates/task_create.html:9 tasks/templates/task_create.html:25
 #: tasks/templates/task_create.html:46 tasks/templates/task_edit.html:11
@@ -2008,8 +1884,6 @@ msgstr "Assignment type"
 
 #: tasks/templates/task_create.html:68 tasks/templates/task_edit.html:161
 #: tasks/templates/task_edit.html:418 tasks/templates/task_import.html:74
-#, fuzzy
-#| msgid "nazvanie"
 msgid "kratkoe_nazvanie"
 msgstr "Name"
 
@@ -2024,11 +1898,9 @@ msgstr "Task name in jupiter."
 
 #: tasks/templates/task_create.html:80
 msgid "must be unique for all tasks in jupyter"
-msgstr ""
+msgstr "must be unique for all tasks in jupyter"
 
 #: tasks/templates/task_create.html:93 tasks/templates/task_edit.html:186
-#, fuzzy
-#| msgid "student"
 msgid "max_students"
 msgstr "Student"
 
@@ -2037,10 +1909,8 @@ msgid "podzadachi"
 msgstr "Sub-assignments"
 
 #: tasks/templates/task_create.html:174 tasks/templates/task_import.html:171
-#, fuzzy
-#| msgid "sozdanie_zadachi"
 msgid "uvedomit_o_sozdanii_zadachi"
-msgstr "Create assignment"
+msgstr "Notify students about task creation"
 
 #: tasks/templates/task_create.html:191 tasks/templates/task_edit.html:348
 #: tasks/templates/task_import.html:177
@@ -2090,15 +1960,15 @@ msgstr "Enter assignment litera"
 
 #: tasks/templates/task_create_or_edit_js.html:347
 msgid "assignment name is required"
-msgstr ""
+msgstr "assignment name is required"
 
 #: tasks/templates/task_create_or_edit_js.html:348
 msgid "assignment name cannot contains spaces"
-msgstr ""
+msgstr "assignment name cannot contains spaces"
 
 #: tasks/templates/task_create_or_edit_js.html:349
 msgid "assignment name already in use"
-msgstr ""
+msgstr "assignment name already in use"
 
 #: tasks/templates/task_edit.html:197
 msgid "vybor_grupp_zavisit_ot_zadach"
@@ -2149,14 +2019,10 @@ msgid "nam"
 msgstr "Us"
 
 #: templates/base.html:163
-#, fuzzy
-#| msgid "vse_statusy"
 msgid "vse_resultaty"
 msgstr "All statuses"
 
 #: templates/base.html:698
-#, fuzzy
-#| msgid "est_novye_soobshenija"
 msgid "base_est_novye_soobshenija"
 msgstr "New messages available"
 
@@ -2365,8 +2231,6 @@ msgid "filial"
 msgstr "Branch"
 
 #: users/model_user_profile_filter.py:43 users/model_user_status.py:38
-#, fuzzy
-#| msgid "status_studenta"
 msgid "status_postupleniya"
 msgstr "Student status"
 
@@ -2527,20 +2391,14 @@ msgid "uchitsya_seychas"
 msgstr "Active now"
 
 #: users/templates/user_profile.html:296
-#, fuzzy
-#| msgid "sdat"
 msgid "da"
 msgstr "Yes"
 
 #: users/templates/user_profile.html:298
-#, fuzzy
-#| msgid "kontest"
 msgid "net"
 msgstr "No"
 
 #: users/templates/user_profile.html:309
-#, fuzzy
-#| msgid "kursov"
 msgid "kurs_vuza"
 msgstr "Courses"
 
@@ -2601,10 +2459,8 @@ msgid "otpravljat_mne_kommentarii"
 msgstr "Send comments to me"
 
 #: users/templates/user_settings.html:51
-#, fuzzy
-#| msgid "novoe_soobshenie"
 msgid "moe_mestopozhenie"
-msgstr "New message"
+msgstr "My location"
 
 #: users/templates/user_settings.html:52
 msgid "dlja_vremeni"
@@ -2615,8 +2471,6 @@ msgid "title_otvjazat_svoj_profil"
 msgstr "Title unlink my account"
 
 #: users/views.py:425
-#, fuzzy
-#| msgid "profil_uzhe_privjazan"
 msgid "uzhe_privjazan"
 msgstr "Profile is already linked"
 
