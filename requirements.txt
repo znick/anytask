@@ -19,7 +19,7 @@ flup==1.0.3
 ipdb==0.13.9
 Pillow==9.0.0
 psycopg2==2.9.9
-python-gettext==3.0
+python-gettext==5.0
 python-magic==0.4.15
 requests==2.27.1
 sqlparse==0.4.2
