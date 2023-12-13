@@ -23,7 +23,7 @@ def sanitize_html(value):
             if tag.name not in valid_tags:
                 tag.hidden = True
             tag.attrs = dict((attr, val) for attr, val in tag.attrs
-                         if attr in valid_attrs)
+                             if attr in valid_attrs)
         return '<p>' + soup.renderContents().decode('utf8').replace('javascript:', '').replace("\n", '</p><p>') + '</p>'
     return soup.renderContents().decode('utf8')
 
