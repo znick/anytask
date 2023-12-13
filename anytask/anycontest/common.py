@@ -243,8 +243,8 @@ def get_contest_info(contest_id, lang=None):
                                            headers=HEADERS).json()['result']
             json_str = u'{{"ru": "{0}", "en": "{1}"}}'
             for problem in contest_info['problems']:
-                problem_en = (item for item in contest_info_en['problems']
-                              if item['problemId'] == problem['problemId']).next()
+                problem_en = next(item for item in contest_info_en['problems']
+                              if item['problemId'] == problem['problemId'])
                 problem['problemTitle'] = json_str.format(
                     process_task_text(problem['problemTitle']),
                     process_task_text(problem_en['problemTitle'])
