@@ -1,7 +1,7 @@
 tornado==5
 ipykernel==4.5.2
 django==1.11.29
-Pillow==9.0.0
+Pillow==10.1.0
 django-recaptcha==1.4.0
 python-gettext==3.0
 beautifulsoup4
