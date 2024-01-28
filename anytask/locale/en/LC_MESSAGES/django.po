@@ -956,7 +956,7 @@ msgstr "Task reviewer changed:"
 
 #: issues/models.py:524
 msgid "status_izmenen"
-msgstr "Status uodated:"
+msgstr "Status updated:"
 
 #: issues/models.py:525
 msgid "ocenka_izmenena"
