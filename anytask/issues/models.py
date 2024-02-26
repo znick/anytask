@@ -540,7 +540,7 @@ class Event(models.Model):
 
     value = models.TextField(max_length=2500, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
-    sended_notify = models.BooleanField(default=False)
+    sended_notify = models.BooleanField(default=False, db_index=True)
 
     def pull_plugins(self):
         # upload_review(self)

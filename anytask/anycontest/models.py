@@ -33,7 +33,7 @@ class ContestSubmission(models.Model):
     compiler_id = models.CharField(max_length=191, blank=True)
     send_error = models.TextField(null=True, blank=True)
 
-    got_verdict = models.BooleanField(default=False)
+    got_verdict = models.BooleanField(default=False, db_index=True)
     full_response = models.TextField(null=True, blank=True)
     verdict = models.TextField(null=True, blank=True)
     precompile_checks = models.TextField(null=True, blank=True)

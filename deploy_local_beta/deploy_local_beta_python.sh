@@ -15,7 +15,7 @@ fi
 
 ANYBETA_report
 ANYBETA_report "Enable virtualenv"
-virtualenv -p $ANYBETA_PYTHON_PATH $ANYBETA_VENV_NAME
+$ANYBETA_PYTHON_PATH -m venv $ANYBETA_VENV_NAME
 ANYBETA_activate
 ANYBETA_crash_on_error
 
