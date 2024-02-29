@@ -17,12 +17,15 @@ GIT_DIR = "git"
 BUF_SIZE = 4096
 LIMIT_BYTES = 10 * 1024 * 1024
 MAX_COMMENT_SIZE = 10000
+SSH_KEY_ID_DEFAULT = 'SSH_KEY'
 
 
-def git_clone(repo, dst_dir):
+def git_clone(repo, dst_dir, ssh_key_id):
     cmd = ["git", "clone", repo, dst_dir]
 
-    ssh_key = os.environ.get("SSH_KEY")
+    ssh_key_prefix = os.environ.get("SSH_KEY_PREFIX", "")
+    ssh_key_variable = "{}{}".format(ssh_key_prefix, ssh_key_id)
+    ssh_key = os.environ.get(ssh_key_variable)
     ssh = "ssh -o StrictHostKeyChecking=no"
     if ssh_key:
         subprocess.check_call(["chmod", "0600", ssh_key])
@@ -36,7 +39,7 @@ def git_clone(repo, dst_dir):
     subprocess.check_call(cmd, env=env)
 
 
-def prepare_dir(repo, files, dirname="./"):
+def prepare_dir(repo, files, dirname="./", ssh_key_id=SSH_KEY_ID_DEFAULT):
     git_dir = os.path.join(dirname, GIT_DIR)
     task_dir = os.path.join(dirname, TASK_DIR)
     git_clone(repo, git_dir)
@@ -73,7 +76,7 @@ def limited_reader(fn_in, fn_out, limit_bytes):
 
 class Worker:
     def __init__(self, task, repo, run_cmd, files, timeout, output_file,
-            course_id, issue_id):
+            course_id, issue_id, ssh_key_id):
         self.task = task
         self.repo = repo
         self.run_cmd = json.loads(run_cmd)
@@ -82,10 +85,11 @@ class Worker:
         self.output_file = output_file
         self.course_id = course_id
         self.issue_id = issue_id
+        self.ssh_key_id = ssh_key_id
 
     def run(self):
         logging.info("Process task %s", self.task)
-        prepare_dir(self.repo, self.files)
+        prepare_dir(self.repo, self.files, self.ssh_key_id)
         run_cmd = self.run_cmd + [self.task, "../"+TASK_DIR]
         output, ret = self.execute(run_cmd, cwd=GIT_DIR)
         self.make_artifact(output)

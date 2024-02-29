@@ -5,9 +5,10 @@ variables:
   FILES: 'Files urls to be tested'
   DOCKER_IMAGE: 'Docker image to run tests in it'
   TIMEOUT: 'Timeout of running worker'
-  OUTPUT_FILE: 'Run output' 
-  COURSE_ID: 'Course id' 
-  ISSUE_ID: 'Issue id' 
+  OUTPUT_FILE: 'Run output'
+  COURSE_ID: 'Course id'
+  ISSUE_ID: 'Issue id'
+  SSH_KEY_ID: 'SSH key id'
 
 run:
   image: $DOCKER_IMAGE
@@ -17,7 +18,7 @@ run:
     - apt-get install -y git
   script:
     - cd easyci2/gitlabci
-    - ./run_worker.sh "$TASK" "$REPO" "$RUN_CMD" "$FILES" "$TIMEOUT" "$OUTPUT_FILE" "$COURSE_ID" "$ISSUE_ID"
+    - ./run_worker.sh "$TASK" "$REPO" "$RUN_CMD" "$FILES" "$TIMEOUT" "$OUTPUT_FILE" "$COURSE_ID" "$ISSUE_ID" "$SSH_KEY_ID"
   artifacts:
     paths:
       - easyci2/gitlabci/$OUTPUT_FILE

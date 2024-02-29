@@ -19,6 +19,7 @@ PASSWORDS = "passwords.json"
 PASSWORDS_JSON = os.environ.get("PASSWORDS_JSON")
 MAX_COMMENT_SIZE = 10000
 REQUEST_TIMEOUT = 300
+SSH_KEY_ID_DEFAULT = 'SSH_KEY'
 
 
 def load_passwords(filename=PASSWORDS):
@@ -73,7 +74,8 @@ def add_to_scheduler(task):
             course["docker_image"],
             course["timeout"],
             course_id,
-            issue_id)
+            issue_id,
+            course.get('ssh_key_id', SSH_KEY_ID_DEFAULT))
 
 
 def send_message(ret):
