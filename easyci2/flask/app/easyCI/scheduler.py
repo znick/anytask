@@ -33,7 +33,7 @@ class GitlabCIScheduler(AbstractScheduler):
         self.prefix = "https://gitlab.com/api/v4/projects/" + GITLAB_REPO_ID
 
     def schedule(self, task, repo, run_cmd, files, docker_image, timeout, 
-            course_id, issue_id):
+            course_id, issue_id, ssh_key_id):
         inputs = {"TASK" : task,
                   "REPO" : repo,
                   "RUN_CMD" : json.dumps(run_cmd),
@@ -42,7 +42,8 @@ class GitlabCIScheduler(AbstractScheduler):
                   "TIMEOUT" : timeout,
                   "OUTPUT_FILE" : self.output_file,
                   "COURSE_ID" : course_id,
-                  "ISSUE_ID" : issue_id}
+                  "ISSUE_ID" : issue_id,
+                  "SSH_KEY_ID": ssh_key_id}
         variables = "".join(["&variables[{}]={}".format(key, inputs[key])
             for key in inputs])
         url = self.prefix + "/ref/master/trigger/pipeline?token={}&{}".format(
