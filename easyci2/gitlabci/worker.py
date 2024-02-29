@@ -89,7 +89,7 @@ class Worker:
 
     def run(self):
         logging.info("Process task %s", self.task)
-        prepare_dir(self.repo, self.files, self.ssh_key_id)
+        prepare_dir(self.repo, self.files, './', self.ssh_key_id)
         run_cmd = self.run_cmd + [self.task, "../"+TASK_DIR]
         output, ret = self.execute(run_cmd, cwd=GIT_DIR)
         self.make_artifact(output)
