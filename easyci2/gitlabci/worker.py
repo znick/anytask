@@ -42,7 +42,7 @@ def git_clone(repo, dst_dir, ssh_key_id):
 def prepare_dir(repo, files, dirname="./", ssh_key_id=SSH_KEY_ID_DEFAULT):
     git_dir = os.path.join(dirname, GIT_DIR)
     task_dir = os.path.join(dirname, TASK_DIR)
-    git_clone(repo, git_dir)
+    git_clone(repo, git_dir, ssh_key_id)
 
     os.mkdir(task_dir)
     for url in files:
