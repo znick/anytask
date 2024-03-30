@@ -46,4 +46,5 @@ urlpatterns = [
     url(r'^jupyter/', include('jupyter.urls')),
     url(r'^set_lang/', set_lang_view, name='set_lang'),
     url(r'^get_lang/', get_lang_view, name='get_lang'),
+    url(r'^$', index.views.index, name="index.views.robotstxt_view"),
 ]
