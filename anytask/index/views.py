@@ -1,10 +1,13 @@
+from django.http import HttpResponse
 from django.shortcuts import render
 from schools.models import School
+
 
 ROBOTS_TXT = """User-agent: *
 Allow: /
 Clean-param: next /accounts/login/
 """
+
 
 def index(request):
     schools = School.objects.all().filter(is_active=True).order_by('name')
