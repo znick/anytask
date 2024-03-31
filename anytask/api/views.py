@@ -34,15 +34,15 @@ def login_required_basic_auth(view):
         auth_str = request.META['HTTP_AUTHORIZATION']
         auth_str_parts = auth_str.split()
 
+
         if auth_str_parts[0].lower() != "basic":
             return get_401_response()
 
         username, password = base64.b64decode(auth_str_parts[1].encode('utf8')).decode('utf8').split(":", 1)
-        user = authenticate(username=username, password=password)
+        user = authenticate(request=request, username=username, password=password)
         if user is None or not user.is_active:
             return get_401_response()
 
-        login(request, user)
         request.user = user
         return view(request, *args, **kwargs)
 

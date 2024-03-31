@@ -6,7 +6,7 @@ import json
 from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 from courses.models import Course
 from issues.model_issue_status import IssueStatus
@@ -18,6 +18,7 @@ from years.models import Year
 import api.views
 
 
+@override_settings(LANGUAGE_CODE='en-EN', LANGUAGES=(('en', 'English'),))
 class ApiTest(TestCase):
     maxDiff = None
 
@@ -63,15 +64,15 @@ class ApiTest(TestCase):
 
         self.group = Group.objects.create(name='group_name',
                                           year=self.year)
-        self.group.students = [self.student]
+        self.group.students.set([self.student])
         self.group.save()
 
         self.course = Course.objects.create(name='course_name',
                                             year=self.year)
-        self.course.groups = [self.group]
-        self.course.teachers = [self.teacher]
-        self.course.issue_fields = IssueField.objects.exclude(id=10).exclude(id=11).exclude(id=12)
-        self.course.issue_status_system.statuses = IssueStatus.objects.all()
+        self.course.groups.set([self.group])
+        self.course.teachers.set([self.teacher])
+        self.course.issue_fields.set(IssueField.objects.exclude(id=10).exclude(id=11).exclude(id=12))
+        self.course.issue_status_system.statuses.set(IssueStatus.objects.all())
         self.course.save()
 
         self.task1 = Task.objects.create(title='task_title1',
@@ -492,7 +493,7 @@ class ApiTest(TestCase):
                 },
                 {
                     'files': [],
-                    'message': 'status_izmenen'
+                    'message': 'Status updated:'
                                ' \u0417\u0430\u0447\u0442\u0435\u043d\u043e \u043f\u043e\u0441\u043b\u0435'
                                ' \u0434\u0435\u0434\u043b\u0430\u0439\u043d\u0430',
                     'id': 2,
