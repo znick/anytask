@@ -1057,19 +1057,19 @@ class S3MigrateIssueAttachments(TestCase, SerializeMixin):
 
         self.group = Group.objects.create(name='group_name',
                                           year=self.year)
-        self.group.students = [self.student]
+        self.group.students.set([self.student])
         self.group.save()
 
         self.course = Course.objects.create(name='course_name',
                                             year=self.year)
-        self.course.groups = [self.group]
-        self.course.teachers = [self.teacher]
-        self.course.issue_fields = IssueField.objects.exclude(id=10).exclude(id=11)
+        self.course.groups.set([self.group])
+        self.course.teachers.set([self.teacher])
+        self.course.issue_fields.set(IssueField.objects.exclude(id=10).exclude(id=11))
         self.course.save()
 
         self.school = School.objects.create(name='school_name',
                                             link='school_link')
-        self.school.courses = [self.course]
+        self.school.courses.set([self.course])
         self.school.save()
 
         self.task = Task.objects.create(title='task_title',
