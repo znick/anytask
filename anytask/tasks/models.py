@@ -113,7 +113,7 @@ class Task(models.Model):
         for task_taken in TaskTaken.objects.filter(task=self):
             task_taken.update_status()
 
-        if user.is_anonymous():
+        if user.is_anonymous:
             return (False, 'Необходимо залогиниться')
 
         if self.is_hidden:
@@ -175,20 +175,20 @@ class Task(models.Model):
         return (True, u'')
 
     def user_can_cancel_task(self, user):
-        if user.is_anonymous() or self.is_hidden:
+        if user.is_anonymous or self.is_hidden:
             return False
         if TaskTaken.objects.filter(task=self).filter(user=user).filter(status=TaskTaken.STATUS_TAKEN).count() != 0:
             return True
         return False
 
     def user_can_score_task(self, user):
-        if user.is_anonymous():
+        if user.is_anonymous:
             return False
 
         return self.course.user_is_teacher(user)
 
     def user_can_pass_task(self, user, follow_costudents=True):
-        if user.is_anonymous():
+        if user.is_anonymous:
             return False
 
         if not self.course.is_python_task:

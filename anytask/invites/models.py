@@ -28,7 +28,7 @@ class Invite(models.Model):
 
     @staticmethod
     def user_can_generate_invite(generative_user):
-        if generative_user.is_anonymous():
+        if generative_user.is_anonymous:
             return False
 
         if generative_user.is_superuser:

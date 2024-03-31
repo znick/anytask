@@ -162,7 +162,7 @@ class Course(models.Model):
         return reverse('courses.views.course_page', args=[str(self.id)])
 
     def user_can_edit_course(self, user):
-        if user.is_anonymous():
+        if user.is_anonymous:
             return False
         if user.is_superuser:
             return True
@@ -183,7 +183,7 @@ class Course(models.Model):
         return None
 
     def user_is_attended(self, user):
-        if user.is_anonymous():
+        if user.is_anonymous:
             return False
 
         if self.user_is_teacher(user):
@@ -195,7 +195,7 @@ class Course(models.Model):
         return False
 
     def user_can_see_transcript(self, user, student):
-        if user.is_anonymous():
+        if user.is_anonymous:
             return not self.private and self.full_transcript
         if self.user_is_teacher(user):
             return True
@@ -205,21 +205,21 @@ class Course(models.Model):
             return user.id == student.id
 
     def user_can_see_queue(self, user):
-        if user.is_anonymous():
+        if user.is_anonymous:
             return False
         if self.user_is_teacher(user):
             return True
         return False
 
     def user_can_see_contest_run_id(self, user):
-        if user.is_anonymous():
+        if user.is_anonymous:
             return False
         if self.send_to_contest_from_users and (self.user_is_teacher(user) or self.show_contest_run_id):
             return True
         return False
 
     def user_can_see_attendance_log(self, user):
-        if user.is_anonymous():
+        if user.is_anonymous:
             return False
         return self.has_attendance_log and self.user_is_teacher(user)
 

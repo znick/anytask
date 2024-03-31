@@ -315,12 +315,12 @@ class UserProfileAccess(TestCase):
         self.check_access(access_result_no_school)
 
         # not in one school
-        self.school_1.courses = [self.course_1, self.course_2]
+        self.school_1.courses.set([self.course_1, self.course_2])
         self.check_access(access_result_one_school)
 
         # not in different schools
-        self.school_1.courses = [self.course_1]
-        self.school_2.courses = [self.course_2]
+        self.school_1.courses.set([self.course_1])
+        self.school_2.courses.set([self.course_2])
         self.check_access(access_result_different_school)
 
     def test_user_profile_access_teacher_1_course_1(self):
