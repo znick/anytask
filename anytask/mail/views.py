@@ -83,26 +83,26 @@ def ajax_get_mailbox(request):
             user_profile.unread_messages.clear()
             user_profile.send_notify_messages.clear()
         else:
-            user_profile.unread_messages = list(
+            user_profile.unread_messages.set(list(
                 user_profile.unread_messages
                 .exclude(id__in=datatable_data["make_read[]"])
                 .values_list("id", flat=True)
-            )
-            user_profile.send_notify_messages = list(
+            ))
+            user_profile.send_notify_messages.set(list(
                 user_profile.send_notify_messages
                 .exclude(id__in=datatable_data["make_read[]"])
                 .values_list("id", flat=True)
-            )
+            ))
     if "make_unread[]" in datatable_data:
         user_profile.unread_messages.add(*Message.objects.filter(id__in=datatable_data["make_unread[]"]))
     if "make_delete[]" in datatable_data:
         user_profile.deleted_messages.add(*Message.objects.filter(id__in=datatable_data["make_delete[]"]))
     if "make_undelete[]" in datatable_data:
-        user_profile.deleted_messages = list(
+        user_profile.deleted_messages.set(list(
             user_profile.deleted_messages
             .exclude(id__in=datatable_data["make_undelete[]"])
             .values_list("id", flat=True)
-        )
+        ))
 
     messages = Message.objects.none()
     messages_deleted = user_profile.deleted_messages.all()
@@ -266,19 +266,19 @@ def ajax_send_message(request):
         users = data.get("new_recipients_user[]", [])
         if "new_recipients_preinit[]" in data:
             users += request.session.get('user_ids_send_mail_' + data["new_recipients_preinit[]"][0], [])
-        message.recipients_user = users
+        message.recipients_user.set(users)
         recipients_ids.update(message.recipients_user.values_list('id', flat=True))
 
     group_ids = []
     if "new_recipients_group[]" in data:
-        message.recipients_group = data["new_recipients_group[]"]
+        message.recipients_group.set(data["new_recipients_group[]"])
 
         for group in Group.objects.filter(id__in=data["new_recipients_group[]"]):
             recipients_ids.update(group.students.exclude(id=user.id).values_list('id', flat=True))
             group_ids.append(group.id)
 
     if "new_recipients_course[]" in data:
-        message.recipients_course = data["new_recipients_course[]"]
+        message.recipients_course.set(data["new_recipients_course[]"])
 
         for course in Course.objects.filter(id__in=data["new_recipients_course[]"]):
             for group in course.groups.exclude(id__in=group_ids).distinct():
@@ -290,6 +290,6 @@ def ajax_send_message(request):
         recipients_ids.update(UserProfile.objects.filter(user_status__in=data["new_recipients_status[]"])
                               .values_list('user__id', flat=True))
 
-    message.recipients = list(recipients_ids)
+    message.recipients.set(list(recipients_ids))
 
     return HttpResponse("OK")

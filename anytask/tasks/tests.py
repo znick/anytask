@@ -7,7 +7,7 @@ when you run "manage.py test".
 Replace this with more appropriate tests for your application.
 """
 
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.contrib.auth.models import User
 from schools.models import School
 from courses.models import Course
@@ -83,6 +83,7 @@ class CreateTest(TestCase):
         self.assertEqual(task.one_file_upload, True)
 
 
+@override_settings(LANGUAGE_CODE='en-EN', LANGUAGES=(('en', 'English'),))
 class ViewsTest(TestCase):
     def setUp(self):
         self.teacher_password = 'password1'
@@ -159,7 +160,7 @@ class ViewsTest(TestCase):
 
         # title
         self.assertEqual(html.find('title').string.strip().strip('\n'),
-                         u'sozdanie_zadachi | course_name | 2016-2017',
+                         u'Create assignment | course_name | 2016-2017',
                          'Wrong page title')
 
         # navbar
@@ -171,18 +172,18 @@ class ViewsTest(TestCase):
         # breadcrumbs
         breadcrumbs = container.find('ul', 'breadcrumb')('li')
         self.assertEqual(len(breadcrumbs), 4, 'breadcrumbs len is not 4')
-        self.assertEqual(breadcrumbs[0].a['href'], u'/', 'breadcrumbs 1st link wrong')
-        self.assertEqual(breadcrumbs[1].a['href'], u'/school/school_link', 'breadcrumbs 2nd link wrong')
-        self.assertEqual(breadcrumbs[1].a.string.strip().strip('\n'), u'school_name', 'breadcrumbs 2nd text wrong')
+        self.assertEqual(breadcrumbs[0].a['href'], '/', 'breadcrumbs 1st link wrong')
+        self.assertEqual(breadcrumbs[1].a['href'], '/school/school_link', 'breadcrumbs 2nd link wrong')
+        self.assertEqual(breadcrumbs[1].a.string.strip().strip('\n'), 'school_name', 'breadcrumbs 2nd text wrong')
         self.assertEqual(breadcrumbs[2].a['href'], u'/course/1', 'breadcrumbs 3rd link wrong')
-        self.assertEqual(breadcrumbs[2].a.string.strip().strip('\n'), u'course_name', 'breadcrumbs 3rd text wrong')
-        self.assertEqual(breadcrumbs[3].string.strip().strip('\n'), u'sozdanie_zadachi', 'breadcrumbs 4th text wrong')
+        self.assertEqual(breadcrumbs[2].a.string.strip().strip('\n'), 'course_name', 'breadcrumbs 3rd text wrong')
+        self.assertEqual(breadcrumbs[3].string.strip().strip('\n'), 'Create assignment', 'breadcrumbs 4th text wrong')
 
         # form
         div_task_id = container.find('div', {'id': 'task_edit'})
         self.assertIsNotNone(div_task_id, "No main div with id 'task_edit'")
         self.assertEqual(container.find('h5', 'card-title').string,
-                         u'sozdanie_zadachi',
+                         'Create assignment',
                          "Wrong card title")
 
         form_inputs = div_task_id.form('input', 'form-control')
@@ -198,19 +199,19 @@ class ViewsTest(TestCase):
         self.assertEqual(form_select_group[0]['value'], '1', 'form select group 1nd option value wrong')
         self.assertTrue('selected' in dict(form_select_group[0].attrs), 'form select group 1nd option selected')
         self.assertEqual(form_select_group[0].string.strip().strip('\n'),
-                         u'group_name',
+                         'group_name',
                          'form select group 2nd option text wrong')
 
         form_select_type = div_task_id.form.find('select', {'id': 'task_edit_type'})('option')
         self.assertEqual(len(form_select_type), 4, "form select type len not 4")
         self.assertEqual(form_select_type[0]['value'], 'All', 'form select type 1st option value wrong')
         self.assertEqual(form_select_type[0].string.strip().strip('\n'),
-                         u's_obsuzhdeniem',
+                         'With discussion',
                          'form select type 1st option text wrong')
         self.assertEqual(form_select_type[1]['value'], 'Only mark', 'form select type 2nd option value wrong')
         self.assertFalse('selected' in form_select_type[1], 'form select type 2nd option selected')
         self.assertEqual(form_select_type[1].string.strip().strip('\n'),
-                         u'tolko_ocenka',
+                         'Mark only',
                          'form select type 2nd option text wrong')
 
         form_textarea = div_task_id.form.textarea
@@ -281,20 +282,20 @@ class ViewsTest(TestCase):
         # breadcrumbs
         breadcrumbs = container.find('ul', 'breadcrumb')('li')
         self.assertEqual(len(breadcrumbs), 4, 'breadcrumbs len is not 4')
-        self.assertEqual(breadcrumbs[0].a['href'], u'/', 'breadcrumbs 1st link wrong')
-        self.assertEqual(breadcrumbs[1].a['href'], u'/school/school_link', 'breadcrumbs 2nd link wrong')
-        self.assertEqual(breadcrumbs[1].a.string.strip().strip('\n'), u'school_name', 'breadcrumbs 2nd text wrong')
-        self.assertEqual(breadcrumbs[2].a['href'], u'/course/1', 'breadcrumbs 3rd link wrong')
-        self.assertEqual(breadcrumbs[2].a.string.strip().strip('\n'), u'course_name', 'breadcrumbs 3rd text wrong')
+        self.assertEqual(breadcrumbs[0].a['href'], '/', 'breadcrumbs 1st link wrong')
+        self.assertEqual(breadcrumbs[1].a['href'], '/school/school_link', 'breadcrumbs 2nd link wrong')
+        self.assertEqual(breadcrumbs[1].a.string.strip().strip('\n'), 'school_name', 'breadcrumbs 2nd text wrong')
+        self.assertEqual(breadcrumbs[2].a['href'], '/course/1', 'breadcrumbs 3rd link wrong')
+        self.assertEqual(breadcrumbs[2].a.string.strip().strip('\n'), 'course_name', 'breadcrumbs 3rd text wrong')
         self.assertEqual(breadcrumbs[3].string.strip().strip('\n'),
-                         u'redaktirovanie_zadachi',
+                         'Change assignment',
                          'breadcrumbs 4th text wrong')
 
         # form
         div_task_id = container.find('div', {'id': 'task_edit'})
         self.assertIsNotNone(div_task_id, "No main div with id 'task_edit'")
         self.assertEqual(container.find('h5', 'card-title').string,
-                         u'redaktirovanie_zadachi',
+                         'Change assignment',
                          "Wrong card title")
 
         form_inputs = div_task_id.form('input', 'form-control')
@@ -320,7 +321,7 @@ class ViewsTest(TestCase):
         self.assertEqual(form_select_group[0]['value'], '1', 'form select group 2nd option value wrong')
         self.assertTrue('selected' in dict(form_select_group[0].attrs), 'form select group 2nd option selected')
         self.assertEqual(form_select_group[0].string.strip().strip('\n'),
-                         u'group_name',
+                         'group_name',
                          'form select group 2nd option text wrong')
 
         form_select_type = div_task_id.form.find('select', {'id': 'task_edit_type'})('option')
@@ -328,12 +329,12 @@ class ViewsTest(TestCase):
         self.assertEqual(form_select_type[0]['value'], 'All', 'form select type 1st option value wrong')
         self.assertTrue('selected' in dict(form_select_group[0].attrs), 'form select type 1nd option not selected')
         self.assertEqual(form_select_type[0].string.strip().strip('\n'),
-                         u's_obsuzhdeniem',
+                         'With discussion',
                          'form select type 1st option text wrong')
         self.assertEqual(form_select_type[1]['value'], 'Only mark', 'form select type 2nd option value wrong')
         self.assertFalse('selected' in dict(form_select_type[1].attrs), 'form select type 2nd option selected')
         self.assertEqual(form_select_type[1].string.strip().strip('\n'),
-                         u'tolko_ocenka',
+                         'Mark only',
                          'form select type 2nd option text wrong')
 
         form_textarea = div_task_id.form.textarea
@@ -442,7 +443,7 @@ class ViewsTest(TestCase):
         response = client.post(reverse(tasks.views.contest_task_import), post_data)
         self.assertEqual(response.status_code, 200, "Can't get get_contest_info via teacher")
         self.assertEqual(response.content,
-                         b'{"is_error": true, "error": "net_prav_na_kontest"}',
+                         b'{"is_error": true, "error": "Contest: Permission denied"}',
                          'Wrong response text')
 
         # get contest_task_import page with unknown error
