@@ -32,10 +32,10 @@ def save_result_html(html):
 class CreateTest(TestCase):
     def test_task_create_filled(self):
         year = Year.objects.create(start_year=2016)
-        group = [Group.objects.create(name='name_groups', year=year)]
+        groups = [Group.objects.create(name='name_groups', year=year)]
         course = Course.objects.create(name='course_name',
                                        year=year)
-        course.groups = group
+        course.groups.set(groups)
         course.save()
 
         parent_task = Task.objects.create(title='parent_task',
@@ -60,7 +60,7 @@ class CreateTest(TestCase):
         task.sended_notify = False
         task.one_file_upload = True
         task.save()
-        task.groups = group
+        task.groups.set(groups)
         task_id = task.id
 
         task = Task.objects.get(id=task_id)
@@ -68,7 +68,7 @@ class CreateTest(TestCase):
         self.assertIsInstance(task, Task)
         self.assertEqual(task.title, 'title')
         self.assertEqual(task.course, course)
-        self.assertCountEqual(task.groups.all(), group)
+        self.assertCountEqual(task.groups.all(), groups)
         self.assertEqual(task.weight, 1)
         self.assertEqual(task.is_hidden, True)
         self.assertEqual(task.parent_task, parent_task)
@@ -103,18 +103,18 @@ class ViewsTest(TestCase):
 
         self.group = Group.objects.create(name='group_name',
                                           year=self.year)
-        self.group.students = [self.student]
+        self.group.students.set([self.student])
         self.group.save()
 
         self.course = Course.objects.create(name='course_name',
                                             year=self.year)
-        self.course.groups = [self.group]
-        self.course.teachers = [self.teacher]
+        self.course.groups.set([self.group])
+        self.course.teachers.set([self.teacher])
         self.course.save()
 
         self.school = School.objects.create(name='school_name',
                                             link='school_link')
-        self.school.courses = [self.course]
+        self.school.courses.set([self.course])
         self.school.save()
 
         self.task = Task.objects.create(title='task_title_0',
@@ -154,7 +154,7 @@ class ViewsTest(TestCase):
         response = client.get(reverse(tasks.views.task_create_page, kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 200, "Can't get task_create_page via teacher")
 
-        html = BeautifulSoup(response.content)
+        html = BeautifulSoup(response.content, features="lxml")
         container = html.body.find('div', 'container', recursive=False)
 
         # title
@@ -264,7 +264,7 @@ class ViewsTest(TestCase):
         response = client.get(reverse(tasks.views.task_edit_page, kwargs={'task_id': created_task.id}))
         self.assertEqual(response.status_code, 200, "Can't get task_edit_page via teacher")
 
-        html = BeautifulSoup(response.content)
+        html = BeautifulSoup(response.content, features="lxml")
         container = html.body.find('div', 'container', recursive=False)
 
         # title
@@ -347,7 +347,7 @@ class ViewsTest(TestCase):
         response = client.get(reverse(courses.views.gradebook, kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 200, "Can't get course_page via teacher")
 
-        html = BeautifulSoup(response.content)
+        html = BeautifulSoup(response.content, features="lxml")
         container = html.body.find('div', 'container-fluid', recursive=False)
 
         # table results
