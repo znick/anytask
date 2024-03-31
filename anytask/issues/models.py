@@ -489,7 +489,7 @@ class Issue(models.Model):
             deleted_followers = [get_user_fullname(follower)
                                  for follower in set(self.followers.all()).difference(set(new_followers))]
             add_followers = [get_user_fullname(follower) for follower in new_followers.all()]
-            self.followers = value
+            self.followers.set(value)
             value = ', '.join(add_followers) + '\n' + ', '.join(deleted_followers)
         return delete_event, value
 
@@ -514,7 +514,7 @@ class Issue(models.Model):
             if self.responsible:
                 new_followers.append(self.responsible)
             self.responsible = new_responsible
-            self.followers = new_followers
+            self.followers.set(new_followers)
         else:
             delete_event = True
         value = get_user_fullname(value)

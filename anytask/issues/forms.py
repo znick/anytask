@@ -47,15 +47,19 @@ def get_users_choise(issue, field=None):
 
 def get_responsible_form(field_name, request, issue, data=None, *args, **kwargs):
     class _form(DefaultForm):
-        responsible_name = forms.TypedChoiceField(get_users_choise(issue, 'responsible'), coerce=user_id2user, label='',
-                                                  required=False)
+        responsible_name = forms.TypedChoiceField(
+            choices=get_users_choise(issue, "responsible"),
+            coerce=user_id2user,
+            label="",
+            required=False,
+        )
 
     return _form(field_name, request, issue, data, *args, **kwargs)
 
 
 def get_followers_form(field_name, request, issue, data=None, *args, **kwargs):
     class _form(DefaultForm):
-        followers_names = forms.MultipleChoiceField(get_users_choise(issue, 'followers'), required=False,
+        followers_names = forms.MultipleChoiceField(choices=get_users_choise(issue, 'followers'), required=False,
                                                     label='')  # we dont need coerce function here
         # because add user id to m2m field is ok.
 
@@ -91,7 +95,7 @@ def status_id2status(status_id):
 def get_status_form(field_name, request, issue, data=None, *args, **kwargs):
     class _form(DefaultForm):
         lang = request.user.profile.language
-        status = forms.TypedChoiceField(get_status_choice(issue, lang),
+        status = forms.TypedChoiceField(choices=get_status_choice(issue, lang),
                                         coerce=status_id2status, label='', required=False)
 
     return _form(field_name, request, issue, data, *args, **kwargs)
