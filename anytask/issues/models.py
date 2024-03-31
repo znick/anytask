@@ -39,7 +39,7 @@ def normalize_decimal(number):
 
 class File(models.Model):
     file = models.FileField(upload_to=get_file_path, null=True, blank=True, max_length=500)
-    event = models.ForeignKey('Event', on_delete=models.DO_NOTHING)
+    event = models.ForeignKey("Event", on_delete=models.DO_NOTHING)
     deleted = models.BooleanField(default=False)
 
     def filename(self):
@@ -47,17 +47,33 @@ class File(models.Model):
 
 
 class Issue(models.Model):
-    student = models.ForeignKey(User, db_index=True, null=False, blank=False, related_name='student', on_delete=models.DO_NOTHING)
+    student = models.ForeignKey(
+        User,
+        db_index=True,
+        null=False,
+        blank=False,
+        related_name="student",
+        on_delete=models.DO_NOTHING,
+    )
     costudents = models.ManyToManyField(User, blank=True, db_index=True, related_name='costudents')
 
-    task = models.ForeignKey(Task, db_index=True, null=True, blank=False, on_delete=models.DO_NOTHING)
+    task = models.ForeignKey(
+        Task, db_index=True, null=True, blank=False, on_delete=models.DO_NOTHING
+    )
 
     mark = models.FloatField(db_index=False, null=False, blank=False, default=0)
 
     create_time = models.DateTimeField(auto_now_add=True)  # remove default=timezone.now
     update_time = models.DateTimeField(default=timezone.now)
 
-    responsible = models.ForeignKey(User, db_index=True, null=True, blank=True, related_name='responsible', on_delete=models.DO_NOTHING)
+    responsible = models.ForeignKey(
+        User,
+        db_index=True,
+        null=True,
+        blank=True,
+        related_name="responsible",
+        on_delete=models.DO_NOTHING,
+    )
     followers = models.ManyToManyField(User, blank=True)
 
     STATUS_NEW = 'new'
@@ -81,7 +97,14 @@ class Issue(models.Model):
     )
 
     status = models.CharField(max_length=20, choices=ISSUE_STATUSES, default=STATUS_NEW)
-    status_field = models.ForeignKey(IssueStatus, db_index=True, null=False, blank=False, default=1, on_delete=models.DO_NOTHING)
+    status_field = models.ForeignKey(
+        IssueStatus,
+        db_index=True,
+        null=False,
+        blank=False,
+        default=1,
+        on_delete=models.DO_NOTHING,
+    )
 
     def is_status_accepted(self):
         return self.status_field.tag in [IssueStatus.STATUS_ACCEPTED, IssueStatus.STATUS_ACCEPTED_AFTER_DEADLINE]
@@ -534,9 +557,15 @@ class Issue(models.Model):
 
 
 class Event(models.Model):
-    issue = models.ForeignKey(Issue, null=False, blank=False, on_delete=models.DO_NOTHING)
-    author = models.ForeignKey(User, db_index=True, null=True, blank=True, on_delete=models.DO_NOTHING)
-    field = models.ForeignKey(IssueField, blank=False, default=1, on_delete=models.DO_NOTHING)
+    issue = models.ForeignKey(
+        Issue, null=False, blank=False, on_delete=models.DO_NOTHING
+    )
+    author = models.ForeignKey(
+        User, db_index=True, null=True, blank=True, on_delete=models.DO_NOTHING
+    )
+    field = models.ForeignKey(
+        IssueField, blank=False, default=1, on_delete=models.DO_NOTHING
+    )
 
     value = models.TextField(max_length=2500, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)

@@ -85,14 +85,14 @@ class ViewsTest(TestCase):
 
         self.recipients_group = [Group.objects.create(name='group1_name',
                                                       year=self.year)]
-        self.recipients_group[0].students = [self.user_in_group]
+        self.recipients_group[0].students.set([self.user_in_group])
 
         self.recipients_course = [Course.objects.create(name='course_name',
                                                         year=self.year)]
         self.group_in_course = Group.objects.create(name='group2_name',
                                                     year=self.year)
         self.group_in_course.students = [self.user_in_course]
-        self.recipients_course[0].groups = [self.group_in_course]
+        self.recipients_course[0].groups.set([self.group_in_course])
 
         self.recipients = [self.user, self.user_in_group, self.user_in_course]
 

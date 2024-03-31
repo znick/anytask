@@ -11,7 +11,14 @@ from users.model_user_status import UserStatus
 
 
 class Message(models.Model):
-    sender = models.ForeignKey(User, db_index=False, null=False, blank=False, related_name='sender+', on_delete=models.DO_NOTHING)
+    sender = models.ForeignKey(
+        User,
+        db_index=False,
+        null=False,
+        blank=False,
+        related_name="sender+",
+        on_delete=models.DO_NOTHING,
+    )
     recipients = models.ManyToManyField(User, db_index=False, blank=False, related_name='recipients+')
     recipients_user = models.ManyToManyField(User, db_index=False, blank=True,
                                              related_name='recipients_user+')

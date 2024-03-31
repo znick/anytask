@@ -5,10 +5,11 @@ import os
 import sys
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-locale.setlocale(locale.LC_ALL, '')
+locale.setlocale(locale.LC_ALL, "")
+
 
 def main():
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'anytask.settings')
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "anytask.settings")
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
@@ -19,9 +20,11 @@ def main():
         ) from exc
     execute_from_command_line(sys.argv)
 
+
 # To skip test_site_profile_not_available from django.contrib.auth.tests.models.ProfileTestCase
 # see https://code.djangoproject.com/ticket/17966
-sys.modules['django.contrib.auth.tests'] = None
+sys.modules["django.contrib.auth.tests"] = None
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()
