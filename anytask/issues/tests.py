@@ -995,7 +995,9 @@ class ViewsTest(TestCase):
         self.task.rb_integrated = False
         self.task.save()
 
-        call_command('s3migrate_issue_attachments', '--execute', '--do-rewrite-url')
+        stdout = StringIO()
+        stderr = StringIO()
+        call_command('s3migrate_issue_attachments', '--execute', '--do-rewrite-url', stdout=stdout, stderr=stderr)
 
         # login
         self.assertTrue(client.login(username=self.student.username, password=self.student_password),
@@ -1199,20 +1201,25 @@ class S3MigrateIssueAttachments(TestCase, SerializeMixin):
         out = StringIO()
         err = StringIO()
         call_command('s3migrate_issue_attachments', '--execute', '--rewrite-only-existing', stdout=out, stderr=err)
+        cmd_out = out.getvalue()
 
+        expected_stdout = []
         for file in [file_first, file_second]:
             expected_s3_path = S3OverlayStorage.append_s3_prefix(file.file.name)
-            expected_stdout = ('''Note: destination already exists: {}\n'''
-                               '''Note: updating model: {}, {}\n'''
-                               '''Note: updated model: {}, {}\n'''
-                               ).format(
-                expected_s3_path, file, expected_s3_path, file, expected_s3_path)
-            expected_stdout = (expected_stdout * 2).strip()
+            expected_stdout.append(
+                """Note: destination already exists: {}\n"""
+                """Note: updating model: {}, {}\n"""
+                """Note: updated model: {}, {}\n""".format(
+                    expected_s3_path, file, expected_s3_path, file, expected_s3_path
+                )
+            )
+
             file = File.objects.get(pk=file.pk)
-            cmd_out = out.getvalue().strip()
-            self.assertEqual(expected_stdout, cmd_out)
             self.assertTrue(S3OverlayStorage.is_s3_stored(file.file.name))
             self.assertTrue(self.s3_storage.exists(file.file.name))
+
+        expected_stdout = "".join(expected_stdout)
+        self.assertEqual(expected_stdout, cmd_out)
 
     def test_upload_archives(self):
         for ext in anyrb.unpacker.get_supported_extensions():
