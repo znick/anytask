@@ -4,7 +4,7 @@ import base64
 import json
 
 from django.conf import settings
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseBadRequest, HttpResponseNotFound
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
@@ -33,7 +33,6 @@ def login_required_basic_auth(view):
 
         auth_str = request.META['HTTP_AUTHORIZATION']
         auth_str_parts = auth_str.split()
-
 
         if auth_str_parts[0].lower() != "basic":
             return get_401_response()
