@@ -18,7 +18,7 @@ from tasks.models import Task, TaskGroupRelations
 from mock import patch
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 import tasks.views
 import courses.views

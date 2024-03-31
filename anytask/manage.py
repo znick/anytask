@@ -1,31 +1,27 @@
 #!/usr/bin/env python
-
+"""Django's command-line utility for administrative tasks."""
 import locale
-import sys
 import os
-import imp
+import sys
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
-
 locale.setlocale(locale.LC_ALL, '')
 
-try:
-    imp.find_module('settings')  # Assumed to be in the same directory.
-except ImportError:
-    sys.stderr.write("Error: Can't find the file 'settings.py' in the directory containing %r. "
-                     "It appears you've customized things.\n"
-                     "You'll have to run django-admin.py, passing it your settings module.\n" % __file__)
-    sys.exit(1)
-
+def main():
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'anytask.settings')
+    try:
+        from django.core.management import execute_from_command_line
+    except ImportError as exc:
+        raise ImportError(
+            "Couldn't import Django. Are you sure it's installed and "
+            "available on your PYTHONPATH environment variable? Did you "
+            "forget to activate a virtual environment?"
+        ) from exc
+    execute_from_command_line(sys.argv)
 
 # To skip test_site_profile_not_available from django.contrib.auth.tests.models.ProfileTestCase
 # see https://code.djangoproject.com/ticket/17966
 sys.modules['django.contrib.auth.tests'] = None
 
-if __name__ == "__main__":
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "anytask.settings")
-
-    from django.core.management import execute_from_command_line
-
-    execute_from_command_line(sys.argv)
+if __name__ == '__main__':
+    main()

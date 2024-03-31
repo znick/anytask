@@ -7,6 +7,9 @@ import django.views.static
 import index.views
 import admission.views
 
+import courses.urls
+import issues.urls
+
 from middleware.lang_middleware import set_lang_view, get_lang_view
 
 # Uncomment the next two lines to enable the admin:
@@ -14,7 +17,7 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = [
-    url(r'^admin/', include(admin.site.urls)),
+    url(r'^admin/', admin.site.urls),
     url(r'^course/', include('courses.urls')),
     url(r'^issue/', include('issues.urls')),
     url(r'^school/', include('schools.urls')),

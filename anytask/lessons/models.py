@@ -13,10 +13,10 @@ class Lesson(models.Model):
     description = models.TextField(null=True, blank=True, default='')
     date_starttime = models.DateTimeField(auto_now=False, null=True, default=None)
     date_endtime = models.DateTimeField(auto_now=False, null=True, default=None)
-    course = models.ForeignKey(Course, db_index=True, null=False, blank=False)
-    group = models.ForeignKey(Group, null=False, blank=False)
+    course = models.ForeignKey(Course, db_index=True, null=False, blank=False, on_delete=models.DO_NOTHING)
+    group = models.ForeignKey(Group, null=False, blank=False, on_delete=models.DO_NOTHING)
     not_visited_students = models.ManyToManyField(User, blank=True)
-    updated_by = models.ForeignKey(User, db_index=False, null=True, blank=True, related_name='authors')
+    updated_by = models.ForeignKey(User, db_index=False, null=True, blank=True, related_name='authors', on_delete=models.DO_NOTHING)
     schedule_id = models.CharField(max_length=100, db_index=True, null=True, blank=True)
     position = models.IntegerField(db_index=True, null=True, blank=True)
 

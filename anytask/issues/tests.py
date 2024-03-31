@@ -27,7 +27,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from mock import patch
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from storages.backends.s3boto3 import S3Boto3Storage
 
 import issues.views

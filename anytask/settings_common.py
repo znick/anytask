@@ -3,6 +3,7 @@
 
 import os
 from django.contrib.messages import constants as messages
+
 MESSAGE_TAGS = {
     messages.DEBUG: 'alert-secondary',
     messages.INFO: 'alert-info',
@@ -16,25 +17,22 @@ PROJECT_PATH = os.path.dirname(os.path.abspath(__file__))
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [
-            # insert your TEMPLATE_DIRS here
-        ],
+        'DIRS': [os.path.join(PROJECT_PATH, 'templates')],
+        'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
-                # Insert your TEMPLATE_CONTEXT_PROCESSORS here or use this
-                # list if you haven't customized them:
+                'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
-                'django.template.context_processors.debug',
                 'django.template.context_processors.i18n',
                 'django.template.context_processors.media',
                 'django.template.context_processors.static',
                 'django.template.context_processors.tz',
                 'django.contrib.messages.context_processors.messages',
             ],
-            'loaders': [
-                # insert your TEMPLATE_LOADERS here
-            ]
+            # 'loaders': [
+            #     # insert your TEMPLATE_LOADERS here
+            # ]
         },
     },
 ]
@@ -120,7 +118,7 @@ SECRET_KEY = '3$uum*a)#mnl()ds5em&scsv9gz*!fwbqa&%apz&ccbdukyyku'
 
 # List of callables that know how to import templates from various sources.
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -131,39 +129,37 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.locale.LocaleMiddleware',
     'anytask.middleware.timezone_middleware.TimezoneMiddleware',
     'anytask.middleware.lang_middleware.LanguageCookieMiddleware',
-)
+]
 
 ROOT_URLCONF = 'anytask.urls'
 
-TEMPLATES = [
-    {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [
-            # Always use forward slashes, even on Windows.
-            # Don't forget to use absolute paths, not relative paths.
-            os.path.join(PROJECT_PATH, 'templates')
-        ],
-        'OPTIONS': {
-            'context_processors': [
-                # Insert your TEMPLATE_CONTEXT_PROCESSORS here or use this
-                # list if you haven't customized them:
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.template.context_processors.debug',
-                'django.template.context_processors.i18n',
-                'django.template.context_processors.media',
-                'django.template.context_processors.static',
-                'django.template.context_processors.tz',
-                'django.contrib.messages.context_processors.messages',
-            ],
-            'loaders': [
-                'django.template.loaders.filesystem.Loader',
-                'django.template.loaders.app_directories.Loader',
-                # 'django.template.loaders.eggs.Loader'
-            ]
-        },
-    },
-]
+# TEMPLATES = [
+#     {
+#         'BACKEND': 'django.template.backends.django.DjangoTemplates',
+#         'DIRS': [
+#             # Always use forward slashes, even on Windows.
+#             # Don't forget to use absolute paths, not relative paths.
+#             os.path.join(PROJECT_PATH, 'templates')
+#         ],
+#         'OPTIONS': {
+#             'context_processors': [
+#                 'django.template.context_processors.request',
+#                 'django.contrib.auth.context_processors.auth',
+#                 'django.template.context_processors.debug',
+#                 'django.template.context_processors.i18n',
+#                 'django.template.context_processors.media',
+#                 'django.template.context_processors.static',
+#                 'django.template.context_processors.tz',
+#                 'django.contrib.messages.context_processors.messages',
+#             ],
+#             # 'loaders': [
+#             #     'django.template.loaders.filesystem.Loader',
+#             #     'django.template.loaders.app_directories.Loader',
+#             #     # 'django.template.loaders.eggs.Loader'
+#             # ]
+#         },
+#     },
+# ]
 
 INSTALLED_APPS = (
     'django.contrib.auth',
@@ -190,7 +186,6 @@ INSTALLED_APPS = (
     'issues',
     'anyrb',
     'django_extensions',
-    'django_bootstrap_breadcrumbs',
     'filemanager',
     'schools',
     'jfu',
@@ -204,6 +199,7 @@ INSTALLED_APPS = (
     'lessons',
     'api',
     'django_premailer',
+    'django_bootstrap_breadcrumbs',
 )
 
 AUTH_PROFILE_MODULE = "users.UserProfile"

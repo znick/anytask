@@ -11,7 +11,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import Q, Max
 from django.utils.translation import ugettext_lazy as _
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.html import escape
 
@@ -40,15 +40,15 @@ def get_lang_text(text, lang):
 class Task(models.Model):
     title = models.CharField(max_length=191, db_index=True, null=True, blank=True)
     short_title = models.CharField(max_length=15, db_index=True, null=True, blank=True)
-    course = models.ForeignKey(Course, db_index=True, null=False, blank=False)
-    group = models.ForeignKey(Group, db_index=False, null=True, blank=True, default=None)
+    course = models.ForeignKey(Course, db_index=True, null=False, blank=False, on_delete=models.DO_NOTHING)
+    group = models.ForeignKey(Group, db_index=False, null=True, blank=True, default=None, on_delete=models.DO_NOTHING)
     groups = models.ManyToManyField(Group, blank=False, related_name='groups_set')
 
     weight = models.IntegerField(db_index=True, null=False, blank=False, default=0)
 
     is_hidden = models.BooleanField(db_index=True, null=False, blank=False, default=False)
 
-    parent_task = models.ForeignKey('self', db_index=True, null=True, blank=True, related_name='children')
+    parent_task = models.ForeignKey('self', db_index=True, null=True, blank=True, related_name='children', on_delete=models.DO_NOTHING)
 
     task_text = models.TextField(null=True, blank=True, default=None)
 
@@ -78,7 +78,7 @@ class Task(models.Model):
     update_time = models.DateTimeField(auto_now=True)  # remove default=timezone.now
     deadline_time = models.DateTimeField(auto_now=False, blank=True, null=True, default=None)
 
-    updated_by = models.ForeignKey(User, db_index=False, null=True, blank=True)
+    updated_by = models.ForeignKey(User, db_index=False, null=True, blank=True, on_delete=models.DO_NOTHING)
 
     contest_id = models.IntegerField(db_index=True, null=False, blank=False, default=0)
     problem_id = models.CharField(max_length=128, db_index=True, null=True, blank=True)
@@ -265,13 +265,13 @@ class Task(models.Model):
 
 class TaskLog(models.Model):
     title = models.CharField(max_length=191, db_index=True, null=True, blank=True)
-    course = models.ForeignKey(Course, db_index=False, null=False, blank=False)
-    group = models.ForeignKey(Group, db_index=False, null=True, blank=True, default=None)
+    course = models.ForeignKey(Course, db_index=False, null=False, blank=False, on_delete=models.DO_NOTHING)
+    group = models.ForeignKey(Group, db_index=False, null=True, blank=True, default=None, on_delete=models.DO_NOTHING)
     groups = models.ManyToManyField(Group, blank=False, related_name='groups_log_set')
 
     weight = models.IntegerField(db_index=False, null=False, blank=False, default=0)
 
-    parent_task = models.ForeignKey('self', db_index=True, null=True, blank=True, related_name='parent_task_set')
+    parent_task = models.ForeignKey('self', db_index=True, null=True, blank=True, related_name='parent_task_set', on_delete=models.DO_NOTHING)
 
     task_text = models.TextField(null=True, blank=True, default=None)
 
@@ -292,7 +292,7 @@ class TaskLog(models.Model):
     update_time = models.DateTimeField(auto_now=True)  # remove default=timezone.now
     deadline_time = models.DateTimeField(auto_now=False, null=True, default=None)
 
-    updated_by = models.ForeignKey(User, db_index=False, null=True, blank=True)
+    updated_by = models.ForeignKey(User, db_index=False, null=True, blank=True, on_delete=models.DO_NOTHING)
 
     contest_id = models.IntegerField(db_index=True, null=False, blank=False, default=0)
     problem_id = models.CharField(max_length=128, db_index=True, null=True, blank=True)
@@ -308,9 +308,9 @@ class TaskTaken(models.Model):
     STATUS_SCORED = 3
     STATUS_DELETED = 4
 
-    user = models.ForeignKey(User, db_index=True, null=False, blank=False)
-    task = models.ForeignKey(Task, db_index=True, null=False, blank=False)
-    issue = models.ForeignKey('issues.Issue', db_index=True, null=True, blank=False)
+    user = models.ForeignKey(User, db_index=True, null=False, blank=False, on_delete=models.DO_NOTHING)
+    task = models.ForeignKey(Task, db_index=True, null=False, blank=False, on_delete=models.DO_NOTHING)
+    issue = models.ForeignKey('issues.Issue', db_index=True, null=True, blank=False, on_delete=models.DO_NOTHING)
 
     TASK_TAKEN_STATUSES = (
         (STATUS_TAKEN, u'Task taken'),
@@ -391,8 +391,8 @@ class TaskTaken(models.Model):
 
 
 class TaskGroupRelations(models.Model):
-    task = models.ForeignKey(Task, db_index=False, null=False, blank=False)
-    group = models.ForeignKey(Group, db_index=False, null=False, blank=False)
+    task = models.ForeignKey(Task, db_index=False, null=False, blank=False, on_delete=models.DO_NOTHING)
+    group = models.ForeignKey(Group, db_index=False, null=False, blank=False, on_delete=models.DO_NOTHING)
 
     position = models.IntegerField(db_index=False, null=False, blank=False, default=0)
 

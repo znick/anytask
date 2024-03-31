@@ -15,7 +15,7 @@ from tasks.models import Task, TaskTaken
 from tasks.management.commands.check_task_taken_expires import Command as CheckTastTakenExpiresCommand
 
 from bs4 import BeautifulSoup
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 import courses.pythontask
 import courses.views
 import issues.views

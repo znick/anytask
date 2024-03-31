@@ -15,13 +15,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='contestsubmission',
             name='file',
-            field=models.ForeignKey(to='issues.File'),
+            field=models.ForeignKey(to='issues.File', on_delete=models.DO_NOTHING),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='contestsubmission',
             name='issue',
-            field=models.ForeignKey(to='issues.Issue'),
+            field=models.ForeignKey(to='issues.Issue', on_delete=models.DO_NOTHING),
             preserve_default=True,
         ),
     ]

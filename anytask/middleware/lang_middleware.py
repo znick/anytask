@@ -1,13 +1,14 @@
 from django.http import HttpResponseBadRequest, Http404, HttpResponse
 from django.utils import translation
 from django.views.decorators.http import require_POST
+from django.utils.deprecation import MiddlewareMixin
 
 COOKIE_NAME = "anytask_lang"
 
 # Recipe from https://stackoverflow.com/questions/36859854/use-cookie-only-for-user-language-instead-of-opening-session
 
 
-class LanguageCookieMiddleware(object):
+class LanguageCookieMiddleware(MiddlewareMixin):
     def process_request(self, request):
         lang = request.COOKIES.get(COOKIE_NAME)
         if not lang:

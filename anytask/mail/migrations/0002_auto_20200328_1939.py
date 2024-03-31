@@ -23,13 +23,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='message',
             name='recipients_user',
-            field=models.ManyToManyField(related_name=b'recipients_user+', null=True, to=settings.AUTH_USER_MODEL, blank=True),
+            field=models.ManyToManyField(related_name='recipients_user+', null=True, to=settings.AUTH_USER_MODEL, blank=True),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='message',
             name='sender',
-            field=models.ForeignKey(related_name=b'sender+', to=settings.AUTH_USER_MODEL, db_index=False),
+            field=models.ForeignKey(related_name='sender+', to=settings.AUTH_USER_MODEL, db_index=False, on_delete=models.DO_NOTHING),
             preserve_default=True,
         ),
     ]

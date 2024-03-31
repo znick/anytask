@@ -12,7 +12,7 @@ from courses.models import Course
 from groups.models import Group
 
 from django.core import mail
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 
 class UserLoginTest(TestCase):
@@ -220,21 +220,21 @@ class UserProfileAccess(TestCase):
         self.year = Year.objects.create(start_year=2016)
 
         self.group_1 = Group.objects.create(name='group_1', year=self.year)
-        self.group_1.students = [self.student_1_group_1, self.student_2_group_1]
+        self.group_1.students.set([self.student_1_group_1, self.student_2_group_1])
 
         self.group_2 = Group.objects.create(name='group_2', year=self.year)
-        self.group_2.students = [self.student_1_group_2]
+        self.group_2.students.set([self.student_1_group_2])
 
         self.group_3 = Group.objects.create(name='group_3', year=self.year)
-        self.group_3.students = [self.student_1_group_3]
+        self.group_3.students.set([self.student_1_group_3])
 
         self.course_1 = Course.objects.create(name='course_1', year=self.year)
-        self.course_1.groups = [self.group_1, self.group_2]
-        self.course_1.teachers = [self.teacher_1_course_1, self.teacher_2_course_1]
+        self.course_1.groups.set([self.group_1, self.group_2])
+        self.course_1.teachers.set([self.teacher_1_course_1, self.teacher_2_course_1])
 
         self.course_2 = Course.objects.create(name='course_2', year=self.year)
-        self.course_2.groups = [self.group_3]
-        self.course_2.teachers = [self.teacher_1_course_2]
+        self.course_2.groups.set([self.group_3])
+        self.course_2.teachers.set([self.teacher_1_course_2])
 
         self.school_1 = School.objects.create(name='school_1', link='school_1')
 

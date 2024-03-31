@@ -62,9 +62,9 @@ class Migration(migrations.Migration):
             name='DefaultTeacher',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('course', models.ForeignKey(to='courses.Course')),
-                ('group', models.ForeignKey(blank=True, to='groups.Group', null=True)),
-                ('teacher', models.ForeignKey(to=settings.AUTH_USER_MODEL, blank=True, null=True, db_index=False)),
+                ('course', models.ForeignKey(to='courses.Course', on_delete=models.DO_NOTHING)),
+                ('group', models.ForeignKey(blank=True, to='groups.Group', null=True, on_delete=models.DO_NOTHING)),
+                ('teacher', models.ForeignKey(to=settings.AUTH_USER_MODEL, blank=True, null=True, db_index=False, on_delete=models.DO_NOTHING)),
             ],
             options={
             },
@@ -97,10 +97,10 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('update_time', models.DateTimeField(default=django.utils.timezone.now, auto_now=True)),
-                ('course', models.ForeignKey(to='courses.Course', db_index=False)),
-                ('mark', models.ForeignKey(to='courses.MarkField', blank=True, null=True, db_index=False)),
-                ('student', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
-                ('teacher', models.ForeignKey(related_name=b'teacher_change_mark', blank=True, to=settings.AUTH_USER_MODEL, null=True, db_index=False)),
+                ('course', models.ForeignKey(to='courses.Course', db_index=False, on_delete=models.DO_NOTHING)),
+                ('mark', models.ForeignKey(to='courses.MarkField', blank=True, null=True, db_index=False, on_delete=models.DO_NOTHING)),
+                ('student', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.DO_NOTHING)),
+                ('teacher', models.ForeignKey(related_name='teacher_change_mark', blank=True, to=settings.AUTH_USER_MODEL, null=True, db_index=False, on_delete=models.DO_NOTHING)),
             ],
             options={
             },
@@ -123,13 +123,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='course',
             name='filename_extensions',
-            field=models.ManyToManyField(related_name=b'filename_extensions_set', null=True, to='courses.FilenameExtension', blank=True),
+            field=models.ManyToManyField(related_name='filename_extensions_set', null=True, to='courses.FilenameExtension', blank=True),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='course',
             name='group_with_extern',
-            field=models.ForeignKey(related_name=b'course_with_extern', blank=True, to='groups.Group', null=True, db_index=False),
+            field=models.ForeignKey(related_name='course_with_extern', blank=True, to='groups.Group', null=True, db_index=False, on_delete=models.DO_NOTHING),
             preserve_default=True,
         ),
         migrations.AddField(

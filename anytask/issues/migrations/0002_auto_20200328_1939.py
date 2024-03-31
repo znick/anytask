@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='issue',
             name='task',
-            field=models.ForeignKey(to='tasks.Task', null=True),
+            field=models.ForeignKey(to='tasks.Task', null=True, on_delete=models.DO_NOTHING),
             preserve_default=True,
         ),
         migrations.AlterUniqueTogether(
@@ -27,25 +27,25 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='file',
             name='event',
-            field=models.ForeignKey(to='issues.Event'),
+            field=models.ForeignKey(to='issues.Event', on_delete=models.DO_NOTHING),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='event',
             name='author',
-            field=models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL, null=True),
+            field=models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL, null=True, on_delete=models.DO_NOTHING),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='event',
             name='field',
-            field=models.ForeignKey(default=1, to='issues.IssueField'),
+            field=models.ForeignKey(default=1, to='issues.IssueField', on_delete=models.DO_NOTHING),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='event',
             name='issue',
-            field=models.ForeignKey(to='issues.Issue'),
+            field=models.ForeignKey(to='issues.Issue', on_delete=models.DO_NOTHING),
             preserve_default=True,
         ),
     ]

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
@@ -95,7 +95,7 @@ class Course(models.Model):
 
     information = models.TextField(db_index=False, null=True, blank=True)
 
-    year = models.ForeignKey(Year, db_index=True, null=False, blank=False, default=timezone.now().year)
+    year = models.ForeignKey(Year, db_index=True, null=False, blank=False, default=timezone.now().year, on_delete=models.DO_NOTHING)
 
     is_active = models.BooleanField(db_index=True, null=False, blank=False, default=False)
 
@@ -126,10 +126,10 @@ class Course(models.Model):
 
     can_be_chosen_by_extern = models.BooleanField(db_index=False, null=False, blank=False, default=False)
     group_with_extern = models.ForeignKey(
-        Group, related_name="course_with_extern", db_index=False, null=True, blank=True
+        Group, related_name="course_with_extern", db_index=False, null=True, blank=True, on_delete=models.DO_NOTHING
     )
 
-    mark_system = models.ForeignKey(CourseMarkSystem, db_index=False, null=True, blank=True)
+    mark_system = models.ForeignKey(CourseMarkSystem, db_index=False, null=True, blank=True, on_delete=models.DO_NOTHING)
 
     show_accepted_after_contest_ok = models.BooleanField(db_index=False, null=False, blank=False, default=False)
     default_accepted_after_contest_ok = models.BooleanField(db_index=False, null=False, blank=False, default=False)
@@ -139,7 +139,7 @@ class Course(models.Model):
 
     default_task_send_to_users = models.BooleanField(db_index=False, null=False, blank=False, default=False)
 
-    issue_status_system = models.ForeignKey(IssueStatusSystem, db_index=False, null=False, blank=False, default=1)
+    issue_status_system = models.ForeignKey(IssueStatusSystem, db_index=False, null=False, blank=False, default=1, on_delete=models.DO_NOTHING)
 
     is_python_task = models.BooleanField(db_index=False, null=False, blank=False, default=False)
     max_students_per_task = models.IntegerField(null=False, blank=False, default=0)
@@ -276,9 +276,9 @@ class Course(models.Model):
 
 
 class DefaultTeacher(models.Model):
-    teacher = models.ForeignKey(User, db_index=False, null=True, blank=True)
-    course = models.ForeignKey(Course, db_index=True, null=False, blank=False)
-    group = models.ForeignKey(Group, db_index=True, null=True, blank=True)
+    teacher = models.ForeignKey(User, db_index=False, null=True, blank=True, on_delete=models.DO_NOTHING)
+    course = models.ForeignKey(Course, db_index=True, null=False, blank=False, on_delete=models.DO_NOTHING)
+    group = models.ForeignKey(Group, db_index=True, null=True, blank=True, on_delete=models.DO_NOTHING)
 
     def __str__(self):
         return u"|".join((self.course.name, self.group.name, self.teacher.username))
@@ -288,11 +288,11 @@ class DefaultTeacher(models.Model):
 
 
 class StudentCourseMark(models.Model):
-    student = models.ForeignKey(User, db_index=True, null=False, blank=False)
-    course = models.ForeignKey(Course, db_index=False, null=False, blank=False)
-    mark = models.ForeignKey(MarkField, db_index=False, null=True, blank=True)
+    student = models.ForeignKey(User, db_index=True, null=False, blank=False, on_delete=models.DO_NOTHING)
+    course = models.ForeignKey(Course, db_index=False, null=False, blank=False, on_delete=models.DO_NOTHING)
+    mark = models.ForeignKey(MarkField, db_index=False, null=True, blank=True, on_delete=models.DO_NOTHING)
 
-    teacher = models.ForeignKey(User, related_name='teacher_change_mark', db_index=False, null=True, blank=True)
+    teacher = models.ForeignKey(User, related_name='teacher_change_mark', db_index=False, null=True, blank=True, on_delete=models.DO_NOTHING)
     update_time = models.DateTimeField(auto_now=True)  # remove default=timezone.now
 
     def __str__(self):

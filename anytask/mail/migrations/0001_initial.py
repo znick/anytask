@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
                 ('hidden_copy', models.BooleanField(default=False)),
                 ('variable', models.BooleanField(default=False)),
                 ('create_time', models.DateTimeField(default=django.utils.timezone.now, auto_now_add=True)),
-                ('recipients', models.ManyToManyField(related_name=b'recipients+', to=settings.AUTH_USER_MODEL)),
+                ('recipients', models.ManyToManyField(related_name='recipients+', to=settings.AUTH_USER_MODEL)),
                 ('recipients_course', models.ManyToManyField(to='courses.Course', null=True, blank=True)),
                 ('recipients_group', models.ManyToManyField(to='groups.Group', null=True, blank=True)),
             ],

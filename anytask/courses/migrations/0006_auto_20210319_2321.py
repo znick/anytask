@@ -6,6 +6,7 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
+    atomic = False
 
     dependencies = [
         ('courses', '0005_auto_20210319_2320'),

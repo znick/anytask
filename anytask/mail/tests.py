@@ -7,7 +7,7 @@ from courses.models import Course
 from groups.models import Group
 from years.models import Year
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from mail.views import format_date
 from pytz import timezone as timezone_pytz
 import json
