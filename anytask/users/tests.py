@@ -3,7 +3,7 @@
 import re
 
 from django.contrib.auth.models import User
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.contrib.sites.models import Site
 
 from schools.models import School
@@ -15,6 +15,7 @@ from django.core import mail
 from django.urls import reverse
 
 
+@override_settings(LANGUAGE_CODE='ru-RU', LANGUAGES=(('ru', 'Russian'),))
 class UserLoginTest(TestCase):
     RESET_LINK_RE = re.compile(r'http://localhost(.*)$', re.MULTILINE)
 
@@ -141,6 +142,7 @@ class UserLoginTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertFormError(response, 'form', 'username', u"Пользователь с таким именем уже существует.")
 
+    @override_settings(LANGUAGE_CODE='en-EN', LANGUAGES=(('en', 'English'),))
     def test_register_user__email_already_exists(self):
         client = self.client
 
