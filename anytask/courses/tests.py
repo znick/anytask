@@ -2,7 +2,7 @@
 
 import datetime
 
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.contrib.auth.models import User
 from django.conf import settings
 from schools.models import School
@@ -49,13 +49,13 @@ class CreateTest(TestCase):
         course.is_active = True
         course.year = year
         course.save()
-        course.teachers = teachers
-        course.groups = groups
+        course.teachers.set(teachers)
+        course.groups.set(groups)
         # course.contest_integrated = True
         # course.send_rb_and_contest_together = True
         # course.rb_integrated = True
         course.send_to_contest_from_users = True
-        course.filename_extensions = filename_extensions
+        course.filename_extensions.set(filename_extensions)
         course.full_transcript = False
         course.private = True
         course.can_be_chosen_by_extern = True
@@ -90,6 +90,7 @@ class CreateTest(TestCase):
         self.assertEqual(course.mark_system, mark_system)
 
 
+@override_settings(LANGUAGE_CODE='en-EN', LANGUAGES=(('en', 'English'),))
 class ViewsTest(TestCase):
     def setUp(self):
         self.teacher_password = 'password1'
@@ -110,18 +111,18 @@ class ViewsTest(TestCase):
 
         self.group = Group.objects.create(name='group_name',
                                           year=self.year)
-        self.group.students = [self.student]
+        self.group.students.set([self.student])
         self.group.save()
 
         self.course = Course.objects.create(name='course_name',
                                             year=self.year)
-        self.course.groups = [self.group]
-        self.course.teachers = [self.teacher]
+        self.course.groups.set([self.group])
+        self.course.teachers.set([self.teacher])
         self.course.save()
 
         self.school = School.objects.create(name='school_name',
                                             link='school_link')
-        self.school.courses = [self.course]
+        self.school.courses.set([self.course])
         self.school.save()
 
     def test_gradebook_anonymously(self):
@@ -210,7 +211,7 @@ class ViewsTest(TestCase):
         response = client.get(reverse(courses.views.gradebook, kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 200)
 
-        html = BeautifulSoup(response.content)
+        html = BeautifulSoup(response.content, features="lxml")
         container = html.body.find('div', 'container-fluid', recursive=False)
 
         # title
@@ -274,7 +275,6 @@ class ViewsTest(TestCase):
         self.assertEqual(table_body_rows_cells[3].span.string.strip().strip('\n'), u'0')
 
     def test_queue_page_with_teacher(self):
-        return
         client = self.client
 
         # login
@@ -284,8 +284,9 @@ class ViewsTest(TestCase):
         response = client.get(reverse(courses.views.queue_page, kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 200)
 
-        html = BeautifulSoup(response.content)
-        container = html.body.find('div', 'container', recursive=False)
+        html = BeautifulSoup(response.content, features="lxml")
+        container = html.body.find('div', 'container-fluid', recursive=False)
+        self.assertIsNotNone(container)
 
         # title
         self.assertEqual(html.find('title').string.strip().strip('\n'), u'course_name | 2016-2017')
@@ -304,23 +305,20 @@ class ViewsTest(TestCase):
         self.assertEqual(len(breadcrumbs), 4)
         self.assertEqual(breadcrumbs[0].a['href'], u'/')
         self.assertEqual(breadcrumbs[1].a['href'], u'/school/school_link')
-        self.assertEqual(breadcrumbs[1].a.string.strip().strip('\n'), u'school_name')
+        self.assertEqual(breadcrumbs[1].a.string.strip().strip('\n'), 'school_name')
         self.assertEqual(breadcrumbs[2].a['href'], u'/course/1')
-        self.assertEqual(breadcrumbs[2].a.string.strip().strip('\n'), u'course_name')
-        self.assertEqual(breadcrumbs[3].string.strip().strip('\n'), u'ochered_na_proverku')
+        self.assertEqual(breadcrumbs[2].a.string.strip().strip('\n'), 'course_name')
+        self.assertEqual(breadcrumbs[3].string.strip().strip('\n'), 'Check up queue')
 
         # filter
         form = container.form
         self.assertIsNotNone(form)
 
         form_id_responsible = form.find('select', {'id': 'id_responsible'})('option')
-        self.assertEqual(len(form_id_responsible), 2)
-        self.assertEqual(form_id_responsible[0]['value'], '')
-        self.assertTrue('selected' in dict(form_id_responsible[0].attrs))
-        self.assertEqual(form_id_responsible[0].string.strip().strip('\n'), u'luboj')
-        self.assertEqual(form_id_responsible[1]['value'], '1')
-        self.assertFalse('selected' in form_id_responsible[1])
-        self.assertEqual(form_id_responsible[1].string.strip().strip('\n'), u'teacher_name teacher_last_name')
+        self.assertEqual(len(form_id_responsible), 1)
+        self.assertEqual(form_id_responsible[0]['value'], '1')
+        self.assertFalse('selected' in form_id_responsible[0])
+        self.assertEqual(form_id_responsible[0].string.strip().strip('\n'), u'teacher_name teacher_last_name')
 
         form_id_followers = form.find('div', {'id': 'div_id_followers'}).find('select')('option')
         self.assertEqual(len(form_id_followers), 1)
@@ -329,10 +327,9 @@ class ViewsTest(TestCase):
         self.assertEqual(form_id_followers[0].next.string.strip().strip('\n'), u'teacher_name teacher_last_name')
 
         # table queue
-        table = container('table', 'table_queue')
-
-        table_body_rows = table[0].tbody('tr')
-        self.assertEqual(len(table_body_rows), 0)
+        table = container.find('table', {'id': 'table_queue'})
+        table_body_rows = table.find_all('tr')
+        self.assertEqual(len(table_body_rows), 1)   # 1 because of head row
 
     def test_edit_course_information_with_teacher(self):
         client = self.client
@@ -356,7 +353,7 @@ class ViewsTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
         # # course information
-        # html = BeautifulSoup(response.content)
+        # html = BeautifulSoup(response.content, features="lxml")
         # container = html.body.find('div', 'container', recursive=False)
         # self.assertEqual(container.find('div', {'id': 'course-information'}).find('div', 'not-sanitize')
         #                  .string.strip().strip('\n'), 'course_information')
@@ -371,7 +368,7 @@ class ViewsTest(TestCase):
         response = client.get(reverse(courses.views.course_settings, kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 200)
 
-        html = BeautifulSoup(response.content)
+        html = BeautifulSoup(response.content, features="lxml")
         container = html.body.find('div', 'container', recursive=False)
 
         # title
@@ -391,10 +388,10 @@ class ViewsTest(TestCase):
         self.assertEqual(len(breadcrumbs), 4)
         self.assertEqual(breadcrumbs[0].a['href'], u'/')
         self.assertEqual(breadcrumbs[1].a['href'], u'/school/school_link')
-        self.assertEqual(breadcrumbs[1].a.string.strip().strip('\n'), u'school_name')
+        self.assertEqual(breadcrumbs[1].a.string.strip().strip('\n'), 'school_name')
         self.assertEqual(breadcrumbs[2].a['href'], u'/course/1')
-        self.assertEqual(breadcrumbs[2].a.string.strip().strip('\n'), u'course_name')
-        self.assertEqual(breadcrumbs[3].string.strip().strip('\n'), u'nastrojki')
+        self.assertEqual(breadcrumbs[2].a.string.strip().strip('\n'), 'course_name')
+        self.assertEqual(breadcrumbs[3].string.strip().strip('\n'), 'Settings')
 
         # form
         form = container.form
@@ -420,7 +417,7 @@ class ViewsTest(TestCase):
         response = client.get(reverse(courses.views.course_settings, kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 200)
 
-        html = BeautifulSoup(response.content)
+        html = BeautifulSoup(response.content, features="lxml")
         container = html.body.find('div', 'container', recursive=False)
 
         # form
@@ -450,7 +447,7 @@ class ViewsTest(TestCase):
         response = client.get(reverse(courses.views.gradebook, kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 200)
 
-        html = BeautifulSoup(response.content)
+        html = BeautifulSoup(response.content, features="lxml")
         container = html.body.find('div', 'container-fluid', recursive=False)
 
         # edit course button
@@ -460,7 +457,7 @@ class ViewsTest(TestCase):
         self.assertEqual(len(btn_group), 2)
         self.assertEqual(btn_group[0]['id'], u'status_btn')
         self.assertEqual(btn_group[1]['href'], u'javascript:change_visibility_hidden_tasks(1);')
-        self.assertEqual(btn_group[1].string.strip().strip('\n'), u'pokazat_skrytye_zadachi')
+        self.assertEqual(btn_group[1].string.strip().strip('\n'), 'Show hidden assignments')
 
         # table results
         table = container.find('table', 'table-results')
@@ -482,7 +479,7 @@ class ViewsTest(TestCase):
         response = client.get(reverse(courses.views.gradebook, kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 200)
 
-        html = BeautifulSoup(response.content)
+        html = BeautifulSoup(response.content, features="lxml")
         container = html.body.find('div', 'container-fluid', recursive=False)
 
         # edit course button
@@ -492,7 +489,7 @@ class ViewsTest(TestCase):
         self.assertEqual(len(btn_group), 2)
         self.assertEqual(btn_group[0]['id'], u'status_btn')
         self.assertEqual(btn_group[1]['href'], u'javascript:change_visibility_hidden_tasks(1);')
-        self.assertEqual(btn_group[1].string.strip().strip('\n'), u'ne_pokazyvat_skrytye_zadachi')
+        self.assertEqual(btn_group[1].string.strip().strip('\n'), 'Do not show hidden assignments')
 
         # table results
         table = container.find('table', 'table-results')
@@ -516,7 +513,7 @@ class ViewsTest(TestCase):
 
         mark_fields = [MarkField.objects.create(name='mark1'), MarkField.objects.create(name='mark2')]
         course_mark_system = CourseMarkSystem.objects.create(name='course_mark_system')
-        course_mark_system.marks = mark_fields
+        course_mark_system.marks.set(mark_fields)
         course_mark_system.save()
         self.course.mark_system = course_mark_system
         self.course.save()
@@ -525,7 +522,7 @@ class ViewsTest(TestCase):
         response = client.get(reverse(courses.views.gradebook, kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 200)
 
-        html = BeautifulSoup(response.content)
+        html = BeautifulSoup(response.content, features="lxml")
         container = html.body.find('div', 'container-fluid', recursive=False)
 
         # table results
@@ -567,7 +564,7 @@ class ViewsTest(TestCase):
         response = client.get(reverse(courses.views.gradebook, kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 200)
 
-        html = BeautifulSoup(response.content)
+        html = BeautifulSoup(response.content, features="lxml")
         container = html.body.find('div', 'container-fluid', recursive=False)
 
         # table results
@@ -617,7 +614,7 @@ class ViewsTest(TestCase):
         response = client.get(reverse(courses.views.gradebook, kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 200)
 
-        html = BeautifulSoup(response.content)
+        html = BeautifulSoup(response.content, features="lxml")
         container = html.body.find('div', 'container-fluid', recursive=False)
 
         # table results
@@ -660,7 +657,7 @@ class ViewsTest(TestCase):
         response = client.get(reverse(courses.views.gradebook, kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 200)
 
-        html = BeautifulSoup(response.content)
+        html = BeautifulSoup(response.content, features="lxml")
         container = html.body.find('div', 'container-fluid', recursive=False)
 
         # table results
@@ -699,7 +696,7 @@ class ViewsTest(TestCase):
         response = client.get(reverse(courses.views.gradebook, kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 200)
 
-        html = BeautifulSoup(response.content)
+        html = BeautifulSoup(response.content, features="lxml")
         container = html.body.find('div', 'container-fluid', recursive=False)
 
         # title
@@ -825,7 +822,7 @@ class ViewsTest(TestCase):
 
         mark_fields = [MarkField.objects.create(name='mark1'), MarkField.objects.create(name='mark2')]
         course_mark_system = CourseMarkSystem.objects.create(name='course_mark_system')
-        course_mark_system.marks = mark_fields
+        course_mark_system.marks.set(mark_fields)
         course_mark_system.save()
         self.course.mark_system = course_mark_system
         self.course.save()
@@ -834,7 +831,7 @@ class ViewsTest(TestCase):
         response = client.get(reverse(courses.views.gradebook, kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 200)
 
-        html = BeautifulSoup(response.content)
+        html = BeautifulSoup(response.content, features="lxml")
         container = html.body.find('div', 'container-fluid', recursive=False)
 
         # table results
@@ -871,7 +868,7 @@ class ViewsTest(TestCase):
         response = client.get(reverse(courses.views.gradebook, kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 200)
 
-        html = BeautifulSoup(response.content)
+        html = BeautifulSoup(response.content, features="lxml")
         container = html.body.find('div', 'container-fluid', recursive=False)
 
         # table results
@@ -903,7 +900,7 @@ class ViewsTest(TestCase):
         response = client.get(reverse(courses.views.gradebook, kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 200)
 
-        html = BeautifulSoup(response.content)
+        html = BeautifulSoup(response.content, features="lxml")
         container = html.body.find('div', 'container-fluid', recursive=False)
 
         # table results
@@ -947,7 +944,7 @@ class ViewsTest(TestCase):
         response = client.get(reverse(courses.views.gradebook, kwargs={'course_id': self.course.id}))
         self.assertEqual(response.status_code, 200)
 
-        html = BeautifulSoup(response.content)
+        html = BeautifulSoup(response.content, features="lxml")
         container = html.body.find('div', 'container-fluid', recursive=False)
 
         # table results
