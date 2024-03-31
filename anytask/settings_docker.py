@@ -83,7 +83,7 @@ EMAIL_DEFAULT_BCC = os.environ.get('EMAIL_DEFAULT_BCC')
 COURSES_WITH_CONTEST_MARKS = [11, 10, 65, 85, 93, 82, 79, 80, 104, 137, 160, 155, 237, 214, 202, 294, 307, 277]
 
 # ALL_PAGES_MESSAGE = ""
-ALL_PAGES_MESSAGE = """<div class="alert alert-warning">Технические работы! Anytask будет недоступен 31 марта, с 20 по 21 МСК.
+ALL_PAGES_MESSAGE = """<div class="alert alert-warning">Технические работы! Anytask будет недоступен 3 апреля, с 20 по 21 МСК.
 Приносим извинения за неудобства.
 </div>"""
 
