@@ -108,7 +108,7 @@ class UserLoginTest(TestCase):
 
     def test_register_user(self):
         client = self.client
-        
+
         form_data = {"username": u"test_user1",
                      "email": u"test_user_00@example.com",
                      "first_name": u"Иван",
@@ -131,13 +131,11 @@ class UserLoginTest(TestCase):
         self.assertEqual(user.last_name, "Иванов")
 
         self.assertTrue(client.login(username="test_user1", password="qwer1"))
-        
-        user_profile = UserProfile.objects.get(user=user)
-        
-        self.assertEqual(user_profile.show_email, True)
 
+        user_profile = user.profile
+        self.assertEqual(user_profile.show_email, True)
         self.assertEqual(user_profile.is_active(), True)
-        
+
     def test_register_user__login_already_exists(self):
         client = self.client
 
