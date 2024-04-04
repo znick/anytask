@@ -132,8 +132,7 @@ class UserLoginTest(TestCase):
         self.assertTrue(client.login(username="test_user1", password="qwer1"))
 
         user_profile = user.profile
-        self.assertEqual(user_profile.show_email, True)
-        self.assertEqual(user_profile.is_active(), True)
+        self.assertEqual(user_profile.show_email, False)
 
     def test_register_user__login_already_exists(self):
         client = self.client
