@@ -21,7 +21,7 @@ from registration.forms import RegistrationForm, RegistrationFormUniqueEmail
 from registration.models import RegistrationProfile
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, HTML
+from crispy_forms.layout import Layout, HTML, Field
 
 attrs_dict = { 'class': 'required' }
 
@@ -38,6 +38,7 @@ class AnytaskLoginForm(AuthenticationForm):
         self.helper.form_action = '/accounts/login/'
         self.helper.label_class = 'col-md-4'
         self.helper.field_class = 'col-md-8'
+        self.helper.layout = Layout(Field('username', wrapper_class="row"), Field('password', wrapper_class="row"))
         self.helper.layout.append(HTML(u"""<div class="form-group row" style="margin-bottom: 16px;margin-top: -16px;">
                                              <div class="col-md-offset-4 col-md-8">
                                                <a href="{% url "auth_password_reset" %}"><small class="text-muted">""" + _(u'Забыли пароль?') + """</small></a>

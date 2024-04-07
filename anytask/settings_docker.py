@@ -82,10 +82,11 @@ EMAIL_DEFAULT_BCC = os.environ.get('EMAIL_DEFAULT_BCC')
 
 COURSES_WITH_CONTEST_MARKS = [11, 10, 65, 85, 93, 82, 79, 80, 104, 137, 160, 155, 237, 214, 202, 294, 307, 277]
 
-ALL_PAGES_MESSAGE = ""
-#ALL_PAGES_MESSAGE = """<div class="alert alert-warning">Технические работы! Anytask будет недоступен 4 апреля с 21 по 22 МСК.
-#Приносим извинения за неудобства.
-#</div>"""
+ALL_PAGES_MESSAGE = os.environ.get('ALL_PAGES_MESSAGE', '')
+# ALL_PAGES_MESSAGE = """<div class="alert alert-warning">
+# Технические работы! Anytask будет недоступен 4 апреля с 21 по 22 МСК.
+# Приносим извинения за неудобства.
+# </div>"""
 
 PYTHONTASK_MAX_DAYS_WITHOUT_SCORES = 30
 PYTHONTASK_MAX_DAYS_TO_FULL_CANCEL = 2
