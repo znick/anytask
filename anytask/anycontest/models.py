@@ -25,9 +25,9 @@ class ContestSubmissionWaiting(Exception):
 
 
 class ContestSubmission(models.Model):
-    issue = models.ForeignKey('issues.Issue', db_index=True, null=False, blank=False)
-    author = models.ForeignKey(User, null=False, blank=False)
-    file = models.ForeignKey('issues.File', null=False, blank=False)
+    issue = models.ForeignKey('issues.Issue', db_index=True, null=False, blank=False, on_delete=models.DO_NOTHING)
+    author = models.ForeignKey(User, null=False, blank=False, on_delete=models.DO_NOTHING)
+    file = models.ForeignKey('issues.File', null=False, blank=False, on_delete=models.DO_NOTHING)
 
     run_id = models.CharField(max_length=191, blank=True)
     compiler_id = models.CharField(max_length=191, blank=True)

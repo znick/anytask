@@ -8,7 +8,7 @@ from anyrb.common import AnyRB
 from anyrb.common import update_status_review_request
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import models
 from django.db.models import Q
 from django.dispatch import receiver
@@ -39,7 +39,7 @@ def normalize_decimal(number):
 
 class File(models.Model):
     file = models.FileField(upload_to=get_file_path, null=True, blank=True, max_length=500)
-    event = models.ForeignKey('Event')
+    event = models.ForeignKey("Event", on_delete=models.DO_NOTHING)
     deleted = models.BooleanField(default=False)
 
     def filename(self):
@@ -47,17 +47,33 @@ class File(models.Model):
 
 
 class Issue(models.Model):
-    student = models.ForeignKey(User, db_index=True, null=False, blank=False, related_name='student')
+    student = models.ForeignKey(
+        User,
+        db_index=True,
+        null=False,
+        blank=False,
+        related_name="student",
+        on_delete=models.DO_NOTHING,
+    )
     costudents = models.ManyToManyField(User, blank=True, db_index=True, related_name='costudents')
 
-    task = models.ForeignKey(Task, db_index=True, null=True, blank=False)
+    task = models.ForeignKey(
+        Task, db_index=True, null=True, blank=False, on_delete=models.DO_NOTHING
+    )
 
     mark = models.FloatField(db_index=False, null=False, blank=False, default=0)
 
     create_time = models.DateTimeField(auto_now_add=True)  # remove default=timezone.now
     update_time = models.DateTimeField(default=timezone.now)
 
-    responsible = models.ForeignKey(User, db_index=True, null=True, blank=True, related_name='responsible')
+    responsible = models.ForeignKey(
+        User,
+        db_index=True,
+        null=True,
+        blank=True,
+        related_name="responsible",
+        on_delete=models.DO_NOTHING,
+    )
     followers = models.ManyToManyField(User, blank=True)
 
     STATUS_NEW = 'new'
@@ -81,7 +97,14 @@ class Issue(models.Model):
     )
 
     status = models.CharField(max_length=20, choices=ISSUE_STATUSES, default=STATUS_NEW)
-    status_field = models.ForeignKey(IssueStatus, db_index=True, null=False, blank=False, default=1)
+    status_field = models.ForeignKey(
+        IssueStatus,
+        db_index=True,
+        null=False,
+        blank=False,
+        default=1,
+        on_delete=models.DO_NOTHING,
+    )
 
     def is_status_accepted(self):
         return self.status_field.tag in [IssueStatus.STATUS_ACCEPTED, IssueStatus.STATUS_ACCEPTED_AFTER_DEADLINE]
@@ -466,7 +489,7 @@ class Issue(models.Model):
             deleted_followers = [get_user_fullname(follower)
                                  for follower in set(self.followers.all()).difference(set(new_followers))]
             add_followers = [get_user_fullname(follower) for follower in new_followers.all()]
-            self.followers = value
+            self.followers.set(value)
             value = ', '.join(add_followers) + '\n' + ', '.join(deleted_followers)
         return delete_event, value
 
@@ -491,7 +514,7 @@ class Issue(models.Model):
             if self.responsible:
                 new_followers.append(self.responsible)
             self.responsible = new_responsible
-            self.followers = new_followers
+            self.followers.set(new_followers)
         else:
             delete_event = True
         value = get_user_fullname(value)
@@ -534,9 +557,15 @@ class Issue(models.Model):
 
 
 class Event(models.Model):
-    issue = models.ForeignKey(Issue, null=False, blank=False)
-    author = models.ForeignKey(User, db_index=True, null=True, blank=True)
-    field = models.ForeignKey(IssueField, blank=False, default=1)
+    issue = models.ForeignKey(
+        Issue, null=False, blank=False, on_delete=models.DO_NOTHING
+    )
+    author = models.ForeignKey(
+        User, db_index=True, null=True, blank=True, on_delete=models.DO_NOTHING
+    )
+    field = models.ForeignKey(
+        IssueField, blank=False, default=1, on_delete=models.DO_NOTHING
+    )
 
     value = models.TextField(max_length=2500, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)

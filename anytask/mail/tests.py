@@ -7,7 +7,7 @@ from courses.models import Course
 from groups.models import Group
 from years.models import Year
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from mail.views import format_date
 from pytz import timezone as timezone_pytz
 import json
@@ -42,10 +42,10 @@ class CreateTest(TestCase):
 
         message.save()
 
-        message.recipients = self.recipients
-        message.recipients_user = self.recipients
-        message.recipients_course = self.recipients_course
-        message.recipients_group = self.recipients_group
+        message.recipients.set(self.recipients)
+        message.recipients_user.set(self.recipients)
+        message.recipients_course.set(self.recipients_course)
+        message.recipients_group.set(self.recipients_group)
 
         message_id = message.id
 
@@ -85,14 +85,14 @@ class ViewsTest(TestCase):
 
         self.recipients_group = [Group.objects.create(name='group1_name',
                                                       year=self.year)]
-        self.recipients_group[0].students = [self.user_in_group]
+        self.recipients_group[0].students.set([self.user_in_group])
 
         self.recipients_course = [Course.objects.create(name='course_name',
                                                         year=self.year)]
         self.group_in_course = Group.objects.create(name='group2_name',
                                                     year=self.year)
-        self.group_in_course.students = [self.user_in_course]
-        self.recipients_course[0].groups = [self.group_in_course]
+        self.group_in_course.students.set([self.user_in_course])
+        self.recipients_course[0].groups.set([self.group_in_course])
 
         self.recipients = [self.user, self.user_in_group, self.user_in_course]
 
@@ -175,10 +175,10 @@ class ViewsTest(TestCase):
         message.title = u"title"
         message.text = u"text"
         message.save()
-        message.recipients = self.recipients
-        message.recipients_user = self.recipients_user
-        message.recipients_group = self.recipients_group
-        message.recipients_course = self.recipients_course
+        message.recipients.set(self.recipients)
+        message.recipients_user.set(self.recipients_user)
+        message.recipients_group.set(self.recipients_group)
+        message.recipients_course.set(self.recipients_course)
 
         get_data = {
             u'unread_count': 0,

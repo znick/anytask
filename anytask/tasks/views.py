@@ -292,7 +292,7 @@ def task_create_or_edit(request, course, task_id=None):
             course_task.save()
 
     task_groups = params['groups']
-    task.groups = task_groups
+    task.groups.set(task_groups)
     task.set_position_in_new_group(task_groups)
 
     if task_id and changed_score_after_deadline and task.parent_task:
@@ -458,7 +458,7 @@ def contest_task_import(request):
         real_task.save()
 
         task_groups = common_params['groups']
-        real_task.groups = task_groups
+        real_task.groups.set(task_groups)
         real_task.set_position_in_new_group(task_groups)
 
         reversion.set_user(request.user)

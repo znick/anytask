@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
                 ('added_time', models.DateTimeField(default=django.utils.timezone.now, auto_now_add=True)),
                 ('update_time', models.DateTimeField(default=django.utils.timezone.now, auto_now=True)),
                 ('students', models.ManyToManyField(to=settings.AUTH_USER_MODEL, null=True, blank=True)),
-                ('year', models.ForeignKey(to='years.Year', blank=True)),
+                ('year', models.ForeignKey(to='years.Year', blank=True, on_delete=models.DO_NOTHING)),
             ],
             options={
             },

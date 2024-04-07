@@ -41,9 +41,9 @@ def forward(apps, schema_editor):
     # default IssueStatusSystem
     IssueStatusSystem(**{'name': u'Стандартная система'}).save()
     issue_status_system = IssueStatusSystem.objects.get(pk=1)
-    issue_status_system.statuses = [IssueStatus.objects.get(pk=3),
+    issue_status_system.statuses.set([IssueStatus.objects.get(pk=3),
                                     IssueStatus.objects.get(pk=4),
-                                    IssueStatus.objects.get(pk=5)]
+                                    IssueStatus.objects.get(pk=5)])
     issue_status_system.save()
 
 

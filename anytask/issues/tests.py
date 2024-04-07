@@ -11,7 +11,7 @@ from unittest import skipIf
 
 from django.core.management import call_command
 from django.conf import settings
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.contrib.auth.models import User
 from django.test.testcases import SerializeMixin
 
@@ -27,7 +27,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from mock import patch
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from storages.backends.s3boto3 import S3Boto3Storage
 
 import issues.views
@@ -57,7 +57,7 @@ class CreateTest(TestCase):
         group = Group.objects.create(name='name_groups', year=year)
         course = Course.objects.create(name='course_name',
                                        year=year)
-        course.groups = [group]
+        course.groups.set([group])
         course.save()
         task = Task.objects.create(title='task',
                                    course=course)
@@ -77,7 +77,7 @@ class CreateTest(TestCase):
         issue.responsible = responsible
         issue.status_field = status
         issue.save()
-        issue.followers = followers
+        issue.followers.set(followers)
         issue.save()
         issue_id = issue.id
 
@@ -92,6 +92,7 @@ class CreateTest(TestCase):
         self.assertCountEqual(issue.followers.all(), followers)
 
 
+@override_settings(LANGUAGE_CODE='en-EN', LANGUAGES=(('en', 'English'),))
 class ViewsTest(TestCase):
     def setUp(self):
         self.teacher_password = 'password1'
@@ -112,19 +113,19 @@ class ViewsTest(TestCase):
 
         self.group = Group.objects.create(name='group_name',
                                           year=self.year)
-        self.group.students = [self.student]
+        self.group.students.set([self.student])
         self.group.save()
 
         self.course = Course.objects.create(name='course_name',
                                             year=self.year)
-        self.course.groups = [self.group]
-        self.course.teachers = [self.teacher]
-        self.course.issue_fields = IssueField.objects.exclude(id=10).exclude(id=11).exclude(id=12)
+        self.course.groups.set([self.group])
+        self.course.teachers.set([self.teacher])
+        self.course.issue_fields.set(IssueField.objects.exclude(id=10).exclude(id=11).exclude(id=12))
         self.course.save()
 
         self.school = School.objects.create(name='school_name',
                                             link='school_link')
-        self.school.courses = [self.course]
+        self.school.courses.set([self.course])
         self.school.save()
 
         self.task = Task.objects.create(title='task_title',
@@ -162,7 +163,7 @@ class ViewsTest(TestCase):
         self.assertEqual(response.status_code, 200, "Can't get get_or_create via teacher")
         self.assertEqual(len(response.redirect_chain), 1, "Must be redirect from get_or_create")
 
-        html = BeautifulSoup(response.content)
+        html = BeautifulSoup(response.content, features="lxml")
         container = html.body.find('div', 'container', recursive=False)
 
         # title
@@ -198,20 +199,20 @@ class ViewsTest(TestCase):
         results = info('div', 'accordion2-result')
         forms = info('form')
         self.assertEqual(len(forms), 4, 'Issue field forms len is not 8')
-        self.assertEqual(labels[0].string.strip().strip('\n'), u'kurs:', '1st issue field label wrong')
+        self.assertEqual(labels[0].string.strip().strip('\n'), 'Course:', '1st issue field label wrong')
         self.assertEqual(results[0].a['href'], '/course/1', '1st issue field link wrong')
         self.assertEqual(results[0].a.string.strip().strip('\n'), 'course_name', '1st issue field link text wrong')
 
-        self.assertEqual(labels[1].string.strip().strip('\n'), u'zadacha:', '2nd issue field label wrong')
+        self.assertEqual(labels[1].string.strip().strip('\n'), 'Problem:', '2nd issue field label wrong')
         self.assertEqual(results[1].a.string.strip().strip('\n'), 'task_title', '2nd issue field text wrong')
 
-        self.assertEqual(labels[2].string.strip().strip('\n'), u'student:', '3rd issue field label wrong')
+        self.assertEqual(labels[2].string.strip().strip('\n'), 'Student:', '3rd issue field label wrong')
         self.assertEqual(results[2].a['href'], '/users/student/', '3rd issue field link wrong')
         self.assertEqual(results[2].a.string.strip().strip('\n'),
                          'student_last_name student_name',
                          '3rd issue field link text wrong')
 
-        self.assertEqual(labels[3].a.string.strip().strip('\n'), u'proverjaushij', '4th issue field label text wrong')
+        self.assertEqual(labels[3].a.string.strip().strip('\n'), 'TA', '4th issue field label text wrong')
         self.assertEqual(labels[3].a['data-target'], u'#collapse5', '4th issue field label data-target wrong')
         self.assertEqual(results[3].string.strip().strip('\n'), '---', '4th issue field text wrong')
         self.assertEqual(forms[0].find('input', {'name': 'form_name'})['value'],
@@ -224,13 +225,13 @@ class ViewsTest(TestCase):
                          '4th issue field select option text wrong')
         self.assertEqual(len(forms[0]('button')), 2, '4th issue field button len is not 2')
         self.assertEqual(forms[0]('button')[0].string.strip().strip('\n'),
-                         u'sohranit',
+                         'Save',
                          '4th issue field 1st button wrong ')
         self.assertEqual(forms[0]('button')[1].string.strip().strip('\n'),
-                         u'ja',
+                         'Me',
                          '4th issue field 2st button wrong ')
 
-        self.assertEqual(labels[4].a.string.strip().strip('\n'), u'nabludateli', '5th issue field label text wrong')
+        self.assertEqual(labels[4].a.string.strip().strip('\n'), 'Viewers', '5th issue field label text wrong')
         self.assertEqual(labels[4].a['data-target'], u'#collapse6', '5th issue field label data-target wrong')
         self.assertEqual(results[4].string.strip().strip('\n'), '---', '5th issue field text wrong')
         self.assertEqual(forms[1].find('input', {'name': 'form_name'})['value'],
@@ -243,13 +244,13 @@ class ViewsTest(TestCase):
                          '5th issue field select option text wrong')
         self.assertEqual(len(forms[1]('button')), 2, '5th issue field button len is not 2')
         self.assertEqual(forms[1]('button')[0].string.strip().strip('\n'),
-                         u'sohranit',
+                         'Save',
                          '5th issue field 1st button wrong ')
         self.assertEqual(forms[1]('button')[1].string.strip().strip('\n'),
-                         u'ja',
+                         'Me',
                          '5th issue field 2st button wrong ')
 
-        self.assertEqual(labels[5].a.string.strip().strip('\n'), u'статус', '6th issue field label text wrong')
+        self.assertEqual(labels[5].a.string.strip().strip('\n'), 'Status', '6th issue field label text wrong')
         self.assertEqual(labels[5].a['data-target'], u'#collapse7', '6th issue field label data-target wrong')
         self.assertEqual(results[5].string.strip().strip('\n'), u'Новый', '6th issue field text wrong')
         self.assertEqual(forms[2].find('input', {'name': 'form_name'})['value'],
@@ -270,12 +271,12 @@ class ViewsTest(TestCase):
                       '6th issue field select 3st option text wrong')
         self.assertEqual(len(forms[2]('button')), 1, '6th issue field button len is not 1')
         self.assertEqual(forms[2]('button')[0].string.strip().strip('\n'),
-                         u'sohranit',
+                         'Save',
                          '6th issue field 1st button wrong ')
 
-        self.assertEqual(labels[6].a.string.strip().strip('\n'), u'ocenka', '7th issue field label text wrong')
+        self.assertEqual(labels[6].a.string.strip().strip('\n'), 'Mark', '7th issue field label text wrong')
         self.assertEqual(labels[6].a['data-target'], u'#collapse8', '7th issue field label data-target wrong')
-        self.assertEqual(results[6].string.strip().strip('\n'), '0 iz 10', '7th issue field text wrong')
+        self.assertEqual(results[6].string.strip().strip('\n'), '0 out of 10', '7th issue field text wrong')
         self.assertEqual(forms[3].find('input', {'name': 'form_name'})['value'],
                          'mark_form',
                          '7th issue field input form_name wrong')
@@ -285,13 +286,13 @@ class ViewsTest(TestCase):
         self.assertIsNotNone(forms[3].find('input', {'name': 'mark'}), '7th issue field mark input wrong')
         self.assertEqual(len(forms[3]('button')), 2, '7th issue field button len is not 2')
         self.assertEqual(forms[3]('button')[0].string.strip().strip('\n'),
-                         u'sohranit',
+                         'Save',
                          '7th issue field 1st button wrong ')
         self.assertEqual(forms[3]('button')[1].string.strip().strip('\n'),
-                         u'Зачтено',
+                         'Зачтено',
                          '7th issue field 2st button wrong ')
 
-        self.assertEqual(labels[7].string.strip().strip('\n'), u'data_sdachi:', '8th issue field label wrong')
+        self.assertEqual(labels[7].string.strip().strip('\n'), 'Submit due:', '8th issue field label wrong')
         self.assertEqual(results[7].string.strip().strip('\n'), '', '8th issue field text wrong')
 
     def test_post_responsible_name_form_send_button_with_teacher(self):
@@ -310,7 +311,7 @@ class ViewsTest(TestCase):
         self.assertEqual(response.status_code, 200, "Can't get issue_page via teacher")
         self.assertEqual(len(response.redirect_chain), 1, "Must be redirect")
 
-        html = BeautifulSoup(response.content)
+        html = BeautifulSoup(response.content, features="lxml")
         container = html.body.find('div', 'container', recursive=False)
 
         # history
@@ -323,7 +324,7 @@ class ViewsTest(TestCase):
                          'teacher_last_name teacher_name',
                          'Wrong comment author name')
         self.assertEqual(history[0].find('div', 'history-body').find('p').string.strip().strip('\n'),
-                         u'zadachu_proveriaet teacher_last_name teacher_name',
+                         'Task reviewer changed: teacher_last_name teacher_name',
                          'Wrong comment text')
 
         # info
@@ -358,7 +359,7 @@ class ViewsTest(TestCase):
         self.assertEqual(response.status_code, 200, "Can't get issue_page via teacher")
         self.assertEqual(len(response.redirect_chain), 1, "Must be redirect")
 
-        html = BeautifulSoup(response.content)
+        html = BeautifulSoup(response.content, features="lxml")
         container = html.body.find('div', 'container', recursive=False)
 
         # history
@@ -371,7 +372,7 @@ class ViewsTest(TestCase):
                          'teacher_last_name teacher_name',
                          'Wrong comment author name')
         self.assertEqual(history[0].find('div', 'history-body').find('p').string.strip().strip('\n'),
-                         u'zadachu_proveriaet teacher_last_name teacher_name',
+                         'Task reviewer changed: teacher_last_name teacher_name',
                          'Wrong comment text')
 
         # info
@@ -406,7 +407,7 @@ class ViewsTest(TestCase):
         self.assertEqual(response.status_code, 200, "Can't get issue_page via teacher")
         self.assertEqual(len(response.redirect_chain), 1, "Must be redirect")
 
-        html = BeautifulSoup(response.content)
+        html = BeautifulSoup(response.content, features="lxml")
         container = html.body.find('div', 'container', recursive=False)
 
         # history
@@ -419,7 +420,7 @@ class ViewsTest(TestCase):
                          'teacher_last_name teacher_name',
                          'Wrong comment author name')
         self.assertEqual(history[0].find('div', 'history-body').find('p').string.strip().strip('\n'),
-                         u'nabludaiut teacher_last_name teacher_name',
+                         'Viewers teacher_last_name teacher_name',
                          'Wrong comment text')
 
         # info
@@ -454,7 +455,7 @@ class ViewsTest(TestCase):
         self.assertEqual(response.status_code, 200, "Can't get issue_page via teacher")
         self.assertEqual(len(response.redirect_chain), 1, "Must be redirect")
 
-        html = BeautifulSoup(response.content)
+        html = BeautifulSoup(response.content, features="lxml")
         container = html.body.find('div', 'container', recursive=False)
 
         # history
@@ -467,7 +468,7 @@ class ViewsTest(TestCase):
                          'teacher_last_name teacher_name',
                          'Wrong comment author name')
         self.assertEqual(history[0].find('div', 'history-body').find('p').string.strip().strip('\n'),
-                         u'nabludaiut teacher_last_name teacher_name',
+                         'Viewers teacher_last_name teacher_name',
                          'Wrong comment text')
 
         # info
@@ -503,7 +504,7 @@ class ViewsTest(TestCase):
         self.assertEqual(response.status_code, 200, "Can't get issue_page via teacher")
         self.assertEqual(len(response.redirect_chain), 1, "Must be redirect")
 
-        html = BeautifulSoup(response.content)
+        html = BeautifulSoup(response.content, features="lxml")
         container = html.body.find('div', 'container', recursive=False)
 
         # history
@@ -516,7 +517,7 @@ class ViewsTest(TestCase):
                          'teacher_last_name teacher_name',
                          'Wrong comment author name')
         self.assertEqual(history[0].find('div', 'history-body').find('p').string.strip().strip('\n'),
-                         u'status_izmenen На доработке',
+                         'Status updated: На доработке',
                          'Wrong comment text')
 
         # info
@@ -539,7 +540,7 @@ class ViewsTest(TestCase):
         self.assertEqual(response.status_code, 200, "Can't get issue_page via teacher")
         self.assertEqual(len(response.redirect_chain), 1, "Must be redirect")
 
-        html = BeautifulSoup(response.content)
+        html = BeautifulSoup(response.content, features="lxml")
         container = html.body.find('div', 'container', recursive=False)
 
         # history
@@ -552,14 +553,14 @@ class ViewsTest(TestCase):
                          'teacher_last_name teacher_name',
                          'Wrong comment author name')
         self.assertEqual(history[0].find('div', 'history-body').find('p').string.strip().strip('\n'),
-                         u'ocenka_izmenena 3',
+                         'Grade mark changed to 3',
                          'Wrong comment text')
 
         # info
         info = container.find('div', {'id': 'accordion2'})
         results = info('div', 'accordion2-result')
-        self.assertEqual(results[5].string.strip().strip('\n'), u'Новый', '6th issue field text wrong')
-        self.assertEqual(results[6].string.strip().strip('\n'), u'3 iz 10', '7th issue field text wrong')
+        self.assertEqual(results[5].string.strip().strip('\n'), 'Новый', '6th issue field text wrong')
+        self.assertEqual(results[6].string.strip().strip('\n'), '3 out of 10', '7th issue field text wrong')
 
     def test_post_mark_form_accept_button_with_teacher(self):
         client = self.client
@@ -577,7 +578,7 @@ class ViewsTest(TestCase):
         self.assertEqual(response.status_code, 200, "Can't get issue_page via teacher")
         self.assertEqual(len(response.redirect_chain), 1, "Must be redirect")
 
-        html = BeautifulSoup(response.content)
+        html = BeautifulSoup(response.content, features="lxml")
         container = html.body.find('div', 'container', recursive=False)
 
         # history
@@ -590,7 +591,7 @@ class ViewsTest(TestCase):
                          'teacher_last_name teacher_name',
                          'Wrong comment author name')
         self.assertEqual(history[0].find('div', 'history-body').find('p').string.strip().strip('\n'),
-                         u'status_izmenen Зачтено',
+                         'Status updated: Зачтено',
                          'Wrong comment text')
         self.assertEqual(history[1].strong.a['href'],
                          '/users/teacher/',
@@ -599,14 +600,14 @@ class ViewsTest(TestCase):
                          'teacher_last_name teacher_name',
                          'Wrong comment author name')
         self.assertEqual(history[1].find('div', 'history-body').find('p').string.strip().strip('\n'),
-                         u'ocenka_izmenena 3',
+                         'Grade mark changed to 3',
                          'Wrong comment text')
 
         # info
         info = container.find('div', {'id': 'accordion2'})
         results = info('div', 'accordion2-result')
-        self.assertEqual(results[5].string.strip().strip('\n'), u'Зачтено', '6th issue field text wrong')
-        self.assertEqual(results[6].string.strip().strip('\n'), u'3 iz 10', '7th issue field text wrong')
+        self.assertEqual(results[5].string.strip().strip('\n'), 'Зачтено', '6th issue field text wrong')
+        self.assertEqual(results[6].string.strip().strip('\n'), '3 out of 10', '7th issue field text wrong')
 
     def test_comment_with_teacher(self):
         client = self.client
@@ -626,7 +627,7 @@ class ViewsTest(TestCase):
         self.assertEqual(response.status_code, 200, "Can't get issue_page via teacher")
         self.assertEqual(len(response.redirect_chain), 1, "Must be redirect")
 
-        html = BeautifulSoup(response.content)
+        html = BeautifulSoup(response.content, features="lxml")
         container = html.body.find('div', 'container', recursive=False)
 
         # history
@@ -655,7 +656,7 @@ class ViewsTest(TestCase):
         self.assertEqual(response.status_code, 200, "Can't get get_or_create via teacher")
         self.assertEqual(len(response.redirect_chain), 1, "Must be redirect from get_or_create")
 
-        html = BeautifulSoup(response.content)
+        html = BeautifulSoup(response.content, features="lxml")
         container = html.body.find('div', 'container', recursive=False)
 
         # title
@@ -690,32 +691,32 @@ class ViewsTest(TestCase):
         results = info('div', 'accordion2-result')
         forms = info('form')
         self.assertEqual(len(forms), 0, 'Issue field forms len is not 0')
-        self.assertEqual(labels[0].string.strip().strip('\n'), u'kurs:', '1st issue field label wrong')
+        self.assertEqual(labels[0].string.strip().strip('\n'), 'Course:', '1st issue field label wrong')
         self.assertEqual(results[0].a['href'], '/course/1', '1st issue field link wrong')
         self.assertEqual(results[0].a.string.strip().strip('\n'), 'course_name', '1st issue field link text wrong')
 
-        self.assertEqual(labels[1].string.strip().strip('\n'), u'zadacha:', '2nd issue field label wrong')
+        self.assertEqual(labels[1].string.strip().strip('\n'), 'Problem:', '2nd issue field label wrong')
         self.assertEqual(results[1].a.string.strip().strip('\n'), 'task_title', '2nd issue field text wrong')
 
-        self.assertEqual(labels[2].string.strip().strip('\n'), u'student:', '3rd issue field label wrong')
+        self.assertEqual(labels[2].string.strip().strip('\n'), 'Student:', '3rd issue field label wrong')
         self.assertEqual(results[2].a['href'], '/users/student/', '3rd issue field link wrong')
         self.assertEqual(results[2].a.string.strip().strip('\n'),
                          'student_last_name student_name',
                          '3rd issue field link text wrong')
 
-        self.assertEqual(labels[3].string.strip().strip('\n'), u'proverjaushij:', '4th issue field label text wrong')
+        self.assertEqual(labels[3].string.strip().strip('\n'), 'TA:', '4th issue field label text wrong')
         self.assertEqual(results[3].string.strip().strip('\n'), '---', '4th issue field text wrong')
 
-        self.assertEqual(labels[4].string.strip().strip('\n'), u'nabludateli:', '5th issue field label text wrong')
+        self.assertEqual(labels[4].string.strip().strip('\n'), 'Viewers:', '5th issue field label text wrong')
         self.assertEqual(results[4].string.strip().strip('\n'), '---', '5th issue field text wrong')
 
-        self.assertEqual(labels[5].string.strip().strip('\n'), u'статус:', '6th issue field label text wrong')
-        self.assertEqual(results[5].string.strip().strip('\n'), u'Новый', '6th issue field text wrong')
+        self.assertEqual(labels[5].string.strip().strip('\n'), 'Status:', '6th issue field label text wrong')
+        self.assertEqual(results[5].string.strip().strip('\n'), 'Новый', '6th issue field text wrong')
 
-        self.assertEqual(labels[6].string.strip().strip('\n'), u'ocenka:', '7th issue field label text wrong')
-        self.assertEqual(results[6].string.strip().strip('\n'), '0 iz 10', '7th issue field text wrong')
+        self.assertEqual(labels[6].string.strip().strip('\n'), 'Mark:', '7th issue field label text wrong')
+        self.assertEqual(results[6].string.strip().strip('\n'), '0 out of 10', '7th issue field text wrong')
 
-        self.assertEqual(labels[7].string.strip().strip('\n'), u'data_sdachi:', '8th issue field label wrong')
+        self.assertEqual(labels[7].string.strip().strip('\n'), 'Submit due:', '8th issue field label wrong')
         self.assertEqual(results[7].string.strip().strip('\n'), '', '8th issue field text wrong')
 
     def test_comment_with_student(self):
@@ -736,7 +737,7 @@ class ViewsTest(TestCase):
         self.assertEqual(response.status_code, 200, "Can't get issue_page via student")
         self.assertEqual(len(response.redirect_chain), 1, "Must be redirect")
 
-        html = BeautifulSoup(response.content)
+        html = BeautifulSoup(response.content, features="lxml")
         container = html.body.find('div', 'container', recursive=False)
 
         # history
@@ -753,7 +754,7 @@ class ViewsTest(TestCase):
                          'Wrong comment text')
 
     def _extract_history_from_response(self, issue_page_response):
-        html = BeautifulSoup(issue_page_response.content)
+        html = BeautifulSoup(issue_page_response.content, features="lxml")
         container = html.body.find('div', 'container', recursive=False)
         history = container.find('ul', 'history')('li')
         return history
@@ -804,7 +805,7 @@ class ViewsTest(TestCase):
         self.assertEqual(response.status_code, 200, "Can't get issue_page via teacher")
         self.assertEqual(len(response.redirect_chain), 1, "Must be redirect")
 
-        html = BeautifulSoup(response.content)
+        html = BeautifulSoup(response.content, features="lxml")
         container = html.body.find('div', 'container', recursive=False)
 
         # history
@@ -829,7 +830,7 @@ class ViewsTest(TestCase):
         self.assertEqual(response.status_code, 200, "Can't get issue_page via teacher")
         self.assertEqual(len(response.redirect_chain), 1, "Must be redirect")
 
-        html = BeautifulSoup(response.content)
+        html = BeautifulSoup(response.content, features="lxml")
         container = html.body.find('div', 'container', recursive=False)
 
         # history
@@ -855,7 +856,7 @@ class ViewsTest(TestCase):
                                       kwargs={'issue_id': issue.id}))
         self.assertEqual(response.status_code, 200, "Can't get issue_page via teacher")
 
-        html = BeautifulSoup(response.content)
+        html = BeautifulSoup(response.content, features="lxml")
         container = html.body.find('div', 'container', recursive=False)
 
         # history
@@ -895,7 +896,7 @@ class ViewsTest(TestCase):
         self.assertEqual(response.status_code, 200, "Can't get upload via student")
         self.assertEqual(len(response.redirect_chain), 1, "Must be redirect")
 
-        html = BeautifulSoup(response.content)
+        html = BeautifulSoup(response.content, features="lxml")
         container = html.body.find('div', 'container', recursive=False)
 
         # history
@@ -913,7 +914,7 @@ class ViewsTest(TestCase):
                          'Wrong comment text')
         comment_body = comment_body.next.next
         self.assertEqual(comment_body.string.strip().strip('\n'),
-                         u'oshibka_otpravki_v_rb',
+                         'Sending to RB failed',
                          'Wrong comment text about RB')
         comment_body = history[0].find('div', 'history-body').find('div', 'files')
         self.assertEqual(comment_body.a.string.strip().strip('\n'),
@@ -932,7 +933,7 @@ class ViewsTest(TestCase):
         self.assertEqual(response.status_code, 200, "Can't get upload via student")
         self.assertEqual(len(response.redirect_chain), 1, "Must be redirect")
 
-        html = BeautifulSoup(response.content)
+        html = BeautifulSoup(response.content, features="lxml")
         container = html.body.find('div', 'container', recursive=False)
 
         # history
@@ -965,7 +966,7 @@ class ViewsTest(TestCase):
                                       kwargs={'issue_id': issue.id}))
         self.assertEqual(response.status_code, 200, "Can't get upload via student")
 
-        html = BeautifulSoup(response.content)
+        html = BeautifulSoup(response.content, features="lxml")
         container = html.body.find('div', 'container', recursive=False)
 
         # history
@@ -979,7 +980,7 @@ class ViewsTest(TestCase):
                          'Wrong comment author name')
         comment_body = history[2].find('div', 'history-body').strong
         self.assertEqual(comment_body.next.string.strip().strip('\n'),
-                         u'novyj_kommentarij',
+                         'New comment',
                          'Wrong comment text')
         self.assertEqual(comment_body.a.string.strip().strip('\n'),
                          u'Review request 1',
@@ -994,7 +995,9 @@ class ViewsTest(TestCase):
         self.task.rb_integrated = False
         self.task.save()
 
-        call_command('s3migrate_issue_attachments', '--execute', '--do-rewrite-url')
+        stdout = StringIO()
+        stderr = StringIO()
+        call_command('s3migrate_issue_attachments', '--execute', '--do-rewrite-url', stdout=stdout, stderr=stderr)
 
         # login
         self.assertTrue(client.login(username=self.student.username, password=self.student_password),
@@ -1010,7 +1013,7 @@ class ViewsTest(TestCase):
         self.assertEqual(response.status_code, 200, "Can't get upload via student")
         self.assertEqual(len(response.redirect_chain), 1, "Must be redirect")
 
-        html = BeautifulSoup(response.content)
+        html = BeautifulSoup(response.content, features="lxml")
         container = html.body.find('div', 'container', recursive=False)
 
         # history
@@ -1056,19 +1059,19 @@ class S3MigrateIssueAttachments(TestCase, SerializeMixin):
 
         self.group = Group.objects.create(name='group_name',
                                           year=self.year)
-        self.group.students = [self.student]
+        self.group.students.set([self.student])
         self.group.save()
 
         self.course = Course.objects.create(name='course_name',
                                             year=self.year)
-        self.course.groups = [self.group]
-        self.course.teachers = [self.teacher]
-        self.course.issue_fields = IssueField.objects.exclude(id=10).exclude(id=11)
+        self.course.groups.set([self.group])
+        self.course.teachers.set([self.teacher])
+        self.course.issue_fields.set(IssueField.objects.exclude(id=10).exclude(id=11))
         self.course.save()
 
         self.school = School.objects.create(name='school_name',
                                             link='school_link')
-        self.school.courses = [self.course]
+        self.school.courses.set([self.course])
         self.school.save()
 
         self.task = Task.objects.create(title='task_title',
@@ -1198,20 +1201,25 @@ class S3MigrateIssueAttachments(TestCase, SerializeMixin):
         out = StringIO()
         err = StringIO()
         call_command('s3migrate_issue_attachments', '--execute', '--rewrite-only-existing', stdout=out, stderr=err)
+        cmd_out = out.getvalue()
 
+        expected_stdout = []
         for file in [file_first, file_second]:
             expected_s3_path = S3OverlayStorage.append_s3_prefix(file.file.name)
-            expected_stdout = ('''Note: destination already exists: {}\n'''
-                               '''Note: updating model: {}, {}\n'''
-                               '''Note: updated model: {}, {}\n'''
-                               ).format(
-                expected_s3_path, file, expected_s3_path, file, expected_s3_path)
-            expected_stdout = (expected_stdout * 2).strip()
+            expected_stdout.append(
+                """Note: destination already exists: {}\n"""
+                """Note: updating model: {}, {}\n"""
+                """Note: updated model: {}, {}\n""".format(
+                    expected_s3_path, file, expected_s3_path, file, expected_s3_path
+                )
+            )
+
             file = File.objects.get(pk=file.pk)
-            cmd_out = out.getvalue().strip()
-            self.assertEqual(expected_stdout, cmd_out)
             self.assertTrue(S3OverlayStorage.is_s3_stored(file.file.name))
             self.assertTrue(self.s3_storage.exists(file.file.name))
+
+        expected_stdout = "".join(expected_stdout)
+        self.assertEqual(expected_stdout, cmd_out)
 
     def test_upload_archives(self):
         for ext in anyrb.unpacker.get_supported_extensions():

@@ -14,8 +14,17 @@ from django.db import IntegrityError
 
 
 class Invite(models.Model):
-    generated_by = models.ForeignKey(User, db_index=False, null=False, blank=False, related_name='invite_generated_by')
-    group = models.ForeignKey(Group, db_index=False, null=True, blank=True)
+    generated_by = models.ForeignKey(
+        User,
+        db_index=False,
+        null=False,
+        blank=False,
+        related_name="invite_generated_by",
+        on_delete=models.DO_NOTHING,
+    )
+    group = models.ForeignKey(
+        Group, db_index=False, null=True, blank=True, on_delete=models.DO_NOTHING
+    )
     invited_users = models.ManyToManyField(User, blank=True)
 
     key = models.CharField(max_length=10, db_index=True, null=False, blank=False, unique=True)
@@ -28,7 +37,7 @@ class Invite(models.Model):
 
     @staticmethod
     def user_can_generate_invite(generative_user):
-        if generative_user.is_anonymous():
+        if generative_user.is_anonymous:
             return False
 
         if generative_user.is_superuser:

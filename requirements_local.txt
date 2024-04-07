@@ -1,16 +1,16 @@
 tornado==5
 ipykernel==4.5.2
-django==1.11.29
+django==2.0.13
 Pillow==9.0.0
 django-recaptcha==1.4.0
 python-gettext==3.0
 beautifulsoup4
 Werkzeug==0.15.3
-django-extensions==1.6.7
+django-extensions==2.2.9
 ipdb==0.13.9
 sqlparse==0.4.2
 django-debug-toolbar==1.3.2
-django-bootstrap-breadcrumbs==0.9.1
+django-bootstrap-breadcrumbs==0.9.2
 python-magic==0.4.15
 django-filemanager==0.0.5
 requests==2.27.1
@@ -19,7 +19,7 @@ text-unidecode==1.3
 django-dprog-jfu==2.2.3
 django-filter==1.1.0
 xmltodict==0.11.0
-django-crispy-forms==1.6.0
+django-crispy-forms==1.8.1
 mock==3.0.5
 django-colorfield==0.1.14
 django-haystack==2.8.1
@@ -27,7 +27,7 @@ django-storages==1.9.1
 boto3==1.20.41
 s3cmd==2.1.0
 Whoosh==2.7.4
-django-reversion==1.10
+django-reversion==2.0.13
 dateutils==0.6.12
 flake8==3.8.4
 django_premailer==0.2.0

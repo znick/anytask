@@ -24,25 +24,25 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='course',
             name='issue_status_system',
-            field=models.ForeignKey(default=1, to='issues.IssueStatusSystem', db_index=False),
+            field=models.ForeignKey(default=1, to='issues.IssueStatusSystem', db_index=False, on_delete=models.DO_NOTHING),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='course',
             name='mark_system',
-            field=models.ForeignKey(to='courses.CourseMarkSystem', blank=True, null=True, db_index=False),
+            field=models.ForeignKey(to='courses.CourseMarkSystem', blank=True, null=True, db_index=False, on_delete=models.DO_NOTHING),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='course',
             name='teachers',
-            field=models.ManyToManyField(related_name=b'course_teachers_set', null=True, to=settings.AUTH_USER_MODEL, blank=True),
+            field=models.ManyToManyField(related_name='course_teachers_set', null=True, to=settings.AUTH_USER_MODEL, blank=True),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='course',
             name='year',
-            field=models.ForeignKey(default=2020, to='years.Year'),
+            field=models.ForeignKey(default=2020, to='years.Year', on_delete=models.DO_NOTHING),
             preserve_default=True,
         ),
     ]

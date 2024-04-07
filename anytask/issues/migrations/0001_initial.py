@@ -46,9 +46,9 @@ class Migration(migrations.Migration):
                 ('mark', models.FloatField(default=0)),
                 ('create_time', models.DateTimeField(default=django.utils.timezone.now, auto_now_add=True)),
                 ('update_time', models.DateTimeField(default=django.utils.timezone.now)),
-                ('status', models.CharField(default=b'new', max_length=20, choices=[(b'new', 'novyj'), (b'rework', 'na_dorabotke'), (b'verification', 'na_proverke'), (b'accepted', 'zachteno'), (b'auto_verification', 'na_avtomaticheskoj_proverke'), (b'need_info', 'trebuetsja_informacija')])),
+                ('status', models.CharField(default='new', max_length=20, choices=[('new', 'novyj'), ('rework', 'na_dorabotke'), ('verification', 'na_proverke'), ('accepted', 'zachteno'), ('auto_verification', 'na_avtomaticheskoj_proverke'), ('need_info', 'trebuetsja_informacija')])),
                 ('followers', models.ManyToManyField(to=settings.AUTH_USER_MODEL, null=True, blank=True)),
-                ('responsible', models.ForeignKey(related_name=b'responsible', blank=True, to=settings.AUTH_USER_MODEL, null=True)),
+                ('responsible', models.ForeignKey(related_name='responsible', blank=True, to=settings.AUTH_USER_MODEL, null=True, on_delete=models.DO_NOTHING)),
             ],
             options={
             },
@@ -61,8 +61,8 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=191)),
                 ('title', models.CharField(max_length=191, blank=True)),
                 ('history_message', models.CharField(max_length=191, blank=True)),
-                ('plugin', models.CharField(default=b'FieldDefaultPlugin', max_length=191)),
-                ('plugin_version', models.CharField(default=b'0.1', max_length=50)),
+                ('plugin', models.CharField(default='FieldDefaultPlugin', max_length=191)),
+                ('plugin_version', models.CharField(default='0.1', max_length=50)),
             ],
             options={
             },
@@ -73,8 +73,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(help_text='Format is {"ru": "C\u0435\u043c\u0438\u043d\u0430\u0440", "en": "Seminar", etc.} or {"ru": "C\u0435\u043c\u0438\u043d\u0430\u0440"}', max_length=191, db_index=True, validators=[common.locale_funcs.validate_json])),
-                ('tag', models.CharField(blank=True, max_length=191, null=True, choices=[(b'rework', 'rework'), (b'verification', 'verification'), (b'accepted', 'accepted'), (b'seminar', 'seminar'), (b'accepted_after_deadline', 'accepted_after_deadline')])),
-                ('color', colorfield.fields.ColorField(default=b'#818A91', max_length=18)),
+                ('tag', models.CharField(blank=True, max_length=191, null=True, choices=[('rework', 'rework'), ('verification', 'verification'), ('accepted', 'accepted'), ('seminar', 'seminar'), ('accepted_after_deadline', 'accepted_after_deadline')])),
+                ('color', colorfield.fields.ColorField(default='#818A91', max_length=18)),
                 ('hidden', models.BooleanField(default=False)),
             ],
             options={
@@ -97,13 +97,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='issue',
             name='status_field',
-            field=models.ForeignKey(default=1, to='issues.IssueStatus'),
+            field=models.ForeignKey(default=1, to='issues.IssueStatus', on_delete=models.DO_NOTHING),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='issue',
             name='student',
-            field=models.ForeignKey(related_name=b'student', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(related_name='student', to=settings.AUTH_USER_MODEL, on_delete=models.DO_NOTHING),
             preserve_default=True,
         ),
     ]

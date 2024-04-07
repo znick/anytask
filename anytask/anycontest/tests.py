@@ -189,7 +189,7 @@ class AnyContestTest(TestCase):
         self.group = Group.objects.create(name='name_groups', year=self.year)
         self.course = Course.objects.create(name='course_name',
                                             year=self.year)
-        self.course.groups = [self.group]
+        self.course.groups.set([self.group])
         self.course.save()
 
         self.task = Task.objects.create(title='task',

@@ -11,7 +11,7 @@ ANYBETA_crash_on_error
 $ANYBETA_ROOT/anytask/manage.py createsuperuser --username=anytask --email=anytask@yandex.ru --noinput
 ANYBETA_crash_on_error
 
-echo 'from django.contrib.auth.models import User ; user=User.objects.get(username="anytask") ; user.set_password("pass") ; user.save() ; print("Password changed")' | $ANYBETA_ROOT/anytask/manage.py shell --plain
+echo 'from django.contrib.auth.models import User ; user=User.objects.get(username="anytask") ; user.set_password("pass") ; user.save() ; print("Password changed")' | $ANYBETA_ROOT/anytask/manage.py shell
 ANYBETA_crash_on_error
 
 ANYBETA_report "root"

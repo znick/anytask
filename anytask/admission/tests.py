@@ -3,7 +3,7 @@
 from django.test import TestCase
 from mock import patch
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.conf import settings
 
 from users.model_user_status import UserStatus

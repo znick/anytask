@@ -4,7 +4,7 @@ import base64
 import json
 
 from django.conf import settings
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseBadRequest, HttpResponseNotFound
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
@@ -38,11 +38,10 @@ def login_required_basic_auth(view):
             return get_401_response()
 
         username, password = base64.b64decode(auth_str_parts[1].encode('utf8')).decode('utf8').split(":", 1)
-        user = authenticate(username=username, password=password)
+        user = authenticate(request=request, username=username, password=password)
         if user is None or not user.is_active:
             return get_401_response()
 
-        login(request, user)
         request.user = user
         return view(request, *args, **kwargs)
 

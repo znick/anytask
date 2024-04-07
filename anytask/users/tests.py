@@ -3,7 +3,7 @@
 import re
 
 from django.contrib.auth.models import User
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.contrib.sites.models import Site
 
 from schools.models import School
@@ -12,9 +12,10 @@ from courses.models import Course
 from groups.models import Group
 
 from django.core import mail
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 
+@override_settings(LANGUAGE_CODE='ru-RU', LANGUAGES=(('ru', 'Russian'),))
 class UserLoginTest(TestCase):
     RESET_LINK_RE = re.compile(r'http://localhost(.*)$', re.MULTILINE)
 
@@ -148,6 +149,7 @@ class UserLoginTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertFormError(response, 'form', 'username', u"Пользователь с таким именем уже существует.")
 
+    @override_settings(LANGUAGE_CODE='en-EN', LANGUAGES=(('en', 'English'),))
     def test_register_user__email_already_exists(self):
         client = self.client
 
@@ -227,21 +229,21 @@ class UserProfileAccess(TestCase):
         self.year = Year.objects.create(start_year=2016)
 
         self.group_1 = Group.objects.create(name='group_1', year=self.year)
-        self.group_1.students = [self.student_1_group_1, self.student_2_group_1]
+        self.group_1.students.set([self.student_1_group_1, self.student_2_group_1])
 
         self.group_2 = Group.objects.create(name='group_2', year=self.year)
-        self.group_2.students = [self.student_1_group_2]
+        self.group_2.students.set([self.student_1_group_2])
 
         self.group_3 = Group.objects.create(name='group_3', year=self.year)
-        self.group_3.students = [self.student_1_group_3]
+        self.group_3.students.set([self.student_1_group_3])
 
         self.course_1 = Course.objects.create(name='course_1', year=self.year)
-        self.course_1.groups = [self.group_1, self.group_2]
-        self.course_1.teachers = [self.teacher_1_course_1, self.teacher_2_course_1]
+        self.course_1.groups.set([self.group_1, self.group_2])
+        self.course_1.teachers.set([self.teacher_1_course_1, self.teacher_2_course_1])
 
         self.course_2 = Course.objects.create(name='course_2', year=self.year)
-        self.course_2.groups = [self.group_3]
-        self.course_2.teachers = [self.teacher_1_course_2]
+        self.course_2.groups.set([self.group_3])
+        self.course_2.teachers.set([self.teacher_1_course_2])
 
         self.school_1 = School.objects.create(name='school_1', link='school_1')
 
@@ -322,12 +324,12 @@ class UserProfileAccess(TestCase):
         self.check_access(access_result_no_school)
 
         # not in one school
-        self.school_1.courses = [self.course_1, self.course_2]
+        self.school_1.courses.set([self.course_1, self.course_2])
         self.check_access(access_result_one_school)
 
         # not in different schools
-        self.school_1.courses = [self.course_1]
-        self.school_2.courses = [self.course_2]
+        self.school_1.courses.set([self.course_1])
+        self.school_2.courses.set([self.course_2])
         self.check_access(access_result_different_school)
 
     def test_user_profile_access_teacher_1_course_1(self):

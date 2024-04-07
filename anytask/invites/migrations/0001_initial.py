@@ -21,8 +21,8 @@ class Migration(migrations.Migration):
                 ('key', models.CharField(unique=True, max_length=10, db_index=True)),
                 ('added_time', models.DateTimeField(default=django.utils.timezone.now, auto_now_add=True)),
                 ('update_time', models.DateTimeField(default=django.utils.timezone.now, auto_now=True)),
-                ('generated_by', models.ForeignKey(related_name=b'invite_generated_by', to=settings.AUTH_USER_MODEL, db_index=False)),
-                ('group', models.ForeignKey(to='groups.Group', blank=True, null=True, db_index=False)),
+                ('generated_by', models.ForeignKey(related_name='invite_generated_by', to=settings.AUTH_USER_MODEL, db_index=False, on_delete=models.DO_NOTHING)),
+                ('group', models.ForeignKey(to='groups.Group', blank=True, null=True, db_index=False, on_delete=models.DO_NOTHING)),
                 ('invited_users', models.ManyToManyField(to=settings.AUTH_USER_MODEL, null=True, blank=True)),
             ],
             options={

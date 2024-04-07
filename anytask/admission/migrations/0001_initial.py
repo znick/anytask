@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
                 ('old_activation_key', models.CharField(max_length=40, null=True, blank=True)),
                 ('is_updating', models.BooleanField(default=False)),
                 ('user_info', models.TextField(null=True, blank=True)),
-                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.DO_NOTHING)),
             ],
             options={
             },
