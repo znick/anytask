@@ -68,7 +68,7 @@ def get_followers_form(field_name, request, issue, data=None, *args, **kwargs):
 
 def get_costudents_form(field_name, request, issue, data=None, *args, **kwargs):
     class _form(DefaultForm):
-        costudents_names = forms.MultipleChoiceField(get_users_choise(issue, 'costudents'), required=False,
+        costudents_names = forms.MultipleChoiceField(choices=get_users_choise(issue, 'costudents'), required=False,
                                                      label='')  # we dont need coerce function here
         # because add user id to m2m field is ok.
 
