@@ -44,7 +44,7 @@ class Command(BaseCommand):
             task_created = False
             task_changed = False
 
-            version_list = Version.objects.get_for_object(task).get_unique()
+            version_list = list(Version.objects.get_for_object(task).get_unique())
 
             task_info = [''] * len(DIFF_FIELDS)
             for i_version, version in enumerate(version_list):
