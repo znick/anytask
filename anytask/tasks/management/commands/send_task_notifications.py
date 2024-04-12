@@ -43,7 +43,7 @@ class Command(BaseCommand):
             task_created = False
             task_changed = False
 
-            version_list = reversion.get_unique_for_object(task)
+            version_list = reversion.get_for_object(task).get_unique()
 
             task_info = [''] * len(DIFF_FIELDS)
             for i_version, version in enumerate(version_list):
