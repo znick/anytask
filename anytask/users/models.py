@@ -29,7 +29,7 @@ class UserProfile(models.Model):
         blank=False,
         unique=True,
         related_name="profile",
-        on_delete=models.DO_NOTHING,
+        on_delete=models.CASCADE,
     )
     middle_name = models.CharField(max_length=128, db_index=True, null=True, blank=True)
     user_status = models.ManyToManyField(UserStatus, db_index=True, blank=True, related_name='users_by_status')
