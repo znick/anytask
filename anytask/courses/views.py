@@ -642,7 +642,7 @@ def course_settings(request, course_id):
                 issue.set_teacher(teacher=teacher)
 
     if 'rb_extensions[]' in request.POST:
-        course.filename_extensions = request.POST.getlist('rb_extensions[]')
+        course.filename_extensions.set(request.POST.getlist('rb_extensions[]'))
     else:
         course.filename_extensions.clear()
 
