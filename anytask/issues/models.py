@@ -502,7 +502,7 @@ class Issue(models.Model):
             deleted_costudents = [get_user_fullname(costudent)
                                   for costudent in set(self.costudents.all()).difference(set(new_costudents))]
             add_costudents = [get_user_fullname(costudent) for costudent in new_costudents.all()]
-            self.costudents = value
+            self.costudents.set(value)
             value = ', '.join(add_costudents) + '\n' + ', '.join(deleted_costudents)
         return delete_event, value
 
