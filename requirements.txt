@@ -21,7 +21,7 @@ Pillow==9.0.0
 psycopg2==2.9.9
 python-gettext==3.0
 python-magic==0.4.15
-requests==2.27.1
+requests==2.32.2
 sqlparse==0.4.2
 tornado==5
 text-unidecode==1.3
