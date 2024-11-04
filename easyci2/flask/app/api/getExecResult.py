@@ -18,6 +18,13 @@ GITLAB_WEBHOOKS_TOKEN = os.environ.get('GITLAB_WEBHOOKS_TOKEN')
 TASK_STATUSES = TTLCache(maxsize=1024, ttl=timedelta(minutes=15), timer=datetime.now)
 
 
+def variables_raw2variables(variables_raw):
+    ret = {}
+    for v in variables_raw:
+        ret[v["key"]] = v["value"]
+    return ret
+
+
 @bp.route('/gitlabci/', methods=['POST'])
 def gitlabci():
     gitlab_token_header = request.headers.get("X-Gitlab-Token")
@@ -38,7 +45,8 @@ def gitlabci():
     job_id = job_data['id']
 
     scheduler = GitlabCIScheduler()
-    variables = scheduler.get_pipeline_vars(pipeline_id)
+    variables_raw = pipeline_data["object_attributes"]["variables"]
+    variables = variables_raw2variables(variables_raw)
 
     # init structure for message
     ret = dict()
@@ -46,7 +54,7 @@ def gitlabci():
     # set job data
     ret["job_id"] = job_id
     ret["timestamp"] = job_data["created_at"]
-    ret["pipeline_url"] = scheduler.get_pipeline(pipeline_id)["web_url"]
+    ret["pipeline_url"] = pipeline_data["object_attributes"]["url"]
     ret["job_status"] = job_data["status"]
 
     # set task data
