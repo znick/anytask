@@ -11,7 +11,7 @@ distlib==0.3.0
 distro==1.4.0
 Flask==1.1.2
 Flask-Session==0.3.2
-gunicorn==20.1.0
+gunicorn==22.0.0
 html5lib==1.0.1
 idna==2.8
 iniconfig==1.1.1
