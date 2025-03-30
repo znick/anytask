@@ -188,8 +188,9 @@
         "course_id": 1188,
         "repo": "git@github.com:tswr/imkn_python_method.git",
         "run_cmd": ["_home_task_checker/run_in_anytask_org.sh"],
-        "docker_image": "zhnick/imkn_python_checker:latest",
-        "timeout": 10800
+        "docker_image": "ghcr.io/python-fiit/ubuntu_ci:latest",
+        "timeout": 10800,
+        "ssh_key_id": "SSH_KEY_FT"
     },
     {
         "host": "https://anytask.org",
