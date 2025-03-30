@@ -186,7 +186,7 @@
     {
         "host": "https://anytask.org",
         "course_id": 1188,
-        "repo": "git@github.com:tswr/imkn_python_method.git",
+        "repo": "git@github.com:python-fiit/materials.git",
         "run_cmd": ["_home_task_checker/run_in_anytask_org.sh"],
         "docker_image": "ghcr.io/python-fiit/ubuntu_ci:latest",
         "timeout": 10800,
