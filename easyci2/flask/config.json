@@ -199,5 +199,14 @@
         "run_cmd": ["_python_task_checker/main.py"],
         "docker_image": "zhnick/imkn_python_checker:latest",
         "timeout": 900
+    },
+    {
+        "host": "https://anytask.org",
+        "course_id": 1194,
+        "repo": "git@github.com:python-fiit/materials.git",
+        "run_cmd": ["_python_task_checker/main.py"],
+        "docker_image": "ghcr.io/python-fiit/ubuntu_ci:latest",
+        "timeout": 900,
+        "ssh_key_id": "SSH_KEY_FT"
     }
 ]
