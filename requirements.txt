@@ -11,7 +11,7 @@ django-htmlmin==0.11.0
 django-dprog-jfu==2.2.3
 django-recaptcha==1.4.0
 django-reversion==2.0.13
-django==2.0.13
+django==3.2.25
 django_premailer==0.2.0
 django-storages==1.9.1
 boto3==1.20.41
