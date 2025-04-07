@@ -1,6 +1,6 @@
 tornado==5
 ipykernel==4.5.2
-django==2.0.13
+django==5.0.6
 Pillow==9.0.0
 django-recaptcha==1.4.0
 python-gettext==3.0
