@@ -14,6 +14,7 @@ services:
     volumes:
       - "/var/lib/anytask/media:/var/lib/anytask/media"
       - "/var/log/anytask:/var/log/anytask"
+      - "/search:/var/lib/anytask/search"
     mem_limit: 6GB
     ulimits:
         nproc: 65535
