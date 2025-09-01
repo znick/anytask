@@ -59,6 +59,9 @@ RUN set -ex \
 RUN mkdir -p /var/log/anytask
 RUN chmod a+w /var/log/anytask
 
+RUN mkdir -p /search
+RUN chmod a+w /search
+
 # Copy your application code to the container (make sure you create a .dockerignore file if any large files or directories should be excluded)
 RUN mkdir /code/
 ADD . /code/

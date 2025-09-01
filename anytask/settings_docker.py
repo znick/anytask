@@ -105,6 +105,12 @@ LANGUAGES = (('ru', u'Русский'),
 
 # FILE_UPLOAD_PERMISSIONS = 644  # 0644
 
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
+        'PATH': '/search/whoosh',
+    },
+}
 
 AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
