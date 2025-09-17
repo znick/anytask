@@ -378,7 +378,7 @@ def ya_oauth_response(request, type_of_oauth):
         PASSWORD = settings.PASSPORT_OAUTH_PASSWORD
 
     ya_oauth = yandex_oauth.OAuthYandex(OAUTH, PASSWORD)
-    ya_response = ya_oauth.get_token(int(request.GET['code']))
+    ya_response = ya_oauth.get_token(request.GET['code'])
     ya_passport_response = requests.get('https://login.yandex.ru/info?json&oauth_token=' + ya_response['access_token'])
 
     request.session["ya_oauth_login"] = ya_passport_response.json()['login']
