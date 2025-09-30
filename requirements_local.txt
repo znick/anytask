@@ -1,4 +1,4 @@
-tornado==5
+tornado==6.5
 ipykernel==4.5.2
 django==2.0.13
 Pillow==9.0.0
