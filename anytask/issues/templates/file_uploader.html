@@ -66,6 +66,7 @@
     <input type="hidden" name="form_name" value="comment_form">
     <textarea rows="4" name="comment" id="id_comment" cols="40" class="form-control col-md-12" style="margin-bottom: 10px;"></textarea>
     <input type="hidden" name="issue_id" value="{{ issue.id }}">
+    <input type="hidden" id="edit_msg_event_id" name="event_id" value="">
     {% block UPLOAD_FORM_BUTTON_BAR %}
     <div class="fileupload-buttonbar">
     {% comment %}
@@ -138,11 +139,16 @@
                 <button class="btn btn-info pull-xs-right" formaction="#" style="margin-top: 10px; margin-left: 10px;" type="submit">{% trans "zadat_vopros" %}</button>
             {% else %}
                 <input type="hidden" name="update_issue" value="" />
-                <button style="margin-top: 10px;" type="submit" class="btn btn-primary pull-xs-right">
+                <button style="margin-top: 10px;" type="submit"
+                        class="btn btn-primary pull-xs-right" id="submit-btn">
                     <span>{% trans "otpravit" %}</span>
                 </button>
             {% endif %}
             {% endblock %}
+            <input type="button" style="margin: 10px; display: none;"
+                   class="btn btn-danger pull-xs-right" id="cancel-edit-msg-btn"
+                   onClick="end_edit_msg()" value="{% trans "otmena" %}">
+            </input>
         </div>
         {% block UPLOAD_FORM_PROGRESS_BAR %}
         {% comment %}

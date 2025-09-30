@@ -2,6 +2,7 @@
 import os
 import requests
 from copy import deepcopy
+from difflib import Differ
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -21,7 +22,7 @@ from anycontest.common import get_problem_compilers
 from anyrb.common import AnyRB
 from issues.model_issue_field import IssueField
 from issues.model_issue_status import IssueStatus
-from issues.models import Issue, Event, File
+from issues.models import Issue, Event, File, EventChange
 
 
 def user_is_teacher_or_staff(user, issue):
@@ -308,8 +309,28 @@ def upload(request):
     issue = get_object_or_404(Issue, id=int(request.POST['issue_id']))
 
     if 'update_issue' in request.POST:
+
+        # If event_id in POST, edit message and redirect back
+        if 'event_id' in request.POST and request.POST['event_id'].isdigit():
+            user = request.user
+            event_id = int(request.POST['event_id'])
+            event = get_object_or_404(Event, id=event_id)
+            if event.author != user:
+                raise PermissionDenied
+
+            old_value = event.value
+            new_value = request.POST['comment']
+            history = EventChange.objects.create(
+                event=event,
+                old_value=old_value)
+            history.save()
+            event.value = new_value
+            event.save()
+            return HttpResponsePermanentRedirect("/issue/" + request.POST['issue_id'])
+
         event_value = {'files': [], 'comment': '', 'compilers': []}
         event_value['comment'] = request.POST['comment']
+
         file_counter = 0
 
         for field, value in dict(request.POST).items():
