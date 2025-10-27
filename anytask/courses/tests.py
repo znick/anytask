@@ -2,7 +2,8 @@
 
 import datetime
 
-from django.test import TestCase, override_settings
+from django.db import connection
+from django.test import TestCase, override_settings, TransactionTestCase
 from django.contrib.auth.models import User
 from django.conf import settings
 from schools.models import School
@@ -11,7 +12,7 @@ from courses.models import Course, IssueField, FilenameExtension, CourseMarkSyst
 from issues.models import Issue, IssueStatus
 from groups.models import Group
 from years.models import Year
-from tasks.models import Task, TaskTaken
+from tasks.models import Task, TaskTaken, TaskGroupRelations
 from tasks.management.commands.check_task_taken_expires import Command as CheckTastTakenExpiresCommand
 
 from bs4 import BeautifulSoup
@@ -961,6 +962,81 @@ class ViewsTest(TestCase):
 
         table_body_sum = table.tbody('td')[3]
         self.assertEqual(table_body_sum.span.string.strip().strip('\n'), '3.0')
+
+
+@override_settings(LANGUAGE_CODE='en-EN', LANGUAGES=(('en', 'English'),))
+class DeleteTaskTest(TransactionTestCase):
+    def setUp(self):
+        if connection.vendor == "sqlite":
+            with connection.cursor() as cursor:
+                # We need TransactionTestCase here to run this PRAGMA
+                # Can be deleted after migrating to Django 2.2+
+                # Need this pragma for test_delete_task,
+                # because we got a problems with FK while deleting tasks
+
+                cursor.execute("PRAGMA foreign_keys = ON;")
+
+        self.teacher_password = 'password1'
+        self.teacher = User.objects.create_user(username='teacher',
+                                                password=self.teacher_password)
+        self.teacher.first_name = 'teacher_name'
+        self.teacher.last_name = 'teacher_last_name'
+        self.teacher.save()
+
+        self.student_password = 'password2'
+        self.student = User.objects.create_user(username='student',
+                                                password=self.student_password)
+        self.student.first_name = 'student_name'
+        self.student.last_name = 'student_last_name'
+        self.student.save()
+
+        self.year = Year.objects.create(start_year=2016)
+
+        self.group = Group.objects.create(name='group_name',
+                                          year=self.year)
+        self.group.students.set([self.student])
+        self.group.save()
+
+        seminar_status = IssueStatus(name="seminar", tag=IssueStatus.STATUS_SEMINAR)
+        seminar_status.save()
+        issue_status_system = IssueStatusSystem()
+        issue_status_system.name = "seminar"
+        issue_status_system.save()
+        issue_status_system.statuses.add(seminar_status)
+
+        self.course = Course.objects.create(name='course_name',
+                                            year=self.year,
+                                            issue_status_system=issue_status_system)
+        self.course.groups.set([self.group])
+        self.course.teachers.set([self.teacher])
+        self.course.save()
+
+        self.school = School.objects.create(name='school_name',
+                                            link='school_link')
+        self.school.courses.set([self.course])
+        self.school.save()
+
+    def test_delete_task(self):
+        client = self.client
+        task = Task.objects.create(title='task_title',
+                                   course=self.course,
+                                   score_max=10,
+                                   type=Task.TYPE_SIMPLE)
+
+        task.set_position_in_new_group()
+
+        self.assertTrue(client.login(username=self.teacher.username, password=self.teacher_password))
+        data = {
+            'course_id': task.id,
+            'group_id': self.group.id,
+            'task_deleted[]': task.id,
+            'deleting_ids_from_groups': '{}',
+        }
+        response = client.post("/course/change_table_tasks_pos", data=data)
+        self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(Task.objects.filter(id=task.id).count(), 0)
+        self.assertEqual(TaskGroupRelations.objects.filter(task__id=task.id).count(), 0)
 
 
 class PythonTaskTest(TestCase):

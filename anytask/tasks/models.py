@@ -41,7 +41,7 @@ class Task(models.Model):
     title = models.CharField(max_length=191, db_index=True, null=True, blank=True)
     short_title = models.CharField(max_length=15, db_index=True, null=True, blank=True)
     course = models.ForeignKey(
-        Course, db_index=True, null=False, blank=False, on_delete=models.DO_NOTHING
+        Course, db_index=True, null=False, blank=False, on_delete=models.CASCADE
     )
     group = models.ForeignKey(
         Group,
@@ -49,7 +49,7 @@ class Task(models.Model):
         null=True,
         blank=True,
         default=None,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.CASCADE,
     )
     groups = models.ManyToManyField(Group, blank=False, related_name="groups_set")
 
@@ -63,7 +63,7 @@ class Task(models.Model):
         null=True,
         blank=True,
         related_name="children",
-        on_delete=models.DO_NOTHING,
+        on_delete=models.CASCADE,
     )
 
     task_text = models.TextField(null=True, blank=True, default=None)
@@ -95,7 +95,7 @@ class Task(models.Model):
     deadline_time = models.DateTimeField(auto_now=False, blank=True, null=True, default=None)
 
     updated_by = models.ForeignKey(
-        User, db_index=False, null=True, blank=True, on_delete=models.DO_NOTHING
+        User, db_index=False, null=True, blank=True, on_delete=models.CASCADE
     )
 
     contest_id = models.IntegerField(db_index=True, null=False, blank=False, default=0)
@@ -284,7 +284,7 @@ class Task(models.Model):
 class TaskLog(models.Model):
     title = models.CharField(max_length=191, db_index=True, null=True, blank=True)
     course = models.ForeignKey(
-        Course, db_index=False, null=False, blank=False, on_delete=models.DO_NOTHING
+        Course, db_index=False, null=False, blank=False, on_delete=models.CASCADE
     )
     group = models.ForeignKey(
         Group,
@@ -292,7 +292,7 @@ class TaskLog(models.Model):
         null=True,
         blank=True,
         default=None,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.CASCADE,
     )
     groups = models.ManyToManyField(Group, blank=False, related_name="groups_log_set")
 
@@ -304,7 +304,7 @@ class TaskLog(models.Model):
         null=True,
         blank=True,
         related_name="parent_task_set",
-        on_delete=models.DO_NOTHING,
+        on_delete=models.CASCADE,
     )
 
     task_text = models.TextField(null=True, blank=True, default=None)
@@ -327,7 +327,7 @@ class TaskLog(models.Model):
     deadline_time = models.DateTimeField(auto_now=False, null=True, default=None)
 
     updated_by = models.ForeignKey(
-        User, db_index=False, null=True, blank=True, on_delete=models.DO_NOTHING
+        User, db_index=False, null=True, blank=True, on_delete=models.CASCADE
     )
 
     contest_id = models.IntegerField(db_index=True, null=False, blank=False, default=0)
@@ -345,17 +345,17 @@ class TaskTaken(models.Model):
     STATUS_DELETED = 4
 
     user = models.ForeignKey(
-        User, db_index=True, null=False, blank=False, on_delete=models.DO_NOTHING
+        User, db_index=True, null=False, blank=False, on_delete=models.CASCADE
     )
     task = models.ForeignKey(
-        Task, db_index=True, null=False, blank=False, on_delete=models.DO_NOTHING
+        Task, db_index=True, null=False, blank=False, on_delete=models.CASCADE
     )
     issue = models.ForeignKey(
         "issues.Issue",
         db_index=True,
         null=True,
         blank=False,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.CASCADE,
     )
 
     TASK_TAKEN_STATUSES = (
@@ -438,10 +438,10 @@ class TaskTaken(models.Model):
 
 class TaskGroupRelations(models.Model):
     task = models.ForeignKey(
-        Task, db_index=False, null=False, blank=False, on_delete=models.DO_NOTHING
+        Task, db_index=False, null=False, blank=False, on_delete=models.CASCADE
     )
     group = models.ForeignKey(
-        Group, db_index=False, null=False, blank=False, on_delete=models.DO_NOTHING
+        Group, db_index=False, null=False, blank=False, on_delete=models.CASCADE
     )
 
     position = models.IntegerField(db_index=False, null=False, blank=False, default=0)

@@ -67,7 +67,7 @@ class UserProfile(models.Model):
     update_time = models.DateTimeField(auto_now=True)  # remove default=timezone.now
 
     updated_by = models.ForeignKey(
-        User, db_index=False, null=True, blank=True, on_delete=models.DO_NOTHING
+        User, db_index=False, null=True, blank=True, on_delete=models.CASCADE
     )
 
     login_via_yandex = models.BooleanField(db_index=False, null=False, blank=False, default=False)
@@ -129,7 +129,7 @@ class UserProfileLog(models.Model):
         null=False,
         blank=False,
         related_name="profiles_logs_by_user",
-        on_delete=models.DO_NOTHING,
+        on_delete=models.CASCADE,
     )
     middle_name = models.CharField(max_length=128, db_index=True, null=True, blank=True)
     user_status = models.ManyToManyField(UserStatus, db_index=True, blank=True)
@@ -186,7 +186,7 @@ class UserProfileLog(models.Model):
     language = models.CharField(default="ru", max_length=128, unique=False, null=True, blank=True)
 
     updated_by = models.ForeignKey(
-        User, db_index=False, null=True, blank=True, on_delete=models.DO_NOTHING
+        User, db_index=False, null=True, blank=True, on_delete=models.CASCADE
     )
 
     def is_current_year_student(self):

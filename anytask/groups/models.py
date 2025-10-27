@@ -5,7 +5,7 @@ from years.models import Year
 
 
 class Group(models.Model):
-    year = models.ForeignKey(Year, db_index=True, null=False, blank=True, on_delete=models.DO_NOTHING)
+    year = models.ForeignKey(Year, db_index=True, null=False, blank=True, on_delete=models.CASCADE)
     name = models.CharField(max_length=191, db_index=True, null=False, blank=True)
     students = models.ManyToManyField(User, blank=True)
 
