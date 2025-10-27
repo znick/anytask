@@ -20,10 +20,10 @@ class Invite(models.Model):
         null=False,
         blank=False,
         related_name="invite_generated_by",
-        on_delete=models.DO_NOTHING,
+        on_delete=models.CASCADE,
     )
     group = models.ForeignKey(
-        Group, db_index=False, null=True, blank=True, on_delete=models.DO_NOTHING
+        Group, db_index=False, null=True, blank=True, on_delete=models.CASCADE
     )
     invited_users = models.ManyToManyField(User, blank=True)
 

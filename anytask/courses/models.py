@@ -101,7 +101,7 @@ class Course(models.Model):
         null=False,
         blank=False,
         default=timezone.now().year,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.CASCADE,
     )
 
     is_active = models.BooleanField(db_index=True, null=False, blank=False, default=False)
@@ -138,7 +138,7 @@ class Course(models.Model):
         db_index=False,
         null=True,
         blank=True,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.CASCADE,
     )
 
     mark_system = models.ForeignKey(
@@ -146,7 +146,7 @@ class Course(models.Model):
         db_index=False,
         null=True,
         blank=True,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.CASCADE,
     )
 
     show_accepted_after_contest_ok = models.BooleanField(db_index=False, null=False, blank=False, default=False)
@@ -163,7 +163,7 @@ class Course(models.Model):
         null=False,
         blank=False,
         default=1,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.CASCADE,
     )
 
     is_python_task = models.BooleanField(db_index=False, null=False, blank=False, default=False)
@@ -302,13 +302,13 @@ class Course(models.Model):
 
 class DefaultTeacher(models.Model):
     teacher = models.ForeignKey(
-        User, db_index=False, null=True, blank=True, on_delete=models.DO_NOTHING
+        User, db_index=False, null=True, blank=True, on_delete=models.CASCADE
     )
     course = models.ForeignKey(
-        Course, db_index=True, null=False, blank=False, on_delete=models.DO_NOTHING
+        Course, db_index=True, null=False, blank=False, on_delete=models.CASCADE
     )
     group = models.ForeignKey(
-        Group, db_index=True, null=True, blank=True, on_delete=models.DO_NOTHING
+        Group, db_index=True, null=True, blank=True, on_delete=models.CASCADE
     )
 
     def __str__(self):
@@ -320,13 +320,13 @@ class DefaultTeacher(models.Model):
 
 class StudentCourseMark(models.Model):
     student = models.ForeignKey(
-        User, db_index=True, null=False, blank=False, on_delete=models.DO_NOTHING
+        User, db_index=True, null=False, blank=False, on_delete=models.CASCADE
     )
     course = models.ForeignKey(
-        Course, db_index=False, null=False, blank=False, on_delete=models.DO_NOTHING
+        Course, db_index=False, null=False, blank=False, on_delete=models.CASCADE
     )
     mark = models.ForeignKey(
-        MarkField, db_index=False, null=True, blank=True, on_delete=models.DO_NOTHING
+        MarkField, db_index=False, null=True, blank=True, on_delete=models.CASCADE
     )
 
     teacher = models.ForeignKey(
@@ -335,7 +335,7 @@ class StudentCourseMark(models.Model):
         db_index=False,
         null=True,
         blank=True,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.CASCADE,
     )
     update_time = models.DateTimeField(auto_now=True)  # remove default=timezone.now
 

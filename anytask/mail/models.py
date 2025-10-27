@@ -17,7 +17,7 @@ class Message(models.Model):
         null=False,
         blank=False,
         related_name="sender+",
-        on_delete=models.DO_NOTHING,
+        on_delete=models.CASCADE,
     )
     recipients = models.ManyToManyField(User, db_index=False, blank=False, related_name='recipients+')
     recipients_user = models.ManyToManyField(User, db_index=False, blank=True,
