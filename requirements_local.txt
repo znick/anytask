@@ -3,7 +3,7 @@ ipykernel==4.5.2
 django==2.0.13
 Pillow==9.0.0
 django-recaptcha==1.4.0
-python-gettext==3.0
+python-gettext==5.0
 beautifulsoup4
 Werkzeug==0.15.3
 django-extensions==2.2.9
