@@ -225,5 +225,5 @@
         "docker_image": "ghcr.io/python-fiit/ubuntu_ci:latest",
         "timeout": 10800,
         "ssh_key_id": "SSH_KEY_FT"
-    },
+    }
 ]
