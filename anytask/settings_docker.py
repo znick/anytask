@@ -9,6 +9,7 @@ from settings_common import *  # noqa: F403
 import os
 
 DEBUG = True
+LOG_LEVEL = os.environ.get('LOG_LEVEL', 'DEBUG')
 
 ALLOWED_HOSTS = ['anytask.org', 'www.anytask.org', "docker.anytask.org", "beta.anytask.org"]
 
@@ -29,7 +30,7 @@ LOGGING = {
     },
     'handlers': {
         'file': {
-            'level': 'DEBUG',
+            'level': LOG_LEVEL,
             'class': 'logging.FileHandler',
             'filename': '/var/log/anytask/full.log',
             'formatter': 'verbose',
@@ -39,7 +40,7 @@ LOGGING = {
     'loggers': {
         'django': {
             'handlers': ['file'],
-            'level': 'DEBUG',
+            'level': LOG_LEVEL,
             'propagate': True,
 
         },
