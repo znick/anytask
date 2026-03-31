@@ -16,9 +16,9 @@ class IssueFilter(django_filters.FilterSet):
     update_time = django_filters.DateRangeFilter(label=_('data_poslednego_izmenenija'))
     responsible = django_filters.MultipleChoiceFilter(label=_('proverjaushij'), widget=forms.SelectMultiple)
     followers = django_filters.MultipleChoiceFilter(label=_('nabludateli'), widget=forms.SelectMultiple)
-    students = django_filters.MultipleChoiceFilter(name="student", label=_('studenty'), widget=forms.SelectMultiple)
+    students = django_filters.MultipleChoiceFilter(field_name="student", label=_('studenty'), widget=forms.SelectMultiple)
     seminars = django_filters.MultipleChoiceFilter(
-        name="task__parent_task", label=_('uroki'), widget=forms.SelectMultiple
+        field_name="task__parent_task", label=_('uroki'), widget=forms.SelectMultiple
     )
     task = django_filters.MultipleChoiceFilter(label=_('zadacha'), widget=forms.SelectMultiple)
 

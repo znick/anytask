@@ -11,13 +11,13 @@ from issues.model_issue_status import IssueStatus
 
 
 class IssueFilterStudent(django_filters.FilterSet):
-    is_active = django_filters.ChoiceFilter(label=_('tip_kursa'), name='task__course__is_active')
+    is_active = django_filters.ChoiceFilter(label=_('tip_kursa'), field_name='task__course__is_active')
     years = django_filters.MultipleChoiceFilter(
         label=_('god_kursa'),
-        name='task__course__year',
+        field_name='task__course__year',
         widget=forms.CheckboxSelectMultiple
     )
-    courses = django_filters.MultipleChoiceFilter(label=_('kurs'), name='task__course', widget=forms.SelectMultiple)
+    courses = django_filters.MultipleChoiceFilter(label=_('kurs'), field_name='task__course', widget=forms.SelectMultiple)
     responsible = django_filters.MultipleChoiceFilter(label=_('prepodavateli'), widget=forms.SelectMultiple)
     status_field = django_filters.MultipleChoiceFilter(label=_('status'), widget=forms.SelectMultiple)
     update_time = django_filters.DateRangeFilter(label=_('data_poslednego_izmenenija'))
