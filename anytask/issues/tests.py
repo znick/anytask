@@ -11,7 +11,7 @@ from unittest import skipIf
 
 from django.core.management import call_command
 from django.conf import settings
-from django.test import TestCase, override_settings
+from django.test import TestCase, RequestFactory, override_settings
 from django.contrib.auth.models import User
 from django.test.testcases import SerializeMixin
 
@@ -19,9 +19,11 @@ from schools.models import School
 from courses.models import Course, IssueField
 from groups.models import Group
 from years.models import Year
-from tasks.models import Task
+from tasks.models import Task, TaskTaken
+from issues.forms import get_costudents_form
 from issues.models import Issue, File, Event
 from issues.model_issue_status import IssueStatus
+from issues.views import user_can_read
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from mock import patch
@@ -1258,11 +1260,6 @@ class S3MigrateIssueAttachments(TestCase, SerializeMixin):
 # ---------------------------------------------------------------------------
 # Costudents feature tests
 # ---------------------------------------------------------------------------
-
-from django.test import RequestFactory
-from issues.forms import get_costudents_form
-from issues.views import user_can_read
-from tasks.models import TaskTaken
 
 
 def _make_user(username):
