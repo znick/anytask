@@ -1253,3 +1253,196 @@ class S3MigrateIssueAttachments(TestCase, SerializeMixin):
             issue.delete()
             event_create_file.delete()
             file.delete()
+
+
+# ---------------------------------------------------------------------------
+# Costudents feature tests
+# ---------------------------------------------------------------------------
+
+from django.test import RequestFactory
+from issues.forms import get_costudents_form
+from issues.views import user_can_read
+from tasks.models import TaskTaken
+
+
+def _make_user(username):
+    return User.objects.create_user(username=username, password='pass')
+
+
+class CostudentsSetupMixin:
+    """Common setUp for costudents tests."""
+
+    def setUp(self):
+        self.year = Year.objects.create(start_year=2090)
+        self.group = Group.objects.create(name='co_group', year=self.year)
+
+        self.student = _make_user('co_student')
+        self.costudent = _make_user('co_costudent')
+        self.other = _make_user('co_other')
+        self.group.students.set([self.student, self.costudent, self.other])
+
+        self.course = Course.objects.create(
+            name='co_course',
+            year=self.year,
+            is_python_task=True,
+            allow_costudents=True,
+        )
+        self.course.groups.set([self.group])
+        self.course.issue_fields.set(IssueField.objects.all())
+
+        self.task = Task.objects.create(
+            title='co_task',
+            course=self.course,
+            score_max=10,
+            max_costudents=2,
+        )
+        self.task.groups.set([self.group])
+
+        self.issue = Issue.objects.create(student=self.student, task=self.task)
+        self.task_taken = TaskTaken.objects.create(
+            user=self.student,
+            task=self.task,
+            issue=self.issue,
+            status=TaskTaken.STATUS_TAKEN,
+        )
+
+
+class IssueCostudentsFieldTest(CostudentsSetupMixin, TestCase):
+
+    def test_add_costudent(self):
+        self.issue.costudents.add(self.costudent)
+        self.assertIn(self.costudent, self.issue.costudents.all())
+
+    def test_remove_costudent(self):
+        self.issue.costudents.add(self.costudent)
+        self.issue.costudents.remove(self.costudent)
+        self.assertNotIn(self.costudent, self.issue.costudents.all())
+
+    def test_get_byname_costudents_names_returns_ids(self):
+        self.issue.costudents.add(self.costudent)
+        ids = self.issue.get_byname('costudents_names')
+        self.assertIn(self.costudent.id, ids)
+
+    def test_get_byname_costudents_names_empty(self):
+        ids = self.issue.get_byname('costudents_names')
+        self.assertEqual(ids, [])
+
+    def test_set_field_costudents_names_no_change_returns_delete_event(self):
+        delete_event, _ = self.issue.set_field_costudents_names([])
+        self.assertTrue(delete_event)
+
+    def test_set_field_costudents_names_adds_costudent(self):
+        delete_event, value = self.issue.set_field_costudents_names([self.costudent.id])
+        self.assertFalse(delete_event)
+        self.assertIn(self.costudent, self.issue.costudents.all())
+
+    def test_set_field_costudents_names_replaces_previous(self):
+        self.issue.costudents.add(self.costudent)
+        delete_event, value = self.issue.set_field_costudents_names([self.other.id])
+        self.assertFalse(delete_event)
+        self.assertNotIn(self.costudent, self.issue.costudents.all())
+        self.assertIn(self.other, self.issue.costudents.all())
+
+    def test_set_field_costudents_names_clears_all(self):
+        self.issue.costudents.add(self.costudent)
+        delete_event, value = self.issue.set_field_costudents_names([])
+        self.assertFalse(delete_event)
+        self.assertEqual(list(self.issue.costudents.all()), [])
+
+
+class TaskUserCanPassWithCostudentsTest(CostudentsSetupMixin, TestCase):
+
+    def test_primary_student_can_pass_task(self):
+        self.assertTrue(self.task.user_can_pass_task(self.student))
+
+    def test_costudent_can_pass_task_when_primary_is_taken(self):
+        self.issue.costudents.add(self.costudent)
+        self.assertTrue(self.task.user_can_pass_task(self.costudent))
+
+    def test_non_costudent_cannot_pass_task(self):
+        self.assertFalse(self.task.user_can_pass_task(self.other))
+
+    def test_costudent_cannot_pass_when_task_taken_cancelled(self):
+        self.issue.costudents.add(self.costudent)
+        self.task_taken.status = TaskTaken.STATUS_CANCELLED
+        self.task_taken.save()
+        self.assertFalse(self.task.user_can_pass_task(self.costudent))
+
+    def test_costudent_can_pass_when_task_scored(self):
+        self.issue.costudents.add(self.costudent)
+        self.task_taken.status = TaskTaken.STATUS_SCORED
+        self.task_taken.save()
+        self.assertTrue(self.task.user_can_pass_task(self.costudent))
+
+
+class CourseAllowCostudentsFieldTest(TestCase):
+
+    def setUp(self):
+        self.year = Year.objects.create(start_year=2091)
+
+    def test_allow_costudents_defaults_to_false(self):
+        course = Course.objects.create(name='normal_course', year=self.year)
+        self.assertFalse(course.allow_costudents)
+
+    def test_allow_costudents_can_be_enabled(self):
+        course = Course.objects.create(name='python_course', year=self.year, allow_costudents=True)
+        self.assertTrue(course.allow_costudents)
+
+
+class TaskMaxCostudentsFieldTest(CostudentsSetupMixin, TestCase):
+
+    def test_max_costudents_is_set(self):
+        self.assertEqual(self.task.max_costudents, 2)
+
+    def test_max_costudents_defaults_to_zero(self):
+        year = Year.objects.create(start_year=2092)
+        group = Group.objects.create(name='grp', year=year)
+        course = Course.objects.create(name='c', year=year)
+        task = Task.objects.create(title='t', course=course, score_max=5)
+        task.groups.set([group])
+        self.assertEqual(task.max_costudents, 0)
+
+
+class UserCanReadWithCostudentTest(CostudentsSetupMixin, TestCase):
+
+    def test_student_can_read_own_issue(self):
+        self.assertTrue(user_can_read(self.student, self.issue))
+
+    def test_costudent_can_read_issue(self):
+        self.issue.costudents.add(self.costudent)
+        self.assertTrue(user_can_read(self.costudent, self.issue))
+
+    def test_non_costudent_cannot_read_issue(self):
+        self.assertFalse(user_can_read(self.other, self.issue))
+
+
+class CostudentsFormValidationTest(CostudentsSetupMixin, TestCase):
+
+    def _post_request(self, costudent_ids):
+        factory = RequestFactory()
+        request = factory.post('/', {'costudents_names': [str(i) for i in costudent_ids]})
+        request.user = self.student
+        return request
+
+    def test_form_valid_within_limit(self):
+        request = self._post_request([self.costudent.id])
+        form = get_costudents_form('costudents_names', request, self.issue)
+        self.assertTrue(form.is_valid(), form.errors)
+
+    def test_form_valid_at_exact_limit(self):
+        request = self._post_request([self.costudent.id, self.other.id])
+        form = get_costudents_form('costudents_names', request, self.issue)
+        self.assertTrue(form.is_valid(), form.errors)
+
+    def test_form_invalid_exceeds_limit(self):
+        extra = _make_user('co_extra')
+        self.group.students.add(extra)
+        request = self._post_request([self.costudent.id, self.other.id, extra.id])
+        form = get_costudents_form('costudents_names', request, self.issue)
+        self.assertFalse(form.is_valid())
+        self.assertIn('costudents_names', form.errors)
+
+    def test_form_valid_empty_selection(self):
+        request = self._post_request([])
+        form = get_costudents_form('costudents_names', request, self.issue)
+        self.assertTrue(form.is_valid(), form.errors)
