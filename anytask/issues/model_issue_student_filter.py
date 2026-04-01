@@ -17,7 +17,9 @@ class IssueFilterStudent(django_filters.FilterSet):
         field_name='task__course__year',
         widget=forms.CheckboxSelectMultiple
     )
-    courses = django_filters.MultipleChoiceFilter(label=_('kurs'), field_name='task__course', widget=forms.SelectMultiple)
+    courses = django_filters.MultipleChoiceFilter(
+        label=_('kurs'), field_name='task__course', widget=forms.SelectMultiple
+    )
     responsible = django_filters.MultipleChoiceFilter(label=_('prepodavateli'), widget=forms.SelectMultiple)
     status_field = django_filters.MultipleChoiceFilter(label=_('status'), widget=forms.SelectMultiple)
     update_time = django_filters.DateRangeFilter(label=_('data_poslednego_izmenenija'))
