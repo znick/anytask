@@ -58,4 +58,4 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 _settings_local = os.path.join(os.path.dirname(__file__), 'settings_local.py')
 if os.path.exists(_settings_local):
-    execfile(_settings_local)  # NOQA
+    exec(open(_settings_local).read())  # NOQA
