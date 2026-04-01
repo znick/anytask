@@ -58,7 +58,7 @@ class UserProfileFilter(django_filters.FilterSet):
         )
     '''
 
-    def empty_filter(self, qs, value):
+    def empty_filter(self, qs, name, value):
         return qs
 
     # def filter_course(self, qs, value):

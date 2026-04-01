@@ -41,6 +41,7 @@ import json
 import datetime
 import pytz
 from reversion import revisions as reversion
+from reversion.models import Version
 
 
 @login_required
@@ -235,7 +236,7 @@ def profile_history(request, username=None):
         user_to_show = get_object_or_404(User, username=username)
     user_profile = user_to_show.profile
 
-    version_list = reversion.get_for_object(user_profile)
+    version_list = Version.objects.get_for_object(user_profile)
     user_status_prev = None
     history = []
     for version in reversed(version_list):

@@ -1,7 +1,7 @@
 FROM python:3.8-slim
 
-ENV LANG C.UTF-8
-ENV LC_ALL C.UTF-8
+ENV LANG=C.UTF-8
+ENV LC_ALL=C.UTF-8
 
 # Install packages needed to run your application (not build deps):
 #   mime-support -- for mime types when serving static files
@@ -43,6 +43,8 @@ RUN set -ex \
         libpq-dev \
         default-libmysqlclient-dev \
         default-mysql-client \
+        libxml2-dev \
+        libxslt1-dev \
     " \
     && apt-get update && apt-get install -y --no-install-recommends $BUILD_DEPS \
     && pip install -U virtualenv \

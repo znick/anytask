@@ -64,7 +64,7 @@ def queue_page(request, course_id):
     if not course.user_can_see_queue(user):
         raise PermissionDenied
 
-    f = IssueFilter(request.GET, {})
+    f = IssueFilter(request.GET, Issue.objects.none())
     f.set_course(course, user)
     session_key = '_'.join([QUEUE_SESSION_PREFIX, str(course_id)])
     if request.GET:
