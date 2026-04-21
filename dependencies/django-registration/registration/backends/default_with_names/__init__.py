@@ -129,16 +129,8 @@ class RegistrationFormWithNames(RegistrationForm):
         self.fields['last_name'].label = _(u"Фамилия")
         self.fields['show_email'].label = _(u"Показывать мой e-mail всем пользователям")
 
-        self.fields.keyOrder = [
-            'username',
-            'first_name',
-            'last_name',
-            'email',
-            'show_email',
-            'password1',
-            'password2',
-            #'invite',
-        ]
+        field_order = ['username', 'first_name', 'last_name', 'email', 'show_email', 'password1', 'password2']
+        self.fields = {k: self.fields[k] for k in field_order}
 
 
 class RegistrationFormWithNamesUniqEmail(RegistrationFormWithNames, RegistrationFormUniqueEmail):

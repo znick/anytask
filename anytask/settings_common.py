@@ -332,3 +332,5 @@ AWS_DEFAULT_ACL = 'public-read'  # As when served by Django & FileSystemStorage
 AWS_S3_USE_SSL = False
 
 DEFAULT_FILE_STORAGE = 'anytask.storage.S3OverlayStorage'
+
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
