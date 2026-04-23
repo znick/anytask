@@ -2272,6 +2272,12 @@ msgstr "Забыли пароль?"
 msgid "nevernyj_login"
 msgstr "Пожалуйста, введите верные имя пользователя / адрес электронной почты и пароль."
 
+msgid "registracija_zavershena"
+msgstr "Регистрация завершена"
+
+msgid "proverite_spam"
+msgstr "Если письмо не пришло в течение нескольких минут, проверьте папку «Спам»."
+
 #: users/forms.py:25
 msgid "invajta_ne_sushestvuet"
 msgstr "Такого инвайта не существует."
