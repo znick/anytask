@@ -2174,7 +2174,7 @@ msgstr "Register"
 
 #: templates/registration/registration_complete.html:8
 msgid "vyslano_pismo"
-msgstr "Email sent"
+msgstr "We've sent you an email with an activation link. Please follow the link to activate your account."
 
 #: templates/registration/registration_form.html:70
 #: templates/registration/registration_form.html:75
@@ -2213,6 +2213,33 @@ msgstr "Passwords do not match"
 #: templates/registration/registration_form.html:165
 msgid "zaregistrirovatsja"
 msgstr "Register"
+
+msgid "login_label"
+msgstr "Login"
+
+msgid "imya_label"
+msgstr "First name"
+
+msgid "familiya_label"
+msgstr "Last name"
+
+msgid "pokazyvat_email"
+msgstr "Show my email to all users"
+
+msgid "login_email_label"
+msgstr "Login / E-mail"
+
+msgid "zabyli_parol"
+msgstr "Forgot your password?"
+
+msgid "nevernyj_login"
+msgstr "Please enter a correct username / email address and password."
+
+msgid "registracija_zavershena"
+msgstr "Registration complete"
+
+msgid "proverite_spam"
+msgstr "If you don't see the email within a few minutes, please check your spam folder."
 
 #: users/forms.py:25
 msgid "invajta_ne_sushestvuet"

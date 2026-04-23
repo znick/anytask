@@ -1,10 +1,18 @@
 {% extends "base.html" %}
 {% load i18n %}
 
+{% block title %}{% trans "akkaunt_aktivirovan" %}{% endblock %}
+
 {% block content %}
-
-{% trans "akkaunt_aktivirovan" %}
-
-<a href="{% url "auth_login" %}">{% trans "vojti" %}</a>
-
+<div class="row">
+    <div class="col-md-6 col-sm-8 col-xs-12">
+        <div class="card">
+            <div class="card-block" style="text-align: center; padding: 2rem;">
+                <span class="fa fa-check-circle" style="font-size: 4rem; color: #5cb85c;"></span>
+                <h4 class="card-title" style="margin-top: 1rem;">{% trans "akkaunt_aktivirovan" %}</h4>
+                <a href="{% url "auth_login" %}" class="btn btn-secondary" style="margin-top: 1rem;">{% trans "vojti" %}</a>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

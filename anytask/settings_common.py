@@ -200,6 +200,7 @@ INSTALLED_APPS = (
     'api',
     'django_premailer',
     'django_bootstrap_breadcrumbs',
+    'captcha',
 )
 
 AUTH_PROFILE_MODULE = "users.UserProfile"
@@ -207,8 +208,8 @@ AUTH_PROFILE_MODULE = "users.UserProfile"
 ACCOUNT_ACTIVATION_DAYS = 7
 INVITE_EXPIRED_DAYS = 180
 
-RECAPTCHA_PUBLIC_KEY = "01MgZtfgTcrycDEs4Wdvd06g=="
-RECAPTCHA_PRIVATE_KEY = "18ccfac9d336db9817a893ce45751d5a"
+RECAPTCHA_PUBLIC_KEY = ""
+RECAPTCHA_PRIVATE_KEY = ""
 
 ANYSVN_SVN_URL_PREFIX = "/svn/"
 ANYSVN_REPOS_PATH = "../svn/user_repos"
@@ -332,3 +333,5 @@ AWS_DEFAULT_ACL = 'public-read'  # As when served by Django & FileSystemStorage
 AWS_S3_USE_SSL = False
 
 DEFAULT_FILE_STORAGE = 'anytask.storage.S3OverlayStorage'
+
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'

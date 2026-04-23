@@ -20,6 +20,9 @@ from registration import signals
 from registration.forms import RegistrationForm, RegistrationFormUniqueEmail
 from registration.models import RegistrationProfile
 
+from captcha.fields import ReCaptchaField
+from captcha.widgets import ReCaptchaV2Checkbox
+
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, HTML, Field
 
@@ -31,8 +34,8 @@ class AnytaskLoginForm(AuthenticationForm):
 
     def __init__(self, *args, **kwargs):
         AuthenticationForm.__init__(self, *args, **kwargs)
-        self.error_messages['invalid_login'] = "Пожалуйста, введите верные имя пользователя / адрес электронной почты и пароль."
-        self.fields['username'].label = _(u"Логин / E-mail")
+        self.error_messages['invalid_login'] = _(u'nevernyj_login')
+        self.fields['username'].label = _(u'login_email_label')
 
         self.helper = FormHelper(self)
         self.helper.form_action = '/accounts/login/'
@@ -41,12 +44,12 @@ class AnytaskLoginForm(AuthenticationForm):
         self.helper.layout = Layout(Field('username', wrapper_class="row"), Field('password', wrapper_class="row"))
         self.helper.layout.append(HTML(u"""<div class="form-group row" style="margin-bottom: 16px;margin-top: -16px;">
                                              <div class="col-md-offset-4 col-md-8">
-                                               <a href="{% url "auth_password_reset" %}"><small class="text-muted">""" + _(u'Забыли пароль?') + """</small></a>
+                                               <a href="{% url "auth_password_reset" %}"><small class="text-muted">""" + _(u'zabyli_parol') + """</small></a>
                                              </div>
                                            </div>
                                            <div class="form-group row">
                                              <div class="col-md-offset-4 col-md-8">
-                                               <button type="submit" class="btn btn-secondary">""" + _(u'Войти') + """</button>
+                                               <button type="submit" class="btn btn-secondary">""" + _(u'vojti') + """</button>
                                                <input type="hidden" name="next" value="{{ next }}" />
                                              </div>
                                            </div>"""))
@@ -124,21 +127,13 @@ class RegistrationFormWithNames(RegistrationForm):
 
     def __init__(self, *args, **kwargs):
         super(RegistrationForm, self).__init__(*args, **kwargs)
-        self.fields['username'].label = _(u"Логин")
-        self.fields['first_name'].label = _(u"Имя")
-        self.fields['last_name'].label = _(u"Фамилия")
-        self.fields['show_email'].label = _(u"Показывать мой e-mail всем пользователям")
+        self.fields['username'].label = _(u'login_label')
+        self.fields['first_name'].label = _(u'imya_label')
+        self.fields['last_name'].label = _(u'familiya_label')
+        self.fields['show_email'].label = _(u'pokazyvat_email')
 
-        self.fields.keyOrder = [
-            'username',
-            'first_name',
-            'last_name',
-            'email',
-            'show_email',
-            'password1',
-            'password2',
-            #'invite',
-        ]
+        field_order = ['username', 'first_name', 'last_name', 'email', 'show_email', 'password1', 'password2']
+        self.fields = {k: self.fields[k] for k in field_order}
 
 
 class RegistrationFormWithNamesUniqEmail(RegistrationFormWithNames, RegistrationFormUniqueEmail):
@@ -148,12 +143,15 @@ class BootStrapRegistrationFormWithNames(RegistrationFormWithNamesUniqEmail):
     def __init__(self, *args, **kwargs):
         RegistrationFormWithNamesUniqEmail.__init__(self, *args, **kwargs)
 
+        if getattr(settings, 'RECAPTCHA_PUBLIC_KEY', '') and getattr(settings, 'RECAPTCHA_PRIVATE_KEY', ''):
+            self.fields['captcha'] = ReCaptchaField(widget=ReCaptchaV2Checkbox)
+
         self.helper = FormHelper(self)
         self.helper.label_class = 'col-md-4'
         self.helper.field_class = 'col-md-8'
         self.helper.layout.append(HTML(u"""<div class="form-group row">
                                              <div class="col-md-offset-4 col-md-8">
-                                               <button type="submit" class="btn btn-secondary">""" + _(u'Зарегистрироваться') + """</button>
+                                               <button type="submit" class="btn btn-secondary">""" + _(u'zaregistrirovatsja') + """</button>
                                              </div>
                                            </div>"""))
 

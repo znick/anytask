@@ -177,7 +177,7 @@ class UserLoginTest(TestCase):
 
         response = client.post('/accounts/register/', form_data)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, u"Два поля с паролями не совпадают.")
+        self.assertContains(response, u"Введенные пароли не совпадают.")
 
     def test_reset_password(self):
         client = self.client

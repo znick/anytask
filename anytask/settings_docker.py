@@ -60,6 +60,9 @@ if not os.environ.get("ANYTASK_BETA", False):
 CONTEST_EXTENSIONS = {'.py': 'python2_6', '.py2': 'python2_6', '.py3': 'python3', '.cpp': 'gcc0x', '.java': 'java8',
                       '.h': 'gcc0x', '.cs': 'mono_csharp', '.c': 'plain_c', '.go': 'gccgo'}
 
+RECAPTCHA_PUBLIC_KEY = os.environ.get('RECAPTCHA_PUBLIC_KEY', '')
+RECAPTCHA_PRIVATE_KEY = os.environ.get('RECAPTCHA_PRIVATE_KEY', '')
+
 RB_API_URL = os.environ.get('RB_API_URL', 'https://anytask.org/rb')
 RB_API_PASSWORD = os.environ.get('RB_API_PASSWORD')
 RB_SYMLINK_SERVICE_URL = os.environ.get('RB_SYMLINK_SERVICE_URL')
@@ -73,7 +76,7 @@ PASSPORT_OAUTH_PASSWORD = os.environ.get('PASSPORT_OAUTH_PASSWORD')
 
 IPYTHON_URL = os.environ.get("IPYTHON_URL", "http://anytask.org:8888/notebooks")
 
-EMAIL_BACKEND = 'common.email_bcc.BCCEmailBackend'
+EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'common.email_bcc.BCCEmailBackend')
 EMAIL_HOST = os.environ.get('EMAIL_HOST')
 EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 25))
 EMAIL_USE_SSL = bool(os.environ.get('EMAIL_USE_SSL', False))

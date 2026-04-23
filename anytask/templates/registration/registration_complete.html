@@ -1,10 +1,22 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans "registracija" %}{% endblock %}
+{% block title %}{% trans "registracija_zavershena" %}{% endblock %}
 
 {% block content %}
-
-{% trans "vyslano_pismo" %}
-
+<div class="row">
+    <div class="col-md-6 col-sm-8 col-xs-12">
+        <div class="card">
+            <div class="card-block" style="text-align: center; padding: 2rem;">
+                <span class="fa fa-envelope-o" style="font-size: 4rem; color: #5cb85c;"></span>
+                <h4 class="card-title" style="margin-top: 1rem;">{% trans "registracija_zavershena" %}</h4>
+                <p class="card-text" style="margin-top: 1rem;">{% trans "vyslano_pismo" %}</p>
+                <p class="text-muted" style="font-size: 0.9rem; margin-top: 0.5rem;">
+                    <span class="fa fa-info-circle"></span>
+                    {% trans "proverite_spam" %}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
