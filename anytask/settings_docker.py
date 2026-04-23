@@ -76,7 +76,7 @@ PASSPORT_OAUTH_PASSWORD = os.environ.get('PASSPORT_OAUTH_PASSWORD')
 
 IPYTHON_URL = os.environ.get("IPYTHON_URL", "http://anytask.org:8888/notebooks")
 
-EMAIL_BACKEND = 'common.email_bcc.BCCEmailBackend'
+EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'common.email_bcc.BCCEmailBackend')
 EMAIL_HOST = os.environ.get('EMAIL_HOST')
 EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 25))
 EMAIL_USE_SSL = bool(os.environ.get('EMAIL_USE_SSL', False))
