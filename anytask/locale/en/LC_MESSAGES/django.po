@@ -2214,6 +2214,27 @@ msgstr "Passwords do not match"
 msgid "zaregistrirovatsja"
 msgstr "Register"
 
+msgid "login_label"
+msgstr "Login"
+
+msgid "imya_label"
+msgstr "First name"
+
+msgid "familiya_label"
+msgstr "Last name"
+
+msgid "pokazyvat_email"
+msgstr "Show my email to all users"
+
+msgid "login_email_label"
+msgstr "Login / E-mail"
+
+msgid "zabyli_parol"
+msgstr "Forgot your password?"
+
+msgid "nevernyj_login"
+msgstr "Please enter a correct username / email address and password."
+
 #: users/forms.py:25
 msgid "invajta_ne_sushestvuet"
 msgstr "Invite does not exist"

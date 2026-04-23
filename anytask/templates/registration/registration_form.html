@@ -5,6 +5,7 @@
 {% block title %}{% trans "registracija" %}{% endblock %}
 
 {% block scripts %}
+    {{ form.media }}
     <script src="{{ STATIC_URL }}jquery.validate.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
@@ -142,6 +143,15 @@
                                                 <input type="checkbox" name="{{ field.html_name }}" id="{{ field.id_for_label }}" style="margin-left: 3px;" {% if field.value%}checked{% endif %}>
                                                 <small class="text-muted">{{ field.label }}</small>
                                             </label>
+                                        </div>
+                                    </div>
+                                {% elif field.name == "captcha" %}
+                                    <div class="form-group row {% if field.errors %}has-danger{% endif %}">
+                                        <div class="col-md-offset-4 col-md-8">
+                                            {{ field }}
+                                            {% for error in field.errors %}
+                                                <small class="text-danger">{{ error }}</small>
+                                            {% endfor %}
                                         </div>
                                     </div>
                                 {% else %}
