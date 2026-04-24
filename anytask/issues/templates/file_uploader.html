@@ -30,14 +30,38 @@
     });
 
     var $submitBtns = $('#fileupload button[type="submit"]');
+    var uploadStarted = false;
+
+    function lockSend() {
+        $submitBtns.prop('disabled', true);
+        $('#upload-progress-bar').css('width', '0%');
+        $('#upload-progress-wrap').show();
+    }
+    function unlockSend() {
+        uploadStarted = false;
+        $submitBtns.prop('disabled', false);
+        setTimeout(function() { $('#upload-progress-wrap').fadeOut(300); }, 800);
+    }
+
     $('#fileupload')
-        .on('fileuploadstart', function() {
-            $submitBtns.prop('disabled', true);
-            $('#upload-progress-wrap').show();
+        .on('fileuploadadd', function() {
+            // Disable immediately on file selection (before processing/uploading)
+            lockSend();
+        })
+        .on('fileuploadsend', function() {
+            // HTTP request is about to start - upload is really happening
+            uploadStarted = true;
         })
         .on('fileuploadstop', function() {
-            $submitBtns.prop('disabled', false);
-            setTimeout(function() { $('#upload-progress-wrap').fadeOut(300); }, 800);
+            // All uploads finished (success or failure)
+            unlockSend();
+        })
+        .on('fileuploadprocessfail', function() {
+            // File failed client-side validation (too big, wrong type, etc.)
+            // No upload will start, so re-enable unless one was already going
+            if (!uploadStarted) {
+                unlockSend();
+            }
         })
         .on('fileuploadprogressall', function(e, data) {
             var pct = parseInt(data.loaded / data.total * 100, 10);
