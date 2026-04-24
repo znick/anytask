@@ -3,9 +3,9 @@
 import json
 
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import render
-from haystack.query import SearchQuerySet
 
 from courses.models import Course
 from schools.models import School
@@ -65,93 +65,88 @@ def search_users(query, user, max_result=None):
     result = []
     result_objs = []
 
-    if query:
-        user_is_staff = user.is_staff
-        user_is_teacher = None
-        if not user_is_staff:
-            user_is_teacher = True if Course.objects.filter(teachers=user).count() else False
+    if not query:
+        return result, result_objs
 
-        sgs = SearchQuerySet().models(UserProfile).exclude(user_id=user.id)
+    user_is_staff = user.is_staff
+    user_is_teacher = None
+    if not user_is_staff:
+        user_is_teacher = True if Course.objects.filter(teachers=user).count() else False
 
-        sgs_fullname = sgs.autocomplete(fullname_auto=query)
+    name_q = (
+        Q(user__first_name__icontains=query) |
+        Q(user__last_name__icontains=query) |
+        Q(user__username__icontains=query)
+    )
 
-        sgs_login = sgs.autocomplete(login_auto=query)
+    if user_is_staff or user_is_teacher:
+        name_q |= (
+            Q(ya_contest_login__icontains=query) |
+            Q(ya_passport_email__icontains=query) |
+            Q(user__email__icontains=query)
+        )
 
-        if user_is_staff or user_is_teacher:
-            sgs_ya_contest_login = sgs.autocomplete(ya_contest_login_auto=query)
-            sgs_ya_passport_email = sgs.autocomplete(ya_passport_email_auto=query)
-            sgs_email = sgs.autocomplete(email_auto=query)
-        else:
-            sgs_ya_contest_login = sgs.none()
-            sgs_ya_passport_email = sgs.none()
-            sgs_email = sgs.none()
+    profiles = (
+        UserProfile.objects
+        .filter(name_q)
+        .exclude(user=user)
+        .select_related('user')
+        .prefetch_related('user_status')
+    )
 
-        sgs = sgs_fullname | sgs_login | sgs_ya_contest_login | sgs_ya_passport_email | sgs_email
+    if not user_is_staff:
+        groups = user.group_set.all()
+        courses = Course.objects.filter(groups__in=groups)
+        schools = School.objects.filter(courses__in=courses)
+        courses_teacher = Course.objects.filter(teachers=user)
+        schools_teacher = School.objects.filter(courses__in=courses_teacher)
 
-        if not user_is_staff:
-            groups = user.group_set.all()
-            courses = Course.objects.filter(groups__in=groups)
-            schools = School.objects.filter(courses__in=courses)
-            courses_teacher = Course.objects.filter(teachers=user)
-            schools_teacher = School.objects.filter(courses__in=courses_teacher)
+        for profile in profiles:
+            user_to_show = profile.user
+            groups_user_to_show = user_to_show.group_set.all()
+            courses_user_to_show = Course.objects.filter(groups__in=groups_user_to_show)
+            schools_user_to_show = School.objects.filter(courses__in=courses_user_to_show)
+            courses_user_to_show_teacher = Course.objects.filter(teachers=user_to_show)
+            schools_user_to_show_teacher = School.objects.filter(courses__in=courses_user_to_show_teacher)
 
-            for sg in sgs:
-                user_to_show = sg.object.user
-                groups_user_to_show = user_to_show.group_set.all()
-                courses_user_to_show = Course.objects.filter(groups__in=groups_user_to_show)
-                schools_user_to_show = School.objects.filter(courses__in=courses_user_to_show)
-                courses_user_to_show_teacher = Course.objects.filter(teachers=user_to_show)
-                schools_user_to_show_teacher = School.objects.filter(courses__in=courses_user_to_show_teacher)
+            if not (schools_user_to_show | schools_user_to_show_teacher) & (schools | schools_teacher):
+                continue
 
-                user_school_user_to_show = False
-                if (schools_user_to_show | schools_user_to_show_teacher) & (schools | schools_teacher):
-                    user_school_user_to_show = True
+            user_to_show_teach_user = bool(courses_user_to_show_teacher & courses)
+            user_teach_user_to_show = bool(courses_teacher & courses_user_to_show)
 
-                if not user_school_user_to_show:
-                    continue
-                user_to_show_teach_user = False
-                if courses_user_to_show_teacher & courses:
-                    user_to_show_teach_user = True
+            show_email = profile.show_email or user_teach_user_to_show or user_to_show_teach_user
 
-                user_teach_user_to_show = False
-                if courses_teacher & courses_user_to_show:
-                    user_teach_user_to_show = True
+            result.append({
+                "fullname": user_to_show.get_full_name(),
+                "username": user_to_show.username,
+                "ya_contest_login": profile.ya_contest_login if user_is_teacher else '',
+                "url": user_to_show.get_absolute_url(),
+                "avatar": profile.avatar.url if profile.avatar else '',
+                "email": user_to_show.email if show_email else '',
+                "ya_passport_email": profile.ya_passport_email if show_email else '',
+                "id": user_to_show.id,
+                "statuses": list(profile.user_status.values_list('name', 'color'))
+            })
+            result_objs.append(profile)
 
-                show_email = \
-                    sg.object.show_email or \
-                    user_teach_user_to_show or \
-                    user_to_show_teach_user
-
-                result.append({
-                    "fullname": user_to_show.get_full_name(),
-                    "username": user_to_show.username,
-                    "ya_contest_login": sg.object.ya_contest_login if user_is_teacher else '',
-                    "url": user_to_show.get_absolute_url(),
-                    "avatar": sg.object.avatar.url if sg.object.avatar else '',
-                    "email": user_to_show.email if show_email else '',
-                    "ya_passport_email": sg.object.ya_passport_email if show_email else '',
-                    "id": user_to_show.id,
-                    "statuses": list(sg.object.user_status.values_list('name', 'color'))
-                })
-                result_objs.append(sg.object)
-
-                if len(result) == max_result:
-                    break
-
-        else:
-            for sg in sgs[:max_result]:
-                result.append({
-                    "fullname": sg.object.user.get_full_name(),
-                    "username": sg.object.user.username,
-                    "ya_contest_login": sg.object.ya_contest_login,
-                    "url": sg.object.user.get_absolute_url(),
-                    "avatar": sg.object.avatar.url if sg.object.avatar else '',
-                    "email": sg.object.user.email,
-                    "ya_passport_email": sg.object.ya_passport_email,
-                    "id": sg.object.user.id,
-                    "statuses": list(sg.object.user_status.values_list('name', 'color'))
-                })
-                result_objs.append(sg.object)
+            if max_result and len(result) == max_result:
+                break
+    else:
+        qs = profiles[:max_result] if max_result else profiles
+        for profile in qs:
+            result.append({
+                "fullname": profile.user.get_full_name(),
+                "username": profile.user.username,
+                "ya_contest_login": profile.ya_contest_login,
+                "url": profile.user.get_absolute_url(),
+                "avatar": profile.avatar.url if profile.avatar else '',
+                "email": profile.user.email,
+                "ya_passport_email": profile.ya_passport_email,
+                "id": profile.user.id,
+                "statuses": list(profile.user_status.values_list('name', 'color'))
+            })
+            result_objs.append(profile)
 
     return result, result_objs
 
@@ -160,27 +155,31 @@ def search_courses(query, user, max_result=None):
     result = []
     result_objs = []
 
-    if query:
-        user_is_staff = user.is_staff
-        sgs_name = SearchQuerySet().models(Course).order_by('-is_active')
+    if not query:
+        return result, result_objs
 
-        if not user_is_staff:
-            groups = user.group_set.all()
-            courses_ids = (Course.objects.filter(groups__in=groups) | Course.objects.filter(teachers=user)) \
-                .values_list('id', flat=True)
+    user_is_staff = user.is_staff
 
-            sgs_name = sgs_name.filter(course_id__in=courses_ids).autocomplete(name_auto=query)
-        else:
-            sgs_name = sgs_name.autocomplete(name_auto=query)
+    courses_qs = Course.objects.filter(name__icontains=query).order_by('-is_active')
 
-        for sg in sgs_name[:max_result]:
-            result.append({
-                'name': str(sg.object.name),
-                'year': str(sg.object.year),
-                'url': sg.object.get_absolute_url(),
-                'schools': [sch.name for sch in sg.object.school_set.all()],
-                'is_active': sg.object.is_active
-            })
-            result_objs.append(sg.object)
+    if not user_is_staff:
+        groups = user.group_set.all()
+        allowed_ids = (
+            Course.objects.filter(groups__in=groups) | Course.objects.filter(teachers=user)
+        ).values_list('id', flat=True)
+        courses_qs = courses_qs.filter(id__in=allowed_ids)
+
+    if max_result:
+        courses_qs = courses_qs[:max_result]
+
+    for course in courses_qs:
+        result.append({
+            'name': str(course.name),
+            'year': str(course.year),
+            'url': course.get_absolute_url(),
+            'schools': [sch.name for sch in course.school_set.all()],
+            'is_active': course.is_active
+        })
+        result_objs.append(course)
 
     return result, result_objs
