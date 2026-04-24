@@ -29,6 +29,21 @@
         {% endblock %}
     });
 
+    var $submitBtns = $('#fileupload button[type="submit"]');
+    $('#fileupload')
+        .on('fileuploadstart', function() {
+            $submitBtns.prop('disabled', true);
+            $('#upload-progress-wrap').show();
+        })
+        .on('fileuploadstop', function() {
+            $submitBtns.prop('disabled', false);
+            setTimeout(function() { $('#upload-progress-wrap').fadeOut(300); }, 800);
+        })
+        .on('fileuploadprogressall', function(e, data) {
+            var pct = parseInt(data.loaded / data.total * 100, 10);
+            $('#upload-progress-bar').css('width', pct + '%').attr('aria-valuenow', pct);
+        });
+
     $('.fileupload-buttonbar').on("click", '.delete', function() {
         $('#filename_changed_alert').hide();
         $('.drop-zone').show();
@@ -146,8 +161,18 @@
         </div>
         {% block UPLOAD_FORM_PROGRESS_BAR %}
         {% comment %}
-         The global progress information. 
+         The global progress information.
         {% endcomment %}
+        <div id="upload-progress-wrap" style="display:none; margin-top: 10px;">
+            <div class="progress">
+                <div id="upload-progress-bar"
+                     class="progress-bar progress-bar-striped active"
+                     role="progressbar"
+                     aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"
+                     style="width: 0%;">
+                </div>
+            </div>
+        </div>
         {% endblock %}
 
     </div>
