@@ -98,6 +98,18 @@ class SearchUsersTest(TestCase):
         usernames = [r['username'] for r in data['result']]
         self.assertIn('peer_user', usernames)
 
+    def test_find_peer_by_full_name(self):
+        response = self._search_users('Bob Jones', self.searcher)
+        data = json.loads(response.content)
+        usernames = [r['username'] for r in data['result']]
+        self.assertIn('peer_user', usernames)
+
+    def test_find_peer_by_full_name_reversed(self):
+        response = self._search_users('Jones Bob', self.searcher)
+        data = json.loads(response.content)
+        usernames = [r['username'] for r in data['result']]
+        self.assertIn('peer_user', usernames)
+
     def test_case_insensitive_match(self):
         response = self._search_users('bob', self.searcher)
         data = json.loads(response.content)

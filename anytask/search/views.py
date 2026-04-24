@@ -32,15 +32,11 @@ def ajax_search_users(request):
     if 'q' not in request.GET:
         return HttpResponseForbidden()
 
-    if 'max' in request.GET:
-        max_result = int(request.GET["max"])
-    else:
-        max_result = 3
-
+    max_result = int(request.GET.get('max', 3))
     result, _ = search_users(request.GET.get('q', ''), request.user, max_result + 1)
 
     return HttpResponse(json.dumps({'result': result[:max_result],
-                                    'is_limited': True if len(result) > max_result else False}),
+                                    'is_limited': len(result) > max_result}),
                         content_type='application/json')
 
 
@@ -49,120 +45,108 @@ def ajax_search_courses(request):
     if 'q' not in request.GET:
         return HttpResponseForbidden()
 
-    if 'max' in request.GET:
-        max_result = int(request.GET["max"])
-    else:
-        max_result = 3
-
+    max_result = int(request.GET.get('max', 3))
     result, _ = search_courses(request.GET.get('q', ''), request.user, max_result + 1)
 
     return HttpResponse(json.dumps({'result': result[:max_result],
-                                    'is_limited': True if len(result) > max_result else False}),
+                                    'is_limited': len(result) > max_result}),
                         content_type='application/json')
 
 
-def search_users(query, user, max_result=None):
-    result = []
-    result_objs = []
+def _build_user_search_query(query, extra_fields=False):
+    q = Q()
+    for word in query.split():
+        word_q = (
+            Q(user__first_name__icontains=word) |
+            Q(user__last_name__icontains=word) |
+            Q(user__username__icontains=word)
+        )
+        if extra_fields:
+            word_q |= (
+                Q(ya_contest_login__icontains=word) |
+                Q(ya_passport_email__icontains=word) |
+                Q(user__email__icontains=word)
+            )
+        q &= word_q
+    return q
 
+
+def _profile_to_dict(profile, show_email=True, show_ya_contest=True):
+    return {
+        "fullname": profile.user.get_full_name(),
+        "username": profile.user.username,
+        "ya_contest_login": profile.ya_contest_login if show_ya_contest else '',
+        "url": profile.user.get_absolute_url(),
+        "avatar": profile.avatar.url if profile.avatar else '',
+        "email": profile.user.email if show_email else '',
+        "ya_passport_email": profile.ya_passport_email if show_email else '',
+        "id": profile.user.id,
+        "statuses": list(profile.user_status.values_list('name', 'color')),
+    }
+
+
+def search_users(query, user, max_result=None):
     if not query:
-        return result, result_objs
+        return [], []
 
     user_is_staff = user.is_staff
-    user_is_teacher = None
-    if not user_is_staff:
-        user_is_teacher = True if Course.objects.filter(teachers=user).count() else False
-
-    name_q = (
-        Q(user__first_name__icontains=query) |
-        Q(user__last_name__icontains=query) |
-        Q(user__username__icontains=query)
-    )
-
-    if user_is_staff or user_is_teacher:
-        name_q |= (
-            Q(ya_contest_login__icontains=query) |
-            Q(ya_passport_email__icontains=query) |
-            Q(user__email__icontains=query)
-        )
+    user_is_teacher = not user_is_staff and Course.objects.filter(teachers=user).exists()
 
     profiles = (
         UserProfile.objects
-        .filter(name_q)
+        .filter(_build_user_search_query(query, extra_fields=user_is_staff or user_is_teacher))
         .exclude(user=user)
         .select_related('user')
         .prefetch_related('user_status')
     )
 
-    if not user_is_staff:
-        groups = user.group_set.all()
-        courses = Course.objects.filter(groups__in=groups)
-        schools = School.objects.filter(courses__in=courses)
-        courses_teacher = Course.objects.filter(teachers=user)
-        schools_teacher = School.objects.filter(courses__in=courses_teacher)
-
-        for profile in profiles:
-            user_to_show = profile.user
-            groups_user_to_show = user_to_show.group_set.all()
-            courses_user_to_show = Course.objects.filter(groups__in=groups_user_to_show)
-            schools_user_to_show = School.objects.filter(courses__in=courses_user_to_show)
-            courses_user_to_show_teacher = Course.objects.filter(teachers=user_to_show)
-            schools_user_to_show_teacher = School.objects.filter(courses__in=courses_user_to_show_teacher)
-
-            if not (schools_user_to_show | schools_user_to_show_teacher) & (schools | schools_teacher):
-                continue
-
-            user_to_show_teach_user = bool(courses_user_to_show_teacher & courses)
-            user_teach_user_to_show = bool(courses_teacher & courses_user_to_show)
-
-            show_email = profile.show_email or user_teach_user_to_show or user_to_show_teach_user
-
-            result.append({
-                "fullname": user_to_show.get_full_name(),
-                "username": user_to_show.username,
-                "ya_contest_login": profile.ya_contest_login if user_is_teacher else '',
-                "url": user_to_show.get_absolute_url(),
-                "avatar": profile.avatar.url if profile.avatar else '',
-                "email": user_to_show.email if show_email else '',
-                "ya_passport_email": profile.ya_passport_email if show_email else '',
-                "id": user_to_show.id,
-                "statuses": list(profile.user_status.values_list('name', 'color'))
-            })
-            result_objs.append(profile)
-
-            if max_result and len(result) == max_result:
-                break
-    else:
+    if user_is_staff:
         qs = profiles[:max_result] if max_result else profiles
-        for profile in qs:
-            result.append({
-                "fullname": profile.user.get_full_name(),
-                "username": profile.user.username,
-                "ya_contest_login": profile.ya_contest_login,
-                "url": profile.user.get_absolute_url(),
-                "avatar": profile.avatar.url if profile.avatar else '',
-                "email": profile.user.email,
-                "ya_passport_email": profile.ya_passport_email,
-                "id": profile.user.id,
-                "statuses": list(profile.user_status.values_list('name', 'color'))
-            })
-            result_objs.append(profile)
+        result_objs = list(qs)
+        result = [_profile_to_dict(p) for p in result_objs]
+        return result, result_objs
+
+    groups = user.group_set.all()
+    courses = Course.objects.filter(groups__in=groups)
+    schools = School.objects.filter(courses__in=courses)
+    courses_teacher = Course.objects.filter(teachers=user)
+    schools_teacher = School.objects.filter(courses__in=courses_teacher)
+    searcher_schools = schools | schools_teacher
+
+    result = []
+    result_objs = []
+    for profile in profiles:
+        u = profile.user
+        target_courses = Course.objects.filter(groups__in=u.group_set.all())
+        target_schools = School.objects.filter(courses__in=target_courses)
+        target_courses_teacher = Course.objects.filter(teachers=u)
+        target_schools_teacher = School.objects.filter(courses__in=target_courses_teacher)
+
+        if not (target_schools | target_schools_teacher) & searcher_schools:
+            continue
+
+        show_email = (
+            profile.show_email or
+            bool(target_courses_teacher & courses) or
+            bool(courses_teacher & target_courses)
+        )
+
+        result.append(_profile_to_dict(profile, show_email=show_email, show_ya_contest=user_is_teacher))
+        result_objs.append(profile)
+
+        if max_result and len(result) == max_result:
+            break
 
     return result, result_objs
 
 
 def search_courses(query, user, max_result=None):
-    result = []
-    result_objs = []
-
     if not query:
-        return result, result_objs
-
-    user_is_staff = user.is_staff
+        return [], []
 
     courses_qs = Course.objects.filter(name__icontains=query).order_by('-is_active')
 
-    if not user_is_staff:
+    if not user.is_staff:
         groups = user.group_set.all()
         allowed_ids = (
             Course.objects.filter(groups__in=groups) | Course.objects.filter(teachers=user)
@@ -172,14 +156,16 @@ def search_courses(query, user, max_result=None):
     if max_result:
         courses_qs = courses_qs[:max_result]
 
-    for course in courses_qs:
+    result = []
+    result_objs = []
+    for c in courses_qs:
         result.append({
-            'name': str(course.name),
-            'year': str(course.year),
-            'url': course.get_absolute_url(),
-            'schools': [sch.name for sch in course.school_set.all()],
-            'is_active': course.is_active
+            'name': str(c.name),
+            'year': str(c.year),
+            'url': c.get_absolute_url(),
+            'schools': [sch.name for sch in c.school_set.all()],
+            'is_active': c.is_active,
         })
-        result_objs.append(course)
+        result_objs.append(c)
 
     return result, result_objs
