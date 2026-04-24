@@ -57,15 +57,15 @@ def _build_user_search_query(query, extra_fields=False):
     q = Q()
     for word in query.split():
         word_q = (
-            Q(user__first_name__icontains=word) |
-            Q(user__last_name__icontains=word) |
-            Q(user__username__icontains=word)
+            Q(user__first_name__icontains=word)
+            | Q(user__last_name__icontains=word)
+            | Q(user__username__icontains=word)
         )
         if extra_fields:
             word_q |= (
-                Q(ya_contest_login__icontains=word) |
-                Q(ya_passport_email__icontains=word) |
-                Q(user__email__icontains=word)
+                Q(ya_contest_login__icontains=word)
+                | Q(ya_passport_email__icontains=word)
+                | Q(user__email__icontains=word)
             )
         q &= word_q
     return q
@@ -126,9 +126,9 @@ def search_users(query, user, max_result=None):
             continue
 
         show_email = (
-            profile.show_email or
-            bool(target_courses_teacher & courses) or
-            bool(courses_teacher & target_courses)
+            profile.show_email
+            or bool(target_courses_teacher & courses)
+            or bool(courses_teacher & target_courses)
         )
 
         result.append(_profile_to_dict(profile, show_email=show_email, show_ya_contest=user_is_teacher))

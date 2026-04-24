@@ -291,7 +291,7 @@ class SearchCoursesTest(TestCase):
 
     def test_max_result_limits_and_is_limited_flag(self):
         for i in range(5):
-            c = Course.objects.create(name=f'Algorithms Part {i}', year=self.year)
+            Course.objects.create(name=f'Algorithms Part {i}', year=self.year)
 
         response = self._search_courses('Algo', self.staff, max_result=3)
         data = json.loads(response.content)
