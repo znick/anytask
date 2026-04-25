@@ -33,6 +33,20 @@
     var $primarySubmit = $submitBtns.first();
     var originalSubmitHTML = $primarySubmit.html();
     var uploadStarted = false;
+    var maxFileSize = {{ max_file_size }};
+    var uploadErrorMessages = {
+        'Maximum number of files exceeded': '{% trans "prevysheno_kolvo_fajlov" %}',
+        'Filetype not allowed': '{% trans "nedopustimyj_tip_fajla" %}',
+        'File is too big': '{% trans "fajl_slishkom_bolshoj" %}',
+        'File is too small': '{% trans "fajl_slishkom_mal" %}'
+    };
+
+    function formatBytes(b) {
+        if (b >= 1073741824) return (b / 1073741824).toFixed(1) + ' GB';
+        if (b >= 1048576)    return (b / 1048576).toFixed(1) + ' MB';
+        if (b >= 1024)       return (b / 1024).toFixed(1) + ' KB';
+        return b + ' B';
+    }
 
     function setProgress(pct) {
         $('#upload-progress-bar')
@@ -70,6 +84,8 @@
     $('#fileupload')
         .on('fileuploadadd', function() {
             // Disable immediately on file selection (before processing/uploading)
+            $('#upload-error-msg').empty();
+            $('#upload-error-alert').hide();
             lockSend();
         })
         .on('fileuploadsend', function() {
@@ -80,9 +96,26 @@
             // All uploads finished (success or failure)
             unlockSend();
         })
-        .on('fileuploadprocessfail', function() {
+        .on('fileuploadprocessfail', function(e, data) {
             // File failed client-side validation (too big, wrong type, etc.)
             // No upload will start, so re-enable unless one was already going
+            var $msg = $('#upload-error-msg');
+            $.each(data.files, function(i, file) {
+                if (!file.error) return;
+                var text = uploadErrorMessages[file.error] || file.error;
+                if (file.error === 'File is too big') {
+                    text += ' (' + formatBytes(file.size) +
+                            ', max ' + formatBytes(maxFileSize) + ')';
+                }
+                $msg.append(
+                    $('<div>')
+                        .append($('<strong>').text(file.name))
+                        .append(document.createTextNode(' — ' + text))
+                );
+            });
+            if ($msg.children().length) {
+                $('#upload-error-alert').show();
+            }
             if (!uploadStarted) {
                 unlockSend();
             }
@@ -164,6 +197,13 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
                 {% trans "otpravljat_odin_fajl" %}
+            </div>
+            <div id="upload-error-alert" class="alert alert-danger alert-dismissible" role="alert" style="display: none; margin-bottom: 10px;">
+                <button type="button" class="close" aria-label="Close" onclick="$('#upload-error-alert').hide(); return false;">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <strong>{% trans "oshibka" %}:</strong>
+                <span id="upload-error-msg"></span>
             </div>
             <table style="margin-bottom: 0px;" role="presentation" class="table table-striped">
                <tbody class="files" data-toggle="modal-gallery" data-target="#modal-gallery"></tbody>
