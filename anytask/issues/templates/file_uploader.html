@@ -30,16 +30,30 @@
     });
 
     var $submitBtns = $('#fileupload button[type="submit"]');
+    var $primarySubmit = $submitBtns.first();
+    var originalSubmitHTML = $primarySubmit.html();
     var uploadStarted = false;
 
+    function setProgress(pct) {
+        $('#upload-progress-bar')
+            .css('width', pct + '%')
+            .attr('aria-valuenow', pct)
+            .text(pct + '%');
+    }
+    function setSubmitBusy(pct) {
+        var label = (typeof pct === 'number') ? (pct + '%') : '...';
+        $primarySubmit.html("<span class='fa fa-circle-o-notch fa-spin fa-fw'></span> " + label);
+    }
     function lockSend() {
         $submitBtns.prop('disabled', true);
-        $('#upload-progress-bar').css('width', '0%');
+        setSubmitBusy();
+        setProgress(0);
         $('#upload-progress-wrap').show();
     }
     function unlockSend() {
         uploadStarted = false;
         $submitBtns.prop('disabled', false);
+        $primarySubmit.html(originalSubmitHTML);
         setTimeout(function() { $('#upload-progress-wrap').fadeOut(300); }, 800);
     }
 
@@ -65,7 +79,8 @@
         })
         .on('fileuploadprogressall', function(e, data) {
             var pct = parseInt(data.loaded / data.total * 100, 10);
-            $('#upload-progress-bar').css('width', pct + '%').attr('aria-valuenow', pct);
+            setProgress(pct);
+            setSubmitBusy(pct);
         });
 
     $('.fileupload-buttonbar').on("click", '.delete', function() {
@@ -188,12 +203,13 @@
          The global progress information.
         {% endcomment %}
         <div id="upload-progress-wrap" style="display:none; margin-top: 10px;">
-            <div class="progress">
+            <div class="progress" style="height: 22px; margin-bottom: 0;">
                 <div id="upload-progress-bar"
                      class="progress-bar progress-bar-striped active"
                      role="progressbar"
                      aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"
-                     style="width: 0%;">
+                     style="width: 0%; min-width: 3em; line-height: 22px; font-weight: bold;">
+                    0%
                 </div>
             </div>
         </div>
