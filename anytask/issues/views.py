@@ -23,6 +23,8 @@ from issues.model_issue_field import IssueField
 from issues.model_issue_status import IssueStatus
 from issues.models import Issue, Event, File
 
+IMAGE_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.svg'}
+
 
 def user_is_teacher_or_staff(user, issue):
     if user.is_staff:
@@ -371,7 +373,7 @@ def upload(request):
         'size': file.size,
 
         'url': instance.file.url,
-        'thumbnailUrl': instance.file.url,
+        'thumbnailUrl': instance.file.url if os.path.splitext(basename)[1].lower() in IMAGE_EXTENSIONS else None,
 
         'delete_url': reverse('jfu_delete', kwargs={'pk': instance.pk}),
         'delete_type': 'POST',

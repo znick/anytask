@@ -29,6 +29,103 @@
         {% endblock %}
     });
 
+    var $submitBtns = $('#fileupload button[type="submit"]');
+    var $primarySubmit = $submitBtns.first();
+    var originalSubmitHTML = $primarySubmit.html();
+    var uploadStarted = false;
+    var maxFileSize = {{ max_file_size }};
+    var uploadErrorMessages = {
+        'Maximum number of files exceeded': '{% trans "prevysheno_kolvo_fajlov" %}',
+        'Filetype not allowed': '{% trans "nedopustimyj_tip_fajla" %}',
+        'File is too big': '{% trans "fajl_slishkom_bolshoj" %}',
+        'File is too small': '{% trans "fajl_slishkom_mal" %}'
+    };
+
+    function formatBytes(b) {
+        if (b >= 1073741824) return (b / 1073741824).toFixed(1) + ' GB';
+        if (b >= 1048576)    return (b / 1048576).toFixed(1) + ' MB';
+        if (b >= 1024)       return (b / 1024).toFixed(1) + ' KB';
+        return b + ' B';
+    }
+
+    function setProgress(pct) {
+        $('#upload-progress-bar')
+            .css('width', pct + '%')
+            .attr('aria-valuenow', pct)
+            .text(pct + '%');
+    }
+    function setSubmitBusy(pct) {
+        var label = (typeof pct === 'number') ? (pct + '%') : '...';
+        // Update only the text node, not the whole HTML — preserves the spinner
+        // element so its CSS animation doesn't restart on every progress tick.
+        var $label = $primarySubmit.find('.upload-busy-label');
+        if ($label.length) {
+            $label.text(label);
+        } else {
+            $primarySubmit.html(
+                "<span class='fa fa-circle-o-notch fa-spin fa-fw'></span> " +
+                "<span class='upload-busy-label'>" + label + "</span>"
+            );
+        }
+    }
+    function lockSend() {
+        $submitBtns.prop('disabled', true);
+        setSubmitBusy();
+        setProgress(0);
+        $('#upload-progress-wrap').show();
+    }
+    function unlockSend() {
+        uploadStarted = false;
+        $submitBtns.prop('disabled', false);
+        $primarySubmit.html(originalSubmitHTML);
+        setTimeout(function() { $('#upload-progress-wrap').fadeOut(300); }, 800);
+    }
+
+    $('#fileupload')
+        .on('fileuploadadd', function() {
+            // Disable immediately on file selection (before processing/uploading)
+            $('#upload-error-msg').empty();
+            $('#upload-error-alert').hide();
+            lockSend();
+        })
+        .on('fileuploadsend', function() {
+            // HTTP request is about to start - upload is really happening
+            uploadStarted = true;
+        })
+        .on('fileuploadstop', function() {
+            // All uploads finished (success or failure)
+            unlockSend();
+        })
+        .on('fileuploadprocessfail', function(e, data) {
+            // File failed client-side validation (too big, wrong type, etc.)
+            // No upload will start, so re-enable unless one was already going
+            var $msg = $('#upload-error-msg');
+            $.each(data.files, function(i, file) {
+                if (!file.error) return;
+                var text = uploadErrorMessages[file.error] || file.error;
+                if (file.error === 'File is too big') {
+                    text += ' (' + formatBytes(file.size) +
+                            ', max ' + formatBytes(maxFileSize) + ')';
+                }
+                $msg.append(
+                    $('<div>')
+                        .append($('<strong>').text(file.name))
+                        .append(document.createTextNode(' — ' + text))
+                );
+            });
+            if ($msg.children().length) {
+                $('#upload-error-alert').show();
+            }
+            if (!uploadStarted) {
+                unlockSend();
+            }
+        })
+        .on('fileuploadprogressall', function(e, data) {
+            var pct = parseInt(data.loaded / data.total * 100, 10);
+            setProgress(pct);
+            setSubmitBusy(pct);
+        });
+
     $('.fileupload-buttonbar').on("click", '.delete', function() {
         $('#filename_changed_alert').hide();
         $('.drop-zone').show();
@@ -101,6 +198,13 @@
                 </button>
                 {% trans "otpravljat_odin_fajl" %}
             </div>
+            <div id="upload-error-alert" class="alert alert-danger alert-dismissible" role="alert" style="display: none; margin-bottom: 10px;">
+                <button type="button" class="close" aria-label="Close" onclick="$('#upload-error-alert').hide(); return false;">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <strong>{% trans "oshibka" %}:</strong>
+                <span id="upload-error-msg"></span>
+            </div>
             <table style="margin-bottom: 0px;" role="presentation" class="table table-striped">
                <tbody class="files" data-toggle="modal-gallery" data-target="#modal-gallery"></tbody>
             </table>
@@ -146,8 +250,18 @@
         </div>
         {% block UPLOAD_FORM_PROGRESS_BAR %}
         {% comment %}
-         The global progress information. 
+         The global progress information.
         {% endcomment %}
+        <div id="upload-progress-wrap" style="display:none; margin-top: 10px;">
+            <div style="height: 22px; background-color: #e9ecef; border-radius: 4px; overflow: hidden;">
+                <div id="upload-progress-bar"
+                     role="progressbar"
+                     aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"
+                     style="width: 0%; min-width: 3em; height: 100%; background-color: #0275d8; color: #fff; text-align: center; line-height: 22px; font-weight: bold; transition: width 0.2s ease;">
+                    0%
+                </div>
+            </div>
+        </div>
         {% endblock %}
 
     </div>
