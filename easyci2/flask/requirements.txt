@@ -27,7 +27,7 @@ pluggy==0.13.1
 progress==1.5
 py==1.10.0
 pyparsing==2.4.6
-pytest==6.2.3
+pytest==9.0.3
 pytoml==0.1.21
 requests==2.25.1
 requests-mock==1.8.0
