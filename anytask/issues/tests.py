@@ -1040,6 +1040,7 @@ class ViewsTest(TestCase):
 
 @skipIf(not IS_S3_REACHABLE, "S3 seems misconfigured")
 class S3MigrateIssueAttachments(TestCase, SerializeMixin):
+    lockfile = __file__
     maxDiff = None
 
     def setUp(self):

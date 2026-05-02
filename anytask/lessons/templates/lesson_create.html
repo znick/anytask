@@ -74,7 +74,7 @@
                         <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
                             <select class="form-control" id='lesson_edit_group' name="lesson_group_id[]" multiple="multiple">
                                 {% for group in course.groups.all %}
-                                    <option value="{{ group.id }}" {% ifequal group.id lesson.group %}selected{% endifequal %}>{{ group.name }}</option>
+                                    <option value="{{ group.id }}" {% if group.id == lesson.group %}selected{% endif %}>{{ group.name }}</option>
                                 {% endfor %}
                             </select>
                             <small class="text-help" id="lesson_group_id_error_text"></small>
@@ -85,7 +85,7 @@
                         <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
                             <select class="form-control" id='lesson_edit_type' name="period_type">
                                 {% for type_id, type in period_types %}
-                                    <option value="{{ type_id }}" {% ifequal type_id lesson.period %}selected{% endifequal %}>{{ type }}</option>
+                                    <option value="{{ type_id }}" {% if type_id == lesson.period %}selected{% endif %}>{{ type }}</option>
                                 {% endfor %}
                             </select>
                         </div>

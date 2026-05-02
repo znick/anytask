@@ -75,7 +75,7 @@
                             <td style="width:30%">{{ student.last_name }} {{ student.first_name }}</td>
                             <td style="width:8%">
                                 {% if total %}
-                                    <span class="label label-info">{{ total|floatformat }}</span>
+                                    <span class="label label-info">{{ total|floatformat:"-1u" }}</span>
                                 {% endif %}
                             </td>
                             <td>
@@ -94,7 +94,7 @@
         {% endfor %}
 
         {% for group,total,active,avg in course_stat %}
-        <pre>{% if not forloop.last %}{{ group.name }} {% endif %}{{ total|floatformat }}/{{ active }} ({{ avg|floatformat }})</pre>
+        <pre>{% if not forloop.last %}{{ group.name }} {% endif %}{{ total|floatformat:"-1u" }}/{{ active }} ({{ avg|floatformat:"-1u" }})</pre>
         {% endfor %}
 	</div>
 </div>

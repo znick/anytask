@@ -108,7 +108,7 @@
                                 <option value=""> ---</option>
                                 {% for seminar in seminar_tasks %}
                                     <option value="{{ seminar.id }}"
-                                            {% ifequal seminar.id task.parent_task.id %}selected{% endifequal %}>{{ seminar.title }}</option>
+                                            {% if seminar.id == task.parent_task.id %}selected{% endif %}>{{ seminar.title }}</option>
                                 {% endfor %}
                             </select>
                         </div>

@@ -15,14 +15,14 @@
         <div class="row">
             <div class="col-md-6">
                 <div class="card-title-block">
-                    {% ifnotequal group course.group_with_extern %}
+                    {% if group != course.group_with_extern %}
                         <h5 class="card-title">
                             {% if group.name %}{% if not group_attendance_list %}<a class="card-link table-link" href="{{ course.get_absolute_url }}/attendance/group/{{ group.id }}">{% endif %}{{ group.name }}</a>{% endif %}&nbsp;
                             {% if default_teacher|key:group %}
                                 (<a class="card-link table-link" href="{{ default_teacher|get_url:group }}">{{ default_teacher|get_name:group }}</a>)
                             {% endif %}
                         </h5>
-                    {% endifnotequal %}
+                    {% endif %}
                     {% if not group_attendance_list %}<button class="btn btn-secondary btn-table-fullscreen" type="button" for="#table_results_{{ group.id }}"><i class="fa fa-expand fa-lg"></i></button>{% endif %}
                 </div>
             </div>

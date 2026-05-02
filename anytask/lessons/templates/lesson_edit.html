@@ -115,7 +115,7 @@
                         <div class="controls col-lg-4 col-md-6 col-sm-7 col-xs-7">
                             <select class="form-control" id='lesson_edit_type' name="period_type" {% if lesson.period != 'Once' %}disabled{% endif %}>
                                 {% for type_id, type in period_types %}
-                                    <option value="{{ type_id }}" {% ifequal type_id lesson.period %}selected{% endifequal %}>{{ type }}</option>
+                                    <option value="{{ type_id }}" {% if type_id == lesson.period %}selected{% endif %}>{{ type }}</option>
                                 {% endfor %}
                             </select>
                         {% if lesson.period != 'Once' %}<input type="hidden" name="period_type" value="{{ lesson.period }}"/>{% endif %}

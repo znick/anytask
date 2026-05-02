@@ -26,13 +26,15 @@ class IndexTest(TestCase):
         response = self.client.get(reverse('index.views.index'))
         self.assertQuerysetEqual(
             response.context['schools'],
-            ['<School: active_school>']
+            ['<School: active_school>'],
+            transform=repr
         )
         # Archive index
         response = self.client.get(reverse('index.views.archive_index'))
         self.assertQuerysetEqual(
             response.context['schools'],
-            ['<School: archived_school>']
+            ['<School: archived_school>'],
+            transform=repr
         )
 
     def test_switch_lang(self):

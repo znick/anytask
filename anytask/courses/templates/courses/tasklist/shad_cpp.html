@@ -17,14 +17,14 @@
         <div class="row">
             <div class="col-md-6">
                 <div class="card-title-block">
-                    {% ifnotequal group course.group_with_extern %}
+                    {% if group != course.group_with_extern %}
                         <h5 class="card-title">
                             {% if group.name %}{% if not group_gradebook %}<a class="card-link table-link" href="{{ course.get_absolute_url }}/gradebook{% if seminar %}/seminar/{{ seminar.id }}{% endif %}/group/{{ group.id }}">{% endif %}{{ group.name }}</a>{% endif %}&nbsp;
                             {% if default_teacher|key:group %}
                                 (<a class="card-link table-link" href="{{ default_teacher|get_url:group }}">{{ default_teacher|get_name:group }}</a>)
                             {% endif %}
                         </h5>
-                    {% endifnotequal %}
+                    {% endif %}
                     {% if user_is_teacher %}
                         <div class="card-title-teacher-buttons">
                             <div class="card-title-teacher-view-buttons">
@@ -168,7 +168,7 @@
                                         <select name="mark_id">
                                             <option value=-1>--</option>
                                             {% for mark in course_mark_system_vals %}
-                                                <option value="{{ mark.id }}" {% ifequal mark_id mark.id %}selected="selected"{% endifequal %}>{{ mark }}</option>
+                                                <option value="{{ mark.id }}" {% if mark_id == mark.id %}selected="selected"{% endif %}>{{ mark }}</option>
                                             {% endfor %}
                                         </select>
                                     </form>

@@ -67,8 +67,10 @@ SITE_ID = 1
 USE_I18N = True
 
 # If you set this to False, Django will not format dates, numbers and
-# calendars according to the current locale
-# USE_L10N = True
+# calendars according to the current locale.
+# Django 4.0 changed the default from False to True; explicitly set False to
+# preserve existing behavior (decimal separator stays "." regardless of locale).
+USE_L10N = False
 
 # DECIMAL_SEPARATOR = '.'
 
