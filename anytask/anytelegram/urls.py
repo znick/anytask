@@ -1,7 +1,7 @@
 import anytelegram.views
-from django.conf.urls import url
+from django.urls import re_path
 
 urlpatterns = [
-    url(r'^webhook/(?P<token>[0-9a-z\-]+)$', anytelegram.views.webhook,
+    re_path(r'^webhook/(?P<token>[0-9a-z\-]+)$', anytelegram.views.webhook,
         name='anytelegram.views.webhook')
 ]

@@ -1,7 +1,7 @@
-from django.conf.urls import url
+from django.urls import re_path
 import invites.views
 
 urlpatterns = [
-    url(r'^generate_invites/$', invites.views.generate_invites,
+    re_path(r'^generate_invites/$', invites.views.generate_invites,
         name="invites.views.generate_invites"),
 ]

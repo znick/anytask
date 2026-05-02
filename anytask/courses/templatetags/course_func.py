@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django import template
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from issues.models import Issue
 from issues.model_issue_status import IssueStatus
 from courses.models import DefaultTeacher

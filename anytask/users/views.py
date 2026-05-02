@@ -8,7 +8,7 @@ from django.conf import settings
 from django.utils.http import is_safe_url
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from django.utils.translation import check_for_language
 from django.utils import timezone
 
@@ -670,7 +670,7 @@ def set_user_language(request):
                 response.set_cookie(settings.LANGUAGE_COOKIE_NAME, lang_code)
 
         user = request.user
-        if user.is_authenticated():
+        if user.is_authenticated:
             user_profile = user.profile
             user_profile.language = lang_code
             user_profile.save()

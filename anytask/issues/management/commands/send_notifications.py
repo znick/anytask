@@ -5,8 +5,8 @@ from django.contrib.sites.models import Site
 from django.conf import settings
 from django.db.models import Q
 from django.utils import translation, timezone
-from django.utils.translation import ugettext as _
-from django.utils.translation import ugettext_noop as _noop
+from django.utils.translation import gettext as _
+from django.utils.translation import gettext_noop as _noop
 from django.template.loader import render_to_string
 
 from common.mail import send_mass_mail_html

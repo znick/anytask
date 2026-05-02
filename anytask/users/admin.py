@@ -3,7 +3,7 @@
 from users.models import UserProfile
 from users.model_user_status import UserStatus
 from django.contrib import admin
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from django.contrib.auth import admin as auth_admin
 
 from reversion.admin import VersionAdmin

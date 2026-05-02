@@ -1,4 +1,4 @@
-from django.conf.urls import url
+from django.urls import re_path
 import jupyter.views
 
-urlpatterns = [url(r'^assignments$', jupyter.views.update_jupyter_task, name="jupyter.views.update_jupyter_task"), ]
+urlpatterns = [re_path(r'^assignments$', jupyter.views.update_jupyter_task, name="jupyter.views.update_jupyter_task"), ]

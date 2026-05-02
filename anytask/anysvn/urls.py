@@ -1,7 +1,7 @@
-from django.conf.urls import url
+from django.urls import re_path
 from anysvn.views import SvnAccesss
 
 urlpatterns = [
-    url(r'^access/$', SvnAccesss.as_view(),
+    re_path(r'^access/$', SvnAccesss.as_view(),
         name="anysvn.views.SvnAccesss.as_view"),
 ]

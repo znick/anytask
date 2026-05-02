@@ -13,7 +13,7 @@ from .common import get_contest_info
 from anycontest.models import ContestSubmission
 
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 import threading
 import http.server as BaseHTTPServer

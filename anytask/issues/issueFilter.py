@@ -3,7 +3,7 @@
 import django_filters
 from django import forms
 from django.conf import settings
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from issues.model_issue_status import IssueStatus
 from pytz import timezone as timezone_pytz
 from tasks.models import Task

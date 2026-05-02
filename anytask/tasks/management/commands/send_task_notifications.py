@@ -7,7 +7,7 @@ from django.contrib.sites.models import Site
 from django.conf import settings
 from django.template.loader import render_to_string
 from django.utils import translation
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 from tasks.models import Task
 from common.mail import send_mass_mail_html

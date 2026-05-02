@@ -179,6 +179,7 @@ INSTALLED_APPS = (
     'bootstrap',
     'index',
     'crispy_forms',
+    'crispy_bootstrap4',
     'invites',
     'anycontest',
     'issues',

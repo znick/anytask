@@ -6,7 +6,7 @@ import time
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.utils import translation, timezone
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from django.db.models import Q
 
 from anycontest.common import comment_verdict  # , set_contest_marks, convert_to_contest_login

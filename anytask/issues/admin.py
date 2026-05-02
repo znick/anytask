@@ -4,7 +4,7 @@ from issues.model_issue_field import IssueField
 from issues.model_issue_status import IssueStatus, IssueStatusSystem
 from issues.models import Issue, Event
 from django.contrib import admin
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 
 def display_color(obj):

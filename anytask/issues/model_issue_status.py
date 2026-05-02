@@ -1,7 +1,7 @@
 # coding: utf-8
 
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from common.locale_funcs import validate_json, get_value_from_json
 
 from colorfield.fields import ColorField
