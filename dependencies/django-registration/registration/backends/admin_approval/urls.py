@@ -18,8 +18,8 @@ your own URL patterns for these views instead.
 
 
 from django.conf import settings
-from django.conf.urls import include
-from django.conf.urls import url
+from django.urls import re_path, include
+from django.urls import re_path
 from django.contrib.auth.decorators import permission_required
 from django.views.generic.base import TemplateView
 
@@ -30,10 +30,10 @@ from .views import RegistrationView
 from registration.backends.admin_approval.views import ResendActivationView
 
 urlpatterns = [
-    url(r'^activate/resend/$',
+    re_path(r'^activate/resend/$',
         ResendActivationView.as_view(),
         name='registration_resend_activation'),
-    url(r'^activate/complete/$',
+    re_path(r'^activate/complete/$',
         TemplateView.as_view(
             template_name='registration/activation_complete_admin_pending.html'
         ),
@@ -43,21 +43,21 @@ urlpatterns = [
     # that way it can return a sensible "invalid key" message instead of a
     # confusing 404.
 
-    url(r'^activate/(?P<activation_key>\w+)/$',
+    re_path(r'^activate/(?P<activation_key>\w+)/$',
         ActivationView.as_view(),
         name='registration_activate'),
-    url(r'^approve/complete/$',
+    re_path(r'^approve/complete/$',
         TemplateView.as_view(
             template_name='registration/admin_approve_complete.html'),
         name='registration_approve_complete'),
-    url(r'^approve/(?P<profile_id>[0-9]+)/$',
+    re_path(r'^approve/(?P<profile_id>[0-9]+)/$',
         permission_required('is_superuser')(ApprovalView.as_view()),
         name='registration_admin_approve'),
-    url(r'^register/complete/$',
+    re_path(r'^register/complete/$',
         TemplateView.as_view(
             template_name='registration/registration_complete.html'),
         name='registration_complete'),
-    url(r'^register/closed/$',
+    re_path(r'^register/closed/$',
         TemplateView.as_view(
             template_name='registration/registration_closed.html'),
         name='registration_disallowed'),
@@ -66,12 +66,12 @@ urlpatterns = [
 
 if getattr(settings, 'INCLUDE_REGISTER_URL', True):
     urlpatterns += [
-        url(r'^register/$',
+        re_path(r'^register/$',
             RegistrationView.as_view(),
             name='registration_register'),
     ]
 
 if getattr(settings, 'INCLUDE_AUTH_URLS', True):
     urlpatterns += [
-        url(r'', include('registration.auth_urls')),
+        re_path(r'', include('registration.auth_urls')),
     ]

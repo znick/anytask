@@ -5,7 +5,7 @@ from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirec
 from django.db.models import Q
 from django.db.models import Sum
 from django.conf import settings
-from django.utils.http import is_safe_url
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.utils.translation import gettext as _
@@ -652,10 +652,10 @@ def ajax_edit_user_info(request):
 
 
 def set_user_language(request):
-    next = request.REQUEST.get('next')
-    if not is_safe_url(url=next, host=request.get_host()):
+    next = request.GET.get('next') or request.POST.get('next')
+    if not url_has_allowed_host_and_scheme(url=next, allowed_hosts={request.get_host()}):
         next = request.META.get('HTTP_REFERER')
-        if not is_safe_url(url=next, host=request.get_host()):
+        if not url_has_allowed_host_and_scheme(url=next, allowed_hosts={request.get_host()}):
             next = '/'
     response = HttpResponseRedirect(next)
     if request.method == 'POST':
