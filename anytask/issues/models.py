@@ -616,6 +616,10 @@ class Event(models.Model):
             message.append(', '.join(file_list))
         return u'\n'.join(message)
 
+    def get_history(self):
+        history = EventChange.objects.filter(event_id=self.id)
+        return history
+
     def is_comment(self):
         return self.field.name == 'comment'
 
@@ -635,6 +639,17 @@ class Event(models.Model):
                                     self.issue.id)
         if self.is_change():
             ret += u' {0}'.format(self.field.name)
+        return ret
+
+
+class EventChange(models.Model):
+    event = models.ForeignKey(Event, null=False, blank=False)
+
+    old_value = models.TextField(max_length=2500, blank=True)
+    timestamp = models.DateTimeField(auto_now=True)
+
+    def __unicode__(self):
+        ret = u'Change in event {0}, issue {1}'.format(self.event.id, self.event.issue.id)
         return ret
 
 

@@ -1,0 +1,25 @@
+{% load link_to_open %}
+{% load i18n %}
+{% load tz %}
+{% load info %}
+{% get_current_language as LANGUAGE_CODE %}
+
+{% load sanitize_html %}
+
+
+  {% for event_change in event_history %}
+  <p>History</p>
+                                <div class="row">
+                                    <div class="col-xs-11">
+                                        <div class="{% if event.author == user %}mine{% else %}not_mine{% endif %} history-body">
+                                            {% autoescape off %}
+                                                {{ event_change.old_value|sanitize }}
+                                            {% endautoescape %}
+                                        </div>
+                                    </div>
+                                </div>
+  {% endfor %}
+  {% if not issue.get_history %}
+      {% trans "zdes_nichego_net" %}
+  {% endif %}
+
