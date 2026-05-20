@@ -5,7 +5,7 @@ Pillow==9.0.0
 django-recaptcha==3.0.0
 python-gettext==3.0
 beautifulsoup4
-Werkzeug==2.0.3
+Werkzeug==3.1.6
 django-extensions==3.1.5
 ipdb==0.13.9
 sqlparse==0.4.2
