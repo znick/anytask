@@ -53,7 +53,7 @@ class Command(BaseCommand):
             contest_submission.save()
 
         if message:
-            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [email, "anytask@yandex.ru"])
+            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [email, "anytask@anytask.org"])
 
         # logging to cron log
         print("Command send_freezed_run_id_notify check {0} submissions took {1} seconds"

@@ -41,7 +41,7 @@ class Command(BaseCommand):
                 message += u"\n" + u"*" * 20 + u"\n\n"
 
         if message:
-            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, ["anytask@yandex.ru"])
+            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, ["anytask@anytask.org"])
 
         # logging to cron log
         print("Command send_issue_duplicate_notify find {0} issues and took {1} seconds"
