@@ -119,6 +119,7 @@ SECRET_KEY = '3$uum*a)#mnl()ds5em&scsv9gz*!fwbqa&%apz&ccbdukyyku'
 # List of callables that know how to import templates from various sources.
 
 MIDDLEWARE = [
+    'django_prometheus.middleware.PrometheusBeforeMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -129,6 +130,7 @@ MIDDLEWARE = [
     'django.middleware.locale.LocaleMiddleware',
     'anytask.middleware.timezone_middleware.TimezoneMiddleware',
     'anytask.middleware.lang_middleware.LanguageCookieMiddleware',
+    'django_prometheus.middleware.PrometheusAfterMiddleware',
 ]
 
 ROOT_URLCONF = 'anytask.urls'
@@ -196,6 +198,8 @@ INSTALLED_APPS = (
     'admission',
     'lessons',
     'api',
+    'django_prometheus',
+    'metrics',
     'django_premailer',
     'django_bootstrap_breadcrumbs',
     'captcha',

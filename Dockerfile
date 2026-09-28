@@ -92,6 +92,11 @@ ENV UWSGI_VIRTUALENV=/venv UWSGI_HTTP=:8000 UWSGI_SOCKET=:3031 UWSGI_MASTER=1 UW
 # Number of uWSGI workers and threads per worker (customize as needed):
 ENV UWSGI_WORKERS=16 UWSGI_THREADS=24
 
+# prometheus_client multiprocess mode for /metrics: each uWSGI worker keeps its metrics in this dir
+# (cleaned up by docker_entrypoint.sh). Set for uWSGI only, not container-wide, so that
+# `docker exec ... manage.py` cron jobs don't leave their own files there.
+ENV UWSGI_ENV=PROMETHEUS_MULTIPROC_DIR=/tmp/prometheus_multiproc
+
 # uWSGI static file serving configuration (customize or comment out if not needed):
 ENV UWSGI_STATIC_EXPIRES_URI=".*\.(css|js|png|jpg|jpeg|gif|ico|woff|ttf|otf|svg|scss|map|txt) 315360000"
 
