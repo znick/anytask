@@ -822,7 +822,8 @@ def ajax_update_contest_tasks(request):
     if got_info:
         problem_req = FakeResponse()
         problem_req = requests.get(settings.CONTEST_API_URL + 'problems?contestId=' + str(contest_id),
-                                   headers={'Authorization': 'OAuth ' + settings.CONTEST_OAUTH})
+                                   headers={'Authorization': 'OAuth ' + settings.CONTEST_OAUTH},
+                                   timeout=settings.REQUESTS_TIMEOUT)
         problems = []
         if 'error' in problem_req:
             response['is_error'] = True

@@ -361,7 +361,7 @@ def get_contest_problems(request):
                             content_type="application/json")
 
     problem_req = requests.get(PROBLEMS_API.format(lang=lang, cont_id=str(contest_id)),
-                               headers=HEADERS)
+                               headers=HEADERS, timeout=settings.REQUESTS_TIMEOUT)
     problem_req = problem_req.json()
 
     if 'error' in problem_req:
@@ -405,7 +405,7 @@ def contest_task_import(request):
     got_info, contest_info = get_contest_info(contest_id)
 
     problem_req = requests.get(PROBLEMS_API.format(lang='ru', cont_id=str(contest_id)),
-                               headers=HEADERS)
+                               headers=HEADERS, timeout=settings.REQUESTS_TIMEOUT)
     problems = []
     if 'result' in problem_req.json():
         problems = problem_req.json()['result']['problems']

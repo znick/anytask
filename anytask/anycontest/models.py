@@ -73,7 +73,7 @@ class ContestSubmission(models.Model):
                 oauth = student_profile.ya_contest_oauth
                 reg_req = requests.get(
                     settings.CONTEST_API_URL + 'status?contestId=' + str(contest_id),
-                    headers={'Authorization': 'OAuth ' + oauth})
+                    headers={'Authorization': 'OAuth ' + oauth}, timeout=settings.REQUESTS_TIMEOUT)
                 if 'error' in reg_req.json():
                     self.send_error = reg_req.json()["error"]["message"]
                     self.save()
@@ -88,7 +88,8 @@ class ContestSubmission(models.Model):
             else:
                 oauth = settings.CONTEST_OAUTH
             problem_req = requests.get(settings.CONTEST_API_URL + 'problems?contestId=' + str(contest_id),
-                                       headers={'Authorization': 'OAuth ' + settings.CONTEST_OAUTH})
+                                       headers={'Authorization': 'OAuth ' + settings.CONTEST_OAUTH},
+                                       timeout=settings.REQUESTS_TIMEOUT)
             problem_id = None
             for problem in problem_req.json()['result']['problems']:
                 if problem['title'] == issue.task.problem_id:
@@ -109,7 +110,8 @@ class ContestSubmission(models.Model):
                                                      'contestId': contest_id,
                                                      'problemId': problem_id},
                                                files=files,
-                                               headers={'Authorization': 'OAuth ' + oauth})
+                                               headers={'Authorization': 'OAuth ' + oauth},
+                                               timeout=settings.REQUESTS_TIMEOUT)
                     if 'error' not in submit_req.json():
                         break
                     time.sleep(0.5)
@@ -147,7 +149,8 @@ class ContestSubmission(models.Model):
             contest_id = issue.task.contest_id
             results_req = requests.get(
                 settings.CONTEST_V1_API_URL + '/contests/' + str(contest_id) + '/submissions/' + str(run_id) + '/full',
-                headers={'Authorization': 'OAuth ' + oauth}
+                headers={'Authorization': 'OAuth ' + oauth},
+                timeout=settings.REQUESTS_TIMEOUT
             )
             results_req_json = results_req.json()
             issue.set_byname('mark', float(results_req_json['finalScore']))
@@ -189,7 +192,8 @@ class ContestSubmission(models.Model):
             contest_id = issue.task.contest_id
             results_req = requests.get(
                 settings.CONTEST_API_URL + 'results?runId=' + str(run_id) + '&contestId=' + str(contest_id),
-                headers={'Authorization': 'OAuth ' + oauth}
+                headers={'Authorization': 'OAuth ' + oauth},
+                timeout=settings.REQUESTS_TIMEOUT
             )
             results_req_json = results_req.json()
             self.full_response = results_req.content

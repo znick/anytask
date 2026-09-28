@@ -148,7 +148,7 @@ def check_easy_ci(request, issue, event, sent_files):
             try:
                 response = requests.post(issue.task.course.easyCI_url
                                          + "/api/add_task",
-                                         json=check_request_dict)
+                                         json=check_request_dict, timeout=settings.REQUESTS_TIMEOUT)
                 print(response.status_code)
             except requests.exceptions.RequestException:
                 issue.add_comment("Cannot send to easyCI. Time: "

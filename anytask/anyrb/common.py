@@ -169,7 +169,7 @@ class AnyRB(object):
             return
 
         url = settings.RB_SYMLINK_SERVICE_URL + "/" + str(repo_id)
-        response = requests.get(url)
+        response = requests.get(url, timeout=settings.REQUESTS_TIMEOUT)
         response.raise_for_status()
 
     def create_review_request(self):
@@ -239,13 +239,15 @@ class RbReviewGroup(object):
             'invite_only': True,
             'name': self.review_group_name,
         }
-        r = requests.post(url, auth=(settings.RB_API_USERNAME, settings.RB_API_PASSWORD), data=payload)
+        r = requests.post(url, auth=(settings.RB_API_USERNAME, settings.RB_API_PASSWORD), data=payload,
+                          timeout=settings.REQUESTS_TIMEOUT)
         logger.info("RevewBoard create for '%s' : '%s' : '%s'", self.review_group_name, r.status_code, r.content)
         assert r.status_code in (200, 201, 223, 409)
 
     def list(self):
         url = settings.RB_API_URL + "/api/groups/{0}/users/".format(self.review_group_name)
-        r = requests.get(url, auth=(settings.RB_API_USERNAME, settings.RB_API_PASSWORD))
+        r = requests.get(url, auth=(settings.RB_API_USERNAME, settings.RB_API_PASSWORD),
+                         timeout=settings.REQUESTS_TIMEOUT)
         logger.info("RevewBoard list for '%s' : '%s'", self.review_group_name, r.content)
         for user in r.json()["users"]:
             yield user["username"]
@@ -255,14 +257,16 @@ class RbReviewGroup(object):
         payload = {
             'username': username,
         }
-        r = requests.post(url, auth=(settings.RB_API_USERNAME, settings.RB_API_PASSWORD), data=payload)
+        r = requests.post(url, auth=(settings.RB_API_USERNAME, settings.RB_API_PASSWORD), data=payload,
+                          timeout=settings.REQUESTS_TIMEOUT)
         logger.info("ReviewGroup user_add Add '%s' to '%s. Status:'%s'",
                     username, self.review_group_name, r.status_code)
         assert r.status_code in (200, 201, 204)
 
     def user_del(self, username):
         url = settings.RB_API_URL + "/api/groups/{0}/users/{1}/".format(self.review_group_name, username)
-        r = requests.delete(url, auth=(settings.RB_API_USERNAME, settings.RB_API_PASSWORD))
+        r = requests.delete(url, auth=(settings.RB_API_USERNAME, settings.RB_API_PASSWORD),
+                            timeout=settings.REQUESTS_TIMEOUT)
         logger.info("ReviewGroup user_del Drop '%s' from '%s'. Status:'%s'",
                     username, self.review_group_name, r.status_code)
         assert r.status_code in (200, 201, 204)
@@ -348,4 +352,5 @@ class RbReviewGroup(object):
 
 def update_status_review_request(review_id, status):
     url = settings.RB_API_URL + '/api/review-requests/' + review_id + '/'
-    requests.put(url, data={'status': status}, auth=(settings.RB_API_USERNAME, settings.RB_API_PASSWORD))
+    requests.put(url, data={'status': status}, auth=(settings.RB_API_USERNAME, settings.RB_API_PASSWORD),
+                 timeout=settings.REQUESTS_TIMEOUT)
