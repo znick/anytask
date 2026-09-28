@@ -1,4 +1,4 @@
-FROM python:3.8-slim-bullseye
+FROM python:3.8-slim-bookworm
 
 ENV LANG=C.UTF-8
 ENV LC_ALL=C.UTF-8
