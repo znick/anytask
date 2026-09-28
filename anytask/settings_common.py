@@ -222,6 +222,9 @@ RB_SYMLINK_SERVICE_URL = None
 RB_EXTENSIONS = ['.py', '.py2', '.py3', '.cpp', '.sage', '.m', '.java', '.h', '.cs', '.sh', '.c', '.txt', '.fs', '.hpp',
                  '.cc', '.rkt', '.sql']
 
+# (connect, read) timeout in seconds for all outgoing HTTP requests
+REQUESTS_TIMEOUT = (10, 60)
+
 FREEZED_RUN_ID_MINUTES = 30
 CONTEST_API_URL = 'https://api.contest.yandex.net/anytask/'
 CONTEST_V1_API_URL = 'https://api.contest.yandex.net/api/public/v2/'

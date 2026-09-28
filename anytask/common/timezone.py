@@ -12,7 +12,8 @@ def get_tz(geoid):
     try:
         return requests.get(settings.GEOBASE_API,
                             params={'id': geoid},
-                            headers={"Authorization": "anytask"}
+                            headers={"Authorization": "anytask"},
+                            timeout=settings.REQUESTS_TIMEOUT
                             ).json()['tzname']
     except:  # noqa
         return settings.TIME_ZONE

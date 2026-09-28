@@ -6,6 +6,7 @@ import requests
 GITLAB_REPO_ID = os.environ.get("GITLAB_REPO_ID") or ""
 GITLAB_TRIGGER_TOKEN = os.environ.get("GITLAB_TRIGGER_TOKEN") or ""
 GITLAB_READ_PIPELINES_TOKEN = os.environ.get("GITLAB_READ_PIPELINES_TOKEN") or ""
+REQUEST_TIMEOUT = (10, 60)
 
 
 class AbstractScheduler:
@@ -20,7 +21,7 @@ def gitlabci_getter(url_constructor):
     def wrapper(*args, **kwargs):
         url = url_constructor(*args, **kwargs)
         headers = {"PRIVATE-TOKEN" : GITLAB_READ_PIPELINES_TOKEN }
-        request = requests.get(url, headers=headers)
+        request = requests.get(url, headers=headers, timeout=REQUEST_TIMEOUT)
         return json.loads(request.content.decode())
     return wrapper
 
@@ -48,7 +49,7 @@ class GitlabCIScheduler(AbstractScheduler):
             for key in inputs])
         url = self.prefix + "/ref/master/trigger/pipeline?token={}&{}".format(
                     GITLAB_TRIGGER_TOKEN, variables)
-        r = requests.post(url)
+        r = requests.post(url, timeout=REQUEST_TIMEOUT)
 
     @gitlabci_getter
     def get_pipelines(self):

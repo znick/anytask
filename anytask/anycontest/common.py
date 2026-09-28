@@ -39,7 +39,7 @@ def user_register_to_contest(contest_id, ya_contest_uid):
         req = requests.get(
             settings.CONTEST_API_URL + 'register-user?uidToRegister=' + str(ya_contest_uid)
             + '&contestId=' + str(contest_id),
-            headers=HEADERS)
+            headers=HEADERS, timeout=settings.REQUESTS_TIMEOUT)
         req_json = req.json()
         if 'error' in req_json:
             got_info = False
@@ -62,7 +62,7 @@ def get_problem_compilers(problem_id, contest_id):
 
     try:
         contest_req = requests.get(settings.CONTEST_API_URL + 'contest?contestId=' + str(contest_id),
-                                   headers=HEADERS)
+                                   headers=HEADERS, timeout=settings.REQUESTS_TIMEOUT)
         for problem in contest_req.json()['result']['problems']:
             if problem['alias'] == problem_id:
                 problem_compilers = problem['compilers']
@@ -101,7 +101,8 @@ def set_contest_marks(contest_id, students_info):
     results_req = FakeResponse()
     try:
         results_req = requests.get(
-            settings.CONTEST_URL + 'action/api/download-log?contestId=' + str(contest_id) + '&snarkKey=spike')
+            settings.CONTEST_URL + 'action/api/download-log?contestId=' + str(contest_id) + '&snarkKey=spike',
+            timeout=settings.REQUESTS_TIMEOUT)
         try:
             contest_dict = xmltodict.parse(results_req.content)
 
@@ -179,7 +180,8 @@ def get_contest_mark(contest_id, problem_id, ya_login):
     ya_login = convert_to_contest_login(ya_login)
     try:
         results_req = requests.get(
-            settings.CONTEST_URL + 'action/api/download-log?contestId=' + str(contest_id) + '&snarkKey=spike')
+            settings.CONTEST_URL + 'action/api/download-log?contestId=' + str(contest_id) + '&snarkKey=spike',
+            timeout=settings.REQUESTS_TIMEOUT)
         try:
             contest_dict = xmltodict.parse(results_req.content)
 
@@ -231,7 +233,8 @@ def get_contest_info(contest_id, lang=None):
 
     try:
         lang_ = 'ru' if lang is None else lang
-        contest_req = requests.get(contest_api.format(lang=lang_, cont_id=str(contest_id)), headers=HEADERS)
+        contest_req = requests.get(contest_api.format(lang=lang_, cont_id=str(contest_id)), headers=HEADERS,
+                                   timeout=settings.REQUESTS_TIMEOUT)
 
         if 'error' in contest_req.json():
             return False, contest_req.json()["error"]["message"]
@@ -240,7 +243,7 @@ def get_contest_info(contest_id, lang=None):
 
         if lang is None:
             contest_info_en = requests.get(contest_api.format(lang='en', cont_id=str(contest_id)),
-                                           headers=HEADERS).json()['result']
+                                           headers=HEADERS, timeout=settings.REQUESTS_TIMEOUT).json()['result']
             json_str = u'{{"ru": "{0}", "en": "{1}"}}'
             for problem in contest_info['problems']:
                 problem_en = next(item for item in contest_info_en['problems']
