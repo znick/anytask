@@ -12,8 +12,13 @@ DEBUG = True
 LOG_LEVEL = os.environ.get('LOG_LEVEL', 'DEBUG')
 
 ALLOWED_HOSTS = ['anytask.org', 'www.anytask.org', "docker.anytask.org", "beta.anytask.org"]
+# e.g. the container's own name, so a metrics scraper can reach /metrics without going through nginx
+ALLOWED_HOSTS += os.environ.get('EXTRA_ALLOWED_HOSTS', '').split()
 
 DATABASES = {'default': dj_database_url.config(conn_max_age=600)}  # noqa: F405
+# Same backend, wrapped to export query count/latency/error metrics to /metrics
+DATABASES['default']['ENGINE'] = DATABASES['default']['ENGINE'].replace('django.db.backends.',
+                                                                        'django_prometheus.db.backends.')
 
 # STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 

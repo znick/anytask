@@ -6,6 +6,7 @@ import django.contrib.auth.views
 import django.views.static
 import index.views
 import admission.views
+import metrics.views
 
 from middleware.lang_middleware import set_lang_view, get_lang_view
 
@@ -48,4 +49,5 @@ urlpatterns = [
     url(r'^set_lang/', set_lang_view, name='set_lang'),
     url(r'^get_lang/', get_lang_view, name='get_lang'),
     url(r'^robots.txt$', index.views.robotstxt_view, name="index.views.robotstxt_view"),
+    url(r'^metrics$', metrics.views.metrics, name="metrics.views.metrics"),
 ]
