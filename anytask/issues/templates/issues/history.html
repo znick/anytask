@@ -110,7 +110,7 @@
                                 <div class="files">
                                     <i class="fa fa-file-o"></i>
                                     {% for file in event.file_set.all %}
-                                        {% with file_path=file.file.url %}
+                                        {% with file_path=file.get_url %}
                                             {% if teacher_or_staff and file_path|is_ipynb %}
                                                 <div class="btn-group ipynb-file-link">
                                                     <a class="dropdown-toggle" href="{% link_to_open file_path teacher_or_staff %}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

@@ -6,6 +6,7 @@ when you run "manage.py test".
 
 Replace this with more appropriate tests for your application.
 """
+import os
 from io import StringIO
 from unittest import skipIf
 
@@ -14,6 +15,7 @@ from django.conf import settings
 from django.test import TestCase, RequestFactory, override_settings
 from django.contrib.auth.models import User
 from django.test.testcases import SerializeMixin
+from django.utils import timezone
 
 from schools.models import School
 from courses.models import Course, IssueField
@@ -989,6 +991,7 @@ class ViewsTest(TestCase):
                          'Wrong comment text about RB')
 
     @skipIf(not IS_S3_REACHABLE, "S3 seems misconfigured")
+    @override_settings(AWS_S3_SERVE_DELAY_DAYS=-1)
     def test_attached_file_in_s3(self):
         client = self.client
         issue = Issue.objects.create(task_id=self.task.id, student_id=self.student.id)
@@ -999,7 +1002,7 @@ class ViewsTest(TestCase):
 
         stdout = StringIO()
         stderr = StringIO()
-        call_command('s3migrate_issue_attachments', '--execute', '--do-rewrite-url', stdout=stdout, stderr=stderr)
+        call_command('s3migrate_issue_attachments', '--execute', stdout=stdout, stderr=stderr)
 
         # login
         self.assertTrue(client.login(username=self.student.username, password=self.student_password),
@@ -1082,148 +1085,129 @@ class S3MigrateIssueAttachments(TestCase, SerializeMixin):
 
         self.s3_storage = S3OverlayStorage()
 
-    def test_dry_run_rewrite_new_no_changes(self):
+    def test_dry_run_upload_no_changes(self):
         issue = Issue.objects.create(task_id=self.task.id, student_id=self.student.id)
         event_create_file = Event.objects.create(issue=issue, field=IssueField.objects.get(name='file'))
         file = File.objects.create(file=SimpleUploadedFile('test_s3_issues.py', b'some text'), event=event_create_file)
 
         out = StringIO()
-        call_command('s3migrate_issue_attachments', '--do-rewrite-url', stdout=out)
+        call_command('s3migrate_issue_attachments', stdout=out)
 
         expected_s3_path = S3OverlayStorage.append_s3_prefix(file.file.name)
         expected_stdout = ('''Note: Dry run\n'''
-                           '''Note: uploaded: {}\n'''
-                           '''Note: updating model: {}, {}''').format(
-            expected_s3_path, file, expected_s3_path)
+                           '''Note: uploaded: {}''').format(expected_s3_path)
         file = File.objects.get(pk=file.pk)
+        self.assertIsNone(file.s3_uploaded_at)
         self.assertFalse(S3OverlayStorage.is_s3_stored(file.file.name))
         self.assertFalse(self.s3_storage.exists(expected_s3_path))
         self.assertEqual(expected_stdout, out.getvalue().strip())
 
-    def test_dry_run_dont_rewrite_new_no_changes(self):
-        issue = Issue.objects.create(task_id=self.task.id, student_id=self.student.id)
-        event_create_file = Event.objects.create(issue=issue, field=IssueField.objects.get(name='file'))
-        file = File.objects.create(file=SimpleUploadedFile('test_s3_issues.py', b'some text'),
-                                   event=event_create_file)
-
-        out = StringIO()
-        call_command('s3migrate_issue_attachments', '--rewrite-only-existing', stdout=out)
-
-        expected_s3_path = S3OverlayStorage.append_s3_prefix(file.file.name)
-        expected_stdout = ('''Note: Dry run\n'''
-                           '''Note: uploaded: {}''').format(
-            expected_s3_path)
-        file = File.objects.get(pk=file.pk)
-        self.assertFalse(S3OverlayStorage.is_s3_stored(file.file.name))
-        self.assertFalse(self.s3_storage.exists(expected_s3_path))
-        self.assertEqual(expected_stdout, out.getvalue().strip())
-
-    def test_upload_no_rewrite(self):
+    def test_execute_upload_sets_timestamp_keeps_local_name(self):
         issue = Issue.objects.create(task_id=self.task.id, student_id=self.student.id)
         event_create_file = Event.objects.create(issue=issue, field=IssueField.objects.get(name='file'))
         file = File.objects.create(file=SimpleUploadedFile('test_s3_issues.py', b'some text'), event=event_create_file)
+
+        before = timezone.now()
+        out = StringIO()
+        call_command('s3migrate_issue_attachments', '--execute', stdout=out)
+        after = timezone.now()
+
+        expected_s3_path = S3OverlayStorage.append_s3_prefix(file.file.name)
+        expected_stdout = 'Note: uploaded: {}'.format(expected_s3_path)
+        file = File.objects.get(pk=file.pk)
+        self.assertEqual(expected_stdout, out.getvalue().strip())
+        self.assertIsNotNone(file.s3_uploaded_at)
+        self.assertTrue(before <= file.s3_uploaded_at <= after)
+        self.assertFalse(S3OverlayStorage.is_s3_stored(file.file.name))
+        self.assertTrue(self.s3_storage.exists(expected_s3_path))
+        # Default delays mean it's still way too soon to serve from S3.
+        self.assertEqual(file.get_url(), file.file.url)
+
+    def test_execute_upload_idempotent_second_run(self):
+        issue = Issue.objects.create(task_id=self.task.id, student_id=self.student.id)
+        event_create_file = Event.objects.create(issue=issue, field=IssueField.objects.get(name='file'))
+        file = File.objects.create(file=SimpleUploadedFile('test_s3_issues.py', b'some text'), event=event_create_file)
+
+        call_command('s3migrate_issue_attachments', '--execute', stdout=StringIO())
+        first_uploaded_at = File.objects.get(pk=file.pk).s3_uploaded_at
 
         out = StringIO()
         call_command('s3migrate_issue_attachments', '--execute', stdout=out)
 
+        self.assertEqual('', out.getvalue().strip())
+        self.assertEqual(first_uploaded_at, File.objects.get(pk=file.pk).s3_uploaded_at)
+
+    def test_phase1_ignore_extension_extra_skips_upload(self):
+        issue = Issue.objects.create(task_id=self.task.id, student_id=self.student.id)
+        event_create_file = Event.objects.create(issue=issue, field=IssueField.objects.get(name='file'))
+        file = File.objects.create(file=SimpleUploadedFile('test_s3_issues.zip', b'some binary'), event=event_create_file)
+
+        out = StringIO()
+        call_command('s3migrate_issue_attachments', '--execute', '--ignore-extension-extra=.zip', stdout=out)
+
+        expected_stdout = 'Note: skipping: ignored extension: {}'.format(file.file.name)
         file = File.objects.get(pk=file.pk)
-        expected_s3_path = S3OverlayStorage.append_s3_prefix(file.file.name)
-        expected_stdout = 'Note: uploaded: {}'.format(expected_s3_path)
-        self.assertFalse(S3OverlayStorage.is_s3_stored(file.file.name))
-        self.assertTrue(self.s3_storage.exists(expected_s3_path))
+        self.assertIsNone(file.s3_uploaded_at)
         self.assertEqual(expected_stdout, out.getvalue().strip())
 
-    def test_upload_with_rewrite(self):
+    def test_delete_local_copies_noop_before_t2(self):
         issue = Issue.objects.create(task_id=self.task.id, student_id=self.student.id)
         event_create_file = Event.objects.create(issue=issue, field=IssueField.objects.get(name='file'))
         file = File.objects.create(file=SimpleUploadedFile('test_s3_issues.py', b'some text'), event=event_create_file)
 
+        call_command('s3migrate_issue_attachments', '--execute', stdout=StringIO())
+        local_path = file.file.path
+
         out = StringIO()
-        call_command('s3migrate_issue_attachments', '--execute', '--do-rewrite-url', stdout=out)
+        call_command('s3migrate_issue_attachments', '--execute', '--delete-local-copies', stdout=out)
 
-        expected_s3_path = S3OverlayStorage.append_s3_prefix(file.file.name)
-        expected_stdout = ('''Note: uploaded: {}\n'''
-                           '''Note: updating model: {}, {}\n'''
-                           '''Note: updated model: {}, {}''').format(
-            expected_s3_path, file, expected_s3_path, file, expected_s3_path)
+        self.assertEqual('', out.getvalue().strip())
         file = File.objects.get(pk=file.pk)
-        self.assertTrue(S3OverlayStorage.is_s3_stored(file.file.name))
-        self.assertTrue(self.s3_storage.exists(expected_s3_path))
-        self.assertEqual(expected_stdout, out.getvalue().strip())
+        self.assertFalse(S3OverlayStorage.is_s3_stored(file.file.name))
+        self.assertTrue(os.path.exists(local_path))
 
-    def test_rewrite_url_only_existing(self):
+    def test_delete_local_copies_flips_and_deletes_after_t2(self):
         issue = Issue.objects.create(task_id=self.task.id, student_id=self.student.id)
         event_create_file = Event.objects.create(issue=issue, field=IssueField.objects.get(name='file'))
         file = File.objects.create(file=SimpleUploadedFile('test_s3_issues.py', b'some text'), event=event_create_file)
 
-        out = StringIO()
-        call_command('s3migrate_issue_attachments', '--execute', '--rewrite-only-existing', stdout=out)
-
-        file = File.objects.get(pk=file.pk)
+        call_command('s3migrate_issue_attachments', '--execute', stdout=StringIO())
+        local_path = file.file.path
         expected_s3_path = S3OverlayStorage.append_s3_prefix(file.file.name)
-        self.assertFalse(S3OverlayStorage.is_s3_stored(file.file.name))
-        self.assertTrue(self.s3_storage.exists(expected_s3_path))
-        self.assertEqual('Note: uploaded: {}'.format(expected_s3_path),
-                         out.getvalue().strip())
+
+        # Simulate T2 (default 218 days) having passed, without mocking time.
+        File.objects.filter(pk=file.pk).update(s3_uploaded_at=timezone.now() - timedelta(days=230))
 
         out = StringIO()
-        call_command('s3migrate_issue_attachments', '--execute', '--rewrite-only-existing', stdout=out)
+        call_command('s3migrate_issue_attachments', '--execute', '--delete-local-copies', stdout=out)
 
-        expected_s3_path = S3OverlayStorage.append_s3_prefix(file.file.name)
-        expected_stdout = ('''Note: destination already exists: {}\n'''
-                           '''Note: updating model: {}, {}\n'''
-                           '''Note: updated model: {}, {}''').format(
-            expected_s3_path, file, expected_s3_path, file, expected_s3_path)
+        expected_stdout = ('''Note: updated model: {}, {}\n'''
+                           '''Note: deleted local: {}''').format(file, expected_s3_path, file.file.name)
+        self.assertEqual(expected_stdout, out.getvalue().strip())
         file = File.objects.get(pk=file.pk)
         self.assertTrue(S3OverlayStorage.is_s3_stored(file.file.name))
-        self.assertTrue(self.s3_storage.exists(file.file.name))
-        self.assertEqual(expected_stdout, out.getvalue().strip())
+        self.assertEqual(file.file.name, expected_s3_path)
+        self.assertFalse(os.path.exists(local_path))
 
-    def test_rewrite_url_only_existing_many_refs(self):
+    def test_delete_local_copies_absolute_overrides_force_cutover(self):
         issue = Issue.objects.create(task_id=self.task.id, student_id=self.student.id)
         event_create_file = Event.objects.create(issue=issue, field=IssueField.objects.get(name='file'))
-        file_first = File.objects.create(
-            file=SimpleUploadedFile('test_s3_issues.py', b'some text'), event=event_create_file)
-        file_second = File.objects.get(pk=file_first.pk)
-        file_second.pk = 0x1337
-        file_second.save(force_insert=True)
+        file = File.objects.create(file=SimpleUploadedFile('test_s3_issues.py', b'some text'), event=event_create_file)
 
-        out = StringIO()
-        call_command('s3migrate_issue_attachments', '--execute', '--rewrite-only-existing', stdout=out)
+        call_command('s3migrate_issue_attachments', '--execute', stdout=StringIO())
+        local_path = file.file.path
 
-        file_first = File.objects.get(pk=file_first.pk)
-        file_second = File.objects.get(pk=file_second.pk)
-        for file in [file_first, file_second]:
-            expected_s3_path = S3OverlayStorage.append_s3_prefix(file.file.name)
-            self.assertFalse(S3OverlayStorage.is_s3_stored(file.file.name))
-            self.assertTrue(self.s3_storage.exists(expected_s3_path))
-            self.assertEqual(('''Note: uploaded: {}'''.format(expected_s3_path)),
-                             out.getvalue().strip())
+        # Relative defaults (210/8 days) haven't elapsed at all, but an
+        # absolute override should force the cutover regardless.
+        cutover = timezone.now() - timedelta(minutes=1)
+        with override_settings(AWS_S3_SERVE_AT=cutover, AWS_S3_DELETE_LOCAL_AT=cutover):
+            call_command('s3migrate_issue_attachments', '--execute', '--delete-local-copies', stdout=StringIO())
 
-        out = StringIO()
-        err = StringIO()
-        call_command('s3migrate_issue_attachments', '--execute', '--rewrite-only-existing', stdout=out, stderr=err)
-        cmd_out = out.getvalue()
+        file = File.objects.get(pk=file.pk)
+        self.assertTrue(S3OverlayStorage.is_s3_stored(file.file.name))
+        self.assertFalse(os.path.exists(local_path))
 
-        expected_stdout = []
-        for file in [file_first, file_second]:
-            expected_s3_path = S3OverlayStorage.append_s3_prefix(file.file.name)
-            expected_stdout.append(
-                """Note: destination already exists: {}\n"""
-                """Note: updating model: {}, {}\n"""
-                """Note: updated model: {}, {}\n""".format(
-                    expected_s3_path, file, expected_s3_path, file, expected_s3_path
-                )
-            )
-
-            file = File.objects.get(pk=file.pk)
-            self.assertTrue(S3OverlayStorage.is_s3_stored(file.file.name))
-            self.assertTrue(self.s3_storage.exists(file.file.name))
-
-        expected_stdout = "".join(expected_stdout)
-        self.assertEqual(expected_stdout, cmd_out)
-
-    def test_upload_archives(self):
+    def test_execute_upload_archives(self):
         for ext in anyrb.unpacker.get_supported_extensions():
             fail_msg = 'Failed for extension: {}'.format(ext)
             issue = Issue.objects.create(task_id=self.task.id, student_id=self.student.id)
@@ -1233,20 +1217,14 @@ class S3MigrateIssueAttachments(TestCase, SerializeMixin):
                 event=event_create_file)
 
             out = StringIO()
-            call_command('s3migrate_issue_attachments', '--execute', '--do-rewrite-url', stdout=out)
+            call_command('s3migrate_issue_attachments', '--execute', stdout=out)
 
             expected_s3_path = S3OverlayStorage.append_s3_prefix(file.file.name)
-            expected_stdout = ('''Note: uploaded: {}\n'''
-                               '''Note: updating model: {}, {}\n'''
-                               '''Note: updated model: {}, {}''').format(
-                expected_s3_path, file, expected_s3_path, file, expected_s3_path)
+            expected_stdout = 'Note: uploaded: {}'.format(expected_s3_path)
             file = File.objects.get(pk=file.pk)
-            self.assertTrue(
-                S3OverlayStorage.is_s3_stored(file.file.name),
-                fail_msg)
-            self.assertTrue(
-                self.s3_storage.exists(expected_s3_path),
-                fail_msg)
+            self.assertIsNotNone(file.s3_uploaded_at, fail_msg)
+            self.assertFalse(S3OverlayStorage.is_s3_stored(file.file.name), fail_msg)
+            self.assertTrue(self.s3_storage.exists(expected_s3_path), fail_msg)
             self.assertEqual(
                 expected_stdout,
                 out.getvalue().strip(),
@@ -1255,6 +1233,65 @@ class S3MigrateIssueAttachments(TestCase, SerializeMixin):
             issue.delete()
             event_create_file.delete()
             file.delete()
+
+
+@skipIf(not IS_S3_REACHABLE, "S3 seems misconfigured")
+class FileGetUrlTest(TestCase, SerializeMixin):
+    """File.get_url() is state-based (not purely elapsed-time-based), see
+    issues.models.File.get_url and common/s3_rollout.py.
+    """
+
+    def setUp(self):
+        self.student = User.objects.create_user(username='student_geturl', password='password2')
+        self.year = Year.objects.create(start_year=2016)
+        self.group = Group.objects.create(name='group_name_geturl', year=self.year)
+        self.group.students.set([self.student])
+        self.group.save()
+        self.course = Course.objects.create(name='course_name_geturl', year=self.year)
+        self.course.groups.set([self.group])
+        self.course.issue_fields.set(IssueField.objects.exclude(id=10).exclude(id=11))
+        self.course.save()
+        self.task = Task.objects.create(title='task_title_geturl', course=self.course, score_max=10)
+        self.issue = Issue.objects.create(task_id=self.task.id, student_id=self.student.id)
+        self.event = Event.objects.create(issue=self.issue, field=IssueField.objects.get(name='file'))
+
+    def _make_file(self):
+        return File.objects.create(file=SimpleUploadedFile('test_geturl.py', b'hello'), event=self.event)
+
+    def test_get_url_local_when_never_uploaded(self):
+        file = self._make_file()
+        with override_settings(AWS_S3_SERVE_AT=timezone.now() - timedelta(days=1)):
+            # s3_uploaded_at is None -> never S3-eligible, even under an absolute override.
+            self.assertEqual(file.get_url(), file.file.url)
+
+    def test_get_url_local_before_t1(self):
+        file = self._make_file()
+        file.s3_uploaded_at = timezone.now()
+        file.save(update_fields=['s3_uploaded_at'])
+        self.assertEqual(file.get_url(), file.file.url)
+
+    def test_get_url_virtual_s3_between_t1_and_t2_no_db_mutation(self):
+        file = self._make_file()
+        file.s3_uploaded_at = timezone.now() - timedelta(days=211)  # past T1=210, not T2=218
+        file.save(update_fields=['s3_uploaded_at'])
+
+        self.assertTrue(file.get_url().startswith(settings.AWS_S3_ENDPOINT_URL))
+        file.refresh_from_db()
+        self.assertFalse(S3OverlayStorage.is_s3_stored(file.file.name))
+
+    def test_get_url_resolves_via_file_url_once_name_already_flipped(self):
+        file = self._make_file()
+        file.file.name = S3OverlayStorage.append_s3_prefix(file.file.name)
+        file.save(update_fields=['file'])
+        # s3_uploaded_at left None -> proves get_url() is state-based, not time-based.
+        self.assertTrue(file.get_url().startswith(settings.AWS_S3_ENDPOINT_URL))
+
+    def test_get_url_absolute_override_t1_forces_s3(self):
+        file = self._make_file()
+        file.s3_uploaded_at = timezone.now()
+        file.save(update_fields=['s3_uploaded_at'])
+        with override_settings(AWS_S3_SERVE_AT=timezone.now() - timedelta(minutes=1)):
+            self.assertTrue(file.get_url().startswith(settings.AWS_S3_ENDPOINT_URL))
 
 
 # ---------------------------------------------------------------------------

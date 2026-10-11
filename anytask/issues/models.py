@@ -6,6 +6,7 @@ from decimal import Decimal
 
 from anyrb.common import AnyRB
 from anyrb.common import update_status_review_request
+from common.s3_rollout import should_serve_from_s3
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.urls import reverse
@@ -16,6 +17,7 @@ from django.utils import timezone
 from django.utils.translation import ugettext as _
 from issues.model_issue_field import IssueField
 from issues.model_issue_status import IssueStatus
+from storage import S3OverlayStorage
 from tasks.models import Task
 from text_unidecode import unidecode
 from users.common import get_user_fullname, get_user_link
@@ -42,8 +44,33 @@ class File(models.Model):
     event = models.ForeignKey("Event", on_delete=models.CASCADE)
     deleted = models.BooleanField(default=False)
 
+    create_time = models.DateTimeField(auto_now_add=True)  # remove default=timezone.now
+    update_time = models.DateTimeField(default=timezone.now)
+
+    # NULL = never uploaded to S3. Set once by s3migrate_issue_attachments's
+    # upload phase. Kept separate from create_time/update_time so unrelated
+    # code touching those can never corrupt the S3 rollout schedule below.
+    s3_uploaded_at = models.DateTimeField(null=True, blank=True, default=None, db_index=True)
+
     def filename(self):
         return os.path.basename(self.file.name)
+
+    def get_url(self):
+        """URL anytask should serve right now for this attachment, based on
+        *state* (not just elapsed time), so it stays correct even if the
+        migrate command hasn't run yet for this file:
+        - file.name already S3-prefixed (command already flipped it at T2)
+          -> self.file.url resolves correctly on its own.
+        - not S3-prefixed yet, but past effective T1 -> virtual S3 URL via
+          append_s3_prefix, WITHOUT mutating file.name.
+        - otherwise (never uploaded, or uploaded but before T1) -> local URL.
+        """
+        name = self.file.name
+        if S3OverlayStorage.is_s3_stored(name):
+            return self.file.url
+        if self.s3_uploaded_at is not None and should_serve_from_s3(self.s3_uploaded_at):
+            return self.file.storage.url(S3OverlayStorage.append_s3_prefix(name))
+        return self.file.url
 
 
 class Issue(models.Model):
