@@ -331,6 +331,13 @@ AWS_STORAGE_BUCKET_NAME = 'anytask-test-s3'
 AWS_DEFAULT_ACL = 'public-read'  # As when served by Django & FileSystemStorage
 AWS_S3_USE_SSL = False
 
+# Feature flag: when enabled, links to files stored on S3 are presigned URLs
+# requested from S3 via the API (valid for AWS_S3_PRESIGNED_URL_EXPIRE seconds),
+# instead of an unsigned URL that just assumes the object is publicly readable.
+# See anytask.storage.S3OverlayStorage.
+AWS_S3_PRESIGNED_URLS_ENABLED = False
+AWS_S3_PRESIGNED_URL_EXPIRE = 7 * 24 * 60 * 60  # 7 days - max TTL S3 allows (SigV4 limit)
+
 DEFAULT_FILE_STORAGE = 'anytask.storage.S3OverlayStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'

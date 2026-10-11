@@ -122,3 +122,9 @@ AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME', 'anytask')
 AWS_DEFAULT_ACL = 'public-read'  # As when served by Django & FileSystemStorage
 AWS_S3_USE_SSL = True
 AWS_QUERYSTRING_AUTH = False
+
+# Opt-in: serve S3 files via 7-day presigned URLs requested from the API
+# instead of unsigned/guessed public URLs. Off by default to keep current
+# behaviour; enable with AWS_S3_PRESIGNED_URLS_ENABLED=true.
+AWS_S3_PRESIGNED_URLS_ENABLED = os.environ.get('AWS_S3_PRESIGNED_URLS_ENABLED', '').lower() in ('1', 'true', 'yes')
+AWS_S3_PRESIGNED_URL_EXPIRE = int(os.environ.get('AWS_S3_PRESIGNED_URL_EXPIRE', 7 * 24 * 60 * 60))

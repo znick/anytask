@@ -1,3 +1,5 @@
+from urllib.parse import urlsplit
+
 from django import template
 from django.conf import settings
 
@@ -6,7 +8,10 @@ register = template.Library()
 
 @register.filter
 def is_ipynb(path):
-    return path.endswith('.ipynb')
+    # `path` may be a presigned S3 URL with a trailing querystring
+    # (?AWSAccessKeyId=...&Signature=...&Expires=...), so check the URL's
+    # path component rather than the raw string.
+    return urlsplit(path).path.endswith('.ipynb')
 
 
 @register.simple_tag

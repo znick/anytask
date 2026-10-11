@@ -21,9 +21,25 @@ class S3OverlayStorage(Storage):
 
     IGNORED_EXTENSIONS = []
 
+    # Default TTL for presigned URLs when AWS_S3_PRESIGNED_URLS_ENABLED is on.
+    # 7 days is the maximum lifetime S3 allows for a presigned URL (SigV4 limit).
+    PRESIGNED_URL_EXPIRE = 7 * 24 * 60 * 60
+
     def __init__(self, *args, **kwargs):
         self.local_storage = FileSystemStorage(*args, **kwargs)
-        self.s3_storage = S3Boto3Storage(*args, **kwargs)
+
+        s3_kwargs = dict(kwargs)
+        if getattr(settings, 'AWS_S3_PRESIGNED_URLS_ENABLED', False):
+            # Instead of returning an unsigned URL that merely assumes the
+            # object is publicly readable (AWS_QUERYSTRING_AUTH=False), ask
+            # S3 (via boto3's `generate_presigned_url`) for an actual signed
+            # link with a limited lifetime.
+            s3_kwargs.setdefault('querystring_auth', True)
+            s3_kwargs.setdefault(
+                'querystring_expire',
+                getattr(settings, 'AWS_S3_PRESIGNED_URL_EXPIRE', self.PRESIGNED_URL_EXPIRE),
+            )
+        self.s3_storage = S3Boto3Storage(*args, **s3_kwargs)
 
     @classmethod
     def _is_local_only(cls, name):
