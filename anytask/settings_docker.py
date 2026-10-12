@@ -6,6 +6,7 @@ from settings_common import *  # noqa: F403
 # This is NOT a complete production settings file. For more, see:
 # See https://docs.djangoproject.com/en/dev/howto/deployment/checklist/
 
+import datetime
 import os
 
 DEBUG = True
@@ -128,3 +129,27 @@ AWS_QUERYSTRING_AUTH = False
 # behaviour; enable with AWS_S3_PRESIGNED_URLS_ENABLED=true.
 AWS_S3_PRESIGNED_URLS_ENABLED = os.environ.get('AWS_S3_PRESIGNED_URLS_ENABLED', '').lower() in ('1', 'true', 'yes')
 AWS_S3_PRESIGNED_URL_EXPIRE = int(os.environ.get('AWS_S3_PRESIGNED_URL_EXPIRE', 7 * 24 * 60 * 60))
+
+
+def _aws_s3_rollout_datetime_env(var_name):
+    """Parse an ISO-8601 datetime with an explicit UTC offset from an env
+    var (e.g. '2026-05-01T00:00:00+00:00'). Returns None if unset. Plain
+    stdlib parsing (no django.utils here) to avoid touching settings while
+    this very settings module is still being built.
+    """
+    raw = os.environ.get(var_name)
+    if not raw:
+        return None
+    value = datetime.datetime.fromisoformat(raw)
+    if value.tzinfo is None:
+        raise ValueError('{} must include a UTC offset, e.g. 2026-05-01T00:00:00+00:00'.format(var_name))
+    return value
+
+
+# issues.File S3 rollout (see common/s3_rollout.py). Days are opt-in tuning
+# knobs; the two absolute cutover dates are unset by default (per-file
+# relative delay applies) and, once set, force the rollout for ALL files.
+AWS_S3_SERVE_DELAY_DAYS = int(os.environ.get('AWS_S3_SERVE_DELAY_DAYS', 210))
+AWS_S3_DELETE_LOCAL_DELAY_DAYS = int(os.environ.get('AWS_S3_DELETE_LOCAL_DELAY_DAYS', 8))
+AWS_S3_SERVE_AT = _aws_s3_rollout_datetime_env('AWS_S3_SERVE_AT')
+AWS_S3_DELETE_LOCAL_AT = _aws_s3_rollout_datetime_env('AWS_S3_DELETE_LOCAL_AT')

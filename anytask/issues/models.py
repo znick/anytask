@@ -59,18 +59,30 @@ class File(models.Model):
         """URL anytask should serve right now for this attachment, based on
         *state* (not just elapsed time), so it stays correct even if the
         migrate command hasn't run yet for this file:
-        - file.name already S3-prefixed (command already flipped it at T2)
+        - already migrated to S3 (command flipped it at T2, or legacy data)
           -> self.file.url resolves correctly on its own.
-        - not S3-prefixed yet, but past effective T1 -> virtual S3 URL via
+        - not migrated yet, but past effective T1 -> virtual S3 URL via
           append_s3_prefix, WITHOUT mutating file.name.
         - otherwise (never uploaded, or uploaded but before T1) -> local URL.
         """
-        name = self.file.name
-        if S3OverlayStorage.is_s3_stored(name):
+        if self.is_migrated_to_s3:
             return self.file.url
         if self.s3_uploaded_at is not None and should_serve_from_s3(self.s3_uploaded_at):
-            return self.file.storage.url(S3OverlayStorage.append_s3_prefix(name))
+            return self.file.storage.url(S3OverlayStorage.append_s3_prefix(self.file.name))
         return self.file.url
+
+    @property
+    def is_migrated_to_s3(self):
+        """True once file.name has been flipped to the S3-prefixed path (by
+        s3migrate_issue_attachments's phase 2, or a legacy pre-rollout
+        migration) - i.e. ALL storage ops for this file (not just URLs)
+        already go through S3Boto3Storage. Deliberately derived from the
+        path rather than a separate DB column: S3OverlayStorage._dispatch
+        routes open()/exists()/delete()/save() by this same path-prefix
+        check, so a cached flag could drift from what the storage layer
+        actually does.
+        """
+        return S3OverlayStorage.is_s3_stored(self.file.name)
 
 
 class Issue(models.Model):
