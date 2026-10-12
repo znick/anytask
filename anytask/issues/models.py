@@ -55,6 +55,23 @@ class File(models.Model):
     def filename(self):
         return os.path.basename(self.file.name)
 
+    def save(self, *args, **kwargs):
+        """A new row can point at a storage path that's already backing
+        another File row - e.g. Issue.set_field_comment() re-wraps a
+        previously uploaded solution file in a brand new File when it's
+        attached to a comment event, reusing the same (already-committed)
+        FieldFile, so no bytes are rewritten and the path is unchanged.
+        Without this, such a row would start with s3_uploaded_at=NULL and
+        wrongly look "never uploaded" even though its bytes have been on S3
+        (and possibly past T1) for a while. Inherit the timestamp from any
+        sibling row for that same path instead of resetting the clock.
+        """
+        if self.pk is None and self.s3_uploaded_at is None and self.file.name:
+            sibling = File.objects.filter(file=self.file.name, s3_uploaded_at__isnull=False).first()
+            if sibling is not None:
+                self.s3_uploaded_at = sibling.s3_uploaded_at
+        super(File, self).save(*args, **kwargs)
+
     def get_url(self):
         """URL anytask should serve right now for this attachment, based on
         *state* (not just elapsed time), so it stays correct even if the
