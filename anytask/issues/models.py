@@ -6,6 +6,7 @@ from decimal import Decimal
 
 from anyrb.common import AnyRB
 from anyrb.common import update_status_review_request
+from common.s3_rollout import should_serve_from_s3
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.urls import reverse
@@ -16,6 +17,7 @@ from django.utils import timezone
 from django.utils.translation import ugettext as _
 from issues.model_issue_field import IssueField
 from issues.model_issue_status import IssueStatus
+from storage import S3OverlayStorage
 from tasks.models import Task
 from text_unidecode import unidecode
 from users.common import get_user_fullname, get_user_link
@@ -42,8 +44,62 @@ class File(models.Model):
     event = models.ForeignKey("Event", on_delete=models.CASCADE)
     deleted = models.BooleanField(default=False)
 
+    create_time = models.DateTimeField(auto_now_add=True)  # remove default=timezone.now
+    update_time = models.DateTimeField(default=timezone.now)
+
+    # NULL = never uploaded to S3. Set once by s3migrate_issue_attachments's
+    # upload phase. Kept separate from create_time/update_time so unrelated
+    # code touching those can never corrupt the S3 rollout schedule below.
+    s3_uploaded_at = models.DateTimeField(null=True, blank=True, default=None, db_index=True)
+
     def filename(self):
         return os.path.basename(self.file.name)
+
+    def save(self, *args, **kwargs):
+        """A new row can point at a storage path that's already backing
+        another File row - e.g. Issue.set_field_comment() re-wraps a
+        previously uploaded solution file in a brand new File when it's
+        attached to a comment event, reusing the same (already-committed)
+        FieldFile, so no bytes are rewritten and the path is unchanged.
+        Without this, such a row would start with s3_uploaded_at=NULL and
+        wrongly look "never uploaded" even though its bytes have been on S3
+        (and possibly past T1) for a while. Inherit the timestamp from any
+        sibling row for that same path instead of resetting the clock.
+        """
+        if self.pk is None and self.s3_uploaded_at is None and self.file.name:
+            sibling = File.objects.filter(file=self.file.name, s3_uploaded_at__isnull=False).first()
+            if sibling is not None:
+                self.s3_uploaded_at = sibling.s3_uploaded_at
+        super(File, self).save(*args, **kwargs)
+
+    def get_url(self):
+        """URL anytask should serve right now for this attachment, based on
+        *state* (not just elapsed time), so it stays correct even if the
+        migrate command hasn't run yet for this file:
+        - already migrated to S3 (command flipped it at T2, or legacy data)
+          -> self.file.url resolves correctly on its own.
+        - not migrated yet, but past effective T1 -> virtual S3 URL via
+          append_s3_prefix, WITHOUT mutating file.name.
+        - otherwise (never uploaded, or uploaded but before T1) -> local URL.
+        """
+        if self.is_migrated_to_s3:
+            return self.file.url
+        if self.s3_uploaded_at is not None and should_serve_from_s3(self.s3_uploaded_at):
+            return self.file.storage.url(S3OverlayStorage.append_s3_prefix(self.file.name))
+        return self.file.url
+
+    @property
+    def is_migrated_to_s3(self):
+        """True once file.name has been flipped to the S3-prefixed path (by
+        s3migrate_issue_attachments's phase 2, or a legacy pre-rollout
+        migration) - i.e. ALL storage ops for this file (not just URLs)
+        already go through S3Boto3Storage. Deliberately derived from the
+        path rather than a separate DB column: S3OverlayStorage._dispatch
+        routes open()/exists()/delete()/save() by this same path-prefix
+        check, so a cached flag could drift from what the storage layer
+        actually does.
+        """
+        return S3OverlayStorage.is_s3_stored(self.file.name)
 
 
 class Issue(models.Model):

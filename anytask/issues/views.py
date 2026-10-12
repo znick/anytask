@@ -372,8 +372,8 @@ def upload(request):
         'name': basename,
         'size': file.size,
 
-        'url': instance.file.url,
-        'thumbnailUrl': instance.file.url if os.path.splitext(basename)[1].lower() in IMAGE_EXTENSIONS else None,
+        'url': instance.get_url(),
+        'thumbnailUrl': instance.get_url() if os.path.splitext(basename)[1].lower() in IMAGE_EXTENSIONS else None,
 
         'delete_url': reverse('jfu_delete', kwargs={'pk': instance.pk}),
         'delete_type': 'POST',

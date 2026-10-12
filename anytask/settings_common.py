@@ -338,6 +338,23 @@ AWS_S3_USE_SSL = False
 AWS_S3_PRESIGNED_URLS_ENABLED = False
 AWS_S3_PRESIGNED_URL_EXPIRE = 7 * 24 * 60 * 60  # 7 days - max TTL S3 allows (SigV4 limit)
 
+# issues.File S3 rollout (see common/s3_rollout.py): a file gets uploaded to
+# S3 immediately once seen by s3migrate_issue_attachments, but anytask keeps
+# serving the local link for it until T1, and the management command only
+# flips the DB pointer to S3 + deletes the local copy at T2.
+#
+# T1 default: File.s3_uploaded_at + AWS_S3_SERVE_DELAY_DAYS (~7 calendar
+# months, approximated as days).
+AWS_S3_SERVE_DELAY_DAYS = 210
+# T2 default: effective T1 + AWS_S3_DELETE_LOCAL_DELAY_DAYS.
+AWS_S3_DELETE_LOCAL_DELAY_DAYS = 8
+# Absolute override for T1: if set, ALL uploaded files start serving from S3
+# as of this exact datetime, ignoring AWS_S3_SERVE_DELAY_DAYS.
+AWS_S3_SERVE_AT = None
+# Absolute override for T2: if set, ALL eligible files become flip+delete-
+# ready as of this exact datetime, ignoring AWS_S3_DELETE_LOCAL_DELAY_DAYS.
+AWS_S3_DELETE_LOCAL_AT = None
+
 DEFAULT_FILE_STORAGE = 'anytask.storage.S3OverlayStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'

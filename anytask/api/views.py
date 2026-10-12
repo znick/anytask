@@ -94,8 +94,8 @@ def unpack_file(request, f):
     return {
         "id": f.id,
         "filename": f.filename(),
-        "path": f.file.url,
-        "url": request.build_absolute_uri(f.file.url),
+        "path": f.get_url(),
+        "url": request.build_absolute_uri(f.get_url()),
     }
 
 
