@@ -10,7 +10,7 @@ import datetime
 import os
 
 DEBUG = True
-LOG_LEVEL = os.environ.get('LOG_LEVEL', 'DEBUG')
+LOG_LEVEL = os.environ.get('LOG_LEVEL', 'INFO')
 
 ALLOWED_HOSTS = ['anytask.org', 'www.anytask.org', "docker.anytask.org", "beta.anytask.org"]
 # e.g. the container's own name, so a metrics scraper can reach /metrics without going through nginx
@@ -39,21 +39,29 @@ LOGGING = {
     },
     'handlers': {
         'file': {
-            'level': LOG_LEVEL,
             'class': 'logging.FileHandler',
             'filename': '/var/log/anytask/full.log',
             'formatter': 'verbose',
         }
 
     },
+    # Root, not just 'django': app loggers like 'anytelegram' or __name__ ones were going nowhere
+    'root': {
+        'handlers': ['file'],
+        'level': LOG_LEVEL,
+    },
     'loggers': {
         'django': {
-            'handlers': ['file'],
             'level': LOG_LEVEL,
-            'propagate': True,
-
         },
-
+        # Kept quiet even with LOG_LEVEL=DEBUG: a line per missing template variable
+        # (dozens per page) and, while DEBUG is on, a line per SQL query
+        'django.template': {
+            'level': 'INFO',
+        },
+        'django.db.backends': {
+            'level': 'INFO',
+        },
     }
 }
 

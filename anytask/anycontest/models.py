@@ -273,8 +273,14 @@ class ContestSubmission(models.Model):
             logger.warning("Run_id %s is running for %s", run_id, timezone.now() - self.create_time)
             got_verdict = False
         except Exception as e:
-            logger.exception("Exception while request to Contest: '%s' : '%s', Exception: '%s'",
-                             results_req.url, results_req.json(), e)
+            # Not the whole response: it carries the student's source and tests (~8KB),
+            # and check_contest retries the submission on every run
+            try:
+                contest_error = results_req.json().get('error')
+            except Exception:
+                contest_error = None
+            logger.exception("Exception while request to Contest: '%s', Contest error: '%s', Exception: '%r'",
+                             results_req.url, contest_error, e)
             got_verdict = False
 
         self.got_verdict = got_verdict
