@@ -20,6 +20,9 @@ DATABASES = {'default': dj_database_url.config(conn_max_age=600)}  # noqa: F405
 # Same backend, wrapped to export query count/latency/error metrics to /metrics
 DATABASES['default']['ENGINE'] = DATABASES['default']['ENGINE'].replace('django.db.backends.',
                                                                         'django_prometheus.db.backends.')
+# Without it mysqlclient connects as utf8 (3-byte) and emoji etc. break; ?charset= in DATABASE_URL still wins
+if 'mysql' in DATABASES['default']['ENGINE']:
+    DATABASES['default'].setdefault('OPTIONS', {}).setdefault('charset', 'utf8mb4')
 
 # STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 
